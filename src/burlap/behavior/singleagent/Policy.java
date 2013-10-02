@@ -44,6 +44,24 @@ public abstract class Policy {
 	public abstract boolean isStochastic();
 	
 	
+	
+	/**
+	 * Will return the probability of this policy taking action ga in state s
+	 * @param s the state in which the action would be taken
+	 * @param ga the action being queried
+	 * @return the probability of this policy taking action ga in state s
+	 */
+	public double getProbOfAction(State s, GroundedAction ga){
+		List <ActionProb> probs = this.getActionDistributionForState(s);
+		for(ActionProb ap : probs){
+			if(ap.ga.equals(ga)){
+				return ap.pSelection;
+			}
+		}
+		return 0.;
+	}
+	
+	
 	/**
 	 * A helper method for defining deterministic policies. This method relies on the getAction method being
 	 * implemented and will return a list of ActionProb objects with a single instance: the result of
