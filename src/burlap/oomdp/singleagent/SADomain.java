@@ -58,5 +58,12 @@ public class SADomain extends Domain {
 	public SingleAction getSingleAction(String name) {
 		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stocashtic game formalisms");
 	}
+
+
+	@Override
+	protected Domain newInstance() {
+		return new SADomain();
+	}
+
 	
 }

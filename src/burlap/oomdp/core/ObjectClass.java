@@ -43,6 +43,21 @@ public class ObjectClass {
 	}
 	
 	
+	/**
+	 * Will create and return a new ObjectClass object with copies of this object class' attributes
+	 * @param newDomain the domain to which the new object class should be attached
+	 * @return the new ObjectClass object
+	 */
+	public ObjectClass copy(Domain newDomain){
+		ObjectClass noc = new ObjectClass(newDomain, name);
+		for(Attribute att : attributeList){
+			noc.addAttribute(att.copy(newDomain));
+		}
+		
+		return noc;
+	}
+	
+	
 	public void setAttributes(List <Attribute> atts){
 		
 		attributeList.clear();

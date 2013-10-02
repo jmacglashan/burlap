@@ -39,6 +39,27 @@ public abstract class Domain {
 		
 	}
 	
+	
+	/**
+	 * Will return a new instance of this Domain's class (either SADomain or SGDomain)
+	 * @return a new instance of this Domain's class (either SADomain or SGDomain)
+	 */
+	protected abstract Domain newInstance();
+	
+	/**
+	 * This will return a new domain object populated with copies of this Domain's ObjectClasses. Note that propositional
+	 * functions and actions are not copied into the new domain
+	 * @return a new Domain object with copies of this Domain's ObjectClasses
+	 */
+	public Domain getNewDomainWithCopiedObjectClasses(){
+		Domain d = this.newInstance();
+		for(Attribute a : this.attributes){
+			a.copy(d);
+		}
+		
+		return d;
+	}
+	
 	public void addObjectClass(ObjectClass oc){
 		if(!objectClassMap.containsKey(oc.name)){
 			objectClasses.add(oc);

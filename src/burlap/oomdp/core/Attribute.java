@@ -119,6 +119,24 @@ public class Attribute {
 		
 	}
 	
+	
+	/**
+	 * Will create a new Attribute object with the same configuration and name as this one.
+	 * @param newDomain the domain to which the new attribute should be attached
+	 * @return the new attribute object
+	 */
+	public Attribute copy(Domain newDomain){
+		Attribute nd = new Attribute(newDomain, name, type);
+		nd.lowerLim = this.lowerLim;
+		nd.upperLim = this.upperLim;
+		nd.discValues = new ArrayList<String>(discValues);
+		nd.discValuesHash = new HashMap<String, Integer>(discValuesHash);
+		nd.hidden = this.hidden;
+		
+		
+		return nd;
+	}
+	
 	public void setLims(double lower, double upper){
 		this.lowerLim = lower;
 		this.upperLim = upper;

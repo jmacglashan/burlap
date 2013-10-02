@@ -20,14 +20,7 @@ public class SGDomain extends Domain{
 	protected Map <String, SingleAction>				singleActionMap;		
 	
 	public SGDomain() {
-		objectClasses = new ArrayList <ObjectClass>();
-		objectClassMap = new HashMap <String, ObjectClass>();
-		
-		attributes = new ArrayList <Attribute>();
-		attributeMap = new HashMap <String, Attribute>();
-		
-		propFunctions = new ArrayList <PropositionalFunction>();
-		propFunctionMap = new HashMap <String, PropositionalFunction>();
+		super();
 		
 		singleActions = new HashSet<SingleAction>();
 		singleActionMap = new HashMap<String, SingleAction>();
@@ -123,6 +116,13 @@ public class SGDomain extends Domain{
 	@Override
 	public Action getAction(String name) {
 		throw new UnsupportedOperationException("Stochastic Games domain does not contain any action for single agent formalisms");
+	}
+
+
+
+	@Override
+	protected Domain newInstance() {
+		return new SGDomain();
 	}
 	
 	
