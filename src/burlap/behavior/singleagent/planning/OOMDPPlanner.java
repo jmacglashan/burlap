@@ -80,7 +80,9 @@ public abstract class OOMDPPlanner {
 		
 	}
 	
-	
+	public void setActions(List<Action> actions){
+		this.actions = actions;
+	}
 	
 	public TerminalFunction getTF(){
 		return tf;
