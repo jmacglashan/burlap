@@ -92,6 +92,10 @@ public abstract class OOMDPPlanner {
 		return rf;
 	}
 	
+	public StateHashFactory getHashingFactory(){
+		return this.hashingFactory;
+	}
+	
 	public void setDebugCode(int code){
 		this.debugCode = code;
 	}
