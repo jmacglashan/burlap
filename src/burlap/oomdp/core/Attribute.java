@@ -157,7 +157,19 @@ public class Attribute {
 		this.discValues = new ArrayList <String> (vals);
 		this.discValuesHash = new HashMap<String, Integer>();
 		for(int i = 0; i < discValues.size(); i++){
-			this.discValuesHash.put(vals.get(i), new Integer(i));
+			this.discValuesHash.put(vals.get(i), i);
+		}
+		
+		//set range
+		this.lowerLim = 0.0;
+		this.upperLim = discValues.size()-1;
+	}
+	
+	public void setDiscValues(String [] vals){
+		this.discValues = Arrays.asList(vals);
+		this.discValuesHash = new HashMap<String, Integer>();
+		for(int i = 0; i < discValues.size(); i++){
+			this.discValuesHash.put(discValues.get(i), i);
 		}
 		
 		//set range
