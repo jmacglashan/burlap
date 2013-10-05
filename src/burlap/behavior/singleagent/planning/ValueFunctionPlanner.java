@@ -43,6 +43,10 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	}
 	
 	
+	public double value(State s){
+		StateHashTuple sh = this.hashingFactory.hashState(s);
+		return valueFunction.get(sh);
+	}
 	
 	public List <QValue> getQs(State s){
 		
