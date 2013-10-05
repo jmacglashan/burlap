@@ -126,6 +126,13 @@ public class ValueIteration extends ValueFunctionPlanner{
 				continue;
 			}
 			
+			mapToStateIndex.put(sh, sh);
+			
+			//do not need to expand from terminal states
+			if(this.tf.isTerminal(sh.s)){
+				continue;
+			}
+			
 			//otherwise do expansion
 			//first get all grounded actions for this state
 			List <GroundedAction> gas = new ArrayList<GroundedAction>();
@@ -149,7 +156,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 			//now make entry for this in the transition dynamics
 			transitionDynamics.put(sh, transitions);
-			mapToStateIndex.put(sh, sh);
+			
 			
 		}
 		
