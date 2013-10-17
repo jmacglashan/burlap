@@ -104,6 +104,16 @@ public class ObjectInstance {
 		this.computeRealVals();
 	}
 	
+	public void addRelationalTarget(String attName, String target){
+		int ind = obClass.attributeIndex(attName);
+		values.get(ind).addRelationalTarget(target);
+	}
+	
+	public void clearRelationalTargets(String attName){
+		int ind = obClass.attributeIndex(attName);
+		values.get(ind).clearRelationTargets();
+	}
+	
 	public void setValues(List <Double> vs){
 		
 		for(int i = 0; i < vs.size(); i++){
@@ -166,6 +176,11 @@ public class ObjectInstance {
 	public int getDiscValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getDiscVal();
+	}
+	
+	public List <String> getAllRelationalTargets(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getAllRelationalTargets();
 	}
 	
 	public List <Value> getValues(){

@@ -1,5 +1,7 @@
 package burlap.oomdp.core.values;
 
+import java.util.List;
+
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
 
@@ -34,6 +36,16 @@ public class DiscreteValue extends Value{
 		discVal = intv;
 	}
 	
+	@Override
+	public void addRelationalTarget(String t) {
+		throw new UnsupportedOperationException(new Error("Value is discrete, cannot add relational target"));
+	}
+	
+	@Override
+	public void clearRelationTargets() {
+		throw new UnsupportedOperationException(new Error("Value is discrete, cannot clear relational targets"));
+	}
+	
 	public int getDiscVal(){
 		return this.discVal;
 	}
@@ -44,6 +56,11 @@ public class DiscreteValue extends Value{
 	
 	public String getStringVal(){
 		return attribute.discValues.get(discVal);
+	}
+	
+	@Override
+	public List<String> getAllRelationalTargets() {
+		throw new UnsupportedOperationException(new Error("Value is discrete, cannot return relational values"));
 	}
 	
 	@Override
@@ -65,6 +82,11 @@ public class DiscreteValue extends Value{
 		return discVal == op.discVal;
 		
 	}
+
+	
+
+	
+
 
 	
 	

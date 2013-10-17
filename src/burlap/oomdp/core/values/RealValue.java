@@ -1,5 +1,7 @@
 package burlap.oomdp.core.values;
 
+import java.util.List;
+
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
 
@@ -12,8 +14,8 @@ public class RealValue extends Value {
 	
 	public RealValue(Value v){
 		super(v);
-		RealValue dv = (RealValue)v;
-		this.realVal = dv.realVal;
+		RealValue rv = (RealValue)v;
+		this.realVal = rv.realVal;
 	}
 	
 	public Value copy(){
@@ -32,6 +34,11 @@ public class RealValue extends Value {
 		this.realVal = Double.parseDouble(v);
 	}
 	
+	@Override
+	public void addRelationalTarget(String t) {
+		throw new UnsupportedOperationException(new Error("Value is real, cannot add relational target"));
+	}
+	
 	public int getDiscVal(){
 		throw new UnsupportedOperationException(new Error("Value is real, cannot return discrete value"));
 	}
@@ -40,8 +47,18 @@ public class RealValue extends Value {
 		return this.realVal;
 	}
 	
+	@Override
+	public void clearRelationTargets() {
+		throw new UnsupportedOperationException(new Error("Value is real, cannot clear relational targets"));
+	}
+	
 	public String getStringVal(){
 		return String.valueOf(this.realVal);
+	}
+	
+	@Override
+	public List<String> getAllRelationalTargets() {
+		throw new UnsupportedOperationException(new Error("Value is real, cannot return relational values"));
 	}
 	
 	@Override

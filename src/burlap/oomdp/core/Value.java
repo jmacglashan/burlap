@@ -1,5 +1,7 @@
 package burlap.oomdp.core;
 
+import java.util.List;
+
 public abstract class Value {
 
 	protected Attribute			attribute;		//defines the attribute kind of this value
@@ -14,7 +16,6 @@ public abstract class Value {
 		this.attribute = v.attribute;
 	}
 	
-	public abstract Value copy();
 	
 	public Attribute getAttribute(){
 		return attribute;
@@ -24,56 +25,27 @@ public abstract class Value {
 		return attribute.name;
 	}
 	
+	@Override
+	public String toString(){
+		return this.getStringVal();
+	}
+	
+	public abstract Value copy();
+	
 	public abstract void setValue(int v);
 	public abstract void setValue(double v);
 	public abstract void setValue(String v);
 	
-	
-	/*
-	public void setDiscValue(int v){
-		discVal = v;
-	}
-	
-	public void setDiscValue(String v){
-		int intv = attribute.discValuesHash.get(v);
-		discVal = intv;
-	}
-	
-	public void setRealValue(double v){
-		realVal = v;
-	}
-	*/
-	
-	
+	public abstract void addRelationalTarget(String t);
+	public abstract void clearRelationTargets();
 	
 	public abstract int getDiscVal();
 	public abstract double getRealVal();
 	public abstract String getStringVal();
+	public abstract List <String> getAllRelationalTargets();
+	
+	
 	public abstract double getNumericRepresentation();
 	
-	/*
-	public int getDiscreteDimensionality(){
-		return attribute.discValues.size();
-	}
-	*/
-	/*
-	public boolean equals(Object obj){
-		Value op = (Value)obj;
-		if(!op.attribute.equals(attribute)){
-			return false;
-		}
-		if(op.attribute.type == AttributeType.DISC){
-			return discVal == op.discVal;
-		}
-		return realVal == op.realVal;
-		
-		
-	}
-	*/
-	/*
-	public int hashCode(){
-		return attribute.hashCode();
-	}
-	*/
 	
 }

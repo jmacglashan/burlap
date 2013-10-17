@@ -5,7 +5,9 @@ import java.util.*;
 import javax.management.RuntimeErrorException;
 
 import burlap.oomdp.core.values.DiscreteValue;
+import burlap.oomdp.core.values.MultiTargetRelationalValue;
 import burlap.oomdp.core.values.RealValue;
+import burlap.oomdp.core.values.RelationalValue;
 
 /**
  * 
@@ -18,7 +20,9 @@ public class Attribute {
 		NOTYPE(-1),
 		DISC(0),
 		REAL(1),
-		REALUNBOUND(2);
+		REALUNBOUND(2),
+		RELATIONAL(3),
+		MULTITARGETRELATIONAL(4);
 		
 		private final int intVal;
 		
@@ -38,6 +42,10 @@ public class Attribute {
 					return REAL;
 				case 2:
 					return REALUNBOUND;
+				case 3:
+					return RELATIONAL;
+				case 4:
+					return MULTITARGETRELATIONAL;
 				default:
 					return NOTYPE;
 			}
@@ -222,6 +230,12 @@ public class Attribute {
 		}
 		else if(this.type == AttributeType.REAL || this.type == AttributeType.REALUNBOUND){
 			return new RealValue(this);
+		}
+		else if(this.type == AttributeType.RELATIONAL){
+			return new RelationalValue(this);
+		}
+		else if(this.type == AttributeType.MULTITARGETRELATIONAL){
+			return new MultiTargetRelationalValue(this);
 		}
 		
 		throw new RuntimeErrorException(new Error("Unknown attribute type; cannot construct a corresponding Value for it."));
