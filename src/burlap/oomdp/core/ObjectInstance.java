@@ -3,6 +3,7 @@ package burlap.oomdp.core;
 import java.util.*;
 
 
+
 public class ObjectInstance {
 	
 	private ObjectClass					obClass;			//object class to which this object belongs
@@ -71,7 +72,7 @@ public class ObjectInstance {
 		
 		values = new ArrayList <Value>(obClass.numAttributes());
 		for(Attribute att : obClass.attributeList){
-			values.add(new Value(att));
+			values.add(att.valueConstructor());
 		}
 		
 	}
@@ -195,7 +196,7 @@ public class ObjectInstance {
 		for(int i = 0; i < obClass.observableAttributeIndices.size(); i++){
 			
 			int ind = obClass.observableAttributeIndices.get(i);
-			obsFeatureVec[i] = values.get(ind).getNumericVal();
+			obsFeatureVec[i] = values.get(ind).getNumericRepresentation();
 			
 		}
 		
@@ -234,9 +235,11 @@ public class ObjectInstance {
 	
 	}
 	
+	
 	public int hashCode(){
 		return name.hashCode();
 	}
+	
 	
 
 }

@@ -2,9 +2,14 @@ package burlap.oomdp.core;
 
 import java.util.*;
 
+import javax.management.RuntimeErrorException;
+
+import burlap.oomdp.core.values.DiscreteValue;
+import burlap.oomdp.core.values.RealValue;
+
 /**
  * 
- * @author James
+ * @author James MacGlashan
  * 
  */
 public class Attribute {
@@ -71,6 +76,7 @@ public class Attribute {
 		this.domain.addAttribute(this);
 		
 	}
+	
 	/**
 	 * 
 	 * @param domain the domain that the attribute exists in
@@ -203,6 +209,22 @@ public class Attribute {
 		this.lowerLim = 0.0;
 		this.upperLim = discValues.size()-1;
 	
+	}
+	
+	
+	/**
+	 * Returns a Value object compatible with this Attributes type (i.e., discrete or real)
+	 * @return a Value object compatible with this Attributes type (i.e., discrete or real)
+	 */
+	public Value valueConstructor(){
+		if(this.type == Attribute.AttributeType.DISC){
+			return new DiscreteValue(this);
+		}
+		else if(this.type == AttributeType.REAL || this.type == AttributeType.REALUNBOUND){
+			return new RealValue(this);
+		}
+		
+		throw new RuntimeErrorException(new Error("Unknown attribute type; cannot construct a corresponding Value for it."));
 	}
 	
 	
