@@ -1,13 +1,19 @@
 package burlap.oomdp.singleagent.explorer;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.TextArea;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.awt.event.*;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import burlap.oomdp.core.Domain;
@@ -31,6 +37,8 @@ public class VisualExplorer extends JFrame{
 	
 	Visualizer 										painter;
 	TextArea										propViewer;
+	TextField										actionField;
+	JButton											actionButton;
 	int												cWidth;
 	int												cHeight;
 	
@@ -86,7 +94,11 @@ public class VisualExplorer extends JFrame{
 		propViewer.setPreferredSize(new Dimension(cWidth, 100));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		getContentPane().add(propViewer, BorderLayout.SOUTH);
+		Container bottomContainer = new Container();
+		bottomContainer.setLayout(new BorderLayout());
+		bottomContainer.add(propViewer, BorderLayout.NORTH);
+		
+		getContentPane().add(bottomContainer, BorderLayout.SOUTH);
 		getContentPane().add(painter, BorderLayout.CENTER);
 	
 		
@@ -124,6 +136,20 @@ public class VisualExplorer extends JFrame{
 
 		});
 		
+		actionField = new TextField(20);
+		bottomContainer.add(actionField, BorderLayout.CENTER);
+		
+		actionButton = new JButton("Execute");
+		actionButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				handleExecute();
+				
+			}
+		});
+		bottomContainer.add(actionButton, BorderLayout.EAST);
+		
 		painter.updateState(baseState);
 		
 		pack();
@@ -131,7 +157,43 @@ public class VisualExplorer extends JFrame{
 	}
 	
 	
-	private void handleKeyPressed(KeyEvent e){
+	protected void handleExecute(){
+		
+		String actionCommand = this.actionField.getText();
+		
+		if(actionCommand.length() == 0){
+			return ;
+		}
+		
+		String [] comps = actionCommand.split(" ");
+		String actionName = comps[0];
+		
+		//construct parameter list as all that remains
+		String params[];
+		if(comps.length > 1){
+			params = new String[comps.length-1];
+			for(int i = 1; i < comps.length; i++){
+				params[i-1] = comps[i];
+			}
+		}
+		else{
+			params = new String[0];
+		}
+		
+		Action action = domain.getAction(actionName);
+		if(action == null){
+			System.out.println("Unknown action: " + actionName);
+		}
+		else{
+			curState = action.performAction(curState, params);
+			numSteps++;
+			
+			painter.updateState(curState);
+			this.updatePropTextArea(curState);
+		}
+	}
+	
+	protected void handleKeyPressed(KeyEvent e){
 		
 		String key = String.valueOf(e.getKeyChar());
 

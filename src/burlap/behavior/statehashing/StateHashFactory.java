@@ -2,10 +2,8 @@ package burlap.behavior.statehashing;
 
 import burlap.oomdp.core.State;
 
-public class StateHashFactory {
+public interface StateHashFactory {
 
-	public StateHashTuple hashState(State s){
-		return new StateHashTuple(s);
-	}
+	public StateHashTuple hashState(State s);
 	
 }

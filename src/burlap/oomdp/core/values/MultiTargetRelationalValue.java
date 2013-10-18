@@ -1,24 +1,24 @@
 package burlap.oomdp.core.values;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
 
 public class MultiTargetRelationalValue extends Value {
 
-	protected List <String>		targetObjects;
+	protected Set <String>		targetObjects;
 	
 	public MultiTargetRelationalValue(Attribute attribute){
 		super(attribute);
-		this.targetObjects = new ArrayList<String>();
+		this.targetObjects = new TreeSet<String>();
 	}
 	
 	public MultiTargetRelationalValue(Value v){
 		super(v);
 		MultiTargetRelationalValue rv = (MultiTargetRelationalValue)v;
-		this.targetObjects = new ArrayList<String>(rv.targetObjects);
+		this.targetObjects = new TreeSet<String>(rv.targetObjects);
 	}
 	
 	
@@ -65,18 +65,20 @@ public class MultiTargetRelationalValue extends Value {
 	}
 	
 	@Override
-	public List<String> getAllRelationalTargets() {
+	public Set<String> getAllRelationalTargets() {
 		return this.targetObjects;
 	}
 
 	@Override
 	public String getStringVal() {
 		StringBuffer buf = new StringBuffer();
-		for(int i = 0; i < this.targetObjects.size(); i++){
-			if(i > 0){
+		boolean didFirst = false;
+		for(String t : this.targetObjects){
+			if(!didFirst){
 				buf.append(";");
+				didFirst = true;
 			}
-			buf.append(this.targetObjects.get(i));
+			buf.append(t);
 		}
 		return buf.toString();
 	}
@@ -84,6 +86,33 @@ public class MultiTargetRelationalValue extends Value {
 	@Override
 	public double getNumericRepresentation() {
 		return 0;
+	}
+	
+	
+	@Override
+	public boolean equals(Object obj){
+		
+		if(!(obj instanceof MultiTargetRelationalValue)){
+			return false;
+		}
+		
+		MultiTargetRelationalValue op = (MultiTargetRelationalValue)obj;
+		if(!op.attribute.equals(attribute)){
+			return false;
+		}
+		
+		if(this.targetObjects.size() != op.targetObjects.size()){
+			return false;
+		}
+		
+		for(String t : this.targetObjects){
+			if(!op.targetObjects.contains(t)){
+				return false;
+			}
+		}
+		
+		return true;
+		
 	}
 
 }

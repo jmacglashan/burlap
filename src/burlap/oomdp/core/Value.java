@@ -1,11 +1,11 @@
 package burlap.oomdp.core;
 
-import java.util.List;
+import java.util.Set;
 
 public abstract class Value {
 
-	protected Attribute			attribute;		//defines the attribute kind of this value
-	
+	protected Attribute			attribute;			//defines the attribute kind of this value
+	protected boolean			isObservable=true;	//relevant to POMDPs for which values are only observable at certain times
 	
 	
 	public Value(Attribute attribute){
@@ -25,6 +25,14 @@ public abstract class Value {
 		return attribute.name;
 	}
 	
+	public void setObservability(boolean isObservable){
+		this.isObservable = isObservable;
+	}
+	
+	public boolean isObservable(){
+		return this.isObservable;
+	}
+	
 	@Override
 	public String toString(){
 		return this.getStringVal();
@@ -42,7 +50,7 @@ public abstract class Value {
 	public abstract int getDiscVal();
 	public abstract double getRealVal();
 	public abstract String getStringVal();
-	public abstract List <String> getAllRelationalTargets();
+	public abstract Set <String> getAllRelationalTargets();
 	
 	
 	public abstract double getNumericRepresentation();

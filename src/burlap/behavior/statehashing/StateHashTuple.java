@@ -3,7 +3,7 @@ package burlap.behavior.statehashing;
 
 import burlap.oomdp.core.State;
 
-public class StateHashTuple {
+public abstract class StateHashTuple {
 
 	public State								s;
 	protected int								hashCode;
@@ -18,12 +18,7 @@ public class StateHashTuple {
 	
 	
 	
-	public void computeHashCode(){
-		
-		this.hashCode = this.s.getCompleteStateDescription().toString().hashCode(); //very basic and does not guarantee object name invariance
-		needToRecomputeHashCode = false;
-		
-	}
+	public abstract void computeHashCode();
 	
 	
 	@Override

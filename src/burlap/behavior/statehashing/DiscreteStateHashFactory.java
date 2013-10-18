@@ -26,7 +26,7 @@ import burlap.oomdp.core.State;
  * @author James MacGlashan
  *
  */
-public class DiscreteStateHashFactory extends StateHashFactory {
+public class DiscreteStateHashFactory implements StateHashFactory {
 
 	Map<String, List<Attribute>>	attributesForHashCode;
 	

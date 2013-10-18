@@ -1,7 +1,7 @@
 package burlap.oomdp.core.values;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
@@ -62,8 +62,8 @@ public class RelationalValue extends Value {
 	}
 	
 	@Override
-	public List<String> getAllRelationalTargets() {
-		List <String> res = new ArrayList<String>();
+	public Set<String> getAllRelationalTargets() {
+		Set <String> res = new TreeSet<String>();
 		res.add(this.target);
 		return res;
 	}
@@ -78,6 +78,22 @@ public class RelationalValue extends Value {
 		return 0;
 	}
 
+	
+	@Override
+	public boolean equals(Object obj){
+		
+		if(!(obj instanceof RelationalValue)){
+			return false;
+		}
+		
+		RelationalValue op = (RelationalValue)obj;
+		if(!op.attribute.equals(attribute)){
+			return false;
+		}
+		
+		return this.target.equals(op.target);
+		
+	}
 	
 
 }

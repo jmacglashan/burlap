@@ -1,6 +1,6 @@
 package burlap.oomdp.core.values;
 
-import java.util.List;
+import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
@@ -59,7 +59,7 @@ public class DiscreteValue extends Value{
 	}
 	
 	@Override
-	public List<String> getAllRelationalTargets() {
+	public Set<String> getAllRelationalTargets() {
 		throw new UnsupportedOperationException(new Error("Value is discrete, cannot return relational values"));
 	}
 	
@@ -68,6 +68,7 @@ public class DiscreteValue extends Value{
 		return (double)this.discVal;
 	}
 	
+	@Override
 	public boolean equals(Object obj){
 		
 		if(!(obj instanceof DiscreteValue)){

@@ -12,20 +12,7 @@ public class ObjectInstance {
 	
 	private LinkedList <String>			pseudoClass;		//list of pseudo classes that have been assigned from parameterization
 	
-	private double [] 					obsFeatureVec;		//double representation of feature vector for easy manipulation (e.g., kd-trees)
 	
-	
-	
-	public ObjectInstance(ObjectClass obClass){
-		
-		this.obClass = obClass;
-		this.name = "noname";
-		this.pseudoClass = new LinkedList <String>();
-		this.pseudoClass.add(obClass.name); //base pseudo class is the true class 
-		
-		this.initializeValueObjects();
-		
-	}
 	
 	public ObjectInstance(ObjectClass obClass, String name){
 		
@@ -53,10 +40,7 @@ public class ObjectInstance {
 			pseudoClass.addLast(pc);
 		}
 		
-		this.obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
-		for(int i = 0; i < o.obsFeatureVec.length; i++){
-			obsFeatureVec[i] = o.obsFeatureVec[i];
-		}
+		
 		
 	}
 	
@@ -67,8 +51,6 @@ public class ObjectInstance {
 	
 	
 	public void initializeValueObjects(){
-		
-		obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
 		
 		values = new ArrayList <Value>(obClass.numAttributes());
 		for(Attribute att : obClass.attributeList){
@@ -89,19 +71,19 @@ public class ObjectInstance {
 	public void setValue(String attName, String v){
 		int ind = obClass.attributeIndex(attName);
 		values.get(ind).setValue(v);
-		this.computeRealVals();
+		
 	}
 	
 	public void setValue(String attName, double v){
 		int ind = obClass.attributeIndex(attName);
 		values.get(ind).setValue(v);
-		this.computeRealVals();
+		
 	}
 	
 	public void setValue(String attName, int v){
 		int ind = obClass.attributeIndex(attName);
 		values.get(ind).setValue(v);
-		this.computeRealVals();
+		
 	}
 	
 	public void addRelationalTarget(String attName, String target){
@@ -119,18 +101,9 @@ public class ObjectInstance {
 		for(int i = 0; i < vs.size(); i++){
 			values.get(i).setValue(vs.get(i));
 		}
-		this.computeRealVals();
+
 	}
 	
-	public void setObservableValues(List <Double> vs){
-		
-		for(int i = 0; i < vs.size(); i++){
-			int ind = obClass.observableAttributeIndices.get(i);
-			values.get(ind).setValue(vs.get(i));
-		}
-		this.computeRealVals();
-		
-	}
 	
 	public String getName(){
 		return name;
@@ -178,7 +151,7 @@ public class ObjectInstance {
 		return values.get(ind).getDiscVal();
 	}
 	
-	public List <String> getAllRelationalTargets(String attName){
+	public Set <String> getAllRelationalTargets(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getAllRelationalTargets();
 	}
@@ -198,26 +171,16 @@ public class ObjectInstance {
 	
 	}
 	
-	public String getObservableValueStringRep(){
-		String res = String.valueOf(obsFeatureVec[0]);
-		for(int i = 1; i < obsFeatureVec.length; i++){
-			res = res + "," + String.valueOf(obsFeatureVec[i]);
-		}
-		return res;
-	}
 	
-	public void computeRealVals(){
-		
-		for(int i = 0; i < obClass.observableAttributeIndices.size(); i++){
-			
-			int ind = obClass.observableAttributeIndices.get(i);
-			obsFeatureVec[i] = values.get(ind).getNumericRepresentation();
-			
-		}
-		
-	}
 	
 	public double[] getObservableFeatureVec(){
+		
+		double [] obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
+		for(int i = 0; i < obsFeatureVec.length; i++){
+			int ind = obClass.observableAttributeIndices.get(i);
+			obsFeatureVec[i] = values.get(ind).getNumericRepresentation();
+		}
+		
 		return obsFeatureVec;
 	}
 	

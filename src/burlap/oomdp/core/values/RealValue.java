@@ -1,6 +1,6 @@
 package burlap.oomdp.core.values;
 
-import java.util.List;
+import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
@@ -57,7 +57,7 @@ public class RealValue extends Value {
 	}
 	
 	@Override
-	public List<String> getAllRelationalTargets() {
+	public Set<String> getAllRelationalTargets() {
 		throw new UnsupportedOperationException(new Error("Value is real, cannot return relational values"));
 	}
 	

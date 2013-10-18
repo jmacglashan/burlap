@@ -244,6 +244,7 @@ public class State {
 	
 	
 	
+	
 	@Override
 	public boolean equals(Object other){
 	
@@ -435,6 +436,14 @@ public class State {
 			return new ArrayList <ObjectInstance>();
 		}
 		return new ArrayList <ObjectInstance>(tmp);
+	}
+	
+	public ObjectInstance getFirstObjectOfClass(String oclass){
+		List <ObjectInstance> obs = this.objectIndexByTrueClass.get(oclass);
+		if(obs != null && obs.size() > 0){
+			return obs.get(0);
+		}
+		return null;
 	}
 	
 	public List <List <ObjectInstance>> getAllObjectsByClass(){

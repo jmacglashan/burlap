@@ -356,6 +356,8 @@ public class GridWorldDomain implements DomainGenerator {
 			exp.addActionShortHand("w", ACTIONWEST);
 			exp.addActionShortHand("s", ACTIONSOUTH);
 			
+			exp.exploreFromState(s);
+			
 		}
 		else if(expMode == 1){
 			
