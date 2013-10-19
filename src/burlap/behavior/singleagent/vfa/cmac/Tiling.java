@@ -69,7 +69,7 @@ public class Tiling {
 			this.hashCode = 1;
 			
 			for(String className : Tiling.this.classOrder){
-				List<ObjectInstance> objectsOfClass = s.getObjectsOfClass(className);
+				List<ObjectInstance> objectsOfClass = s.getObjectsOfTrueClass(className);
 				List <ObjectTile> objectTiles = new ArrayList<Tiling.ObjectTile>(objectsOfClass.size());
 				for(ObjectInstance o : objectsOfClass){
 					ObjectTile ot = new ObjectTile(o);
@@ -163,7 +163,7 @@ public class Tiling {
 			hashCode = 1;
 			
 			
-			className = o.getPseudoClass();
+			className = o.getTrueClassName();
 			List<AttributeTileSpecification> classSpecs = specification.get(className);
 			for(AttributeTileSpecification ats : classSpecs){
 				String attName = ats.attribute.name;

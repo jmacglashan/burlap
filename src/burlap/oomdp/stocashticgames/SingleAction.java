@@ -66,7 +66,7 @@ public abstract class SingleAction {
 			return res; //no parameters so just the single ga without params
 		}
 		
-		List <List <String>> bindings = s.getPossibleBindingsGivenParamOrderGroups(this.parameterTypes, this.parameterRenames, true);
+		List <List <String>> bindings = s.getPossibleBindingsGivenParamOrderGroups(this.parameterTypes, this.parameterRenames);
 		
 		for(List <String> params : bindings){
 			String [] aparams = params.toArray(new String[params.size()]);

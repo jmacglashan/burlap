@@ -6,11 +6,10 @@ import java.util.*;
 
 public class ObjectInstance {
 	
-	private ObjectClass					obClass;			//object class to which this object belongs
-	private String						name;				//name of the object for disambiguation
-	private List <Value>				values;				//the values for each attribute
+	protected ObjectClass					obClass;			//object class to which this object belongs
+	protected String						name;				//name of the object for disambiguation
+	protected List <Value>					values;				//the values for each attribute
 	
-	private LinkedList <String>			pseudoClass;		//list of pseudo classes that have been assigned from parameterization
 	
 	
 	
@@ -18,8 +17,6 @@ public class ObjectInstance {
 		
 		this.obClass = obClass;
 		this.name = name;
-		this.pseudoClass = new LinkedList <String>();
-		this.pseudoClass.add(obClass.name); //base pseudo class is the true class
 		
 		this.initializeValueObjects();
 		
@@ -34,14 +31,7 @@ public class ObjectInstance {
 		for(Value v : o.values){
 			values.add(v.copy());
 		}
-		
-		this.pseudoClass = new LinkedList<String>();
-		for(String pc : o.pseudoClass){
-			pseudoClass.addLast(pc);
-		}
-		
-		
-		
+			
 	}
 	
 	public ObjectInstance copy(){
@@ -64,9 +54,6 @@ public class ObjectInstance {
 	}
 	
 	
-	public void pushPseudoClass(String c){
-		pseudoClass.addFirst(c);
-	}
 	
 	public void setValue(String attName, String v){
 		int ind = obClass.attributeIndex(attName);
@@ -118,18 +105,6 @@ public class ObjectInstance {
 		return obClass.name;
 	}
 	
-	public String getPseudoClass(){
-		return pseudoClass.peek();
-	}
-	
-	public String popPseudoClass(){
-		//only pop the class if there are more than one
-		//because the first element is the true class and can never be removed
-		if(pseudoClass.size() > 1){
-			return pseudoClass.poll();
-		}
-		return null;
-	}
 	
 	public Value getValueForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
@@ -162,7 +137,7 @@ public class ObjectInstance {
 	
 	public String getObjectDescription(){
 		
-		String desc = name + " (" + this.getPseudoClass() + ")\n";
+		String desc = name + " (" + this.getTrueClassName() + ")\n";
 		for(Value v : values){
 			desc = desc + "\t" + v.attName() + ":\t" + v.getStringVal() + "\n";
 		}

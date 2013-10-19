@@ -90,8 +90,8 @@ public class Visualizer extends Canvas{
 			else{ //otherwise see if we have a painter for this object's class
 				
 				//try the parameterized class first
-				if(objectClassPainters.containsKey(o.getPseudoClass())){
-					objectClassPainters.get(o.getPseudoClass()).paintObject(g2, curState, o, cWidth, cHeight);
+				if(objectClassPainters.containsKey(o.getTrueClassName())){
+					objectClassPainters.get(o.getTrueClassName()).paintObject(g2, curState, o, cWidth, cHeight);
 				}
 				else if(objectClassPainters.containsKey(o.getTrueClassName())){ //try true class if no entry for the parameterized class
 					objectClassPainters.get(o.getTrueClassName()).paintObject(g2, curState, o, cWidth, cHeight);

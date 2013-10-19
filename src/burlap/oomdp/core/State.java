@@ -12,7 +12,6 @@ public class State {
 	private List <ObjectInstance>							hiddenObjectInstances;		//list of hidden object instances that facilitate domain dynamics and infer observable values
 	private Map <String, ObjectInstance>					objectMap;					//map from object names to their instances
 	
-	private Map <String, List <ObjectInstance>>				objectIndexByClass;			//map of object instances organized by (pseudo)class name
 	private Map <String, List <ObjectInstance>>				objectIndexByTrueClass;		//map of object instances organized by true class name
 
 	
@@ -47,8 +46,6 @@ public class State {
 		hiddenObjectInstances = new ArrayList <ObjectInstance>();
 		objectMap = new HashMap <String, ObjectInstance>();
 		
-		objectIndexByClass = new HashMap <String, List <ObjectInstance>>();
-		
 		objectIndexByTrueClass = new HashMap <String, List <ObjectInstance>>();
 	}
 	
@@ -80,20 +77,7 @@ public class State {
 	
 	private void addObjectClassIndexing(ObjectInstance o){
 		
-		String oclass = o.getPseudoClass();
 		String otclass = o.getTrueClassName();
-		
-		//manage pseudo indexing
-		if(objectIndexByClass.containsKey(oclass)){
-			objectIndexByClass.get(oclass).add(o);
-		}
-		else{
-			
-			ArrayList <ObjectInstance> classList = new ArrayList <ObjectInstance>();
-			classList.add(o);
-			objectIndexByClass.put(oclass, classList);
-			
-		}
 		
 		//manage true indexing
 		if(objectIndexByTrueClass.containsKey(otclass)){
@@ -141,25 +125,9 @@ public class State {
 	
 	private void removeObjectClassIndexing(ObjectInstance o){
 		
-		String oclass = o.getPseudoClass();
-		List <ObjectInstance> classList = objectIndexByClass.get(oclass);
 		
 		String otclass = o.getTrueClassName();
 		List <ObjectInstance> classTList = objectIndexByTrueClass.get(otclass);
-		
-		//manage psuedo class
-		
-		//if this index has more than one entry, then we can just remove from it and be done
-		if(classList.size() > 1){
-			classList.remove(o);
-		}
-		else{
-			//otherwise we have to remove class entries for it since it's the only one
-			objectIndexByClass.remove(oclass);
-		}
-		
-		
-		//manage true class
 		
 		//if this index has more than one entry, then we can just remove from it and be done
 		if(classTList.size() > 1){
@@ -296,87 +264,6 @@ public class State {
 	}
 	
 	
-	public State parameterize(String [] params){
-		if(params.length == 0){
-			return this; //no parameters, it's the same state
-		}
-		
-		//otherwise label them accordingly
-		for(int i = 0; i < params.length; i++){
-			this.parameterize(params[i], "param" + i);
-		}
-		
-		return this;
-		
-	}
-	
-	public State parameterize(String [] params, String [] newClassNames){
-		if(params.length == 0){
-			return this; //no parameters, it's the same state
-		}
-		
-		//otherwise label them accordingly
-		for(int i = 0; i < params.length; i++){
-			this.parameterize(params[i], newClassNames[i]);
-		}
-		
-		return this;
-		
-	}
-	
-	public State deparameterize(String [] params){
-		if(params.length == 0){
-			return this; //no parameters, it's the same state
-		}
-		
-		//otherwise label them accordingly
-		for(int i = 0; i < params.length; i++){
-			this.deparameterize(params[i]);
-		}
-		
-		return this;
-		
-	}
-	
-	public void parameterize(String oname, String pseudoClassName){
-		
-		ObjectInstance o = objectMap.get(oname);
-		
-		if(o == null){
-			return ;
-		}
-		
-		//first remove the object indexing under its previous class
-		this.removeObjectClassIndexing(o);
-		
-		//now change the class name
-		o.pushPseudoClass(pseudoClassName);
-		
-		//now reorganize the object indexing by its new class
-		this.addObjectClassIndexing(o);
-		
-	}
-	
-	public void deparameterize(String oname){
-		
-		ObjectInstance o = objectMap.get(oname);
-		
-		if(o == null){
-			return ;
-		}
-		
-		//first remove the object indexing under its current class
-		this.removeObjectClassIndexing(o);
-		
-		//now change the class name to be what it was before this last parameterization
-		o.popPseudoClass();
-		
-		//now reorganize the object indexing by its new class
-		this.addObjectClassIndexing(o);
-		
-	}
-	
-	
 	
 	public int numTotalObjets(){
 		return objectInstances.size() + hiddenObjectInstances.size();
@@ -422,13 +309,6 @@ public class State {
 		return objects;
 	}
 	
-	public List <ObjectInstance> getObjectsOfClass(String oclass){
-		List <ObjectInstance> tmp = objectIndexByClass.get(oclass);
-		if(tmp == null){
-			return new ArrayList <ObjectInstance>();
-		}
-		return new ArrayList <ObjectInstance>(tmp);
-	}
 	
 	public List <ObjectInstance> getObjectsOfTrueClass(String oclass){
 		List <ObjectInstance> tmp = objectIndexByTrueClass.get(oclass);
@@ -446,17 +326,14 @@ public class State {
 		return null;
 	}
 	
-	public List <List <ObjectInstance>> getAllObjectsByClass(){
-		return new ArrayList<List<ObjectInstance>>(objectIndexByClass.values());
+	public Set <String> getObjectClassesPresent(){
+		return new HashSet<String>(objectIndexByTrueClass.keySet());
 	}
 	
 	public List <List <ObjectInstance>> getAllObjectsByTrueClass(){
 		return new ArrayList<List<ObjectInstance>>(objectIndexByTrueClass.values());
 	}
 	
-	public Set <String> getObjectClassesPresent(){
-		return new HashSet<String>(objectIndexByClass.keySet());
-	}
 	
 	public String getStateDescription(){
 		
@@ -498,7 +375,7 @@ public class State {
 			return res; //no parameters so just the single ga without params
 		}
 		
-		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups(), true);
+		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
 		
 		for(List <String> params : bindings){
 			String [] aprams = params.toArray(new String[params.size()]);
@@ -529,7 +406,7 @@ public class State {
 			return res; //no parameters so just the single gp without params
 		}
 		
-		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(pf.getParameterClasses(), pf.getParameterOrderGroups(), true);
+		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(pf.getParameterClasses(), pf.getParameterOrderGroups());
 		
 		for(List <String> params : bindings){
 			String [] aprams = params.toArray(new String[params.size()]);
@@ -553,17 +430,14 @@ public class State {
 	}
 	
 	
-	public List <List <String>> getPossibleBindingsGivenParamOrderGroups(String [] paramClasses, String [] paramOrderGroups, boolean useTrueClass){
+	public List <List <String>> getPossibleBindingsGivenParamOrderGroups(String [] paramClasses, String [] paramOrderGroups){
 		
 		List <List <String>> res = new ArrayList <List<String>>();
 		List <List <String>> currentBindingSets = new ArrayList <List<String>>();
 		List <String> uniqueRenames = this.identifyUniqueClassesInParameters(paramOrderGroups);
 		List <String> uniqueParamClases = this.identifyUniqueClassesInParameters(paramClasses);
 		
-		Map <String, List <ObjectInstance>>	instanceMap = objectIndexByClass;
-		if(useTrueClass){
-			instanceMap = objectIndexByTrueClass;
-		}
+		Map <String, List <ObjectInstance>>	instanceMap = objectIndexByTrueClass;
 		
 		//first make sure we have objects for each class parameter; if not return empty list
 		for(String oclass : uniqueParamClases){
@@ -577,7 +451,7 @@ public class State {
 			}
 		}
 		
-		this.getPossibleRenameBindingsHelper(res, currentBindingSets, 0, objectInstances, uniqueRenames, paramClasses, paramOrderGroups, useTrueClass);
+		this.getPossibleRenameBindingsHelper(res, currentBindingSets, 0, objectInstances, uniqueRenames, paramClasses, paramOrderGroups);
 		
 		
 		return res;
@@ -596,8 +470,7 @@ public class State {
 	
 	
 	private void getPossibleRenameBindingsHelper(List <List <String>> res, List <List <String>> currentBindingSets, int bindIndex,
-			List <ObjectInstance> remainingObjects, List <String> uniqueOrderGroups, String [] paramClasses, String [] paramOrderGroups,
-			boolean useTrueClass){
+			List <ObjectInstance> remainingObjects, List <String> uniqueOrderGroups, String [] paramClasses, String [] paramOrderGroups){
 		
 		if(bindIndex == uniqueOrderGroups.size()){
 			//base case, put it all together and add it to the result
@@ -609,7 +482,7 @@ public class State {
 		
 		String r = uniqueOrderGroups.get(bindIndex);
 		String c = this.parameterClassAssociatedWithOrderGroup(r, paramOrderGroups, paramClasses);
-		List <ObjectInstance> cands = this.objectsMatchingClass(remainingObjects, c, useTrueClass);
+		List <ObjectInstance> cands = this.objectsMatchingClass(remainingObjects, c);
 		int k = this.numOccurencesOfOrderGroup(r, paramOrderGroups);
 		List <List <String>> combs = this.getAllCombinationsOfObjects(cands, k);
 		for(List <String> cb : combs){
@@ -622,7 +495,7 @@ public class State {
 			List <ObjectInstance> nextObsReamining = this.objectListDifference(remainingObjects, cb);
 			
 			//recursive step
-			this.getPossibleRenameBindingsHelper(res, nextBinding, bindIndex+1, nextObsReamining, uniqueOrderGroups, paramClasses, paramOrderGroups, useTrueClass);
+			this.getPossibleRenameBindingsHelper(res, nextBinding, bindIndex+1, nextObsReamining, uniqueOrderGroups, paramClasses, paramOrderGroups);
 			
 		}
 		
@@ -686,21 +559,16 @@ public class State {
 	}
 	
 	
-	private List <ObjectInstance> objectsMatchingClass(List <ObjectInstance> sourceObs, String cname, boolean useTrueClass){
+	private List <ObjectInstance> objectsMatchingClass(List <ObjectInstance> sourceObs, String cname){
 		
 		List <ObjectInstance> res = new ArrayList<ObjectInstance>(sourceObs.size());
 		
 		for(ObjectInstance o : sourceObs){
-			if(useTrueClass){
-				if(o.getTrueClassName().equals(cname)){
-					res.add(o);
-				}
+			
+			if(o.getTrueClassName().equals(cname)){
+				res.add(o);
 			}
-			else{
-				if(o.getPseudoClass().equals(cname)){
-					res.add(o);
-				}
-			}
+			
 		}
 		
 		return res;
