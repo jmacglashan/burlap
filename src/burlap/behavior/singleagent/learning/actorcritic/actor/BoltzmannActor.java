@@ -22,6 +22,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 public class BoltzmannActor extends Actor {
 
+	protected Domain								domain;
 	protected List<Action>							actions;
 	protected StateHashFactory						hashingFactory;
 	protected double								learningRate;
@@ -33,6 +34,7 @@ public class BoltzmannActor extends Actor {
 	
 	
 	public BoltzmannActor(Domain domain, StateHashFactory hashingFactory, double learningRate) {
+		this.domain = domain;
 		this.actions = new ArrayList<Action>(domain.getActions());
 		this.hashingFactory = hashingFactory;
 		this.learningRate = learningRate;
@@ -97,7 +99,7 @@ public class BoltzmannActor extends Actor {
 			probs.add(new ActionProb(ap.ga, probsArray[i]));
 		}
 		
-		if(this.containsParameterizedActions){
+		if(this.containsParameterizedActions && !this.domain.isNameDependent()){
 			//then convert back to this states space
 			Map <String, String> matching = node.sh.s.getObjectMatchingTo(s, false);
 			
@@ -147,7 +149,7 @@ public class BoltzmannActor extends Actor {
 	protected ActionPreference getMatchingPreference(StateHashTuple sh, GroundedAction ga, PolicyNode node){
 		
 		GroundedAction translatedAction = ga;
-		if(ga.params.length > 0){
+		if(ga.params.length > 0  && !this.domain.isNameDependent()){
 			Map <String, String> matching = sh.s.getObjectMatchingTo(node.sh.s, false);
 			translatedAction = this.translateAction(ga, matching);
 		}

@@ -12,7 +12,7 @@ public class State {
 	private List <ObjectInstance>							hiddenObjectInstances;		//list of hidden object instances that facilitate domain dynamics and infer observable values
 	private Map <String, ObjectInstance>					objectMap;					//map from object names to their instances
 	
-	private Map <String, List <ObjectInstance>>				objectIndexByTrueClass;		//map of object instances organized by true class name
+	private Map <String, List <ObjectInstance>>				objectIndexByTrueClass;		//map of object instances organized by class name
 
 	
 	

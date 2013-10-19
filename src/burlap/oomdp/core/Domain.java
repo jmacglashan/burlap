@@ -8,21 +8,23 @@ import burlap.oomdp.stocashticgames.SingleAction;
 
 
 /**
- * 
- * @author James
- *	This is the base class for an OOMDBP domain. 
+ * This is the base class for an OO-MDP/OO-SG domain. It includes data members for the set of attributes, object classes
+ * and propositional functions of the domain.
+ * @author James MacGlashan
  */
 public abstract class Domain {
 	
 	
 	protected List <ObjectClass>						objectClasses;			//list of object classes
-	protected Map <String, ObjectClass>					objectClassMap;		//look up object classes by name
+	protected Map <String, ObjectClass>					objectClassMap;			//look up object classes by name
 	
-	protected List <Attribute>							attributes;			//list of attributes
+	protected List <Attribute>							attributes;				//list of attributes
 	protected Map <String, Attribute>					attributeMap;			//lookup attributes by name
 	
 	protected List <PropositionalFunction>				propFunctions;			//list of propositional functions
 	protected Map <String, PropositionalFunction> 		propFunctionMap;		//lookup propositional functions by name
+	
+	protected boolean									nameDependentDomain = false;
 	
 
 	
@@ -37,6 +39,38 @@ public abstract class Domain {
 		propFunctions = new ArrayList <PropositionalFunction>();
 		propFunctionMap = new HashMap <String, PropositionalFunction>();
 		
+	}
+	
+	
+	/**
+	 * Sets whether this domain's states are object name dependent or independent. In an OO-MDP states are represented
+	 * as a set of object instances; therefore state equality can either be determined by whether there is a
+	 * bijection between the states such that the matched objects have the same value (name independent), or whether the same
+	 * object references have the same values (name dependent). For instance, imagine a state s_1 with two objects of the same class,
+	 * o_1 and o_2 with value assignments v_a and v_b, respectively. Imagine a corresponding state s_2, also with objects o_1 and
+	 * o_2; however, in s_2, the value assignment is o_1=v_b and o_2=v_a. If the domain is name independent, then s_1 == s_2,
+	 * because you can match o_1 in s_1 to o_2 in s_2 (and symmetrically for the other objects). However, if the domain is
+	 * name dependent, then s_1 != s_2, because the specific object references have different values in each state.
+	 * @param nameDependent sets whether this domain's states are object name dependent (true) or not (false).
+	 */
+	public void setNameDependence(boolean nameDependent){
+		this.nameDependentDomain = nameDependent;
+	}
+	
+	
+	/**
+	 * Returns whether this domain's states are object name dependent. In an OO-MDP states are represented
+	 * as a set of object instances; therefore state equality can either be determined by whether there is a
+	 * bijection between the states such that the matched objects have the same value (name independent), or whether the same
+	 * object references have the same values (name dependent). For instance, imagine a state s_1 with two objects of the same class,
+	 * o_1 and o_2 with value assignments v_a and v_b, respectively. Imagine a corresponding state s_2, also with objects o_1 and
+	 * o_2; however, in s_2, the value assignment is o_1=v_b and o_2=v_a. If the domain is name independent, then s_1 == s_2,
+	 * because you can match o_1 in s_1 to o_2 in s_2 (and symmetrically for the other objects). However, if the domain is
+	 * name dependent, then s_1 != s_2, because the specific object references have different values in each state.
+	 * @return true if this domain is name dependent and false if it object name independent.
+	 */
+	public boolean isNameDependent(){
+		return this.nameDependentDomain;
 	}
 	
 	
