@@ -160,7 +160,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 		}
 		
-		DPrint.cl(11, "Finished reachability analysis; # states: " + transitionDynamics.size());
+		DPrint.cl(11, "Finished reachability analysis; # states: " + mapToStateIndex.size());
 		
 		
 		return true;

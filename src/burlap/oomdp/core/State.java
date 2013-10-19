@@ -587,7 +587,10 @@ public class State {
 	
 	
 	
-	
+	@Override
+	public String toString(){
+		return this.getCompleteStateDescription();
+	}
 	
 	
 	

@@ -148,11 +148,17 @@ public class BlocksWorld implements DomainGenerator {
 			ObjectInstance src = st.getObject(params[0]);
 			ObjectInstance target = st.getObject(params[1]);
 			
+			String srcOnName = src.getStringValForAttribute(ATTONBLOCK);
+			
 			src.setValue(ATTONBLOCK, target.getName());
 			src.setValue(ATTONTABLE, 0); //may not have been on table to start, but make sure it's not set now
 			
 			target.setValue(ATTCLEAR, 0);
 			
+			if(!srcOnName.equals("")){
+				ObjectInstance oldTarget = st.getObject(srcOnName);
+				oldTarget.setValue(ATTCLEAR, 1);
+			}
 			
 			return st;
 		}

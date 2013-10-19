@@ -55,7 +55,6 @@ public abstract class OOMDPPlanner {
 			this.actions.add(a);
 			if(a.getParameterClasses().length > 0){
 				containsParameterizedActions = true;
-				break;
 			}
 		}
 		
@@ -124,14 +123,7 @@ public abstract class OOMDPPlanner {
 	
 	protected List <GroundedAction> getAllGroundedActions(State s){
 		
-		List <GroundedAction> res = new ArrayList<GroundedAction>();
-		
-		for(Action a : actions){
-			List <GroundedAction> gas = s.getAllGroundedActionsFor(a);
-			res.addAll(gas);
-		}
-		
-		return res;
+		return s.getAllGroundedActionsFor(this.actions);
 		
 	}
 	

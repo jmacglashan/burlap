@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
@@ -199,6 +201,10 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		if(node == null){
 			node = new QLearningStateNode(s);
 			List<GroundedAction> gas = this.getAllGroundedActions(s.s);
+			if(gas.size() == 0){
+				gas = this.getAllGroundedActions(s.s);
+				throw new RuntimeErrorException(new Error("No possible actions in this state, cannot continue Q-learning"));
+			}
 			for(GroundedAction ga : gas){
 				node.addQValue(ga, qInit);
 			}

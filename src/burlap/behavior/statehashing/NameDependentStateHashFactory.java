@@ -27,7 +27,7 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 		}
 		
 		
-		return null;
+		return new NameDependentStateHashTuple(s);
 	}
 	
 	protected void addNewObjectNames(State s){
