@@ -58,6 +58,10 @@ public class ObjectClass {
 	}
 	
 	
+	public Attribute getAttribute(String name){
+		return this.attributeMap.get(name);
+	}
+	
 	public void setAttributes(List <Attribute> atts){
 		
 		attributeList.clear();

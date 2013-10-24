@@ -2,8 +2,10 @@ package burlap.behavior.singleagent.planning;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.options.Option;
@@ -94,6 +96,16 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 		}
 		return this.getQ(sh, a, matching);
+	}
+	
+	
+	public List <State> getAllStates(){
+		List <State> result = new ArrayList<State>(valueFunction.size());
+		Set<StateHashTuple> shs = valueFunction.keySet();
+		for(StateHashTuple sh : shs){
+			result.add(sh.s);
+		}
+		return result;
 	}
 	
 	

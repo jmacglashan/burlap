@@ -28,6 +28,6 @@ public interface StaticPainter {
 	 * @param cWidth the width of the canvas
 	 * @param cHeight the height of the canvas
 	 */
-	public abstract void paint(Graphics2D g2, State s, float cWidth, float cHeight);
+	public void paint(Graphics2D g2, State s, float cWidth, float cHeight);
 
 }

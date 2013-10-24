@@ -52,7 +52,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	
 	public void runVI(){
 		
-		Set <StateHashTuple> states = transitionDynamics.keySet();
+		Set <StateHashTuple> states = mapToStateIndex.keySet();
 		
 		int i = 0;
 		for(i = 0; i < this.maxPasses; i++){
