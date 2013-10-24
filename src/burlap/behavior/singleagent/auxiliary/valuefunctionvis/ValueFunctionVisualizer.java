@@ -129,7 +129,7 @@ public class ValueFunctionVisualizer extends Canvas{
 			this.svp.paintStateValue(bufferedGraphics, s, vIter.next(), cWidth, cHeight);
 		}
 		
-		if(this.sdp != null){
+		if(this.spp != null){
 			for(State s : this.stateValuesToVisualize){
 				this.spp.paintStateValue(bufferedGraphics, s, policy, cWidth, cHeight);
 			}
