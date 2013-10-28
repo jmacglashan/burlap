@@ -49,6 +49,7 @@ public class BlocksWorld implements DomainGenerator {
 	public Domain generateDomain() {
 		
 		Domain domain = new SADomain();
+		domain.setNameDependence(true);
 		
 		List <String> colNames = new ArrayList<String>();
 		colNames.add(COLORRED);
@@ -180,6 +181,9 @@ public class BlocksWorld implements DomainGenerator {
 			
 			if(src.getDiscValForAttribute(ATTCLEAR) == 0){
 				return false;
+			}
+			if(src.getDiscValForAttribute(ATTONTABLE) == 1){
+				return false; //cannot unstack a block already on the table
 			}
 			
 			return true; 

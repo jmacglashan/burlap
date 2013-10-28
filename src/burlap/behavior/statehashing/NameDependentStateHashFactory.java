@@ -22,7 +22,7 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 	@Override
 	public StateHashTuple hashState(State s) {
 		
-		if(objectNameOrder.size() != objectNameOrder.size()){
+		if(objectNameOrder.size() != s.getObservableObjects().size()){
 			this.addNewObjectNames(s);
 		}
 		
