@@ -13,6 +13,7 @@
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
+    <mkdir dir="${lib}"/>
   </target>
 
   <target name="compile" depends="init"
