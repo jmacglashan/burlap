@@ -6,15 +6,32 @@ import java.util.TreeSet;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
 
+
+/**
+ * A multi-target relational value object subclass. Values are stored as an ordered set (TreeSet) of string names
+ * of the object instance name identifiers. If the attribute is not linked to any target, the set will be empty.
+ * @author James MacGlashan
+ *
+ */
 public class MultiTargetRelationalValue extends Value {
 
 	protected Set <String>		targetObjects;
 	
+	
+	/**
+	 * Sets whether this value is observable to the agent or not.
+	 * @param isObservable true if this value is observable to the agent; false otherwise.
+	 */
 	public MultiTargetRelationalValue(Attribute attribute){
 		super(attribute);
 		this.targetObjects = new TreeSet<String>();
 	}
 	
+	
+	/**
+	 * Initializes this value as a copy from the source Value object v.
+	 * @param v the source Value to make this object a copy of.
+	 */
 	public MultiTargetRelationalValue(Value v){
 		super(v);
 		MultiTargetRelationalValue rv = (MultiTargetRelationalValue)v;

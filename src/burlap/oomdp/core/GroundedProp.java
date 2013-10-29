@@ -1,15 +1,29 @@
 package burlap.oomdp.core;
 
 
+/**
+ * Propositional functions are defined to be evaluated on object parameters and this class provides a
+ * definition for a grounded propositional function; that is, it specifies specific object parameters
+ * on which the propositional function should be evaluated. The equals method correctly accounts for
+ * parameter order groups defined by this objects propositional function.
+ * @author James MacGlashan
+ *
+ */
 public class GroundedProp implements Cloneable{
 
 	public PropositionalFunction pf;
 	public String [] params;
 	
+	/**
+	 * Initializes a grounded propositional function
+	 * @param p the propositional function that does the evaluation
+	 * @param par the object name references on which the propositional function would be evaluated
+	 */
 	public GroundedProp(PropositionalFunction p, String [] par){
 		pf = p;
 		params = par;
 	}
+	
 	
 	public Object clone()
 	{
@@ -17,10 +31,19 @@ public class GroundedProp implements Cloneable{
 		catch(Exception e) {return null;}
 	}
 	
-	public boolean isTrue(State st){
-		return pf.isTrue(st, params);
+	/**
+	 * Evaluates whether this grounded propositional function is true in the provided state.
+	 * @param s the state on which to evaluate the grounded propositional function
+	 * @return true if the propositional function bounded to this groundedProp's parameters is true in the specified state.
+	 */
+	public boolean isTrue(State s){
+		return pf.isTrue(s, params);
 	}
 	
+	/**
+	 * Returns a string representation of this grounded prop. If this groundedProp is specified by two parameters (ob1, ob2)
+	 * then the returned format is: "PFName(ob1, ob2)"
+	 */
 	public String toString(){
 		StringBuffer buf = new StringBuffer();
 		
@@ -35,6 +58,7 @@ public class GroundedProp implements Cloneable{
 		
 		return buf.toString();
 	}
+	
 	
 	public boolean equals(Object obj){
 		if(this == obj){

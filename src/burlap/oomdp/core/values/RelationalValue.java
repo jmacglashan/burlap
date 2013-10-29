@@ -6,15 +6,32 @@ import java.util.TreeSet;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
 
+
+/**
+ * A relational valued value subclass in which values are stored as a single String object for the name of the object instance to which it is linked.
+ * If the relational value is not linked to any object, then the String value is set to the empty String: "".
+ * @author James MacGlashan
+ *
+ */
 public class RelationalValue extends Value {
 
 	protected String		target;
 	
+	
+	/**
+	 * Initializes this value to be an assignment for Attribute attribute.
+	 * @param attribute
+	 */
 	public RelationalValue(Attribute attribute){
 		super(attribute);
 		this.target = "";
 	}
 	
+	
+	/**
+	 * Initializes this value as a copy from the source Value object v.
+	 * @param v the source Value to make this object a copy of.
+	 */
 	public RelationalValue(Value v){
 		super(v);
 		RelationalValue rv = (RelationalValue)v;

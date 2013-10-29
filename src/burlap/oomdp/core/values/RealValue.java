@@ -5,13 +5,29 @@ import java.util.Set;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
 
+
+/**
+ * A real-valued value subclass in which real-values are stored as doubles.
+ * @author James MacGlashan
+ *
+ */
 public class RealValue extends Value {
 	protected double		realVal;
 
+	
+	/**
+	 * Initializes this value to be an assignment for Attribute attribute.
+	 * @param attribute
+	 */
 	public RealValue(Attribute attribute){
 		super(attribute);
 	}
 	
+	
+	/**
+	 * Initializes this value as a copy from the source Value object v.
+	 * @param v the source Value to make this object a copy of.
+	 */
 	public RealValue(Value v){
 		super(v);
 		RealValue rv = (RealValue)v;

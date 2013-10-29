@@ -9,7 +9,6 @@ import java.util.Set;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
-import burlap.debugtools.MyTimer;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
