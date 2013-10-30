@@ -1,17 +1,37 @@
 package burlap.oomdp.stocashticgames;
 
+
+/**
+ * Provides a grounded version of a {@link SingleAction}. That is, since {@link SingleAction} objects may take parameters,
+ * this class provides a grounded version of the action that has specific objects bound to its parameters. Additionally,
+ * this class also specifies who the acting agent is.
+ * @author James MacGlashan
+ *
+ */
 public class GroundedSingleAction {
 
 	public String actingAgent;
 	public SingleAction action;
 	public String [] params;
 	
+	
+	/**
+	 * Initializes this object with the name of the acting agent, the SingleAction reference, and the parameters used.
+	 * @param actingAgent the acting agent.
+	 * @param a the {@link SingleAction}.
+	 * @param p a String array specifying the parameters bound to a.
+	 */
 	public GroundedSingleAction(String actingAgent, SingleAction a, String [] p){
 		this.init(actingAgent, a, p);
 	}
 	
 	
-	//may also take parameters as a single string that is comma delineated
+	/**
+	 * Initializes this object with the name of the acting agent, the SingleAction reference, and the parameters used.
+	 * @param actingAgent the acting agent.
+	 * @param a the {@link SingleAction}.
+	 * @param p a command delineated string specifying the parameters bound to a.
+	 */
 	public GroundedSingleAction(String actingAgent, SingleAction a, String p){
 		
 		String [] ps = null;
@@ -32,10 +52,19 @@ public class GroundedSingleAction {
 	}
 	
 	
+	/**
+	 * Returns true if this action uses parameters
+	 * @return true if this action uses parameters; false otherwise
+	 */
 	public boolean isPamaeterized(){
 		return action.isPamaeterized();
 	}
 	
+	
+	/**
+	 * Returns a string specifying the action name and parameters used in this GroundedSingleAction.
+	 * @return a string specifying the action name and parameters used in this GroundedSingleAction.
+	 */
 	public String justActionString(){
 		StringBuffer buf = new StringBuffer();
 		buf.append(action.actionName);
@@ -47,6 +76,7 @@ public class GroundedSingleAction {
 		
 	}
 	
+	@Override
 	public String toString(){
 		StringBuffer buf = new StringBuffer();
 		buf.append(actingAgent).append(":");
@@ -75,7 +105,7 @@ public class GroundedSingleAction {
 			return false;
 		}
 		
-		String [] rclasses = this.action.parameterRenames;
+		String [] rclasses = this.action.parameterOrderGroups;
 		
 		for(int i = 0; i < this.params.length; i++){
 			String p = this.params[i];

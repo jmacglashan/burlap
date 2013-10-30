@@ -8,6 +8,12 @@ import burlap.oomdp.stocashticgames.tournament.MatchEntry;
 import burlap.oomdp.stocashticgames.tournament.MatchSelector;
 
 
+/**
+ * This class defines a MatchSelctory that plays all pairwise matches of agents in a round robin. It sets
+ * all agents to play as the same {@link burlap.oomdp.stochasticgames.AgentType} and therefore is only valid in symmetric games.
+ * @author James MacGlashan
+ *
+ */
 public class AllPairWiseSameTypeMS implements MatchSelector {
 	
 	protected int n;
@@ -16,6 +22,12 @@ public class AllPairWiseSameTypeMS implements MatchSelector {
 	protected int p0;
 	protected int p1;
 	
+	
+	/**
+	 * Initializes the selector
+	 * @param at the {@link burlap.oomdp.stochasticgames.AgentType} that all agents will play as
+	 * @param n the number of agents in the tournament
+	 */
 	public AllPairWiseSameTypeMS(AgentType at, int n){
 		this.n = n;
 		this.at = at;
