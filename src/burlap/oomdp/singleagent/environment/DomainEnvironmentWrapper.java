@@ -27,10 +27,17 @@ public class DomainEnvironmentWrapper implements DomainGenerator {
 	protected Domain srcDomain;
 	protected Environment env;
 	
+	
+	/**
+	 * Initializes this class with the source domain used by an environment object
+	 * @param srcDomain the source domain used by an environment
+	 * @param env the environment that this domain generator will wrap
+	 */
 	public DomainEnvironmentWrapper(Domain srcDomain, Environment env){
 		this.srcDomain = srcDomain;
 		this.env = env;
 	}
+	
 	
 	@Override
 	public Domain generateDomain() {

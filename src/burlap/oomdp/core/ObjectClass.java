@@ -2,6 +2,16 @@ package burlap.oomdp.core;
 
 import java.util.*;
 
+
+/**
+ * Object classes are part of the OO-MDP definition and define the kinds of objects that can exist in an OO-MDP state.
+ * Object classes have a name to identify them and a set of attributes that define them. Object classes may also be
+ * specified as "hidden" which means that they should not be used by the agent planning/learning algorithms when resolving
+ * the state. Hidden object classes may be useful for defining POMDP domains or in facilitating the generation of values
+ * for observable object classes.
+ * @author James MacGlashan
+ *
+ */
 public class ObjectClass {
 	
 	public String							name;							//name of the object class
@@ -10,9 +20,15 @@ public class ObjectClass {
 	public Map <String, Attribute>			attributeMap;					//map from attribute name to the defining attribute
 	public List <Attribute>					attributeList;					//definitions of object attributes
 	public List <Integer>					observableAttributeIndices;		//feature vector index of only attributes that are observable to the world
-	public boolean							hidden;							//whether this is a hidden object class for facilitating transition dynamics and observable objects
+	public boolean							hidden;							//whether this is a hidden object class from the agent, but defines the state space
 	
 	
+	/**
+	 * Initializes the attribute indexing data structures, connects this object class
+	 * to the specified domain, and automatically connects the domain to this object class.
+	 * @param domain the domain to which this object class belongs
+	 * @param name the name identifier for this object class
+	 */
 	public ObjectClass(Domain domain, String name){
 		
 		this.name = name;
@@ -28,6 +44,13 @@ public class ObjectClass {
 		
 	}
 	
+	/**
+	 * Initializes the attribute indexing data structures, connects this object class
+	 * to the specified domain, and automatically connects the domain to this object class.
+	 * @param domain the domain to which this object class belongs
+	 * @param name the name identifier for this object class
+	 * @param hidden whether this object class is hidden or not
+	 */
 	public ObjectClass(Domain domain, String name, boolean hidden){
 		
 		this.name = name;
@@ -58,10 +81,19 @@ public class ObjectClass {
 	}
 	
 	
+	/**
+	 * Returns the attribute with the given name
+	 * @param name the name of the attribute to return
+	 * @return the attribute with the given name, or null, if this object class is not defined by an attribute with the given name.
+	 */
 	public Attribute getAttribute(String name){
 		return this.attributeMap.get(name);
 	}
 	
+	/**
+	 * Sets the attributes used to define this object class
+	 * @param atts the attributes to define this object class
+	 */
 	public void setAttributes(List <Attribute> atts){
 		
 		attributeList.clear();
@@ -76,6 +108,10 @@ public class ObjectClass {
 	}
 	
 	
+	/**
+	 * Adds an attribute to define this object class
+	 * @param att the attribute to add
+	 */
 	public void addAttribute(Attribute att){
 		
 		//only add if it is new
@@ -96,14 +132,29 @@ public class ObjectClass {
 	}
 	
 	
+	/**
+	 * Return whether this object class is defined by the given attribute
+	 * @param att the attribute to test
+	 * @return true if this object class is defined by attribute att; false otherwise.
+	 */
 	public boolean hasAttribute(Attribute att){
 		return this.hasAttribute(att.name);
 	}
 	
+	/**
+	 * Return whether this object class is defined by the attribute with the given name
+	 * @param attName the name of the attribute to test
+	 * @return true if this object class is defined by an attribute with the name attName; false otherwise
+	 */
 	public boolean hasAttribute(String attName){	
 		return attributeMap.containsKey(attName);
 	}
 	
+	/**
+	 * Returns the internally stored index of the attribute with the given name
+	 * @param attName the name of the attribute for which to get the index
+	 * @return the index of the attribute with name attName; -1 if this object class is not defined by an attribute named attName
+	 */
 	public int attributeIndex(String attName){
 		Integer ind = attributeIndex.get(attName);
 		if(ind != null){
@@ -112,6 +163,11 @@ public class ObjectClass {
 		return -1;
 	}
 	
+	
+	/**
+	 * Returns the number of attributes that define this object class.
+	 * @return the number of attributes that define this object class.
+	 */
 	public int numAttributes(){
 		return attributeList.size();
 	}

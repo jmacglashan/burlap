@@ -9,6 +9,13 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.stocashticgames.SingleAction;
 
 
+
+/**
+ * A domain subclass for single agent domains. This class adds data structures to index the actions that can be taken
+ * by the agent in the domain.
+ * @author James MacGlashan
+ *
+ */
 public class SADomain extends Domain {
 
 	protected List <Action>							actions;				//list of actions

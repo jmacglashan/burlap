@@ -5,14 +5,29 @@ import java.util.Set;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Value;
 
+
+/**
+ * A discrete value subclass in which discrete values are stored as int values. The int values correspond to the attributes
+ * categorical list of discrete values, so the int values should always be >= 0 unless it is unset, which is specified by a value of -1.
+ * @author James MacGlashan
+ *
+ */
 public class DiscreteValue extends Value{
 	protected int			discVal = -1;
 	
 	
+	/**
+	 * Initializes this value to be an assignment for Attribute attribute.
+	 * @param attribute
+	 */
 	public DiscreteValue(Attribute attribute){
 		super(attribute);
 	}
 	
+	/**
+	 * Initializes this value as a copy from the source Value object v.
+	 * @param v the source Value to make this object a copy of.
+	 */
 	public DiscreteValue(Value v){
 		super(v);
 		DiscreteValue dv = (DiscreteValue)v;

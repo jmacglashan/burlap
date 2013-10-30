@@ -27,7 +27,9 @@ public abstract class Domain {
 	protected boolean									nameDependentDomain = false;
 	
 
-	
+	/**
+	 * Initializes the data structures for indexing the object classes, attributes, and propositional functions
+	 */
 	public Domain(){
 		
 		objectClasses = new ArrayList <ObjectClass>();
@@ -94,6 +96,11 @@ public abstract class Domain {
 		return d;
 	}
 	
+	
+	/**
+	 * Add an object class to define this domain
+	 * @param oc the object class to add to this domain.
+	 */
 	public void addObjectClass(ObjectClass oc){
 		if(!objectClassMap.containsKey(oc.name)){
 			objectClasses.add(oc);
@@ -101,6 +108,11 @@ public abstract class Domain {
 		}
 	}
 	
+	
+	/**
+	 * Add an attribute that can be used to define object classes of this domain.
+	 * @param att the attribtue to add to this domain.
+	 */
 	public void addAttribute(Attribute att){
 		if(!attributeMap.containsKey(att.name)){
 			attributes.add(att);
@@ -108,6 +120,12 @@ public abstract class Domain {
 		}
 	}
 	
+	
+	/**
+	 * Add a propositional function that can be used to evaluate objects that belong to object classes
+	 * of this domain.
+	 * @param prop the propositional function to add.
+	 */
 	public void addPropositionalFunction(PropositionalFunction prop){
 		if(!propFunctionMap.containsKey(prop.getName())){
 			propFunctions.add(prop);
@@ -115,45 +133,134 @@ public abstract class Domain {
 		}
 	}
 	
-	
+	/**
+	 * Add a single agent action that defines this domain. This method
+	 * will throw a runtime exception if this domain is not an instance of
+	 * the single agent domain (SADomain).
+	 * @param act the single agent action to add.
+	 */
 	public abstract void addAction(Action act);
+	
+	/**
+	 * Add a stochastic game action that defines this domain that can be executed by an agent in the game.
+	 * The set of single agent actions defines the set of joint actions in the stochastic domain (as the cross product).
+	 * This method will throw a runtime exception if this domain is not an instance of the stochastic
+	 * game domain (SGDomain).
+	 * @param sa the stochastic game action that can be executed by an agent in the game.
+	 */
 	public abstract void addSingleAction(SingleAction sa);
 	
 	
+	/**
+	 * Returns the list of object classes that define this domain. Modifying the returned list
+	 * will not alter the list of object classes that define this domain, because it returns a
+	 * shallow copy. Modifying the object classes in the returned list will, however, 
+	 * modify the object classes in this domain.
+	 * @return a shallow copy of the object classes in this domain.
+	 */
 	public List <ObjectClass> getObjectClasses(){
 		return new ArrayList <ObjectClass>(objectClasses);
 	}
 	
+	
+	/**
+	 * Returns the object class in this domain with the given name.
+	 * @param name the name of the object class to return
+	 * @return the object class with the given name or null if it is not present.
+	 */
 	public ObjectClass getObjectClass(String name){
 		return objectClassMap.get(name);
 	}
-		
+	
+	
+	/**
+	 * Returns a list of the attributes that define this domain. Modifying the returned list
+	 * will not alter the list of attributes that define this domain, because it returns a
+	 * shallow copy. Modifying the attributes in the returned list will, however, 
+	 * modify the attributes in this domain.
+	 * @return a shallow copy of the attributes in this domain.
+	 */
 	public List <Attribute> getAttributes(){
 		return new ArrayList <Attribute>(attributes);
 	}
 	
+	
+	/**
+	 * Returns the attribute in this domain with the given name
+	 * @param name the name of the attribute to return
+	 * @return the attribute with the given name, or null if it is not present.
+	 */
 	public Attribute getAttribute(String name){
 		return attributeMap.get(name);
 	}
 	
 	
+	/**
+	 * Returns a list of the propositional functions that define this domain. Modifying the returned list
+	 * will not alter the list of propositional functions that define this domain, because it returns a
+	 * shallow copy. Modifying the propositional functions in the returned list will, however, 
+	 * modify the propositional functions in this domain.
+	 * @return
+	 */
 	public List <PropositionalFunction> getPropFunctions(){
 		return new ArrayList <PropositionalFunction>(propFunctions);
 	}
 	
+	
+	/**
+	 * Returns the propositional function in this domain with the given name
+	 * @param name the name of the attribute to return.
+	 * @return the propositional function with the given name or null if it is not present.
+	 */
 	public PropositionalFunction getPropFunction(String name){
 		return propFunctionMap.get(name);
 	}
 	
-	
+	/**
+	 * Returns a list of the single agent actions that define this domain. Modifying the returned list
+	 * will not alter the list of actions that define this domain, because it returns a
+	 * shallow copy. Modifying the actions in the returned list will, however, 
+	 * modify the actions in this domain. This method will throw a runtime exception
+	 * if it is not an instance of the single agent domain (SADomain).
+	 * @return
+	 */
 	public abstract List <Action> getActions();
+	
+	/**
+	 * Returns a list of the stochastic game actions that that can be taken by individual agents in this domain. Modifying the returned list
+	 * will not alter the list of actions that define this domain, because it returns a
+	 * shallow copy. Modifying the actions in the returned list will, however, 
+	 * modify the actions in this domain. This method will throw a runtime exception
+	 * if it is not an instance of the stochastic game domain (SGDomain).
+	 * @return
+	 */
 	public abstract List <SingleAction> getSingleActions();
 	
+	
+	
+	/**
+	 * Returns the single agent action with the given name. This method will throw a runtime exception
+	 * if it is not an instance of the single agent domain (SADomain).
+	 * @param name the name of the action to return
+	 * @return the action with the given name or null if it does not exist. 
+	 */
 	public abstract Action getAction(String name);
+	
+	/**
+	 * Return the stochastic game action with the given name. This method will throw a runtime exception
+	 * if it is not an instance of the stochastic game domain (SGDomain).
+	 * @param name the name of the action to return
+	 * @return the action with the given name or null if it does not exist.
+	 */
 	public abstract SingleAction getSingleAction(String name);
 	
-	// Maps propFuncClass -> propList
-	// eg: color -> isWhite, isBlue, isYellow...
+	
+	
+	
+	/**
+	 * Returns a map of propositional function classes to the set of propositional functions that belong to that class.
+	 * @return a map of propositional function classes to the set of propositional functions that belong to that class.
+	 */
 	public Map<String, Set<PropositionalFunction>> getPropositionlFunctionsMap() {
 		HashMap<String, Set<PropositionalFunction>> propFuncs = new HashMap<String, Set<PropositionalFunction>>();
 		for(PropositionalFunction pf : this.propFunctions) {
@@ -171,11 +278,19 @@ public abstract class Domain {
 		return propFuncs;
 	}
 
-	public Map<String, Set<PropositionalFunction>> getPropositionlFunctionsFromObjectClass(String objectName) {
+	
+	/**
+	 * Returns a map of propositional function classes to the set of propositional functions that belong to that class, but
+	 * only includes propositional function classes that define propositional functions that operate on a given object
+	 * class parameter.
+	 * @param objectClassName the name of the object class for which propositional function classes should be returned
+	 * @return a map of propositional function classes to the set of propositional functions that belong to that class.
+	 */
+	public Map<String, Set<PropositionalFunction>> getPropositionlFunctionsFromObjectClass(String objectClassName) {
 		HashMap<String, Set<PropositionalFunction>> propFuncs = new HashMap<String, Set<PropositionalFunction>>();
 		for(PropositionalFunction pf : this.propFunctions) {
 			for(String paramClass : pf.getParameterClasses()) {
-				if(paramClass.equals(objectName)) {
+				if(paramClass.equals(objectClassName)) {
 					String propFuncClass = pf.getClassName();
 					Set<PropositionalFunction> propList = propFuncs.get(propFuncClass);
 					if(propList == null) {

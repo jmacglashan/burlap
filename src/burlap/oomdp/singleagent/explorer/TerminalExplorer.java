@@ -9,21 +9,46 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 
 
+
+/**
+ * This class allows you act as the agent by choosing actions to take in specific states. States are
+ * conveyed to the user through a text description in the terminal and the user specifies actions
+ * by typing the actions into the terminal. Shorthand names for actions names may be provided. Action
+ * parameters are specified by space delineated input. For instance: "stack block0 block1" will cause
+ * the stack action to called with action parameters block0 and block1. The command ##reset##
+ * causes the state to reset to the initial state provided to the explorer.
+ * @author James MacGlashan
+ *
+ */
 public class TerminalExplorer {
 	
 	private Domain					domain;
 	private Map <String, String>	actionShortHand;
 	
+	
+	/**
+	 * Initializes the explorer with the specified domain
+	 * @param domain the domain to explore
+	 */
 	public TerminalExplorer(Domain domain){
 		this.domain = domain;
 		this.setActionShortHand(new HashMap <String, String>());
 	}
 	
+	/**
+	 * Initializes the explorer with the specified domain and short hand names for actions
+	 * @param domain the domain to explore
+	 * @param ash a map from short hand names to full action names. For instance, "s->stack"
+	 */
 	public TerminalExplorer(Domain domain, Map <String, String> ash){
 		this.domain = domain;
 		this.setActionShortHand(ash);
 	}
 	
+	/**
+	 * Sets teh short hand names to use for actions.
+	 * @param ash a map from short hand names to full action names. For instance, "s->stack"
+	 */
 	public void setActionShortHand(Map <String, String> ash){
 		this.actionShortHand = ash;
 		List <Action> actionList = domain.getActions();
@@ -32,18 +57,29 @@ public class TerminalExplorer {
 		}
 	}
 	
+	
+	/**
+	 * Adds a short hand name for an action name
+	 * @param shortHand the short hand name to use
+	 * @param action the full action name
+	 */
 	public void addActionShortHand(String shortHand, String action){
 		actionShortHand.put(shortHand, action);
 	}
 	
-	public void exploreFromState(State st){
+	
+	/**
+	 * Starts the explorer to run from state s
+	 * @param s the state from which to explore.
+	 */
+	public void exploreFromState(State s){
 		
-		State src = st.copy();
+		State src = s.copy();
 		String actionPromptDelimiter = "-----------------------------------";
 		
 		while(true){
 			
-			this.printState(st);
+			this.printState(s);
 			
 			System.out.println(actionPromptDelimiter);
 			
@@ -55,7 +91,7 @@ public class TerminalExplorer {
 				line = in.readLine();
 				
 				if(line.equals("##reset##")){
-					st = src;
+					s = src;
 				}
 				else{
 					
@@ -84,7 +120,7 @@ public class TerminalExplorer {
 						System.out.println("Unknown action: " + actionName);
 					}
 					else{
-						st = action.performAction(st, params);
+						s = action.performAction(s, params);
 					}
 					
 				}
@@ -102,9 +138,14 @@ public class TerminalExplorer {
 		
 	}
 	
-	public void printState(State st){
+	
+	/**
+	 * Prints the state s to the terminal.
+	 * @param s the state to print to the terminal.
+	 */
+	public void printState(State s){
 		
-		System.out.println(st.getStateDescription());
+		System.out.println(s.getStateDescription());
 		
 	}
 	

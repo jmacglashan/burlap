@@ -10,12 +10,43 @@ import burlap.oomdp.core.values.RealValue;
 import burlap.oomdp.core.values.RelationalValue;
 
 /**
+ * The attribute class defines attributes that define OO-MDP object classes. There are different types of attributes
+ * to support different types of value. Currently, there are attributes to support discrete values, real values, and
+ * relational values. Discrete values are represented by an integer, but these integers can be specified to correspond
+ * to categorical values represented as string. Discrete attributes require a finite domain (that is, it must be specified
+ * how many different discrete values there are). There are two different kinds of real attributed; bounded and unbounded.
+ * A a bounded real attribute should have a lower limit value and an upper limit value. Unbounded real attributes may span any
+ * range. Both attributes' values are represented by double data types. There are also two kinds of relational
+ * attributes: single target and multi-target. A single target relational attribute can only be linked to one other
+ * object, whereas a multi-target relational attribute can be linked to set of other objects. In both cases, the relational
+ * attribute can be unset to any target. The single-target relational attribute values are represented by strings the specify
+ * the name reference of the object to which they are connected. Multi-target relational attribute values are represented
+ * by an ordered set of string values indicating the targets to which the attribute is connected.
  * 
+ * Attributes may also be specified as "hidden," which means that they should not be used by the agent planning/learning algorithms when resolving
+ * the state. Hidden attributes may be useful for defining POMDP domains or in facilitating the generation of values
+ * for observable attributes.
+ *  
  * @author James MacGlashan
  * 
  */
 public class Attribute {
 	
+	
+	/**
+	 * And enumeration type to indicate the various types of attributes supported. There is an special value
+	 * for an unspecified TYPE, but in general this should not be used unless creation of values for it
+	 * is handled with care.
+	 * The integer correspondence of attributes types are:
+	 * -1: NOTYPE (no type)
+	 * 0: DISC (discrete)
+	 * 1: REAL (bounded real)
+	 * 2: REALUNBOUND (unbounded real)
+	 * 3: RELATIONAL (single-target relational)
+	 * 4: MULTITARGETRELATIONAL (multi-target relation)
+	 * @author James MacGlashan
+	 *
+	 */
 	public enum AttributeType{
 		NOTYPE(-1),
 		DISC(0),
@@ -151,22 +182,41 @@ public class Attribute {
 		return nd;
 	}
 	
+	/**
+	 * Sets the upper and lower bound limits for a bounded real attribute.
+	 * @param lower the lower limit
+	 * @param upper the upper limit
+	 */
 	public void setLims(double lower, double upper){
 		this.lowerLim = lower;
 		this.upperLim = upper;
 	}
 	
 	
-	
+	/**
+	 * Sets the type for this attribute using the integer representation of types.
+	 * See the AttributeType enum for more information on the correspondence of int
+	 * values to the AttributeTypes.
+	 * @param itype the integer representation of types.
+	 */
 	public void setType(int itype){
 		this.type = AttributeType.fromInt(itype);
 	}
 	
+	
+	/**
+	 * Sets the type for this attribute.
+	 * @param type the attribute type to which this attribute should be set
+	 */
 	public void setType(AttributeType type){
 		this.type = type;
 	}
 	
 	
+	/**
+	 * Sets a discrete attribute's categorical values
+	 * @param vals the list of categorical values for this discrete attribute
+	 */
 	public void setDiscValues(List <String> vals){
 		this.discValues = new ArrayList <String> (vals);
 		this.discValuesHash = new HashMap<String, Integer>();
@@ -179,6 +229,11 @@ public class Attribute {
 		this.upperLim = discValues.size()-1;
 	}
 	
+	
+	/**
+	 * Sets a discrete attribute's categorical values.
+	 * @param vals an array of categorical values for this discerte attribute
+	 */
 	public void setDiscValues(String [] vals){
 		this.discValues = Arrays.asList(vals);
 		this.discValuesHash = new HashMap<String, Integer>();
@@ -192,7 +247,8 @@ public class Attribute {
 	}
 	
 	/**
-	 * Sets the possible range of discrete values for the attribute
+	 * Sets the possible range of discrete values for the attribute. The categorical values
+	 * will be set to the the string representation of each integer number.
 	 * @param low the minimum int value for the attribute
 	 * @param high the maximum int value for the attribute
 	 * @param step the amount by which the int value will increase
@@ -221,7 +277,8 @@ public class Attribute {
 	
 	
 	/**
-	 * Returns a Value object compatible with this Attributes type (i.e., discrete or real)
+	 * Returns a Value object compatible with this Attributes type (i.e., discrete or real).
+	 * This method will not work for NOTYPE attributes.
 	 * @return a Value object compatible with this Attributes type (i.e., discrete or real)
 	 */
 	public Value valueConstructor(){
