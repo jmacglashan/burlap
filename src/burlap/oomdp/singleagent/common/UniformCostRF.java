@@ -4,6 +4,12 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
+
+/**
+ * Defines a reward function that always returns -1.
+ * @author James MacGlashan
+ *
+ */
 public class UniformCostRF implements RewardFunction {
 
 	

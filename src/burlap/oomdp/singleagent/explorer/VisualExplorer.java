@@ -23,7 +23,17 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.visualizer.Visualizer;
 
-
+/**
+ * This class allows you act as the agent by choosing actions to take in specific states. States are
+ * conveyed to the user through a 2D visualization and the user specifies actions
+ * by either pressing keys that are mapped to actions or by typing the actions into the action command field. 
+ * Action parameters in the action field are specified by space delineated input. For instance: "stack block0 block1" will cause
+ * the stack action to called with action parameters block0 and block1. The ` key
+ * causes the state to reset to the initial state provided to the explorer. Other special kinds of actions
+ * not described in the domain can be added and executed by pressing corresponding keys for them.
+ * @author James MacGlashan
+ *
+ */
 public class VisualExplorer extends JFrame{
 
 	private static final long serialVersionUID = 1L;
@@ -45,16 +55,33 @@ public class VisualExplorer extends JFrame{
 	int												numSteps;
 	
 	
+	
+	/**
+	 * Initializes the visual explorer with the domain to explorer, the visualizer to use, and the base state from which to explore.
+	 * @param domain the domain to explore
+	 * @param painter the 2D state visualizer
+	 * @param baseState the initial state from which to explore
+	 */
 	public VisualExplorer(Domain domain, Visualizer painter, State baseState){
 		
 		this.init(domain, painter, baseState, 800, 800);
 	}
 	
+	
+	/**
+	 * Initializes the visual explorer with the domain to explorer, the visualizer to use, the base state from which to explore,
+	 * and the dimensions of the visualizer.
+	 * @param domain the domain to explore
+	 * @param painter the 2D state visualizer
+	 * @param baseState the initial state from which to explore
+	 * @param w the width of the visualizer canvas
+	 * @param h the height of the visualizer canvas
+	 */
 	public VisualExplorer(Domain domain, Visualizer painter, State baseState, int w, int h){
 		this.init(domain, painter, baseState, w, h);
 	}
 	
-	public void init(Domain domain, Visualizer painter, State baseState, int w, int h){
+	protected void init(Domain domain, Visualizer painter, State baseState, int w, int h){
 		
 		this.domain = domain;
 		this.baseState = baseState;
@@ -76,18 +103,38 @@ public class VisualExplorer extends JFrame{
 		
 	}
 	
+	/**
+	 * Returns a special action that causes the state to reset to the initial state.
+	 * @return
+	 */
 	public StateResetSpecialAction getResetSpecialAction(){
 		return (StateResetSpecialAction)keySpecialMap.get("`");
 	}
 	
+	
+	/**
+	 * Specifies which action to execute for a given key press
+	 * @param key the key that is pressed by the user
+	 * @param action the action to take when the key is pressed
+	 */
 	public void addKeyAction(String key, String action){
 		keyActionMap.put(key, action);
 	}
 	
+	
+	/**
+	 * Specifies which special non-domain action to take for a given key press
+	 * @param key the key that is pressed by the user
+	 * @param action the special non-domain action to take when the key is pressed
+	 */
 	public void addSpecialAction(String key, SpecialExplorerAction action){
 		keySpecialMap.put(key, action);
 	}
 	
+	
+	/**
+	 * Initializes the visual explorer GUI and presents it to the user.
+	 */
 	public void initGUI(){
 		
 		painter.setPreferredSize(new Dimension(cWidth, cHeight));

@@ -3,7 +3,8 @@ package burlap.oomdp.singleagent;
 import burlap.oomdp.core.State;
 
 /**
- * 
+ * A grounded action contains a reference to an action and the names of object instances that
+ * are bound to the Action's parameters.
  * @author James
  *
  */
@@ -12,12 +13,22 @@ public class GroundedAction {
 	public Action action;
 	public String [] params;
 	
+	
+	/**
+	 * Initializes the GroundedAction with the given Action reference and action parameters.
+	 * @param a the action reference
+	 * @param p a String array of object parameters for the action
+	 */
 	public GroundedAction(Action a, String [] p){
 		this.init(a, p);
 	}
 	
 	
-	//may also take parameters as a single string that is comma delineated
+	/**
+	 * Initializes the GroundedAction with the given Action reference and action parameters.
+	 * @param a the action reference
+	 * @param p a comma delineated String representing the object parameters for the action.
+	 */
 	public GroundedAction(Action a, String p){
 		
 		String [] ps = null;
