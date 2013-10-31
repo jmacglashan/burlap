@@ -33,7 +33,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
 		numEpisodesToStore = 1;
-		this.PlannerInit(domain, rf, tf, gamma, null);
+		this.plannerInit(domain, rf, tf, gamma, null);
 	}
 	
 	
@@ -45,7 +45,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
 		numEpisodesToStore = 1;
-		this.PlannerInit(domain, rf, tf, gamma, null);
+		this.plannerInit(domain, rf, tf, gamma, null);
 	}
 	
 	

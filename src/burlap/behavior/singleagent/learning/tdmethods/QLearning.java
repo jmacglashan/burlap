@@ -69,7 +69,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	public void QLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize){
 		
-		this.PlannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
 		this.qIndex = new HashMap<StateHashTuple, QLearningStateNode>();
 		this.learningRate = learningRate;
 		this.learningPolicy = learningPolicy;

@@ -35,7 +35,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	public void VFPInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory){
 		
-		this.PlannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.transitionDynamics = new HashMap<StateHashTuple, List<ActionTransitions>>();
 		this.valueFunction = new HashMap<StateHashTuple, Double>();

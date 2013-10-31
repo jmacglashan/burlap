@@ -5,17 +5,12 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.TextArea;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -35,10 +30,14 @@ import burlap.oomdp.visualizer.Visualizer;
 
 
 
-
+/**
+ * This class is used to visualize a set of episodes that have been saves to files in a common directory.
+ * @author James MacGlashan
+ *
+ */
 public class EpisodeSequenceVisualizer extends JFrame{
 
-private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
 	
 	//Frontend GUI
@@ -70,13 +69,28 @@ private static final long serialVersionUID = 1L;
 	
 	
 	
+	/**
+	 * Initializes the EpisodeSequenceVisualizer. By default the state visualizer will be set to the size 800x800 pixels.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the episodes took place
+	 * @param sp a state parser that can be used to parse the states stored in the episode files
+	 * @param experimentDirectory the path to the directory containing the episode files.
+	 */
 	public EpisodeSequenceVisualizer(Visualizer v, Domain d, StateParser sp, String experimentDirectory){
 		
 		this.init(v, d, sp, experimentDirectory, 800, 800);
 		
 	}
 	
-	
+	/**
+	 * Initializes the EpisodeSequenceVisualizer.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the episodes took place
+	 * @param sp a state parser that can be used to parse the states stored in the episode files
+	 * @param experimentDirectory the path to the directory containing the episode files.
+	 * @param w the width of the state visualizer canvas
+	 * @param h the height of the state visualizer canvas
+	 */
 	public void init(Visualizer v, Domain d, StateParser sp, String experimentDirectory, int w, int h){
 		
 		painter = v;
@@ -99,6 +113,9 @@ private static final long serialVersionUID = 1L;
 		
 	}
 	
+	/**
+	 * Initializes the GUI and presents it to the user.
+	 */
 	public void initGUI(){
 		
 

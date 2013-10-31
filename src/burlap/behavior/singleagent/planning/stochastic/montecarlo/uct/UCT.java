@@ -63,7 +63,7 @@ public class UCT extends OOMDPPlanner {
 	
 	public void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
-		this.PlannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
 		this.maxHorizon = horizon;
 		this.maxRollOutsFromRoot = nRollouts;
 		this.explorationBias = explorationBias;

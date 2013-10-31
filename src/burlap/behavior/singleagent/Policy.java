@@ -13,7 +13,11 @@ import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullAction;
 
 
-
+/**
+ * This abstract class is used to store a policy for a domain that can be queried and perform common operations with the policy.
+ * @author James MacGlashan
+ *
+ */
 public abstract class Policy {
 
 	protected boolean evaluateDecomposesOptions = true;
@@ -86,7 +90,7 @@ public abstract class Policy {
 	 * the subclass needs to only define the getActionDistribution method and the getAction method can simply
 	 * call this method to return an action.
 	 * @param s
-	 * @return
+	 * @return a GroundedAction to take
 	 */
 	protected GroundedAction sampleFromActionDistribution(State s){
 		Random rand = RandomFactory.getMapped(0);

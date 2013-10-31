@@ -16,22 +16,39 @@ import burlap.oomdp.singleagent.common.NullAction;
 
 
 
-
+/**
+ * This class is used to keep track of all events that occur in an episode.
+ * @author James MacGlashan
+ *
+ */
 public class EpisodeAnalysis {
 
 	public List<State>									stateSequence;
 	public List<GroundedAction>							actionSequence;
 	public List<Double>									rewardSequence;
 	
+	
+	/**
+	 * Creates a new EpisodeAnalysis object. Before recording transitions, the {@link initializeEpisideWithInitialState(State)} method
+	 * should be called to set the initial state of the episode.
+	 */
 	public EpisodeAnalysis(){
 		this.initializeDatastructures();
 	}
 	
 	
+	/**
+	 * Initializes a new EpisodeAnalysis object with the initial state in which the episode started.
+	 * @param initialState the initial state of the episode
+	 */
 	public EpisodeAnalysis(State initialState){
 		this.initializeEpisideWithInitialState(initialState);
 	}
 	
+	/**
+	 * Initializes this object with the initial state in which the episode started.
+	 * @param initialState the initial state of the episode
+	 */
 	public void initializeEpisideWithInitialState(State initialState){
 		this.initializeDatastructures();
 		this.stateSequence.add(initialState);
@@ -43,36 +60,85 @@ public class EpisodeAnalysis {
 		rewardSequence = new ArrayList<Double>();
 	}
 	
+	
+	/**
+	 * Adds a state to the state sequence. In general, it is recommended that {@link initializeEpisideWithInitialState(State)} method
+	 * along with subsequent calls to the {@link recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * method can be used to manually add a state.
+	 * @param s the state to add
+	 */
 	public void addState(State s){
 		stateSequence.add(s);
 	}
 	
+	/**
+	 * Adds a GroundedAction to the action sequence. In general, it is recommended that {@link initializeEpisideWithInitialState(State)} method
+	 * along with subsequent calls to the {@link recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * method can be used to manually add a GroundedAction.
+	 * @param ga the GroundedAction to add
+	 */
 	public void addAction(GroundedAction ga){
 		actionSequence.add(ga);
 	}
 	
+	/**
+	 * Adds a reward to the reward sequence. In general, it is recommended that {@link initializeEpisideWithInitialState(State)} method
+	 * along with subsequent calls to the {@link recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * method can be used to manually add a reward.
+	 * @param r the reward to add
+	 */
 	public void addReward(double r){
 		rewardSequence.add(r);
 	}
 	
+	
+	/**
+	 * Records an transition event where the agent applied the usingAction argument in the last
+	 * state in this object's state sequence, received reward r, and transitioned to state next. 
+	 * @param next the next state to which the agent transitioned
+	 * @param usingAction the action the agent used that caused the transition
+	 * @param r the reward the agent received for this transition.
+	 */
 	public void recordTransitionTo(State next, GroundedAction usingAction, double r){
 		stateSequence.add(next);
 		actionSequence.add(usingAction);
 		rewardSequence.add(r);
 	}
 	
+	
+	/**
+	 * Returns the ith state in this episode. i=0 refers to the initial state.
+	 * @param i the index of the state in this episode
+	 * @return the ith state in this episode
+	 */
 	public State getState(int i){
 		return stateSequence.get(i);
 	}
 	
+	/**
+	 * Returns the ith action taken in this episode. i=0 refers to the action taken in the initial state.
+	 * @param i the index of the action in this episode
+	 * @return the ith action taken in this episode
+	 */
 	public GroundedAction getAction(int i){
 		return actionSequence.get(i);
 	}
 	
+	/**
+	 * Returns the ith reward received in this episode. i=0 refers to the reward received 
+	 * after taking the first action in the initial state.
+	 * @param i
+	 * @return
+	 */
 	public double getReward(int i){
 		return rewardSequence.get(i);
 	}
 	
+	/**
+	 * Returns the number of time steps in this episode, which is equivalent to the number of states. Note that there
+	 * will always be one less action and reward than there are time steps, since the agent will not act in the final state.
+	 * @return the number of time steps in this episode
+	 */
 	public int numTimeSteps(){
 		return stateSequence.size(); //state sequence will always have the most because of initial state and terminal state
 	}
@@ -106,6 +172,12 @@ public class EpisodeAnalysis {
 		}
 	}
 	
+	
+	/**
+	 * Returns a string representing the actions taken in this episode. Actions are separated
+	 * by ';' characters.
+	 * @return a string representing the actions taken in this episode
+	 */
 	public String getActionSequenceString(){
 		StringBuffer buf = new StringBuffer();
 		boolean first = true;
@@ -121,7 +193,12 @@ public class EpisodeAnalysis {
 	}
 	
 	
-	
+	/**
+	 * Writes this episode to a file. If the the directories for the specified file path do not exist, then they will be created.
+	 * If the file extension is not ".episode" will automatically be added.
+	 * @param path the path to the file in which to write this episode.
+	 * @param sp the state parser to use to convert state objects to string representations.
+	 */
 	public void writeToFile(String path, StateParser sp){
 		
 		if(!path.endsWith(".episode")){
@@ -147,6 +224,11 @@ public class EpisodeAnalysis {
 	}
 	
 	
+	/**
+	 * Converts this episode into a string representation.
+	 * @param sp the state parser to use to convert state objects to string representations.
+	 * @return a string representation of this episode.
+	 */
 	public String parseIntoString(StateParser sp){
 		
 		StringBuffer sbuf = new StringBuffer(256);
@@ -166,6 +248,13 @@ public class EpisodeAnalysis {
 	}
 	
 	
+	/**
+	 * Reads an episode that was written to a file and turns into an EpisodeAnalysis object.
+	 * @param path the path to the episode file.
+	 * @param d the domain to which the states and actions belong
+	 * @param sp a state parser that can parse the state string representation in the file
+	 * @return an EpisodeAnalysis object.
+	 */
 	public static EpisodeAnalysis parseFileIntoEA(String path, Domain d, StateParser sp){
 		
 		//read whole file into string first
@@ -180,6 +269,13 @@ public class EpisodeAnalysis {
 	}
 	
 	
+	/**
+	 * Parses a string representation of an episode into an EpisodeAnalysis object.
+	 * @param str a string represenation of the episode.
+	 * @param d the domain to which the states and actions belong
+	 * @param sp a state parser that can parse the state string representation in the file
+	 * @return an EpisodeAnalysis object.
+	 */
 	public static EpisodeAnalysis parseStringIntoEA(String str, Domain d, StateParser sp){
 		
 		EpisodeAnalysis ea = new EpisodeAnalysis();
