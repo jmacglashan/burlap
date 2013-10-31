@@ -14,7 +14,7 @@ public class ConstantStateGenerator implements StateGenerator {
 	
 	/**
 	 * This class takes a source state as input as returns copies of it for every call of generateState().
-	 * @param src the src state of which to return copies
+	 * @param src the source state of which to return copies
 	 */
 	public ConstantStateGenerator(State src){
 		this.src = src;

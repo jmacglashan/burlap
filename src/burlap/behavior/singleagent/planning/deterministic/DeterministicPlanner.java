@@ -35,7 +35,7 @@ public abstract class DeterministicPlanner extends OOMDPPlanner{
 	
 	public void deterministicPlannerInit(Domain domain, RewardFunction rf, TerminalFunction tf, StateConditionTest gc, StateHashFactory hashingFactory){
 		
-		this.PlannerInit(domain, rf, tf, 1., hashingFactory); //goal condition doubles as termination function for detemrinistic planners 
+		this.plannerInit(domain, rf, tf, 1., hashingFactory); //goal condition doubles as termination function for detemrinistic planners 
 		this.gc = gc;
 		this.internalPolicy = new HashMap<StateHashTuple, GroundedAction>();
 	

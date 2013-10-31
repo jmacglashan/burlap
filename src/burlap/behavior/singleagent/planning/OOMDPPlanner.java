@@ -10,7 +10,6 @@ import burlap.behavior.singleagent.options.OptionEvaluatingRF;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -18,27 +17,79 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
-
+/**
+ * The super class to use for all planning algorithms. It provides the common data members that most all planning algorithms will need to use for planning
+ * and provides methods for manipulating them that are common. This class also defines the interface that all planners should use.
+ * @author James MacGlashan
+ *
+ */
 public abstract class OOMDPPlanner {
 
+	/**
+	 * The domain in which planning will be performed
+	 */
 	protected Domain												domain;
+	
+	/**
+	 * The hashing factory to use for hashing states
+	 */
 	protected StateHashFactory										hashingFactory;
+	
+	/**
+	 * The reward function used for planning
+	 */
 	protected RewardFunction										rf;
+	
+	/**
+	 * The terminal function for identifying terminal states
+	 */
 	protected TerminalFunction										tf;
+	
+	/**
+	 * The discount factor
+	 */
 	protected double												gamma;
+	
+	
+	/**
+	 * The list of actions this planner can use. May include non-domain specified actions like options.
+	 */
 	protected List <Action>											actions;
 	
-	protected Map <StateHashTuple, StateHashTuple>					mapToStateIndex; //this is useful because two states may be equal but have different object name references and this mapping lets the user pull out which exact state (and object names) was used for the action dynamics
+	/**
+	 * A mapping to internal states that are stored. Useful since two identical states may have different object instance name identifiers
+	 * that can affect the parameters in GroundedActions.
+	 */
+	protected Map <StateHashTuple, StateHashTuple>					mapToStateIndex;
 	
-	
+	/**
+	 * Indicates whether the action set for this planner includes parameterized actions
+	 */
 	protected boolean												containsParameterizedActions;
 	
+	
+	/**
+	 * The debug code use for calls to {@link burlap.debugtools.DPrint}
+	 */
 	protected int													debugCode;
 	
 	
+	/**
+	 * This method will cause the planner to begin planning from the specified initial state
+	 * @param initialState
+	 */
 	public abstract void planFromState(State initialState);
 	
-	public void PlannerInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory){
+	
+	/**
+	 * Initializes the planner with the common planning elements
+	 * @param domain the domain in which planning will be performed
+	 * @param rf the reward function
+	 * @param tf the terminal state function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the hashing factory used to store states (may be set to null if the planner is not tabular)
+	 */
+	public void plannerInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory){
 		
 		this.domain = domain;
 		this.rf = rf;
@@ -60,6 +111,12 @@ public abstract class OOMDPPlanner {
 		
 	}
 	
+	
+	/**
+	 * Adds an additional action the planner that is not included in the domain definition. For instance, an {@link burlap.behavior.singleagent.options.Option}
+	 * should be added using this method.
+	 * @param a the action to add to the planner
+	 */
 	public void addNonDomainReferencedAction(Action a){
 		//make sure it doesn't already exist in the list
 		if(!actions.contains(a)){
@@ -79,34 +136,78 @@ public abstract class OOMDPPlanner {
 		
 	}
 	
+	
+	/**
+	 * Sets the action set the planner should use.
+	 * @param actions the actions the planner should use.
+	 */
 	public void setActions(List<Action> actions){
 		this.actions = actions;
 	}
 	
+	
+	/**
+	 * Returns the {@link burlap.oomdp.core.TerminalFunction} this planner uses.
+	 * @return the {@link burlap.oomdp.core.TerminalFunction} this planner uses.
+	 */
 	public TerminalFunction getTF(){
 		return tf;
 	}
 	
+	
+	/**
+	 * Returns the {@link burlap.oomdp.singleagent.RewardFunction} this planner uses.
+	 * @return the {@link burlap.oomdp.singleagent.RewardFunction} this planner uses.
+	 */
 	public RewardFunction getRF(){
 		return rf;
 	}
 	
+	/**
+	 * Returns the {@link burlap.behavior.statehashing.StateHashFactory} this planner uses.
+	 * @return the {@link burlap.behavior.statehashing.StateHashFactory} this planner uses.
+	 */
 	public StateHashFactory getHashingFactory(){
 		return this.hashingFactory;
 	}
 	
+	
+	/**
+	 * Sets the debug code to be used by calls to {@link burlap.debugtools.DPrint}
+	 * @param code the code to be used by {@link burlap.debugtools.DPrint}
+	 */
 	public void setDebugCode(int code){
 		this.debugCode = code;
 	}
 	
+	
+	/**
+	 * Returns the debug code used by this planner for calls to {@link burlap.debugtools.DPrint}
+	 * @return the debug code used by this planner for calls to {@link burlap.debugtools.DPrint}
+	 */
 	public int getDebugCode(){
 		return debugCode;
 	}
 	
+	
+	/**
+	 * Toggles whether the planner's calls to {@link burlap.debugtools.DPrint} should be printed.
+	 * @param toggle whether to print the calls to {@link burlap.debugtools.DPrint}
+	 */
 	public void toggleDebugPrinting(boolean toggle){
 		DPrint.toggleCode(debugCode, toggle);
 	}
 	
+	
+	/**
+	 * Takes a source parameterized GroundedAction and a matching between object instances of two different states and returns a GroudnedAction
+	 * with parameters using the matched parameters. This method is useful a stored state and action pair in the planner data structure has different
+	 * object name identifiers than a query state that is otherwise identical. The matching is from the state in which the source action is applied
+	 * to some target state that is not provided to this method.
+	 * @param a the source action that needs to be translated
+	 * @param matching a map from object instance names to other object instance names.
+	 * @return and new GroundedAction with object parameterizations that follow from the matching
+	 */
 	protected GroundedAction translateAction(GroundedAction a, Map <String,String> matching){
 		String [] newParams = new String[a.params.length];
 		for(int i = 0; i < a.params.length; i++){
@@ -115,12 +216,21 @@ public abstract class OOMDPPlanner {
 		return new GroundedAction(a.action, newParams);
 	}
 	
-	
+	/**
+	 * A shorthand method for hashing a state.
+	 * @param s the state to hash
+	 * @return a StateHashTuple produce from this planners StateHashFactory.
+	 */
 	public StateHashTuple stateHash(State s){
 		return hashingFactory.hashState(s);
 	}
 	
 	
+	/**
+	 * Returns all grounded actions in the provided state for all the actions that this planner can use.
+	 * @param s the source state for which to get all GroundedActions.
+	 * @return all GroundedActions.
+	 */
 	protected List <GroundedAction> getAllGroundedActions(State s){
 		
 		return s.getAllGroundedActionsFor(this.actions);

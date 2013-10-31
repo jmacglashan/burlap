@@ -11,7 +11,15 @@ import java.util.*;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
-
+/**
+ * This class provides 2D visualization of states by being provided a set of classes that can paint
+ * ObjectInstnaces to the canvas as well as classes that can paint general domain information. Painters
+ * for object classes as well as specific object instances can be provided. If there is a painter
+ * for an object class and a painter for a specific object instance of that same class, then the specific object instance
+ * painter will be used to pain that object instead of the painter for that instnace's OO-MDP class.
+ * @author James MacGlashan
+ *
+ */
 public class Visualizer extends Canvas{
 
 	private static final long serialVersionUID = 1L; //needed for Canvas extension
@@ -39,27 +47,54 @@ public class Visualizer extends Canvas{
 		
 	}
 	
+	/**
+	 * Sets the background color of the canvas
+	 * @param c the background color of the canvas
+	 */
 	public void setBGColor(Color c){
 		bgColor = c;
 	}
 	
+	/**
+	 * Adds a static painter for the domain.
+	 * @param sp the static painter to add.
+	 */
 	public void addStaticPainter(StaticPainter sp){
 		staticPainters.add(sp);
 	}
 	
+	
+	/**
+	 * Adds a class that will paint objects that belong to a given OO-MDPclass.
+	 * @param className the name of the class that the provided painter can paint
+	 * @param op the painter
+	 */
 	public void addObjectClassPainter(String className, ObjectPainter op){
 		objectClassPainters.put(className, op);
 	}
 	
+	
+	/**
+	 * Adds a painter that will be used to paint a specific object in states
+	 * @param objectName the name of the object this painter is used to paint
+	 * @param op the painter
+	 */
 	public void addSpecificObjectPainter(String objectName, ObjectPainter op){
 		specificObjectPainters.put(objectName, op);
 	}
 	
-	public void updateState(State st){
-		curState = st;
+	
+	/**
+	 * Updates the state that needs to be painted and repaints.
+	 * @param s the state to paint
+	 */
+	public void updateState(State s){
+		curState = s;
 		repaint();
 	}
 	
+	
+	@Override
 	public void paint(Graphics g){
 		
 		Graphics2D g2 = (Graphics2D) g;

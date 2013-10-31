@@ -9,10 +9,16 @@ import burlap.oomdp.stocashticgames.JointAction;
 import burlap.oomdp.stocashticgames.JointActionModel;
 
 
+/**
+ * This action model can be used to take a single stage game, and cause it to repeat itself.
+ * This is achieved by simply having the same state returned after each joint action.
+ * @author James MacGlashan
+ *
+ */
 public class StaticRepeatedGameActionModel extends JointActionModel {
 
 	public StaticRepeatedGameActionModel() {
-		// TODO Auto-generated constructor stub
+		//nothing to do
 	}
 
 	@Override

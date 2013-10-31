@@ -15,6 +15,24 @@ import burlap.oomdp.stocashticgames.SGDomain;
 import burlap.oomdp.stocashticgames.SingleAction;
 
 
+
+/**
+ * This class allows you act as all of the agents in a domain by choosing actions for each of them to take in specific states. States are
+ * conveyed to the user through a text description in the terminal and the user specifies actions
+ * by typing the actions into the terminal, one line at a time for each agent's action. 
+ * The command format is "agentName::action parameter1 pameter2" and so on for as many parameters
+ * as there may be (or none if an action takes no parameters). 
+ * <p/>
+ * When all of the agent's actions have
+ * been input, they may be executed by typing "##"
+ * <p/>
+ * Shorthand names for actions names may be provided. 
+ * <p/>
+ * The command ##reset##
+ * causes the state to reset to the initial state provided to the explorer.
+ * @author James MacGlashan
+ *
+ */
 public class SGTerminalExplorer {
 
 	protected SGDomain					domain;
@@ -23,6 +41,12 @@ public class SGTerminalExplorer {
 	protected JointAction				curJointAction;
 	protected JointReward				rf;
 	
+	
+	/**
+	 * Initializes the explorer with a domain and action model
+	 * @param domain the domain which will be explored
+	 * @param jam the action model definition transition dynamics
+	 */
 	public SGTerminalExplorer(SGDomain domain, JointActionModel jam){
 		this.domain = domain;
 		this.jam = jam;
@@ -30,6 +54,12 @@ public class SGTerminalExplorer {
 		this.rf = null;
 	}
 	
+	/**
+	 * Initializes the explorer with a domain and action model and shorthand names for actions
+	 * @param domain the domain which will be explored
+	 * @param jam the action model definition transition dynamics
+	 * @param ash a map from shorthand names to full action names that can be typed instead of the full action names
+	 */
 	public SGTerminalExplorer(SGDomain domain, JointActionModel jam, Map <String, String> ash){
 		this.domain = domain;
 		this.jam = jam;
@@ -37,11 +67,19 @@ public class SGTerminalExplorer {
 		this.rf = null;
 	}
 	
+	
+	/**
+	 * Allows the explorer to keep track of the reward received that will be printed to the output.
+	 * @param rf the reward function to use.
+	 */
 	public void setTrackingRF(JointReward rf){
 		this.rf = rf;
 	}
 	
-	
+	/**
+	 * Sets the action shorthands to use
+	 * @param ash a map from action shorthands to full action names
+	 */
 	public void setActionShortHand(Map <String, String> ash){
 		this.actionShortHand = ash;
 		List <SingleAction> actionList = domain.getSingleActions();
@@ -50,18 +88,29 @@ public class SGTerminalExplorer {
 		}
 	}
 	
+	
+	/**
+	 * Adds a shorthand for an action
+	 * @param shortHand the shorthand for the action
+	 * @param action the full name of the action that the shorthand represents
+	 */
 	public void addActionShortHand(String shortHand, String action){
 		actionShortHand.put(shortHand, action);
 	}
 	
-	public void exploreFromState(State st){
+	
+	/**
+	 * Causes the explorer to begin from the given input state
+	 * @param s the state from which to start exploring.
+	 */
+	public void exploreFromState(State s){
 		
 		curJointAction = new JointAction();
 		
-		State src = st.copy();
+		State src = s.copy();
 		String actionPromptDelimiter = "-----------------------------------";
 		
-		this.printState(st);
+		this.printState(s);
 		System.out.println(actionPromptDelimiter);
 		
 		while(true){
@@ -75,26 +124,26 @@ public class SGTerminalExplorer {
 				line = in.readLine();
 				
 				if(line.equals("##reset##")){
-					st = src;
+					s = src;
 					curJointAction = new JointAction();
-					this.printState(st);
+					this.printState(s);
 					System.out.println(actionPromptDelimiter);
 				}
 				else if(line.equals("##")){
-					State ns = this.jam.performJointAction(st, curJointAction);
+					State ns = this.jam.performJointAction(s, curJointAction);
 					
 					if(this.rf != null){
-						Map<String, Double> reward = rf.reward(st, curJointAction, ns);
+						Map<String, Double> reward = rf.reward(s, curJointAction, ns);
 						for(String aname : reward.keySet()){
 							System.out.println("" + aname + ": " + reward.get(aname));
 						}
 						System.out.println("++++++++++++++++++++++++++++++++");
 					}
 					
-					st = ns;
+					s = ns;
 					
 					curJointAction = new JointAction();
-					this.printState(st);
+					this.printState(s);
 					System.out.println(actionPromptDelimiter);
 				}
 				else{
@@ -128,7 +177,7 @@ public class SGTerminalExplorer {
 					}
 					else{
 						GroundedSingleAction gsa = new GroundedSingleAction(agentName, sa, params);
-						if(sa.isApplicableInState(st, agentName, params)){
+						if(sa.isApplicableInState(s, agentName, params)){
 							System.out.println("Setting action: " + agentName + "::" + actionName);
 							curJointAction.addAction(gsa);
 						}
@@ -153,9 +202,14 @@ public class SGTerminalExplorer {
 		
 	}
 	
-	public void printState(State st){
+	
+	/**
+	 * Prints the given state to the terminal.
+	 * @param s the state to print to the terminal.
+	 */
+	public void printState(State s){
 		
-		System.out.println(st.getStateDescription());
+		System.out.println(s.getStateDescription());
 		
 	}
 

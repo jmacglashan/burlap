@@ -16,20 +16,40 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
+/**
+ * This class implements a Boltzmann policy where the the Q-values represent
+ * the components of the Boltzmann distribution. This policy requires a QComputable
+ * planner to be passed to it.
+ * @author James MacGlashan
+ *
+ */
 public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 
 	protected QComputablePlanner		qplanner;
 	double								temperature;
 	
 	
-	
+	/**
+	 * Initializes with a temperature value. The temperature value controls how greedy the Boltzmann distribution is.
+	 * The temperature should be positive with values near zero causing the distribution to be more greedy. A high temperature
+	 * causes the distribution to be more uniform.
+	 * @param temperature the positive temperature value to use
+	 */
 	public BoltzmannQPolicy(double temperature){
 		this.qplanner = null;
 		this.temperature = temperature;
 	}
 	
-	public BoltzmannQPolicy(QComputablePlanner vf, double temperature){
-		this.qplanner = vf;
+	
+	/**
+	 * Initializes with a temperature value and the QComputable planner to use. The temperature value controls how greedy the Boltzmann distribution is.
+	 * The temperature should be positive with values near zero causing the distribution to be more greedy. A high temperature
+	 * causes the distribution to be more uniform.
+	 * @param planner the q-computable planner to use.
+	 * @param temperature the positive temperature value to use
+	 */
+	public BoltzmannQPolicy(QComputablePlanner planner, double temperature){
+		this.qplanner = planner;
 		this.temperature = temperature;
 	}
 	

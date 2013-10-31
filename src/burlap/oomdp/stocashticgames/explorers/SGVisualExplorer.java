@@ -1,15 +1,13 @@
 package burlap.oomdp.stocashticgames.explorers;
 
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
-import java.awt.TextArea;
-import java.util.Map;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.TextArea;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -26,6 +24,17 @@ import burlap.oomdp.stocashticgames.SingleAction;
 import burlap.oomdp.visualizer.Visualizer;
 
 
+/**
+ * This class allows you act as all of the agents in a stochastic game by choosing actions for each of them to take in specific states. States are
+ * conveyed to the user through a 2D visualization and the user specifies actions for each agent
+ * by pressing keys that are mapped to actions or by typing the actions into the action command field. After each
+ * action is specified, the corresponding joint action is taken by pressing a special finalizing key that by default to set to "c".
+ * The ` key
+ * causes the state to reset to the initial state provided to the explorer. Other special kinds of actions
+ * not described in the domain can be added and executed by pressing corresponding keys for them.
+ * @author James MacGlashan
+ *
+ */
 public class SGVisualExplorer extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -45,19 +54,37 @@ public class SGVisualExplorer extends JFrame {
 	
 	int												numSteps;
 	
-	String											jointActionComplete;
+	String											jointActionComplete = "c";
 	JointAction										nextAction;
 	
+	
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 * @param jam the joint action model that defines transition probabilities
+	 */
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam){
 		
 		this.init(domain, painter, baseState, jam, 800, 800);
 	}
 	
+	
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 * @param jam the joint action model that defines transition probabilities
+	 * @param w the width of the state visualizer
+	 * @param h the height of the state visualizer
+	 */
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
 		this.init(domain, painter, baseState, jam, w, h);
 	}
 	
-	public void init(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
+	protected void init(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
 		
 		this.domain = domain;
 		this.baseState = baseState;
@@ -83,22 +110,47 @@ public class SGVisualExplorer extends JFrame {
 		
 	}
 	
+	/**
+	 * Sets the joint action model to use
+	 * @param jac the joint action model to use
+	 */
 	public void setJAC(String jac){
 		this.jointActionComplete = jac;
 	}
 	
+	/**
+	 * Returns the reset action being used when the reset key ` is pressed
+	 * @return the reset action being used when the reset key ` is pressed
+	 */
 	public StateResetSpecialAction getResetSpecialAction(){
 		return (StateResetSpecialAction)keySpecialMap.get("`");
 	}
 	
+	/**
+	 * Specifies the action to set for a given key press. Actions should be formatted to include
+	 * the agent name as follows: "agentName::actionName" This means
+	 * that different key presses will have to specified for different agents.
+	 * @param key the key that will cause the action to be set
+	 * @param action the action to set when the specified key is pressed.
+	 */
 	public void addKeyAction(String key, String action){
 		keyActionMap.put(key, action);
 	}
 	
+	
+	/**
+	 * Adds a special non-domain action to modify the state when a key is pressed
+	 * @param key the key that will cause the special non-domain action to be executed
+	 * @param action the special non-domain action to exectute
+	 */
 	public void addSpecialAction(String key, SpecialExplorerAction action){
 		keySpecialMap.put(key, action);
 	}
 	
+	
+	/**
+	 * Initializes the GUI and presents it to the user.
+	 */
 	public void initGUI(){
 		
 		painter.setPreferredSize(new Dimension(cWidth, cHeight));

@@ -90,7 +90,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	protected void GDSLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lamda){
 		
-		this.PlannerInit(domain, rf, tf, gamma, null);
+		this.plannerInit(domain, rf, tf, gamma, null);
 		this.vfa = vfa;
 		this.learningRate = learningRate;
 		this.learningPolicy = learningPolicy;

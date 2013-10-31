@@ -30,18 +30,38 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 
 	Map<String, List<Attribute>>	attributesForHashCode;
 	
+	/**
+	 * Initializes this hashing factory to compute hash codes with all attributes of all object classes.
+	 */
 	public DiscreteStateHashFactory() {
 		attributesForHashCode = null;
 	}
 	
+	/**
+	 * Initializes this hashing factory to hash on only the attributes for the specified classes in the provided map
+	 * @param attributesForHashCode a map from object class names to the attributes that should be used in the hash calculation for those object classes.
+	 */
 	public DiscreteStateHashFactory(Map<String, List<Attribute>> attributesForHashCode){
 		this.attributesForHashCode = attributesForHashCode;
 	}
 	
+	/**
+	 * Sets this hashing factory to hash on only the attributes for the specified classes in the provided map
+	 * @param attributesForHashCode a map from object class names to the attributes that should be used in the hash calculation for those object classes.
+	 */
 	public void setAttributesForHashCode(Map<String, List<Attribute>> attributesForHashCode){
 		this.attributesForHashCode = attributesForHashCode;
 	}
 	
+	
+	/**
+	 * Sets which attributes to use in the hash calculation for the given class. If this method has not be called before
+	 * and the class was initialized with the default constructor, then only these class attributes, and those specified by subsequent
+	 * calls to this method or those specified by a subsequent call of the other attribute setting methods
+	 * will be used for computing hash codes
+	 * @param classname the name of the class
+	 * @param atts the attributes whose values in object instances should be used to compute hash codes
+	 */
 	public void setAttributesForClass(String classname, List <Attribute> atts){
 		if(attributesForHashCode == null){
 			attributesForHashCode = new HashMap<String, List<Attribute>>();
@@ -49,6 +69,15 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 		attributesForHashCode.put(classname, new ArrayList<Attribute>(atts));
 	}
 	
+	
+	/**
+	 * Specifies that an additional attribute of the specified class should be used for computing hash codes. If this method has not be called before
+	 * and the class was initialized with the default constructor, then only these class attributes, and those specified by subsequent
+	 * calls to this method or those specified by a subsequent call of the other attribute setting methods
+	 * will be used for computing hash codes
+	 * @param classname the name of the class
+	 * @param att the attribute whose values will be included in the computation of hash codes
+	 */
 	public void addAttributeForClass(String classname, Attribute att){
 		if(attributesForHashCode == null){
 			attributesForHashCode = new HashMap<String, List<Attribute>>();

@@ -3,15 +3,14 @@ package burlap.oomdp.auxiliary;
 import burlap.oomdp.core.Domain;
 
 /**
- * 
- * @author James
- * Any implementation of an OOMDP domain should use this interface in addition to having an internal Domain data member.
- * generateDomain() instatiated the internal Domain object with all the proper data then returns it for use with a visualizer and/or explorer.
+ * This class provides a simple interface for constructing domains, but it is not required to create domains. All domains that
+ * exist in BURLAP adhere to this interface for constructing domains.
+ * @author James MacGlashan
  */
 public interface DomainGenerator {
 
 	/**
-	 * 
+	 * Returns a newly instanced Domain object
 	 * @return the newly instantiated Domain object.
 	 */
 	public Domain generateDomain();

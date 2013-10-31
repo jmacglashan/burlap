@@ -8,6 +8,20 @@ import java.util.Set;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
+
+/**
+ * This hashing factory provides hashing and state equality checks for domains in which the object name references are important.
+ * This is in contrast to the typical OO-MDP state equality checking in which as long as there was a bijection between set of
+ * object instances in two state objects in which the matched objects had equivalent value assignments, the states were considered
+ * equal. In other words, in typical OO-MDP the ObjectInstance name identifier did not affect state equality. In a NameDependent domain,
+ * changing the name of an object instances, changes which state it represents. NameDependent domains are useful for domains with
+ * relational attributes in which the specific object reference to which an attribute is linked is important.
+ * <p/>
+ * Hash codes are currently computed using the name identifier of the object instance as well as the value assignments for all
+ * observable object instances.
+ * @author James MacGlashan
+ *
+ */
 public class NameDependentStateHashFactory implements StateHashFactory {
 
 	protected List <String>				objectNameOrder;
