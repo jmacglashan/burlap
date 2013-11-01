@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.singleagent.planning.StateConditionTest;
@@ -12,19 +11,45 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
-
+/**
+ * An implementation of A*. The typical "costs" of A* should be represented by negative reward returned by the reward function.
+ * Similarly, the heuristic function should return non-positive values and an admissible heuristic would be h(n) >= C(n) for all n.
+ * A* computes the f-score as g(n) + h(n) where g(n) is the cost so far to node n and h(n) is the admissible heuristic to estimate
+ * the remaining cost. Again, costs should be represented as negative reward.
+ * @author James MacGlashan
+ *
+ */
 public class AStar extends BestFirst{
 
-	
+	/**
+	 * The heuristic function.
+	 */
 	protected Heuristic									heuristic;
+	
+	/**
+	 * Data structure for maintaining g(n): the cost so far to node n
+	 */
 	protected Map <StateHashTuple, Double> 				cumulatedRewardMap;
+	
+	/**
+	 * Store the most recent cumulative reward received to some node.
+	 */
 	protected double									lastComputedCumR;
 	
+	
+	/**
+	 * Initializes A*. Goal states are indicated by gc evaluating to true. The costs are stored as negative rewards in the reward function.
+	 * By default there are no terminal states except teh goal states, so a terminal function is not taken.
+	 * @param domain the domain in which to plan
+	 * @param rf the reward function that represents costs as negative reward
+	 * @param gc should evaluate to true for goal states; false otherwise
+	 * @param hashingFactory the state hashing factory to use
+	 * @param heuristic the planning heuristic. Should return non-positive values.
+	 */
 	public AStar(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic){
 		
 		this.deterministicPlannerInit(domain, rf, new NullTermination(), gc, hashingFactory);
