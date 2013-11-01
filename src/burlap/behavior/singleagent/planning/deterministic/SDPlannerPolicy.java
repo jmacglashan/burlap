@@ -49,7 +49,7 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	@Override
 	public GroundedAction getAction(State s) {
-		if(this.dp.cachedPlanForState(s)){
+		if(this.dp.hasCachedPlanForState(s)){
 			return this.dp.querySelectedActionForState(s);
 		}
 		return null; //then the policy is undefined

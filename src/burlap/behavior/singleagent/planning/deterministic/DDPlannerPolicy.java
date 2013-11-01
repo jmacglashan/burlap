@@ -17,11 +17,10 @@ import burlap.oomdp.singleagent.GroundedAction;
  * This is a dynamic deterministic planner policy, which means
  * if the source deterministic planner has not already computed
  * and cached the plan for a query state, then this policy
- * will first compute a plan with the planner and then return the
+ * will first compute a plan using the planner and then return the
  * answer
  * @author James MacGlashan
  */
-
 public class DDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 
 	protected DeterministicPlanner dp;
@@ -31,6 +30,10 @@ public class DDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 		this.dp = null;
 	}
 	
+	/**
+	 * Initializes with the deterministic planner
+	 * @param dp the deterministic planner to use for policy generation
+	 */
 	public DDPlannerPolicy(DeterministicPlanner dp){
 		this.dp = dp;
 	}

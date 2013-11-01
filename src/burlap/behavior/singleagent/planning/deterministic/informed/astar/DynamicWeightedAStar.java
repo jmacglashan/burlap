@@ -8,26 +8,68 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
-
+/**
+ * Dynamic Weighted A* [1] uses a dynamic heuristic weight that is based on depth of the current search tree and based on an expected depth of the search. Specifically,
+ * f(n) = g(n) + (1 + \epsilon * w(n))*h(n),
+ * 
+ * where epsilon is a parameter > 1 indicating greediness (the larger the more greedy) and
+ * 
+ * w(n) = {  1 - d(n)/N      if d(n) <= N
+ *        {  0               if d(n) > N,
+ *        
+ * where d(n) is the depth of the search and N is the expected depth of the search. This algorithm has the effect of becoming less
+ * greedy as the search continues, which allows it to find a decent solution quickly but avoid returning extremely sub-optimal solutions.
+ * 
+ * 1. Pohl, Ira (August, 1973). "The avoidance of (relative) catastrophe, heuristic competence, genuine dynamic weighting and computational issues in heuristic problem solving". 
+ * Proceedings of the Third International Joint Conference on Artificial Intelligence (IJCAI-73) 3. California, USA. pp. 11Ð17.
+ * 
+ * 
+ * @author James MacGlashan
+ *
+ */
 public class DynamicWeightedAStar extends AStar {
 
+	/**
+	 * parameter > 1 indicating the maximum amount of greediness; the larger the more greedy.
+	 */
 	protected double										epsilon;
+	
+	/**
+	 * The expected depth required for a plan
+	 */
 	protected int											expectedDepth;
+	
+	/**
+	 * Data structure for storing the depth of explored states
+	 */
 	protected Map <StateHashTuple, Integer>					depthMap;
+	
+	/**
+	 * maintains the depth of the last explored node
+	 */
 	protected int											lastComputedDepth;
 	
+	
+	/**
+	 * Initializes the planner.
+	 * @param domain the domain in which to plan
+	 * @param rf the reward function that represents costs as negative reward
+	 * @param gc should evaluate to true for goal states; false otherwise
+	 * @param hashingFactory the state hashing factory to use
+	 * @param heuristic the planning heuristic. Should return non-positive values.
+	 * @param epsilon parameter > 1 indicating greediness; the larger the value the more greedy.
+	 * @param expectedDepth the expected depth of the plan
+	 */
 	public DynamicWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic, double epsilon, int expectedDepth) {
 		super(domain, rf, gc, hashingFactory, heuristic);
 		this.epsilon = epsilon;
@@ -59,10 +101,8 @@ public class DynamicWeightedAStar extends AStar {
 	}
 
 	
-	/*
-	 * (non-Javadoc)
-	 * @see edu.brown.cs.ai.behavior.oomdp.planning.deterministic.informed.BestFirst#planFromState(edu.umbc.cs.maple.oomdp.State)
-	 * This method is being overriden because to avoid reopening closed states that are not actually better due to the dynamic
+	/**
+	 * This method is being overridden because to avoid reopening closed states that are not actually better due to the dynamic
 	 * h weight, the reopen check needs to be based on the g score, note the f score
 	 */
 	@Override
@@ -189,6 +229,12 @@ public class DynamicWeightedAStar extends AStar {
 		return F;
 	}
 	
+	
+	/**
+	 * Returns the weighted epsilon value at the given search depth
+	 * @param depth the search depth
+	 * @return the weighted epsilon value at the given search depth
+	 */
 	protected double epsilonWeight(int depth){
 		
 		double ratio = ((double)depth)/((double)expectedDepth);

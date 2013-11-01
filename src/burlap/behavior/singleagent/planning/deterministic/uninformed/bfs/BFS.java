@@ -19,9 +19,21 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.common.UniformCostRF;
 
-
+/**
+ * Implements Breadth-first search.
+ * @author James MacGlashan
+ *
+ */
 public class BFS extends DeterministicPlanner {
 
+	
+	/**
+	 * BFS only needs reference to the domain, goal conditions, and hashing factory. The reward function is considered UniformCost, but is
+	 * not used. No states are considered terminal states, but planning will stop when it finds the goal state.
+	 * @param domain the domain in which to plan
+	 * @param gc the test for goal states
+	 * @param hashingFactory the state hashing factory to use.
+	 */
 	public BFS(Domain domain, StateConditionTest gc, StateHashFactory hashingFactory){
 		this.deterministicPlannerInit(domain, new UniformCostRF(), new NullTermination(), gc, hashingFactory);
 	}
