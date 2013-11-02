@@ -202,6 +202,26 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	}
 	
 	
+	/**
+	 * Performs a Bellman value function update on the provided (hashed) state. Results are stored in the value function map as well as returned.
+	 * @param sh the hashed state on which to perform the Bellman update.
+	 * @return the new value of the state.
+	 */
+	protected double performBellmanUpdateOn(StateHashTuple sh){
+		List<ActionTransitions> transitions = transitionDynamics.get(sh);
+		double maxQ = Double.NEGATIVE_INFINITY;
+		for(ActionTransitions at : transitions){
+			double q = this.computeQ(sh.s, at);
+			if(q > maxQ){
+				maxQ = q;
+			}
+		}
+		
+		valueFunction.put(sh, maxQ);
+		
+		return maxQ;
+	}
+	
 	
 	/**
 	 * Returns the Q-value for a given set and the possible transitions from it for a given action. This computation

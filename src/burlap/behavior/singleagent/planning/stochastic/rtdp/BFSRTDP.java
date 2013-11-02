@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -24,40 +21,79 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 
+/**
+ * A modified version of Real-time Dynamic Programming [1] in which first a breadth-first search-like pass is made to see the value function, and then
+ * planning continues in the typical RTDP rollout-like fashion. The BFS pass either extends to all reachable states from the source state, or optionally,
+ * to the depth required to visit a goal state. This approach may be useful if the depth of the optimal policy is expected to be much shorter than the depth of the entire
+ * state space. The BFS-like pass expands all possible stochastic transitions from an action.
+ * 
+ * 
+ * 1. Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
+ * 
+ * @author James MacGlashan
+ *
+ */
 public class BFSRTDP extends RTDP {
-	
-	protected Policy												rollOutPolicy;
-	
 
-	protected int													dynamicPasses;
+	/**
+	 * indicates whether the BFS-like pass has already been performed.
+	 */
 	protected boolean												performedInitialPlan;
+	
+	/**
+	 * The goal condition that stops the BFS-like pass
+	 */
 	protected StateConditionTest									goalCondition;
 	
 	
-	
-	public BFSRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int numPasses, int maxDepth){
+	/**
+	 * Initializes the planner.
+	 * @param domain the domain in which to plan
+	 * @param rf the reward function
+	 * @param tf the terminal state function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factor to use
+	 * @param numRollouts the number of rollouts to perform when planning is started.
+	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, VI will terminate.
+	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
+	 */
+	public BFSRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int numRollouts, double maxDelta, int maxDepth){
 		
-		super(domain, rf, tf, gamma, hashingFactory, numPasses, maxDepth);
+		super(domain, rf, tf, gamma, hashingFactory, numRollouts, maxDelta, maxDepth);
 
-		this.dynamicPasses = 1;
 		this.performedInitialPlan = false;
 		this.goalCondition = null;
 
 	}
 	
 	
-	public BFSRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int numPasses, int maxDepth, StateConditionTest goalCondition){
+	
+	/**
+	 * Initializes the planner.
+	 * @param domain the domain in which to plan
+	 * @param rf the reward function
+	 * @param tf the terminal state function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factor to use
+	 * @param numRollouts the number of rollouts to perform when planning is started.
+	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, VI will terminate.
+	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
+	 * @param goalCondition a state condition test that returns true for goal states. Causes the BFS-like pass to stop expanding when found.
+	 */
+	public BFSRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int numRollouts, double maxDelta, int maxDepth, StateConditionTest goalCondition){
 		
-		super(domain, rf, tf, gamma, hashingFactory, numPasses, maxDepth);
+		super(domain, rf, tf, gamma, hashingFactory, numRollouts, maxDelta, maxDepth);
 
-		this.dynamicPasses = 1;
 		this.performedInitialPlan = false;
 		this.goalCondition = goalCondition;
 
 	}
 	
 
-	
+	/**
+	 * Sets the goal state that causes the BFS-like pass to stop expanding when found.
+	 * @param gc
+	 */
 	public void setGoalCondition(StateConditionTest gc){
 		this.goalCondition = gc;
 	}
@@ -70,26 +106,32 @@ public class BFSRTDP extends RTDP {
 			this.performInitialPassFromState(initialState);
 		}
 		else{
-			this.performRolloutPassFromState(initialState);
+			this.performRolloutPassesFromState(initialState);
 		}
 
 	}
 	
 	
+	/**
+	 * Performs a BFS-like pass to either all reachable states or to depth at which a goal state is found and then performs the Bellman update on all those states.
+	 * @param initialState the initial state from which to perform the BFS-like pass.
+	 */
 	protected void performInitialPassFromState(State initialState){
 		
 		List <StateHashTuple> orderedStates = this.performRecahabilityAnalysisFrom(initialState);
-		for(int i = 0; i < numPasses; i++){
-			this.performOrderedVIPass(orderedStates);
-		}
+		this.performOrderedBellmanUpdates(orderedStates);
 		
 		performedInitialPlan = true;
 		
 	}
 	
-	protected void performRolloutPassFromState(State initialState){
+	/**
+	 * Performs the standard RTDP rollout and Bellman updates.
+	 * @param initialState the initial state from which to the perform the rollouts.
+	 */
+	protected void performRolloutPassesFromState(State initialState){
 		
-		for(int i = 0; i < dynamicPasses; i++){
+		for(int i = 0; i < this.numRollouts; i++){
 			
 			EpisodeAnalysis ea = this.rollOutPolicy.evaluateBehavior(initialState, rf, tf, maxDepth);
 			LinkedList <StateHashTuple> orderedStates = new LinkedList<StateHashTuple>();
@@ -97,7 +139,10 @@ public class BFSRTDP extends RTDP {
 				orderedStates.addFirst(this.stateHash(s));
 			}
 			
-			this.performOrderedVIPass(orderedStates);
+			double delta = this.performOrderedBellmanUpdates(orderedStates);
+			if(delta < this.maxDelta){
+				break;
+			}
 		}
 		
 		
@@ -106,7 +151,11 @@ public class BFSRTDP extends RTDP {
 	
 	
 	
-	//this will return a reverse ordered closed list
+	/**
+	 * Finds either all reachable states from si or all states up to the depth that the first goal state is found from si.
+	 * @param si the initial state from which to search for states
+	 * @return the list of all states found
+	 */
 	protected List <StateHashTuple> performRecahabilityAnalysisFrom(State si){
 		
 		DPrint.cl(debugCode, "Starting reachability analysis");
@@ -186,6 +235,12 @@ public class BFSRTDP extends RTDP {
 		return closedList;
 	}
 	
+	
+	/**
+	 * Returns whether a state is a goal state.
+	 * @param s the state to test.
+	 * @return true if s is a goal state; false otherwise.
+	 */
 	protected boolean satisfiesGoal(State s){
 		if(goalCondition == null){
 			return false;

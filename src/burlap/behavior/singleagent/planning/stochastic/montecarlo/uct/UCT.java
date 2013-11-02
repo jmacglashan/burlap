@@ -17,13 +17,21 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 
-
+/**
+ * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.behavior.singleagent.planning.StateConditionTest})
+ * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
+ * <br/>
+ * <br/>
+ * 1. Kocsis, Levente, and Csaba Szepesvari. "Bandit based monte-carlo planning." ECML (2006). 282-293.
+ * 
+ * @author James MacGlashan
+ *
+ */
 public class UCT extends OOMDPPlanner {
 
 	protected List<Map<StateHashTuple, UCTStateNode>> 			stateDepthIndex;
@@ -50,6 +58,17 @@ public class UCT extends OOMDPPlanner {
 	
 	
 	
+	/**
+	 * Initializes UCT
+	 * @param domain the domain in which to plan
+	 * @param rf the reward function to use
+	 * @param tf the terminal function to use
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factory
+	 * @param horizon the planning horizon
+	 * @param nRollouts the number of rollouts to perform 
+	 * @param explorationBias the exploration bias constant (suggested >2)
+	 */
 	public UCT(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
 		stateNodeConstructor = new UCTStateConstructor();
@@ -61,7 +80,7 @@ public class UCT extends OOMDPPlanner {
 		
 	}
 	
-	public void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
+	protected void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
 		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
 		this.maxHorizon = horizon;
@@ -75,10 +94,19 @@ public class UCT extends OOMDPPlanner {
 	}
 	
 	
+	/**
+	 * Returns the root node of the UCT tree.
+	 * @return
+	 */
 	public UCTStateNode getRoot(){
 		return root;
 	}
 	
+	
+	/**
+	 * Tells the planner to stop planning if a goal state is ever found.
+	 * @param gc a {@link burlap.behavior.singleagent.planning.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
+	 */
 	public void useGoalConditionStopCriteria(StateConditionTest gc){
 		this.goalCondition = gc;
 	}
@@ -129,11 +157,21 @@ public class UCT extends OOMDPPlanner {
 
 	}
 	
-	
+	/*
+	 * Initializes data members; should be called before {@link treeRollOut(UCTStateNode, int, int)}
+	 */
 	protected void initializeRollOut(){
 		foundGoalOnRollout = false;
 	}
 	
+	
+	/**
+	 * Performs a rollout in the UCT tree from the given node, keeping track of how many new nodes can be added to the tree.
+	 * @param node the node from which to rollout
+	 * @param depth the depth of the node
+	 * @param childrenLeftToAdd the number of new subsequent nodes that can be connected to the tree
+	 * @return the sample return from rolling out from this node
+	 */
 	public double treeRollOut(UCTStateNode node, int depth, int childrenLeftToAdd){
 		
 		numVisits++;
@@ -158,8 +196,9 @@ public class UCT extends OOMDPPlanner {
 		UCTActionNode anode = this.selectActionNode(node);
 		
 		if(anode == null){
-			//no action to perform!
-			return ((maxHorizon - depth))*-1.; //TODO: this should be generalized to RMIN and return Min
+			//no actions can be performed in this state
+			return 0.;
+			//return ((maxHorizon - depth))*-1.;
 		}
 		
 		
@@ -171,10 +210,6 @@ public class UCT extends OOMDPPlanner {
 		if(!anode.action.action.isPrimitive()){
 			Option o = (Option)anode.action.action;
 			depthChange = o.getLastNumSteps();
-		}
-		
-		if(numRollOutsFromRoot % 100 == 0){
-			//System.out.print(anode.action.toString() + " ");
 		}
 		
 		UCTStateNode snprime = this.queryTreeIndex(shprime, depth+depthChange);
@@ -222,15 +257,18 @@ public class UCT extends OOMDPPlanner {
 			uniqueStatesInTree.add(snprime.state);
 		}
 		
-		if(foundGoalOnRollout && anode != this.bestReturnAction(node)){
-			DPrint.cl(debugCode, "Not propagated correctly...");
-		}
 		
 		return sampledReturn;
 	}
 	
 	
 	
+	/**
+	 * Returns true if rollouts and planning should cease. Planning will stop
+	 * if the planner is told to terminate upon finding a goal and one was found, or if
+	 * the maximum number of rollouts have already been performed.
+	 * @return 
+	 */
 	public boolean stopPlanning(){
 		if(foundGoal){
 			return true;
@@ -249,7 +287,13 @@ public class UCT extends OOMDPPlanner {
 	
 	
 	
-	
+	/**
+	 * Selections which action to take. Unexplored actions from the node are selected first.
+	 * If all actions have been explored, then the action with the highest upper confidence Q-value
+	 * is selected, ties are broken randomly.
+	 * @param snode the UCT node from which to select an action.
+	 * @return the {@link UCTActionNode} to be taken.
+	 */
 	protected UCTActionNode selectActionNode(UCTStateNode snode){
 		
 		List <UCTActionNode> candidates = new ArrayList<UCTActionNode>();
@@ -308,17 +352,35 @@ public class UCT extends OOMDPPlanner {
 	}
 	
 	
+	
+	/**
+	 * Returns the upper confidence Q-value for a given state node and action node.
+	 * @param snode the state node
+	 * @param anode the action node
+	 * @return the upper confidence Q-value
+	 */
 	protected double computeUCTQ(UCTStateNode snode, UCTActionNode anode){
 		return anode.averageReturn() + this.explorationQBoost(snode.n, anode.n);
 	}
 	
 	
+	/**
+	 * Returns the extra value added to the average sample Q-value that is sued to produce the upper confidence Q-value.
+	 * @param ns the number of times the state node has been visited
+	 * @param na the number of times the action node has been visited
+	 * @return the extra value added to the average sample Q-value that is sued to produce the upper confidence Q-value.
+	 */
 	protected double explorationQBoost(int ns, int na){
 		return explorationBias * Math.sqrt(Math.log(ns) / (double)na);
 	}
 	
 	
-	
+	/**
+	 * Returns the {@link UCTStateNode} for the given (hashed) state at the given depth.
+	 * @param sh the state whose node should be returned
+	 * @param d the depth of the state
+	 * @return the corresponding {@link UCTStateNode}
+	 */
 	protected UCTStateNode queryTreeIndex(StateHashTuple sh, int d){
 		
 		if(d >= stateDepthIndex.size()){
@@ -329,6 +391,10 @@ public class UCT extends OOMDPPlanner {
 		
 	}
 	
+	/**
+	 * Adds a {@link UCTStateNode} to the UCT tree
+	 * @param snode the {@link UCTStateNode} to add
+	 */
 	protected void addNodeToIndexTree(UCTStateNode snode){
 		
 		while(stateDepthIndex.size() <= snode.depth){
@@ -350,6 +416,11 @@ public class UCT extends OOMDPPlanner {
 	}
 	
 	
+	/**
+	 * Returns the {@link UCTActionNode} with the highest average sample Q-value. Ties are broken by returning the first {@link UCTActionNode} with the highest value. 
+	 * @param snode the {@link UCTStateNode} to query
+	 * @return the {@link UCTActionNode} with the highest average sample Q-value
+	 */
 	protected UCTActionNode bestReturnAction(UCTStateNode snode){
 		
 		double maxQ = Double.NEGATIVE_INFINITY;
@@ -369,6 +440,12 @@ public class UCT extends OOMDPPlanner {
 		
 	}
 	
+	
+	/**
+	 * Returns true if the sample returns for any actions are different
+	 * @param snode the node to check for an action preference
+	 * @return true if the sample returns for any actions are different; false otherwise or if there is only one action to take.
+	 */
 	protected boolean containsActionPreference(UCTStateNode snode){
 		
 		
