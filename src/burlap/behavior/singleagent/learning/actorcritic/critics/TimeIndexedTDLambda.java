@@ -2,13 +2,11 @@ package burlap.behavior.singleagent.learning.actorcritic.critics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
-import burlap.behavior.singleagent.learning.actorcritic.critics.TDLambda.StateEligibilityTrace;
-import burlap.behavior.singleagent.learning.actorcritic.critics.TDLambda.VValue;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -32,6 +30,14 @@ public class TimeIndexedTDLambda extends TDLambda {
 	}
 	
 	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, double vinit, double lambda, int maxEpisodeSize) {
+		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
+		
+		this.maxEpisodeSize = maxEpisodeSize;
+		this.vTIndex = new ArrayList<Map<StateHashTuple,VValue>>();
+		
+	}
+	
+	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda, int maxEpisodeSize) {
 		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
 		
 		this.maxEpisodeSize = maxEpisodeSize;
@@ -114,7 +120,7 @@ public class TimeIndexedTDLambda extends TDLambda {
 		
 		VValue v = timeMap.get(sh);
 		if(v == null){
-			v = new VValue(vinit);
+			v = new VValue(this.vInitFunction.value(sh.s));
 			timeMap.put(sh, v);
 		}
 		return v;

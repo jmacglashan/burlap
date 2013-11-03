@@ -2,17 +2,14 @@ package burlap.behavior.singleagent.planning.stochastic.rtdp;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.BoltzmannQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -160,8 +157,8 @@ public class RTDP extends ValueFunctionPlanner {
 				continue;
 			}
 			
-			Double V = valueFunction.get(sh);
-			double v = V == null ? 0. : V;
+			
+			double v = this.value(sh);
 			
 			double maxQ = this.performBellmanUpdateOn(sh);
 			delta = Math.max(Math.abs(maxQ - v), delta);

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
+import burlap.behavior.ValueFunctionInitialization;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
@@ -17,7 +18,6 @@ import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -29,7 +29,7 @@ import burlap.oomdp.singleagent.RewardFunction;
 public class QLearning extends OOMDPPlanner implements QComputablePlanner, LearningAgent{
 
 	protected Map<StateHashTuple, QLearningStateNode>				qIndex;
-	protected double												qInit;
+	protected ValueFunctionInitialization							qInitFunction;
 	protected double												learningRate;
 	protected Policy												learningPolicy;
 	
@@ -52,29 +52,34 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	
 	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			double qInit, double learningRate) {
-		this.QLInit(domain, rf, tf, gamma, hashingFactory, qInit, learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE);
+		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE);
 	}
 	
 	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			double qInit, double learningRate, int maxEpisodeSize) {
-		this.QLInit(domain, rf, tf, gamma, hashingFactory, qInit, learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize);
+		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize);
 	}
 	
 	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
+		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, learningPolicy, maxEpisodeSize);
+	}
+	
+	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
 		this.QLInit(domain, rf, tf, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
 	}
 	
 	
 	public void QLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
-			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize){
+			ValueFunctionInitialization qInitFunction, double learningRate, Policy learningPolicy, int maxEpisodeSize){
 		
 		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
 		this.qIndex = new HashMap<StateHashTuple, QLearningStateNode>();
 		this.learningRate = learningRate;
 		this.learningPolicy = learningPolicy;
 		this.maxEpisodeSize = maxEpisodeSize;
-		this.qInit = qInit;
+		this.qInitFunction = qInitFunction;
 		
 		numEpisodesToStore = 1;
 		episodeHistory = new LinkedList<EpisodeAnalysis>();
@@ -85,6 +90,10 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		
 	}
 	
+	
+	public void setQInitFunction(ValueFunctionInitialization qInit){
+		this.qInitFunction = qInit;
+	}
 	
 	public void setLearningPolicy(Policy p){
 		this.learningPolicy = p;
@@ -206,7 +215,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 				throw new RuntimeErrorException(new Error("No possible actions in this state, cannot continue Q-learning"));
 			}
 			for(GroundedAction ga : gas){
-				node.addQValue(ga, qInit);
+				node.addQValue(ga, qInitFunction.qValue(s.s, ga));
 			}
 			
 			qIndex.put(s, node);

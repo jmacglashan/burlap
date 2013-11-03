@@ -112,8 +112,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 					
 				}
 				
-				Double V = valueFunction.get(sh);
-				double v = V == null ? 0. : V;
+				double v = this.value(sh);
 				
 				double maxQ = this.performBellmanUpdateOn(sh);
 				delta = Math.max(Math.abs(maxQ - v), delta);

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import burlap.behavior.ValueFunctionInitialization;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -28,12 +29,24 @@ import burlap.oomdp.singleagent.RewardFunction;
  */
 public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComputablePlanner{
 
-	
+	/**
+	 * A data structure for storing the hashed transition dynamics from each state.
+	 */
 	protected Map <StateHashTuple, List<ActionTransitions>>			transitionDynamics;
+	
+	/**
+	 * A map for storing the current value function estimate for each state.
+	 */
 	protected Map <StateHashTuple, Double>							valueFunction;
 	
-
 	
+	/**
+	 * The value function initialization to use; defaulted to an initialization of 0 everywhere.
+	 */
+	protected ValueFunctionInitialization							valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization();
+	
+
+	@Override
 	public abstract void planFromState(State initialState);
 	
 	
@@ -60,15 +73,27 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	
 	/**
-	 * Returns the value function evaluation of the given state.
+	 * Returns the value function evaluation of the given state. If the value is not stored, then the default value
+	 * specified by the ValueFunctionInitialization object of this class is returned.
 	 * @param s the state to evaluate.
 	 * @return the value function evaluation of the given state.
 	 */
 	public double value(State s){
 		StateHashTuple sh = this.hashingFactory.hashState(s);
-		return valueFunction.get(sh);
+		return this.value(sh);
 	}
 	
+	/**
+	 * Returns the value function evaluation of the given hashed state. If the value is not stored, then the default value
+	 * specified by the ValueFunctionInitialization object of this class is returned.
+	 * @param s the hashed state to evaluate.
+	 * @return the value function evaluation of the given state.
+	 */
+	public double value(StateHashTuple sh){
+		Double V = valueFunction.get(sh);
+		double v = V == null ? this.getDefaultValue(sh.s) : V;
+		return v;
+	}
 	
 	@Override
 	public List <QValue> getQs(State s){
@@ -242,7 +267,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			
 			for(HashedTransitionProbability tp : trans.transitions){
 				
-				double vp = this.getComputedVForSH(tp.sh);
+				double vp = this.value(tp.sh);
 				
 				//note that for options, tp.p will be the *discounted* probability of transition to s',
 				//so there is not need for a discount factor to be included
@@ -255,7 +280,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			
 			for(HashedTransitionProbability tp : trans.transitions){
 				
-				double vp = this.getComputedVForSH(tp.sh);
+				double vp = this.value(tp.sh);
 				
 				double discount = this.gamma;
 				double r = rf.reward(s, trans.ga, tp.sh.s);
@@ -275,22 +300,10 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 * @return the default V-value in double form.
 	 */
 	protected double getDefaultValue(State s){
-		return 0.;
+		return this.valueInitializer.value(s);
 	}
 	
 	
-	/**
-	 * Returns the pre-computed V-value for a given hashed state. If non exists, the default value is returned.
-	 * @param s the hashed input state to get the V-value for
-	 * @return the pre-computed V-value in double form
-	 */
-	protected double getComputedVForSH(StateHashTuple sh){
-		Double res = valueFunction.get(sh);
-		if(res == null){
-			return this.getDefaultValue(sh.s);
-		}
-		return res;
-	}
 	
 	
 	

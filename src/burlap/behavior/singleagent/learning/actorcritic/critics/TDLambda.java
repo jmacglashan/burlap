@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import burlap.behavior.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
@@ -24,7 +25,7 @@ public class TDLambda implements Critic {
 	protected double								gamma;
 	protected StateHashFactory						hashingFactory;
 	protected double								learningRate;
-	protected double								vinit;
+	protected ValueFunctionInitialization			vInitFunction;
 	protected double								lambda;
 	
 	
@@ -39,7 +40,21 @@ public class TDLambda implements Critic {
 		this.hashingFactory = hashingFactory;
 		
 		this.learningRate = learningRate;
-		this.vinit = vinit;
+		vInitFunction = new ValueFunctionInitialization.ConstantValueFunctionInitialization(vinit);
+		this.lambda = lambda;
+		
+		
+		vIndex = new HashMap<StateHashTuple, VValue>();
+	}
+	
+	public TDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda) {
+		this.rf = rf;
+		this.tf = tf;
+		this.gamma = gamma;
+		this.hashingFactory = hashingFactory;
+		
+		this.learningRate = learningRate;
+		vInitFunction = vinit;
 		this.lambda = lambda;
 		
 		
@@ -123,7 +138,7 @@ public class TDLambda implements Critic {
 	protected VValue getV(StateHashTuple sh){
 		VValue v = this.vIndex.get(sh);
 		if(v == null){
-			v = new VValue(vinit);
+			v = new VValue(this.vInitFunction.value(sh.s));
 			this.vIndex.put(sh, v);
 		}
 		return v;
