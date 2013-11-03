@@ -23,6 +23,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * Although these planners do not strictly compute policies, but instead action sequences, it also stores an internal partial policy
  * that specifies which action to take in each state that is on the path of a plan it has previously found. If the same
  * planner is used multiple times from different initial states (but same goal condition) it will progressively fill out the policy.
+ * If the planner fails to find a valid plan, it will throw a {@link PlanningFailedException} runtime exception.
  * @author James MacGlashan
  *
  */
