@@ -5,10 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * A {@link ColorBlend} instance that takes as input a set of "landmark" {@link java.awt.Color} objects and corresponding values between them.
+ * For a given value, it interpolates between the two landmarks values than lower bound and upper bound the input. The interpolation is by default
+ * linear. However, it can also be specified to first find the normalized distance between the bounding landmark values and raise it to a power, which
+ * may produce more obvious perceptual changes to small changes in value.
+ * @author James MacGlashan
+ *
+ */
 public class LandmarkColorBlendInterpolation implements ColorBlend {
 
+	/**
+	 * The value position of each landmark
+	 */
 	protected List <Double>			landmarkValues;
+	
+	/**
+	 * The landmark colors
+	 */
 	protected List <Color>			landmarkColors;
+	
+	/**
+	 * The power to raise the normalized distance
+	 */
 	protected double				polyDegree = 1.;
 	
 	
@@ -17,16 +36,28 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 		this.landmarkColors = new ArrayList<Color>();
 	}
 	
+	/**
+	 * Initializes the color blend with a power to raise the normalized distance of values.
+	 * @param polyDegree
+	 */
 	public LandmarkColorBlendInterpolation(double polyDegree) {
 		this.landmarkValues = new ArrayList<Double>();
 		this.landmarkColors = new ArrayList<Color>();
 		this.polyDegree = polyDegree;
 	}
 	
+	/**
+	 * Sets the color blend to raise the normalized distance of values to the given degree.
+	 * @param polyDegree the power to raise the normalized distance
+	 */
 	public void setPolynomialDegree(double polyDegree){
 		this.polyDegree = polyDegree;
 	}
 	
+	/**
+	 * Returns the power to raise the normalized distance
+	 * @return
+	 */
 	public double getPolynomialDegree(){
 		return this.polyDegree;
 	}
@@ -109,6 +140,13 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 	}
 	
 	
+	/**
+	 * Returns the point that is a normalized distance t between s and e
+	 * @param s the start value
+	 * @param e the end value
+	 * @param t the normalized distance between s and e
+	 * @return the point that is a normalized distance t between s and e
+	 */
 	protected float interpolate(float s, float e, float t){
 		float range = e - s;
 		return s + t*range;

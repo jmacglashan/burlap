@@ -9,23 +9,70 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
+
+/**
+ * A class for rendering the value of states as colored 2D cells on the canvas.
+ * @author James MacGlashan
+ *
+ */
 public class StateValuePainter2D extends StateValuePainter {
 
 	
-	protected String				xAttName;
-	protected String				yAttName;
+	/**
+	 * The name of the attribute that is used for determining the x-position on the canvas
+	 */
+	protected String							xAttName;
 	
-	protected String				xClassName;
-	protected String				yClassName;
+	/**
+	 * The name of the attribute that is used for determining the y-position on the canvas
+	 */
+	protected String							yAttName;
 	
-	protected String				xObjectName;
-	protected String				yObjectName;
 	
-	protected ColorBlend			colorBlend;
+	/**
+	 * The name of the class that holds the x-attribute used for determining the x-posiition on the canvas
+	 */
+	protected String							xClassName;
 	
-	protected int					numXCells = -1;
-	protected int					numYCells = -1;
+	/**
+	 * The name of the class that holds the y-attribute used for determining the y-posiition on the canvas
+	 */
+	protected String							yClassName;
 	
+	
+	/**
+	 * The name of the object that holds the x-attribute used for determining the x-posiition on the canvas
+	 */
+	protected String							xObjectName;
+	
+	/**
+	 * The name of the object that holds the y-attribute used for determining the y-posiition on the canvas
+	 */
+	protected String							yObjectName;
+	
+	
+	/**
+	 * The object to use for returning the color with which to fill the state cell given its value.
+	 */
+	protected ColorBlend						colorBlend;
+	
+	/**
+	 * Option used for specifying the number of possible states that will be rendered in a row (i.e., across the x-axis). -1 causes the
+	 * attribute categorical size to be used instead.
+	 */
+	protected int								numXCells = -1;
+	
+	/**
+	 * Option used for specifying the number of possible states that will be rendered in a column (i.e., across the y-axis). -1 causes the
+	 * attribute categorical size to be used instead.
+	 */
+	protected int								numYCells = -1;
+	
+	
+	/**
+	 * Initializes the value painter.
+	 * @param colorBlend the object to use for returning the color with which to fill the state cell given its value.
+	 */
 	public StateValuePainter2D(ColorBlend colorBlend){
 		this.colorBlend = colorBlend;
 	}
@@ -69,11 +116,21 @@ public class StateValuePainter2D extends StateValuePainter {
 	}
 
 	
+	
+	/**
+	 * Sets the number of states that will be rendered along a row
+	 * @param numXCells the number of states that will be rendered along a row
+	 */
 	public void setNumXCells(int numXCells) {
 		this.numXCells = numXCells;
 	}
 
 
+	
+	/**
+	 * Sets the number of states that will be rendered along a row
+	 * @param numYCells the number of states that will be rendered along a column
+	 */
 	public void setNumYCells(int numYCells) {
 		this.numYCells = numYCells;
 	}
@@ -142,6 +199,11 @@ public class StateValuePainter2D extends StateValuePainter {
 	}
 	
 	
+	/**
+	 * Returns the object instance in a state that holds the x-position information.
+	 * @param s the state for which to get the x-position
+	 * @return the object instance in a state that holds the x-position information.
+	 */
 	protected ObjectInstance xObjectInstance(State s){
 		if(this.xClassName != null){
 			return s.getFirstObjectOfClass(xClassName);
@@ -149,6 +211,12 @@ public class StateValuePainter2D extends StateValuePainter {
 		return s.getObject(xObjectName);
 	}
 	
+	
+	/**
+	 * Returns the object instance in a state that holds the y-position information.
+	 * @param s the state for which to get the y-position
+	 * @return the object instance in a state that holds the y-position information.
+	 */
 	protected ObjectInstance yObjectInstance(State s){
 		if(this.yClassName != null){
 			return s.getFirstObjectOfClass(yClassName);
