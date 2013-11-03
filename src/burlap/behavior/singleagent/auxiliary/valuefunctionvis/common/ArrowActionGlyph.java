@@ -9,9 +9,22 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
+
+/**
+ * An instance of the {@link ActionGlyphPainter} that will render arrows to the graphics context.
+ * @author James MacGlashan
+ *
+ */
 public class ArrowActionGlyph implements ActionGlyphPainter {
 
+	/**
+	 * The direction of the arrow.0: north; 1: south; 2: east; 3:west
+	 */
 	protected int			direction;
+	
+	/**
+	 * The color of the arrow
+	 */
 	protected Color			fillColor = Color.BLACK;
 	
 	
