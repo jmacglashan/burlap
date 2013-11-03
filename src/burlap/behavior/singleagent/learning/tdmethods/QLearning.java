@@ -7,10 +7,10 @@ import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
-import burlap.behavior.ValueFunctionInitialization;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
+import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
