@@ -1,13 +1,13 @@
-package burlap.oomdp.stocashticgames.common;
+package burlap.oomdp.stochasticgames.common;
 
-import burlap.oomdp.stocashticgames.Agent;
-import burlap.oomdp.stocashticgames.AgentFactory;
-import burlap.oomdp.stocashticgames.JointReward;
+import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.AgentFactory;
+import burlap.oomdp.stochasticgames.JointReward;
 
 /**
  * An agent generating factory that will produce an agent that uses an internal subjective reward function.
  * This can be useful for agents that use reward shaping. The base agent is first generated using
- * a different {@link burlap.oomdp.stocashticgames.AgentFactory} and the returned agent from
+ * a different {@link burlap.oomdp.stochasticgames.AgentFactory} and the returned agent from
  * that provided agent has its internal reward function set to the one specified for use
  * in this factory. The agent is then returned by this factory.
  * @author James MacGlashan

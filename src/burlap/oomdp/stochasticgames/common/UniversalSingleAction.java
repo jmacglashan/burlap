@@ -1,8 +1,8 @@
-package burlap.oomdp.stocashticgames.common;
+package burlap.oomdp.stochasticgames.common;
 
 import burlap.oomdp.core.State;
-import burlap.oomdp.stocashticgames.SGDomain;
-import burlap.oomdp.stocashticgames.SingleAction;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SingleAction;
 
 
 /**

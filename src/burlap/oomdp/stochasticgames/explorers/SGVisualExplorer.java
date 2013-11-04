@@ -1,4 +1,4 @@
-package burlap.oomdp.stocashticgames.explorers;
+package burlap.oomdp.stochasticgames.explorers;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -16,11 +16,11 @@ import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
 import burlap.oomdp.singleagent.explorer.StateResetSpecialAction;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
-import burlap.oomdp.stocashticgames.JointAction;
-import burlap.oomdp.stocashticgames.JointActionModel;
-import burlap.oomdp.stocashticgames.SGDomain;
-import burlap.oomdp.stocashticgames.SingleAction;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SingleAction;
 import burlap.oomdp.visualizer.Visualizer;
 
 

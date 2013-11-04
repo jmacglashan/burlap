@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgame;
 import java.util.List;
 
 import burlap.oomdp.core.State;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
 
 
 public abstract class Strategy {

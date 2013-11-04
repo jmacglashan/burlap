@@ -1,4 +1,4 @@
-package burlap.oomdp.stocashticgames.tournament;
+package burlap.oomdp.stochasticgames.tournament;
 
 import java.util.List;
 

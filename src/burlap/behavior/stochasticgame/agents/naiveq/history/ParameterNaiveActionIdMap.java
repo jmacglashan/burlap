@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
-import burlap.oomdp.stocashticgames.SingleAction;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.SingleAction;
 
 public class ParameterNaiveActionIdMap implements ActionIdMap {
 

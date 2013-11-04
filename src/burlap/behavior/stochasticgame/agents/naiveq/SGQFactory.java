@@ -2,9 +2,9 @@ package burlap.behavior.stochasticgame.agents.naiveq;
 
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.auxiliary.StateAbstraction;
-import burlap.oomdp.stocashticgames.Agent;
-import burlap.oomdp.stocashticgames.AgentFactory;
-import burlap.oomdp.stocashticgames.SGDomain;
+import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.AgentFactory;
+import burlap.oomdp.stochasticgames.SGDomain;
 
 public class SGQFactory implements AgentFactory {
 

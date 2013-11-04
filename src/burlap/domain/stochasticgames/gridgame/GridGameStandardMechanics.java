@@ -12,9 +12,9 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
-import burlap.oomdp.stocashticgames.JointAction;
-import burlap.oomdp.stocashticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.JointActionModel;
 
 
 public class GridGameStandardMechanics extends JointActionModel {

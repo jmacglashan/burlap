@@ -1,14 +1,14 @@
-package burlap.oomdp.stocashticgames.tournament.common;
+package burlap.oomdp.stochasticgames.tournament.common;
 
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.stocashticgames.JointActionModel;
-import burlap.oomdp.stocashticgames.JointReward;
-import burlap.oomdp.stocashticgames.SGDomain;
-import burlap.oomdp.stocashticgames.SGStateGenerator;
-import burlap.oomdp.stocashticgames.World;
-import burlap.oomdp.stocashticgames.WorldGenerator;
+import burlap.oomdp.stochasticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.JointReward;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SGStateGenerator;
+import burlap.oomdp.stochasticgames.World;
+import burlap.oomdp.stochasticgames.WorldGenerator;
 
 
 /**

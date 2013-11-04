@@ -1,12 +1,12 @@
-package burlap.oomdp.stocashticgames.common;
+package burlap.oomdp.stochasticgames.common;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.stocashticgames.JointAction;
-import burlap.oomdp.stocashticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.JointActionModel;
 
 
 /**

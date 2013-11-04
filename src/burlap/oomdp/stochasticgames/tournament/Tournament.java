@@ -1,4 +1,4 @@
-package burlap.oomdp.stocashticgames.tournament;
+package burlap.oomdp.stochasticgames.tournament;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +8,10 @@ import java.util.Map;
 
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.stocashticgames.Agent;
-import burlap.oomdp.stocashticgames.AgentFactory;
-import burlap.oomdp.stocashticgames.World;
-import burlap.oomdp.stocashticgames.WorldGenerator;
+import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.AgentFactory;
+import burlap.oomdp.stochasticgames.World;
+import burlap.oomdp.stochasticgames.WorldGenerator;
 
 
 /**
@@ -19,7 +19,7 @@ import burlap.oomdp.stocashticgames.WorldGenerator;
  * whose performance is going to be compared in games in which only a subset of the agents can participate at a time, for instance
  * running a tournament of many agents in 2-player games like iterated prisoner's dilemma. The Tournament class requires
  * a list of agents, a world generator and a match selector. The MatchSelector determines which agents will be matched up
- * in a game, which {@link burlap.oomdp.stocashticgames.AgentType} role they will play as and how many matches there will be.
+ * in a game, which {@link burlap.oomdp.stochasticgames.AgentType} role they will play as and how many matches there will be.
  * @author James MacGlashan
  *
  */

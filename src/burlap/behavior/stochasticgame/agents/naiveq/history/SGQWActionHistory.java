@@ -15,10 +15,10 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
-import burlap.oomdp.stocashticgames.Agent;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
-import burlap.oomdp.stocashticgames.JointAction;
-import burlap.oomdp.stocashticgames.SGDomain;
+import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.SGDomain;
 
 public class SGQWActionHistory extends SGQLAgent {
 

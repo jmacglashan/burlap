@@ -4,7 +4,7 @@ package burlap.oomdp.core;
 import java.util.*;
 
 import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.stocashticgames.SingleAction;
+import burlap.oomdp.stochasticgames.SingleAction;
 
 
 /**

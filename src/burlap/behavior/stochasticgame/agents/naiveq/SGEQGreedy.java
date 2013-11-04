@@ -7,9 +7,9 @@ import java.util.Random;
 import burlap.behavior.stochasticgame.Strategy;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.State;
-import burlap.oomdp.stocashticgames.AgentType;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
-import burlap.oomdp.stocashticgames.SingleAction;
+import burlap.oomdp.stochasticgames.AgentType;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.SingleAction;
 
 
 public class SGEQGreedy extends Strategy {

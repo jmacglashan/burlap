@@ -12,12 +12,12 @@ import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
-import burlap.oomdp.stocashticgames.Agent;
-import burlap.oomdp.stocashticgames.AgentType;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
-import burlap.oomdp.stocashticgames.JointAction;
-import burlap.oomdp.stocashticgames.SGDomain;
-import burlap.oomdp.stocashticgames.SingleAction;
+import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.AgentType;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SingleAction;
 
 
 public class SGQLAgent extends Agent {

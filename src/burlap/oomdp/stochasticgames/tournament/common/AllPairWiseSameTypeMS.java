@@ -1,11 +1,11 @@
-package burlap.oomdp.stocashticgames.tournament.common;
+package burlap.oomdp.stochasticgames.tournament.common;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.stocashticgames.AgentType;
-import burlap.oomdp.stocashticgames.tournament.MatchEntry;
-import burlap.oomdp.stocashticgames.tournament.MatchSelector;
+import burlap.oomdp.stochasticgames.AgentType;
+import burlap.oomdp.stochasticgames.tournament.MatchEntry;
+import burlap.oomdp.stochasticgames.tournament.MatchSelector;
 
 
 /**

@@ -1,4 +1,4 @@
-package burlap.oomdp.stocashticgames.explorers;
+package burlap.oomdp.stochasticgames.explorers;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.State;
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
-import burlap.oomdp.stocashticgames.JointAction;
-import burlap.oomdp.stocashticgames.JointActionModel;
-import burlap.oomdp.stocashticgames.JointReward;
-import burlap.oomdp.stocashticgames.SGDomain;
-import burlap.oomdp.stocashticgames.SingleAction;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.JointReward;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SingleAction;
 
 
 

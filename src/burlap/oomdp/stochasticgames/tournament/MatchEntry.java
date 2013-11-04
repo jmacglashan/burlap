@@ -1,6 +1,6 @@
-package burlap.oomdp.stocashticgames.tournament;
+package burlap.oomdp.stochasticgames.tournament;
 
-import burlap.oomdp.stocashticgames.AgentType;
+import burlap.oomdp.stochasticgames.AgentType;
 
 /**
  * This class indicates which player in a tournament is to play in a match and what {@link burlap.oomdp.stochasticgames.AgentType} role they will play.

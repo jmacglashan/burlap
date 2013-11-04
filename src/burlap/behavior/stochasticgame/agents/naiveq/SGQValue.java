@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgame.agents.naiveq;
 
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
 
 public class SGQValue {
 

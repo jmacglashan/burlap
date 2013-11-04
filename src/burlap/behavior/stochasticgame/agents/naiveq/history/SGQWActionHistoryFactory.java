@@ -1,9 +1,9 @@
 package burlap.behavior.stochasticgame.agents.naiveq.history;
 
 import burlap.behavior.statehashing.StateHashFactory;
-import burlap.oomdp.stocashticgames.Agent;
-import burlap.oomdp.stocashticgames.AgentFactory;
-import burlap.oomdp.stocashticgames.SGDomain;
+import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.AgentFactory;
+import burlap.oomdp.stochasticgames.SGDomain;
 
 public class SGQWActionHistoryFactory implements AgentFactory {
 

@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgame.agents.naiveq.history;
 
-import burlap.oomdp.stocashticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
 
 public interface ActionIdMap {
 	public int getActionId(GroundedSingleAction gsa);

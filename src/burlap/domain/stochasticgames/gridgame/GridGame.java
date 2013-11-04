@@ -9,11 +9,11 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.stocashticgames.JointActionModel;
-import burlap.oomdp.stocashticgames.SGDomain;
-import burlap.oomdp.stocashticgames.SingleAction;
-import burlap.oomdp.stocashticgames.common.UniversalSingleAction;
-import burlap.oomdp.stocashticgames.explorers.SGVisualExplorer;
+import burlap.oomdp.stochasticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SingleAction;
+import burlap.oomdp.stochasticgames.common.UniversalSingleAction;
+import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
 
