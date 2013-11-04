@@ -14,7 +14,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * is guaranteed to be at most \epsilon times the optimal solution cost.
  * 
  * 
- * 1. Pohl, Ira (1970). "First results on the effect of error in heuristic search". Machine Intelligence 5: 219Ð236.
+ * 1. Pohl, Ira (1970). "First results on the effect of error in heuristic search". Machine Intelligence 5: 219-236.
  * 
  * @author James MacGlashan
  *

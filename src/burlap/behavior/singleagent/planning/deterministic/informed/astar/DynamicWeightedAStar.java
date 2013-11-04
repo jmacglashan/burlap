@@ -31,7 +31,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * greedy as the search continues, which allows it to find a decent solution quickly but avoid returning extremely sub-optimal solutions.
  * 
  * 1. Pohl, Ira (August, 1973). "The avoidance of (relative) catastrophe, heuristic competence, genuine dynamic weighting and computational issues in heuristic problem solving". 
- * Proceedings of the Third International Joint Conference on Artificial Intelligence (IJCAI-73) 3. California, USA. pp. 11Ð17.
+ * Proceedings of the Third International Joint Conference on Artificial Intelligence (IJCAI-73) 3. California, USA. pp. 11-17.
  * 
  * 
  * @author James MacGlashan
