@@ -11,22 +11,15 @@ import java.util.Set;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.Policy.ActionProb;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.tdmethods.QLearningStateNode;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
 import burlap.behavior.singleagent.vfa.ActionApproximationResult;
-import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.ApproximationResult;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.FunctionWeight;
 import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.WeightGradient;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -35,37 +28,120 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 
+
+/**
+ * Gradient Descent SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. This implementation will work
+ * with both linear and non-linear value function approximations by using the gradient value provided to it through the 
+ * {@link burlap.behavior.singleagent.vfa.ValueFunctionApproximation} interface provided. <p/>The implementation can either be used for learning or planning,
+ * the latter of which is performed by running many learning episodes in succession. The number of episodes used for planning can be determined
+ * by a threshold maximum number of episodes, or by a maximum change in the VFA weight threshold.
+ * @author James MacGlashan
+ * 
+ * <p/>
+ * 1. Rummery, Gavin A., and Mahesan Niranjan. On-line Q-learning using connectionist systems. University of Cambridge, Department of Engineering, 1994. <br/>
+ * 2. 2. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
+ *
+ */
 public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputablePlanner, LearningAgent {
 	
 	
+	/**
+	 * The object that performs value function approximation
+	 */
 	protected ValueFunctionApproximation							vfa;
+	
+	/**
+	 * A constant learning rate parameter
+	 */
 	protected double												learningRate;
+	
+	/**
+	 * The learning policy to use. Typically these will be policies that link back to this object so that they change as the Q-value estimate change.
+	 */
 	protected Policy												learningPolicy;
+	
+	/**
+	 * the strength of eligibility traces (0 for one step, 1 for full propagation)
+	 */
 	protected double												lambda;
 	
+	
+	/**
+	 * The maximum number of steps that will be taken in an episode before the agent terminates a learning episode
+	 */
 	protected int													maxEpisodeSize;
+	
+	/**
+	 * A counter for counting the number of steps in an episode that have been taken thus far
+	 */
 	protected int													eStepCounter;
 	
-	
+	/**
+	 * The maximum number of episodes to use for planning
+	 */
 	protected int													numEpisodesForPlanning;
+	
+	/**
+	 * The maximum allowable change in the VFA weights during an episode before the planning method terminates.
+	 */
 	protected double												maxWeightChangeForPlanningTermination;
+	
+	/**
+	 * The maximum VFA weight change that occurred in the last learning episode.
+	 */
 	protected double												maxWeightChangeInLastEpisode;
 	
+	
+	/**
+	 * The minimum eligibility value of a trace that will cause it to be updated
+	 */
 	protected double												minEligibityForUpdate = 0.01;
 	
+	
+	/**
+	 * the saved previous learning episodes
+	 */
 	protected LinkedList<EpisodeAnalysis>							episodeHistory;
+	
+	/**
+	 * The number of the most recent learning episodes to store.
+	 */
 	protected int													numEpisodesToStore;
 	
+	
+	/**
+	 * Whether to use accumulating or replacing eligibility traces.
+	 */
 	protected boolean												useReplacingTraces = false;
 	
+	/**
+	 * Whether options should be decomposed into actions in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 */
 	protected boolean												shouldDecomposeOptions = true;
+	
+	
+	/**
+	 * Whether decomposed options should have their primitive actions annotated with the options name in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 */
 	protected boolean												shouldAnnotateOptions = true;
 	
 	
 	
 	
 	
-
+	/**
+	 * Initializes SARSA(\lambda) with 0.1 epsilon greedy policy and places no limit on the number of steps the 
+	 * agent can take in an episode. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param ValueFunctionApproximation the value function approximation method to use for estimate Q-values
+	 * @param learningRate the learning rate
+	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
+	 */
 	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
 			double learningRate, double lamda) {
 		
@@ -73,6 +149,20 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		
 	}
 	
+	
+	/**
+	 * Initializes SARSA(\lambda) with 0.1 epsilon greedy policy. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param ValueFunctionApproximation the value function approximation method to use for estimate Q-values
+	 * @param learningRate the learning rate
+	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
+	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
+	 */
 	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
 			double learningRate, int maxEpisodeSize, double lamda) {
 		
@@ -80,6 +170,21 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		
 	}
 	
+	
+	/**
+	 * Initializes SARSA(\lambda) By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param ValueFunctionApproximation the value function approximation method to use for estimate Q-values
+	 * @param learningRate the learning rate
+	 * @param learningPolicy the learning policy to follow during a learning episode.
+	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
+	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
+	 */
 	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lamda) {
 	
@@ -87,6 +192,20 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	}
 
 	
+	/**
+	 * Initializes SARSA(\lambda) By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param ValueFunctionApproximation the value function approximation method to use for estimate Q-values
+	 * @param learningRate the learning rate
+	 * @param learningPolicy the learning policy to follow during a learning episode.
+	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
+	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
+	 */
 	protected void GDSLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lamda){
 		
@@ -107,12 +226,21 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	}
 	
 	
+	
+	/**
+	 * Sets which policy this agent should use for learning.
+	 * @param p the policy to use for learning.
+	 */
 	public void setLearningPolicy(Policy p){
 		this.learningPolicy = p;
 	}
 	
 	
-	public void setMaxEpisodesForPlanning(int n){
+	/**
+	 * Sets the maximum number of episodes that will be performed when the {@link planFromState(State)} method is called.
+	 * @param n the maximum number of episodes that will be performed when the {@link planFromState(State)} method is called.
+	 */
+	public void setMaximumEpisodesForPlanning(int n){
 		if(n > 0){
 			this.numEpisodesForPlanning = n;
 		}
@@ -121,7 +249,13 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		}
 	}
 	
-	public void setMaxQChangeForPlanningTerminaiton(double m){
+	
+	/**
+	 * Sets a max change in the VFA weight threshold that will cause the {@link planFromState(State)} to stop planning
+	 * when it is achieved.
+	 * @param m the maximum allowable change in the VFA weights before planning stops
+	 */
+	public void setMaxVFAWeightChangeForPlanningTerminaiton(double m){
 		if(m > 0.){
 			this.maxWeightChangeForPlanningTermination = m;
 		}
@@ -130,10 +264,20 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		}
 	}
 	
+	
+	/**
+	 * Returns the number of steps taken in the last episode;
+	 * @return the number of steps taken in the last episode;
+	 */
 	public int getLastNumSteps(){
 		return eStepCounter;
 	}
 	
+	
+	/**
+	 * Sets whether to use replacing eligibility traces rather than accumulating traces.
+	 * @param toggle
+	 */
 	public void setUseReplaceTraces(boolean toggle){
 		this.useReplacingTraces = toggle;
 	}
@@ -366,6 +510,13 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	}
 	
 	
+	/**
+	 * Creates a Q-value object in which the Q-value is determined from VFA.
+	 * @param results the VFA prediction results for each action.
+	 * @param s the state of the Q-value
+	 * @param ga the action taken
+	 * @return a Q-value object in which the Q-value is determined from VFA.
+	 */
 	protected QValue getQFromFeaturesFor(List<ActionApproximationResult> results, State s, GroundedAction ga){
 		
 		ActionApproximationResult result = ActionApproximationResult.extractApproximationForAction(results, ga);
@@ -374,11 +525,24 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		return q;
 	}
 	
+	
+	/**
+	 * Gets all Q-value VFA results for each action for a given state
+	 * @param s the state for which the Q-Value VFA results should be returned.
+	 * @return all Q-value VFA results for each action for a given state
+	 */
 	protected List <ActionApproximationResult> getAllActionApproximations(State s){
 		List<GroundedAction> gas = this.getAllGroundedActions(s);
 		return this.vfa.getStateActionValues(s, gas);
 	}
 	
+	
+	/**
+	 * Returns the VFA Q-value approximation for the given state and action.
+	 * @param s the state for which the VFA result should be returned
+	 * @param ga the action for which the VFA result should be returned
+	 * @return the VFA Q-value approximation for the given state and action.
+	 */
 	protected ActionApproximationResult getActionApproximation(State s, GroundedAction ga){
 		List <GroundedAction> gaList = new ArrayList<GroundedAction>(1);
 		gaList.add(ga);
@@ -402,14 +566,34 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	
 	
 	
-	
+	/**
+	 * An object for keeping track of the eligibility traces within an episode for each VFA weight
+	 * @author James MacGlashan
+	 *
+	 */
 	public static class EligibilityTraceVector{
 		
+		/**
+		 * The VFA weight being traced
+		 */
 		public FunctionWeight		weight;
+		
+		/**
+		 * The eligibility value
+		 */
 		public double				eligibilityValue;
+		
+		/**
+		 * The value of the weight when the trace started
+		 */
 		public double				initialWeightValue;
 		
 		
+		/**
+		 * Creates a trace for the given weight with the given eligibility value
+		 * @param weight the VFA weight
+		 * @param eligibilityValue the eligibility to assign to it.
+		 */
 		public EligibilityTraceVector(FunctionWeight weight, double eligibilityValue){
 			this.weight = weight;
 			this.eligibilityValue = eligibilityValue;

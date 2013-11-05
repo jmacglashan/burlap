@@ -26,52 +26,189 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 
+/**
+ * Tabular Q-learning algorithm [1]. This implementation will work correctly with Options [2]. The implementation can either be used for learning or planning,
+ * the latter of which is performed by running many learning episodes in succession. The number of episodes used for planning can be determined
+ * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
+ * 
+ * <p/>
+ * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
+ * 2. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
+ * 
+ * @author James MacGlashan
+ *
+ */
 public class QLearning extends OOMDPPlanner implements QComputablePlanner, LearningAgent{
 
+	
+	/**
+	 * The tabular mapping from states to Q-values
+	 */
 	protected Map<StateHashTuple, QLearningStateNode>				qIndex;
+	
+	/**
+	 * The object that defines how Q-values are initialized.
+	 */
 	protected ValueFunctionInitialization							qInitFunction;
+	
+	/**
+	 * A constant learning rate parameter
+	 */
 	protected double												learningRate;
+	
+	/**
+	 * The learning policy to use. Typically these will be policies that link back to this object so that they change as the Q-value estimate change.
+	 */
 	protected Policy												learningPolicy;
 	
+	
+	/**
+	 * The maximum number of steps that will be taken in an episode before the agent terminates a learning episode
+	 */
 	protected int													maxEpisodeSize;
+	
+	/**
+	 * A counter for counting the number of steps in an episode that have been taken thus far
+	 */
 	protected int													eStepCounter;
 	
-	
+	/**
+	 * The maximum number of episodes to use for planning
+	 */
 	protected int													numEpisodesForPlanning;
+	
+	/**
+	 * The maximum allowable change in the Q-function during an episode before the planning method terminates.
+	 */
 	protected double												maxQChangeForPlanningTermination;
+	
+	/**
+	 * The maximum Q-value change that occurred in the last learning episode.
+	 */
 	protected double												maxQChangeInLastEpisode;
 	
+	
+	/**
+	 * the saved previous learning episodes
+	 */
 	protected LinkedList<EpisodeAnalysis>							episodeHistory;
+	
+	/**
+	 * The number of the most recent learning episodes to store.
+	 */
 	protected int													numEpisodesToStore;
 	
 	
+	/**
+	 * Whether options should be decomposed into actions in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 */
 	protected boolean												shouldDecomposeOptions = true;
+	
+	/**
+	 * Whether decomposed options should have their primitive actions annotated with the options name in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 */
 	protected boolean												shouldAnnotateOptions = true;
 	
 	
 	
+	/**
+	 * Initializes Q-learning with 0.1 epsilon greedy policy, the same Q-value initialization everywhere, and places no limit on the number of steps the 
+	 * agent can take in an episode. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factory to use for Q-lookups
+	 * @param qInit the initial Q-value to user everywhere
+	 * @param learningRate the learning rate
+	 */
 	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			double qInit, double learningRate) {
 		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE);
 	}
 	
+	
+	/**
+	 * Initializes Q-learning with 0.1 epsilon greedy policy, the same Q-value initialization everywhere. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factory to use for Q-lookups
+	 * @param qInit the initial Q-value to user everywhere
+	 * @param learningRate the learning rate
+	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
+	 */
 	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			double qInit, double learningRate, int maxEpisodeSize) {
 		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize);
 	}
 	
+	
+	/**
+	 * Initializes the same Q-value initialization everywhere. Note that if the provided policy is derived from the Q-value of this learning agent (as it should be),
+	 * you may need to set the policy to point to this object after call this constructor; the constructor will not do this automatically in case it was by design
+	 * to use the policy that was learned in some other domain. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factory to use for Q-lookups
+	 * @param qInit the initial Q-value to user everywhere
+	 * @param learningRate the learning rate
+	 * @param learningPolicy the learning policy to follow during a learning episode.
+	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
+	 */
 	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
 		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, learningPolicy, maxEpisodeSize);
 	}
 	
+	
+	/**
+	 * Initializes the algorithm. Note that if the provided policy is derived from the Q-value of this learning agent (as it should be),
+	 * you may need to set the policy to point to this object after call this constructor; the constructor will not do this automatically in case it was by design
+	 * to use the policy that was learned in some other domain. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factory to use for Q-lookups
+	 * @param qInit a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param learningRate the learning rate
+	 * @param learningPolicy the learning policy to follow during a learning episode.
+	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
+	 */
 	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
 		this.QLInit(domain, rf, tf, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
 	}
 	
 	
-	public void QLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	
+	/**
+	 * Initializes the algorithm. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * algorithm as a planning algorithm.
+	 * @param domain the domain in which to learn
+	 * @param rf the reward function
+	 * @param tf the terminal function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the state hashing factory to use for Q-lookups
+	 * @param qInit a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param learningRate the learning rate
+	 * @param learningPolicy the learning policy to follow during a learning episode.
+	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
+	 */
+	protected void QLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			ValueFunctionInitialization qInitFunction, double learningRate, Policy learningPolicy, int maxEpisodeSize){
 		
 		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
@@ -90,17 +227,28 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		
 	}
 	
-	
+	/**
+	 * Sets how to initialize Q-values for previously unexperienced state-action pairs.
+	 * @param qInit a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 */
 	public void setQInitFunction(ValueFunctionInitialization qInit){
 		this.qInitFunction = qInit;
 	}
 	
+	
+	/**
+	 * Sets which policy this agent should use for learning.
+	 * @param p the policy to use for learning.
+	 */
 	public void setLearningPolicy(Policy p){
 		this.learningPolicy = p;
 	}
 	
-	
-	public void setMaxEpisodesForPlanning(int n){
+	/**
+	 * Sets the maximum number of episodes that will be performed when the {@link planFromState(State)} method is called.
+	 * @param n the maximum number of episodes that will be performed when the {@link planFromState(State)} method is called.
+	 */
+	public void setMaximumEpisodesForPlanning(int n){
 		if(n > 0){
 			this.numEpisodesForPlanning = n;
 		}
@@ -109,6 +257,11 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		}
 	}
 	
+	/**
+	 * Sets a max change in the Q-function threshold that will cause the {@link planFromState(State)} to stop planning
+	 * when it is achieved.
+	 * @param m the maximum allowable change in the Q-function before planning stops
+	 */
 	public void setMaxQChangeForPlanningTerminaiton(double m){
 		if(m > 0.){
 			this.maxQChangeForPlanningTermination = m;
@@ -118,6 +271,10 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		}
 	}
 	
+	/**
+	 * Returns the number of steps taken in the last episode;
+	 * @return the number of steps taken in the last episode;
+	 */
 	public int getLastNumSteps(){
 		return eStepCounter;
 	}
@@ -179,13 +336,23 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	}
 	
 	
-
+	/**
+	 * Returns the possible Q-values for a given hashed stated.
+	 * @param s the hashed state for which to get the Q-values.
+	 * @return the possible Q-values for a given hashed stated.
+	 */
 	protected List<QValue> getQs(StateHashTuple s) {
 		QLearningStateNode node = this.getStateNode(s);
 		return node.qEntry;
 	}
 
 
+	/**
+	 * Returns the Q-value for a given hashed state and action.
+	 * @param s the hashed state
+	 * @param a the action
+	 * @return the Q-value for a given hashed state and action; null is returned if there is not Q-value currently stored.
+	 */
 	protected QValue getQ(StateHashTuple s, GroundedAction a) {
 		QLearningStateNode node = this.getStateNode(s);
 		
@@ -200,9 +367,16 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 			}
 		}
 		
-		return null; //no action for this state indexed / raise problem
+		return null; //no action for this state indexed
 	}
 	
+	
+	/**
+	 * Returns the {@link QLearningStateNode} object stored for the given hashed state. If no {@link QLearningStateNode} object.
+	 * is stored, then it is created and has its Q-value initialize using this objects {@link burlap.behavior.singleagent.ValueFunctionInitialization} data member.
+	 * @param s the hashed state for which to get the {@link QLearningStateNode} object
+	 * @return the {@link QLearningStateNode} object stored for the given hashed state. If no {@link QLearningStateNode} object.
+	 */
 	protected QLearningStateNode getStateNode(StateHashTuple s){
 		
 		QLearningStateNode node = qIndex.get(s);
@@ -225,6 +399,11 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		
 	}
 	
+	/**
+	 * Returns the maximum Q-value in the hashed stated.
+	 * @param s the state for which to get he maximum Q-value;
+	 * @return the maximum Q-value in the hashed stated.
+	 */
 	protected double getMaxQ(StateHashTuple s){
 		List <QValue> qs = this.getQs(s);
 		double max = Double.NEGATIVE_INFINITY;
