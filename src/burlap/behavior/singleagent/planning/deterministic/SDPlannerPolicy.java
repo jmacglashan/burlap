@@ -16,7 +16,8 @@ import burlap.oomdp.singleagent.GroundedAction;
  * This is a static deterministic planner policy, which means
  * if the source deterministic planner has not already computed
  * and cached the plan for a query state, then this policy
- * is undefined for that state and will not try to compute it
+ * is undefined for that state and will cause the policy to throw
+ * a corresponding {@link burlap.behavior.singleagent.Policy.PolicyUndefinedException} exception object.
  * @author James MacGlashan
  */
 
@@ -49,17 +50,27 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	@Override
 	public GroundedAction getAction(State s) {
-		if(this.dp.hasCachedPlanForState(s)){
-			return this.dp.querySelectedActionForState(s);
+		
+		if(this.dp == null){
+			throw new RuntimeException("The planner used by this Policy is not defined; therefore, the policy is undefined.");
 		}
-		return null; //then the policy is undefined
+		
+		if(this.dp.hasCachedPlanForState(s)){
+			GroundedAction ga = this.dp.querySelectedActionForState(s);
+			//the surrounding if condition will probably be sufficient for null cases, but doing double check just to make sure.
+			if(ga == null){
+				throw new PolicyUndefinedException();
+			}
+			return ga;
+		}
+		throw new PolicyUndefinedException();
 	}
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
 		GroundedAction selectedAction = this.getAction(s);
 		if(selectedAction == null){
-			return null; //policy is undefined for this state
+			throw new PolicyUndefinedException();
 		}
 		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
 		ActionProb ap = new ActionProb(selectedAction, 1.);

@@ -57,6 +57,9 @@ public abstract class Policy {
 	 */
 	public double getProbOfAction(State s, GroundedAction ga){
 		List <ActionProb> probs = this.getActionDistributionForState(s);
+		if(probs == null || probs.size() == 0){
+			throw new PolicyUndefinedException();
+		}
 		for(ActionProb ap : probs){
 			if(ap.ga.equals(ga)){
 				return ap.pSelection;
@@ -76,6 +79,9 @@ public abstract class Policy {
 	 */
 	protected List <ActionProb> getDeterministicPolicy(State s){
 		GroundedAction ga = this.getAction(s);
+		if(ga == null){
+			throw new PolicyUndefinedException();
+		}
 		ActionProb ap = new ActionProb(ga, 1.);
 		List <ActionProb> aps = new ArrayList<Policy.ActionProb>();
 		aps.add(ap);
@@ -96,6 +102,9 @@ public abstract class Policy {
 		Random rand = RandomFactory.getMapped(0);
 		double roll = rand.nextDouble();
 		List <ActionProb> probs = this.getActionDistributionForState(s);
+		if(probs == null || probs.size() == 0){
+			throw new PolicyUndefinedException();
+		}
 		double sump = 0.;
 		for(ActionProb ap : probs){
 			sump += ap.pSelection;
@@ -212,6 +221,9 @@ public abstract class Policy {
 		
 		//follow policy
 		GroundedAction ga = this.getAction(cur);
+		if(ga == null){
+			throw new PolicyUndefinedException();
+		}
 		if(ga.action.isPrimitive() || !this.evaluateDecomposesOptions){
 			next = ga.executeIn(cur);
 			double r = rf.reward(cur, ga, next);
@@ -257,13 +269,48 @@ public abstract class Policy {
 	
 	
 	
+	/**
+	 * Class for storing an action and probability tuple. The probability represents the probability that the action will be selected.
+	 * @author James MacGlashan
+	 *
+	 */
 	public static class ActionProb{
+		
+		/**
+		 * The action to be considered.
+		 */
 		public GroundedAction ga;
+		
+		/**
+		 * The probability of the action being selected.
+		 */
 		public double pSelection;
 		
+		
+		/**
+		 * Initializes the action, probability tuple.
+		 * @param ga the action to be considered
+		 * @param p the probability of the action being selected.
+		 */
 		public ActionProb(GroundedAction ga, double p){
 			this.ga = ga;
 			this.pSelection = p;
+		}
+		
+	}
+	
+	
+	/**
+	 * RuntimeException to be thrown when a Policy is queried for a state in which the policy is undefined.
+	 * @author James MacGlashan
+	 *
+	 */
+	public static class PolicyUndefinedException extends RuntimeException{
+
+		private static final long serialVersionUID = 1L;
+		
+		public PolicyUndefinedException(){
+			super("Policy is undefined for provided state");
 		}
 		
 	}
