@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import javax.swing.ActionMap;
-
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
