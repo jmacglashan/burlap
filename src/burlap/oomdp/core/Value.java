@@ -110,6 +110,18 @@ public abstract class Value {
 	
 	
 	/**
+	 * Removes a specific relational target from the relational value in relational attribute. If the relational
+	 * attribute does not have this target specified, then nothing happens. This method is primarily useful
+	 * for multi-target relational attributes, but if the attribute is a single-target relational attribute
+	 * and its one currently set target is the one passed to this method, then this method will clear the
+	 * attribute value.
+	 * 
+	 * @param target the object name identifier to remove
+	 */
+	public abstract void removeRelationalTarget(String target);
+	
+	
+	/**
 	 * Returns the discrete integer value of this Value object
 	 * @return the discrete integer value of this Value object
 	 */
@@ -133,6 +145,7 @@ public abstract class Value {
 	 * @return the ordered set of all relational targets of this object.
 	 */
 	public abstract Set <String> getAllRelationalTargets();
+	
 	
 	
 	/**

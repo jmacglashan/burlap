@@ -138,6 +138,16 @@ public class ObjectInstance {
 		values.get(ind).clearRelationTargets();
 	}
 	
+	/**
+	 * Removes an object target from the specified relational attribute.
+	 * @param attName the name of the relational attribute from which the target should be removed.
+	 * @param target the target to remove from the relational attribute value.
+	 */
+	public void removeRelationalTarget(String attName, String target){
+		int ind = obClass.attributeIndex(attName);
+		values.get(ind).removeRelationalTarget(target);
+	}
+	
 	
 	/**
 	 * Returns the name identifier of this object instance

@@ -15,7 +15,11 @@ import burlap.oomdp.core.Value;
  */
 public class RelationalValue extends Value {
 
-	protected String		target;
+	/**
+	 * A string representing the object target of this value. Targets are specified by the object name identifier.
+	 * If the relational target is unset, then this value will be set to the empty string "", which is the default value.
+	 */
+	protected String		target = "";
 	
 	
 	/**
@@ -67,6 +71,13 @@ public class RelationalValue extends Value {
 	public void clearRelationTargets() {
 		this.target = "";
 	}
+	
+	@Override
+	public void removeRelationalTarget(String target) {
+		if(this.target.equals(target)){
+			this.target = "";
+		}
+	}
 
 	@Override
 	public int getDiscVal() {
@@ -111,6 +122,9 @@ public class RelationalValue extends Value {
 		return this.target.equals(op.target);
 		
 	}
+
+
+	
 	
 
 }

@@ -12,6 +12,10 @@ import burlap.oomdp.core.Value;
  *
  */
 public class RealValue extends Value {
+	
+	/**
+	 * The real value stored as a double.
+	 */
 	protected double		realVal;
 
 	
@@ -34,18 +38,22 @@ public class RealValue extends Value {
 		this.realVal = rv.realVal;
 	}
 	
+	@Override
 	public Value copy(){
 		return new RealValue(this);
 	}
 	
+	@Override
 	public void setValue(int v){
 		this.realVal = (double)v;
 	}
 	
+	@Override
 	public void setValue(double v){
 		this.realVal = v;
 	}
 	
+	@Override
 	public void setValue(String v){
 		this.realVal = Double.parseDouble(v);
 	}
@@ -55,10 +63,12 @@ public class RealValue extends Value {
 		throw new UnsupportedOperationException(new Error("Value is real, cannot add relational target"));
 	}
 	
+	@Override
 	public int getDiscVal(){
 		throw new UnsupportedOperationException(new Error("Value is real, cannot return discrete value"));
 	}
 	
+	@Override
 	public double getRealVal(){
 		return this.realVal;
 	}
@@ -68,6 +78,12 @@ public class RealValue extends Value {
 		throw new UnsupportedOperationException(new Error("Value is real, cannot clear relational targets"));
 	}
 	
+	@Override
+	public void removeRelationalTarget(String target) {
+		throw new UnsupportedOperationException(new Error("Value is real, cannot modify relational targets"));
+	}
+	
+	@Override
 	public String getStringVal(){
 		return String.valueOf(this.realVal);
 	}
@@ -82,6 +98,7 @@ public class RealValue extends Value {
 		return this.realVal;
 	}
 	
+	@Override
 	public boolean equals(Object obj){
 		
 		if(!(obj instanceof RealValue)){
@@ -96,5 +113,8 @@ public class RealValue extends Value {
 		return realVal == op.realVal;
 		
 	}
+
+
+	
 	
 }

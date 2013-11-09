@@ -15,6 +15,10 @@ import burlap.oomdp.core.Value;
  */
 public class MultiTargetRelationalValue extends Value {
 
+	/**
+	 * The set of object targets to which this value points. Object targets are indicated
+	 * by their object name identifier.
+	 */
 	protected Set <String>		targetObjects;
 	
 	
@@ -70,6 +74,11 @@ public class MultiTargetRelationalValue extends Value {
 	public void clearRelationTargets() {
 		this.targetObjects.clear();
 	}
+	
+	@Override
+	public void removeRelationalTarget(String target) {
+		this.targetObjects.remove(target);
+	}
 
 	@Override
 	public int getDiscVal() {
@@ -85,17 +94,18 @@ public class MultiTargetRelationalValue extends Value {
 	public Set<String> getAllRelationalTargets() {
 		return this.targetObjects;
 	}
+	
 
 	@Override
 	public String getStringVal() {
 		StringBuffer buf = new StringBuffer();
 		boolean didFirst = false;
 		for(String t : this.targetObjects){
-			if(!didFirst){
+			if(didFirst){
 				buf.append(";");
-				didFirst = true;
 			}
 			buf.append(t);
+			didFirst = true;
 		}
 		return buf.toString();
 	}
@@ -131,5 +141,8 @@ public class MultiTargetRelationalValue extends Value {
 		return true;
 		
 	}
+
+
+	
 
 }

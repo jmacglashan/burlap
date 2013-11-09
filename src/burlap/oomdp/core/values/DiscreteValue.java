@@ -13,6 +13,13 @@ import burlap.oomdp.core.Value;
  *
  */
 public class DiscreteValue extends Value{
+	
+	/**
+	 * The discrete value stored as an integer. If the attribute
+	 * defines categorical values with strings, this int value represents
+	 * the index in the list of categorical values. The default value
+	 * of -1 indicates an unset attribute value.
+	 */
 	protected int			discVal = -1;
 	
 	
@@ -34,18 +41,22 @@ public class DiscreteValue extends Value{
 		this.discVal = dv.discVal;
 	}
 	
+	@Override
 	public Value copy(){
 		return new DiscreteValue(this);
 	}
 	
+	@Override
 	public void setValue(int v){
 		this.discVal = v;
 	}
 	
+	@Override
 	public void setValue(double v){
 		this.discVal = (int)v;
 	}
 	
+	@Override
 	public void setValue(String v){
 		int intv = attribute.discValuesHash.get(v);
 		discVal = intv;
@@ -61,14 +72,22 @@ public class DiscreteValue extends Value{
 		throw new UnsupportedOperationException(new Error("Value is discrete, cannot clear relational targets"));
 	}
 	
+	@Override
+	public void removeRelationalTarget(String target) {
+		throw new UnsupportedOperationException(new Error("Value is discrete, cannot modify relational targets"));
+	}
+	
+	@Override
 	public int getDiscVal(){
 		return this.discVal;
 	}
 	
+	@Override
 	public double getRealVal(){
 		throw new UnsupportedOperationException(new Error("Value is discrete, cannot return real value"));
 	}
 	
+	@Override
 	public String getStringVal(){
 		return attribute.discValues.get(discVal);
 	}
@@ -77,6 +96,8 @@ public class DiscreteValue extends Value{
 	public Set<String> getAllRelationalTargets() {
 		throw new UnsupportedOperationException(new Error("Value is discrete, cannot return relational values"));
 	}
+	
+	
 	
 	@Override
 	public double getNumericRepresentation() {
@@ -98,6 +119,8 @@ public class DiscreteValue extends Value{
 		return discVal == op.discVal;
 		
 	}
+
+	
 
 	
 
