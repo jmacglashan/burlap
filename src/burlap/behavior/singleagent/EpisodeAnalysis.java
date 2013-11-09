@@ -179,11 +179,22 @@ public class EpisodeAnalysis {
 	 * @return a string representing the actions taken in this episode
 	 */
 	public String getActionSequenceString(){
+		return this.getActionSequenceString("; ");
+	}
+	
+	
+	/**
+	 * Returns a string representing the actions taken in this episode. Actions are separated
+	 * by the provided delimiter string.
+	 * @param delimiter the delimiter to separate actions in the string.
+	 * @return a string representing the actions taken in this episode
+	 */
+	public String getActionSequenceString(String delimiter){
 		StringBuffer buf = new StringBuffer();
 		boolean first = true;
 		for(GroundedAction ga : actionSequence){
 			if(!first){
-				buf.append("; ");
+				buf.append(delimiter);
 			}
 			buf.append(ga.toString());
 			first = false;
