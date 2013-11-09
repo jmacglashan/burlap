@@ -14,9 +14,9 @@ import burlap.oomdp.core.Value;
 public class RealValue extends Value {
 	
 	/**
-	 * The real value stored as a double.
+	 * The real value stored as a double. Default value of NaN indicates that the value is unset
 	 */
-	protected double		realVal;
+	protected double		realVal = Double.NaN;
 
 	
 	/**
@@ -70,6 +70,9 @@ public class RealValue extends Value {
 	
 	@Override
 	public double getRealVal(){
+		if(Double.isNaN(this.realVal)){
+			throw new UnsetValueException();
+		}
 		return this.realVal;
 	}
 	
@@ -85,6 +88,9 @@ public class RealValue extends Value {
 	
 	@Override
 	public String getStringVal(){
+		if(Double.isNaN(this.realVal)){
+			throw new UnsetValueException();
+		}
 		return String.valueOf(this.realVal);
 	}
 	
@@ -95,6 +101,9 @@ public class RealValue extends Value {
 	
 	@Override
 	public double getNumericRepresentation() {
+		if(Double.isNaN(this.realVal)){
+			throw new UnsetValueException();
+		}
 		return this.realVal;
 	}
 	

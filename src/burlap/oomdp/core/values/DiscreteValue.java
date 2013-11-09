@@ -79,6 +79,9 @@ public class DiscreteValue extends Value{
 	
 	@Override
 	public int getDiscVal(){
+		if(this.discVal == -1){
+			throw new UnsetValueException();
+		}
 		return this.discVal;
 	}
 	
@@ -89,6 +92,9 @@ public class DiscreteValue extends Value{
 	
 	@Override
 	public String getStringVal(){
+		if(this.discVal == -1){
+			throw new UnsetValueException();
+		}
 		return attribute.discValues.get(discVal);
 	}
 	
@@ -101,6 +107,9 @@ public class DiscreteValue extends Value{
 	
 	@Override
 	public double getNumericRepresentation() {
+		if(this.discVal == -1){
+			throw new UnsetValueException();
+		}
 		return (double)this.discVal;
 	}
 	
