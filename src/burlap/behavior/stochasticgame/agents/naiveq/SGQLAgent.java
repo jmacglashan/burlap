@@ -10,7 +10,6 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.stochasticgame.Strategy;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
-import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;

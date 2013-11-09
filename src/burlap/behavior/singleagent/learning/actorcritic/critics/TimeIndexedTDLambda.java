@@ -7,7 +7,6 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
-import burlap.behavior.singleagent.learning.actorcritic.critics.TDLambda.VValue;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;

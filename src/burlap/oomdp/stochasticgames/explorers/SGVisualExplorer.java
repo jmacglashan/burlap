@@ -250,18 +250,6 @@ public class SGVisualExplorer extends JFrame {
 	}
 	
 	
-	//single actions separated by semicolons
-	private JointAction parseIntoJointAciton(String str){
-		
-		String [] sacomps = str.split(";");
-		
-		JointAction ja = new JointAction(sacomps.length);
-		for(int i = 0; i < sacomps.length; i++){
-			ja.addAction(this.parseIntoSingleActions(sacomps[i]));
-		}
-		
-		return ja;
-	}
 	
 	//assumed format: "agentName:actionName param1 parm2 ... paramn"
 	private GroundedSingleAction parseIntoSingleActions(String str){

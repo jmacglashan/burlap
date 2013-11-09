@@ -2,7 +2,6 @@ package burlap.behavior.singleagent.planning.commonpolicies;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.management.RuntimeErrorException;
 

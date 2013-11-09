@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.vfa;
 
 import java.util.List;
-import java.util.Map;
 
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
