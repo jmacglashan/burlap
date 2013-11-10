@@ -96,6 +96,10 @@ public class GraphDefinedDomain implements DomainGenerator {
 		return s;
 	}
 	
+	public static int getNodeId(State s){
+		return s.getFirstObjectOfClass(CLASSAGENT).getDiscValForAttribute(ATTNODE);
+	}
+	
 	
 	
 	public class NodeTransitionProbibility{
