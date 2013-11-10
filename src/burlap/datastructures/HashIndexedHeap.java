@@ -10,19 +10,53 @@ import java.util.Map;
 //all methods are implemented for max heap; however, setting the max heap boolean to false causes the comparisons of all objects in this
 //method to flip integer sign, thereby making it a min heap
 
+
+/**
+ * An implementation of a hash map backed heap/priority queue. This data structure allows efficient O(1) "contains" checks and efficient
+ * O(lg(n)) modifications of entries already in the heap that with a typical Java PriorityQueue would require linear updates. This data structure is especially
+ * useful for planning algorithms like A* that keep a priority queue of states, but may need to update their priority if a better path to them is found.
+ * <p/>
+ * By default, the heap is a max heap (which results in elements with the highest priority being dequeued first), but it may also be set to be a min heap.
+ * 
+ * @author James MacGlashan
+ *
+ * @param <T> any Java object
+ */
 public class HashIndexedHeap <T> {
 
+	/**
+	 * Heap ordered list of objects
+	 */
 	protected List<T> 						nodesArray;
+	
+	/**
+	 * Number of objects in the heap
+	 */
 	protected int							size;
+	
+	/**
+	 * Hash map from objects to their index in the heap
+	 */
 	protected Map<T, Integer>				arrayIndexMap;
+	
+	/**
+	 * If true, this is ordered according to a max heap; if false ordered according to a min heap.
+	 */
 	protected boolean						maxHeap;
+	
+	/**
+	 * A comparator to compare objects
+	 */
 	protected Comparator<T>					priorityCompare;
 	
 	
 	
 	
 	
-	
+	/**
+	 * Initializes the heap with a comparator
+	 * @param pcompare the comparator to compare the priority of elements of this heap
+	 */
 	public HashIndexedHeap(Comparator<T> pcompare){
 		nodesArray = new ArrayList<T>();
 		arrayIndexMap = new HashMap<T, Integer>();
@@ -31,6 +65,12 @@ public class HashIndexedHeap <T> {
 		priorityCompare = pcompare;
 	}
 	
+	
+	/**
+	 * Initializes the heap with a comparator and an initial capacity size
+	 * @param pcompare the comparator to compare the priority of elements of this heap
+	 * @param capacity the initial compacity size of the heap
+	 */
 	public HashIndexedHeap(Comparator<T> pcompare, int capacity){
 		
 		nodesArray = new ArrayList<T>(capacity);
@@ -41,16 +81,31 @@ public class HashIndexedHeap <T> {
 		
 	}
 	
+	
+	/**
+	 * Returns the size of the heap
+	 * @return the size of the heap
+	 */
 	public int size(){
 		return size;
 	}
 	
+	
+	/**
+	 * Sets whether this heap is a max heap or a min heap
+	 * @param max if true, sets to be ma heap; if false sets to be min heap.
+	 */
 	public void setUseMaxHeap(boolean max){
 		this.maxHeap = max;
 	}
 	
 	
-	//returns of a ptr to the instance matching this
+
+	/**
+	 * Checks if the heap contains this object and returns the pointer to the stored object if it does; otherwise null is returned.
+	 * @param inst the inst to look for in the heap
+	 * @return the pointer to the stored object if it is in the heap; null otherwise.
+	 */
 	public T containsInstance(T inst){
 		Integer I = arrayIndexMap.get(inst);
 		if(I == null){
@@ -60,6 +115,11 @@ public class HashIndexedHeap <T> {
 		return nodesArray.get(i);
 	}
 	
+	
+	/**
+	 * Returns a pointer to the head of the heap without removing it
+	 * @return a pointer to the head of the heap
+	 */
 	public T peek(){
 		if(size == 0){
 			return null;
@@ -68,6 +128,11 @@ public class HashIndexedHeap <T> {
 		return nodesArray.get(0);
 	}
 	
+	
+	/**
+	 * Returns a pointer to the head of the heap and removes it
+	 * @return a pointer to the head of the heap
+	 */
 	public T poll(){
 		
 		if(size == 0){
@@ -91,6 +156,11 @@ public class HashIndexedHeap <T> {
 		return top;
 	}
 	
+	
+	/**
+	 * Inserts the element into the heap
+	 * @param el the element to be inserted
+	 */
 	public void insert(T el){
 		
 		int i = size;
@@ -107,6 +177,12 @@ public class HashIndexedHeap <T> {
 		
 	}
 	
+	
+	/**
+	 * Calling this method indicates that the priority of the object passed to the method has been modified and that this heap needs to reorder its elements
+	 * as a result
+	 * @param el the element whose priority was modified
+	 */
 	public void refreshPriority(T el){
 		Integer I = arrayIndexMap.get(el);
 		if(I == null){
@@ -119,6 +195,12 @@ public class HashIndexedHeap <T> {
 		
 	}
 	
+	
+	/**
+	 * Adjusts the heap position of the given element 
+	 * @param i the index of the given element
+	 * @param el the element to re-index
+	 */
 	private void refreshPriority(int i, T el){
 		
 		boolean shiftedDown = this.maxHeapify(i);
@@ -144,7 +226,12 @@ public class HashIndexedHeap <T> {
 	}
 	
 	
-	//returns true if changes had to be made
+
+	/**
+	 * Performs the heapify operation
+	 * @param i the index on which to perform heapify
+	 * @return true if changes had to be made; false otherwise.
+	 */
 	private boolean maxHeapify(int i){
 		
 		int l = this.left(i);

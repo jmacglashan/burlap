@@ -9,20 +9,47 @@ import java.util.Random;
 import burlap.debugtools.RandomFactory;
 
 
+
+/**
+ * A class for performing sampling of a set of objects at O(lg(n)) time. Elements can be added and removed dynamically. The "weights" of the objects
+ * should be positive values, but do not have to specify a probability distribution. The sampling will be performed according to the relative weight
+ * of all objects.
+ * @author James MacGlashan
+ *
+ * @param <T> any Java object that will be sampled
+ */
 public class StochasticTree <T>{
 
+	/**
+	 * Root node of the stochastic tree
+	 */
 	protected STNode					root;
+	
+	/**
+	 * A map from elements to the node that holds them.
+	 */
 	protected Map<T, STNode>			nodeMap;
+	
+	/**
+	 * A random object used for sampling.
+	 */
 	protected Random					rand;
 	
 	
 	
-	
+	/**
+	 * Initializes with an empty tree.
+	 */
 	public StochasticTree(){
 		this.init();
 	}
 	
 	
+	/**
+	 * Initializes a tree for objects with the given weights
+	 * @param weights the weights of a set objects that determine how likely they are to be sampled
+	 * @param elements the elements of the tree that will be sampled
+	 */
 	public StochasticTree(List <Double> weights, List <T> elements){
 		this.init();
 		for(int i = 0; i < weights.size(); i++){
@@ -30,21 +57,39 @@ public class StochasticTree <T>{
 		}
 	}
 	
+	/**
+	 * Initializes the three data structure
+	 */
 	protected void init(){
 		root = null;
 		nodeMap = new HashMap<T, StochasticTree<T>.STNode>();
 		rand = RandomFactory.getMapped(2347636);
 	}
 	
+	
+	/**
+	 * Sets the tree to use a specific random object when performing sampling
+	 * @param r
+	 */
 	public void setRandom(Random r){
 		this.rand = r;
 	}
 	
-	
+	/**
+	 * Returns the number of objects in this tree
+	 * @return
+	 */
 	public int size(){
 		return nodeMap.size();
 	}
 	
+	
+	/**
+	 * Returns the pointer to the stored entry in this tree for the given query element. This method
+	 * requires T to be a hashable object.
+	 * @param el the element whose stored object in the tree is to be returned
+	 * @return the pointer to the stored entry in this tree for the given query element
+	 */
 	public T getStoredEntry(T el){
 		STNode node = nodeMap.get(el);
 		if(node == null){
@@ -53,6 +98,11 @@ public class StochasticTree <T>{
 		return node.element;
 	}
 	
+	/**
+	 * Inserts the given element into the tree with the given weight
+	 * @param w the weight of the element
+	 * @param el the element to insert
+	 */
 	public void insert(double w, T el){
 		
 		if(root == null){
@@ -64,20 +114,36 @@ public class StochasticTree <T>{
 		
 	}
 	
+	
+	/**
+	 * Changes the weight of the given element. For this operation to be supported T must be hashable.
+	 * @param element the element whose weight should be changed.
+	 * @param w the new weight of the element.
+	 */
 	public void changeWeight(T element, double w){
 		STNode node = nodeMap.get(element);
 		double delta = w - node.width;
 		node.width = w;
 		if(node.parent != null){
-			this.perculateWeightChange(node.parent, delta);
+			this.percolateWeightChange(node.parent, delta);
 		}
 	}
 	
+	
+	/**
+	 * Removes the given element from the tree. For this operation to be supported
+	 * T must be hashable.
+	 * @param element
+	 */
 	public void remove(T element){
 		STNode node = nodeMap.get(element);
 		this.removeHelper(node);
 	}
 	
+	/**
+	 * Samples an element according to a probability defined by the relative weight of objects from the tree and returns it
+	 * @return a sampled element
+	 */
 	public T sample(){
 		if(root == null){
 			return null;
@@ -86,6 +152,11 @@ public class StochasticTree <T>{
 		return sampleHelper(root, v).element;
 	}
 	
+	
+	/**
+	 * Samples an element according to a probability defined by the relative weight of objects, removes it from the tree, and returns it. 
+	 * @return a sampled element
+	 */
 	public T poll(){
 		if(root == null){
 			return null;
@@ -97,6 +168,13 @@ public class StochasticTree <T>{
 		return el;
 	}
 	
+	
+	/**
+	 * Helper recursive method for inserting an element
+	 * @param node the node from which to insert the element
+	 * @param w the weight of the element
+	 * @param el the element to be inserted
+	 */
 	protected void insertHelper(STNode node, double w, T el){
 		if(!node.isLeaf()){
 			node.width += w;
@@ -132,14 +210,23 @@ public class StochasticTree <T>{
 		
 	}
 	
-	
-	protected void perculateWeightChange(STNode node, double delta){
+	/**
+	 * A recursive method for percolating a weight change of a node
+	 * @param node the node whose weight change should be percolated
+	 * @param delta
+	 */
+	protected void percolateWeightChange(STNode node, double delta){
 		node.width += delta;
 		if(node.parent != null){
-			this.perculateWeightChange(node.parent, delta);
+			this.percolateWeightChange(node.parent, delta);
 		}
 	}
 	
+	
+	/**
+	 * A recursive method for removing a node
+	 * @param node the node to be removed
+	 */
 	protected void removeHelper(STNode node){
 		
 		if(node.isLeaf()){
@@ -190,7 +277,7 @@ public class StochasticTree <T>{
 				
 				
 				if(parent.parent != null){
-					perculateWeightChange(parent.parent, delta);
+					percolateWeightChange(parent.parent, delta);
 				}
 			}
 			else{
@@ -205,7 +292,12 @@ public class StochasticTree <T>{
 	}
 	
 	
-	
+	/**
+	 * A recursive method for performing sampling
+	 * @param node the node from which to sample
+	 * @param v the random value used to determine which direction to go
+	 * @return a sampled node
+	 */
 	protected STNode sampleHelper(STNode node, double v){
 		if(node.isLeaf()){
 			return node;
@@ -219,19 +311,49 @@ public class StochasticTree <T>{
 	
 	
 	
-	
+	/**
+	 * A class for storing a stochastic tree node.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class STNode{
 		
+		/**
+		 * The element this node stores if it is a leaf node
+		 */
 		T			element;
 		
+		
+		/**
+		 * The total weight of all objects below this node
+		 */
 		double		width;
 		
+		
+		/**
+		 * The left subtree node
+		 */
 		STNode		left;
+		
+		/**
+		 * The right subtree node
+		 */
 		STNode		right;
 		
+		
+		/**
+		 * This nodes parent
+		 */
 		STNode		parent;
 		
 		
+		
+		/**
+		 * Initializes a leaf node with the given weight and parent
+		 * @param el the element of the lead node
+		 * @param w the weight of the element
+		 * @param p the parent node
+		 */
 		public STNode(T el, double w, STNode p){
 			element = el;
 			width = w;
@@ -243,7 +365,10 @@ public class StochasticTree <T>{
 			nodeMap.put(el, this);
 		}
 		
-		
+		/**
+		 * Initializes a node with a weight only
+		 * @param w the weight of the node
+		 */
 		public STNode(double w){
 			element = null;
 			width = w;
@@ -253,6 +378,12 @@ public class StochasticTree <T>{
 			right = null;
 		}
 		
+		
+		/**
+		 * Initializes a node with a given weight and parent node
+		 * @param w the weight of the node
+		 * @param p the parent pointer
+		 */
 		public STNode(double w, STNode p){
 			element = null;
 			width = w;
@@ -263,6 +394,10 @@ public class StochasticTree <T>{
 		}
 		
 		
+		/**
+		 * Returns true if this is a left node
+		 * @return true if this is a left node; false otherwise
+		 */
 		public boolean isLeaf(){
 			return element != null;
 		}
@@ -279,7 +414,10 @@ public class StochasticTree <T>{
 	
 	
 	
-	
+	/**
+	 * Demos how to use this class
+	 * @param args empty
+	 */
 	public static void main(String args []){
 		
 		System.out.println("Starting");
@@ -288,7 +426,9 @@ public class StochasticTree <T>{
 		
 	}
 	
-	
+	/**
+	 * An example usage
+	 */
 	public static void test2(){
 		
 		StochasticTree<Integer> st = new StochasticTree<Integer>();
@@ -329,7 +469,9 @@ public class StochasticTree <T>{
 		*/
 	}
 	
-	
+	/**
+	 * Another example usage
+	 */
 	public static void test1(){
 		
 		List <Double> weights = new ArrayList<Double>();

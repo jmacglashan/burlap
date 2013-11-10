@@ -1,5 +1,11 @@
 package burlap.debugtools;
 
+
+/**
+ * A data structure for keeping track of elapsed and average time.
+ * @author James MacGlashan
+ *
+ */
 public class MyTimer{
 
 
@@ -9,9 +15,12 @@ public class MyTimer{
 	private long sumTime;
 	private int numTimers;
 	
-	boolean timing;
+	private boolean timing;
 	
-	
+	/**
+	 * Demo of usage
+	 * @param args
+	 */
 	public static void main(String [] args){
 	
 	
@@ -29,6 +38,10 @@ public class MyTimer{
 	
 	}
 	
+	
+	/**
+	 * Creates a new timer. Timing will not yet be started.
+	 */
 	public MyTimer(){
 	
 		timing = false;
@@ -37,7 +50,9 @@ public class MyTimer{
 	
 	}
 	
-	
+	/**
+	 * Starts the timer.
+	 */
 	public void start(){
 	
 		startTime = System.currentTimeMillis();
@@ -45,6 +60,10 @@ public class MyTimer{
 	
 	}
 	
+	
+	/**
+	 * Stops the timer.
+	 */
 	public void stop(){
 	
 		if(timing){
@@ -57,6 +76,11 @@ public class MyTimer{
 	
 	}
 	
+	
+	/**
+	 * Returns the elapsed time in seconds since the last start-stop calls.
+	 * @return the elapsed time in seconds since the last start-stop calls.
+	 */
 	public double getTime(){
 	
 		long diff = stopTime - startTime;
@@ -66,16 +90,28 @@ public class MyTimer{
 	
 	}
 	
+	/**
+	 * Returns the average time in seconds recorded over all start-stop calls.
+	 * @return the average time in seconds recorded over all start-stop calls.
+	 */
 	public double getAvgTime(){
 	
 		return ((double)sumTime / (double) numTimers) / 1000.0;
 	
 	}
 	
+	/**
+	 * Returns the total time in seconds recorded over all start-stop calls.
+	 * @return the total time in seconds recorded over all start-stop calls.
+	 */
 	public double getTotalTime(){
 		return (double)sumTime / 1000.0;
 	}
 	
+	
+	/**
+	 * Resets to zero the average and total time recorded over all start-stop calls.
+	 */
 	public void resetAvgs(){
 		sumTime = 0;
 		numTimers = 0;
