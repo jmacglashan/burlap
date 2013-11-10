@@ -7,7 +7,15 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
-
+/**
+ * Simplified state parser for grid world states. Format:<br/>
+ * ax ay, l1x l1y, l2x l2y, ..., lnx lny 
+ * <br/>
+ * where ax and ay is the agent x and y position and lix liy is the ith location objects x and y position.
+ * 
+ * @author James MacGlashan
+ *
+ */
 public class GridWorldStateParser implements StateParser {
 
 	protected Domain				domain;

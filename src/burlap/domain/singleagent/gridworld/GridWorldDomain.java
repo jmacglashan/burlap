@@ -36,30 +36,102 @@ import burlap.oomdp.visualizer.Visualizer;
  */
 public class GridWorldDomain implements DomainGenerator {
 
-	//Constants
+	/**
+	 * Constant for the name of the x attribute
+	 */
 	public static final String							ATTX = "x";
+	
+	/**
+	 * Constant for the name of the y attribute
+	 */
 	public static final String							ATTY = "y";
 	
+	
+	/**
+	 * Constant for the name of the agent class
+	 */
 	public static final String							CLASSAGENT = "agent";
+	
+	/**
+	 * Constant for the name of the location class
+	 */
 	public static final String							CLASSLOCATION = "location";
 	
+	
+	/**
+	 * Constant for the name of the north action
+	 */
 	public static final String							ACTIONNORTH = "north";
+	
+	/**
+	 * Constant for the name of the south action
+	 */
 	public static final String							ACTIONSOUTH = "south";
+	
+	/**
+	 * Constant for the name of the east action
+	 */
 	public static final String							ACTIONEAST = "east";
+	
+	/**
+	 * Constant for the name of the west action
+	 */
 	public static final String							ACTIONWEST = "west";
 	
+	
+	
+	/**
+	 * Constant for the name of the at location propositional function
+	 */
 	public static final String							PFATLOCATION = "atLocation";
+	
+	/**
+	 * Constant for the name of the wall to north propositional function
+	 */
 	public static final String							PFWALLNORTH = "wallToNorth";
+	
+	/**
+	 * Constant for the name of the wall to south propositional function
+	 */
 	public static final String							PFWALLSOUTH = "wallToSouth";
+	
+	/**
+	 * Constant for the name of the wall to east propositional function
+	 */
 	public static final String							PFWALLEAST = "wallToEast";
+	
+	/**
+	 * Constant for the name of the wall to west propositional function
+	 */
 	public static final String							PFWALLWEST = "wallToWest";
 	
 	
 	
-	//data members
+	/**
+	 * The width of the grid world
+	 */
 	protected int										width;
+	
+	/**
+	 * The height of grid world
+	 */
 	protected int										height;
+	
+	/**
+	 * The wall map where the first index is the x position and the second index is the y position.
+	 * Values of 1 indicate a wall is there, values of 0 indicate an empty cell
+	 */
 	protected int [][]									map;
+	
+	/**
+	 * Matrix specifying the transition dynamics in terms of movement directions. The first index
+	 * indicates the action direction attempted (ordered north, south, east, west) the second index
+	 * indicates the actual resulting direction the agent will go (assuming there is no wall in the way).
+	 * The value is the probability of that outcome. The existence of walls does not affect the probability
+	 * of the direction the agent will actually go, but if a wall is in the way, it will affect the outcome.
+	 * For instance, if the agent selects north, but there is a 0.2 probability of actually going east and
+	 * there is a wall to the east, then with 0.2 probability, the agent will stay in place.
+	 */
 	protected double[][]								transitionDynamics;
 	
 	
@@ -323,6 +395,9 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 	/**
+	 * Creates a visual explorer or terminal explorer. By default a visual explorer is presented; use the "t" argument
+	 * to create terminal explorer. Will create a 4 rooms grid world with the agent in lower left corner and a location in
+	 * the upper right. Use w-a-s-d to move.
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -405,7 +480,11 @@ public class GridWorldDomain implements DomainGenerator {
 		agent.setValue(ATTY, ny);
 	}
 	
-	
+	/**
+	 * Returns the change in x and y position for a given direction number.
+	 * @param i the direction number (0,1,2,3 indicates north,south,east,west, respectively)
+	 * @return the change in direction for x and y; the first index of the returned double is change in x, the second index is change in y.
+	 */
 	protected int [] movementDirectionFromIndex(int i){
 		
 		int [] result = null;
@@ -435,12 +514,30 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 	
-	
+	/**
+	 * Action class for movement actions in grid world.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class MovementAction extends Action{
 
+		/**
+		 * Probabilities of the actual direction the agent will go
+		 */
 		protected double [] directionProbs;
+		
+		/**
+		 * Random object for sampling distribution
+		 */
 		protected Random rand;
 		
+		
+		/**
+		 * Initializes for the given name, domain and actually direction probabilities the agent will go
+		 * @param name name of the action
+		 * @param domain the domain of the action
+		 * @param directions the probability for each direction (index 0,1,2,3 corresponds to north,south,east,west, respectively).
+		 */
 		public MovementAction(String name, Domain domain, double [] directions){
 			super(name, domain, "");
 			this.directionProbs = directions;
@@ -467,6 +564,7 @@ public class GridWorldDomain implements DomainGenerator {
 			return st;
 		}
 		
+		@Override
 		public List<TransitionProbability> getTransitions(State st, String [] params){
 			
 			List <TransitionProbability> transitions = new ArrayList<TransitionProbability>();
@@ -507,8 +605,20 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 	
+	/**
+	 * Propositional function for determining if the agent is at the same position as a given location object
+	 * @author James MacGlashan
+	 *
+	 */
 	public class AtLocationPF extends PropositionalFunction{
 
+		
+		/**
+		 * Initializes with given name domain and parameter object class types
+		 * @param name name of function
+		 * @param domain the domain of the function
+		 * @param parameterClasses the object class types for the parameters
+		 */
 		public AtLocationPF(String name, Domain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
 		}
@@ -537,13 +647,32 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 	
+	/**
+	 * Propositional function for indicating if a wall is in a given position relative to the agent position
+	 * @author James MacGlashan
+	 *
+	 */
 	public class WallToPF extends PropositionalFunction{
 
-		
+		/**
+		 * The relative x distance from the agent of the cell to check
+		 */
 		protected int xdelta;
+		
+		/**
+		 * The relative y distance from the agent of the cell to check
+		 */
 		protected int ydelta;
 		
 		
+		
+		/**
+		 * Initializes the function.
+		 * @param name the name of the function
+		 * @param domain the domain of the function
+		 * @param parameterClasses the object class parameter types
+		 * @param direction the unit distance direction from the agent to check for a wall (0,1,2,3 corresponds to north,south,east,west).
+		 */
 		public WallToPF(String name, Domain domain, String[] parameterClasses, int direction) {
 			super(name, domain, parameterClasses);
 			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(direction);

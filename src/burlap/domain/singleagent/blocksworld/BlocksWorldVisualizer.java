@@ -15,6 +15,11 @@ import burlap.oomdp.visualizer.Visualizer;
 
 public class BlocksWorldVisualizer {
 
+	
+	/**
+	 * Returns a 2D Visualizer canvas object to visualize {@link BlocksWorld} states.
+	 * @return the visualizer.
+	 */
 	public static Visualizer getVisualizer(){
 		
 		Visualizer v = new Visualizer();
@@ -22,6 +27,13 @@ public class BlocksWorldVisualizer {
 		return v;
 	}
 	
+	
+	/**
+	 * Returns a 2D Visualizer canvas object to visualize {@link BlocksWorld} states where the name of the block is rendered at the provided font
+	 * point size.
+	 * @param fontSize the size of the font to use when rendering the name of a block object.
+	 * @return the visualizer.
+	 */
 	public static Visualizer getVisualizer(int fontSize){
 		
 		Visualizer v = new Visualizer();
@@ -31,6 +43,13 @@ public class BlocksWorldVisualizer {
 	
 	
 	
+	/**
+	 * Paints blocks as a rectangle scaled to a size necessary to be able to show all blocks on the table within the canvas width or all blocks
+	 * stacked on each other within the canvas height. The name of the block object identifier will be painted on the block and the color of the
+	 * rectangle corresponds to the color attribtue of the block.
+	 * @author James MacGlashan
+	 *
+	 */
 	public static class BlockPainter implements ObjectPainter{
 
 		int fontSize = 12;
@@ -39,6 +58,10 @@ public class BlocksWorldVisualizer {
 			
 		}
 		
+		/**
+		 * Initializes with a font size for rendering the name of the block object.
+		 * @param fontSize a font size for rendering the name of the block object.
+		 */
 		public BlockPainter(int fontSize){
 			this.fontSize = fontSize;
 		}

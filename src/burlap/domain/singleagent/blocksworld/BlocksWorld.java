@@ -15,24 +15,80 @@ import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 
+/**
+ * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
+ * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning, the
+ * {@link burlap.behavior.statehashing.NameDependentStateHashFactory} should be used.
+ * @author James MacGlashan
+ *
+ */
 public class BlocksWorld implements DomainGenerator {
 
+	/**
+	 * Constant for the relational "on" attribute name.
+	 */
 	public static final String							ATTONBLOCK = "on";
+	/**
+	 * Constant for the binary "on table" attribute name.
+	 */
 	public static final String							ATTONTABLE = "onTable";
+	
+	/**
+	 * Constant for the binary "clear" attribute name.
+	 */
 	public static final String							ATTCLEAR = "clear";
+	
+	/**
+	 * Constant for the categorical "color" attribute name.
+	 */
 	public static final String							ATTCOLOR = "color";
 	
+	
+	/**
+	 * Constant for the color value "red"
+	 */
 	public static final String							COLORRED = "red";
+	
+	/**
+	 * Constant for the color value "green"
+	 */
 	public static final String							COLORGREEN = "green";
+	
+	/**
+	 * Constant for the color value "blue"
+	 */
 	public static final String							COLORBLUE = "blue";
 	
+	
+	/**
+	 * Constant for the name of the block class.
+	 */
 	public static final String							CLASSBLOCK = "block";
 	
+	/**
+	 * Constant for the stack action name
+	 */
 	public static final String							ACTIONSTACK = "stack";
+	
+	/**
+	 * Constant for the unstack action name
+	 */
 	public static final String							ACTIONUNSTACK = "unstack";
 	
+	
+	/**
+	 * Constant for the propositional function "on" name
+	 */
 	public static final String							PFONBLOCK = "on";
+	
+	/**
+	 * Constant for the propositional function "on table" name
+	 */
 	public static final String							PFONTABLE = "onTable";
+	
+	/**
+	 * Constant for the propositional function "clear" name
+	 */
 	public static final String							PFCLEAR = "clear";
 	
 	
@@ -41,9 +97,6 @@ public class BlocksWorld implements DomainGenerator {
 	//move stack action?
 	
 	
-	public BlocksWorld(){
-		
-	}
 	
 	@Override
 	public Domain generateDomain() {
@@ -90,6 +143,12 @@ public class BlocksWorld implements DomainGenerator {
 	}
 	
 	
+	/**
+	 * Creates a new state with nBlocks block objects in it. Values for created objects are unset, so be sure to set them after call thing method.
+	 * @param d the blocks world domain
+	 * @param nBlocks the number of block objects to create
+	 * @return a new state with nBlocks block objects
+	 */
 	public static State getNewState(Domain d, int nBlocks){
 		State s = new State();
 		ObjectClass oc = d.getObjectClass(CLASSBLOCK);
@@ -102,14 +161,42 @@ public class BlocksWorld implements DomainGenerator {
 	}
 	
 	
+	/**
+	 * Use this method to quickly set the various values of a block
+	 * @param s the state in which the block object should be set
+	 * @param blockInd the index of the block object whose values should be set
+	 * @param onBlock the relational on block value
+	 * @param onTable the binary on table value
+	 * @param clear the binary clear value
+	 * @param color the categorical color value (either "red", "green", or "blue")
+	 */
 	public static void setBlock(State s, int blockInd, String onBlock, int onTable, int clear, String color){
 		setBlock(s.getObservableObjectAt(blockInd), onBlock, onTable, clear, color);
 	}
 	
+	
+	/**
+	 * Use this method to quickly set the various values of a block
+	 * @param s the state in which the block object should be set
+	 * @param blockName the name identifier of the block object whose values are to be set.
+	 * @param onBlock the relational on block value
+	 * @param onTable the binary on table value
+	 * @param clear the binary clear value
+	 * @param color the categorical color value (either "red", "green", or "blue")
+	 */
 	public static void setBlock(State s, String blockName, String onBlock, int onTable, int clear, String color){
 		setBlock(s.getObject(blockName), onBlock, onTable, clear, color);
 	}
 	
+	
+	/**
+	 * Use this method to quickly set the various values of a block
+	 * @param block the block object instance to whose values should be set
+	 * @param onBlock the relational on block value
+	 * @param onTable the binary on table value
+	 * @param clear the binary clear value
+	 * @param color the categorical color value (either "red", "green", or "blue")
+	 */
 	public static void setBlock(ObjectInstance block, String onBlock, int onTable, int clear, String color){
 		block.setValue(ATTONBLOCK, onBlock);
 		block.setValue(ATTONTABLE, onTable);
@@ -118,12 +205,19 @@ public class BlocksWorld implements DomainGenerator {
 	}
 	
 	
+	
+	/**
+	 * Action class for stacking one block onto another. The both blocks must be clear for one to be stacked on the other.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class StackAction extends Action{
 
 		public StackAction(String name, Domain domain){
 			super(name, domain, new String[]{CLASSBLOCK, CLASSBLOCK});
 		}
 		
+		@Override
 		public boolean applicableInState(State st, String [] params){
 
 			//blocks must be clear
@@ -167,6 +261,13 @@ public class BlocksWorld implements DomainGenerator {
 		
 	}
 	
+	
+	/**
+	 * Action class for unstacking a block off of another block and putting it on the table. The block to be unstacked
+	 * must be clear and must be on another block to be unstacked.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class UnstackAction extends Action{
 		
 		public UnstackAction(String name, Domain domain){
@@ -210,6 +311,12 @@ public class BlocksWorld implements DomainGenerator {
 	}
 	
 	
+	
+	/**
+	 * Propositional function class for evaluating whether one block is on another.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class OnBlockPF extends PropositionalFunction{
 
 		public OnBlockPF(String name, Domain domain) {
@@ -228,6 +335,12 @@ public class BlocksWorld implements DomainGenerator {
 		
 	}
 	
+	
+	/**
+	 * Propositional function class for evaluating whether one block is on a table.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class OnTablePF extends PropositionalFunction{
 		
 		public OnTablePF(String name, Domain domain) {
@@ -245,6 +358,12 @@ public class BlocksWorld implements DomainGenerator {
 		
 	}
 	
+	
+	/**
+	 * Propositional function class for evaluating whether one block is clear (has no block stacked on top of it).
+	 * @author James MacGlashan
+	 *
+	 */
 	public class ClearPF extends PropositionalFunction{
 		
 		public ClearPF(String name, Domain domain) {
@@ -262,6 +381,13 @@ public class BlocksWorld implements DomainGenerator {
 		
 	}
 	
+	
+	/**
+	 * Propositional function class for evaluating whether a block is a certain color. This
+	 * class will be instantiated for each possible color of a block.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class ColorPF extends PropositionalFunction{
 		
 		public ColorPF(String name, Domain domain) {
@@ -280,6 +406,11 @@ public class BlocksWorld implements DomainGenerator {
 	}
 	
 	
+	/**
+	 * Main method for exploring the domain. The initial state will have 3 red blocks starting on the table. By default this method will launch the visual explorer.
+	 * Pass a "t" argument to use the terminal explorer.
+	 * @param args
+	 */
 	public static void main(String [] args){
 		
 		BlocksWorld bw = new BlocksWorld();

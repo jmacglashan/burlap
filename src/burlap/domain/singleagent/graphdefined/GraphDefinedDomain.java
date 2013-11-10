@@ -20,20 +20,52 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 
 
+/**
+ * A domain generator for generating domains that are represented as graphs. The graph transitions may be stochastic.
+ * Input to the generator requires the number of graph nodes to be specified and the transition dynamics must be specified for
+ * each node in the graph.
+ * @author James MacGlashan
+ *
+ */
 public class GraphDefinedDomain implements DomainGenerator {
 
+	
+	/**
+	 * Constant for the name of the graph node attribute
+	 */
 	public static final String												ATTNODE = "node";
+	
+	/**
+	 * Constant for the name of the agent class
+	 */
 	public static final String												CLASSAGENT = "agent";
+	
+	/**
+	 * Constant for the base name of each action
+	 */
 	public static final String												BASEACTIONNAME = "action";
 	
 	
-	
+	/**
+	 * The number of state nodes in the graph
+	 */
 	protected int															numNodes;
+	
+	/**
+	 * The maximum number of actions available from any given state node.
+	 */
 	protected int															maxActions;
+	
+	/**
+	 * The state-action stochastic transition dynamics from each state node.
+	 */
 	protected Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>>	transitionDynamics;
 	
 
-	
+	/**
+	 * Initializes the generator to create a domain with the given number of state nodes in it.
+	 * @param numNodes the number of state nodes in the domain.
+	 */
 	public GraphDefinedDomain(int numNodes) {
 		this.numNodes = numNodes;
 		this.maxActions = 0;
@@ -46,6 +78,15 @@ public class GraphDefinedDomain implements DomainGenerator {
 	}
 	
 	
+	/**
+	 * Sets the probability {@link p} for transitioning to state node {@link tNode} after taking action number {@link action} in state node {@link srcNode}.
+	 * Note that this method also defines from which nodes an action can be executed. If this method is never called for source node i and action j, then
+	 * it will be assumed that action j cannot b executed in state node j.
+	 * @param srcNode the source node number from which an action will be taken
+	 * @param action the action to be taken
+	 * @param tNode the resulting state from taking the action in the given source node
+	 * @param p the probability of this transition occurring for the given action and source node.
+	 */
 	public void setTransition(int srcNode, int action, int tNode, double p){
 		
 		if(action >= this.maxActions){
@@ -85,6 +126,12 @@ public class GraphDefinedDomain implements DomainGenerator {
 	
 	
 	
+	/**
+	 * Returns a new state in which the agent is in the specified source node number.
+	 * @param d the domain object for the graph domain
+	 * @param sNode the state node number in which the agent will be.
+	 * @return a new state object where the agent is in the specified state node number.
+	 */
 	public static State getState(Domain d, int sNode){
 		State s = new State();
 		
@@ -96,17 +143,41 @@ public class GraphDefinedDomain implements DomainGenerator {
 		return s;
 	}
 	
+	
+	/**
+	 * Returns the state node number where the agent of the provided state is
+	 * @param s the state object to query
+	 * @return the state node number where the agent of the provided state is
+	 */
 	public static int getNodeId(State s){
 		return s.getFirstObjectOfClass(CLASSAGENT).getDiscValForAttribute(ATTNODE);
 	}
 	
 	
 	
+	/**
+	 * A class for specifying transition probabilities to result node states.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class NodeTransitionProbibility{
 		
+		/**
+		 * The resulting state
+		 */
 		public int 		transitionTo;
+		
+		/**
+		 * The probability of transitioning to the resulting state
+		 */
 		public double 	probabiltiy;
 		
+		
+		/**
+		 * Initializes transition probability
+		 * @param transitionTo the resulting state
+		 * @param probability the probability of transitioning to the resulting state
+		 */
 		public NodeTransitionProbibility(int transitionTo, double probability){
 			this.transitionTo = transitionTo;
 			this.probabiltiy = probability;
@@ -136,12 +207,31 @@ public class GraphDefinedDomain implements DomainGenerator {
 	
 	
 	
-	
+	/**
+	 * An action class for defining actions that can be taken from state nodes. The action can only be taken
+	 * in states for which transition dynamics for the given action are defined.
+	 * @author James MacGlashan
+	 *
+	 */
 	class GraphAction extends Action{
 
+		/**
+		 * Random object for sampling the stochastic graph transitions
+		 */
 		protected Random rand;
+		
+		/**
+		 * The action number of this action
+		 */
 		protected int aId;
 		
+		
+		/**
+		 * Initializes a graph action object for the given domain and for the action of the given number.
+		 * The name of this action will be the constant BASEACTIONNAMEi where i is the action number specified.
+		 * @param domain the domain of the action
+		 * @param aId the action identifier number
+		 */
 		public GraphAction(Domain domain, int aId){
 			super(BASEACTIONNAME+aId, domain, "");
 			this.aId = aId;
