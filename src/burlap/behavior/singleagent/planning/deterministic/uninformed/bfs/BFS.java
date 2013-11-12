@@ -21,6 +21,14 @@ import burlap.oomdp.singleagent.common.UniformCostRF;
 
 /**
  * Implements Breadth-first search.
+ * 
+ * <p/>
+ * If a terminal function is provided via the setter method defined for OO-MDPs, then the search algorithm will not expand any nodes
+ * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
+ * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but
+ * that is not explicitly represented in the transition dynamics.
+ * 
+ * 
  * @author James MacGlashan
  *
  */
@@ -72,6 +80,10 @@ public class BFS extends DeterministicPlanner {
 			if(gc.satisfies(s)){
 				lastVistedNode = node;
 				break;
+			}
+			
+			if(this.tf.isTerminal(s)){
+				continue; //don't expand terminal states
 			}
 			
 			//first get all grounded actions for this state

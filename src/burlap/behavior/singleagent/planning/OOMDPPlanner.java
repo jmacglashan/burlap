@@ -163,6 +163,7 @@ public abstract class OOMDPPlanner {
 		return rf;
 	}
 	
+	
 	/**
 	 * Returns the {@link burlap.behavior.statehashing.StateHashFactory} this planner uses.
 	 * @return the {@link burlap.behavior.statehashing.StateHashFactory} this planner uses.
@@ -172,6 +173,24 @@ public abstract class OOMDPPlanner {
 	}
 	
 	
+	
+	/**
+	 * Sets the reward function used by this planner
+	 * @param rf the reward function to be used by this planner
+	 */
+	public void setRf(RewardFunction rf) {
+		this.rf = rf;
+	}
+
+	/**
+	 * Sets the terminal state function used by this planner
+	 * @param tf the terminal function to be used by this planner
+	 */
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
+	}
+
+
 	/**
 	 * Sets the debug code to be used by calls to {@link burlap.debugtools.DPrint}
 	 * @param code the code to be used by {@link burlap.debugtools.DPrint}

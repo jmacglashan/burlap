@@ -30,6 +30,12 @@ import burlap.oomdp.singleagent.RewardFunction;
  * where d(n) is the depth of the search and N is the expected depth of the search. This algorithm has the effect of becoming less
  * greedy as the search continues, which allows it to find a decent solution quickly but avoid returning extremely sub-optimal solutions.
  * 
+ * <p/>
+ * If a terminal function is provided via the setter method defined for OO-MDPs, then the BestFirst search algorithm will not expand any nodes
+ * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
+ * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but
+ * that is not explicitly represented in the transition dynamics.
+ * 
  * 1. Pohl, Ira (August, 1973). "The avoidance of (relative) catastrophe, heuristic competence, genuine dynamic weighting and computational issues in heuristic problem solving". 
  * Proceedings of the Third International Joint Conference on Artificial Intelligence (IJCAI-73) 3. California, USA. pp. 11-17.
  * 
@@ -144,6 +150,10 @@ public class DynamicWeightedAStar extends AStar {
 			if(gc.satisfies(s)){
 				lastVistedNode = node;
 				break;
+			}
+			
+			if(this.tf.isTerminal(s)){
+				continue; //do not expand terminal state
 			}
 		
 			//generate successors

@@ -13,6 +13,11 @@ import burlap.oomdp.singleagent.RewardFunction;
  * Statically weighted A* [1] implementation. Epsilon is a parameter > 1. The larger the value the more greedy the search. The returned solution
  * is guaranteed to be at most \epsilon times the optimal solution cost.
  * 
+ * <p/>
+ * If a terminal function is provided via the setter method defined for OO-MDPs, then the BestFirst search algorithm will not expand any nodes
+ * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
+ * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but
+ * that is not explicitly represented in the transition dynamics.
  * 
  * 1. Pohl, Ira (1970). "First results on the effect of error in heuristic search". Machine Intelligence 5: 219-236.
  * 

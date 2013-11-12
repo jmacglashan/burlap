@@ -20,9 +20,10 @@ import burlap.oomdp.singleagent.RewardFunction;
 /**
  * This class extends the OOMDPlanner to provide the interface and common mechanisms for classic deterministic forward search planners.
  * Since classic forward search planners search for a goal state, this class makes use of a StateConditionTest object to indicate goal states.
- * Although these planners do not strictly compute policies, but instead action sequences, it also stores an internal partial policy
+ * Although these planners do not strictly compute policies, but instead action sequences to be executed from some initial state, 
+ * it also stores an internal partial policy
  * that specifies which action to take in each state that is on the path of a plan it has previously found. If the same
- * planner is used multiple times from different initial states (but same goal condition) it will progressively fill out the policy.
+ * planner is used multiple times from different initial states (but keep the same goal condition) it will progressively fill out the policy.
  * If the planner fails to find a valid plan, it will throw a {@link PlanningFailedException} runtime exception.
  * @author James MacGlashan
  *

@@ -21,6 +21,11 @@ import burlap.oomdp.singleagent.GroundedAction;
  * Best-first search requires checking if the open queue already has a search node stored in it and possibly modifying its priority and back pointers
  * if a better path to it has been found. To efficiently provide that functionality, this class makes use of a custom
  * hash-backed priority queue (heap) which performs contains tests using a hash map.
+ * <p/>
+ * If a terminal function is provided to subclasses of BestFirst, then the BestFirst search algorithm will not expand any nodes
+ * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
+ * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but
+ * that is not explicitly represented in the transition dynamics.
  * @author James MacGlashan
  *
  */
@@ -118,6 +123,10 @@ public abstract class BestFirst extends DeterministicPlanner {
 			if(gc.satisfies(s)){
 				lastVistedNode = node;
 				break;
+			}
+			
+			if(this.tf.isTerminal(s)){
+				continue; //do not expand nodes from a terminal state
 			}
 		
 			//generate successors

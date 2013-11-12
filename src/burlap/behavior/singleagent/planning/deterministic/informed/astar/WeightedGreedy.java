@@ -13,6 +13,13 @@ import burlap.oomdp.singleagent.RewardFunction;
 /**
  * A weighted greedy search in which the g(n) function (the cost to the current node) is weighted by a fraction 0 <= w <= 1.
  * When w = 0, the search is fully greedy. When w = 1, the search is optimal and equivalent to A*.
+ * 
+ * <p/>
+ * If a terminal function is provided via the setter method defined for OO-MDPs, then the search algorithm will not expand any nodes
+ * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
+ * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but
+ * that is not explicitly represented in the transition dynamics.
+ * 
  * @author James MacGlashan
  *
  */

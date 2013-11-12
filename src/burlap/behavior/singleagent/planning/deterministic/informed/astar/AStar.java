@@ -20,6 +20,12 @@ import burlap.oomdp.singleagent.RewardFunction;
  * Similarly, the heuristic function should return non-positive values and an admissible heuristic would be h(n) >= C(n) for all n.
  * A* computes the f-score as g(n) + h(n) where g(n) is the cost so far to node n and h(n) is the admissible heuristic to estimate
  * the remaining cost. Again, costs should be represented as negative reward.
+ * <p/>
+ * If a terminal function is provided via the setter method defined for OO-MDPs, then the search algorithm will not expand any nodes
+ * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
+ * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but
+ * that is not explicitly represented in the transition dynamics.
+ * 
  * @author James MacGlashan
  *
  */
