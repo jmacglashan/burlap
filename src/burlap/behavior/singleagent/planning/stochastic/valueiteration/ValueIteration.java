@@ -125,7 +125,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 		}
 		
-		DPrint.cl(10, "Passes: " + i);
+		DPrint.cl(this.debugCode, "Passes: " + i);
 		
 	}
 	
@@ -146,7 +146,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			return false; //no need for additional reachability testing
 		}
 		
-		DPrint.cl(11, "Starting reachability analysis");
+		DPrint.cl(this.debugCode, "Starting reachability analysis");
 		
 		//add to the open list
 		LinkedList <StateHashTuple> openList = new LinkedList<StateHashTuple>();
@@ -197,7 +197,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 		}
 		
-		DPrint.cl(11, "Finished reachability analysis; # states: " + mapToStateIndex.size());
+		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + mapToStateIndex.size());
 		
 		this.foundReachableStates = true;
 		
