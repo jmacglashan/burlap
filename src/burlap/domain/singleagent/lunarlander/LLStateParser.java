@@ -8,11 +8,27 @@ import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
 
-
+/**
+ * A state parser specifically for the lunar lander domain. This format is only defined for states that have only one
+ * landing pad object and agent object in them. The format is<br/>
+ * angle x y vx vy<br/>
+ * padLeftBound padRightBound padBottomBound padTopBound<br/>
+ * obstacle1LeftBound obstacle1RightBound obstacle1BottomBound obstacle1TopBound<br/>
+ * ...<br.>
+ * obstacleNLeftBound obstacleNRightBound obstacleNBottomBound obstacleNTopBound<br/>
+ * Where N is the number of obstacles in the state.
+ * @author James MacGlashan
+ *
+ */
 public class LLStateParser implements StateParser {
 
 	Domain domain;
 	
+	
+	/**
+	 * Initializes for the specific lunar lander domain instance.
+	 * @param domain
+	 */
 	public LLStateParser(Domain domain){
 		this.domain = domain;
 	}
