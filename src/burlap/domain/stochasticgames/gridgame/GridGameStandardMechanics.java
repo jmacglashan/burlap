@@ -3,6 +3,7 @@ package burlap.domain.stochasticgames.gridgame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -58,7 +59,8 @@ public class GridGameStandardMechanics extends JointActionModel {
 	
 	@Override
 	public List<TransitionProbability> transitionProbsFor(State s, JointAction ja) {
-		// TODO Auto-generated method stub
+		
+		List <TransitionProbability> tps = new ArrayList<TransitionProbability>();
 		
 		List <GroundedSingleAction> gsas = ja.getActionList();
 		
@@ -89,17 +91,37 @@ public class GridGameStandardMechanics extends JointActionModel {
 			List <Location2> basicMoveResults = this.resolvePositionSwaps(previousLocations, sp.locs);
 			
 			//finally, we need to find all stochastic outcomes from cell competition
+			List <LocationSetProb> cOutcomeSets = this.getPossibleCollisionOutcomes(previousLocations, basicMoveResults);
 			
+			//turn them into states with probabilities
+			for(LocationSetProb csp : cOutcomeSets){
+				
+				State ns = s.copy();
+				for(int i = 0; i < csp.locs.size(); i++){
+					GroundedSingleAction gsa = gsas.get(i);
+					Location2 loc = csp.locs.get(i);
+					
+					ObjectInstance agent = ns.getObject(gsa.actingAgent);
+					agent.setValue(GridGame.ATTX, loc.x);
+					agent.setValue(GridGame.ATTY, loc.y);
+				}
+				
+				double totalProb = sp.p * csp.p;
+				TransitionProbability tp = new TransitionProbability(ns, totalProb);
+				tps.add(tp);
+				
+			}
 			
 			
 		}
 		
 		
-		return null;
+		return this.combineDuplicateTransitionProbabilities(tps);
 	}
 
 	@Override
 	protected void actionHelper(State s, JointAction ja) {
+		
 		
 		List <GroundedSingleAction> gsas = ja.getActionList();
 		
@@ -135,6 +157,8 @@ public class GridGameStandardMechanics extends JointActionModel {
 			agent.setValue(GridGame.ATTY, loc.y);
 			
 		}
+		
+		
 
 	}
 	
@@ -178,7 +202,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 			return new Location2(0, 0);
 		}
 		
-		return null; //unknown action...
+		throw new RuntimeException("Error: Unknown action named '" + actionName + "' that GridGameStandardMechanics cannot handle");
 	}
 	
 	
@@ -193,6 +217,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	protected List<Location2> resolvePositionSwaps(List <Location2> originalPositions, List<Location2> desiredPositions){
 		
 		List<Location2> resolvedPositions = new ArrayList<GridGameStandardMechanics.Location2>(desiredPositions);
+		List <Location2> newNoopPositions = new ArrayList<GridGameStandardMechanics.Location2>();
 		
 		for(int i = 0; i < originalPositions.size(); i++){
 			Location2 a1op = originalPositions.get(i);
@@ -204,23 +229,55 @@ public class GridGameStandardMechanics extends JointActionModel {
 					//swap collision!
 					resolvedPositions.set(i, new Location2(a1op));
 					resolvedPositions.set(j, new Location2(a2op));
+					newNoopPositions.add(a1op);
+					newNoopPositions.add(a2op);
+					
 					break;
 				}
 				
 			}
 		}
 		
-		//make sure there are no other problems resulting from this
-		Map <Integer, List <Integer>> collissionSets = this.getColissionSets(resolvedPositions);
-		while(collissionSets.size() > 0){
-			for(Integer aid : collissionSets.keySet()){
-				resolvedPositions.set(aid, originalPositions.get(aid));
-			}
-			collissionSets = this.getColissionSets(resolvedPositions);
+		
+		if(newNoopPositions.size() > 0){
+			return this.backupNoOps(originalPositions, resolvedPositions, newNoopPositions);
 		}
 		
 		return resolvedPositions;
 		
+	}
+	
+	
+	
+	/**
+	 * Backups position changes by agents which can no longer move to their desired location. That is, if agent a wanted to move
+	 * to cell z, but failed for some reason (e.g., direct collision with another agent), then z would be added to the noops list
+	 * and this method would back up the effect of a's ability to change position to any agents that wanted to move into
+	 * a's position.
+	 * @param originalPositions the original position of agents in the previous state
+	 * @param desiredPositions the desired position where the agents want to go
+	 * @param noops the locations in which agents have been forced to stay from other events
+	 * @return the new resolved locations of all agents
+	 */
+	List <Location2> backupNoOps(List <Location2> originalPositions, List<Location2> desiredPositions, List <Location2> noops){
+		
+		List <Location2> resolved = new ArrayList<GridGameStandardMechanics.Location2>(desiredPositions);
+		
+		boolean needsUpdating = true;
+		while(needsUpdating){
+			needsUpdating = false;
+			for(int i = 0; i < resolved.size(); i++){
+				Location2 dl = resolved.get(i);
+				Location2 ol = originalPositions.get(i);
+				if(!dl.equals(ol) && noops.contains(dl)){
+					resolved.set(i, ol);
+					noops.add(ol);
+					needsUpdating = true;
+				}
+			}
+		}
+		
+		return resolved;
 	}
 	
 	
@@ -295,7 +352,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 		List <LocationSetProb> allOutcomes = new ArrayList<GridGameStandardMechanics.LocationSetProb>();
 		
-		List <Map <Integer, Integer>> winnerAssignments = null;
+		List <Map <Integer, Integer>> winnerAssignments = this.getAllPossibleCollisionWinnerAssignment(collissionSets);
 		double p = 1. / (double)winnerAssignments.size();
 		for(Map <Integer, Integer> winners : winnerAssignments){
 			List <Location2> finalPoses = new ArrayList<GridGameStandardMechanics.Location2>();
@@ -677,10 +734,133 @@ public class GridGameStandardMechanics extends JointActionModel {
 	protected List<Map <Integer, Integer>> getAllPossibleCollisionWinnerAssignment(Map <Integer, List <Integer>> collissionSets){
 		
 		
-		return null;
+		//first get all the disjoint collision lists
+		Set <Integer> collisionSetGeneratedFor = new HashSet<Integer>();
+		List <List<Integer>> collisionLists = new ArrayList<List<Integer>>();
+		for(Map.Entry<Integer, List<Integer>> e : collissionSets.entrySet()){
+			if(collisionSetGeneratedFor.contains(e.getKey())){
+				continue;
+			}
+			collisionLists.add(e.getValue());
+		}
+		
+		
+		//then get all possible assignments for them
+		List <List <Integer>> winnerAssignments = new ArrayList<List<Integer>>();
+		int [] assignment = new int[collisionLists.size()];
+		this.generateAllPossibleCollisionWinnerAssignments(collisionLists, 0, assignment, winnerAssignments);
+		
+		
+		//finally, package it up a list of map interfaces
+		List<Map <Integer, Integer>> result = new ArrayList<Map<Integer,Integer>>(winnerAssignments.size());
+		for(List <Integer> wa : winnerAssignments){
+			Map<Integer, Integer> cmap = new HashMap<Integer, Integer>();
+			for(int i = 0; i < wa.size(); i++){
+				List <Integer> possibleWinners = collisionLists.get(i);
+				int w = wa.get(i);
+				for(int pw : possibleWinners){
+					cmap.put(pw, w);
+				}
+			}
+			result.add(cmap);
+			
+		}
+		
+		
+		return result;
 	}
 	
 	
+	protected void generateAllPossibleCollisionWinnerAssignments(List <List<Integer>> collisionLists, int i, int [] assignment, List <List<Integer>> discovered){
+		
+		if(i == collisionLists.size()){
+			//package it up
+			List <Integer> assignmentList = new ArrayList<Integer>(assignment.length);
+			for(int a : assignment){
+				assignmentList.add(a);
+			}
+			discovered.add(assignmentList);
+			return ;
+		}
+		
+		//otherwise we're in recursive step
+		List<Integer> possibleWinners = collisionLists.get(i);
+		for(int w : possibleWinners){
+			assignment[i] = w;
+			this.generateAllPossibleCollisionWinnerAssignments(collisionLists, i+1, assignment, discovered);
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Iterates through a list of transition probability objects and combines any that refer to the same state
+	 * @param srcTPs and initial list of transition probability objects
+	 * @return an output list of transition probability objects in which any duplicate states have been mereged
+	 */
+	protected List <TransitionProbability> combineDuplicateTransitionProbabilities(List <TransitionProbability> srcTPs){
+		
+		double totalProb = 0.;
+		List <TransitionProbability> result = new ArrayList<TransitionProbability>(srcTPs.size());
+		Set <Integer> marked = new HashSet<Integer>();
+		for(int i = 0; i < srcTPs.size(); i++){
+			if(marked.contains(i)){
+				continue;
+			}
+			TransitionProbability tp = srcTPs.get(i);
+			double sumP = tp.p;
+			for(int j = i+1; j < srcTPs.size(); j++){
+				if(marked.contains(j)){
+					continue;
+				}
+				TransitionProbability cmpTP = srcTPs.get(j);
+				if(this.agentsEqual(tp.s, cmpTP.s)){
+					sumP += cmpTP.p;
+					marked.add(j);
+				}
+			}
+			result.add(new TransitionProbability(tp.s, sumP));
+			totalProb += sumP;
+		}
+		
+		if(Math.abs(1. - totalProb) > 0.000000000001){
+			throw new RuntimeException("Error, transition probabilities do not sum to 1");
+		}
+		
+		return result;
+		
+	}
+	
+	
+	/**
+	 * Returns true if the agent objects between these two states are equal
+	 * @param s1 the first state
+	 * @param s2 the second state
+	 * @return true if the agent objects between these two states are equal
+	 */
+	protected boolean agentsEqual(State s1, State s2){
+		
+		List<ObjectInstance> agents1 = s1.getObjectsOfTrueClass(GridGame.CLASSAGENT);
+		
+		for(ObjectInstance a1 : agents1){
+			ObjectInstance a2 = s2.getObject(a1.getName());
+			
+			int x1 = a1.getDiscValForAttribute(GridGame.ATTX);
+			int x2 = a2.getDiscValForAttribute(GridGame.ATTX);
+			
+			int y1 = a1.getDiscValForAttribute(GridGame.ATTY);
+			int y2 = a2.getDiscValForAttribute(GridGame.ATTY);
+			
+			if(x1 != x2 || y1 != y2){
+				return false;
+			}
+			
+		}
+		
+		return true;
+	}
 	
 	
 	/**
@@ -758,11 +938,29 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 	
 	
+	/**
+	 * A class for holding a location and a probability associated with that location.
+	 * @author James MacGlashan
+	 *
+	 */
 	class Location2Prob{
 		
+		/**
+		 * The location
+		 */
 		public Location2 l;
+		
+		/**
+		 * The probability
+		 */
 		public double p;
 		
+		
+		/**
+		 * Initializes with the given location and probability
+		 * @param l the location
+		 * @param p the probability
+		 */
 		public Location2Prob(Location2 l, double p){
 			this.l = l;
 			this.p = p;
@@ -770,11 +968,30 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 	}
 	
+	
+	/**
+	 * A class for holding the joint probability for a particular set of location outcomes for each agent.
+	 * @author James MacGlashan
+	 *
+	 */
 	class LocationSetProb{
 		
+		/**
+		 * The location outcomes for each agent
+		 */
 		public List <Location2> locs;
+		
+		/**
+		 * The probability for this outcome sequence
+		 */
 		public double p;
 		
+		
+		/**
+		 * Initializes with a list of outcome locations for each agent and the probability of that joint outcome
+		 * @param locs the location outcomes
+		 * @param p the joint probability
+		 */
 		public LocationSetProb(List <Location2> locs, double p){
 			this.locs = locs;
 			this.p = p;

@@ -15,9 +15,24 @@ import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
 
-
+/**
+ * A class for visualizing the grid games. Agents are visualized as circles and goal locations
+ * are visualized as square cells. Different agents are rendered different colors. Personal
+ * goals for each agent are the same color as the agent for whom the goal corresponds, except
+ * at a slightly darker hue. Universal goals are colored grey. Walls are drawn either as
+ * solid lines for solid walls, or as dashed lines for semi-walls.
+ * @author James MacGlashan
+ *
+ */
 public class GGVisualizer {
 
+	
+	/**
+	 * Generates a visualizer for a grid game
+	 * @param maxX the width of the playing field
+	 * @param maxY the height of the playing field
+	 * @return a visualizer for the grid game
+	 */
 	public static Visualizer getVisualizer(int maxX, int maxY){
 		
 		Visualizer v = new Visualizer();
@@ -44,13 +59,42 @@ public class GGVisualizer {
 	}
 	
 	
+	
+	/**
+	 * A painter that can be used for either agent objects or goal objects.
+	 * @author James MacGlashan
+	 *
+	 */
 	static class CellPainter implements ObjectPainter{
 
+		/**
+		 * The width of the playing field
+		 */
 		int maxX;
+		
+		/**
+		 * The height of the playing field
+		 */
 		int maxY;
+		
+		/**
+		 * The color list that corresponds to each agent.
+		 */
 		List<Color> cols;
+		
+		/**
+		 * The shape of the cell that should be drawn; 0 for a rectangle, 1 for a circle.
+		 */
 		int shape;
 		
+		
+		/**
+		 * Initializes the cell painter
+		 * @param mx the width of the playing field
+		 * @param my the height of the playing field
+		 * @param cols the colors that correspond to each agent
+		 * @param s the shape to paint; 0 for rectangles, 1 for circles.
+		 */
 		public CellPainter(int mx, int my, List <Color> cols, int s){
 			this.maxX = mx;
 			this.maxY = my;
@@ -97,12 +141,35 @@ public class GGVisualizer {
 	
 	
 	
+	/**
+	 * Draws a wall object. Solid walls will be drawn with a solid line and semi-walls with a dashed line
+	 * @author James MacGlashan
+	 *
+	 */
 	static class WallPainter implements ObjectPainter{
 
+		/**
+		 * The width of the playing field
+		 */
 		int maxX;
+		
+		/**
+		 * The height of the playing field
+		 */
 		int maxY;
+		
+		/**
+		 * Whether this painter is for vertical walls (true) or horizontal walls (false).
+		 */
 		boolean vertical;
 		
+		
+		/**
+		 * Initializes the painter.
+		 * @param mx the width of the playing field
+		 * @param my the height of the playing field
+		 * @param vert true if this painter is for vertical walls, false if for horizontal walls
+		 */
 		public WallPainter(int mx, int my, boolean vert){
 			this.maxX = mx;
 			this.maxY = my;
