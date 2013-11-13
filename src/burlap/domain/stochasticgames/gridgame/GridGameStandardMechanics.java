@@ -1,6 +1,7 @@
 package burlap.domain.stochasticgames.gridgame;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,15 @@ import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 
 
+/**
+ * This class defines the standard transition dynamics for a grid game. By default, the dynamics set a 0.5 probability of agents being able to
+ * move through semi-walls. The semi-wall pass through probability, however, may be changed by a parameter to a constructor.
+ * If two agents adjacent agents try to move into each others locations, no one will move. If an agent tries
+ * to move into a cell that the other agent is leaving, then they both will move. If two agents try to move into the same location,
+ * then only one of them will randomly make it, while the other will be unmoved in their position.
+ * @author James MacGlashan
+ *
+ */
 public class GridGameStandardMechanics extends JointActionModel {
 
 	Random 						rand;
@@ -24,15 +34,67 @@ public class GridGameStandardMechanics extends JointActionModel {
 	double						pMoveThroughSWall;
 	
 	
+	/**
+	 * Initializes the mechanics for the given domain and sets the semi-wall pass through probability to 0.5;
+	 * @param d the domain object
+	 */
 	public GridGameStandardMechanics(Domain d){
 		rand = RandomFactory.getMapped(0);
 		domain = d;
 		pMoveThroughSWall = 0.5;
 	}
 	
+	
+	/**
+	 * Initializes the mechanics for the given domain and sets the semi-wall pass through probability to semiWallPassThroughProb.
+	 * @param d d the domain object
+	 * @param semiWallPassThroughProb the probability that an agent will pass through a semi-wall.
+	 */
+	public GridGameStandardMechanics(Domain d, double semiWallPassThroughProb){
+		rand = RandomFactory.getMapped(0);
+		domain = d;
+		pMoveThroughSWall = semiWallPassThroughProb;
+	}
+	
 	@Override
 	public List<TransitionProbability> transitionProbsFor(State s, JointAction ja) {
 		// TODO Auto-generated method stub
+		
+		List <GroundedSingleAction> gsas = ja.getActionList();
+		
+		//need to force no movement when trying to enter space of a noop agent
+		List <Location2> previousLocations = new ArrayList<GridGameStandardMechanics.Location2>();
+		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
+		
+		for(GroundedSingleAction gsa : gsas){
+			Location2 loc = this.getLocation(s, gsa.actingAgent);
+			previousLocations.add(loc);
+			if(gsa.action.actionName.equals(GridGame.ACTIONNOOP)){
+				noopLocations.add(loc);
+			}
+		}
+		
+		List <List<Location2Prob>> possibleOutcomes = new ArrayList<List<Location2Prob>>();
+		for(int i = 0; i < ja.size(); i++){
+			Location2 loc = previousLocations.get(i);
+			GroundedSingleAction gsa = gsas.get(i);
+			possibleOutcomes.add(this.getPossibleLocationsFromWallCollisions(s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
+		}
+		
+		List <LocationSetProb> outcomeSets = this.getAllLocationSets(possibleOutcomes);
+		
+		for(LocationSetProb sp : outcomeSets){
+			
+			//resolve collisions from attempted swaps, which is deterministic and does not need to be recursed
+			List <Location2> basicMoveResults = this.resolvePositionSwaps(previousLocations, sp.locs);
+			
+			//finally, we need to find all stochastic outcomes from cell competition
+			
+			
+			
+		}
+		
+		
 		return null;
 	}
 
@@ -77,6 +139,12 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 	
 	
+	/**
+	 * Returns the x-y position of an agent stored in a Location2 object.
+	 * @param s the state in which the agent exists
+	 * @param agentName the name of the agent.
+	 * @return a {@link Locaiton2} object containing the agents position in the world.
+	 */
 	protected Location2 getLocation(State s, String agentName){
 		
 		ObjectInstance a = s.getObject(agentName);
@@ -86,6 +154,12 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 	
 	
+	/**
+	 * Returns the attempted change in position by the agent for the given action. For instance, if the action is north,
+	 * it would result in an attempted position change of (0, +1).
+	 * @param actionName the action taken.
+	 * @return the attempted change in position for the given action.
+	 */
 	protected Location2 attemptedDelta(String actionName){
 		
 		if(actionName.equals(GridGame.ACTIONNORTH)){
@@ -108,6 +182,14 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 	
 	
+	
+	/**
+	 * Returns the position of each agent after accounting for collisions that are a result of agents
+	 * trying to move into each others previous locations.
+	 * @param originalPositions the original position of the agents before their actions were taken.
+	 * @param desiredPositions the new position the agents are trying to go into
+	 * @return the positions of the agents accounting for collisions.
+	 */
 	protected List<Location2> resolvePositionSwaps(List <Location2> originalPositions, List<Location2> desiredPositions){
 		
 		List<Location2> resolvedPositions = new ArrayList<GridGameStandardMechanics.Location2>(desiredPositions);
@@ -141,6 +223,14 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 	}
 	
+	
+	/**
+	 * Resolves collisions that occur when two or more agents try to enter the same cell, in which case only one
+	 * agent will make it into the position and the rest will stay in place
+	 * @param originalPositions the positions of the agents in the original state before their actions were taken
+	 * @param desiredPositions the desired locations of the agents
+	 * @return a list of the resulting positions having accounted for collisions.
+	 */
 	protected List<Location2> resolveCollisions(List<Location2> originalPositions, List <Location2> desiredPositions){
 		
 		//get movement collisions
@@ -189,6 +279,73 @@ public class GridGameStandardMechanics extends JointActionModel {
 		return finalPoses;
 	}
 	
+	
+	protected List <LocationSetProb> getPossibleCollisionOutcomes(List<Location2> originalPositions, List <Location2> desiredPositions){
+		
+		//get movement collisions
+		Map <Integer, List <Integer>> collissionSets = this.getColissionSets(desiredPositions);
+		
+		if(collissionSets.size() == 0){
+			//then this is trivially just the set of desired positions
+			List <LocationSetProb> outcomes = new ArrayList<GridGameStandardMechanics.LocationSetProb>(1);
+			outcomes.add(new LocationSetProb(new ArrayList<GridGameStandardMechanics.Location2>(desiredPositions), 1.));
+			return outcomes;
+			
+		}
+		
+		List <LocationSetProb> allOutcomes = new ArrayList<GridGameStandardMechanics.LocationSetProb>();
+		
+		List <Map <Integer, Integer>> winnerAssignments = null;
+		double p = 1. / (double)winnerAssignments.size();
+		for(Map <Integer, Integer> winners : winnerAssignments){
+			List <Location2> finalPoses = new ArrayList<GridGameStandardMechanics.Location2>();
+			
+			for(int i = 0; i < originalPositions.size(); i++){
+				if(winners.containsKey(i)){
+					if(winners.get(i) != i){
+						//this player lost and stays in place
+						finalPoses.add(originalPositions.get(i));
+					}
+					else{
+						//this player wins and gets to go to desired location
+						finalPoses.add(desiredPositions.get(i));
+					}
+				}
+				else{
+					//no competitors so the agent goes where it wants
+					finalPoses.add(desiredPositions.get(i));
+				}
+			}
+			
+			//it's possible that a losing collision means the agent's spot is no longer available, causing another collision
+			//in this case all agents affected by loser are pushed back
+			collissionSets = this.getColissionSets(finalPoses);
+			while(collissionSets.size() > 0){
+				
+				Set <Integer> pushedBackAgents = collissionSets.keySet();
+				for(Integer aid : pushedBackAgents){
+					finalPoses.set(aid, originalPositions.get(aid));
+				}
+				
+				collissionSets = this.getColissionSets(finalPoses);
+				
+			}
+			
+			LocationSetProb lsp = new LocationSetProb(finalPoses, p);
+			allOutcomes.add(lsp);
+			
+		}
+		
+		
+		return allOutcomes;
+		
+	}
+	
+	/**
+	 * Takes as input the set of collisions and randomly selects a winner
+	 * @param collissionSets the set of collisions; maps from one agent index to a list of the agents with whom he is competing for a cell
+	 * @return A map from each agent involved in a collision to the winning agent of that collision.
+	 */
 	protected Map <Integer, Integer> getWinningAgentMovements(Map <Integer, List <Integer>> collissionSets){
 		
 		Map <Integer, Integer> winners = new HashMap<Integer, Integer>();
@@ -210,6 +367,13 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 	}
 	
+	
+	/**
+	 * Returns with whom each agent is in a collision competition for a cell.
+	 * @param candidatePositions a list of the positions to which each agent would like to go; the Location2 in index 1 indicates the location the 1th index agent
+	 * wants to go to.
+	 * @return A map from the index of each agent to a list of the index of agents with whom there is competition for a cell
+	 */
 	protected Map <Integer, List <Integer>> getColissionSets(List <Location2> candidatePositions){
 		
 		Map <Integer, List <Integer>> collisionSets = new HashMap<Integer, List<Integer>>();
@@ -242,6 +406,17 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 	}
 	
+	
+	/**
+	 * Returns a movement result of the agent. If the agent tries to pass through a semi-wall, then it is randomly
+	 * selected whether the agent succeeds or not. If the agent tries to move through a solid wall or to a location
+	 * where there is another agent who is not moving, then no change occurs.
+	 * @param s the state containing the agent
+	 * @param p0 the initial position of the agent
+	 * @param delta the desired change of position.
+	 * @param agentNoOpLocs the locations occupied by agents who are not moving.
+	 * @return The resulting location of this agents movement.
+	 */
 	protected Location2 sampleBasicMovement(State s, Location2 p0, Location2 delta, List <Location2> agentNoOpLocs){
 		
 		Location2 p1 = p0.add(delta);
@@ -272,6 +447,81 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 	
 	
+	
+	/**
+	 * Returns the list of possible outcome locations for a given start point and desired position change.
+	 * @param s the state in which the changes would occur
+	 * @param p0 the initial location
+	 * @param delta the desired change in position
+	 * @param agentNoOpLocs the locations occupied by agents who are not moving
+	 * @return the list of possible outcome locations in which the agent could wind up
+	 */
+	protected List <Location2Prob> getPossibleLocationsFromWallCollisions(State s, Location2 p0, Location2 delta, List <Location2> agentNoOpLocs){
+		
+		List <Location2Prob> locs = new ArrayList<GridGameStandardMechanics.Location2Prob>(2);
+		
+		Location2 p1 = p0.add(delta);
+		for(Location2 anl : agentNoOpLocs){
+			if(p1.equals(anl)){
+				//definitely cannot move to desired position
+				p1 = p1.subtract(delta);
+				locs.add(new Location2Prob(p1, 1.));
+				return locs;
+			}
+		}
+		
+		if(delta.x != 0){
+			int wc = this.wallCollision(p0, delta, s.getObjectsOfTrueClass(GridGame.CLASSDIMVWALL), true);
+			if(wc == 0){
+				locs.add(new Location2Prob(p1, 1.)); //agent freely moves
+			}
+			else if(wc == 1){
+				p1 = p1.subtract(delta);
+				locs.add(new Location2Prob(p1, 1.)); //agent certainly cannot move
+			}
+			else{
+				//agent moves with some probability
+				locs.add(new Location2Prob(p1, this.pMoveThroughSWall));
+				locs.add(new Location2Prob(p1.subtract(delta), 1.-this.pMoveThroughSWall));
+			}
+		}
+		else if(delta.y != 0){
+			int wc = this.wallCollision(p0, delta, s.getObjectsOfTrueClass(GridGame.CLASSDIMHWALL), false);
+			if(wc == 0){
+				locs.add(new Location2Prob(p1, 1.)); //agent freely moves
+			}
+			else if(wc == 1){
+				p1 = p1.subtract(delta);
+				locs.add(new Location2Prob(p1, 1.)); //agent certainly cannot move
+			}
+			else{
+				//agent moves with some probability
+				locs.add(new Location2Prob(p1, this.pMoveThroughSWall));
+				locs.add(new Location2Prob(p1.subtract(delta), 1.-this.pMoveThroughSWall));
+			}
+		}
+		else{
+			//agent is not trying to change location
+			locs.add(new Location2Prob(p1, 1.));
+		}
+		
+		
+		
+		return locs;
+		
+	}
+	
+	
+	
+	/**
+	 * Return true if the agent is able to move in the desired location; false if the agent moves into a solid wall
+	 * or if the agent randomly fails to move through a semi-wall that is in the way.
+	 * @param p0 the initial location of the agent
+	 * @param delta the desired change in direction of the agent
+	 * @param walls the list of walls in the world
+	 * @param vertical whether the list of provided walls are vertical or horizontal walls
+	 * @return
+	 */
 	protected boolean sampleWallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
 		
 		for(int i = 0; i < walls.size(); i++){
@@ -293,6 +543,45 @@ public class GridGameStandardMechanics extends JointActionModel {
 		return false;
 	}
 	
+	
+	
+	/**
+	 * Indicates whether there are any wall collisions.
+	 * @param p0 the original location
+	 * @param delta the desired change in direction
+	 * @param walls possible wall objects
+	 * @param vertical true if the wall objects are vertical; false if they are horizontal
+	 * @return 0 if there is no collision with a wall, 1 if there is a collision with a solid wall, 2 if there is a potential collision with a semi-wall
+	 */
+	protected int wallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
+		
+		for(int i = 0; i < walls.size(); i++){
+			ObjectInstance w = walls.get(i);
+			if(this.crossesWall(p0, delta, w, vertical)){
+				int wt = w.getDiscValForAttribute(GridGame.ATTWT);
+				if(wt == 0){ //solid wall
+					return 1;
+				}
+				else if(wt == 1){ //stochastic wall
+					return 2;
+				}
+			}
+		}
+		
+		return 0;
+		
+	}
+	
+	
+	
+	/**
+	 * Returns true if the agent would cross a given wall instance given a movement attempt.
+	 * @param p0 the initial state of the agent
+	 * @param delta the desired change in direction
+	 * @param w wall instance to check
+	 * @param vertical true if the wall is a vertical wall; false if the wall is a horizontal wall
+	 * @return whether the agent's movement would cross a wall
+	 */
 	protected boolean crossesWall(Location2 p0, Location2 delta, ObjectInstance w, boolean vertical){
 		
 		int a0, a1, d;
@@ -337,25 +626,118 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 	}
 	
+	
+	
+	/**
+	 * Takes a list of possible location outcomes for each agent and generates all joint location outcomes
+	 * @param locOutcomes a list of possible location outcomes
+	 * @return all joint location outcomes
+	 */
+	protected List<LocationSetProb> getAllLocationSets(List<List<Location2Prob>> locOutcomes){
+		
+		List <LocationSetProb> sets = new ArrayList<GridGameStandardMechanics.LocationSetProb>();
+		Location2 [] locArray = new Location2[locOutcomes.size()];
+		generateAllLocationSetsHelper(locOutcomes, 0, locArray, 1., sets);
+		
+		return sets;
+	}
+	
+	
+	/**
+	 * This method will recursively generate all possible joint location outcomes for a list of possible outcomes for each agent 
+	 * @param locOutcomes the list of possible location outcomes for each agent
+	 * @param i the index from which to generate possible outcomes in a depth-first manner
+	 * @param locArray an array holding the current assignments for a given depth
+	 * @param stackedProb the probability of this location set occurring
+	 * @param discovered the discovered combinations thus far
+	 */
+	protected void generateAllLocationSetsHelper(List<List<Location2Prob>> locOutcomes, int i, Location2 [] locArray, double stackedProb, List<LocationSetProb> discovered){
+		
+		if(i == locOutcomes.size()){
+			//bundle them up
+			List <Location2> locs = new ArrayList<GridGameStandardMechanics.Location2>(locArray.length);
+			Collections.addAll(locs, locArray);
+			LocationSetProb lsp = new LocationSetProb(locs, stackedProb);
+			discovered.add(lsp);
+			return ;
+		}
+		
+		//otherwise we're in recursive step
+		List<Location2Prob> individualOutcomes = locOutcomes.get(i);
+		for(Location2Prob lp : individualOutcomes){
+			locArray[i] = lp.l;
+			this.generateAllLocationSetsHelper(locOutcomes, i+1, locArray, stackedProb*lp.p, discovered);
+		}
+		
+	}
+	
+	
+	
+	
+	protected List<Map <Integer, Integer>> getAllPossibleCollisionWinnerAssignment(Map <Integer, List <Integer>> collissionSets){
+		
+		
+		return null;
+	}
+	
+	
+	
+	
+	/**
+	 * A class for storing 2 dimensional position information. Add and subtract operations are defined for it.
+	 * @author James MacGlashan
+	 *
+	 */
 	class Location2{
 		
+		/**
+		 * The x position
+		 */
 		public int x;
+		
+		/**
+		 * The y position
+		 */
 		public int y;
 		
+		
+		/**
+		 * Constructs with the given position
+		 * @param x the x position
+		 * @param y the y position
+		 */
 		public Location2(int x, int y){
 			this.x = x;
 			this.y = y;
 		}
 		
+		/**
+		 * Constructs a new instance from a previous {@link Location2} instance
+		 * @param l the {@link Location2} instance to copy.
+		 */
 		public Location2(Location2 l){
 			this.x = l.x;
 			this.y = l.y;
 		}
 		
+		
+		/**
+		 * Returns a new {@link Location2} object that is the sum of this object and the provided object. This objects values
+		 * are not affected by this operation.
+		 * @param o the other object whose values should be added.
+		 * @return a new {@link Location2} object that is the sum of this object and the provided object.
+		 */
 		public Location2 add(Location2 o){
 			return new Location2(x+o.x, y+o.y);
 		}
 		
+		
+		/**
+		 * Returns a new {@link Location2} object that is the subtraction of a provided object from this object (this - o). This objects values
+		 * are not affected by this operation.
+		 * @param o the other object whose values should be subtract.
+		 * @return a new {@link Location2} object that is the subtraction of a provided object from this object (this - o).
+		 */
 		public Location2 subtract(Location2 o){
 			return new Location2(x-o.x, y-o.y);
 		}
@@ -371,6 +753,31 @@ public class GridGameStandardMechanics extends JointActionModel {
 			
 			return x == ol.x && y == ol.y;
 			
+		}
+		
+	}
+	
+	
+	class Location2Prob{
+		
+		public Location2 l;
+		public double p;
+		
+		public Location2Prob(Location2 l, double p){
+			this.l = l;
+			this.p = p;
+		}
+		
+	}
+	
+	class LocationSetProb{
+		
+		public List <Location2> locs;
+		public double p;
+		
+		public LocationSetProb(List <Location2> locs, double p){
+			this.locs = locs;
+			this.p = p;
 		}
 		
 	}
