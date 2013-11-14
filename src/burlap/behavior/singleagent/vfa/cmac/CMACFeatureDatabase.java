@@ -20,8 +20,38 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
+
+/**
+ * A feature database using CMACs [1] AKA Tiling Coding over OO-MDP state attributes. The CMAC can be set to define
+ * multiple tilings, each specified for different sets attributes or different object classes. The multiple tilings
+ * can be uniformly offset from each other, or randomly jittered to different alignments. The set of state
+ * (or state-action) features stored are dynamically created as new states are introduced. That is, {@link Tiling}
+ * objects procedurally determine which tile a state is in, but the associated state feature id for each state
+ * feature is determined as needed.
+ * <p/>
+ * Note that different tilings in a CMAC can be defined over different attributes and object classes. For instance
+ * a CMAC can consist of two one dimensional tilings that are over different attibutes, such as one that tiles an
+ * x position while another tiles the y position. Alternatively, a tiling may be multidimensional with different tilings
+ * being defined over different setns of attributes. Having different tilings defined over different sets of attributes
+ * enables the VFA to capture value function independence over different attributes.
+ * 
+ * 
+ * 
+ * <p/>
+ * 
+ * 1. Albus, James S. "A theory of cerebellar function." Mathematical Biosciences 10.1 (1971): 25-61
+ * @author James MacGlashan
+ *
+ */
 public class CMACFeatureDatabase implements FeatureDatabase {
 
+	
+	/**
+	 * Enum for specifying whether tilings should have their tile alignments should be chossen so that they
+	 * are randomly jittered from each other, or if each subsequent tiling should be offset by a uniform amount.
+	 * @author James MacGlashan
+	 *
+	 */
 	public enum TilingArrangement{
 		
 		RANDOMJITTER(0),
@@ -51,23 +81,61 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	}
 	
 	
+	/**
+	 * The number of tilings
+	 */
 	protected int													nTilings;
+	
+	/**
+	 * Whether each tiling should have its offset alignment be randomly jittered or uniformly spaced.
+	 */
 	protected TilingArrangement										arrangement;
 	
+	/**
+	 * A random object for jittering the tile alignments.
+	 */
 	protected Random												rand;
 	
+	
+	/**
+	 * The set of tilings for producing state features
+	 */
 	protected List <Tiling>											tilings;
+	
+	/**
+	 * For each tiling, a map from state tiles to {@link StoredFeaturesForTiling} objects, which contain
+	 * distinct state features for each action. This is useful when doing approximation for state-action values.
+	 */
 	protected List<Map<StateTile, StoredFeaturesForTiling>>			actionTilings;
+	
+	/**
+	 * For each tiling, a map from state tiles to an integer representing their feature identifier
+	 */
 	protected List<Map<StateTile, Integer>>							stateTilings;
 	
 	
+	/**
+	 * The identifier to use for the next state-action pair feature
+	 */
 	protected int													nextActionFeatureId = 0;
+	
+	/**
+	 * The identifier to use for the next state feature.
+	 */
 	protected int													nextStateFeatureId = 0;
 	
 	
 	
 	
-	
+	/**
+	 * Initializes with a set of {@link nTilings} and sets
+	 * the offset arrangement for subsequent tilings to be determined according to {@link arrangement}.
+	 * The OO-MDP object classes attributes over which the tilings will be defined are unspecified at the start
+	 * and will need to be set using other methods on this object such as {@link addSpecificationForAllTilings(String, Attribute, double)}
+	 * or {@link addSpecificaitonForTiling(int, String, Attribute, double)}.
+	 * @param nTilings the number of tilings that will be created.
+	 * @param arrangement either RANDOMJITTER or UNIFORM.
+	 */
 	public CMACFeatureDatabase(int nTilings, TilingArrangement arrangement) {
 		
 		this.nTilings = nTilings;
@@ -89,6 +157,13 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		
 	}
 	
+	/**
+	 * Causes all tilings in this CMAC to be defined over the given attribute for the given OO-MDP class. Along that
+	 * dimension, tilings will have a width of {@link windowSize}.
+	 * @param className the OO-MDP class name for which the provided attribute will be tiled.
+	 * @param attribute the OO-MDP attribute that will be tiled
+	 * @param windowSize the width of tilings over the specified attribute and OO-MDP class.
+	 */
 	public void addSpecificationForAllTilings(String className, Attribute attribute, double windowSize){
 		
 		for(int i = 0; i < nTilings; i++){
@@ -97,6 +172,14 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		
 	}
 	
+	
+	/**
+	 * Causes the {@link i}th tiling in this CMAC to be defined over the given attribute for the given OO-MDP class. Along that
+	 * dimension, the tiling will have a width of {@link windowSize}.
+	 * @param className the OO-MDP class name for which the provided attribute will be tiled.
+	 * @param attribute the OO-MDP attribute that will be tiled
+	 * @param windowSize the width of tilings over the specified attribute and OO-MDP class.
+	 */
 	public void addSpecificaitonForTiling(int i, String className, Attribute attribute, double windowSize){
 		
 		double bucketBoundary = 0.;
@@ -115,6 +198,12 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	}
 	
 	
+	/**
+	 * After all the tiling specifications have been set, this method can be called to produce a linear
+	 * VFA object.
+	 * @param defaultWeightValue the default value weights for the CMAC features will use.
+	 * @return
+	 */
 	public ValueFunctionApproximation generateVFA(double defaultWeightValue){
 		return new LinearVFA(this, defaultWeightValue);
 	}
@@ -199,26 +288,62 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	
 	
 	
-	
+	/**
+	 * A class that is used to assign unique feature identifiers for each action for each state tile.
+	 * @author James MacGlashan
+	 *
+	 */
 	class StoredFeaturesForTiling{
 		
+		/**
+		 * The tile for which unique feature identifiers should be assigned
+		 */
 		public StateTile						storedStateTile;
+		
+		/**
+		 * The features assigned to each action that could be applied to states in the associate tile
+		 */
 		public List <StoredActionFeature>		storedActionFeatures;
 		
+		
+		/**
+		 * Initializes for a given state tile and an empty list of actions associated with it.
+		 * @param stateTile the state tile for which unique state-action features will be associated.
+		 */
 		public StoredFeaturesForTiling(StateTile stateTile){
 			this.storedStateTile = stateTile;
 			this.storedActionFeatures = new ArrayList<StoredActionFeature>();
 		}
 		
+		
+		/**
+		 * Initializes for a given state tile and list of unique action features.
+		 * @param stateTile the state tile for which unique state-action features will be associated.
+		 * @param actionFeatures the unique action features to associate with this tile
+		 */
 		public StoredFeaturesForTiling(StateTile stateTile, List <StoredActionFeature> actionFeatures){
 			this.storedStateTile = stateTile;
 			this.storedActionFeatures = actionFeatures;
 		}
 		
+		
+		/**
+		 * Adds an action feature to be associated with this objects state tile.
+		 * @param af the action feature to add.
+		 */
 		public void addActionFeature(StoredActionFeature af){
 			this.storedActionFeatures.add(af);
 		}
 		
+		
+		/**
+		 * Given a query tile (which contains the query state) an action and a new state-action feature id, adds a new action feature to associate with this tile.
+		 * In the future, this method will support action parameters and mapping between states with different object name identifiers. Currently that support
+		 * is not implement, however, and this method will only work with parameter-less actions.
+		 * @param queryTile the query tile (which contains a query state) for which an action was associated
+		 * @param queryAction the action that is being considered in the queryTile
+		 * @param featureId the feature idenitifer to assign to the state-action pair.
+		 */
 		public void addActionFeatureFromQuery(StateTile queryTile, GroundedAction queryAction, int featureId){
 			if(queryAction.params.length > 0){
 				throw new RuntimeErrorException(new Error("CMAC currently does not supported paramaterized Actions. Support will be added in a later version"));
@@ -227,6 +352,15 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 			this.storedActionFeatures.add(new StoredActionFeature(queryAction, featureId));
 		}
 		
+		
+		/**
+		 * Given a query state and action, returns the associated action feature. In the future, this method will support action 
+		 * parameters and mapping between states with different object name identifiers. Currently, that support
+		 * is not implement, however, and this method will only work with parameter-less actions.
+		 * @param queryTile a query tile (which contains the query state)
+		 * @param queryAction the query action being considered in the query state.
+		 * @return the action feature associated with the state-action pair.
+		 */
 		public StoredActionFeature getStoredActionFeatureFor(StateTile queryTile, GroundedAction queryAction){
 			if(queryAction.params.length > 0){
 				throw new RuntimeErrorException(new Error("CMAC currently does not supported paramaterized Actions. Support will be added in a later version"));
@@ -244,11 +378,30 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		
 	}
 	
+	
+	/**
+	 * A class for associating an action with a unique state-action feature identifier.
+	 * @author James MacGlashan
+	 *
+	 */
 	class StoredActionFeature{
 		
+		/**
+		 * The action
+		 */
 		public GroundedAction			srcGA;
+		
+		/**
+		 * The unique state-action feature identifier
+		 */
 		public int						id;
 		
+		
+		/**
+		 * Initializes.
+		 * @param ga the action
+		 * @param id the unique state-action feature identifier
+		 */
 		public StoredActionFeature(GroundedAction ga, int id){
 			this.srcGA = ga;
 			this.id = id;

@@ -12,18 +12,42 @@ import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
 
+/**
+ * This class provides a tiling specification, which tiles a state according to multi-dimensional tiling of specified attributes
+ * for specified object classes.
+ * @author James MacGlashan
+ *
+ */
 public class Tiling {
 
+	/**
+	 * A map from object class names to attribute tile specifications for attributes of that class
+	 */
 	protected Map<String, List<AttributeTileSpecification>>				specification;
+	
+	/**
+	 * A list specifying the order that the attributes from different classes will be combined into a single multi-dimensional tile
+	 */
 	protected List <String>												classOrder;
 	
 	
+	/**
+	 * Initializes an empty tiling with not attribute specifications.
+	 */
 	public Tiling() {
 		this.specification = new HashMap<String, List<AttributeTileSpecification>>();
 		this.classOrder = new ArrayList<String>();
 	}
 	
 	
+	
+	/**
+	 * Adds an attribute tiling specification for the an attribute of the given class with the given window size and bucket/tile boundary.
+	 * @param className the name of the object class whose attribute specification will be provided
+	 * @param attribute the attribute for which a tiling specification will be provided
+	 * @param windowSize the window size or width of the attribute tiling
+	 * @param bucketBoundary the offset of this tile alignment; that is, where the first tiling boundary starts
+	 */
 	public void addSpecification(String className, Attribute attribute, double windowSize, double bucketBoundary){
 		List<AttributeTileSpecification> specsForClass = specification.get(className);
 		if(specsForClass == null){
@@ -49,19 +73,44 @@ public class Tiling {
 	}
 	
 	
-	
+	/**
+	 * Returns the multi-dimensional tile from this tiling that corresponds to the given input state.
+	 * @param s
+	 * @return
+	 */
 	public StateTile getStateTile(State s){
 		return new StateTile(s);
 	}
 	
 	
+	
+	/**
+	 * A class for representing a tile, which can be treated as a state feature.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class StateTile{
 		
+		/**
+		 * The state the tile is for
+		 */
 		public State							s;
+		
+		/**
+		 * The tiled version of object instances in the state
+		 */
 		public List<List<ObjectTile>>			tiledObjectsByClass;
+		
+		/**
+		 * A hash code for this tiling for fast storage
+		 */
 		protected int							hashCode;
 		
 		
+		/**
+		 * Creates a state tile for the given input state
+		 * @param s the state for which a state tile should be created.
+		 */
 		public StateTile(State s){
 			
 			this.s = s;
@@ -98,6 +147,10 @@ public class Tiling {
 			
 		}
 		
+		/**
+		 * Returns the tiling specification that produced this tiling
+		 * @return the tiling specification that produced this tiling
+		 */
 		public Tiling getOuterTiling(){
 			return Tiling.this;
 		}
@@ -150,13 +203,39 @@ public class Tiling {
 	
 	
 	
+	/**
+	 * A class for creating a tiling of a single OO-MDP object instance which will be combined with other object instance tiles
+	 * to create a single state tiling.
+	 * @author James MacGlashan
+	 *
+	 */
 	public class ObjectTile{
 		
+		/**
+		 * The name of the object instance this tile is for.
+		 */
 		public String objectName;
+		
+		/**
+		 * The tiled attribute values for this object's OO-MDP object instance
+		 */
 		public Map <String, Integer>	attTiles;
+		
+		/**
+		 * The OO-MDP class name for this object's OO-MDP object instance
+		 */
 		public String className;
+		
+		/**
+		 * The hash code for fast storage and retrieval
+		 */
 		public int hashCode;
 		
+		
+		/**
+		 * Creates a tile for the given object instance
+		 * @param o the object instance for which a tile will be created
+		 */
 		public ObjectTile(ObjectInstance o){
 			this.objectName = o.getName();
 			attTiles = new HashMap<String, Integer>();
@@ -182,6 +261,10 @@ public class Tiling {
 		}
 		
 		
+		/**
+		 * Returns the tiling that was used to produce this object instance tile.
+		 * @return the tiling that was used to produce this object instance tile.
+		 */
 		public Tiling getOuterTiling(){
 			return Tiling.this;
 		}

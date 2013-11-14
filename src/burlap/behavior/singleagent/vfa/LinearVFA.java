@@ -20,11 +20,26 @@ import burlap.oomdp.singleagent.GroundedAction;
  */
 public class LinearVFA implements ValueFunctionApproximation {
 
-	
+	/**
+	 * A feature database for which a unique function weight will be associated
+	 */
 	protected FeatureDatabase						featureDatabase;
+	
+	/**
+	 * A map from feature identifiers to function weights
+	 */
 	protected Map<Integer, FunctionWeight>			weights;
+	
+	/**
+	 * A default weight for the functions
+	 */
 	protected double								defaultWeight = 0.0;
 	
+	
+	/**
+	 * Initializes with a feature database; the default weight value will be zero
+	 * @param featureDatabase the feature database to use
+	 */
 	public LinearVFA(FeatureDatabase featureDatabase) {
 		
 		this.featureDatabase = featureDatabase;
@@ -32,6 +47,12 @@ public class LinearVFA implements ValueFunctionApproximation {
 		
 	}
 	
+	
+	/**
+	 * Initializes
+	 * @param featureDatabase the feature database to use
+	 * @param defaultWeight the default feature weight to initialize feature weights to
+	 */
 	public LinearVFA(FeatureDatabase featureDatabase, double defaultWeight) {
 		
 		this.featureDatabase = featureDatabase;
@@ -77,6 +98,11 @@ public class LinearVFA implements ValueFunctionApproximation {
 	
 	
 	
+	/**
+	 * Computes the linear function over the given features and the stored feature weights.
+	 * @param features
+	 * @return
+	 */
 	protected ApproximationResult getApproximationResultFrom(List <StateFeature> features){
 		
 		List <FunctionWeight> activedWeights = new ArrayList<FunctionWeight>(features.size());

@@ -11,22 +11,50 @@ package burlap.behavior.singleagent.vfa;
  */
 public class FunctionWeight {
 
+	/**
+	 * The int value that uniquely identifies this weight
+	 */
 	protected int weightId;
+	
+	/**
+	 * The value of this weight.
+	 */
 	protected double weightValue;
 	
+	
+	/**
+	 * Initializes.
+	 * @param weightId the weight identifier
+	 * @param weightValue the value of the weight
+	 */
 	public FunctionWeight(int weightId, double weightValue) {
 		this.weightId = weightId;
 		this.weightValue = weightValue;
 	}
 	
+	
+	/**
+	 * Returns the weight identifier
+	 * @return the weight identifier
+	 */
 	public int weightId(){
 		return this.weightId;
 	}
 	
+	
+	/**
+	 * Returns the weight value
+	 * @return the weight value
+	 */
 	public double weightValue(){
 		return weightValue;
 	}
 	
+	
+	/**
+	 * Sets the weight
+	 * @param w the value to set the weight to
+	 */
 	public void setWeight(double w){
 		this.weightValue = w;
 	}

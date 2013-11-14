@@ -6,6 +6,11 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
+/**
+ * An interface for defining a database of state features that can be returned for any given input state or input state-action pair.
+ * @author James MacGlashan
+ *
+ */
 public interface FeatureDatabase {
 	
 	/**
