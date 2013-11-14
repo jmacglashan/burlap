@@ -6,19 +6,56 @@ import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentFactory;
 import burlap.oomdp.stochasticgames.SGDomain;
 
+
+/**
+ * And agent factor that produces QLearning agents.
+ * @author James MacGlashan
+ *
+ */
 public class SGQFactory implements AgentFactory {
 
+	/**
+	 * The stochastic games domain in which the agent will act
+	 */
 	protected SGDomain													domain;
 	
+	/**
+	 * The discount rate the Q-learning algorithm will use
+	 */
 	protected double													discount;
+	
+	/**
+	 * The learning rate the Q-learning algorithm will use
+	 */
 	protected double													learningRate;
+	
+	/**
+	 * The default Q-value to which Q-values will be initialized
+	 */
 	protected double													defaultQ;
 	
+	
+	/**
+	 * The state hashing factory the Q-learning algorithm will use
+	 */
 	protected StateHashFactory											stateHash; 
 	
+	
+	/**
+	 * The state abstract the Q-learning algorithm will use
+	 */
 	protected StateAbstraction											storedAbstraction;
 	
 	
+	
+	/**
+	 * Initializes the factory. No state abstraction is set to be used.
+	 * @param domain The stochastic games domain in which the agent will act
+	 * @param discount The discount rate the Q-learning algorithm will use
+	 * @param learningRate The learning rate the Q-learning algorithm will use
+	 * @param defaultQ The default Q-value to which Q-values will be initialized
+	 * @param stateHash The state hashing factory the Q-learning algorithm will use
+	 */
 	public SGQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash) {
 		this.domain = domain;
 		this.discount = discount;
@@ -28,6 +65,16 @@ public class SGQFactory implements AgentFactory {
 		this.storedAbstraction = null;
 	}
 	
+	
+	/**
+	 * Initializes the factory. No state abstraction is set to be used.
+	 * @param domain The stochastic games domain in which the agent will act
+	 * @param discount The discount rate the Q-learning algorithm will use
+	 * @param learningRate The learning rate the Q-learning algorithm will use
+	 * @param defaultQ The default Q-value to which Q-values will be initialized
+	 * @param stateHash The state hashing factory the Q-learning algorithm will use
+	 * @param storedAbstraction the state abstraction the Q-learning algorithm will use
+	 */
 	public SGQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash, StateAbstraction storedAbstraction) {
 		this.domain = domain;
 		this.discount = discount;
@@ -37,6 +84,11 @@ public class SGQFactory implements AgentFactory {
 		this.storedAbstraction = storedAbstraction;
 	}
 	
+	
+	/**
+	 * Sets the factory to provide Q-learning algorithms with the given state abstraction.
+	 * @param abs the state abstraction to use
+	 */
 	public void setStoredAbstraction(StateAbstraction abs){
 		this.storedAbstraction = abs;
 	}

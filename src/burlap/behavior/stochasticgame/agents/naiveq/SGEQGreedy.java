@@ -12,13 +12,35 @@ import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.SingleAction;
 
 
+/**
+ * An epsilon greedy Q-value strategy that the agent can follow.
+ * @author James MacGlashan
+ *
+ */
 public class SGEQGreedy extends Strategy {
 
+	
+	/**
+	 * The Q-learning agent for which this strategy is defined.
+	 */
 	SGQLAgent		agent;
+	
+	/**
+	 * A random object for selecting actions
+	 */
 	Random			rand;
+	
+	/**
+	 * Epsilon; the probability that a random action will be taken instead of the greedy action
+	 */
 	double			e;
 	
 	
+	/**
+	 * Initializes for a given Q-learning agent an epsilon value
+	 * @param a The Q-learning agent for which this strategy is defined.
+	 * @param e The probability that a random action will be taken instead of the greedy action
+	 */
 	public SGEQGreedy(SGQLAgent a, double e) {
 		this.agent = a;
 		this.rand = RandomFactory.getMapped(0);
@@ -87,6 +109,13 @@ public class SGEQGreedy extends Strategy {
 	
 	
 	
+	/**
+	 * Returns a list of the index of actions with the maximum Q-value. Typically this list will be of size 1, but 
+	 * if there are ties for the max action (which is typically in an unvisited state) it will return all of the tied actions.
+	 * @param s the state in which to get Q-values
+	 * @param srcGSAs the actions the agent can take and which is used to define the index of actions
+	 * @return a list of the index actions with the maximum Q-value.
+	 */
 	protected List <Integer> getMaxActions(State s, List<GroundedSingleAction> srcGSAs){
 		List <Integer> maxCands = new ArrayList<Integer>(srcGSAs.size());
 		List <SGQValue> entries = agent.getAllQsFor(s, srcGSAs);

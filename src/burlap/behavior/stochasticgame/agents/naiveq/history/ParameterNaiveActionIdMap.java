@@ -8,11 +8,30 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.SingleAction;
 
+
+/**
+ * An action to int map that takes the list of possible action names in a domain and assigns and int value to them.
+ * This method will not assign unique values to actions with different parameters.
+ * @author James MacGlashan
+ *
+ */
 public class ParameterNaiveActionIdMap implements ActionIdMap {
 
+	/**
+	 * The map from action names to their corresponding int value
+	 */
 	protected Map<String, Integer> map;
+	
+	/**
+	 * The domain for which the action values should be created.
+	 */
 	protected Domain domain;
 	
+	
+	/**
+	 * Initializes a mapping from the names of all actions in a given domain to an int value.
+	 * @param d the domain containing the actions.
+	 */
 	public ParameterNaiveActionIdMap(Domain d){
 		
 		this.domain = d;

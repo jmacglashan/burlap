@@ -20,23 +20,78 @@ import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 
+
+/**
+ * A Tabular Q-learning [1] algorithm for stochastic games formalisms that augments states with the actions each agent took in n
+ * previous time steps. 
+ * 
+ * <p/>
+ * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
+ * @author James MacGlashan
+ *
+ */
 public class SGQWActionHistory extends SGQLAgent {
 
+	
+	/**
+	 * the joint action history
+	 */
 	protected LinkedList <JointAction>			history;
+	
+	/**
+	 * The size of action history to store.
+	 */
 	protected int								historySize;
+	
+	/**
+	 * a map from actions to int values which can be used to fill in an action history attribute value
+	 */
 	protected ActionIdMap						actionMap;
 	
+	
+	/**
+	 * The object class that will be used to represent a history component. A history component
+	 * consists a player identifier, the action that player took, and how long ago that action was taken. A object
+	 * instance of this class will be created for each player in the world and for each of the n time steps
+	 * that this learning algorithm is told to keep.
+	 */
 	protected ObjectClass						classHistory;
 	
 	
-	
+	/**
+	 * A constant for the name of the history time index attribute. For instance, a history object representing the
+	 * action of an agent in the previous time step will have a value of 1 for this attribute
+	 */
 	public static final String					ATTHNUM = "histNum";
+	
+	/**
+	 * A constant for the name of the attribute used to define which agent in the world this history object represents
+	 */
 	public static final String					ATTHPN = "histPN";
+	
+	/**
+	 * A constant for the name of the attribute used to define which action an agent took
+	 */
 	public static final String					ATTHAID = "histAID";
 	
+	
+	/**
+	 * A constant for the name of the history object class. 
+	 */
 	public static String						CLASSHISTORY = "histAID";
 	
 	
+	
+	/**
+	 * Initializes the learning algorithm using 0.1 epsilon greedy learning strategy/policy
+	 * @param d the domain in which the agent will act
+	 * @param discount the discount factor
+	 * @param learningRate the learning rate
+	 * @param hashFactory the state hashing factory to use
+	 * @param historySize the number of previous steps to remember and with which to augment the state space
+	 * @param maxPlayers the maximum number of players that will be in the game
+	 * @param actionMap a mapping from actions to integer identifiers for them
+	 */
 	public SGQWActionHistory(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory, int historySize, int maxPlayers, ActionIdMap actionMap) {
 		super(d, discount, learningRate, hashFactory);
 		this.historySize = historySize;
@@ -114,7 +169,11 @@ public class SGQWActionHistory extends SGQLAgent {
 	}
 	
 	
-	
+	/**
+	 * Takes an input state and returns an augmented state with the history of actions each agent previously took.
+	 * @param s the input state to augment
+	 * @return an augmented state with the history of actions each agent previously took.
+	 */
 	protected State getHistoryAugmentedState(State s){
 		
 		State augS = s.copy();
@@ -145,6 +204,12 @@ public class SGQWActionHistory extends SGQLAgent {
 	}
 	
 	
+	/**
+	 * Returns a history object instance for the corresponding action and how far back in history it occurred
+	 * @param gsa the action that was taken (which includes which agent took it)
+	 * @param h how far back in history the action was taken.
+	 * @return a history object instance for the corresponding action and how far back in history it occurred
+	 */
 	protected ObjectInstance getHistoryObjectInstanceForAgent(GroundedSingleAction gsa, int h){
 		
 		String aname = gsa.actingAgent;
@@ -159,6 +224,13 @@ public class SGQWActionHistory extends SGQLAgent {
 	}
 	
 	
+	/**
+	 * Returns a history object instance for a given agent in which the action that was taken is unset because
+	 * the episode has not last h steps.
+	 * @param aname the name of agent for which the history object should be returned
+	 * @param h how many step backs this object instance represents
+	 * @return a history object instance
+	 */
 	protected ObjectInstance getHistoryLessObjectInstanceForAgent(String aname, int h){
 		
 		ObjectInstance o = new ObjectInstance(classHistory, aname + "-h" + h);

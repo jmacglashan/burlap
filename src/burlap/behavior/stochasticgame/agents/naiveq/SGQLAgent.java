@@ -18,19 +18,67 @@ import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.SingleAction;
 
-
+/**
+ * A Tabular Q-learning [1] algorithm for stochastic games formalisms.
+ * 
+ * <p/>
+ * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
+ * @author James MacGlashan
+ *
+ */
 public class SGQLAgent extends Agent {
 
+	/**
+	 * The tabular map from (hashed) states to the list of Q-values for each action in those states
+	 */
 	protected Map <StateHashTuple, List<SGQValue>>						qMap;
+	
+	/**
+	 * A map from hashed states to the internal state representation for the states stored in the q-table. 
+	 * This is useful since two identical states may have different object instance name identifiers
+	 * that can affect the parameters in GroundedActions.
+	 * 
+	 */
 	protected Map <StateHashTuple, State>								stateRepresentations;
+	
+	/**
+	 * A state abstraction to use.
+	 */
 	protected StateAbstraction											storedMapAbstraction;
+	
+	/**
+	 * The discount factor
+	 */
 	protected double													discount;
+	
+	/**
+	 * the learning rate
+	 */
 	protected double													learningRate;
+	
+	/**
+	 * The default Q-value to which all Q-values will be initialized
+	 */
 	protected double													defaultQ;
+	
+	/**
+	 * The learning strategy to follow (e.g., epsilon greedy).
+	 */
 	protected Strategy													strategy;
+	
+	/**
+	 * The state hashing factory to use.
+	 */
 	protected StateHashFactory											hashFactory;
 	
 	
+	/**
+	 * Initializes with a default Q-value of 0 and a 0.1 epsilon greedy policy/strategy
+	 * @param d the domain in which the agent will act
+	 * @param discount the discount factor
+	 * @param learningRate the learning rate
+	 * @param hashFactory the state hashing factory
+	 */
 	public SGQLAgent(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
@@ -45,6 +93,15 @@ public class SGQLAgent extends Agent {
 		this.storedMapAbstraction = new NullAbstractionNoCopy();
 	}
 	
+	
+	/**
+	 * Initializes with a default 0.1 epsilon greedy policy/strategy
+	 * @param d the domain in which the agent will act
+	 * @param discount the discount factor
+	 * @param learningRate the learning rate
+	 * @param defaultQ the default to which all Q-values will be initialized
+	 * @param hashFactory the state hashing factory
+	 */
 	public SGQLAgent(SGDomain d, double discount, double learningRate, double defaultQ, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
@@ -102,6 +159,11 @@ public class SGQLAgent extends Agent {
 	}
 	
 	
+	/**
+	 * Returns all Q-values for the input state
+	 * @param s the state for which all Q-values should be returned
+	 * @return all Q-values for the input state
+	 */
 	public List <SGQValue> getAllQsFor(State s){
 		
 		
@@ -115,6 +177,12 @@ public class SGQLAgent extends Agent {
 	}
 	
 	
+	/**
+	 * Returns all the Q-values for the given state and actions
+	 * @param s the state for which Q-values should be returned
+	 * @param gsas the actions for which Q-values should be returned
+	 * @return all the Q-values for the given state and actions
+	 */
 	public List <SGQValue> getAllQsFor(State s, List <GroundedSingleAction> gsas){
 		
 		StateHashTuple shq = this.stateHash(s);
@@ -174,6 +242,13 @@ public class SGQLAgent extends Agent {
 		
 	}
 	
+	
+	/**
+	 * Returns the Q-value for a given state-action pair
+	 * @param s the state for which the Q-value should be returned
+	 * @param gsa the action for which the Q-value should be returned.
+	 * @return the Q-value for the given state-action pair.
+	 */
 	public SGQValue getSGQValue(State s, GroundedSingleAction gsa){
 		StateHashTuple shq = this.stateHash(s);
 		
@@ -208,6 +283,12 @@ public class SGQLAgent extends Agent {
 		return qe;
 	}
 	
+	
+	/**
+	 * Returns maximum numeric Q-value for a given state
+	 * @param s the state for which the max Q-value should be returned
+	 * @return maximum numeric Q-value for a given state
+	 */
 	protected double getMaxQValue(State s){
 
 		List<GroundedSingleAction> gas = SingleAction.getAllPossibleGroundedSingleActions(s, worldAgentName, agentType.actions);
@@ -225,11 +306,24 @@ public class SGQLAgent extends Agent {
 	}
 	
 	
+	/**
+	 * First abstracts state s, and then returns the {@link burlap.behavior.statehashing.StateHashTuple} object for the abstracted state.
+	 * @param s the state for which the state hash should be returned.
+	 * @return the hashed state.
+	 */
 	protected StateHashTuple stateHash(State s){
 		State abstracted = this.storedMapAbstraction.abstraction(s);
 		return hashFactory.hashState(abstracted);
 	}
 	
+	
+	/**
+	 * Takes an input action and mapping objects in the source state for the action to objects in another state
+	 * and returns a action with its object parameters mapped to the matched objects.
+	 * @param a the input action
+	 * @param matching the matching between objects from the source state in which the action was generated to objects in another state.
+	 * @return an action with its object parameters mapped according to the state object matching.
+	 */
 	protected GroundedSingleAction translateAction(GroundedSingleAction a, Map <String,String> matching){
 		String [] newParams = new String[a.params.length];
 		for(int i = 0; i < a.params.length; i++){
