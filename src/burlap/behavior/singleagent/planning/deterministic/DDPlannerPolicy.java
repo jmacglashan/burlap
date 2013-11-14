@@ -8,6 +8,7 @@ import javax.management.RuntimeErrorException;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
+import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner.PlanningFailedException;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -68,6 +69,21 @@ public class DDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 
 	@Override
 	public boolean isStochastic() {
+		return false;
+	}
+
+	@Override
+	public boolean isDefinedFor(State s) {
+		GroundedAction ga = null;
+		try{
+			ga = dp.querySelectedActionForState(s);
+		}catch(PlanningFailedException e){
+			//do nothing
+		}
+		if(ga != null){
+			return true;
+		}
+		
 		return false;
 	}
 

@@ -10,17 +10,29 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 
 
-/*
- * This Subgoal option's initiation states are defined by the set
- * of states for which its policy is defined
+
+
+
+/**
+ * This is a subgoal option whose initiation states are defined by the state in which the policy is defined. If the agent
+ * enters a state outside where the policy is defined, that is a termination state with probability 1, as are any subgoal
+ * states.
+ * 
+ * @author James MacGlashan
+ *
  */
-
-
 public class PolicyDefinedSubgoalOption extends Option {
 
 	Policy						policy;
 	StateConditionTest			subgoalTest;
 	
+	
+	/**
+	 * Initializes.
+	 * @param name the name of the option
+	 * @param p the policy of the option
+	 * @param sg the subgoals it is meant to reach
+	 */
 	public PolicyDefinedSubgoalOption(String name, Policy p, StateConditionTest sg){
 		this.policy = p;
 		this.subgoalTest = sg;
@@ -46,7 +58,8 @@ public class PolicyDefinedSubgoalOption extends Option {
 
 	@Override
 	public double probabilityOfTermination(State s, String[] params) {
-		if(subgoalTest.satisfies(this.map(s))){
+		State ms = this.map(s);
+		if(subgoalTest.satisfies(ms) || !this.policy.isDefinedFor(ms)){
 			return 1.;
 		}
 		return 0.;

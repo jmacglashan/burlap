@@ -4,7 +4,8 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
-/*
+
+/**
  * This class is a reward function that accepts a reward function for primitive actions and returns
  * that when the query action is a primitive. If the query action is a option it
  * return the cumulative reward from the options last execution using the assumption that any options that need evaluating
@@ -13,12 +14,21 @@ import burlap.oomdp.singleagent.RewardFunction;
  * 
  * This is useful for planners that would want to execute the option and evaluate the reward afterwards
  * 
-*/
-
+ * @author James MacGlashan
+ *
+ */
 public class OptionEvaluatingRF implements RewardFunction {
 
+	/**
+	 * The source primitive action reward function for the MDP
+	 */
 	RewardFunction primitiveRF;
 	
+	
+	/**
+	 * Initializes.
+	 * @param rf the source primitive action reward function for the MDP
+	 */
 	public OptionEvaluatingRF(RewardFunction rf){
 		this.primitiveRF = rf;
 	}

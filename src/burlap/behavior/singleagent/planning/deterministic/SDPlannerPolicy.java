@@ -85,6 +85,19 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 
 
+	@Override
+	public boolean isDefinedFor(State s) {
+		if(this.dp == null){
+			throw new RuntimeException("The planner used by this Policy is not defined; therefore, the policy is undefined.");
+		}
+		if(this.dp.hasCachedPlanForState(s)){
+			return true;
+		}
+		
+		return false;
+	}
+
+
 	
 
 }

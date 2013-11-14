@@ -8,18 +8,27 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
-/*
- * This class is just an option wrapper for a primitive action
- * This may be useful if a caller wants to universally support the option interface
- * and wants to include primitive options
+
+/**
+ * This class is just an option wrapper of a standard primitive action. Typically this should be unnecessary
+ * because options and actions can coexist in a planner, but if an algorithm wishes to homogenize its interface
+ * it may be useful for it to wrap all of the primitives as options.
+ * @author James MacGlashan
+ *
  */
-
-
 public class PrimitiveOption extends Option {
 
+	
+	/**
+	 * The primitive action this option wraps.
+	 */
 	protected Action srcAction;
 	
 	
+	/**
+	 * Creates an option wrapper for a given primitive action. This option will take on the same name as the primitive action.
+	 * @param srcAction the primitive action to wrap.
+	 */
 	public PrimitiveOption(Action srcAction){
 		this.srcAction = srcAction;
 		this.init(srcAction.getName(), srcAction.getDomain(), srcAction.getParameterClasses(), srcAction.getParameterOrderGroups());

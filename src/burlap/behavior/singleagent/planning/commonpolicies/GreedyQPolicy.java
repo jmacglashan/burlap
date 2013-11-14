@@ -111,7 +111,10 @@ public class GreedyQPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 
 
-	
+	@Override
+	public boolean isDefinedFor(State s) {
+		return true; //can always find q-values with default value
+	}
 	
 	
 	

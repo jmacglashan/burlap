@@ -70,5 +70,10 @@ public class GreedyDeterministicQPolicy extends Policy implements PlannerDerived
 	public boolean isStochastic() {
 		return false;
 	}
+	
+	@Override
+	public boolean isDefinedFor(State s) {
+		return true; //can always find q-values with default value
+	}
 
 }

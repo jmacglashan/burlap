@@ -143,5 +143,10 @@ public class EpsilonGreedy extends Policy implements PlannerDerivedPolicy{
 	public boolean isStochastic() {
 		return true;
 	}
+	
+	@Override
+	public boolean isDefinedFor(State s) {
+		return true; //can always find q-values with default value
+	}
 
 }

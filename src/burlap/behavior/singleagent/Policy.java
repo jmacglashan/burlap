@@ -47,7 +47,7 @@ public abstract class Policy {
 	 */
 	public abstract boolean isStochastic();
 	
-	
+	public abstract boolean isDefinedFor(State s);
 	
 	/**
 	 * Will return the probability of this policy taking action ga in state s

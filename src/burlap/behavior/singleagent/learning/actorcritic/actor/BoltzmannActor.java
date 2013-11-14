@@ -182,6 +182,11 @@ public class BoltzmannActor extends Actor {
 	}
 	
 	
+	@Override
+	public boolean isDefinedFor(State s) {
+		return true; //can always create equal-probable action preferences for a new state
+	}
+	
 	
 	/**
 	 * Returns the stored {@link ActionPreference} that is stored in a policy node. If actions are parameterized and the domain is not name dependent,

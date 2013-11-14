@@ -99,6 +99,12 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 		this.qplanner = (QComputablePlanner)planner;
 		
 	}
+
+
+	@Override
+	public boolean isDefinedFor(State s) {
+		return true; //can always find q-values with default value
+	}
 	
 
 }

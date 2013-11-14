@@ -121,7 +121,12 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 			this.computePolicyFromTree();
 		}
 		
-		return policy.get(planner.stateHash(s));
+		GroundedAction ga = policy.get(planner.stateHash(s));
+		if(ga == null){
+			throw new PolicyUndefinedException();
+		}
+		
+		return ga;
 	}
 
 	@Override
@@ -133,7 +138,7 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 		
 		GroundedAction ga = policy.get(planner.stateHash(s));
 		if(ga == null){
-			return null; //error policy undefined
+			throw new PolicyUndefinedException();
 		}
 		
 		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
@@ -146,6 +151,19 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 	@Override
 	public boolean isStochastic() {
 		return false; //although UCT solves stochastic MDPs, the policy returned here is deterministic and greedy
+	}
+
+	@Override
+	public boolean isDefinedFor(State s) {
+		if(policy == null){
+			this.computePolicyFromTree();
+		}
+		GroundedAction ga = policy.get(planner.stateHash(s));
+		if(ga == null){
+			return false;
+		}
+		
+		return true;
 	}
 
 
