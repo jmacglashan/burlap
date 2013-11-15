@@ -242,6 +242,14 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 * @return the new value of the state.
 	 */
 	protected double performBellmanUpdateOn(StateHashTuple sh){
+		
+		if(this.tf.isTerminal(sh.s)){
+			//terminal states always have a state value of 0
+			valueFunction.put(sh, 0.);
+			return 0.;
+		}
+		
+		
 		List<ActionTransitions> transitions = transitionDynamics.get(sh);
 		double maxQ = Double.NEGATIVE_INFINITY;
 		for(ActionTransitions at : transitions){
