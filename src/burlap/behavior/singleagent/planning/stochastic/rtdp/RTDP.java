@@ -55,14 +55,16 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	
 	/**
-	 * Initializes the planner.
+	 * Initializes the planner. The value function will be initialized to 0 by default and will use a Boltzmann policy with temperature 0.1
+	 * for performing rollouts. Use the {@link setValueFunctionInitialization(ValueFunctionInitialization)} method
+	 * to change the value function initialization and the {@link setRollOutPolicy(Policy} method to change the rollout policy.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
 	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param numRollouts the number of rollouts to perform when planning is started.
-	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, VI will terminate.
+	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
 	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int numRollouts, double maxDelta, int maxDepth){
@@ -96,7 +98,7 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	/**
 	 * Sets the rollout policy to use.
-	 * @param p
+	 * @param p the rollout policy to use
 	 */
 	public void setRollOutPolicy(Policy p){
 		this.rollOutPolicy = p;

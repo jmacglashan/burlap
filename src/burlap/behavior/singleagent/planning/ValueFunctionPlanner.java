@@ -73,6 +73,15 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	
 	/**
+	 * Sets the value function initialization to use.
+	 * @param vfInit the object that defines how to initializes the value function.
+	 */
+	public void setValueFunctionInitialization(ValueFunctionInitialization vfInit){
+		this.valueInitializer = vfInit;
+	}
+	
+	
+	/**
 	 * Returns the value function evaluation of the given state. If the value is not stored, then the default value
 	 * specified by the ValueFunctionInitialization object of this class is returned.
 	 * @param s the state to evaluate.
@@ -257,7 +266,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 */
 	protected double computeQ(State s, ActionTransitions trans){
 		
-		double q = this.getDefaultValue(s);
+		double q = 0.;
 		
 		if(trans.ga.action instanceof Option){
 			
@@ -270,7 +279,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				double vp = this.value(tp.sh);
 				
 				//note that for options, tp.p will be the *discounted* probability of transition to s',
-				//so there is not need for a discount factor to be included
+				//so there is no need for a discount factor to be included
 				q += tp.p * vp; 
 				
 			}
