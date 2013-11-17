@@ -5,6 +5,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.*;
 
@@ -24,14 +25,42 @@ public class Visualizer extends Canvas{
 
 	private static final long serialVersionUID = 1L; //needed for Canvas extension
 
+	/**
+	 * the current state to be painted next
+	 */
+	private State							curState;
 	
-	private State							curState;					//the current state to be painted next
+	/**
+	 * list of static painters that pain static non-object defined properties of the domain
+	 */
+	private List <StaticPainter>			staticPainters;
 	
-	private List <StaticPainter>			staticPainters;				//list of static painters that pain static non-object defined properties of the domain
-	private Map <String, ObjectPainter>		objectClassPainters;		//Map of painters that define how to paint each object class
-	private Map <String, ObjectPainter>		specificObjectPainters;		//Map of painters that define how to paint specific objects; if an object it appears in both specific and general lists, the specific painter is used
+	/**
+	 * Map of painters that define how to paint each object class
+	 */
+	private Map <String, ObjectPainter>		objectClassPainters;
 	
-	private Color							bgColor;					//the background color of the canvas
+	/**
+	 * Map of painters that define how to paint specific objects; if an object it appears in both specific and general lists, the specific painter is used
+	 */
+	private Map <String, ObjectPainter>		specificObjectPainters;	
+	
+	
+	/**
+	 * the background color of the canvas
+	 */
+	private Color							bgColor;
+	
+	
+	/**
+	 * Offscreen image to render to first
+	 */
+	protected Image								offscreen = null;
+	
+	/**
+	 * The graphics context of the offscreen image
+	 */
+	protected Graphics2D						bufferedGraphics = null;
 	
 	
 	
@@ -97,10 +126,12 @@ public class Visualizer extends Canvas{
 	@Override
 	public void paint(Graphics g){
 		
-		Graphics2D g2 = (Graphics2D) g;
+		this.initializeOffscreen();
 		
-		g2.setColor(bgColor);
-		g2.fill(new Rectangle(this.getWidth(), this.getHeight()));
+		
+		
+		this.bufferedGraphics.setColor(bgColor);
+		this.bufferedGraphics.fill(new Rectangle(this.getWidth(), this.getHeight()));
 		
 		if(curState == null){
 			return ;
@@ -111,7 +142,7 @@ public class Visualizer extends Canvas{
 		
 		//draw the static properties
 		for(StaticPainter sp : staticPainters){
-			sp.paint(g2, curState, cWidth, cHeight);
+			sp.paint(this.bufferedGraphics, curState, cWidth, cHeight);
 		}
 		
 		//draw each object if there is a painter to do so
@@ -120,23 +151,38 @@ public class Visualizer extends Canvas{
 			
 			//is there a specific object painter for this object?
 			if(specificObjectPainters.containsKey(o.getName())){
-				specificObjectPainters.get(o.getName()).paintObject(g2, curState, o, cWidth, cHeight);
+				specificObjectPainters.get(o.getName()).paintObject(this.bufferedGraphics, curState, o, cWidth, cHeight);
 			}
 			else{ //otherwise see if we have a painter for this object's class
 				
 				//try the parameterized class first
 				if(objectClassPainters.containsKey(o.getTrueClassName())){
-					objectClassPainters.get(o.getTrueClassName()).paintObject(g2, curState, o, cWidth, cHeight);
+					objectClassPainters.get(o.getTrueClassName()).paintObject(this.bufferedGraphics, curState, o, cWidth, cHeight);
 				}
 				else if(objectClassPainters.containsKey(o.getTrueClassName())){ //try true class if no entry for the parameterized class
-					objectClassPainters.get(o.getTrueClassName()).paintObject(g2, curState, o, cWidth, cHeight);
+					objectClassPainters.get(o.getTrueClassName()).paintObject(this.bufferedGraphics, curState, o, cWidth, cHeight);
 				}
 				
 			}
 			
 		}
 		
+		Graphics2D g2 = (Graphics2D) g;
+		g2.drawImage(offscreen,0,0,this);
+		
 	}
+	
+	
+	
+	/**
+	 * Initializes a new offscreen image and context
+	 */
+	 protected void initializeOffscreen(){
+		 if(this.bufferedGraphics == null){
+			 this.offscreen = createImage(this.getWidth(), this.getHeight());
+			 this.bufferedGraphics = (Graphics2D)offscreen.getGraphics();
+		 }
+	 }
 	
 	
 }

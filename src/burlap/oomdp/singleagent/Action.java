@@ -16,18 +16,42 @@ import burlap.oomdp.core.TransitionProbability;
  * going to be used planning/learning algorithms that require a generative model, rather than the fully enumerated transition
  * dynamics, then the getTransitions(State s, String [] params) does not need to be defined, but for full robustness it should be.
  * 
- * Action objects may also be defined to be require object parameters which can also have parameter order groups specified if
- * there is effect symmetry when changing the order of the parameters. For more information on parameter order groups, see its discussion
+ * Action objects may also be defined to require object parameters (which must adhere to a type). Parameters can also have parameter order groups specified if
+ * there is effect symmetry when changing the order of the parameters. That is, if you swapped the parameter assignments for parameters in the same order group, the action would have
+ * the same effect. However, if you swapped the parameter assignments of two parameters in different order groups, the action would have a different effect. 
+ * For more information on parameter order groups, see its discussion
  * in the {@link burlap.oomdp.core.PropositionalFunction} class description.
  * @author James MacGlashan
  *
  */
 public abstract class Action {
 
-	protected String					name;									//name of the action
-	protected Domain					domain;									//domain that hosts the action
-	protected String []					parameterClasses = new String[0];		//list of class names for each parameter of the action
-	protected String []					parameterOrderGroup = new String[0];	//setting two or more parameters to the same order group indicates that the action will be same regardless of which specific object is set to each parameter
+	/**
+	 * The name of the action that can uniquely identify it
+	 */
+	protected String					name;									
+	
+	/**
+	 * The domain with which this action is associated
+	 */
+	protected Domain					domain;
+	
+	/**
+	 * The object classes each parameter of this action can accept; empty list for a parameter-less action (which is the default)
+	 */
+	protected String []					parameterClasses = new String[0];
+	
+	/**
+	 * Specifies the parameter order group each parameter. Parameters in the same order group are order invariant; that is, if you swapped the parameter assignments for for parameters in the same group, the action would have
+	 * the same effect. However, if you swapped the parameter assignments of two parameters in different order groups, the action would have a different effect.
+	 */
+	protected String []					parameterOrderGroup = new String[0];
+	
+	
+	/**
+	 * An observer that will be notified of an actions results every time it is executed. By default no observer is specified.
+	 */
+	protected ActionObserver			observer = null;
 	
 	
 	public Action(){
@@ -142,6 +166,13 @@ public abstract class Action {
 		return domain;
 	}
 	
+	/**
+	 * Sets an action observer for this action. Set to null to specify no observer or to disable observaiton.
+	 * @param observer the observer that will be told of each event when this action is executed.
+	 */
+	public void setActionObserver(ActionObserver observer){
+		this.observer = observer;
+	}
 	
 	
 	/**
@@ -178,7 +209,6 @@ public abstract class Action {
 	 * @return the state that resulted from applying this action
 	 */
 	public final State performAction(State s, String params){
-		
 		return performAction(s, params.split(","));
 		
 	}
@@ -198,7 +228,13 @@ public abstract class Action {
 			return resultState; //can't do anything if it's not applicable in the state so return the current state
 		}
 		
-		return performActionHelper(resultState, params);
+		resultState = performActionHelper(resultState, params);
+		
+		if(this.observer != null){
+			this.observer.actionEvent(resultState, new GroundedAction(this, params), resultState);
+		}
+		
+		return resultState;
 		
 	}
 	

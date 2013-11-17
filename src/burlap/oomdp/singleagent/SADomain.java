@@ -28,6 +28,17 @@ public class SADomain extends Domain {
 	}
 
 	
+	/**
+	 * Sets all actions associated with this domain to use the provided actions. Actions added to this domain after this method is called
+	 * will have to have the observer set for them independently or by a subsequent call to this method.
+	 * @param observer the observer to set all actions to use.
+	 */
+	public void setActionObserverForAllAction(ActionObserver observer){
+		for(Action a : this.actions){
+			a.setActionObserver(observer);
+		}
+	}
+	
 	@Override
 	public void addAction(Action act){
 		if(!actionMap.containsKey(act.getName())){
