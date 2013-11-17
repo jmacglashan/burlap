@@ -1,6 +1,5 @@
 package burlap.behavior.singleagent.planning.stochastic.valueiteration;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +14,6 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 
@@ -25,7 +22,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * An implementation of asynchronous value iteration. Values of states are updated using the Bellman operator in an arbitrary order and a complete pass
  * over the state space is performed on each iteration. VI can be set to terminate under two possible conditions: when the maximum change in the value
  * function is smaller than some threshold or when a threshold of iterations is passed. This implementation first determines the state space by finding
- * all reachable states from a source state. The time complexity of this operation is equivalent to that of one VI iteration and has the added benefit
+ * all reachable states from a source state. The worst case time complexity of the reachability operation is equivalent to that of one VI iteration and has the added benefit
  * that VI does not pass over non-reachable states.
  * 
  * This implementation is compatible with options.
@@ -73,6 +70,14 @@ public class ValueIteration extends ValueFunctionPlanner{
 		
 	}
 	
+	
+	/**
+	 * Calling this method will force the planner to recompute the reachable states when the {@link planFromState(State)} method is called next.
+	 * This may be useful if the transition dynamics from the last planning call have changed and if planning needs to be restarted as a result.
+	 */
+	public void recomputeReachableStates(){
+		this.foundReachableStates = false;
+	}
 	
 	
 	
@@ -141,8 +146,8 @@ public class ValueIteration extends ValueFunctionPlanner{
 		
 		
 		StateHashTuple sih = this.stateHash(si);
-		//first check if this is an new state, otherwise we do not need to do any new reachability analysis
-		if(transitionDynamics.containsKey(sih)){
+		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
+		if(transitionDynamics.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
 		}
 		
@@ -170,18 +175,10 @@ public class ValueIteration extends ValueFunctionPlanner{
 				continue;
 			}
 			
-			//otherwise do expansion
-			//first get all grounded actions for this state
-			List <GroundedAction> gas = new ArrayList<GroundedAction>();
-			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedActionsFor(a));
-			}
 			
-			//then get the transition dynamics for each action and queue up new states
-			List <ActionTransitions> transitions = new ArrayList<ActionTransitions>();
-			for(GroundedAction ga : gas){
-				ActionTransitions at = new ActionTransitions(sh.s, ga, hashingFactory);
-				transitions.add(at);
+			//get the transition dynamics for each action and queue up new states
+			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
+			for(ActionTransitions at : transitions){
 				for(HashedTransitionProbability tp : at.transitions){
 					StateHashTuple tsh = tp.sh;
 					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
@@ -189,10 +186,8 @@ public class ValueIteration extends ValueFunctionPlanner{
 						openList.offer(tsh);
 					}
 				}
+				
 			}
-			
-			//now make entry for this in the transition dynamics
-			transitionDynamics.put(sh, transitions);
 			
 			
 		}

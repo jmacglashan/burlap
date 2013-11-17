@@ -14,6 +14,7 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -24,15 +25,31 @@ import burlap.oomdp.singleagent.RewardFunction;
  * (so that they can be quickly retrieved without multiple calls to the action transition generation) and a map
  * from states to their values. It also adds support for the QComputable planner which can return
  * Q-values by using the transition dynamics and the stored value function.
+ * <p/>
+ * Note that by default ValueFunction planners will cache the transition dynamics so that they do not have to be procedurally generated
+ * by the {@link burlap.oomdp.singleaction.Action}. Transition dynamic caching can be disable by calling the {@link toggleUseCachedTransitionDynamics(boolean)}
+ * method. This may be desirable if the transition dynamics are expected to change with time, such as when the model is being learned in model-based RL.
  * @author James MacGlashan
  *
  */
 public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComputablePlanner{
 
+	
+	
 	/**
-	 * A data structure for storing the hashed transition dynamics from each state.
+	 * A boolean toggle to indicate whether the transition dynamics should cached in a hashed data structure for quicker access,
+	 * or computed as needed by the Action methods. The default is true, to cache the transition dynamics. However, this value
+	 * should be set to false if it is expected that the transition dynamics can change over time which might be the case
+	 * in model learning scenarios.
+	 */
+	protected boolean												useCachedTransitions = true;
+	
+	
+	/**
+	 * A data structure for storing the hashed transition dynamics from each state, if this algorithm is set to use them.
 	 */
 	protected Map <StateHashTuple, List<ActionTransitions>>			transitionDynamics;
+	
 	
 	/**
 	 * A map for storing the current value function estimate for each state.
@@ -44,6 +61,13 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 * The value function initialization to use; defaulted to an initialization of 0 everywhere.
 	 */
 	protected ValueFunctionInitialization							valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization();
+	
+	
+	
+	
+	
+	
+	
 	
 
 	@Override
@@ -104,6 +128,19 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		return v;
 	}
 	
+	
+	/**
+	 * Sets whether this object should cache hashed transition dynamics for each for faster look up, or whether
+	 * to procedurally generate the transition dynamics as needed from the {@link burlap.oomdp.singleagent.Action} objects.
+	 * Letting the transition dynamics be procedurally generated may be useful if the transition dynamics can change over the time
+	 * such as when using a learned model.
+	 * @param useCachedTransitions true if the transition dynamics should be cached and stored; false if they should always be procedurally generated from the {@link burlap.oomdp.singleagent.Action} objects.
+	 */
+	public void toggleUseCachedTransitionDynamics(boolean useCachedTransitions){
+		this.useCachedTransitions = useCachedTransitions;
+	}
+	
+	
 	@Override
 	public List <QValue> getQs(State s){
 		
@@ -139,20 +176,37 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	@Override
 	public QValue getQ(State s, GroundedAction a){
-		StateHashTuple sh = this.stateHash(s);
-		Map<String,String> matching = null;
-		StateHashTuple indexSH = mapToStateIndex.get(sh);
 		
-		if(indexSH == null){
-			//then this is an unexplored state
-			indexSH = sh;
-			mapToStateIndex.put(indexSH, indexSH);
+		
+		if(this.useCachedTransitions){
+			StateHashTuple sh = this.stateHash(s);
+			Map<String,String> matching = null;
+			StateHashTuple indexSH = mapToStateIndex.get(sh);
+			
+			if(indexSH == null){
+				//then this is an unexplored state
+				indexSH = sh;
+				mapToStateIndex.put(indexSH, indexSH);
+			}
+			
+			if(this.containsParameterizedActions && !this.domain.isNameDependent()){
+				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
+			}
+			return this.getQ(sh, a, matching);
+			
+		}
+		else{
+			
+			StateHashTuple sh = this.stateHash(s);
+			double dq = this.computeQ(sh, a);
+			
+			QValue q = new QValue(s, a, dq);
+			
+			return q;
+			
 		}
 		
-		if(this.containsParameterizedActions && !this.domain.isNameDependent()){
-			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
-		}
-		return this.getQ(sh, a, matching);
+		
 	}
 	
 	
@@ -172,7 +226,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	
 	/**
-	 * Gets a Q-Value for a hashed state, grounded action, and object instance matching from the hashed state to states stored in the internal data structure.
+	 * Gets a Q-Value for a hashed state, grounded action, and object instance matching from the hashed states an internally stored hashed transition dynamics.
 	 * @param sh the input state
 	 * @param a the action to get the Q-value for
 	 * @param matching the object instance matching from sh to the corresponding state stored in the value function
@@ -205,7 +259,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	/**
 	 * Returns the stored action transitions for the given state. If the action transitions
-	 * are not already stored, they will be created and stored.
+	 * are not already cached and this object is set to use caching, then they will be cached.
 	 * @param sh the input state from which to get the transitions
 	 * @return the stored action transitions for the given state
 	 */
@@ -214,6 +268,11 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		if(allTransitions == null){
 			//need to create them
+			
+			//indicate how this state is stored
+			mapToStateIndex.put(sh, sh);
+			
+			
 			//first get all grounded actions for this state
 			List <GroundedAction> gas = new ArrayList<GroundedAction>();
 			for(Action a : actions){
@@ -227,8 +286,10 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				allTransitions.add(at);
 			}
 			
-			//set it
-			transitionDynamics.put(sh, allTransitions);
+			//set it if we're caching
+			if(this.useCachedTransitions){
+				transitionDynamics.put(sh, allTransitions);
+			}
 			
 		}
 		
@@ -236,8 +297,21 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	}
 	
 	
+	
+	
+	/**
+	 * Performs a Bellman value function update on the provided state. Results are stored in the value function map as well as returned.
+	 * If this object is set to used cached transition dynamics and the transition dynamics for this state are not cached, then they will be created and cached.
+	 * @param s the state on which to perform the Bellman update.
+	 * @return the new value of the state.
+	 */
+	public double performBellmanUpdateOn(State s){
+		return this.performBellmanUpdateOn(this.stateHash(s));
+	}
+	
 	/**
 	 * Performs a Bellman value function update on the provided (hashed) state. Results are stored in the value function map as well as returned.
+	 * If this object is set to used cached transition dynamics and the transition dynamics for this state are not cached, then they will be created and cached.
 	 * @param sh the hashed state on which to perform the Bellman update.
 	 * @return the new value of the state.
 	 */
@@ -250,13 +324,30 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		
 		
-		List<ActionTransitions> transitions = transitionDynamics.get(sh);
 		double maxQ = Double.NEGATIVE_INFINITY;
-		for(ActionTransitions at : transitions){
-			double q = this.computeQ(sh.s, at);
-			if(q > maxQ){
-				maxQ = q;
+		
+		if(this.useCachedTransitions){
+		
+			List<ActionTransitions> transitions = this.getActionsTransitions(sh);
+			
+			for(ActionTransitions at : transitions){
+				double q = this.computeQ(sh.s, at);
+				if(q > maxQ){
+					maxQ = q;
+				}
 			}
+			
+		}
+		else{
+			
+			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			for(GroundedAction ga : gas){
+				double q = this.computeQ(sh, ga);
+				if(q > maxQ){
+					maxQ = q;
+				}
+			}
+			
 		}
 		
 		valueFunction.put(sh, maxQ);
@@ -310,6 +401,53 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		return q;
 	}
+	
+	
+	
+	/**
+	 * Computes the Q-value using the uncached transition dynamics produced by the Action object methods. This computation
+	 * *is* compatible with {@link burlap.behavior.singleagent.options.Option} objects.
+	 * @param sh the given state
+	 * @param ga the given action
+	 * @return the double value of a Q-value for the given state-aciton pair.
+	 */
+	protected double computeQ(StateHashTuple sh, GroundedAction ga){
+		
+		double q = 0.;
+		
+		if(ga.action instanceof Option){
+			
+			Option o = (Option)ga.action;
+			double expectedR = o.getExpectedRewards(sh.s, ga.params);
+			q += expectedR;
+			
+			List <TransitionProbability> tps = o.getTransitions(sh.s, ga.params);
+			for(TransitionProbability tp : tps){
+				double vp = this.value(tp.s);
+				
+				//note that for options, tp.p will be the *discounted* probability of transition to s',
+				//so there is no need for a discount factor to be included
+				q += tp.p * vp; 
+			}
+			
+		}
+		else{
+			
+			List <TransitionProbability> tps = ga.action.getTransitions(sh.s, ga.params);
+			for(TransitionProbability tp : tps){
+				double vp = this.value(tp.s);
+				
+				double discount = this.gamma;
+				double r = rf.reward(sh.s, ga, tp.s);
+				q += tp.p * (r + (discount * vp));
+			}
+			
+		}
+		
+		return q;
+	}
+	
+	
 	
 	/**
 	 * Returns the default V-value to use for the state

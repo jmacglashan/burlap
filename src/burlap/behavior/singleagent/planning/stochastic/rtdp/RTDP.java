@@ -1,13 +1,11 @@
 package burlap.behavior.singleagent.planning.stochastic.rtdp;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -189,7 +187,7 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	/**
 	 * Runs normal RTDP in which bellman updates are performed 
-	 * @param initiaState
+	 * @param initiaState the initial state from which to plan
 	 */
 	protected void normalRTDP(State initialState){
 		
@@ -202,7 +200,6 @@ public class RTDP extends ValueFunctionPlanner {
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
 				StateHashTuple sh = this.hashingFactory.hashState(curState);
-				this.cacheTransitionDynamicsIfNeeded(sh);
 				
 				//update this state's value
 				double curV = this.value(sh);
@@ -268,8 +265,6 @@ public class RTDP extends ValueFunctionPlanner {
 		double delta = 0.;
 		for(StateHashTuple sh : states){
 			
-			this.cacheTransitionDynamicsIfNeeded(sh);
-			
 			double v = this.value(sh);
 			
 			double maxQ = this.performBellmanUpdateOn(sh);
@@ -281,32 +276,5 @@ public class RTDP extends ValueFunctionPlanner {
 		
 	}
 	
-	
-	/**
-	 * Finds and caches the hashed transition dynamics for this state if it has not already been done so.
-	 * @param sh the hashed state for which the transition dynamics should be hashed.
-	 */
-	protected void cacheTransitionDynamicsIfNeeded(StateHashTuple sh){
-		if(this.mapToStateIndex.containsKey(sh)){
-			return ; //already cached this one
-		}
-		
-		//otherwise we need to cache the transition dynamics for this state
-		mapToStateIndex.put(sh, sh);
-		
-		//first get all grounded actions for this state
-		List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
-		
-		//then get the transition dynamics for each action
-		List <ActionTransitions> transitions = new ArrayList<ActionTransitions>();
-		for(GroundedAction ga : gas){
-			ActionTransitions at = new ActionTransitions(sh.s, ga, hashingFactory);
-			transitions.add(at);
-		}
-		
-		//now make entry for this in the transition dynamics
-		transitionDynamics.put(sh, transitions);
-		
-	}
 
 }

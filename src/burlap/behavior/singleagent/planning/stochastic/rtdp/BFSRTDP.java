@@ -167,8 +167,8 @@ public class BFSRTDP extends RTDP {
 			}
 			
 			//otherwise do expansion
-			//if we reached a goal state or a previously explored state, then then bfs completes and we do not need to add terminal's children
-			if(this.satisfiesGoal(sh.s) || mapToStateIndex.containsKey(sh)){
+			//if we reached a goal state then then BFS completes and we do not need to add terminal's children
+			if(this.satisfiesGoal(sh.s)){
 				break;
 			}
 			
@@ -177,17 +177,9 @@ public class BFSRTDP extends RTDP {
 			}
 			
 			
-			//first get all grounded actions for this state
-			List <GroundedAction> gas = new ArrayList<GroundedAction>();
-			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedActionsFor(a));
-			}
-			
-			//then get the transition dynamics for each action and queue up new states
-			List <ActionTransitions> transitions = new ArrayList<ActionTransitions>();
-			for(GroundedAction ga : gas){
-				ActionTransitions at = new ActionTransitions(sh.s, ga, hashingFactory);
-				transitions.add(at);
+			//get the transition dynamics for each action and queue up new states
+			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
+			for(ActionTransitions at : transitions){
 				for(HashedTransitionProbability tp : at.transitions){
 					StateHashTuple tsh = tp.sh;
 					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
@@ -195,21 +187,14 @@ public class BFSRTDP extends RTDP {
 						openList.offer(tsh);
 					}
 				}
+				
 			}
-			
-			//now make entry for this in the transition dynamics
-			transitionDynamics.put(sh, transitions);
 
 			//close it
 			closedList.addFirst(sh);
 			
 		}
 		
-		
-		for(StateHashTuple sh : closedList){
-			//add as visited states
-			mapToStateIndex.put(sh, sh);
-		}
 		
 		DPrint.cl(debugCode, "Finished reachability analysis; # states: " + transitionDynamics.size());
 		
