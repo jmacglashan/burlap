@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.Policy.ActionProb;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
@@ -309,6 +311,20 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		return this.performBellmanUpdateOn(this.stateHash(s));
 	}
 	
+	
+	/**
+	 * Performs a fixed-policy Bellman value function update (i.e., policy evaluation) on the provided state. Results are stored in the value function map as well as returned.
+	 * If this object is set to used cached transition dynamics and the transition dynamics for this state are not cached, then they will be created and cached.
+	 * @param s the state on which to perform the Bellman update.
+	 * @param p the policy that is being evaluated
+	 * @return the new value of the state
+	 */
+	public double performFixedPolicyBellmanUpdateOn(State s, Policy p){
+		return this.performFixedPolicyBellmanUpdateOn(this.stateHash(s), p);
+	}
+	
+	
+	
 	/**
 	 * Performs a Bellman value function update on the provided (hashed) state. Results are stored in the value function map as well as returned.
 	 * If this object is set to used cached transition dynamics and the transition dynamics for this state are not cached, then they will be created and cached.
@@ -329,7 +345,6 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		if(this.useCachedTransitions){
 		
 			List<ActionTransitions> transitions = this.getActionsTransitions(sh);
-			
 			for(ActionTransitions at : transitions){
 				double q = this.computeQ(sh.s, at);
 				if(q > maxQ){
@@ -353,6 +368,68 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		valueFunction.put(sh, maxQ);
 		
 		return maxQ;
+	}
+	
+	
+	
+	
+	/**
+	 * Performs a fixed-policy Bellman value function update (i.e., policy evaluation) on the provided (hashed) state. Results are stored in the value function map as well as returned.
+	 * If this object is set to used cached transition dynamics and the transition dynamics for this state are not cached, then they will be created and cached.
+	 * @param sh the hashed state on which to perform the Bellman update.
+	 * @param p the policy that is being evaluated
+	 * @return the new value of the state
+	 */
+	protected double performFixedPolicyBellmanUpdateOn(StateHashTuple sh, Policy p){
+		
+		
+		if(this.tf.isTerminal(sh.s)){
+			//terminal states always have a state value of 0
+			valueFunction.put(sh, 0.);
+			return 0.;
+		}
+		
+		double weightedQ = 0.;
+		List<ActionProb> policyDistribution = p.getActionDistributionForState(sh.s);
+		
+		if(this.useCachedTransitions){
+			
+			List<ActionTransitions> transitions = this.getActionsTransitions(sh);
+			for(ActionTransitions at : transitions){
+				
+				double policyProb = Policy.getProbOfActionGivenDistribution(sh.s, at.ga, policyDistribution);
+				if(policyProb == 0.){
+					continue; //doesn't contribute
+				}
+				
+				double q = this.computeQ(sh.s, at);
+				weightedQ += policyProb*q;
+				
+			}
+			
+		}
+		else{
+			
+			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			for(GroundedAction ga : gas){
+				
+				double policyProb = Policy.getProbOfActionGivenDistribution(sh.s, ga, policyDistribution);
+				if(policyProb == 0.){
+					continue; //doesn't contribute
+				}
+				
+				double q = this.computeQ(sh, ga);
+				weightedQ += policyProb*q;
+			}
+			
+		}
+		
+		
+		
+		valueFunction.put(sh, weightedQ);
+		
+		return weightedQ;
+		
 	}
 	
 	

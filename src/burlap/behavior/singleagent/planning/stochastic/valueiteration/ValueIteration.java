@@ -110,15 +110,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			double delta = 0.;
 			for(StateHashTuple sh : states){
 				
-				if(tf.isTerminal(sh.s)){
-					//no need to compute this state; always zero because it is terminal and agent cannot behave here
-					valueFunction.put(sh, 0.);
-					continue;
-					
-				}
-				
 				double v = this.value(sh);
-				
 				double maxQ = this.performBellmanUpdateOn(sh);
 				delta = Math.max(Math.abs(maxQ - v), delta);
 				

@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.StateConditionTest;
@@ -16,8 +15,6 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 
@@ -154,9 +151,6 @@ public class BFSRTDP extends RTDP {
 		Set <StateHashTuple> openedSet = new HashSet<StateHashTuple>();
 		openList.offer(sih);
 		openedSet.add(sih);
-		
-		List <Action> actions = domain.getActions();
-		
 		
 		while(openList.size() > 0){
 			StateHashTuple sh = openList.poll();

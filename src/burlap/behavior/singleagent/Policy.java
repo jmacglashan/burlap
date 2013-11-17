@@ -69,6 +69,18 @@ public abstract class Policy {
 	}
 	
 	
+	public static double getProbOfActionGivenDistribution(State s, GroundedAction ga, List<ActionProb> distribution){
+		if(distribution == null || distribution.size() == 0){
+			throw new RuntimeException("Distribution is null or empty, cannot return probability for given action.");
+		}
+		for(ActionProb ap : distribution){
+			if(ap.ga.equals(ga)){
+				return ap.pSelection;
+			}
+		}
+		return 0.;
+	}
+	
 	/**
 	 * A helper method for defining deterministic policies. This method relies on the getAction method being
 	 * implemented and will return a list of ActionProb objects with a single instance: the result of
