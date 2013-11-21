@@ -162,6 +162,17 @@ public class BlocksWorld implements DomainGenerator {
 	
 	
 	/**
+	 * Use this method to quickly set the color of a block
+	 * @param s the state in which the block object exists
+	 * @param blockInd the index of the block object whose color value should be set 
+	 * @param color the categorical color value (either "red", "green", or "blue")
+	 */
+	public static void setBlockColor(State s, int blockInd, String color){
+		ObjectInstance b = s.getObjectsOfTrueClass(CLASSBLOCK).get(blockInd);
+		b.setValue(ATTCOLOR, color);
+	}
+	
+	/**
 	 * Use this method to quickly set the various values of a block
 	 * @param s the state in which the block object should be set
 	 * @param blockInd the index of the block object whose values should be set
