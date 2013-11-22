@@ -68,6 +68,11 @@ public class GroundedAction {
 		return buf.toString();
 	}
 	
+	@Override
+	public int hashCode(){
+		return this.action.getName().hashCode();
+	}
+	
 	
 	@Override
 	public boolean equals(Object other){
