@@ -50,6 +50,14 @@ public class ValueIteration extends ValueFunctionPlanner{
 	protected boolean												foundReachableStates = false;
 	
 	
+	/**
+	 * When the reachability analysis to find the state space is performed, a breadth first search-like pass
+	 * (spreading over all stochastic transitions) is performed. It can optionally be set so that the
+	 * search is pruned at terminal states by setting this value to true. By default, it is false and the full
+	 * reachable state space is found
+	 */
+	protected boolean												stopReachabilityFromTerminalStates = false;
+	
 	
 	/**
 	 * Initializers the planner.
@@ -79,6 +87,15 @@ public class ValueIteration extends ValueFunctionPlanner{
 		this.foundReachableStates = false;
 	}
 	
+	
+	/**
+	 * Sets whether the state reachability search to generate the state space will be prune the search from terminal states.
+	 * The default is not to prune.
+	 * @param toggle true if the search should prune the search at terminal states; false if the search should find all reachable states regardless of terminal states.
+	 */
+	public void toggleReachabiltiyTerminalStatePruning(boolean toggle){
+		this.stopReachabilityFromTerminalStates = toggle;
+	}
 	
 	
 	@Override
@@ -162,8 +179,8 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 			mapToStateIndex.put(sh, sh);
 			
-			//do not need to expand from terminal states
-			if(this.tf.isTerminal(sh.s)){
+			//do not need to expand from terminal states if set to prune
+			if(this.tf.isTerminal(sh.s) && stopReachabilityFromTerminalStates){
 				continue;
 			}
 			
