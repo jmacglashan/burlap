@@ -404,7 +404,7 @@ public class GridWorldDomain implements DomainGenerator {
 	
 		GridWorldDomain gwdg = new GridWorldDomain(11, 11);
 		gwdg.setMapToFourRooms();
-		gwdg.setProbSucceedTransitionDynamics(0.75);
+		//gwdg.setProbSucceedTransitionDynamics(0.75);
 		
 		Domain d = gwdg.generateDomain();
 		

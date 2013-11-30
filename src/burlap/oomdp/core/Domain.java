@@ -84,7 +84,7 @@ public abstract class Domain {
 	
 	/**
 	 * This will return a new domain object populated with copies of this Domain's ObjectClasses. Note that propositional
-	 * functions and actions are not copied into the new domain
+	 * functions and actions are not copied into the new domain.
 	 * @return a new Domain object with copies of this Domain's ObjectClasses
 	 */
 	public Domain getNewDomainWithCopiedObjectClasses(){
@@ -92,7 +92,7 @@ public abstract class Domain {
 		for(Attribute a : this.attributes){
 			a.copy(d);
 		}
-		
+		d.nameDependentDomain = this.nameDependentDomain;
 		return d;
 	}
 	
