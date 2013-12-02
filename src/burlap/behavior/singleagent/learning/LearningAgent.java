@@ -24,6 +24,16 @@ public interface LearningAgent {
 	 */
 	public EpisodeAnalysis runLearningEpisodeFrom(State initialState);
 	
+	
+	/**
+	 * Causes the agent to perform a learning episode starting in the given initial state. The episode terminates when a terminal
+	 * state is reached, if the agent decides to determinate the episode, or if the number of steps reaches the provided threshold.
+	 * @param initialState The initial state in which the agent will start the episode.
+	 * @param maxSteps the maximum number of steps in the episode
+	 * @return The learning episode events that was performed, stored in an {@link burlap.behavior.singleagent.EpisodeAnalysis} object.
+	 */
+	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps);
+	
 	/**
 	 * Returns the last learning episode of the agent.
 	 * @return  the last learning episode of the agent.

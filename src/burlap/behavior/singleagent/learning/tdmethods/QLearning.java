@@ -427,9 +427,14 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 
 	}
 
+	
+	@Override
+	public EpisodeAnalysis runLearningEpisodeFrom(State initialState){
+		return this.runLearningEpisodeFrom(initialState, maxEpisodeSize);
+	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
+	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
 		
 		this.toggleShouldAnnotateOptionDecomposition(shouldAnnotateOptions);
 		
@@ -440,7 +445,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		
 		maxQChangeInLastEpisode = 0.;
 		
-		while(!tf.isTerminal(curState.s) && eStepCounter < maxEpisodeSize){
+		while(!tf.isTerminal(curState.s) && eStepCounter < maxSteps){
 			
 			GroundedAction action = learningPolicy.getAction(curState.s);
 			QValue curQ = this.getQ(curState, action);

@@ -141,7 +141,7 @@ public class SarsaLam extends QLearning {
 		
 	
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
+	public EpisodeAnalysis runLearningEpisodeFrom(State initialState,int maxSteps) {
 		
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxQChangeInLastEpisode = 0.;
@@ -155,7 +155,7 @@ public class SarsaLam extends QLearning {
 		
 		
 		
-		while(!tf.isTerminal(curState.s) && eStepCounter < maxEpisodeSize){
+		while(!tf.isTerminal(curState.s) && eStepCounter < maxSteps){
 			
 			StateHashTuple nextState = this.stateHash(action.executeIn(curState.s));
 			GroundedAction nextAction = learningPolicy.getAction(nextState.s);

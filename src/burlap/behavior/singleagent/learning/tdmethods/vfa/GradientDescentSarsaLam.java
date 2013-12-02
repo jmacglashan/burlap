@@ -321,6 +321,11 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	
 	@Override
 	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
+		return this.runLearningEpisodeFrom(initialState, maxEpisodeSize);
+	}
+	
+	@Override
+	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
 		
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxWeightChangeInLastEpisode = 0.;
@@ -334,7 +339,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		ActionApproximationResult curApprox = ActionApproximationResult.extractApproximationForAction(allCurApproxResults, action);
 		
 		
-		while(!tf.isTerminal(curState) && eStepCounter < maxEpisodeSize){
+		while(!tf.isTerminal(curState) && eStepCounter < maxSteps){
 			
 			
 			WeightGradient gradient = this.vfa.getWeightGradient(curApprox.approximationResult);

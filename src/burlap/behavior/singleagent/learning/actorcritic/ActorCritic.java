@@ -112,8 +112,14 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		
 	}
 
+	
 	@Override
 	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
+		return this.runLearningEpisodeFrom(initialState, maxEpisodeSize);
+	}
+	
+	@Override
+	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
 		
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		
@@ -122,7 +128,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		this.critic.initializeEpisode(curState);
 		
 		int timeSteps = 0;
-		while(!tf.isTerminal(curState) && timeSteps < this.maxEpisodeSize){
+		while(!tf.isTerminal(curState) && timeSteps < maxSteps){
 			
 			GroundedAction ga = this.actor.getAction(curState);
 			State nextState = ga.executeIn(curState);
