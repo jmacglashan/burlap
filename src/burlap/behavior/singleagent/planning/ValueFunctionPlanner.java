@@ -108,6 +108,17 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	
 	/**
+	 * Returns whether a value for the given state has been computed previously.
+	 * @param s the state to check
+	 * @return true if the the value for the given state has already been computed; false otherwise.
+	 */
+	public boolean hasComputedValueFor(State s){
+		StateHashTuple sh = this.hashingFactory.hashState(s);
+		return this.valueFunction.containsKey(sh);
+	}
+	
+	
+	/**
 	 * Returns the value function evaluation of the given state. If the value is not stored, then the default value
 	 * specified by the ValueFunctionInitialization object of this class is returned.
 	 * @param s the state to evaluate.
