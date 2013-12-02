@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.stochastic.valueiteration;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,6 +86,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	 */
 	public void recomputeReachableStates(){
 		this.foundReachableStates = false;
+		this.transitionDynamics = new HashMap<StateHashTuple, List<ActionTransitions>>();
 	}
 	
 	
