@@ -130,7 +130,7 @@ public class BoltzmannActor extends Actor {
 			probs.add(new ActionProb(ap.ga, probsArray[i]));
 		}
 		
-		if(this.containsParameterizedActions && !this.domain.isNameDependent()){
+		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
 			//then convert back to this states space
 			Map <String, String> matching = node.sh.s.getObjectMatchingTo(s, false);
 			
@@ -199,7 +199,7 @@ public class BoltzmannActor extends Actor {
 	protected ActionPreference getMatchingPreference(StateHashTuple sh, GroundedAction ga, PolicyNode node){
 		
 		GroundedAction translatedAction = ga;
-		if(ga.params.length > 0  && !this.domain.isNameDependent()){
+		if(ga.params.length > 0  && !this.domain.isObjectIdentifierDependent()){
 			Map <String, String> matching = sh.s.getObjectMatchingTo(node.sh.s, false);
 			translatedAction = this.translateAction(ga, matching);
 		}

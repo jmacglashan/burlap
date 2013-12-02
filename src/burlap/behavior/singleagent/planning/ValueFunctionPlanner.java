@@ -157,7 +157,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		
 		
-		if(this.containsParameterizedActions && !this.domain.isNameDependent()){
+		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
 			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 		}
 		
@@ -191,7 +191,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				mapToStateIndex.put(indexSH, indexSH);
 			}
 			
-			if(this.containsParameterizedActions && !this.domain.isNameDependent()){
+			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
 				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 			}
 			return this.getQ(sh, a, matching);

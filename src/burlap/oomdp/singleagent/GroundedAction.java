@@ -61,14 +61,26 @@ public class GroundedAction {
 		return action.performAction(s, params);
 	}
 	
+	/**
+	 * Returns the action name for this grounded action.
+	 * @return the action name for this grounded action.
+	 */
 	public String actionName(){
 		return this.action.getName();
 	}
 	
-	
+	/**
+	 * This method will translate this object's parameters that were assigned for a given source state, into object parameters in the
+	 * target state that are equal. This method is useful if a domain uses parameterized actions and is object identifier invariant.
+	 * If the domain of this grounded aciton's action is object identifier dependent, then no translation will occur
+	 * and this object will be returned. This object will also be returned if it is a parameterless action.
+	 * @param sourceState the source state from which this objects parameters were bound.
+	 * @param targetState a target state with potentially different object identifiers for equivalent values.
+	 * @return a grounded action object whose parameters have been translated to the target state object identifiers
+	 */
 	public GroundedAction translateParameters(State sourceState, State targetState){
 		
-		if(this.params.length == 0 || this.action.domain.isNameDependent()){
+		if(this.params.length == 0 || this.action.domain.isObjectIdentifierDependent()){
 			//no need to translate a parameterless action or an action that belongs to a name dependent domain
 			return this;
 		}

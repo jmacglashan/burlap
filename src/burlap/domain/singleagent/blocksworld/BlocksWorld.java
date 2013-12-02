@@ -102,7 +102,7 @@ public class BlocksWorld implements DomainGenerator {
 	public Domain generateDomain() {
 		
 		Domain domain = new SADomain();
-		domain.setNameDependence(true);
+		domain.setObjectIdentiferDependence(true);
 		
 		List <String> colNames = new ArrayList<String>();
 		colNames.add(COLORRED);

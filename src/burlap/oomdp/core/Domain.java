@@ -24,7 +24,7 @@ public abstract class Domain {
 	protected List <PropositionalFunction>				propFunctions;			//list of propositional functions
 	protected Map <String, PropositionalFunction> 		propFunctionMap;		//lookup propositional functions by name
 	
-	protected boolean									nameDependentDomain = false;
+	protected boolean									objectIdentifierDependentDomain = false;
 	
 
 	/**
@@ -45,34 +45,34 @@ public abstract class Domain {
 	
 	
 	/**
-	 * Sets whether this domain's states are object name dependent or independent. In an OO-MDP states are represented
+	 * Sets whether this domain's states are object identifier (name) dependent. In an OO-MDP states are represented
 	 * as a set of object instances; therefore state equality can either be determined by whether there is a
-	 * bijection between the states such that the matched objects have the same value (name independent), or whether the same
-	 * object references have the same values (name dependent). For instance, imagine a state s_1 with two objects of the same class,
+	 * bijection between the states such that the matched objects have the same value (identifier independent), or whether objects with the same
+	 * identifier have the same values (identifier dependent). For instance, imagine a state s_1 with two objects of the same class,
 	 * o_1 and o_2 with value assignments v_a and v_b, respectively. Imagine a corresponding state s_2, also with objects o_1 and
-	 * o_2; however, in s_2, the value assignment is o_1=v_b and o_2=v_a. If the domain is name independent, then s_1 == s_2,
+	 * o_2; however, in s_2, the value assignment is o_1=v_b and o_2=v_a. If the domain is identifier independent, then s_1 == s_2,
 	 * because you can match o_1 in s_1 to o_2 in s_2 (and symmetrically for the other objects). However, if the domain is
-	 * name dependent, then s_1 != s_2, because the specific object references have different values in each state.
-	 * @param nameDependent sets whether this domain's states are object name dependent (true) or not (false).
+	 * identifier dependent, then s_1 != s_2, because the objects with the same identifiers (o_1 and o_2) have different values in each state.
+	 * @param objectIdentifierDependent sets whether this domain's states are object identifier dependent (true) or not (false).
 	 */
-	public void setNameDependence(boolean nameDependent){
-		this.nameDependentDomain = nameDependent;
+	public void setObjectIdentiferDependence(boolean objectIdentifierDependent){
+		this.objectIdentifierDependentDomain = objectIdentifierDependent;
 	}
 	
 	
 	/**
-	 * Returns whether this domain's states are object name dependent. In an OO-MDP states are represented
+	 * Returns whether this domain's states are object identifier (name) dependent. In an OO-MDP states are represented
 	 * as a set of object instances; therefore state equality can either be determined by whether there is a
-	 * bijection between the states such that the matched objects have the same value (name independent), or whether the same
-	 * object references have the same values (name dependent). For instance, imagine a state s_1 with two objects of the same class,
+	 * bijection between the states such that the matched objects have the same value (identifier independent), or whether objects with the same
+	 * identifier have the same values (identifier dependent). For instance, imagine a state s_1 with two objects of the same class,
 	 * o_1 and o_2 with value assignments v_a and v_b, respectively. Imagine a corresponding state s_2, also with objects o_1 and
-	 * o_2; however, in s_2, the value assignment is o_1=v_b and o_2=v_a. If the domain is name independent, then s_1 == s_2,
+	 * o_2; however, in s_2, the value assignment is o_1=v_b and o_2=v_a. If the domain is identifier independent, then s_1 == s_2,
 	 * because you can match o_1 in s_1 to o_2 in s_2 (and symmetrically for the other objects). However, if the domain is
-	 * name dependent, then s_1 != s_2, because the specific object references have different values in each state.
-	 * @return true if this domain is name dependent and false if it object name independent.
+	 * identifier dependent, then s_1 != s_2, because the objects with the same identifiers (o_1 and o_2) have different values in each state.
+	 * @return true if this domain is identifier dependent and false if it object identifier independent.
 	 */
-	public boolean isNameDependent(){
-		return this.nameDependentDomain;
+	public boolean isObjectIdentifierDependent(){
+		return this.objectIdentifierDependentDomain;
 	}
 	
 	
@@ -92,7 +92,7 @@ public abstract class Domain {
 		for(Attribute a : this.attributes){
 			a.copy(d);
 		}
-		d.nameDependentDomain = this.nameDependentDomain;
+		d.objectIdentifierDependentDomain = this.objectIdentifierDependentDomain;
 		return d;
 	}
 	
