@@ -1,5 +1,10 @@
 package burlap.oomdp.singleagent;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
 /**
@@ -54,6 +59,41 @@ public class GroundedAction {
 	 */
 	public State executeIn(State s){
 		return action.performAction(s, params);
+	}
+	
+	public String actionName(){
+		return this.action.getName();
+	}
+	
+	
+	public GroundedAction translateParameters(State sourceState, State targetState){
+		
+		if(this.params.length == 0 || this.action.domain.isNameDependent()){
+			//no need to translate a parameterless action or an action that belongs to a name dependent domain
+			return this;
+		}
+		
+		Set <String> matchedObjects = new HashSet<String>();
+		String [] nparams = new String[this.params.length];
+		int i = 0;
+		for(String oname : this.params){
+			ObjectInstance o = sourceState.getObject(oname);
+			List<ObjectInstance> cands = targetState.getObjectsOfTrueClass(o.getObjectClass().name);
+			for(ObjectInstance cand : cands){
+				if(matchedObjects.contains(cand.getName())){
+					continue ;
+				}
+				if(o.valueEquals(cand)){
+					nparams[i] = o.getName();
+					matchedObjects.add(o.getName());
+					break;
+				}
+			}
+			
+			i++;
+		}
+		
+		return new GroundedAction(action, nparams);
 	}
 	
 

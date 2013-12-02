@@ -294,7 +294,7 @@ public class ObjectInstance {
 	 */
 	public boolean valueEquals(ObjectInstance obj){
 	
-		if(!obClass.equals(obj.obClass)){
+		if(!obClass.name.equals(obj.obClass.name)){
 			return false;
 		}
 	
