@@ -63,6 +63,17 @@ public class DPrint {
 	
 	
 	/**
+	 * A universal printf whose behavior is determined by the {@link universalPrint} field
+	 * @param s the format string
+	 * @param args the arguments for the formatted string
+	 */
+	public static void uf(String s, Object...args){
+		if(universalPrint){
+			System.out.printf(s, args);
+		}
+	}
+	
+	/**
 	 * A print line command for the given debug code. If that debug code is set to false, then the print will not occur.
 	 * @param c the debug code under which printing should be performed
 	 * @param s the string to print
@@ -87,6 +98,26 @@ public class DPrint {
 			System.out.print(s);
 		}
 	}
+	
+	
+	
+	/**
+	 * A printf command for the given debug code. If that debug code is set to false, then the print will not occur.
+	 * @param c the debug code under which printing should be performed
+	 * @param s the format string
+	 * @param args the arguments for the formatted string
+	 */
+	public static void cf(int c, String s, Object...args){
+		Boolean m = debugCodes.get(c);
+		boolean mb = universalPrint;
+		if(m != null){
+			mb = m;
+		}
+		if(mb){
+			System.out.printf(s,args);
+		}
+	}
+	
 	
 	/**
 	 * Returns the print mode for a given debug code
