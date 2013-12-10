@@ -198,6 +198,7 @@ public class VisualExplorer extends JFrame{
 		bottomContainer.add(actionButton, BorderLayout.EAST);
 		
 		painter.updateState(baseState);
+		this.updatePropTextArea(baseState);
 		
 		pack();
 		setVisible(true);
