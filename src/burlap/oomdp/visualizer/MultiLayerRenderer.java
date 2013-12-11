@@ -63,6 +63,32 @@ public class MultiLayerRenderer extends Canvas {
 		this.renderLayers.add(l);
 	}
 	
+	/**
+	 * Inserts a render layer at the specified position
+	 * @param i the position in which the render layer should be inserted
+	 * @param l the render layer to insert
+	 */
+	public void insertRenderLayerTo(int i, RenderLayer l){
+		this.renderLayers.add(i, l);
+	}
+	
+	
+	/**
+	 * Removes the render layer at teh specified position.
+	 * @param i the position of the render layer to remove
+	 */
+	public void removeRenderLayer(int i){
+		this.renderLayers.remove(i);
+	}
+	
+	/**
+	 * Returns the number of render layers
+	 * @return the number of render layers
+	 */
+	public int numRenderLayers(){
+		return this.renderLayers.size();
+	}
+	
 	@Override
 	public void paint(Graphics g){
 		
