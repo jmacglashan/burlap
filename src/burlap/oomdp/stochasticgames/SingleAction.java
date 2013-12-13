@@ -86,6 +86,7 @@ public abstract class SingleAction {
 		this.parameterTypes = pt;
 		this.parameterOrderGroups = pr;
 		d.addSingleAction(this);
+		this.domain = d;
 	}
 	
 	/**
