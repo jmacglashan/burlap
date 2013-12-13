@@ -89,6 +89,14 @@ public class MultiLayerRenderer extends Canvas {
 		return this.renderLayers.size();
 	}
 	
+	/**
+	 * Sets the color that will fill the canvas before rendering begins
+	 * @param col the background color
+	 */
+	public void setBGColor(Color col){
+		this.bgColor = col;
+	}
+	
 	@Override
 	public void paint(Graphics g){
 		

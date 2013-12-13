@@ -205,6 +205,21 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 		this.renderStyle = renderStyle;
 	}
 
+	/**
+	 * Sets the soft difference between max actions to determine ties when the MAXACTIONSOFSOFTTIE render style is used.
+	 * @param delta the delta for determining ties.
+	 */
+	public void setSoftTieRenderStyleDelta(double delta){
+		this.softTieDelta = delta;
+	}
+	
+	/**
+	 * Returns the soft difference between max actions to determine ties when the MAXACTIONSOFSOFTTIE render style is used.
+	 * @return the delta for determining ties.
+	 */
+	public double getSoftTieRenderStyleDelta(){
+		return this.softTieDelta;
+	}
 
 	@Override
 	public void paintStatePolicy(Graphics2D g2, State s, Policy policy, float cWidth, float cHeight) {

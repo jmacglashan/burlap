@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.oomdp.core.State;
+import burlap.oomdp.visualizer.MultiLayerRenderer;
 
 
 /**
@@ -27,9 +28,19 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	
 	
 	/**
-	 * The visualizer to use.
+	 * The multi-layer render layer canvas
 	 */
-	protected ValueFunctionVisualizer			visualizer;
+	protected MultiLayerRenderer				visualizer;
+	
+	/**
+	 * The value function renderer
+	 */
+	protected ValueFunctionRenderLayer			vfLayer;
+	
+	/**
+	 * The policy renderer
+	 */
+	protected PolicyRenderLayer					pLayer;
 	
 	/**
 	 * Painter used to visualize the value function
@@ -40,6 +51,9 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * Painter used to visualize the policy
 	 */
 	protected StatePolicyPainter				spp = null;
+	
+	
+	protected List <State>						statesToVisualize;
 	
 	/**
 	 * Painter used to visualize general state-independent domain information
@@ -71,7 +85,15 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param planner the planner that can return the value function.
 	 */
 	public ValueFunctionVisualizerGUI(List <State> states, StateValuePainter svp, QComputablePlanner planner){
-		this.visualizer = new ValueFunctionVisualizer(states, svp, planner);
+		//this.visualizer = new ValueFunctionVisualizer(states, svp, planner);
+		this.statesToVisualize = states;
+		this.visualizer = new MultiLayerRenderer();
+		this.vfLayer = new ValueFunctionRenderLayer(statesToVisualize, svp, planner);
+		this.pLayer = new PolicyRenderLayer(states, null, null);
+		
+		this.visualizer.addRenderLayer(vfLayer);
+		this.visualizer.addRenderLayer(pLayer);
+		
 	}
 
 	
@@ -90,7 +112,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 */
 	public void setSvp(StateValuePainter svp) {
 		this.svp = svp;
-		this.visualizer.setSvp(svp);
+		this.vfLayer.setSvp(svp);
 	}
 
 	
@@ -111,28 +133,12 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 		this.spp = spp;
 		if(spp != null && this.showPolicy != null){
 			this.showPolicy.setEnabled(true);
+			this.pLayer.setSpp(spp);
 		}
 	}
 
 	
 
-	/**
-	 * Returns the state-independent domain painter
-	 * @return the state-independent domain painter
-	 */
-	public StaticDomainPainter getSdp() {
-		return sdp;
-	}
-
-	
-	/**
-	 * Sets the state-independent domain painter
-	 * @param sdp the state-independent domain painter
-	 */
-	public void setSdp(StaticDomainPainter sdp) {
-		this.sdp = sdp;
-		this.visualizer.setSdp(sdp);
-	}
 	
 	
 	/**
@@ -140,7 +146,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param bgColor the canvas background color
 	 */
 	public void setBgColor(Color col){
-		this.visualizer.setBgColor(col);
+		this.visualizer.setBGColor(col);
 	}
 	
 	
@@ -149,7 +155,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param policy the policy to render
 	 */
 	public void setPolicy(Policy p){
-		this.visualizer.setPolicy(p);
+		this.pLayer.setPolicy(p);
 	}
 	
 	
@@ -192,10 +198,10 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	    Object source = e.getItemSelectable();
 	    if(source == this.showPolicy){
 	    	if(this.showPolicy.isSelected()){
-	    		this.visualizer.setSpp(this.spp);
+	    		this.pLayer.setSpp(spp);
 	    	}
 	    	else{
-	    		this.visualizer.setSpp(null);
+	    		this.pLayer.setSpp(null);
 	    	}
 	    	this.visualizer.repaint();
 	    }
