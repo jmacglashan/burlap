@@ -151,16 +151,17 @@ public class ObjectClass {
 	}
 	
 	/**
-	 * Returns the internally stored index of the attribute with the given name
+	 * Returns the internally stored index of the attribute with the given name. A runtime exception is thrown
+	 * if this object class is not defined by an attribute named attName
 	 * @param attName the name of the attribute for which to get the index
-	 * @return the index of the attribute with name attName; -1 if this object class is not defined by an attribute named attName
+	 * @return the index of the attribute with name attName
 	 */
 	public int attributeIndex(String attName){
 		Integer ind = attributeIndex.get(attName);
 		if(ind != null){
 			return ind;
 		}
-		return -1;
+		throw new RuntimeException("The attribute " + attName + " is not defined for this object class (" + this.name + ")");
 	}
 	
 	
