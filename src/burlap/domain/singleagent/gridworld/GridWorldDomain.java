@@ -410,10 +410,10 @@ public class GridWorldDomain implements DomainGenerator {
 	 * Sets the map at the specified location to have the specified wall configuration.
 	 * @param x the x coordinate of the location
 	 * @param y the y coordinate of the location
-	 * @param state the wall stat configuration for this location. 0 = no walls; 1 = complete cell wall/obstacle; 2 = 1D north wall; 3 = 1D east wall; 4 = 1D north *and* east wall
+	 * @param wallType the wall configuration for this location. 0 = no walls; 1 = complete cell wall/obstacle; 2 = 1D north wall; 3 = 1D east wall; 4 = 1D north *and* east wall
 	 */
-	public void setLocationWallState(int x, int y, int state){
-		this.map[x][y] = state;
+	public void setCellWallState(int x, int y, int wallType){
+		this.map[x][y] = wallType;
 	}
 	
 	
