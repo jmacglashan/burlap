@@ -36,6 +36,18 @@ public class Visualizer extends MultiLayerRenderer{
 		this.renderLayers.add(srender);
 	}
 	
+	public Visualizer(StateRenderLayer srender){
+		super();
+		this.srender = srender;
+		this.renderLayers.add(this.srender);
+	}
+	
+	public void setSetRenderLayer(StateRenderLayer srender){
+		this.renderLayers.remove(this.srender);
+		this.renderLayers.add(srender);
+		this.srender = srender;
+	}
+	
 	/**
 	 * Sets the background color of the canvas
 	 * @param c the background color of the canvas
