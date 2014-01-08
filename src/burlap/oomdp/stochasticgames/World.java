@@ -41,6 +41,8 @@ public class World {
 	protected JointAction						lastJointAction;
 	
 	
+	protected List<WorldObserver>				worldObservers;
+	
 	protected int								debugId;
 	
 	
@@ -83,7 +85,7 @@ public class World {
 		
 		agentCumulativeReward = new HashMap<String, Double>();
 		
-		
+		worldObservers = new ArrayList<WorldObserver>();
 		
 		debugId = 284673923;
 	}
@@ -157,6 +159,29 @@ public class World {
 	 */
 	public JointAction getLastJointAction(){
 		return this.lastJointAction;
+	}
+	
+	/**
+	 * Adds a world observer to this world
+	 * @param ob the observer to add
+	 */
+	public void addWorldObserver(WorldObserver ob){
+		this.worldObservers.add(ob);
+	}
+	
+	/**
+	 * Removes the specified world observer from this world
+	 * @param ob the world observer to remove
+	 */
+	public void removeWorldObserver(WorldObserver ob){
+		this.worldObservers.remove(ob);
+	}
+	
+	/**
+	 * Clears all world observers from this world.
+	 */
+	public void clearAllWorldObserver(){
+		this.worldObservers.clear();
 	}
 	
 	
@@ -247,6 +272,11 @@ public class World {
 		//tell all the agents about it
 		for(Agent a : agents){
 			a.observeOutcome(abstractedCurrent, ja, jointReward, abstractedPrime, tf.isTerminal(sp));
+		}
+		
+		//tell observers
+		for(WorldObserver o : this.worldObservers){
+			o.observe(currentState, ja, jointReward, sp);
 		}
 		
 		//update the state

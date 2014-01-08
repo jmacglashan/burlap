@@ -19,7 +19,8 @@ import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.SingleAction;
 
 /**
- * A Tabular Q-learning [1] algorithm for stochastic games formalisms.
+ * A Tabular Q-learning [1] algorithm for stochastic games formalisms. This algorithm ignores the actions of other agents and treats the outcomes
+ * from their decisions as if they're part of the environment transition dynamics.
  * 
  * <p/>
  * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
@@ -57,9 +58,9 @@ public class SGQLAgent extends Agent {
 	protected double													learningRate;
 	
 	/**
-	 * The default Q-value to which all Q-values will be initialized
+	 * Defines how q-values are initialized
 	 */
-	protected double													defaultQ;
+	protected SGNQValueInitialization									qInit;
 	
 	/**
 	 * The learning strategy to follow (e.g., epsilon greedy).
@@ -84,7 +85,7 @@ public class SGQLAgent extends Agent {
 		this.discount = discount;
 		this.learningRate = learningRate;
 		this.hashFactory = hashFactory;
-		this.defaultQ = 0.;
+		this.qInit = new SGNQValueInitialization.ConstantValueQInit(0.);
 		
 		this.qMap = new HashMap<StateHashTuple, List<SGQValue>>();
 		stateRepresentations = new HashMap<StateHashTuple, State>();
@@ -107,7 +108,7 @@ public class SGQLAgent extends Agent {
 		this.discount = discount;
 		this.learningRate = learningRate;
 		this.hashFactory = hashFactory;
-		this.defaultQ = defaultQ;
+		this.qInit = new SGNQValueInitialization.ConstantValueQInit(defaultQ);
 		
 		this.qMap = new HashMap<StateHashTuple, List<SGQValue>>();
 		stateRepresentations = new HashMap<StateHashTuple, State>();
@@ -116,8 +117,46 @@ public class SGQLAgent extends Agent {
 		this.storedMapAbstraction = new NullAbstractionNoCopy();
 	}
 	
+	/**
+	 * Initializes with a default 0.1 epsilon greedy policy/strategy
+	 * @param d the domain in which the agent will act
+	 * @param discount the discount factor
+	 * @param learningRate the learning rate
+	 * @param qInitizalizer the Q-value initialization method
+	 * @param hashFactory the state hashing factory
+	 */
+	public SGQLAgent(SGDomain d, double discount, double learningRate, SGNQValueInitialization qInitizalizer, StateHashFactory hashFactory) {
+		this.init(d);
+		this.discount = discount;
+		this.learningRate = learningRate;
+		this.hashFactory = hashFactory;
+		this.qInit = qInitizalizer;
+		
+		this.qMap = new HashMap<StateHashTuple, List<SGQValue>>();
+		stateRepresentations = new HashMap<StateHashTuple, State>();
+		this.strategy = new SGEQGreedy(this, 0.1);
+		
+		this.storedMapAbstraction = new NullAbstractionNoCopy();
+	}
+	
+	/**
+	 * Sets the state abstraction that this agent will use
+	 * @param abstraction the state abstraction that this agent will use
+	 */
 	public void setStoredMapAbstraction(StateAbstraction abstraction){
 		this.storedMapAbstraction = abstraction;
+	}
+	
+	/**
+	 * Sets the Q-learning strategy that this agent will use (e.g., epsilon greedy)
+	 * @param strategy the Q-learning strategy that this agent will use
+	 */
+	public void setStrategy(Strategy strategy){
+		this.strategy = strategy;
+	}
+	
+	public void setQValueInitializer(SGNQValueInitialization qInit){
+		this.qInit = qInit;
 	}
 
 	@Override
@@ -193,7 +232,7 @@ public class SGQLAgent extends Agent {
 			stateRepresentations.put(shq, shq.s);
 			List <SGQValue> entries = new ArrayList<SGQValue>();
 			for(GroundedSingleAction gsa : gsas){
-				SGQValue q = new SGQValue(gsa, defaultQ);
+				SGQValue q = new SGQValue(gsa, this.qInit.qInit(shq.s, gsa));
 				entries.add(q);
 			}
 			qMap.put(shq, entries);
@@ -226,7 +265,7 @@ public class SGQLAgent extends Agent {
 			}
 			
 			if(!foundMatch){
-				SGQValue qe = new SGQValue(transgsa, defaultQ);
+				SGQValue qe = new SGQValue(transgsa, this.qInit.qInit(shq.s, transgsa));
 				entries.add(qe);
 				returnedEntries.add(qe);
 			}
@@ -256,7 +295,7 @@ public class SGQLAgent extends Agent {
 		if(storedRep == null){
 			//no existing entry so we can create it
 			stateRepresentations.put(shq, shq.s);
-			SGQValue q = new SGQValue(gsa, defaultQ);
+			SGQValue q = new SGQValue(gsa, this.qInit.qInit(shq.s, gsa));
 			List <SGQValue> entries = new ArrayList<SGQValue>();
 			entries.add(q);
 			qMap.put(shq, entries);
@@ -277,7 +316,7 @@ public class SGQLAgent extends Agent {
 		}
 		
 		//if we got here then there are no entries for this action
-		SGQValue qe = new SGQValue(gsa, defaultQ);
+		SGQValue qe = new SGQValue(gsa, this.qInit.qInit(shq.s, gsa));
 		entries.add(qe);
 		
 		return qe;
