@@ -25,10 +25,25 @@ import burlap.oomdp.visualizer.Visualizer;
  * A domain generator for basic grid worlds. This domain generator allows for the creation
  * of arbitrarily sized grid worlds with user defined layouts. The grid world supports
  * classic north, south, east, west movement actions that may be either deterministic
- * or stochastic with user defined stochastic failures. The domain consists of only
- * object classes: an agent class and a location class, each of which is defined by
- * and x and y position. Walls are not considered objects; instead walls are
- * considered part of the transition dynamics. There are five propositional functions
+ * or stochastic with user defined stochastic failures.
+ * <br/>
+ * The domain consists of only
+ * two object classes: an agent class and a location class, each of which is defined by
+ * and x and y position. Locations also have an attribute defining which type of location it is.
+ * The number of
+ * possible types can be set using the {@link setNumberOfLocationTypes(int)} mutator.
+ * Setting location types may be useful if terminating "pits" and goal locations exist in the world
+ * (or any other similar reason), because pits can be marked as on type of location and goals another.
+ * <br/> 
+ * Walls are not considered objects. Instead walls are
+ * considered part of the transition dynamics. There are 2 types of walls supported. Walls that are more like obstacles
+ * and occupy an entire cell of the map and 1D walls. 1D walls are specified as either a horizontal wall on the north side
+ * of a cell or a vertical wall on the east side of the wall. A cell may also have a 1D north and east wall in it. The type of wall
+ * for each cell is specified by a 2D int matrix provided to the constructor. Cells in the matrix with a 0 are clear of any walls
+ * and obstacle; 1s indicate a full cell obstacle; 2s a 1D north wall; 3s a 1D east wall; and 4s indicate that the cell has both
+ * a 1D north wall and 1D east wall.
+ * <br/>
+ * There are five propositional functions
  * supported: atLocation(agent, location), wallToNorth(agent), wallToSouth(agent),
  * wallToEast(agent), and wallToWest(agent). 
  * @author James MacGlashan
@@ -46,6 +61,10 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static final String							ATTY = "y";
 	
+	/**
+	 * Constant for the name of attribute for location object type
+	 */
+	public static final String							ATTLOCTYPE = "locType";
 	
 	/**
 	 * Constant for the name of the agent class
@@ -117,6 +136,13 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	protected int										height;
 	
+	
+	/**
+	 * The number of possible location types
+	 */
+	protected int										numLocationTypes = 1;
+	
+	
 	/**
 	 * The wall map where the first index is the x position and the second index is the y position.
 	 * Values of 1 indicate a wall is there, values of 0 indicate an empty cell
@@ -155,6 +181,15 @@ public class GridWorldDomain implements DomainGenerator {
 	public GridWorldDomain(int [][] map){
 		this.setMap(map);
 		this.setDeterministicTransitionDynamics();
+	}
+	
+	
+	/**
+	 * Sets the number of possible location types to which a location object can belong. The default is 1.
+	 * @param numLocationTypes the number of possible location types to which a location object can belong.
+	 */
+	public void setNumberOfLocationTypes(int numLocationTypes){
+		this.numLocationTypes = numLocationTypes;
 	}
 	
 	
@@ -254,7 +289,7 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 	/**
-	 * Creates a horizontal wall.
+	 * Creates a sequence of complete cell walls spanning the specified start and end x coordinates.
 	 * @param xi The starting x coordinate of the wall
 	 * @param xf The ending x coordinate of the wall
 	 * @param y The y coordinate of the wall
@@ -266,7 +301,7 @@ public class GridWorldDomain implements DomainGenerator {
 	}
 	
 	/**
-	 * Creates a horizontal wall.
+	 * Creates a sequence of complete cell walls spanning the specified start and end y coordinates
 	 * @param yi The stating y coordinate of the wall
 	 * @param yf The ending y coordinate of the wall
 	 * @param x	The x coordinate of the wall
@@ -277,14 +312,114 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 	}
 	
+	/**
+	 * Creates a sequence of 1D north walls spanning the specified start and end x coordinates.
+	 * If any of the cells spanned already have a east wall set in that location, then the cell
+	 * is set to have both an east wall and a north wall.
+	 * @param xi The starting x coordinate of the wall
+	 * @param xf The ending x coordinate of the wall
+	 * @param y The y coordinate of the wall
+	 */
+	public void horizontal1DNorthWall(int xi, int xf, int y){
+		for(int x = xi; x <= xf; x++){
+			int cur = this.map[x][y];
+			if(cur != 3 && cur != 4){
+				this.map[x][y] = 2;
+			}
+			else{
+				this.map[x][y] = 4;
+			}
+		}
+	}
+	
+	/**
+	 * Creates a sequence of 1D east walls spanning the specified start and end y coordinates.
+	 * If any of the cells spanned already have a 1D north wall set in that location, then the cell
+	 * is set to have both a north wall and an east wall.
+	 * @param yi The stating y coordinate of the wall
+	 * @param yf The ending y coordinate of the wall
+	 * @param x	The x coordinate of the wall
+	 */
+	public void vertical1DEastWall(int yi, int yf, int x){
+		for(int y = yi; y <= yf; y++){
+			int cur = this.map[x][y];
+			if(cur != 2 && cur != 4){
+				this.map[x][y] = 3;
+			}
+			else{
+				this.map[x][y] = 4;
+			}
+		}
+	}
+	
+	
+	/**
+	 * Sets a complete cell obstacle in the designated location.
+	 * @param x the x coordinate of the obstacle
+	 * @param y the y coordinate of the obstacle
+	 */
 	public void setObstacleInCell(int x, int y){
 		this.map[x][y] = 1;
 	}
 	
 	
 	/**
-	 * Returns the map being used for the domain
-	 * @return the map being used in the domain
+	 * Sets a specified location to have a 1D north wall.
+	 * If the specified cell already has a 1D east wall set in that location, then the cell
+	 * is set to have both an east wall and a north wall.
+	 * @param x the x coordinate of the location to have the north wall
+	 * @param y the y coordinate of the location to have the north wall
+	 */
+	public void set1DNorthWall(int x, int y){
+		int cur = this.map[x][y];
+		if(cur != 3 && cur != 4){
+			this.map[x][y] = 2;
+		}
+		else{
+			this.map[x][y] = 4;
+		}
+	}
+	
+	/**
+	 * Sets a specified location to have a 1D east wall.
+	 * If the specified cell already has a 1D north wall set in that location, then the cell
+	 * is set to have both a north wall and an east wall.
+	 * @param x the x coordinate of the location to have the east wall
+	 * @param y the y coordinate of the location to have the east wall
+	 */
+	public void set1DEastWall(int x, int y){
+		int cur = this.map[x][y];
+		if(cur != 2 && cur != 4){
+			this.map[x][y] = 3;
+		}
+		else{
+			this.map[x][y] = 4;
+		}
+	}
+	
+	/**
+	 * Removes any obstacles or walls at the specified location.
+	 * @param x the x coordinate of the location
+	 * @param y the y coordinate of the location
+	 */
+	public void clearLocationOfWalls(int x, int y){
+		this.map[x][y] = 0;
+	}
+	
+	/**
+	 * Sets the map at the specified location to have the specified wall configuration.
+	 * @param x the x coordinate of the location
+	 * @param y the y coordinate of the location
+	 * @param state the wall stat configuration for this location. 0 = no walls; 1 = complete cell wall/obstacle; 2 = 1D north wall; 3 = 1D east wall; 4 = 1D north *and* east wall
+	 */
+	public void setLocationWallState(int x, int y, int state){
+		this.map[x][y] = state;
+	}
+	
+	
+	/**
+	 * Returns a copy of the map being used for the domain
+	 * @return a copy of the map being used in the domain
 	 */
 	public int [][] getMap(){
 		return this.map.clone();
@@ -294,38 +429,42 @@ public class GridWorldDomain implements DomainGenerator {
 	@Override
 	public Domain generateDomain() {
 		
-		Domain DOMAIN = new SADomain();
+		Domain domain = new SADomain();
 		
 		//Creates a new Attribute object
-		Attribute xatt = new Attribute(DOMAIN, ATTX, Attribute.AttributeType.DISC);
+		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.DISC);
 		xatt.setDiscValuesForRange(0, this.width-1, 1); //-1 due to inclusivity vs exclusivity
 		
-		Attribute yatt = new Attribute(DOMAIN, ATTY, Attribute.AttributeType.DISC);
+		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.DISC);
 		yatt.setDiscValuesForRange(0, this.height-1, 1); //-1 due to inclusivity vs exclusivity
 		
+		Attribute ltatt = new Attribute(domain, ATTLOCTYPE, Attribute.AttributeType.DISC);
+		ltatt.setDiscValuesForRange(0, numLocationTypes-1, 1);
 		
-		ObjectClass agentClass = new ObjectClass(DOMAIN, CLASSAGENT);
+		
+		ObjectClass agentClass = new ObjectClass(domain, CLASSAGENT);
 		agentClass.addAttribute(xatt);
 		agentClass.addAttribute(yatt);
 		
-		ObjectClass locationClass = new ObjectClass(DOMAIN, CLASSLOCATION);
+		ObjectClass locationClass = new ObjectClass(domain, CLASSLOCATION);
 		locationClass.addAttribute(xatt);
 		locationClass.addAttribute(yatt);
+		locationClass.addAttribute(ltatt);
 		
-		Action north = new MovementAction(ACTIONNORTH, DOMAIN, this.transitionDynamics[0]);
-		Action south = new MovementAction(ACTIONSOUTH, DOMAIN, this.transitionDynamics[1]);
-		Action east = new MovementAction(ACTIONEAST, DOMAIN, this.transitionDynamics[2]);
-		Action west = new MovementAction(ACTIONWEST, DOMAIN, this.transitionDynamics[3]);
+		Action north = new MovementAction(ACTIONNORTH, domain, this.transitionDynamics[0]);
+		Action south = new MovementAction(ACTIONSOUTH, domain, this.transitionDynamics[1]);
+		Action east = new MovementAction(ACTIONEAST, domain, this.transitionDynamics[2]);
+		Action west = new MovementAction(ACTIONWEST, domain, this.transitionDynamics[3]);
 		
 		
-		PropositionalFunction atLocationPF = new AtLocationPF(PFATLOCATION, DOMAIN, new String[]{CLASSAGENT, CLASSLOCATION});
+		PropositionalFunction atLocationPF = new AtLocationPF(PFATLOCATION, domain, new String[]{CLASSAGENT, CLASSLOCATION});
 		
-		PropositionalFunction wallToNorthPF = new WallToPF(PFWALLNORTH, DOMAIN, new String[]{CLASSAGENT}, 0);
-		PropositionalFunction wallToSouthPF = new WallToPF(PFWALLSOUTH, DOMAIN, new String[]{CLASSAGENT}, 1);
-		PropositionalFunction wallToEastPF = new WallToPF(PFWALLEAST, DOMAIN, new String[]{CLASSAGENT}, 2);
-		PropositionalFunction wallToWestPF = new WallToPF(PFWALLWEST, DOMAIN, new String[]{CLASSAGENT}, 3);
+		PropositionalFunction wallToNorthPF = new WallToPF(PFWALLNORTH, domain, new String[]{CLASSAGENT}, 0);
+		PropositionalFunction wallToSouthPF = new WallToPF(PFWALLSOUTH, domain, new String[]{CLASSAGENT}, 1);
+		PropositionalFunction wallToEastPF = new WallToPF(PFWALLEAST, domain, new String[]{CLASSAGENT}, 2);
+		PropositionalFunction wallToWestPF = new WallToPF(PFWALLWEST, domain, new String[]{CLASSAGENT}, 3);
 		
-		return DOMAIN;
+		return domain;
 	}
 
 	
@@ -379,7 +518,7 @@ public class GridWorldDomain implements DomainGenerator {
 	}
 	
 	/**
-	 * Sets the i'th location object to the specified x and y position
+	 * Sets the i'th location object to the specified x and y position. The location type will be set to 0.
 	 * @param s the state with the location object
 	 * @param i specifies which location object index to set
 	 * @param x the x position of the location
@@ -390,66 +529,28 @@ public class GridWorldDomain implements DomainGenerator {
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
+		o.setValue(ATTLOCTYPE, 0);
 	}
-	
-	
 	
 	/**
-	 * Creates a visual explorer or terminal explorer. By default a visual explorer is presented; use the "t" argument
-	 * to create terminal explorer. Will create a 4 rooms grid world with the agent in lower left corner and a location in
-	 * the upper right. Use w-a-s-d to move.
-	 * @param args
+	 * Sets the i'th location object to the specified x and y position and location type.
+	 * @param s the state with the location object
+	 * @param i specifies which location object index to set
+	 * @param x the x position of the location
+	 * @param y the y position of the location
+	 * @param locType the location type of the location
 	 */
-	public static void main(String[] args) {
-	
-		GridWorldDomain gwdg = new GridWorldDomain(11, 11);
-		gwdg.setMapToFourRooms();
-		//gwdg.setProbSucceedTransitionDynamics(0.75);
+	public static void setLocation(State s, int i, int x, int y, int locType){
+		ObjectInstance o = s.getObjectsOfTrueClass(CLASSLOCATION).get(i);
 		
-		Domain d = gwdg.generateDomain();
-		
-		State s = getOneAgentOneLocationState(d);
-		setAgent(s, 0, 0);
-		setLocation(s, 0, 10, 10);
-		
-		
-		int expMode = 1;
-		if(args.length > 0){
-			if(args[0].equals("v")){
-				expMode = 1;
-			}
-			else if(args[0].equals("t")){
-				expMode = 0;
-			}
-		}
-		
-		if(expMode == 0){
-			
-			TerminalExplorer exp = new TerminalExplorer(d);
-			exp.addActionShortHand("n", ACTIONNORTH);
-			exp.addActionShortHand("e", ACTIONEAST);
-			exp.addActionShortHand("w", ACTIONWEST);
-			exp.addActionShortHand("s", ACTIONSOUTH);
-			
-			exp.exploreFromState(s);
-			
-		}
-		else if(expMode == 1){
-			
-			Visualizer v = GridWorldVisualizer.getVisualizer(d, gwdg.getMap());
-			VisualExplorer exp = new VisualExplorer(d, v, s);
-			
-			//use w-s-a-d-x
-			exp.addKeyAction("w", ACTIONNORTH);
-			exp.addKeyAction("s", ACTIONSOUTH);
-			exp.addKeyAction("a", ACTIONWEST);
-			exp.addKeyAction("d", ACTIONEAST);
-			
-			exp.initGUI();
-		}
-		
-		
+		o.setValue(ATTX, x);
+		o.setValue(ATTY, y);
+		o.setValue(ATTLOCTYPE, locType);
 	}
+	
+	
+	
+	
 	
 	
 	
@@ -471,7 +572,9 @@ public class GridWorldDomain implements DomainGenerator {
 		int ny = ay+yd;
 		
 		//hit wall, so do not change position
-		if(nx < 0 || nx >= this.width || ny < 0 || ny >= this.height || this.map[nx][ny] == 1){
+		if(nx < 0 || nx >= this.width || ny < 0 || ny >= this.height || this.map[nx][ny] == 1 ||
+				(xd > 0 && (this.map[ax][ay] == 3 || this.map[ax][ay] == 4)) || (xd < 0 && (this.map[nx][ny] == 3 || this.map[nx][ny] == 4)) ||
+				(yd > 0 && (this.map[ax][ay] == 2 || this.map[ax][ay] == 4)) || (yd < 0 && (this.map[nx][ny] == 2 || this.map[nx][ny] == 4)) ){
 			nx = ax;
 			ny = ay;
 		}
@@ -685,10 +788,15 @@ public class GridWorldDomain implements DomainGenerator {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			
-			int cx = agent.getDiscValForAttribute(ATTX) + xdelta;
-			int cy = agent.getDiscValForAttribute(ATTY) + ydelta;
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
 			
-			if(cx < 0 || cx >= GridWorldDomain.this.width || cy < 0 || cy >= GridWorldDomain.this.height || GridWorldDomain.this.map[cx][cy] == 1){
+			int cx = ax + xdelta;
+			int cy = ay + ydelta;
+			
+			if(cx < 0 || cx >= GridWorldDomain.this.width || cy < 0 || cy >= GridWorldDomain.this.height || GridWorldDomain.this.map[cx][cy] == 1 || 
+					(xdelta > 0 && (GridWorldDomain.this.map[ax][ay] == 3 || GridWorldDomain.this.map[ax][ay] == 4)) || (xdelta < 0 && (GridWorldDomain.this.map[cx][cy] == 3 || GridWorldDomain.this.map[cx][cy] == 4)) ||
+					(ydelta > 0 && (GridWorldDomain.this.map[ax][ay] == 2 || GridWorldDomain.this.map[ax][ay] == 4)) || (ydelta < 0 && (GridWorldDomain.this.map[cx][cy] == 2 || GridWorldDomain.this.map[cx][cy] == 4)) ){
 				return true;
 			}
 			
@@ -699,6 +807,64 @@ public class GridWorldDomain implements DomainGenerator {
 		
 	}
 	
+	
+	
+	/**
+	 * Creates a visual explorer or terminal explorer. By default a visual explorer is presented; use the "t" argument
+	 * to create terminal explorer. Will create a 4 rooms grid world with the agent in lower left corner and a location in
+	 * the upper right. Use w-a-s-d to move.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+	
+		GridWorldDomain gwdg = new GridWorldDomain(11, 11);
+		gwdg.setMapToFourRooms();
+		//gwdg.setProbSucceedTransitionDynamics(0.75);
+		
+		Domain d = gwdg.generateDomain();
+		
+		State s = getOneAgentOneLocationState(d);
+		setAgent(s, 0, 0);
+		setLocation(s, 0, 10, 10, 0);
+		
+		
+		int expMode = 1;
+		if(args.length > 0){
+			if(args[0].equals("v")){
+				expMode = 1;
+			}
+			else if(args[0].equals("t")){
+				expMode = 0;
+			}
+		}
+		
+		if(expMode == 0){
+			
+			TerminalExplorer exp = new TerminalExplorer(d);
+			exp.addActionShortHand("n", ACTIONNORTH);
+			exp.addActionShortHand("e", ACTIONEAST);
+			exp.addActionShortHand("w", ACTIONWEST);
+			exp.addActionShortHand("s", ACTIONSOUTH);
+			
+			exp.exploreFromState(s);
+			
+		}
+		else if(expMode == 1){
+			
+			Visualizer v = GridWorldVisualizer.getVisualizer(d, gwdg.getMap());
+			VisualExplorer exp = new VisualExplorer(d, v, s);
+			
+			//use w-s-a-d-x
+			exp.addKeyAction("w", ACTIONNORTH);
+			exp.addKeyAction("s", ACTIONSOUTH);
+			exp.addKeyAction("a", ACTIONWEST);
+			exp.addKeyAction("d", ACTIONEAST);
+			
+			exp.initGUI();
+		}
+		
+		
+	}
 	
 
 }
