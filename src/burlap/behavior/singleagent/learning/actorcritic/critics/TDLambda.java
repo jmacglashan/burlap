@@ -7,6 +7,8 @@ import java.util.Map;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
+import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
+import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.OptionEvaluatingRF;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -48,9 +50,9 @@ public class TDLambda implements Critic {
 	protected StateHashFactory						hashingFactory;
 	
 	/**
-	 * The learning rate that affects how quickly the estimated value function changes.
+	 * The learning rate function that affects how quickly the estimated value function changes.
 	 */
-	protected double								learningRate;
+	protected LearningRate							learningRate;
 	
 	/**
 	 * Defines how the value function is initialized for unvisited states
@@ -90,7 +92,7 @@ public class TDLambda implements Critic {
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
 		
-		this.learningRate = learningRate;
+		this.learningRate = new ConstantLR(learningRate);
 		vInitFunction = new ValueFunctionInitialization.ConstantValueFunctionInitialization(vinit);
 		this.lambda = lambda;
 		
@@ -116,7 +118,7 @@ public class TDLambda implements Critic {
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
 		
-		this.learningRate = learningRate;
+		this.learningRate = new ConstantLR(learningRate);
 		vInitFunction = vinit;
 		this.lambda = lambda;
 		
@@ -153,6 +155,14 @@ public class TDLambda implements Critic {
 		this.traces.clear();
 	}
 	
+	/**
+	 * Sets the learning rate function to use.
+	 * @param lr the learning rate function to use.
+	 */
+	public void setLearningRate(LearningRate lr){
+		this.learningRate = lr;
+	}
+	
 	@Override
 	public CritiqueResult critiqueAndUpdate(State s, GroundedAction ga, State sprime) {
 		
@@ -183,13 +193,15 @@ public class TDLambda implements Critic {
 				t.eligibility = 1.;
 			}
 			
-			t.v.v = t.v.v + this.learningRate * delta * t.eligibility;
+			double learningRate = this.learningRate.pollLearningRate(t.sh.s, null);
+			t.v.v = t.v.v + learningRate * delta * t.eligibility;
 			t.eligibility = t.eligibility * lambda * discount;
 		}
 		
 		if(!foundTrace){
 			//then add it
-			vs.v = vs.v + this.learningRate * delta;
+			double learningRate = this.learningRate.pollLearningRate(sh.s, null);
+			vs.v = vs.v + learningRate * delta;
 			StateEligibilityTrace t = new StateEligibilityTrace(sh, discount*this.lambda, vs);
 			
 			traces.add(t);

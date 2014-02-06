@@ -12,6 +12,8 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
+import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
@@ -52,9 +54,9 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	protected ValueFunctionInitialization							qInitFunction;
 	
 	/**
-	 * A constant learning rate parameter
+	 * The learning rate function used.
 	 */
-	protected double												learningRate;
+	protected LearningRate											learningRate;
 	
 	/**
 	 * The learning policy to use. Typically these will be policies that link back to this object so that they change as the Q-value estimate change.
@@ -213,7 +215,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		
 		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
 		this.qIndex = new HashMap<StateHashTuple, QLearningStateNode>();
-		this.learningRate = learningRate;
+		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
 		this.maxEpisodeSize = maxEpisodeSize;
 		this.qInitFunction = qInitFunction;
@@ -225,6 +227,15 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		maxQChangeForPlanningTermination = 0.;
 
 		
+	}
+	
+	
+	/**
+	 * Sets the learning rate function to use
+	 * @param lr the learning rate function to use
+	 */
+	public void setLearningRateFunction(LearningRate lr){
+		this.learningRate = lr;
 	}
 	
 	/**
@@ -484,7 +495,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 			double oldQ = curQ.q;
 			
 			//update Q-value
-			curQ.q = curQ.q + this.learningRate * (r + (discount * maxQ) - curQ.q);
+			curQ.q = curQ.q + this.learningRate.pollLearningRate(curState.s, action) * (r + (discount * maxQ) - curQ.q);
 			
 			double deltaQ = Math.abs(oldQ - curQ.q);
 			if(deltaQ > maxQChangeInLastEpisode){

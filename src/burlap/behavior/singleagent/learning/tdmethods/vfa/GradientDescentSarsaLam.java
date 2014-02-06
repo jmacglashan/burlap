@@ -12,6 +12,8 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
+import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
@@ -51,9 +53,9 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	protected ValueFunctionApproximation							vfa;
 	
 	/**
-	 * A constant learning rate parameter
+	 * A learning rate function to use
 	 */
-	protected double												learningRate;
+	protected LearningRate											learningRate;
 	
 	/**
 	 * The learning policy to use. Typically these will be policies that link back to this object so that they change as the Q-value estimate change.
@@ -211,7 +213,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		
 		this.plannerInit(domain, rf, tf, gamma, null);
 		this.vfa = vfa;
-		this.learningRate = learningRate;
+		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
 		this.maxEpisodeSize = maxEpisodeSize;
 		this.lambda = lamda;
@@ -226,6 +228,13 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	}
 	
 	
+	/**
+	 * Sets the learning rate function to use.
+	 * @param lr the learning rate function to use.
+	 */
+	public void setLearningRate(LearningRate lr){
+		this.learningRate = lr;
+	}
 	
 	/**
 	 * Sets which policy this agent should use for learning.
@@ -400,14 +409,18 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 			}
 			
 			
+			double learningRate = this.learningRate.pollLearningRate(curState, action);
+			
 			//update all traces
 			Set <Integer> deletedSet = new HashSet<Integer>();
 			for(EligibilityTraceVector et : traces.values()){
 				
 				int weightId = et.weight.weightId();
 				
+				
+				
 				et.eligibilityValue += gradient.getPartialDerivative(weightId);
-				double newWeight = et.weight.weightValue() + this.learningRate*delta*et.eligibilityValue;
+				double newWeight = et.weight.weightValue() + learningRate*delta*et.eligibilityValue;
 				et.weight.setWeight(newWeight);
 				
 				double deltaW = Math.abs(et.initialWeightValue - newWeight);
@@ -430,7 +443,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 					
 					//then it's new and we need to add it
 					EligibilityTraceVector et = new EligibilityTraceVector(fw, gradient.getPartialDerivative(weightId));
-					double newWeight = fw.weightValue() + this.learningRate*delta*et.eligibilityValue;
+					double newWeight = fw.weightValue() + learningRate*delta*et.eligibilityValue;
 					fw.setWeight(newWeight);
 					
 					double deltaW = Math.abs(et.initialWeightValue - newWeight);

@@ -7,6 +7,8 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
+import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
+import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.BoltzmannDistribution;
@@ -42,7 +44,7 @@ public class BoltzmannActor extends Actor {
 	/**
 	 * The learning rate used to update action preferences in response to critiques.
 	 */
-	protected double								learningRate;
+	protected LearningRate							learningRate;
 	
 	/**
 	 * A map from (hashed) states to Policy nodes; the latter of which contains the action preferences
@@ -68,7 +70,7 @@ public class BoltzmannActor extends Actor {
 		this.domain = domain;
 		this.actions = new ArrayList<Action>(domain.getActions());
 		this.hashingFactory = hashingFactory;
-		this.learningRate = learningRate;
+		this.learningRate = new ConstantLR(learningRate);
 		
 		this.preferences = new HashMap<StateHashTuple, BoltzmannActor.PolicyNode>();
 		
@@ -81,6 +83,15 @@ public class BoltzmannActor extends Actor {
 		}
 		
 	}
+	
+	
+	/**
+	 * Sets the learning rate function to use.
+	 * @param lr the learning rate function to use.
+	 */
+	public void setLearningRate(LearningRate lr){
+		this.learningRate = lr;
+	}
 
 	@Override
 	public void updateFromCritqique(CritiqueResult critqiue) {
@@ -88,8 +99,10 @@ public class BoltzmannActor extends Actor {
 		StateHashTuple sh = this.hashingFactory.hashState(critqiue.getS());
 		PolicyNode node = this.getNode(sh);
 		
+		double learningRate = this.learningRate.pollLearningRate(sh.s, critqiue.getA());
+		
 		ActionPreference pref = this.getMatchingPreference(sh, critqiue.getA(), node);
-		pref.preference += this.learningRate * critqiue.getCritique();
+		pref.preference += learningRate * critqiue.getCritique();
 		
 
 	}
