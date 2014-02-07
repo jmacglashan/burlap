@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
+import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.stochasticgame.Strategy;
+import burlap.behavior.stochasticgame.agents.learningrate.SGConstantLearningRate;
+import burlap.behavior.stochasticgame.agents.learningrate.SGLearningRate;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.State;
@@ -55,7 +59,7 @@ public class SGQLAgent extends Agent {
 	/**
 	 * the learning rate
 	 */
-	protected double													learningRate;
+	protected SGLearningRate											learningRate;
 	
 	/**
 	 * Defines how q-values are initialized
@@ -83,7 +87,7 @@ public class SGQLAgent extends Agent {
 	public SGQLAgent(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
-		this.learningRate = learningRate;
+		this.learningRate = new SGConstantLearningRate(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = new SGNQValueInitialization.ConstantValueQInit(0.);
 		
@@ -106,7 +110,7 @@ public class SGQLAgent extends Agent {
 	public SGQLAgent(SGDomain d, double discount, double learningRate, double defaultQ, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
-		this.learningRate = learningRate;
+		this.learningRate = new SGConstantLearningRate(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = new SGNQValueInitialization.ConstantValueQInit(defaultQ);
 		
@@ -128,7 +132,7 @@ public class SGQLAgent extends Agent {
 	public SGQLAgent(SGDomain d, double discount, double learningRate, SGNQValueInitialization qInitizalizer, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
-		this.learningRate = learningRate;
+		this.learningRate = new SGConstantLearningRate(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = qInitizalizer;
 		
@@ -157,6 +161,10 @@ public class SGQLAgent extends Agent {
 	
 	public void setQValueInitializer(SGNQValueInitialization qInit){
 		this.qInit = qInit;
+	}
+	
+	public void setLearningRate(SGLearningRate lr){
+		this.learningRate = lr;
 	}
 
 	@Override
@@ -187,7 +195,7 @@ public class SGQLAgent extends Agent {
 		}
 		
 
-		qe.q = qe.q + this.learningRate * (r + (this.discount * maxQ) - qe.q);
+		qe.q = qe.q + this.learningRate.pollLearningRate(s, myAction) * (r + (this.discount * maxQ) - qe.q);
 
 	}
 
