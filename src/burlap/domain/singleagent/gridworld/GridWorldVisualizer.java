@@ -280,8 +280,6 @@ public class GridWorldVisualizer {
 		}
 		
 		
-		
-		
 	}
 	
 	

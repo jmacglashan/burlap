@@ -166,6 +166,7 @@ public class SGQLAgent extends Agent {
 	public void setLearningRate(SGLearningRate lr){
 		this.learningRate = lr;
 	}
+	
 
 	@Override
 	public void gameStarting() {
