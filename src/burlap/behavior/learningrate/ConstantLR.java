@@ -1,7 +1,7 @@
-package burlap.behavior.singleagent.learning.learningrate;
+package burlap.behavior.learningrate;
 
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -29,12 +29,12 @@ public class ConstantLR implements LearningRate {
 	}
 	
 	@Override
-	public double peekAtLearningRate(State s, GroundedAction ga) {
+	public double peekAtLearningRate(State s, AbstractGroundedAction ga) {
 		return this.learningRate;
 	}
 
 	@Override
-	public double pollLearningRate(State s, GroundedAction ga) {
+	public double pollLearningRate(State s, AbstractGroundedAction ga) {
 		return this.learningRate;
 	}
 

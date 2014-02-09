@@ -93,7 +93,7 @@ public abstract class DeterministicPlanner extends OOMDPPlanner{
 		GroundedAction res = internalPolicy.get(sh);
 		
 		//do object matching from returned result to this query state and return result
-		res = res.translateParameters(indexSH.s, sh.s);
+		res = (GroundedAction)res.translateParameters(indexSH.s, sh.s);
 		
 				
 		return res;

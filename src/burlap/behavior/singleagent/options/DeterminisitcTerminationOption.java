@@ -204,7 +204,7 @@ public class DeterminisitcTerminationOption extends Option {
 
 	@Override
 	public GroundedAction oneStepActionSelection(State s, String[] params) {
-		return policy.getAction(this.map(s));
+		return (GroundedAction)policy.getAction(this.map(s));
 	}
 
 

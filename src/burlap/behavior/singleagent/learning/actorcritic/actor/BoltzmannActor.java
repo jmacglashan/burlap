@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.learningrate.ConstantLR;
+import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
-import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
-import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.BoltzmannDistribution;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
@@ -119,7 +120,7 @@ public class BoltzmannActor extends Actor {
 	}
 
 	@Override
-	public GroundedAction getAction(State s) {
+	public AbstractGroundedAction getAction(State s) {
 		return this.sampleFromActionDistribution(s);
 	}
 
@@ -153,7 +154,7 @@ public class BoltzmannActor extends Actor {
 					translated.add(ap);
 				}
 				else{
-					ActionProb tap = new ActionProb(this.translateAction(ap.ga, matching), ap.pSelection);
+					ActionProb tap = new ActionProb(this.translateAction((GroundedAction)ap.ga, matching), ap.pSelection);
 					translated.add(tap);
 				}
 			}

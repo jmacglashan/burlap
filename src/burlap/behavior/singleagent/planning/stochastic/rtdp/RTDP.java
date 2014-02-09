@@ -207,7 +207,7 @@ public class RTDP extends ValueFunctionPlanner {
 				delta = Math.max(Math.abs(nV - curV), delta); 
 				
 				//select an action and take it
-				GroundedAction ga = this.rollOutPolicy.getAction(curState);
+				GroundedAction ga = (GroundedAction)this.rollOutPolicy.getAction(curState);
 				curState = ga.executeIn(curState);
 				nSteps++;
 			}

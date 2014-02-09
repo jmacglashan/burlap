@@ -1,5 +1,8 @@
 package burlap.oomdp.stochasticgames;
 
+import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.State;
+
 
 /**
  * Provides a grounded version of a {@link SingleAction}. That is, since {@link SingleAction} objects may take parameters,
@@ -8,11 +11,17 @@ package burlap.oomdp.stochasticgames;
  * @author James MacGlashan
  *
  */
-public class GroundedSingleAction {
+public class GroundedSingleAction extends AbstractGroundedAction{
 
+	/**
+	 * The name of the agent performing the action
+	 */
 	public String actingAgent;
+	
+	/**
+	 * The single action the acting agent will be performing
+	 */
 	public SingleAction action;
-	public String [] params;
 	
 	
 	/**
@@ -51,14 +60,6 @@ public class GroundedSingleAction {
 		this.params = p;
 	}
 	
-	
-	/**
-	 * Returns true if this action uses parameters
-	 * @return true if this action uses parameters; false otherwise
-	 */
-	public boolean isPamaeterized(){
-		return action.isPamaeterized();
-	}
 	
 	
 	/**
@@ -124,6 +125,36 @@ public class GroundedSingleAction {
 		}
 		
 		return true;
+	}
+
+
+	@Override
+	public String actionName() {
+		return this.action.actionName;
+	}
+
+
+	@Override
+	public boolean isExcutable() {
+		return false;
+	}
+
+
+	@Override
+	public State executeIn(State s) {
+		throw new UnsupportedOperationException();
+	}
+
+
+	@Override
+	public boolean actionDomainIsObjectIdentifierDependent() {
+		return this.action.domain.isObjectIdentifierDependent();
+	}
+
+
+	@Override
+	public AbstractGroundedAction copy() {
+		return new GroundedSingleAction(this.actingAgent, this.action, this.params);
 	}
 
 }

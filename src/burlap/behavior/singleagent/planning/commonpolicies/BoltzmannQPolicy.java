@@ -11,8 +11,8 @@ import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.datastructures.BoltzmannDistribution;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -53,7 +53,7 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 	
 	@Override
-	public GroundedAction getAction(State s) {
+	public AbstractGroundedAction getAction(State s) {
 		return this.sampleFromActionDistribution(s);
 	}
 

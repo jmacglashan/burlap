@@ -1,17 +1,16 @@
-package burlap.behavior.stochasticgame.agents.learningrate;
+package burlap.behavior.learningrate;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
-
 
 
 /**
- * This class provides a learning rate for stochastic games agents that decays exponentially with time according to r^t, where r is in [0,1] and t is the time step, from an initial
+ * This class provides a learning rate that decays exponentially with time according to r^t, where r is in [0,1] and t is the time step, from an initial
  * learning rate. A minimum learning rate value can be specified so that the learning rate is never rounded to zero. By default, the learning rate may
  * decrease to Double.MIN_NORMAL, which is the smallest fraction a double value can hold.
  * 
@@ -22,7 +21,7 @@ import burlap.oomdp.stochasticgames.GroundedSingleAction;
  * @author James MacGlashan
  *
  */
-public class SGExponentialDecayLR implements SGLearningRate {
+public class ExponentialDecayLR implements LearningRate {
 
 	/**
 	 * The initial learning rate value
@@ -67,18 +66,12 @@ public class SGExponentialDecayLR implements SGLearningRate {
 	
 	
 	
-	
-	
-	
-	
-	
-	
 	/**
 	 * Initializes with an initial learning rate and decay rate for a state independent learning rate. Minimum learning rate that can be returned will be Double.MIN_NORMAL
 	 * @param initialLearningRate the initial learning rate
 	 * @param decayRate the exponential base by which the learning rate is decayed
 	 */
-	public SGExponentialDecayLR(double initialLearningRate, double decayRate){
+	public ExponentialDecayLR(double initialLearningRate, double decayRate){
 		if(decayRate > 1 || decayRate < 0){
 			throw new RuntimeException("Decay rate must be <= 1 and >= 0");
 		}
@@ -94,7 +87,7 @@ public class SGExponentialDecayLR implements SGLearningRate {
 	 * @param decayRate the exponential base by which the learning rate is decayed
 	 * @param minimumLearningRate the smallest value to which the learning rate will decay
 	 */
-	public SGExponentialDecayLR(double initialLearningRate, double decayRate, double minimumLearningRate){
+	public ExponentialDecayLR(double initialLearningRate, double decayRate, double minimumLearningRate){
 		if(decayRate > 1 || decayRate < 0){
 			throw new RuntimeException("Decay rate must be <= 1 and >= 0");
 		}
@@ -113,7 +106,7 @@ public class SGExponentialDecayLR implements SGLearningRate {
 	 * @param hashingFactory how to hash and compare states
 	 * @param useSeparateLRPerStateAction whether to have an independent learning rate for each state-action pair, rather than just each state
 	 */
-	public SGExponentialDecayLR(double initialLearningRate, double decayRate, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
+	public ExponentialDecayLR(double initialLearningRate, double decayRate, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
 		if(decayRate > 1 || decayRate < 0){
 			throw new RuntimeException("Decay rate must be <= 1 and >= 0");
 		}
@@ -123,7 +116,7 @@ public class SGExponentialDecayLR implements SGLearningRate {
 		this.useStateWise = true;
 		this.useStateActionWise = useSeparateLRPerStateAction;
 		this.hashingFactory = hashingFactory;
-		this.stateWiseMap = new HashMap<StateHashTuple, SGExponentialDecayLR.StateWiseLearningRate>();
+		this.stateWiseMap = new HashMap<StateHashTuple, ExponentialDecayLR.StateWiseLearningRate>();
 		
 	}
 	
@@ -135,7 +128,7 @@ public class SGExponentialDecayLR implements SGLearningRate {
 	 * @param hashingFactory how to hash and compare states
 	 * @param useSeparateLRPerStateAction whether to have an independent learning rate for each state-action pair, rather than just each state
 	 */
-	public SGExponentialDecayLR(double initialLearningRate, double decayRate, double minimumLearningRate, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
+	public ExponentialDecayLR(double initialLearningRate, double decayRate, double minimumLearningRate, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
 		if(decayRate > 1 || decayRate < 0){
 			throw new RuntimeException("Decay rate must be <= 1 and >= 0");
 		}
@@ -146,18 +139,13 @@ public class SGExponentialDecayLR implements SGLearningRate {
 		this.useStateWise = true;
 		this.useStateActionWise = useSeparateLRPerStateAction;
 		this.hashingFactory = hashingFactory;
-		this.stateWiseMap = new HashMap<StateHashTuple, SGExponentialDecayLR.StateWiseLearningRate>();
+		this.stateWiseMap = new HashMap<StateHashTuple, ExponentialDecayLR.StateWiseLearningRate>();
 		
 	}
 	
-	
-	
-	
-	
-	
-	
 	@Override
-	public double peekAtLearningRate(State s, GroundedSingleAction ga) {
+	public double peekAtLearningRate(State s, AbstractGroundedAction ga) {
+		
 		if(!useStateWise){
 			return this.universalLR;
 		}
@@ -171,7 +159,8 @@ public class SGExponentialDecayLR implements SGLearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(State s, GroundedSingleAction ga) {
+	public double pollLearningRate(State s, AbstractGroundedAction ga) {
+		
 		if(!useStateWise){
 			double oldVal = this.universalLR;
 			this.universalLR = this.nextLRVal(oldVal);
@@ -189,10 +178,8 @@ public class SGExponentialDecayLR implements SGLearningRate {
 		double oldVal = md.md;
 		md.md = this.nextLRVal(oldVal);
 		return oldVal;
+		
 	}
-	
-	
-	
 	
 	/**
 	 * Returns the learning rate data structure for the given state. An entry will be created if it does not already exist.
@@ -242,11 +229,11 @@ public class SGExponentialDecayLR implements SGLearningRate {
 		 * @param ga the input action for which the learning rate is returned.
 		 * @return the mutable double entry for the learning rate for the action for the state with which this object is associated.
 		 */
-		public MutableDouble getActionLearningRateEntry(GroundedSingleAction ga){
+		public MutableDouble getActionLearningRateEntry(AbstractGroundedAction ga){
 			MutableDouble entry = this.actionLearningRates.get(ga);
 			if(entry == null){
 				entry = new MutableDouble(initialLearningRate);
-				this.actionLearningRates.put(ga.action.actionName, entry);
+				this.actionLearningRates.put(ga.actionName(), entry);
 			}
 			return entry;
 		}

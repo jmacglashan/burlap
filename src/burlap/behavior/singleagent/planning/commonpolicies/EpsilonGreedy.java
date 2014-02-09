@@ -12,8 +12,8 @@ import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.debugtools.RandomFactory;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -80,7 +80,7 @@ public class EpsilonGreedy extends Policy implements PlannerDerivedPolicy{
 	}
 	
 	@Override
-	public GroundedAction getAction(State s) {
+	public AbstractGroundedAction getAction(State s) {
 		
 		
 		List<QValue> qValues = this.qplanner.getQs(s);

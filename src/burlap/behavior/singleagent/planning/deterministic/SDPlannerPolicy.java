@@ -8,6 +8,7 @@ import javax.management.RuntimeErrorException;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -49,7 +50,7 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 	
 	@Override
-	public GroundedAction getAction(State s) {
+	public AbstractGroundedAction getAction(State s) {
 		
 		if(this.dp == null){
 			throw new RuntimeException("The planner used by this Policy is not defined; therefore, the policy is undefined.");
@@ -68,7 +69,7 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		GroundedAction selectedAction = this.getAction(s);
+		GroundedAction selectedAction = (GroundedAction)this.getAction(s);
 		if(selectedAction == null){
 			throw new PolicyUndefinedException();
 		}

@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import burlap.behavior.learningrate.ConstantLR;
+import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
-import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
@@ -343,7 +343,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 		eStepCounter = 0;
 		Map <Integer, EligibilityTraceVector> traces = new HashMap<Integer, GradientDescentSarsaLam.EligibilityTraceVector>();
 		
-		GroundedAction action = this.learningPolicy.getAction(curState);
+		GroundedAction action = (GroundedAction)this.learningPolicy.getAction(curState);
 		List<ActionApproximationResult> allCurApproxResults = this.getAllActionApproximations(curState);
 		ActionApproximationResult curApprox = ActionApproximationResult.extractApproximationForAction(allCurApproxResults, action);
 		
@@ -354,7 +354,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 			WeightGradient gradient = this.vfa.getWeightGradient(curApprox.approximationResult);
 			
 			State nextState = action.executeIn(curState);
-			GroundedAction nextAction = this.learningPolicy.getAction(nextState);
+			GroundedAction nextAction = (GroundedAction)this.learningPolicy.getAction(nextState);
 			List<ActionApproximationResult> allNextApproxResults = this.getAllActionApproximations(nextState);
 			ActionApproximationResult nextApprox = ActionApproximationResult.extractApproximationForAction(allNextApproxResults, nextAction);
 			double nextQV = nextApprox.approximationResult.predictedValue;

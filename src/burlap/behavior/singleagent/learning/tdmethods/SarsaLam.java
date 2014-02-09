@@ -150,7 +150,7 @@ public class SarsaLam extends QLearning {
 		eStepCounter = 0;
 		LinkedList<EligibilityTrace> traces = new LinkedList<SarsaLam.EligibilityTrace>();
 		
-		GroundedAction action = learningPolicy.getAction(curState.s);
+		GroundedAction action = (GroundedAction)learningPolicy.getAction(curState.s);
 		QValue curQ = this.getQ(curState, action);
 		
 		
@@ -158,7 +158,7 @@ public class SarsaLam extends QLearning {
 		while(!tf.isTerminal(curState.s) && eStepCounter < maxSteps){
 			
 			StateHashTuple nextState = this.stateHash(action.executeIn(curState.s));
-			GroundedAction nextAction = learningPolicy.getAction(nextState.s);
+			GroundedAction nextAction = (GroundedAction)learningPolicy.getAction(nextState.s);
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
 			

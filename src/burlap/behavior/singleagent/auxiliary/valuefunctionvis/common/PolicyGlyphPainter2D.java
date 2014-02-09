@@ -281,7 +281,7 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 			
 			for(ActionProb ap : pdist){
 				if(ap.pSelection >= maxp){
-					ActionGlyphPainter agp = this.actionNameToGlyphPainter.get(ap.ga.action.getName());
+					ActionGlyphPainter agp = this.actionNameToGlyphPainter.get(ap.ga.actionName());
 					if(agp != null){
 						agp.paintGlyph(g2, xval, yval, width, height);
 					}
@@ -292,7 +292,7 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 		else{
 			for(ActionProb ap : pdist){
 				float [] scaledRect = this.rescaleRect(xval, yval, width, height, (float)(ap.pSelection/maxp));
-				ActionGlyphPainter agp = this.actionNameToGlyphPainter.get(ap.ga.action.getName());
+				ActionGlyphPainter agp = this.actionNameToGlyphPainter.get(ap.ga.actionName());
 				if(agp != null){
 					agp.paintGlyph(g2, scaledRect[0], scaledRect[1], scaledRect[2], scaledRect[3]);
 				}

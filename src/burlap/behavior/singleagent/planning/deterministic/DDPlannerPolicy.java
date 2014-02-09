@@ -9,6 +9,7 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner.PlanningFailedException;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -53,13 +54,13 @@ public class DDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	
 	@Override
-	public GroundedAction getAction(State s) {
+	public AbstractGroundedAction getAction(State s) {
 		return dp.querySelectedActionForState(s);
 	}
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		GroundedAction selectedAction = this.getAction(s);
+		GroundedAction selectedAction = (GroundedAction)this.getAction(s);
 		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
 		ActionProb ap = new ActionProb(selectedAction, 1.);
 		res.add(ap);

@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
-import burlap.behavior.singleagent.learning.learningrate.LearningRate;
+import burlap.behavior.learningrate.ConstantLR;
+import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.stochasticgame.Strategy;
-import burlap.behavior.stochasticgame.agents.learningrate.SGConstantLearningRate;
-import burlap.behavior.stochasticgame.agents.learningrate.SGLearningRate;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.State;
@@ -59,7 +57,7 @@ public class SGQLAgent extends Agent {
 	/**
 	 * the learning rate
 	 */
-	protected SGLearningRate											learningRate;
+	protected LearningRate												learningRate;
 	
 	/**
 	 * Defines how q-values are initialized
@@ -87,7 +85,7 @@ public class SGQLAgent extends Agent {
 	public SGQLAgent(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
-		this.learningRate = new SGConstantLearningRate(learningRate);
+		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = new SGNQValueInitialization.ConstantValueQInit(0.);
 		
@@ -110,7 +108,7 @@ public class SGQLAgent extends Agent {
 	public SGQLAgent(SGDomain d, double discount, double learningRate, double defaultQ, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
-		this.learningRate = new SGConstantLearningRate(learningRate);
+		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = new SGNQValueInitialization.ConstantValueQInit(defaultQ);
 		
@@ -132,7 +130,7 @@ public class SGQLAgent extends Agent {
 	public SGQLAgent(SGDomain d, double discount, double learningRate, SGNQValueInitialization qInitizalizer, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
-		this.learningRate = new SGConstantLearningRate(learningRate);
+		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = qInitizalizer;
 		
@@ -163,7 +161,7 @@ public class SGQLAgent extends Agent {
 		this.qInit = qInit;
 	}
 	
-	public void setLearningRate(SGLearningRate lr){
+	public void setLearningRate(LearningRate lr){
 		this.learningRate = lr;
 	}
 	
@@ -256,7 +254,7 @@ public class SGQLAgent extends Agent {
 		Map <String, String> matching = null;
 		for(GroundedSingleAction gsa :gsas){
 			GroundedSingleAction transgsa = gsa;
-			if(gsa.isPamaeterized()){
+			if(gsa.isParameterized()){
 				if(matching == null){
 					matching = shq.s.getObjectMatchingTo(storedRep, false);
 				}
@@ -311,7 +309,7 @@ public class SGQLAgent extends Agent {
 			return q;
 		}
 		
-		if(gsa.isPamaeterized()){
+		if(gsa.isParameterized()){
 			//then we'll need to translate this action to match the internal state representation
 			Map <String, String> matching = shq.s.getObjectMatchingTo(storedRep, false);
 			gsa = this.translateAction(gsa, matching);

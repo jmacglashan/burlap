@@ -130,7 +130,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		int timeSteps = 0;
 		while(!tf.isTerminal(curState) && timeSteps < maxSteps){
 			
-			GroundedAction ga = this.actor.getAction(curState);
+			GroundedAction ga = (GroundedAction)this.actor.getAction(curState);
 			State nextState = ga.executeIn(curState);
 			double r = this.rf.reward(curState, ga, nextState);
 			

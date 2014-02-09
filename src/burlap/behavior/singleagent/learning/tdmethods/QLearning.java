@@ -7,13 +7,13 @@ import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
+import burlap.behavior.learningrate.ConstantLR;
+import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.learningrate.ConstantLR;
-import burlap.behavior.singleagent.learning.learningrate.LearningRate;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
@@ -458,7 +458,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 		
 		while(!tf.isTerminal(curState.s) && eStepCounter < maxSteps){
 			
-			GroundedAction action = learningPolicy.getAction(curState.s);
+			GroundedAction action = (GroundedAction)learningPolicy.getAction(curState.s);
 			QValue curQ = this.getQ(curState, action);
 			
 			StateHashTuple nextState = this.stateHash(action.executeIn(curState.s));

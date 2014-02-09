@@ -1,10 +1,6 @@
 package burlap.oomdp.singleagent;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 
 /**
@@ -13,10 +9,12 @@ import burlap.oomdp.core.State;
  * @author James
  *
  */
-public class GroundedAction {
+public class GroundedAction extends AbstractGroundedAction{
 
+	/**
+	 * The action object for this grounded action
+	 */
 	public Action action;
-	public String [] params;
 	
 	
 	/**
@@ -69,44 +67,6 @@ public class GroundedAction {
 		return this.action.getName();
 	}
 	
-	/**
-	 * This method will translate this object's parameters that were assigned for a given source state, into object parameters in the
-	 * target state that are equal. This method is useful if a domain uses parameterized actions and is object identifier invariant.
-	 * If the domain of this grounded aciton's action is object identifier dependent, then no translation will occur
-	 * and this object will be returned. This object will also be returned if it is a parameterless action.
-	 * @param sourceState the source state from which this objects parameters were bound.
-	 * @param targetState a target state with potentially different object identifiers for equivalent values.
-	 * @return a grounded action object whose parameters have been translated to the target state object identifiers
-	 */
-	public GroundedAction translateParameters(State sourceState, State targetState){
-		
-		if(this.params.length == 0 || this.action.domain.isObjectIdentifierDependent()){
-			//no need to translate a parameterless action or an action that belongs to a name dependent domain
-			return this;
-		}
-		
-		Set <String> matchedObjects = new HashSet<String>();
-		String [] nparams = new String[this.params.length];
-		int i = 0;
-		for(String oname : this.params){
-			ObjectInstance o = sourceState.getObject(oname);
-			List<ObjectInstance> cands = targetState.getObjectsOfTrueClass(o.getObjectClass().name);
-			for(ObjectInstance cand : cands){
-				if(matchedObjects.contains(cand.getName())){
-					continue ;
-				}
-				if(o.valueEquals(cand)){
-					nparams[i] = o.getName();
-					matchedObjects.add(o.getName());
-					break;
-				}
-			}
-			
-			i++;
-		}
-		
-		return new GroundedAction(action, nparams);
-	}
 	
 
 	@Override
@@ -160,6 +120,24 @@ public class GroundedAction {
 		}
 		
 		return true;
+	}
+
+
+	@Override
+	public boolean isExcutable() {
+		return true;
+	}
+
+
+	@Override
+	public boolean actionDomainIsObjectIdentifierDependent() {
+		return this.action.domain.isObjectIdentifierDependent();
+	}
+
+
+	@Override
+	public AbstractGroundedAction copy() {
+		return new GroundedAction(action, params);
 	}
 	
 }

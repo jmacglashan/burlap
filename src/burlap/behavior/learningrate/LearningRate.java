@@ -1,15 +1,15 @@
-package burlap.behavior.stochasticgame.agents.learningrate;
+package burlap.behavior.learningrate;
 
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
 
 
 /**
- * Provides an interface for different methods of learning rate decay for stochastic games.
+ * Provides an interface for different methods of learning rate decay.
  * @author James MacGlashan
  *
  */
-public interface SGLearningRate {
+public interface LearningRate {
 
 	/**
 	 * A method for looking at the current learning rate for a state-action pair without having it altered.
@@ -17,7 +17,7 @@ public interface SGLearningRate {
 	 * @param ga the action from which the learning rate should be returned
 	 * @return the current learning rate for the given state-action pair
 	 */
-	public double peekAtLearningRate(State s, GroundedSingleAction ga);
+	public double peekAtLearningRate(State s, AbstractGroundedAction ga);
 	
 	
 	/**
@@ -26,6 +26,7 @@ public interface SGLearningRate {
 	 * @param ga the action from which the learning rate should be returned
 	 * @return the current learning rate for the given state-action pair
 	 */
-	public double pollLearningRate(State s, GroundedSingleAction ga);
+	public double pollLearningRate(State s, AbstractGroundedAction ga);
+	
 	
 }

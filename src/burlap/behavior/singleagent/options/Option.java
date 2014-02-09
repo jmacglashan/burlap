@@ -664,10 +664,10 @@ public abstract class Option extends Action {
 			for(ActionProb ap : actionSelction){
 				
 				//now get possible outcomes of each action
-				List <TransitionProbability> transitions = ap.ga.action.getTransitions(src.s, src.optionParams);
+				List <TransitionProbability> transitions = ((GroundedAction)ap.ga).action.getTransitions(src.s, src.optionParams);
 				for(TransitionProbability tp : transitions){
 					double totalTransP = ap.pSelection * tp.p;
-					double r = stackedDiscount * this.rf.reward(src.s, ap.ga, tp.s);
+					double r = stackedDiscount * this.rf.reward(src.s, (GroundedAction)ap.ga, tp.s);
 					ExpectationSearchNode next = new ExpectationSearchNode(src, tp.s, totalTransP, r);
 					if(next.probability > this.expectationSearchCutoffProb){
 						this.iterateExpectationScan(next, stackedDiscount*discountFactor, possibleTerminations, expectedReturn);

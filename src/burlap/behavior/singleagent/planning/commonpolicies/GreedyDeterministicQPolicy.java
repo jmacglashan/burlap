@@ -9,8 +9,8 @@ import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -46,7 +46,7 @@ public class GreedyDeterministicQPolicy extends Policy implements PlannerDerived
 	
 
 	@Override
-	public GroundedAction getAction(State s) {
+	public AbstractGroundedAction getAction(State s) {
 		
 		List<QValue> qValues = this.qplanner.getQs(s);
 		double maxQV = Double.NEGATIVE_INFINITY;

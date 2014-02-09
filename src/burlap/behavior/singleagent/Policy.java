@@ -6,6 +6,7 @@ import java.util.Random;
 
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -30,7 +31,7 @@ public abstract class Policy {
 	 * @param s the state for which an action should be returned
 	 * @return a sample action from the action distribution; null if the policy is undefined for s
 	 */
-	public abstract GroundedAction getAction(State s);
+	public abstract AbstractGroundedAction getAction(State s);
 	
 	/**
 	 * This method will return action probability distribution defined by the policy. The action distribution is represented
@@ -90,7 +91,7 @@ public abstract class Policy {
 	 * @return a deterministic action distribution for the action returned by the getAction method.
 	 */
 	protected List <ActionProb> getDeterministicPolicy(State s){
-		GroundedAction ga = this.getAction(s);
+		AbstractGroundedAction ga = this.getAction(s);
 		if(ga == null){
 			throw new PolicyUndefinedException();
 		}
@@ -121,7 +122,7 @@ public abstract class Policy {
 		for(ActionProb ap : probs){
 			sump += ap.pSelection;
 			if(roll < sump){
-				return ap.ga;
+				return (GroundedAction)ap.ga;
 			}
 		}
 		
@@ -232,10 +233,15 @@ public abstract class Policy {
 		State next = null;
 		
 		//follow policy
-		GroundedAction ga = this.getAction(cur);
-		if(ga == null){
+		AbstractGroundedAction aga = this.getAction(cur);
+		if(aga == null){
 			throw new PolicyUndefinedException();
 		}
+		if(!(aga instanceof GroundedAction)){
+			throw new RuntimeException("cannot folow policy for non-single agent actions");
+		}
+		GroundedAction ga = (GroundedAction)aga;
+		
 		if(ga.action.isPrimitive() || !this.evaluateDecomposesOptions){
 			next = ga.executeIn(cur);
 			double r = rf.reward(cur, ga, next);
@@ -291,7 +297,7 @@ public abstract class Policy {
 		/**
 		 * The action to be considered.
 		 */
-		public GroundedAction ga;
+		public AbstractGroundedAction ga;
 		
 		/**
 		 * The probability of the action being selected.
@@ -304,7 +310,7 @@ public abstract class Policy {
 		 * @param ga the action to be considered
 		 * @param p the probability of the action being selected.
 		 */
-		public ActionProb(GroundedAction ga, double p){
+		public ActionProb(AbstractGroundedAction ga, double p){
 			this.ga = ga;
 			this.pSelection = p;
 		}
