@@ -1,10 +1,15 @@
 package burlap.oomdp.core;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
 import burlap.oomdp.core.values.DiscreteValue;
+import burlap.oomdp.core.values.IntValue;
 import burlap.oomdp.core.values.MultiTargetRelationalValue;
 import burlap.oomdp.core.values.RealValue;
 import burlap.oomdp.core.values.RelationalValue;
@@ -44,6 +49,8 @@ public class Attribute {
 	 * 2: REALUNBOUND (unbounded real)
 	 * 3: RELATIONAL (single-target relational)
 	 * 4: MULTITARGETRELATIONAL (multi-target relation)
+	 * 5: INT (discrete int, but not categorical)
+	 * 6: BOOLEAN (0, or 1, discrete value for false, true)
 	 * @author James MacGlashan
 	 *
 	 */
@@ -53,7 +60,9 @@ public class Attribute {
 		REAL(1),
 		REALUNBOUND(2),
 		RELATIONAL(3),
-		MULTITARGETRELATIONAL(4);
+		MULTITARGETRELATIONAL(4),
+		INT(5),
+		BOOLEAN(6);
 		
 		private final int intVal;
 		
@@ -77,23 +86,58 @@ public class Attribute {
 					return RELATIONAL;
 				case 4:
 					return MULTITARGETRELATIONAL;
+				case 5:
+					return INT;
+				case 6:
+					return BOOLEAN;
 				default:
 					return NOTYPE;
 			}
 		}
 	}
 
-	public String						name;				//name of the attribute
-	public AttributeType				type;				//type of values attribute holds
-	public Domain						domain;				//domain that holds this attribute
-	public double						lowerLim;			//lowest value for a bounded real attribute
-	public double						upperLim;			//highest value for a bounded real attribute
-	public Map <String, Integer>		discValuesHash;		//maps names of discrete values to int values 
-	public List <String>				discValues;			//list of discrete value names by their int value
-	public boolean						hidden;				//whether this value is part of the state representation or is hidden from the agent
+	/**
+	 * name of the attribute
+	 */
+	public String						name;
 	
 	/**
-	 * 
+	 * type of values attribute holds
+	 */
+	public AttributeType				type;
+	
+	/**
+	 * domain that holds this attribute
+	 */
+	public Domain						domain;
+	
+	/**
+	 * lowest value for a non-relational attribute
+	 */
+	public double						lowerLim;
+	
+	/**
+	 * highest value for a non-relational attribute
+	 */
+	public double						upperLim;
+	
+	/**
+	 * maps categorical names of discrete values to int values
+	 */
+	public Map <String, Integer>		discValuesHash;
+	
+	/**
+	 * The possible categorical values for a discrete or boolean attribute.
+	 */
+	public List <String>				discValues;
+	
+	/**
+	 * whether this value is part of the state representation or is hidden from the agent
+	 */
+	public boolean						hidden;
+	
+	/**
+	 * Constructs an attribute with an unspecified type that will need to be specified later.
 	 * @param domain the domain that the attribute exists in
 	 * @param name the name of the attribute
 	 */
@@ -117,7 +161,8 @@ public class Attribute {
 	}
 	
 	/**
-	 * 
+	 * Constructs with a given attribute type. If the attribute type is set to boolean, the categorical values will automatically
+	 * be initialized to "false" and "true" with a range from 0 to 1. 
 	 * @param domain the domain that the attribute exists in
 	 * @param name the name of the attribute
 	 * @param type the type of the attribute (discrete or real)
@@ -136,33 +181,21 @@ public class Attribute {
 		
 		this.hidden = false;
 		
+		if(this.type == AttributeType.BOOLEAN){
+			this.discValues.add("false");
+			this.discValues.add("true");
+			this.discValuesHash.put("false", 0);
+			this.discValuesHash.put("true", 1);
+			
+			this.lowerLim = 0.;
+			this.upperLim = 1.;
+		}
+		
 		
 		this.domain.addAttribute(this);
 		
 	}
 	
-	/**
-	 * 
-	 * @param domain the domain that the attribute exists in
-	 * @param name the name of the attribute
-	 * @param type the type of the attribute (discrete or real) in int form
-	 */
-	public Attribute(Domain domain, String name, int type){
-		
-		this.domain = domain;
-		this.name = name;
-		
-		this.type = AttributeType.fromInt(type);
-		this.discValuesHash = new HashMap <String, Integer>(0);
-		this.discValues = new ArrayList <String>(0);
-		
-		this.lowerLim = 0.0;
-		this.upperLim = 0.0;
-		
-		
-		this.domain.addAttribute(this);
-		
-	}
 	
 	
 	/**
@@ -193,23 +226,26 @@ public class Attribute {
 	}
 	
 	
-	/**
-	 * Sets the type for this attribute using the integer representation of types.
-	 * See the AttributeType enum for more information on the correspondence of int
-	 * values to the AttributeTypes.
-	 * @param itype the integer representation of types.
-	 */
-	public void setType(int itype){
-		this.type = AttributeType.fromInt(itype);
-	}
 	
 	
 	/**
 	 * Sets the type for this attribute.
+	 * If the attribute type is set to boolean, the categorical values will automatically
+	 * be initialized to "false" and "true" with a range from 0 to 1.
 	 * @param type the attribute type to which this attribute should be set
 	 */
 	public void setType(AttributeType type){
 		this.type = type;
+		
+		if(this.type == AttributeType.BOOLEAN){
+			this.discValues.add("false");
+			this.discValues.add("true");
+			this.discValuesHash.put("false", 0);
+			this.discValuesHash.put("true", 1);
+			
+			this.lowerLim = 0.;
+			this.upperLim = 1.;
+		}
 	}
 	
 	
@@ -282,7 +318,7 @@ public class Attribute {
 	 * @return a Value object compatible with this Attributes type (i.e., discrete or real)
 	 */
 	public Value valueConstructor(){
-		if(this.type == Attribute.AttributeType.DISC){
+		if(this.type == Attribute.AttributeType.DISC || this.type == AttributeType.BOOLEAN){
 			return new DiscreteValue(this);
 		}
 		else if(this.type == AttributeType.REAL || this.type == AttributeType.REALUNBOUND){
@@ -294,11 +330,14 @@ public class Attribute {
 		else if(this.type == AttributeType.MULTITARGETRELATIONAL){
 			return new MultiTargetRelationalValue(this);
 		}
+		else if(this.type == AttributeType.INT){
+			return new IntValue(this);
+		}
 		
 		throw new RuntimeErrorException(new Error("Unknown attribute type; cannot construct a corresponding Value for it."));
 	}
 	
-	
+	@Override
 	public boolean equals(Object obj){
 		Attribute op = (Attribute)obj;
 		if(op.name.equals(name))
@@ -306,6 +345,8 @@ public class Attribute {
 		return false;
 	}
 	
+	
+	@Override
 	public int hashCode(){
 		return name.hashCode();
 	}

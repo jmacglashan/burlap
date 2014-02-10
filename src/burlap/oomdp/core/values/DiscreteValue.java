@@ -64,17 +64,17 @@ public class DiscreteValue extends Value{
 	
 	@Override
 	public void addRelationalTarget(String t) {
-		throw new UnsupportedOperationException(new Error("Value is discrete, cannot add relational target"));
+		throw new UnsupportedOperationException("Value is discrete, cannot add relational target");
 	}
 	
 	@Override
 	public void clearRelationTargets() {
-		throw new UnsupportedOperationException(new Error("Value is discrete, cannot clear relational targets"));
+		throw new UnsupportedOperationException("Value is discrete, cannot clear relational targets");
 	}
 	
 	@Override
 	public void removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException(new Error("Value is discrete, cannot modify relational targets"));
+		throw new UnsupportedOperationException("Value is discrete, cannot modify relational target");
 	}
 	
 	@Override
@@ -87,7 +87,7 @@ public class DiscreteValue extends Value{
 	
 	@Override
 	public double getRealVal(){
-		throw new UnsupportedOperationException(new Error("Value is discrete, cannot return real value"));
+		throw new UnsupportedOperationException("Value is discrete, cannot return real value");
 	}
 	
 	@Override
@@ -100,7 +100,7 @@ public class DiscreteValue extends Value{
 	
 	@Override
 	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException(new Error("Value is discrete, cannot return relational values"));
+		throw new UnsupportedOperationException("Value is discrete, cannot return relational values");
 	}
 	
 	

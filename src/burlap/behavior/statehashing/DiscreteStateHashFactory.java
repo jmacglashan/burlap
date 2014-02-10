@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
@@ -153,7 +154,16 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 			int vol = 1;
 			for(Attribute att : attributes){
 				index += o.getDiscValForAttribute(att.name)*vol;
-				vol *= att.discValues.size();
+				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
+					vol *= att.discValues.size();
+				}
+				else if(att.type==AttributeType.INT){
+					vol *= 31;
+				}
+				else{
+					throw new RuntimeException("DiscreteStateHashFactory cannot compute hash for non discrete (discrete, boolean, or int) values");
+				}
+				
 			}
 			
 			return index;
@@ -166,7 +176,15 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 			List <Attribute> attributes = this.getAttributesForClass(oclass);
 			int vol = 1;
 			for(Attribute att : attributes){
-				vol *= att.discValues.size();
+				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
+					vol *= att.discValues.size();
+				}
+				else if(att.type==AttributeType.INT){
+					vol *= 31;
+				}
+				else{
+					throw new RuntimeException("DiscreteStateHashFactory cannot compute hash for non discrete (discrete, boolean, or int) values");
+				}
 			}
 			
 			return vol;
