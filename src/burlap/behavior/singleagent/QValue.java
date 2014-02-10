@@ -40,4 +40,15 @@ public class QValue {
 		this.q = q;
 	}
 	
+	
+	/**
+	 * Initialializes this Q-value by copying the information from another Q-value.
+	 * @param src the source Q-value from which to copy.
+	 */
+	public QValue(QValue src){
+		this.s = src.s.copy();
+		this.a = src.a.copy();
+		this.q = src.q;
+	}
+	
 }
