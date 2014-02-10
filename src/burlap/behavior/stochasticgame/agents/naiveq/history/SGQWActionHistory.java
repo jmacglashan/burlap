@@ -5,11 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.singleagent.QValue;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.stochasticgame.agents.naiveq.SGQLAgent;
-import burlap.behavior.stochasticgame.agents.naiveq.SGQValue;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
@@ -138,7 +138,7 @@ public class SGQWActionHistory extends SGQLAgent {
 	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		
 		GroundedSingleAction myAction = jointAction.action(worldAgentName);
-		SGQValue qe = this.getSGQValue(s, myAction);
+		QValue qe = this.getQ(s, myAction);
 		
 		State augS = this.getHistoryAugmentedState(s);
 		

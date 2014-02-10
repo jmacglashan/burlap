@@ -20,6 +20,7 @@ import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -342,8 +343,8 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	}
 
 	@Override
-	public QValue getQ(State s, GroundedAction a) {
-		return this.getQ(this.stateHash(s), a);
+	public QValue getQ(State s, AbstractGroundedAction a) {
+		return this.getQ(this.stateHash(s), (GroundedAction)a);
 	}
 	
 	

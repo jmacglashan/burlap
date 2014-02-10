@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent;
 
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -10,9 +10,23 @@ import burlap.oomdp.singleagent.GroundedAction;
  *
  */
 public class QValue {
-	public State 				s;
-	public GroundedAction		a;
-	public double				q;
+	
+	/**
+	 * The state with which this Q-value is associated.
+	 */
+	public State 						s;
+	
+	/**
+	 * The action with which this Q-value is associated
+	 */
+	public AbstractGroundedAction		a;
+	
+	/**
+	 * The numeric Q-value
+	 */
+	public double						q;
+	
+	
 	
 	/**
 	 * Creates a Q-value for the given state an action pair with the specified q-value
@@ -20,7 +34,7 @@ public class QValue {
 	 * @param a the action
 	 * @param q the initial Q-value
 	 */
-	public QValue(State s, GroundedAction a, double q){
+	public QValue(State s, AbstractGroundedAction a, double q){
 		this.s = s;
 		this.a = a;
 		this.q = q;

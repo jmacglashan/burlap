@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent;
 
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -27,7 +27,7 @@ public interface ValueFunctionInitialization {
 	 * @param a the action for which to get the initial value of the Q-value function.
 	 * @return the initialization value of the Q-value function for a given state and action pair.
 	 */
-	public double qValue(State s, GroundedAction a);
+	public double qValue(State s, AbstractGroundedAction a);
 
 	
 	
@@ -68,7 +68,7 @@ public interface ValueFunctionInitialization {
 		}
 
 		@Override
-		public double qValue(State s, GroundedAction a) {
+		public double qValue(State s, AbstractGroundedAction a) {
 			return value;
 		}
 		

@@ -22,6 +22,7 @@ import burlap.behavior.singleagent.vfa.ActionApproximationResult;
 import burlap.behavior.singleagent.vfa.FunctionWeight;
 import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.WeightGradient;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -517,14 +518,14 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	}
 
 	@Override
-	public QValue getQ(State s, GroundedAction a) {
+	public QValue getQ(State s, AbstractGroundedAction a) {
 		
 		List <GroundedAction> gaList = new ArrayList<GroundedAction>(1);
-		gaList.add(a);
+		gaList.add((GroundedAction)a);
 		
 		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gaList);
 		
-		return this.getQFromFeaturesFor(results, s, a);
+		return this.getQFromFeaturesFor(results, s, (GroundedAction)a);
 	}
 	
 	

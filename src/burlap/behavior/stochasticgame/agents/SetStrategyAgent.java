@@ -2,7 +2,7 @@ package burlap.behavior.stochasticgame.agents;
 
 import java.util.Map;
 
-import burlap.behavior.stochasticgame.Strategy;
+import burlap.behavior.singleagent.Policy;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentFactory;
@@ -18,9 +18,9 @@ import burlap.oomdp.stochasticgames.SGDomain;
 public class SetStrategyAgent extends Agent {
 
 	/**
-	 * The strategy this agent will follow
+	 * The policy encoding the strategy this agent will follow
 	 */
-	protected Strategy		strategy;
+	protected Policy		policy;
 	
 	
 	/**
@@ -28,9 +28,9 @@ public class SetStrategyAgent extends Agent {
 	 * @param domain the domain in which the agent will play
 	 * @param strategy the strategy that the agent will follow
 	 */
-	public SetStrategyAgent(SGDomain domain, Strategy strategy){
+	public SetStrategyAgent(SGDomain domain, Policy policy){
 		this.init(domain);
-		this.strategy = strategy;
+		this.policy = policy;
 	}
 	
 	@Override
@@ -39,7 +39,7 @@ public class SetStrategyAgent extends Agent {
 
 	@Override
 	public GroundedSingleAction getAction(State s) {
-		return this.strategy.getAction(s);
+		return (GroundedSingleAction)this.policy.getAction(s);
 	}
 
 	@Override
@@ -58,22 +58,22 @@ public class SetStrategyAgent extends Agent {
 		/**
 		 * The strategy this agent will follow
 		 */
-		protected Strategy		strategy;
+		protected Policy		policy;
 		
 		/**
 		 * The domain in which the agent will play
 		 */
 		protected SGDomain		domain;
 		
-		public SetStrategyAgentFactory(SGDomain domain, Strategy strategy){
-			this.strategy = strategy;
+		public SetStrategyAgentFactory(SGDomain domain, Policy policy){
+			this.policy = policy;
 			this.domain = domain;
 		}
 		
 		
 		@Override
 		public Agent generateAgent() {
-			return new SetStrategyAgent(domain, strategy);
+			return new SetStrategyAgent(domain, policy);
 		}
 		
 		

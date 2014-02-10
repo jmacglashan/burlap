@@ -13,6 +13,7 @@ import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -188,7 +189,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	
 	@Override
-	public QValue getQ(State s, GroundedAction a){
+	public QValue getQ(State s, AbstractGroundedAction a){
 		
 		
 		if(this.useCachedTransitions){
@@ -205,13 +206,13 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
 				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 			}
-			return this.getQ(sh, a, matching);
+			return this.getQ(sh, (GroundedAction)a, matching);
 			
 		}
 		else{
 			
 			StateHashTuple sh = this.stateHash(s);
-			double dq = this.computeQ(sh, a);
+			double dq = this.computeQ(sh, (GroundedAction)a);
 			
 			QValue q = new QValue(s, a, dq);
 			
