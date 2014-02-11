@@ -224,6 +224,9 @@ public abstract class PropositionalFunction {
 	 */
 	public abstract boolean isTrue(State s, String [] params);
 	
+	public int[] delta(State st, String [] params) {
+		return null;
+	}
 	
 	public boolean equals(Object obj){
 		PropositionalFunction op = (PropositionalFunction)obj;

@@ -1,8 +1,13 @@
 package burlap.oomdp.singleagent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
+import burlap.domain.singleagent.minecraft.Affordance;
+import burlap.domain.singleagent.minecraft.MinecraftDomain;
+import burlap.domain.singleagent.minecraft.Subgoal;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
@@ -201,6 +206,206 @@ public abstract class Action {
 	}
 	
 	
+	public final boolean applicableInState(State st, Domain domain){
+		if(!domain.affordanceMode) {
+			return true;
+		}
+//		System.out.println(st.toString() + " -- " + this.name);
+		
+		// Get relevant Affordance based on subgoal.
+		Affordance curAfford = getRelevAffordance(st, domain);
+		List<Subgoal> subgoals = curAfford.getSubgoals();
+		
+		// Breadth first search through affordance space
+		
+		LinkedList<Subgoal> bfsQ = new LinkedList<Subgoal>();
+		bfsQ.addAll(subgoals);
+		
+		while(!bfsQ.isEmpty()) {
+			Subgoal sg = bfsQ.remove();
+//			System.out.println(sg.getName());
+			if (sg.isTrue(st)) {
+				if (sg.inActions(this.name)) {
+					// This action is associated with a relevant subgoal, return true.
+					return true;
+				}
+				else if (sg.hasAffordance()) {
+					// Subgoal's action isn't correct but it has an affordance
+					// so let's try to follow it (later)
+					Affordance af = sg.getAffordance();
+					for (Subgoal afSG: af.getSubgoals()) {
+						if (afSG.isTrue(st) || !afSG.shouldSatisfy()) {
+							// Either Subgoal is true or isn't a big deal so we take care of it now
+							// Consider adding: if subGoal.inActions(this.name), return true
+//							if (afSG.inActions(this.name)) {
+//								return true;
+//							}
+//							else {
+							bfsQ.add(afSG);
+//							}
+						}
+						else if (afSG.shouldSatisfy()) {
+
+							// Can't walk right, so we want to find a new y coord that lets us walk right
+							Integer dx = Integer.parseInt(afSG.getParams()[0]);
+							Integer dy = Integer.parseInt(afSG.getParams()[1]);
+							Integer dz = Integer.parseInt(afSG.getParams()[2]);
+							
+							String[] oldParams = afSG.getParams();
+							char dir = afSG.getName().charAt(afSG.getName().length() - 1);
+							
+							String[][] possibleParams = new String[2][3];
+							int sgToSet = 0;
+							// Change Y positively
+							while(dy < MinecraftDomain.MAXY && dx < MinecraftDomain.MAXX) {
+								if (dir == 'X') {
+									dy++;
+								}
+								else if (dir == 'Y') {
+									dx++;
+								}
+								String[] newParams = {dx.toString(), dy.toString(), dz.toString()};
+								afSG.setParams(newParams);	
+								
+								if (afSG.isTrue(st)) {
+									possibleParams[sgToSet] = newParams;
+									sgToSet++;
+									break;
+								}
+							}
+
+							while (dy > -MinecraftDomain.MAXY && dx > -MinecraftDomain.MAXX) {
+								if (dir == 'X') {
+									dy--;
+								}
+								else if (dir == 'Y') {
+									dx--;
+								}
+								String[] newParams = {dx.toString(), dy.toString(), dz.toString()};
+								afSG.setParams(newParams);
+								
+								if (afSG.isTrue(st)) {
+									possibleParams[sgToSet] = newParams;
+									sgToSet++;
+									break;
+								}
+							}
+							
+							//reset afSG params to one of the subgoals
+							// GLOBAL
+							String[] localParams;
+							
+							if (sgToSet == 2) {
+								String[] globalPossibleParams1 = MinecraftDomain.locCoordsToGlobal(st, possibleParams[0]);
+								String[] globalPossibleParams2 = MinecraftDomain.locCoordsToGlobal(st, possibleParams[1]);
+								
+								if (domain.prevSatSubgoal != null) {
+									localParams = domain.prevSatSubgoal.chooseGoodSubgoal(globalPossibleParams1, globalPossibleParams2);
+								}
+								else {
+									localParams = domain.goalStack.peek().chooseGoodSubgoal(globalPossibleParams1, globalPossibleParams2);
+								}
+								// Now these are local
+								localParams = MinecraftDomain.globCoordsToLocal(st, localParams);
+								
+							}
+							else {
+								// Only found one possible subgoal, use its global parameters for afSG
+								// Local
+								localParams = possibleParams[0];
+							}
+							afSG.setParams(localParams);
+							
+							// isTrue requires relative coordinates
+							if (afSG.isTrue(st) && afSG.hasSubGoal()) {
+								System.out.println("SUBGOAL TIME");
+								String[] globalParams = MinecraftDomain.locCoordsToGlobal(st, localParams);
+								
+								int constraintDir = (int)dir - 88;
+								boolean isConstraintLessThan = (Integer.parseInt(oldParams[constraintDir]) < 0);
+								
+								afSG.getSubgoal().setParams(globalParams, constraintDir, isConstraintLessThan);  // (int)'X' == 88
+								
+								// For now only isWalkablePX - should loop and find the place were X is 
+								// walkable and make isAtLocation of that walkable X the new subgoal
+								if (!domain.goalStack.peek().getName().equals(afSG.getSubgoal().getName()) || !domain.goalStack.peek().getParams().equals(afSG.getSubgoal().getParams())) {
+									domain.goalStack.add(afSG.getSubgoal());									
+									System.out.println("I am trying out a new subgoal!");
+								}
+								else {
+//									domain.goalStack.add(afSG.getSubgoal());
+								}
+								
+								curAfford = getRelevAffordance(st, domain);
+//								curAfford.setSubGoalParams(globParams);
+								subgoals = curAfford.getSubgoals();
+								bfsQ.clear();
+								
+								for (Subgoal newSG: subgoals) {
+									if (!newSG.getName().equals(sg.getName())) {
+										bfsQ.add(newSG);		
+									}
+								}
+							}
+							afSG.setParams(oldParams);
+						}
+					}
+				}
+				else if (sg.hasSubGoal()) {
+					if (sg.getSubgoal().inActions(this.name)) {
+						return true;
+					}
+				}
+				
+			}
+			else {
+//				System.out.println(curAfford.getName());
+			}
+		}
+
+		// Action was not found in relevant affordances/subgoals
+		return false;
+	}
+	
+	
+	/**
+	 * Default behavior is that an action can be applied in any state
+	 * , but this might need be overridden if that is not the case.
+	 * @param st the state to perform the action on
+	 * @param params list of parameters to be passed into the action
+	 * @return whether the action can be performed on the given state
+	 */
+	public Affordance getRelevAffordance(State st, Domain domain){
+
+		// pop stack, search affordance list for string of thing popped, perform that action.
+		
+		Subgoal goal = domain.goalStack.peek();
+
+		while (goal.isTrue(st)) {
+			domain.prevSatSubgoal = domain.goalStack.pop();
+			domain.prevSatSubgoal.switchConstraint();
+			goal = domain.goalStack.peek();
+		}
+		
+		HashMap<String,Affordance> affordances = domain.affordances;
+		String goalName = goal.getName();
+		Affordance curAfford = affordances.get("d" + goalName);
+		String[] globParams = MinecraftDomain.locCoordsToGlobal(st, goal.getParams());
+		curAfford.setSubGoalParams(globParams);
+//		int[] delta = goal.delta(st);
+//
+//		String[] locGoalCoords = {"" + delta[0], "" + delta[1], "" + delta[2]};
+//		
+//		String[] globalCoords = MinecraftDomain.locCoordsToGlobal(st, locGoalCoords);
+		
+//		curAfford.setSubGoalParams(globalCoords);
+		
+		curAfford.setSubGoalParams(goal.getParams());
+		
+		return curAfford;
+	}
+	
+	
 	/**
 	 * Performs this action in the specified state using the specified parameters and returns the resulting state. The input state
 	 * will not be modified. The method will return a copy of the input state if the action is not applicable in state s with parameters params.
@@ -214,27 +419,25 @@ public abstract class Action {
 	}
 	
 	
-	/**
-	 * Performs this action in the specified state using the specified parameters and returns the resulting state. The input state
-	 * will not be modified. The method will return a copy of the input state if the action is not applicable in state s with parameters params.
-	 * @param s the state in which the action is to be performed.
-	 * @param params a String array specifying the action object parameters
-	 * @return the state that resulted from applying this action
+	/**This is a wrapper for performActionHelper that first performs a check to see whether the action is applicable to the current state.
+	 * @param st the state to perform the action on
+	 * @param params list of parameters to be passed into the action
+	 * @return the modified State st
 	 */
-	public final State performAction(State s, String [] params){
+	public final State performAction(State st, String [] params){
 		
-		State resultState = s.copy();
-		if(!this.applicableInState(s, params)){
+		State resultState = st.copy();
+		if(params.length == 0) {
+			// Affordance case
+			if(!this.applicableInState(st, domain)){
+				return resultState; //can't do anything if it's not applicable in the state so return the current state
+			}
+		}
+		else if(!this.applicableInState(st, params)){
 			return resultState; //can't do anything if it's not applicable in the state so return the current state
 		}
 		
-		resultState = performActionHelper(resultState, params);
-		
-		if(this.observer != null){
-			this.observer.actionEvent(resultState, new GroundedAction(this, params), resultState);
-		}
-		
-		return resultState;
+		return performActionHelper(resultState, params);
 		
 	}
 	

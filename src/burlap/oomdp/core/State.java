@@ -502,6 +502,35 @@ public class State {
 		return res;
 	}
 	
+	/**
+	 * Returns all GroundedAction objects for the source action a in this state.
+	 * @param a the action from which to generate GroundedAction objects.
+	 * @return all GroundedAction objects for the source action a in this state.
+	 */
+	public List <GroundedAction> getAllGroundedActionsFor(Action a, Domain domain){
+		
+		List <GroundedAction> res = new ArrayList<GroundedAction>();
+		
+		if(a.getParameterClasses().length == 0){
+			if(a.applicableInState(this, domain)){
+				res.add(new GroundedAction(a, new String[]{}));
+			}
+			return res; //no parameters so just the single ga without params
+		}
+		
+		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
+		
+		for(List <String> params : bindings){
+			String [] aprams = params.toArray(new String[params.size()]);
+			if(a.applicableInState(this, aprams)){
+				GroundedAction gp = new GroundedAction(a, aprams);
+				res.add(gp);
+			}
+		}
+		
+		return res;
+	}
+	
 	
 	/**
 	 * Returns a list of GroundedAction objects for all grounded actions that can be generated from the provided list of actions.
