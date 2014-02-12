@@ -106,8 +106,6 @@ public class ValueIteration extends ValueFunctionPlanner{
 	
 	public boolean performReachabilityFrom(State si){
 		
-		
-		
 		StateHashTuple sih = this.stateHash(si);
 		//first check if this is an new state, otherwise we do not need to do any new reachability analysis
 		if(transitionDynamics.containsKey(sih)){
@@ -143,7 +141,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			//first get all grounded actions for this state
 			List <GroundedAction> gas = new ArrayList<GroundedAction>();
 			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedActionsFor(a,domain)); // CHANGED (for affordance stuff - added domain to getAll...)
+				gas.addAll(sh.s.getAllGroundedActionsFor(a));
 			}
 			
 			//then get the transition dynamics for each action and queue up new states

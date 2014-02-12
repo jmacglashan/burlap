@@ -463,13 +463,6 @@ public class MinecraftDomain implements DomainGenerator{
 			return st;
 		}
 		
-		@Override
-		public boolean applicableInState(State st, String [] params){
-			PropositionalFunction pf = domain.getPropFunction(ISWALK);
-			pf.isTrue(st, params);
-			return true; 
-		}
-		
 	}
 
 

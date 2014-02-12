@@ -25,8 +25,6 @@ public class MinecraftVisualizer {
 		return v;
 	}
 	
-	
-	
 	public static class MapPainter implements StaticPainter{
 
 		protected int 				dwidth;

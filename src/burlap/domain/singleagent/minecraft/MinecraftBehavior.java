@@ -55,8 +55,8 @@ public class MinecraftBehavior {
 
 		MCStateGenerator mcsg = new MCStateGenerator(mapfile);
 		
-		State initialState = mcsg.getCleanState(domain);
-		
+		initialState = mcsg.getCleanState(domain);
+
 		// -- Initialize Goal Stack --
 		// TODO: Is this necessary or should it be only in affordance planner?
 		ObjectInstance goalObj = initialState.getObject(MinecraftDomain.CLASSGOAL + "0");
@@ -78,10 +78,11 @@ public class MinecraftBehavior {
 					domain.getObjectClass(MinecraftDomain.CLASSAGENT).attributeList); 
 		
 	}
+
+	// ---------- PLANNERS ---------- 
 	
-	
-	// Older working version if basic bad VI
-	public void ValueIterationMC(String outputPath){
+	// Value Iteration (Basic)
+	public void ValueIterationPlanner(String outputPath){
 		
 		if(!outputPath.endsWith("/")){
 			outputPath = outputPath + "/";
@@ -90,20 +91,21 @@ public class MinecraftBehavior {
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
 		
 		planner.planFromState(initialState);
-//		System.out.println(((ValueFunctionPlanner) planner).value(initialState));
-		//create a Q-greedy policy from the planner
+
+		// Create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
-		//int maxIterations = 150;
-		
-		//record the plan results to a file
+		// Record the plan results to a file
 		p.evaluateBehavior(initialState, rf, tf).writeToFile(outputPath + "planResult", sp);
 		
 	}
 	
-	// Affordances Planner
-	
 	// Subgoal Planner
+	
+	
+	
+	
+	// Affordances Planner
 	
 	// Options Planner
 	
@@ -111,14 +113,14 @@ public class MinecraftBehavior {
 	
 	
 	public static void main(String[] args) {
-	
-		MinecraftBehavior mcb = new MinecraftBehavior("test.txt");
 		
+		MinecraftBehavior mcb = new MinecraftBehavior("flatland.map");
+		System.out.println("HOWDY");
 		String outputPath = "output/"; //directory to record results
 		
 		// Call planning and learning algorithms here
 		
-		//mcb.ValueIterationMC(outputPath);
+		mcb.ValueIterationPlanner(outputPath);
 		
 		
 		

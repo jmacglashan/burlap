@@ -41,7 +41,7 @@ public class MCStateGenerator {
 		
 		// Convert relative path to absolute.
 		String root = System.getProperty("user.dir");
-		String abspath = root + "/" + path;
+		String abspath = root + "/maps/" + path;
 		
 		this.fpath = abspath;
 	}
@@ -86,11 +86,10 @@ public class MCStateGenerator {
 	public static void processRow(State s, Domain d, String row, int nrow) {
 		char ch;
 		int ncol = 0;
-
+		row = row.replace(" ", "");
+		
 		while (ncol < row.length()) {
-
 			ch = row.charAt(ncol);
-
 			if (ch != ' ') {
 				addBlock(s, d, nrow, ncol, 0);
 			}
