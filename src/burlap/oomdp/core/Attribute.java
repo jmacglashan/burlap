@@ -191,6 +191,15 @@ public class Attribute {
 			this.upperLim = 1.;
 		}
 		
+		if(this.type == AttributeType.REALUNBOUND){
+			this.lowerLim = Double.NEGATIVE_INFINITY;
+			this.upperLim = Double.POSITIVE_INFINITY;
+		}
+		
+		if(this.type == AttributeType.INT){
+			this.lowerLim = Integer.MIN_VALUE;
+			this.upperLim = Integer.MAX_VALUE;
+		}
 		
 		this.domain.addAttribute(this);
 		
@@ -245,6 +254,16 @@ public class Attribute {
 			
 			this.lowerLim = 0.;
 			this.upperLim = 1.;
+		}
+		
+		if(this.type == AttributeType.REALUNBOUND){
+			this.lowerLim = Double.NEGATIVE_INFINITY;
+			this.upperLim = Double.POSITIVE_INFINITY;
+		}
+		
+		if(this.type == AttributeType.INT){
+			this.lowerLim = Integer.MIN_VALUE;
+			this.upperLim = Integer.MAX_VALUE;
 		}
 	}
 	
