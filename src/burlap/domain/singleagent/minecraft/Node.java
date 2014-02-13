@@ -1,38 +1,39 @@
 package burlap.domain.singleagent.minecraft;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.core.PropositionalFunction;
 
-public abstract class Node {
+public class Node {
 	
-	private List<Node> children;
 	private Node parent;
-	private List<Action> actionList;
-	
-	public List<Node> getChildren() {
-		return children;
-	}
-	
-	public void addChild(Node ch) {
-		ch.setParent(this);
-		children.add(ch);
-	}
+	private PropositionalFunction pf;
+	private ArrayList<Node> children;
 
-	public Node getParent() {
-		return parent;
+	public Node(PropositionalFunction pf, Node p) {
+		this.parent = p;
+		this.pf = pf;
+		this.children = new ArrayList<Node>();
+	}
+	
+	public Node getParent(){
+		return this.parent;
 	}
 	
 	public void setParent(Node p) {
-		parent = p;
+		this.parent = p;
 	}
 	
-	public List<Action> getActions() {
-		return actionList;
+	public void addChild(Node c){
+		this.children.add(c);
 	}
 	
-	public void addAction(Action a) {
-		actionList.add(a);
+	public ArrayList<Node> getChildren() {
+		return this.children;
+	}
+	
+	public PropositionalFunction getPropFunc() {
+		return this.pf;
 	}
 
 }

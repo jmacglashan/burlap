@@ -64,7 +64,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static AtGoalPF 						AtGoalPF = null;
 	public static int[][][]						MAP;
 	public static HashMap<String,Affordance>	affordances;
-	public static Stack<Subgoal>				goalStack;
+	public static Stack<AffordanceSubgoal>				goalStack;
 	private ObjectClass 						agentClass = null;
 	private ObjectClass 						goalClass = null;
 	public static SADomain						DOMAIN = null;	
@@ -137,6 +137,7 @@ public class MinecraftDomain implements DomainGenerator{
 		PropositionalFunction isWalkable = new IsWalkablePF(ISWALK, DOMAIN,
 				new String[]{"Integer", "Integer", "Integer"});
 		
+		
 		// TODO: delete and move to the Affordance Planner
 		if (DOMAIN.affordanceMode) {
 			PropositionalFunction isAXLess = new IsAgentXLess(ISAXLESS, DOMAIN,
@@ -160,39 +161,39 @@ public class MinecraftDomain implements DomainGenerator{
 			Affordance dPosX = new Affordance("dPosX");
 			
 			// Subgoals that we should not try to satisfy (basically just preconditions, if they're true, then proceed)
-			Subgoal isAXLessSG = new Subgoal(ISAXLESS, isAXLess, false);
-			Subgoal isAYLessSG = new Subgoal(ISAYLESS, isAYLess, false);
-			Subgoal isAXMoreSG = new Subgoal(ISAXMORE, isAXMore, false);
-			Subgoal isAYMoreSG = new Subgoal(ISAYMORE, isAYMore, false);
+			AffordanceSubgoal isAXLessSG = new AffordanceSubgoal(ISAXLESS, isAXLess, false);
+			AffordanceSubgoal isAYLessSG = new AffordanceSubgoal(ISAYLESS, isAYLess, false);
+			AffordanceSubgoal isAXMoreSG = new AffordanceSubgoal(ISAXMORE, isAXMore, false);
+			AffordanceSubgoal isAYMoreSG = new AffordanceSubgoal(ISAYMORE, isAYMore, false);
 					
 			// Create subgoals
-			Subgoal isWalkPXSG = new Subgoal("isWalkPX", isWalkable, new String[] {"1","0","0"}, true);
-			Subgoal isWalkNXSG = new Subgoal("isWalkNX", isWalkable, new String[] {"-1","0","0"}, true);
-			Subgoal isWalkPYSG = new Subgoal("isWalkPY", isWalkable, new String[] {"0","1","0"}, true);
-			Subgoal isWalkNYSG = new Subgoal("isWalkNY", isWalkable, new String[] {"0","-1","0"}, true);
+			AffordanceSubgoal isWalkPXSG = new AffordanceSubgoal("isWalkPX", isWalkable, new String[] {"1","0","0"}, true);
+			AffordanceSubgoal isWalkNXSG = new AffordanceSubgoal("isWalkNX", isWalkable, new String[] {"-1","0","0"}, true);
+			AffordanceSubgoal isWalkPYSG = new AffordanceSubgoal("isWalkPY", isWalkable, new String[] {"0","1","0"}, true);
+			AffordanceSubgoal isWalkNYSG = new AffordanceSubgoal("isWalkNY", isWalkable, new String[] {"0","-1","0"}, true);
 			
-			Subgoal goal = new Subgoal(ISATLOC, atGoal);
+			AffordanceSubgoal goal = new AffordanceSubgoal(ISATLOC, atGoal);
 			
 			// TODO: Make isAtLocation a class
 //			Subgoal isAtLocation = new Subgoal(ISATLOC, IsAtLocation);
 			
 			// Add actions to subgoals
-			Subgoal isAtLocationR = new Subgoal(ISATLOC, IsAtLocation);
+			AffordanceSubgoal isAtLocationR = new AffordanceSubgoal(ISATLOC, IsAtLocation);
 			isAtLocationR.setAction(right);
 			isAtLocationR.setParams(isWalkPXSG.getParams());
 			isWalkPXSG.setSubgoal(isAtLocationR);
 	
-			Subgoal isAtLocationL = new Subgoal(ISATLOC, IsAtLocation);
+			AffordanceSubgoal isAtLocationL = new AffordanceSubgoal(ISATLOC, IsAtLocation);
 			isAtLocationL.setAction(left);
 			isAtLocationL.setParams(isWalkNXSG.getParams());
 			isWalkNXSG.setSubgoal(isAtLocationL);
 	
-			Subgoal isAtLocationF = new Subgoal(ISATLOC, IsAtLocation);
+			AffordanceSubgoal isAtLocationF = new AffordanceSubgoal(ISATLOC, IsAtLocation);
 			isAtLocationF.setAction(forward);
 			isAtLocationF.setParams(isWalkPYSG.getParams());
 			isWalkPYSG.setSubgoal(isAtLocationF);
 	
-			Subgoal isAtLocationB = new Subgoal(ISATLOC, IsAtLocation);
+			AffordanceSubgoal isAtLocationB = new AffordanceSubgoal(ISATLOC, IsAtLocation);
 			isAtLocationB.setAction(backward);
 			isAtLocationB.setParams(isWalkNYSG.getParams());
 			isWalkNYSG.setSubgoal(isAtLocationB);
@@ -225,7 +226,7 @@ public class MinecraftDomain implements DomainGenerator{
 			affordances.put(ISAYLESS, dPosX);
 	
 			// === Set up suboaol stack ===
-			Stack<Subgoal> goalStack = new Stack<Subgoal>();
+			Stack<AffordanceSubgoal> goalStack = new Stack<AffordanceSubgoal>();
 			goalStack.push(goal);
 			
 			// Add to domain
@@ -283,7 +284,7 @@ public class MinecraftDomain implements DomainGenerator{
 		return affordances;
 	}
 	
-	public Stack<Subgoal> getGoalStack() {
+	public Stack<AffordanceSubgoal> getGoalStack() {
 		return goalStack;
 	}
 	
@@ -577,6 +578,12 @@ public class MinecraftDomain implements DomainGenerator{
 
 			return (ax < nx);
 		}
+
+		@Override
+		public boolean isTrue(State s) {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 	
 	public static class IsAgentXMore extends PropositionalFunction{
@@ -594,6 +601,12 @@ public class MinecraftDomain implements DomainGenerator{
 			int nx = Integer.parseInt(params[0]);
 			
 			return (ax > nx);
+		}
+
+		@Override
+		public boolean isTrue(State s) {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	}
 	
@@ -614,6 +627,12 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			return (ay < ny);
 		}
+
+		@Override
+		public boolean isTrue(State s) {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 	
 	public static class IsAgentYMore extends PropositionalFunction{
@@ -633,12 +652,47 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			return (ay > ny);
 		}
+
+		@Override
+		public boolean isTrue(State s) {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 	
 	public static class IsAtLocationPF extends PropositionalFunction{
 
+		private String[] params;
+
 		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
+		}
+		
+		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses, String[] params) {
+			super(name, domain, parameterClasses);
+			this.params = params;
+		}
+		
+		@Override
+		public boolean isTrue(State st) {
+			// Version of isTrue that assumes paramaters were given in the construction of this prop func
+			
+			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
+			
+			//get the agent coordinates
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+			
+			int nx = Integer.parseInt(this.params[0]);
+			int ny = Integer.parseInt(this.params[1]);
+			int nz = Integer.parseInt(this.params[2]);
+			
+			if(ax == nx && ay == ny && az == nz){
+				return true;
+			}
+			
+			return false;
 		}
 
 		@Override
@@ -739,6 +793,12 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			return dist;
 		}
+
+		@Override
+		public boolean isTrue(State s) {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	}
 	
@@ -776,6 +836,12 @@ public class MinecraftDomain implements DomainGenerator{
 				return false;
 			}
 			return true;
+		}
+
+		@Override
+		public boolean isTrue(State s) {
+			// TODO Auto-generated method stub
+			return false;
 		}
 		
 	}

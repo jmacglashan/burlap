@@ -1,5 +1,7 @@
 package burlap.oomdp.core;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 /**
  * The propositional function class defines evaluations of object instances in an OO-MDP state and are part of the definition for an OO-MDP domain.
@@ -202,6 +204,17 @@ public abstract class PropositionalFunction {
 	 */
 	public final String getClassName(){
 		return pfClass;
+	}
+	
+	/**
+	 * Returns whether the propositional function is true for the given state, where parameters are
+	 * expected to be defined at the initialization of this propostional function
+	 * @param s the state that is being checked
+	 * @param params the parameters being passed in to the propositional function
+	 * @return whether the propositional function is true
+	 */
+	public boolean isTrue(State s) {
+        throw new NotImplementedException();
 	}
 	
 	/**

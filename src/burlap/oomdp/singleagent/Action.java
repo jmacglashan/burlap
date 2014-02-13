@@ -7,7 +7,7 @@ import java.util.List;
 
 import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.domain.singleagent.minecraft.MinecraftDomain;
-import burlap.domain.singleagent.minecraft.Subgoal;
+import burlap.domain.singleagent.minecraft.AffordanceSubgoal;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
@@ -214,15 +214,15 @@ public abstract class Action {
 		
 		// Get relevant Affordance based on subgoal.
 		Affordance curAfford = getRelevAffordance(st, domain);
-		List<Subgoal> subgoals = curAfford.getSubgoals();
+		List<AffordanceSubgoal> subgoals = curAfford.getSubgoals();
 		
 		// Breadth first search through affordance space
 		
-		LinkedList<Subgoal> bfsQ = new LinkedList<Subgoal>();
+		LinkedList<AffordanceSubgoal> bfsQ = new LinkedList<AffordanceSubgoal>();
 		bfsQ.addAll(subgoals);
 		
 		while(!bfsQ.isEmpty()) {
-			Subgoal sg = bfsQ.remove();
+			AffordanceSubgoal sg = bfsQ.remove();
 //			System.out.println(sg.getName());
 			if (sg.isTrue(st)) {
 				if (sg.inActions(this.name)) {
@@ -233,7 +233,7 @@ public abstract class Action {
 					// Subgoal's action isn't correct but it has an affordance
 					// so let's try to follow it (later)
 					Affordance af = sg.getAffordance();
-					for (Subgoal afSG: af.getSubgoals()) {
+					for (AffordanceSubgoal afSG: af.getSubgoals()) {
 						if (afSG.isTrue(st) || !afSG.shouldSatisfy()) {
 							// Either Subgoal is true or isn't a big deal so we take care of it now
 							// Consider adding: if subGoal.inActions(this.name), return true
@@ -341,7 +341,7 @@ public abstract class Action {
 								subgoals = curAfford.getSubgoals();
 								bfsQ.clear();
 								
-								for (Subgoal newSG: subgoals) {
+								for (AffordanceSubgoal newSG: subgoals) {
 									if (!newSG.getName().equals(sg.getName())) {
 										bfsQ.add(newSG);		
 									}
@@ -379,7 +379,7 @@ public abstract class Action {
 
 		// pop stack, search affordance list for string of thing popped, perform that action.
 		
-		Subgoal goal = domain.goalStack.peek();
+		AffordanceSubgoal goal = domain.goalStack.peek();
 
 		while (goal.isTrue(st)) {
 			domain.prevSatSubgoal = domain.goalStack.pop();
@@ -427,7 +427,7 @@ public abstract class Action {
 	public final State performAction(State st, String [] params){
 		
 		State resultState = st.copy();
-		if(params.length == 0) {
+		/*if(params.length == 0) {
 			// Affordance case
 			if(!this.applicableInState(st, domain)){
 				return resultState; //can't do anything if it's not applicable in the state so return the current state
@@ -435,8 +435,10 @@ public abstract class Action {
 		}
 		else if(!this.applicableInState(st, params)){
 			return resultState; //can't do anything if it's not applicable in the state so return the current state
+		}*/
+		if(!this.applicableInState(st, params)){
+			return resultState; //can't do anything if it's not applicable in the state so return the current state
 		}
-		
 		return performActionHelper(resultState, params);
 		
 	}

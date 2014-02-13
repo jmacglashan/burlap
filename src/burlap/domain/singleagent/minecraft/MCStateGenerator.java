@@ -93,7 +93,7 @@ public class MCStateGenerator {
 			if (ch != ' ') {
 				addBlock(s, d, nrow, ncol, 0);
 			}
-			
+			System.out.println(ch);
 			switch (ch) {
 			case bAddSym:
 				addBlock(s, d, nrow, ncol, 1);
