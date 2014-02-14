@@ -115,6 +115,10 @@ public class EpisodeAnalysis {
 		return stateSequence.get(i);
 	}
 	
+	public State getLastState() {
+		return stateSequence.get(stateSequence.size() - 1);
+	}
+	
 	/**
 	 * Returns the ith action taken in this episode. i=0 refers to the action taken in the initial state.
 	 * @param i the index of the action in this episode

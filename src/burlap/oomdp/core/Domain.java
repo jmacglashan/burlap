@@ -29,7 +29,7 @@ public abstract class Domain {
 	protected boolean									objectIdentifierDependentDomain = false;
 	public HashMap<String, Affordance>					affordances;
 	public Stack<AffordanceSubgoal>								goalStack;
-	public boolean										affordanceMode = true;
+	public boolean										affordanceMode = false;
 	public AffordanceSubgoal										prevSatSubgoal;
 	
 	/**

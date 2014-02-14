@@ -1,5 +1,6 @@
 package burlap.domain.singleagent.minecraft;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.domain.singleagent.minecraft.MinecraftDomain.AtGoalPF;
 import burlap.domain.singleagent.minecraft.MinecraftDomain.IsAtLocationPF;
 import burlap.domain.singleagent.minecraft.MinecraftDomain.IsWalkablePF;
+import burlap.domain.singleagent.minecraft.MinecraftDomain.IsNthOfTheWay;
 
 
 
@@ -56,19 +58,20 @@ public class MinecraftBehavior {
 		sp = new MinecraftStateParser(domain); 	
 		
 		//define the task
-		rf = new SingleGoalPFRF(domain.getPropFunction(MinecraftDomain.PFATGOAL), 10, -1); 
-		tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
-		goalCondition = new TFGoalCondition(tf);
+		//PropositionalFunction prop = domain.getPropFunction(MinecraftDomain.PFATGOAL);
+		//rf = new SingleGoalPFRF(prop, 10, -1); 
+		//tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
+		//goalCondition = new TFGoalCondition(tf);
 		
 		// === Build Initial State=== //
 
 		MCStateGenerator mcsg = new MCStateGenerator(mapfile);
-		System.out.println("BEFOREHOWDY");
+
 		initialState = mcsg.getCleanState(domain);
-		System.out.println("AFTERHOWDY");
+
 		// -- Initialize Goal Stack --
 		// TODO: Is this necessary or should it be only in affordance planner?
-		ObjectInstance goalObj = initialState.getObject(MinecraftDomain.CLASSGOAL + "0");
+		/*ObjectInstance goalObj = initialState.getObject(MinecraftDomain.CLASSGOAL + "0");
 		
 		//get the goal coordinates
 		int gx = goalObj.getDiscValForAttribute(MinecraftDomain.ATTX);
@@ -78,8 +81,7 @@ public class MinecraftBehavior {
 		String[] goalCoords = {"" + gx,"" + gy,"" + gz};
 		
 		// Set the initial subGoal params of reaching the goal
-		domain.goalStack.peek().setParams(goalCoords);
-		
+		domain.goalStack.peek().setParams(goalCoords);*/
 		
 		// Set up the state hashing system
 		hashingFactory = new DiscreteStateHashFactory();
@@ -120,7 +122,7 @@ public class MinecraftBehavior {
 		
 		// Run VI between each subgoal in the chain
 		State currState = initialState;
-		while(propfuncChain.getParent() != null) {
+		while(propfuncChain != null) {
 			//define the task
 			rf = new SingleGoalPFRF(propfuncChain.getPropFunc(), 10, -1); 
 			tf = new SinglePFTF(propfuncChain.getPropFunc()); 
@@ -134,7 +136,9 @@ public class MinecraftBehavior {
 			
 			// Add low level plan to overall plan and update current state to the end of that subgoal plan
 			actions += ea.getActionSequenceString();
-			currState = ea.getState(-1);
+			currState = ea.getLastState();
+			
+			propfuncChain = propfuncChain.getParent();
 			
 		}
 		return actions;
@@ -155,7 +159,8 @@ public class MinecraftBehavior {
 			
 			Node postNode = new Node(post, null);
 			Node preNode = new Node(pre, null);
-			
+			System.out.println("Post Node: " + post);
+			System.out.println("Pre Node: " + pre);
 			if (!nodes.containsKey(post)) {
 				nodes.put(post, postNode);
 			}
@@ -164,7 +169,7 @@ public class MinecraftBehavior {
 				nodes.put(pre, preNode);
 			}
 		}
-		
+		System.out.println("Number of NODES: " + nodes.size());
 		// Add edges between the nodes to form a tree of PropFuncs
 		for (int i = 0; i < kb.size(); i++) {
 			Subgoal edge = kb.get(i);
@@ -186,7 +191,7 @@ public class MinecraftBehavior {
 	}
 	
 	private Node BFS(Node root) {
-		PriorityQueue<Node> nodeQueue = new PriorityQueue<Node>();
+		ArrayDeque<Node> nodeQueue = new ArrayDeque<Node>();
 		
 		nodeQueue.add(root);
 		Node curr = null;
@@ -213,12 +218,29 @@ public class MinecraftBehavior {
 				new String[]{"Integer", "Integer", "Integer"}, new String[]{"5", "5", "1"});
 		PropositionalFunction isWalkable = new IsWalkablePF(this.mcdg.ISWALK, this.mcdg.DOMAIN,
 				new String[]{"Integer", "Integer", "Integer"});
+		
+		String ax = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTX));
+		String ay = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTY));
+		String az = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTZ));
+		
+		PropositionalFunction IsThrQWay = new IsNthOfTheWay("IsThrQWay", this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 0.25);
+		
+		PropositionalFunction IsHalfWay = new IsNthOfTheWay("IsHalfWay", this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 2/4);
+		
+		PropositionalFunction IsOneQWay = new IsNthOfTheWay("IsOneQWay", this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 0.75);
 
 		// Define desired subgoals here:
 		
 		// ALWAYS add a subgoal with the FINAL goal first
-		Subgoal simpleSubgoal = new Subgoal(IsAtLocation, atGoal);
-		result.add(simpleSubgoal);
+		Subgoal sg3 = new Subgoal(IsThrQWay, atGoal);
+		Subgoal sg2 = new Subgoal(IsHalfWay, IsThrQWay);
+		Subgoal sg1 = new Subgoal(IsOneQWay, IsHalfWay);
+		result.add(sg3);
+		//result.add(sg2);
+		//result.add(sg1);
 		
 		return result;
 	}

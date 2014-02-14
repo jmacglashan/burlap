@@ -64,7 +64,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 //			System.out.println(i);
 			double delta = 0.;
 			for(StateHashTuple sh : states){
-				
+
 				if(tf.isTerminal(sh.s)){
 					//no need to compute this state; always zero because it is terminal and agent cannot behave here
 					valueFunction.put(sh, 0.);

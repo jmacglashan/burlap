@@ -46,6 +46,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					PFATGOAL = "AtGoal";
 	public static final String					ISATLOC = "IsAtLocation";
 	public static final String					ISWALK = "IsWalkable";
+	public static final String					ISHALF = "IsHalfWay";
 	public static final String					ISAXLESS = "IsAgentXLess";
 	public static final String					ISAYLESS = "IsAgentYLess";
 	public static final String					ISAXMORE = "IsAgentXMore";
@@ -460,7 +461,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			move(st, 0, 1, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}
 		
@@ -475,7 +476,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			move(st, 0, -1, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}		
 	}
@@ -489,7 +490,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			move(st, 1, 0, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}
 	}
@@ -503,7 +504,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			move(st, -1, 0, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}	
 	}
@@ -516,7 +517,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			place(st, 0, 1, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}
 	}
@@ -529,7 +530,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			place(st, 0, -1, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}	
 	}
@@ -542,7 +543,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			place(st, -1, 0, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}	
 	}
@@ -555,7 +556,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			place(st, 1, 0, 0);
-			System.out.println("Action Performed: " + this.name);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}	
 	}
@@ -657,6 +658,53 @@ public class MinecraftDomain implements DomainGenerator{
 		public boolean isTrue(State s) {
 			// TODO Auto-generated method stub
 			return false;
+		}
+	}
+	
+	public static class IsNthOfTheWay extends PropositionalFunction {
+		
+		private int ox;
+		private int oy;
+		private int oz;
+		private double frac;
+
+		public IsNthOfTheWay(String name, Domain domain, String[] parameterClasses, String[] params, double frac) {
+			super(name, domain, parameterClasses);
+			this.frac = frac;
+			// Get the agent's origin coordinates
+			this.ox = Integer.parseInt(params[0]);
+			this.oy = Integer.parseInt(params[1]);
+			this.oz = Integer.parseInt(params[2]);
+		}
+		
+		@Override
+		public boolean isTrue(State st) {
+			//get the goal coordinates
+			ObjectInstance goal = st.getObject(CLASSGOAL + "0");
+			
+			// Get the goal coordinates
+			int gx = goal.getDiscValForAttribute(ATTX);
+			int gy = goal.getDiscValForAttribute(ATTY);
+			int gz = goal.getDiscValForAttribute(ATTZ);
+			
+			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
+			
+			// Get the agent's current coordinates
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+			
+			int hx = (int) Math.ceil(this.frac*(ox + gx));
+			int hy = (int) Math.ceil(this.frac*(oy + gy));
+			int hz = (int) Math.ceil(this.frac*(oz + gz));
+
+			return (ax == hx && ay == hy && az == hz);
+		}
+
+		@Override
+		public boolean isTrue(State s, String[] params) {
+			// TODO Auto-generated method stub
+			return isTrue(s);
 		}
 	}
 	
