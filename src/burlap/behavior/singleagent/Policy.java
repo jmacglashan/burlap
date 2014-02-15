@@ -6,6 +6,7 @@ import java.util.Random;
 
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
+import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -31,6 +32,9 @@ public abstract class Policy {
 	 * @return a sample action from the action distribution; null if the policy is undefined for s
 	 */
 	public abstract GroundedAction getAction(State s);
+	public abstract GroundedAction getAffordanceAction(State s, ArrayList<Affordance> kb);
+	
+	
 	
 	/**
 	 * This method will return action probability distribution defined by the policy. The action distribution is represented
@@ -100,6 +104,16 @@ public abstract class Policy {
 		return aps;
 	}
 	
+	/**
+	 * This method will return an action sampled by the policy for the given state. If the defined policy is
+	 * stochastic, then multiple calls to this method for the same state may return different actions. The sampling
+	 * should be with respect to defined action distribution that is returned by getActionDistributionForState
+	 * @param s the state for which an action should be returned
+	 * @return a sample action from the action distribution; null if the policy is undefined for s
+	 */
+	public GroundedAction getAffordanceAction(State s) {
+		return null;
+	}
 	
 	
 	/**
@@ -203,6 +217,29 @@ public abstract class Policy {
 	
 	/**
 	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
+	 * when the policy reaches a terminal state defined by tf or when the number of steps surpasses maxSteps.
+	 * @param s the state from which to roll out the policy
+	 * @param rf the reward function used to track rewards accumulated during the episode
+	 * @param tf the terminal function defining when the policy should stop being followed.
+	 * @param maxSteps the maximum number of steps to take before terminating the policy rollout.
+	 * @return an EpisodeAnalysis object that records the events from following the policy.
+	 */
+	public EpisodeAnalysis evaluateAffordanceBehavior(State s, RewardFunction rf, TerminalFunction tf, ArrayList<Affordance> kb){
+		EpisodeAnalysis res = new EpisodeAnalysis();
+		res.addState(s); //add initial state
+		
+		State cur = s;
+		while(!tf.isTerminal(cur)){
+			
+			cur = this.followAndRecordAffordancePolicy(res, cur, rf, kb);
+			
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
 	 * when the number of steps taken is >= numSteps.
 	 * @param s the state from which to roll out the policy
 	 * @param rf the reward function used to track rewards accumulated during the episode
@@ -279,8 +316,58 @@ public abstract class Policy {
 		return next;
 	}
 	
-	
-	
+private State followAndRecordAffordancePolicy(EpisodeAnalysis ea, State cur, RewardFunction rf, ArrayList<Affordance> kb){
+		
+		State next = null;
+		
+		//follow policy
+		GroundedAction ga = this.getAffordanceAction(cur, kb);
+		if(ga == null){
+			throw new PolicyUndefinedException();
+		}
+		if(ga.action.isPrimitive() || !this.evaluateDecomposesOptions){
+			next = ga.executeIn(cur);
+			double r = rf.reward(cur, ga, next);
+			
+			//record result
+			ea.recordTransitionTo(next, ga, r);
+		}
+		else{
+			//then we need to decompose the option
+			Option o = (Option)ga.action;
+			o.initiateInState(cur, ga.params);
+			int ns = 0;
+			do{
+				//do step of option
+				GroundedAction cga = o.oneStepActionSelection(cur, ga.params);
+				next = cga.executeIn(cur);
+				double r = rf.reward(cur, cga, next);
+				
+				if(annotateOptionDecomposition){
+					//setup a null action to record the option and primitive action taken
+					NullAction annotatedPrimitive = new NullAction(o.getName() + "(" + ns + ")-" + cga.action.getName());
+					GroundedAction annotatedPrimitiveGA = new GroundedAction(annotatedPrimitive, cga.params);
+					
+					//record it
+					ea.recordTransitionTo(next, annotatedPrimitiveGA, r);
+				}
+				else{
+					//otherwise just record the primitive that was taken
+					ea.recordTransitionTo(next, cga, r);
+				}
+				
+				cur = next;
+				ns++;
+				
+				
+			}while(o.continueFromState(cur, ga.params));
+			
+		}
+		
+		//return outcome state
+		return next;
+	}
+
 	/**
 	 * Class for storing an action and probability tuple. The probability represents the probability that the action will be selected.
 	 * @author James MacGlashan

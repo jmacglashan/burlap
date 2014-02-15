@@ -12,6 +12,7 @@ import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.debugtools.RandomFactory;
+import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -72,7 +73,28 @@ public class GreedyQPolicy extends Policy implements PlannerDerivedPolicy{
 		}
 		return maxActions.get(rand.nextInt(maxActions.size())).a;
 	}
-
+	
+	@Override
+	public GroundedAction getAffordanceAction(State s, ArrayList<Affordance> kb) {
+		List<QValue> qValues = this.qplanner.getAffordanceQs(s, kb);
+		List <QValue> maxActions = new ArrayList<QValue>();
+		maxActions.add(qValues.get(0));
+		double maxQ = qValues.get(0).q;
+		for(int i = 1; i < qValues.size(); i++){
+			QValue q = qValues.get(i);
+			if(q.q == maxQ){
+				maxActions.add(q);
+			}
+			else if(q.q > maxQ){
+				maxActions.clear();
+				maxActions.add(q);
+				maxQ = q.q;
+			}
+		}
+		GroundedAction ga = maxActions.get(rand.nextInt(maxActions.size())).a;
+		return ga;
+	}
+	
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
 		List<QValue> qValues = this.qplanner.getQs(s);

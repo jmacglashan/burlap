@@ -267,7 +267,7 @@ public class MinecraftBehavior {
 		// Create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
-		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
+		String actionSequence = p.evaluateAffordanceBehavior(initialState, rf, tf, kb).getActionSequenceString();
 		
 		return actionSequence;	
 	}

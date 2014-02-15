@@ -13,6 +13,7 @@ import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
+import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -175,9 +176,50 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		List <QValue> res = new ArrayList<QValue>();
 		for(Action a : actions){
-			List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
+			List <GroundedAction> applications = s.getAllGroundedActionsFor(a); // THIS IS 
 			for(GroundedAction ga : applications){
 				res.add(this.getQ(sh, ga, matching));
+			}
+		}
+		
+		return res;
+		
+	}
+	
+	@Override
+	public List <QValue> getAffordanceQs(State s, ArrayList<Affordance> kb){
+		
+		StateHashTuple sh = this.stateHash(s);
+		Map<String,String> matching = null;
+		StateHashTuple indexSH = mapToStateIndex.get(sh);
+		
+		if(indexSH == null){
+			//then this is an unexplored state
+			indexSH = sh;
+			mapToStateIndex.put(indexSH, indexSH);
+		}
+		
+		
+		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
+			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
+		}
+		
+		
+		List <QValue> res = new ArrayList<QValue>();
+		for(Action a : actions){
+			List <GroundedAction> applications = s.getAllGroundedAffordanceActionsFor(a, kb, this.domain); // THIS IS 
+			for(GroundedAction ga : applications){
+				res.add(this.getQ(sh, ga, matching));
+			}
+		}
+		
+		// If Affordance trimmed off all useful actions, default to normal action set
+		if (res.size() == 0) {
+			for(Action a : actions){
+				List <GroundedAction> applications = s.getAllGroundedActionsFor(a); // THIS IS 
+				for(GroundedAction ga : applications){
+					res.add(this.getQ(sh, ga, matching));
+				}
 			}
 		}
 		
