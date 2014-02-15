@@ -1,41 +1,42 @@
 package burlap.domain.singleagent.minecraft;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+import burlap.oomdp.singleagent.Action;
 
-public class Affordance{
+public class Affordance {
 	
-	private String name;
-	private HashMap<String,AffordanceSubgoal> children; // Subgoals
+	private PropositionalFunction pf;
+	private PropositionalFunction goal;
+	private List<Action> actions;
 	
-	public Affordance(String name) {
-		this.name = name;
-		this.children = new HashMap<String,AffordanceSubgoal>();
+	public Affordance(PropositionalFunction pf, PropositionalFunction goal, List<Action> actions) {
+		this.pf = pf;
+		this.goal = goal;
+		this.actions = actions;
 	}
 	
-	public String getName() {
-		return this.name;
+	public PropositionalFunction getPreCondition() {
+		return this.pf;
 	}
 	
-	public HashMap<String,AffordanceSubgoal> getChildren() {
-		return this.children;
+	public PropositionalFunction getPostCondition() {
+		return this.goal;
 	}
 	
-	public void addChild(AffordanceSubgoal sg) {
-		this.children.put(sg.getName(), sg);
+	public List<Action> getActions() {
+		return this.actions;
 	}
 	
-	public List<AffordanceSubgoal> getSubgoals() {
-		return new ArrayList<AffordanceSubgoal>(children.values());
-	}
-	
-	public void setSubGoalParams(String[] sgParams) {
-		for(String s: children.keySet()) {
-			children.get(s).setParams(sgParams);
+	public boolean isApplicable(State s, PropositionalFunction goal) {
+		
+		if ((this.pf.isTrue(s)) && (goal.getClass() == this.goal.getClass())) {
+			return true;
 		}
+		
+		return false;
 	}
-	
+
 }
-//

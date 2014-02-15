@@ -4,26 +4,26 @@ import java.util.List;
 
 import burlap.oomdp.singleagent.Action;
 
-public abstract class AffordanceNode {
+public abstract class OldAffordanceNode {
 	
-	private List<AffordanceNode> children;
-	private AffordanceNode parent;
+	private List<OldAffordanceNode> children;
+	private OldAffordanceNode parent;
 	private List<Action> actionList;
 	
-	public List<AffordanceNode> getChildren() {
+	public List<OldAffordanceNode> getChildren() {
 		return children;
 	}
 	
-	public void addChild(AffordanceNode ch) {
+	public void addChild(OldAffordanceNode ch) {
 		ch.setParent(this);
 		children.add(ch);
 	}
 
-	public AffordanceNode getParent() {
+	public OldAffordanceNode getParent() {
 		return parent;
 	}
 	
-	public void setParent(AffordanceNode p) {
+	public void setParent(OldAffordanceNode p) {
 		parent = p;
 	}
 	

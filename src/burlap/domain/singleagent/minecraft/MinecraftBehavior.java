@@ -8,6 +8,7 @@ import java.util.Stack;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.PropositionalFunction;
@@ -32,10 +33,7 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
-import burlap.domain.singleagent.minecraft.MinecraftDomain.AtGoalPF;
-import burlap.domain.singleagent.minecraft.MinecraftDomain.IsAtLocationPF;
-import burlap.domain.singleagent.minecraft.MinecraftDomain.IsWalkablePF;
-import burlap.domain.singleagent.minecraft.MinecraftDomain.IsNthOfTheWay;
+import burlap.domain.singleagent.minecraft.MinecraftDomain.*;
 
 
 
@@ -50,50 +48,69 @@ public class MinecraftBehavior {
 	State						initialState;
 	DiscreteStateHashFactory	hashingFactory;
 	
+	PropositionalFunction		pfIsPlane;
+	PropositionalFunction		pfIsThrQWay;
+	PropositionalFunction		pfIsHalfWay;
+	PropositionalFunction		pfIsOneQWay;
+	PropositionalFunction		pfIsAtGoal;
+	PropositionalFunction		pfIsAtLocation;
+	PropositionalFunction		pfIsWalkable;
+	
 	
 	public MinecraftBehavior(String mapfile) {
 		mcdg = new MinecraftDomain();
 		domain = mcdg.generateDomain();
 		
 		sp = new MinecraftStateParser(domain); 	
-		
-		//define the task
-		//PropositionalFunction prop = domain.getPropFunction(MinecraftDomain.PFATGOAL);
-		//rf = new SingleGoalPFRF(prop, 10, -1); 
-		//tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
-		//goalCondition = new TFGoalCondition(tf);
-		
+
 		// === Build Initial State=== //
 
 		MCStateGenerator mcsg = new MCStateGenerator(mapfile);
 
 		initialState = mcsg.getCleanState(domain);
 
-		// -- Initialize Goal Stack --
-		// TODO: Is this necessary or should it be only in affordance planner?
-		/*ObjectInstance goalObj = initialState.getObject(MinecraftDomain.CLASSGOAL + "0");
-		
-		//get the goal coordinates
-		int gx = goalObj.getDiscValForAttribute(MinecraftDomain.ATTX);
-		int gy = goalObj.getDiscValForAttribute(MinecraftDomain.ATTY);
-		int gz = goalObj.getDiscValForAttribute(MinecraftDomain.ATTZ);
-		
-		String[] goalCoords = {"" + gx,"" + gy,"" + gz};
-		
-		// Set the initial subGoal params of reaching the goal
-		domain.goalStack.peek().setParams(goalCoords);*/
-		
 		// Set up the state hashing system
 		hashingFactory = new DiscreteStateHashFactory();
 		hashingFactory.setAttributesForClass(MinecraftDomain.CLASSAGENT, 
 					domain.getObjectClass(MinecraftDomain.CLASSAGENT).attributeList); 
+		
+		// Create Propfuncs for use
+		
+		String ax = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTX));
+		String ay = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTY));
+		String az = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTZ));
+		
+		pfIsPlane = new IsAdjPlane(this.mcdg.ISPLANE, this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT});
+		
+		pfIsThrQWay = new IsNthOfTheWay("IsThrQWay", this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 0.25);
+		
+		pfIsHalfWay = new IsNthOfTheWay("IsHalfWay", this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 2/4);
+		
+		pfIsOneQWay = new IsNthOfTheWay("IsOneQWay", this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 0.75);
+		
+		pfIsAtGoal = new AtGoalPF(this.mcdg.PFATGOAL, this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL});
+		
+		pfIsAtLocation = new IsAtLocationPF(this.mcdg.ISATLOC, this.mcdg.DOMAIN,
+				new String[]{"Integer", "Integer", "Integer"}, new String[]{"5", "5", "1"});
+		
+		pfIsWalkable = new IsWalkablePF(this.mcdg.ISWALK, this.mcdg.DOMAIN,
+				new String[]{"Integer", "Integer", "Integer"});
 		
 	}
 
 	// ---------- PLANNERS ---------- 
 	
 	// Value Iteration (Basic)
-	public void ValueIterationPlanner(String outputPath){
+	public String ValueIterationPlanner(){
+		
+		rf = new SingleGoalPFRF(domain.getPropFunction(MinecraftDomain.PFATGOAL), 10, -1); 
+		tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
+		goalCondition = new TFGoalCondition(tf);
 		
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
 		
@@ -103,15 +120,17 @@ public class MinecraftBehavior {
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
 		// Record the plan results to a file
-		p.evaluateBehavior(initialState, rf, tf).writeToFile(outputPath + "planResult", sp);
+		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
 		
+		
+		return actionSequence;
 	}
 	
-	// Subgoal Planner	
+	// === Subgoal Planner	===
 	public String SubgoalPlanner(ArrayList<Subgoal> kb){
 		
 		// Initialize action plan
-		String actions = new String();
+		String actionSequence = new String();
 		
 		// Build subgoal tree
 		Node subgoalTree = generateGraph(kb);
@@ -135,13 +154,13 @@ public class MinecraftBehavior {
 			EpisodeAnalysis ea = p.evaluateBehavior(initialState, rf, tf);
 			
 			// Add low level plan to overall plan and update current state to the end of that subgoal plan
-			actions += ea.getActionSequenceString();
+			actionSequence += ea.getActionSequenceString();
 			currState = ea.getLastState();
 			
 			propfuncChain = propfuncChain.getParent();
 			
 		}
-		return actions;
+		return actionSequence;
 		
 	}
 	
@@ -211,33 +230,20 @@ public class MinecraftBehavior {
 	private ArrayList<Subgoal> generateSubgoalKB() {
 		ArrayList<Subgoal> result = new ArrayList<Subgoal>();
 		
-		// Define desired propositional functions here:
-		PropositionalFunction atGoal = new AtGoalPF(this.mcdg.PFATGOAL, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL});
-		PropositionalFunction IsAtLocation = new IsAtLocationPF(this.mcdg.ISATLOC, this.mcdg.DOMAIN,
-				new String[]{"Integer", "Integer", "Integer"}, new String[]{"5", "5", "1"});
-		PropositionalFunction isWalkable = new IsWalkablePF(this.mcdg.ISWALK, this.mcdg.DOMAIN,
-				new String[]{"Integer", "Integer", "Integer"});
+
 		
 		String ax = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTX));
 		String ay = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTY));
 		String az = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTZ));
 		
-		PropositionalFunction IsThrQWay = new IsNthOfTheWay("IsThrQWay", this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 0.25);
-		
-		PropositionalFunction IsHalfWay = new IsNthOfTheWay("IsHalfWay", this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 2/4);
-		
-		PropositionalFunction IsOneQWay = new IsNthOfTheWay("IsOneQWay", this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[] {ax, ay, az}, 0.75);
+
 
 		// Define desired subgoals here:
 		
 		// ALWAYS add a subgoal with the FINAL goal first
-		Subgoal sg3 = new Subgoal(IsThrQWay, atGoal);
-		Subgoal sg2 = new Subgoal(IsHalfWay, IsThrQWay);
-		Subgoal sg1 = new Subgoal(IsOneQWay, IsHalfWay);
+		Subgoal sg3 = new Subgoal(this.pfIsThrQWay, this.pfIsAtGoal);
+		Subgoal sg2 = new Subgoal(this.pfIsHalfWay, this.pfIsThrQWay);
+		Subgoal sg1 = new Subgoal(this.pfIsOneQWay, this.pfIsHalfWay);
 		result.add(sg3);
 		//result.add(sg2);
 		//result.add(sg1);
@@ -248,6 +254,41 @@ public class MinecraftBehavior {
 	
 	
 	// Affordances Planner
+	public String AffordancePlanner(ArrayList<Affordance> kb){
+		
+		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
+		
+		planner.planFromState(initialState);
+
+		// Create a Q-greedy policy from the planner
+		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
+		
+		// Record the plan results to a file
+		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
+		
+		return actionSequence;	
+	}
+	
+	public ArrayList<Affordance> generateAffordanceKB() {
+		ArrayList<Affordance> affordances = new ArrayList<Affordance>();
+		
+		String ax = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTX));
+		String ay = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTY));
+		String az = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTZ));
+		
+		ArrayList<Action> isPlaneActions = new ArrayList<Action>();
+		isPlaneActions.add(this.mcdg.forward);
+		isPlaneActions.add(this.mcdg.backward);
+		isPlaneActions.add(this.mcdg.left);
+		isPlaneActions.add(this.mcdg.right);
+		
+		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
+		
+		affordances.add(affIsPlane);
+		
+		return affordances;
+	}
+	
 	
 	// Options Planner
 	
@@ -259,13 +300,21 @@ public class MinecraftBehavior {
 		// Setup Minecraft World
 		MinecraftBehavior mcb = new MinecraftBehavior("flatland.map");
 
-		// Define Knowledge Base
-		ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
+		// VANILLA OOMDP/VI
+		String actionSequence = mcb.ValueIterationPlanner();
+		
+		// SUBGOALS
+		// ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
+		// String actionSequence = mcb.SubgoalPlanner(kb);
+		
+		// AFFORDANCES
+		// ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+		// String actionSequence = mcb.AffordancePlanner(kb);
 		
 		// Call Planning Algorithm
-		String actions = mcb.SubgoalPlanner(kb);
-		System.out.println(actions);
-//		mcb.ValueIterationPlanner("output/");
+
+		System.out.println(actionSequence);
+
 		
 	}
 	

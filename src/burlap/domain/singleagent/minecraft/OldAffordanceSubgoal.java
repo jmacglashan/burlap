@@ -6,7 +6,7 @@ import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 
-public class AffordanceSubgoal{
+public class OldAffordanceSubgoal{
 	
 	private String name;
 	private String[] params;
@@ -14,14 +14,14 @@ public class AffordanceSubgoal{
 //	private HashMap<String,Action> actionMap;
 //	private HashMap<String,Affordance> affordanceMap;
 	private Action action;
-	private Affordance affordance;
-	private AffordanceSubgoal subgoal;
+	private OldAffordance affordance;
+	private OldAffordanceSubgoal subgoal;
 	private boolean tryToSatisfy = true; // Determines if we should try and satisfy this, when false, or if we should just keep searching other subgoals.
 	private int constraintVal;
 	private int constraintDir;
 	private boolean isConstraintLessThan;
 	
-	public AffordanceSubgoal(String name, PropositionalFunction pf, String[] params, boolean tryToSatisfy) {
+	public OldAffordanceSubgoal(String name, PropositionalFunction pf, String[] params, boolean tryToSatisfy) {
 		this.tryToSatisfy = tryToSatisfy;
 		this.name = name;
 		this.pf = pf;
@@ -32,7 +32,7 @@ public class AffordanceSubgoal{
 //		this.affordanceMap = new HashMap<String,Affordance>();
 	}
 	
-	public AffordanceSubgoal(String name, PropositionalFunction pf) {
+	public OldAffordanceSubgoal(String name, PropositionalFunction pf) {
 		this.name = name;
 		this.pf = pf;
 		this.action = action;
@@ -41,7 +41,7 @@ public class AffordanceSubgoal{
 //		this.affordanceMap = new HashMap<String,Affordance>();
 	}
 	
-	public AffordanceSubgoal(String name, PropositionalFunction pf, boolean tryToSatisfy) {
+	public OldAffordanceSubgoal(String name, PropositionalFunction pf, boolean tryToSatisfy) {
 		this.tryToSatisfy = tryToSatisfy;
 		this.name = name;
 		this.pf = pf;
@@ -89,12 +89,12 @@ public class AffordanceSubgoal{
 		return (this.action != null && this.action.getName().equals(name));
 	}
 	
-	public Affordance getAffordance() {
+	public OldAffordance getAffordance() {
 //		return this.affordanceMap;
 		return this.affordance;
 	}
 	
-	public AffordanceSubgoal getSubgoal() {
+	public OldAffordanceSubgoal getSubgoal() {
 		return this.subgoal;
 	}
 	
@@ -111,12 +111,12 @@ public class AffordanceSubgoal{
 		this.action = a;
 	}
 	
-	public void setAffordance(Affordance a) {
+	public void setAffordance(OldAffordance a) {
 //		this.affordanceMap.put(a.getName(), a);
 		this.affordance = a;
 	}
 	
-	public void setSubgoal(AffordanceSubgoal sg) {
+	public void setSubgoal(OldAffordanceSubgoal sg) {
 		this.subgoal = sg;
 	}
 

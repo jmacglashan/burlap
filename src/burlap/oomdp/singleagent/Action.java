@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import burlap.domain.singleagent.minecraft.Affordance;
+import burlap.domain.singleagent.minecraft.OldAffordance;
 import burlap.domain.singleagent.minecraft.MinecraftDomain;
-import burlap.domain.singleagent.minecraft.AffordanceSubgoal;
+import burlap.domain.singleagent.minecraft.OldAffordanceSubgoal;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
@@ -213,16 +213,16 @@ public abstract class Action {
 //		System.out.println(st.toString() + " -- " + this.name);
 		
 		// Get relevant Affordance based on subgoal.
-		Affordance curAfford = getRelevAffordance(st, domain);
-		List<AffordanceSubgoal> subgoals = curAfford.getSubgoals();
+		OldAffordance curAfford = getRelevAffordance(st, domain);
+		List<OldAffordanceSubgoal> subgoals = curAfford.getSubgoals();
 		
 		// Breadth first search through affordance space
 		
-		LinkedList<AffordanceSubgoal> bfsQ = new LinkedList<AffordanceSubgoal>();
+		LinkedList<OldAffordanceSubgoal> bfsQ = new LinkedList<OldAffordanceSubgoal>();
 		bfsQ.addAll(subgoals);
 		
 		while(!bfsQ.isEmpty()) {
-			AffordanceSubgoal sg = bfsQ.remove();
+			OldAffordanceSubgoal sg = bfsQ.remove();
 //			System.out.println(sg.getName());
 			if (sg.isTrue(st)) {
 				if (sg.inActions(this.name)) {
@@ -232,8 +232,8 @@ public abstract class Action {
 				else if (sg.hasAffordance()) {
 					// Subgoal's action isn't correct but it has an affordance
 					// so let's try to follow it (later)
-					Affordance af = sg.getAffordance();
-					for (AffordanceSubgoal afSG: af.getSubgoals()) {
+					OldAffordance af = sg.getAffordance();
+					for (OldAffordanceSubgoal afSG: af.getSubgoals()) {
 						if (afSG.isTrue(st) || !afSG.shouldSatisfy()) {
 							// Either Subgoal is true or isn't a big deal so we take care of it now
 							// Consider adding: if subGoal.inActions(this.name), return true
@@ -341,7 +341,7 @@ public abstract class Action {
 								subgoals = curAfford.getSubgoals();
 								bfsQ.clear();
 								
-								for (AffordanceSubgoal newSG: subgoals) {
+								for (OldAffordanceSubgoal newSG: subgoals) {
 									if (!newSG.getName().equals(sg.getName())) {
 										bfsQ.add(newSG);		
 									}
@@ -375,11 +375,11 @@ public abstract class Action {
 	 * @param params list of parameters to be passed into the action
 	 * @return whether the action can be performed on the given state
 	 */
-	public Affordance getRelevAffordance(State st, Domain domain){
+	public OldAffordance getRelevAffordance(State st, Domain domain){
 
 		// pop stack, search affordance list for string of thing popped, perform that action.
 		
-		AffordanceSubgoal goal = domain.goalStack.peek();
+		OldAffordanceSubgoal goal = domain.goalStack.peek();
 
 		while (goal.isTrue(st)) {
 			domain.prevSatSubgoal = domain.goalStack.pop();
@@ -387,9 +387,9 @@ public abstract class Action {
 			goal = domain.goalStack.peek();
 		}
 		
-		HashMap<String,Affordance> affordances = domain.affordances;
+		HashMap<String,OldAffordance> affordances = domain.affordances;
 		String goalName = goal.getName();
-		Affordance curAfford = affordances.get("d" + goalName);
+		OldAffordance curAfford = affordances.get("d" + goalName);
 		String[] globParams = MinecraftDomain.locCoordsToGlobal(st, goal.getParams());
 		curAfford.setSubGoalParams(globParams);
 //		int[] delta = goal.delta(st);

@@ -3,8 +3,8 @@ package burlap.oomdp.core;
 
 import java.util.*;
 
-import burlap.domain.singleagent.minecraft.Affordance;
-import burlap.domain.singleagent.minecraft.AffordanceSubgoal;
+import burlap.domain.singleagent.minecraft.OldAffordance;
+import burlap.domain.singleagent.minecraft.OldAffordanceSubgoal;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.stochasticgames.SingleAction;
 
@@ -27,10 +27,10 @@ public abstract class Domain {
 	protected Map <String, PropositionalFunction> 		propFunctionMap;		//lookup propositional functions by name
 	
 	protected boolean									objectIdentifierDependentDomain = false;
-	public HashMap<String, Affordance>					affordances;
-	public Stack<AffordanceSubgoal>								goalStack;
+	public HashMap<String, OldAffordance>					affordances;
+	public Stack<OldAffordanceSubgoal>								goalStack;
 	public boolean										affordanceMode = false;
-	public AffordanceSubgoal										prevSatSubgoal;
+	public OldAffordanceSubgoal										prevSatSubgoal;
 	
 	/**
 	 * Initializes the data structures for indexing the object classes, attributes, and propositional functions
@@ -49,12 +49,12 @@ public abstract class Domain {
 	}
 	
 	// Affordance stuff
-	public void setAffordances(HashMap<String,Affordance> affordanceList) {
+	public void setAffordances(HashMap<String,OldAffordance> affordanceList) {
 		affordances = affordanceList;
 	}
 	
 	// Affordance stuff
-	public void setGoalStack(Stack<AffordanceSubgoal> goals) {
+	public void setGoalStack(Stack<OldAffordanceSubgoal> goals) {
 		goalStack = goals;
 	}
 	
