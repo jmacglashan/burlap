@@ -31,7 +31,7 @@ public class MCStateGenerator {
 	private static final char bAddSym = '+';
 	private static final char aSym = 'a';
 	private static final char bRmSym = '-';
-	private static final char dummySym = '#';
+	private static final char dummySym = '.';
 	
 	/**
 	 * @param path the file path for the map file.
@@ -91,21 +91,22 @@ public class MCStateGenerator {
 		while (ncol < row.length()) {
 			ch = row.charAt(ncol);
 			if (ch != ' ') {
-				addBlock(s, d, nrow, ncol, 0);
+				addBlock(s, d, ncol, nrow, 0);
 			}
 			System.out.println(ch);
 			switch (ch) {
 			case bAddSym:
-				addBlock(s, d, nrow, ncol, 1);
+				addBlock(s, d, ncol, nrow, 1);
 				ncol++;
 			case aSym:
-				addAgent(s, d, nrow, ncol, 1);
+				System.out.println("nrow, ncol, 1 |   " + nrow + "," + ncol + ",1");
+				addAgent(s, d, ncol, nrow, 1);
 				ncol++;
 			case gSym:
-				addGoal(s, d, nrow, ncol, 1);
+				addGoal(s, d, ncol, nrow, 1);
 				ncol++;
 			case bRmSym:
-				removeBlock(s, d, nrow, ncol, 0);
+				removeBlock(s, d, ncol, nrow, 0);
 				ncol++;
 			case dummySym:
 				ncol++;
@@ -128,12 +129,14 @@ public class MCStateGenerator {
 	
 	private static void addAgent(State s, Domain d, int x, int y, int z) {
 		ObjectInstance agent = new ObjectInstance(d.getObjectClass("agent"), "agent0");
-		agent.setValue("bNum", 1);  // Expliticly set the number of blocks agent can carry to 1
+		agent.setValue("bNum", 0);  // Expliticly set the number of blocks agent can carry to 1
+		addBlock(s, d, x, y, z - 1); // Agent needs to be on top of a block
 		addObject(agent, s, d, x, y, z);
 	}
 
 	private static void addGoal(State s, Domain d, int x, int y, int z) {
 		ObjectInstance goal = new ObjectInstance(d.getObjectClass("goal"), "goal0");
+		addBlock(s, d, x, y, z - 1); // Goal needs to be on top of a block
 		addObject(goal, s, d, x, y, z);
 	}
 	

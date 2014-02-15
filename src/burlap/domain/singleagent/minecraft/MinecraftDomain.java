@@ -322,7 +322,7 @@ public class MinecraftDomain implements DomainGenerator{
 			return;
 		}
 		
-		if (nz - 1 > 0 && getBlockAt(s, nx, ny, nz - 1) == null) {
+		if (nz - 1 > -1 && getBlockAt(s, nx, ny, nz - 1) == null) {
 			// There is no block under us, return.
 			return;
 		}
@@ -366,7 +366,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 		// If block loc is empty (z-1 from bot), and the loc above is empty (i.e. we can "see" the bottom loc), place it.
-		if (bz - 1 > 0 && getBlockAt(s,bx,by,bz - 1) == null && getBlockAt(s,bx,by,bz) == null){
+		if (bz - 1 >= 0 && getBlockAt(s,bx,by,bz - 1) == null && getBlockAt(s,bx,by,bz) == null){
 			
 			addBlock(s, bx, by, bz - 1);
 			
@@ -394,7 +394,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 		protected State performActionHelper(State st, String[] params) {
-			move(st, 0, 1, 0);
+			move(st, 0, -1, 0);
 //			System.out.println("Action Performed: " + this.name);
 			return st;
 		}
@@ -409,7 +409,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 		protected State performActionHelper(State st, String[] params) {
-			move(st, 0, -1, 0);
+			move(st, 0, 1, 0);
 //			System.out.println("Action Performed: " + this.name);
 			return st;
 		}		
@@ -450,8 +450,8 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 		protected State performActionHelper(State st, String[] params) {
-			place(st, 0, 1, 0);
-			System.out.println("Action Performed: " + this.name);
+			place(st, 0, -1, 0);
+//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}
 	}
@@ -463,7 +463,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 		protected State performActionHelper(State st, String[] params) {
-			place(st, 0, -1, 0);
+			place(st, 0, 1, 0);
 //			System.out.println("Action Performed: " + this.name);
 			return st;
 		}	
@@ -899,36 +899,10 @@ public class MinecraftDomain implements DomainGenerator{
 		Domain d = mcd.generateDomain();
 		
 		// === Build Map === //
-		List <Integer> blockX = new ArrayList<Integer>();
-		List <Integer> blockY = new ArrayList<Integer>();
-		
-		// Row i will have blocks in all 10 locations
-		for (int i = 0; i < MAXX; i++){
-			// Place a trench @ x = 5
-//			if (i == 5)
-//			{
-//				continue;
-//			}
-			blockX.add(i);
-			blockY.add(MAXY);
-		}
 
-		State s = makeTestMap(d, blockX, blockY);
+		MCStateGenerator mcsg = new MCStateGenerator("bridgeland.map");
 
-		// === Add agent and goal === //
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
-		agent.setValue(ATTX, 5);
-		agent.setValue(ATTY, 5);
-		agent.setValue(ATTZ, 2);
-		agent.setValue(ATTBLKNUM, 2);
-
-		ObjectInstance goal = s.getObjectsOfTrueClass(CLASSGOAL).get(0);
-		goal.setValue(ATTX, 5);
-		goal.setValue(ATTY, 9);
-		goal.setValue(ATTZ, 2);
-		
-		s.addObject(new ObjectInstance(DOMAIN.getObjectClass(CLASSAGENT), CLASSAGENT+0));
-		s.addObject(new ObjectInstance(DOMAIN.getObjectClass(CLASSGOAL), CLASSGOAL+0));
+		State initialState = mcsg.getCleanState(d);
 			
 		
 		// Explorer for testing
@@ -937,12 +911,12 @@ public class MinecraftDomain implements DomainGenerator{
 		exp.addActionShortHand("b", ACTIONBACKWARD);
 		exp.addActionShortHand("r", ACTIONRIGHT);
 		exp.addActionShortHand("l", ACTIONLEFT);
-//		exp.addActionShortHand("pf", ACTIONPLACEF);
+		exp.addActionShortHand("pf", ACTIONPLACEF);
 //		exp.addActionShortHand("pb", ACTIONPLACEB);
 //		exp.addActionShortHand("pr", ACTIONPLACER);
 		exp.addActionShortHand("pl", ACTIONPLACEL);
 				
-		exp.exploreFromState(s);
+		exp.exploreFromState(initialState);
 	}
 
 	

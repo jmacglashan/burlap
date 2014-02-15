@@ -79,7 +79,8 @@ public class TerminalExplorer {
 		
 		while(true){
 			
-			this.printState(s);
+//			this.printState(s);
+			System.out.println(s.getFirstObjectOfClass("agent").getObjectDescription());
 			
 			System.out.println(actionPromptDelimiter);
 			
