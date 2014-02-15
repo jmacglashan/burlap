@@ -101,17 +101,20 @@ public class MinecraftBehavior {
 		pfIsWalkable = new IsWalkablePF(this.mcdg.ISWALK, this.mcdg.DOMAIN,
 				new String[]{"Integer", "Integer", "Integer"});
 		
+		
+		// Generate Goal Condition
+		rf = new SingleGoalPFRF(domain.getPropFunction(MinecraftDomain.PFATGOAL), 10, -1); 
+		tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
+		goalCondition = new TFGoalCondition(tf);
+		
+		
 	}
 
 	// ---------- PLANNERS ---------- 
 	
 	// Value Iteration (Basic)
 	public String ValueIterationPlanner(){
-		
-		rf = new SingleGoalPFRF(domain.getPropFunction(MinecraftDomain.PFATGOAL), 10, -1); 
-		tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
-		goalCondition = new TFGoalCondition(tf);
-		
+
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
 		
 		planner.planFromState(initialState);
@@ -121,7 +124,6 @@ public class MinecraftBehavior {
 		
 		// Record the plan results to a file
 		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
-		
 		
 		return actionSequence;
 	}
@@ -230,14 +232,11 @@ public class MinecraftBehavior {
 	private ArrayList<Subgoal> generateSubgoalKB() {
 		ArrayList<Subgoal> result = new ArrayList<Subgoal>();
 		
-
-		
+		// Get agent starting coordinates
 		String ax = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTX));
 		String ay = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTY));
 		String az = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTZ));
 		
-
-
 		// Define desired subgoals here:
 		
 		// ALWAYS add a subgoal with the FINAL goal first
@@ -258,7 +257,7 @@ public class MinecraftBehavior {
 		
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
 		
-		planner.planFromState(initialState);
+		planner.planFromStateAffordance(initialState, kb);
 
 		// Create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
@@ -301,17 +300,16 @@ public class MinecraftBehavior {
 		MinecraftBehavior mcb = new MinecraftBehavior("flatland.map");
 
 		// VANILLA OOMDP/VI
-		String actionSequence = mcb.ValueIterationPlanner();
+		// String actionSequence = mcb.ValueIterationPlanner();
 		
 		// SUBGOALS
 		// ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
 		// String actionSequence = mcb.SubgoalPlanner(kb);
 		
 		// AFFORDANCES
-		// ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-		// String actionSequence = mcb.AffordancePlanner(kb);
+		ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+		String actionSequence = mcb.AffordancePlanner(kb);
 		
-		// Call Planning Algorithm
 
 		System.out.println(actionSequence);
 

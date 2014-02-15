@@ -10,6 +10,7 @@ import burlap.behavior.singleagent.options.OptionEvaluatingRF;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
+import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -80,6 +81,11 @@ public abstract class OOMDPPlanner {
 	 */
 	public abstract void planFromState(State initialState);
 	
+
+	public void planFromStateAffordance(State initialState, ArrayList<Affordance> kb) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	/**
 	 * Initializes the planner with the common planning elements
@@ -255,5 +261,7 @@ public abstract class OOMDPPlanner {
 		return s.getAllGroundedActionsFor(this.actions);
 		
 	}
+
+
 	
 }

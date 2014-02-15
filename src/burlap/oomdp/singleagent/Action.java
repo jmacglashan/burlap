@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.domain.singleagent.minecraft.OldAffordance;
 import burlap.domain.singleagent.minecraft.MinecraftDomain;
 import burlap.domain.singleagent.minecraft.OldAffordanceSubgoal;
@@ -179,6 +180,22 @@ public abstract class Action {
 		this.observer = observer;
 	}
 	
+	
+	/**
+	 * Returns true if this action can be applied in this specified state with the specified parameters.
+	 * Default behavior is that an action can be applied in any state, but the {@link applicableInState(State, String [])}
+	 * method will need to be override if this is not the case.
+	 * @param s the state in which to check if this action can be applied
+	 * @param params a comma delineated String specifying the action object parameters
+	 * @return true if this action can be applied in this specified state with the specified parameters; false otherwise.
+	 */
+	public final boolean applicableInAffordanceState(State s, ArrayList<Affordance> kb){
+		System.out.println("WOOHOO");
+		return true;
+		
+		// ALL AFFORDANCE PLANNING HERe
+		
+	}
 	
 	/**
 	 * Returns true if this action can be applied in this specified state with the specified parameters.

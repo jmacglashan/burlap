@@ -12,6 +12,7 @@ import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
+import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -43,6 +44,15 @@ public class ValueIteration extends ValueFunctionPlanner{
 	public void planFromState(State initialState){
 		this.initializeOptionsForExpectationComputations();
 		if(this.performReachabilityFrom(initialState)){
+			this.runVI();
+		}
+			
+	}
+	
+	@Override
+	public void planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
+		this.initializeOptionsForExpectationComputations();
+		if(this.performAffordanceReachabilityFrom(initialState, kb)){
 			this.runVI();
 		}
 			
@@ -142,6 +152,73 @@ public class ValueIteration extends ValueFunctionPlanner{
 			List <GroundedAction> gas = new ArrayList<GroundedAction>();
 			for(Action a : actions){
 				gas.addAll(sh.s.getAllGroundedActionsFor(a));
+			}
+			
+			//then get the transition dynamics for each action and queue up new states
+			List <ActionTransitions> transitions = new ArrayList<ActionTransitions>();
+			for(GroundedAction ga : gas){
+				ActionTransitions at = new ActionTransitions(sh.s, ga, hashingFactory);
+				transitions.add(at);
+				for(HashedTransitionProbability tp : at.transitions){
+					StateHashTuple tsh = tp.sh;
+					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
+						openedSet.add(tsh);
+						openList.offer(tsh);
+					}
+				}
+			}
+			
+			//now make entry for this in the transition dynamics
+			transitionDynamics.put(sh, transitions);
+			
+			
+		}
+		
+		DPrint.cl(11, "Finished reachability analysis; # states: " + mapToStateIndex.size());
+		
+		
+		return true;
+		
+	}
+		
+	public boolean performAffordanceReachabilityFrom(State si, ArrayList<Affordance> kb){
+		
+		StateHashTuple sih = this.stateHash(si);
+		//first check if this is an new state, otherwise we do not need to do any new reachability analysis
+		if(transitionDynamics.containsKey(sih)){
+			return false; //no need for additional reachability testing
+		}
+		
+		DPrint.cl(11, "Starting reachability analysis");
+		
+		//add to the open list
+		LinkedList <StateHashTuple> openList = new LinkedList<StateHashTuple>();
+		Set <StateHashTuple> openedSet = new HashSet<StateHashTuple>();
+		openList.offer(sih);
+		openedSet.add(sih);
+		
+		
+		while(openList.size() > 0){
+			StateHashTuple sh = openList.poll();
+			
+			//skip this if it's already been expanded
+			if(transitionDynamics.containsKey(sh)){
+				continue;
+			}
+			
+			mapToStateIndex.put(sh, sh);
+			
+			//do not need to expand from terminal states
+			if(this.tf.isTerminal(sh.s)){
+				System.out.println("reached terminal");
+				continue;
+			}
+			
+			//otherwise do expansion
+			//first get all grounded actions for this state
+			List <GroundedAction> gas = new ArrayList<GroundedAction>();
+			for(Action a : actions){
+				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb));
 			}
 			
 			//then get the transition dynamics for each action and queue up new states
