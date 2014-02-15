@@ -49,6 +49,7 @@ public class MinecraftBehavior {
 	DiscreteStateHashFactory	hashingFactory;
 	
 	PropositionalFunction		pfIsPlane;
+	PropositionalFunction		pfIsAdjTrench;
 	PropositionalFunction		pfIsThrQWay;
 	PropositionalFunction		pfIsHalfWay;
 	PropositionalFunction		pfIsOneQWay;
@@ -81,6 +82,9 @@ public class MinecraftBehavior {
 		String az = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTZ));
 		
 		pfIsPlane = new IsAdjPlane(this.mcdg.ISPLANE, this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT});
+		
+		pfIsAdjTrench = new IsAdjTrench(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
 				new String[]{this.mcdg.CLASSAGENT});
 		
 		pfIsThrQWay = new IsNthOfTheWay("IsThrQWay", this.mcdg.DOMAIN,
@@ -285,9 +289,19 @@ public class MinecraftBehavior {
 		isPlaneActions.add(this.mcdg.left);
 		isPlaneActions.add(this.mcdg.right);
 		
+		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
+		isTrenchActions.add(this.mcdg.forward);
+		isTrenchActions.add(this.mcdg.backward);
+		isTrenchActions.add(this.mcdg.left);
+		isTrenchActions.add(this.mcdg.right);
+		isTrenchActions.add(this.mcdg.placeF);
+		
 		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
+		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
 		
 		affordances.add(affIsPlane);
+		affordances.add(affIsAdjTrench);
+		
 		
 		return affordances;
 	}
@@ -301,7 +315,7 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("flatland.map");
+		MinecraftBehavior mcb = new MinecraftBehavior("bridgeland.map");
 
 		// VANILLA OOMDP/VI
 		// String actionSequence = mcb.ValueIterationPlanner();

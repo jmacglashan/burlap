@@ -128,7 +128,7 @@ public class MCStateGenerator {
 	
 	private static void addAgent(State s, Domain d, int x, int y, int z) {
 		ObjectInstance agent = new ObjectInstance(d.getObjectClass("agent"), "agent0");
-		agent.setValue("bNum", 0);  // Expliticly set the number of blocks agent can carry to 1
+		agent.setValue("bNum", 1);  // Expliticly set the number of blocks agent can carry to 1
 		addObject(agent, s, d, x, y, z);
 	}
 

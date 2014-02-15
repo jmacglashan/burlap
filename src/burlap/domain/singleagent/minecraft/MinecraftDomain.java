@@ -62,6 +62,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ISAXMORE = "IsAgentXMore";
 	public static final String					ISAYMORE = "IsAgentYMore";
 	public static final String					ISPLANE = "IsAdjPlane";
+	public static final String					ISADJTRENCH = "IsAdjTrench";
 	
 	// ----- CONSTANTS -----
 	public static final String					CLASSAGENT = "agent";
@@ -142,17 +143,6 @@ public class MinecraftDomain implements DomainGenerator{
 		this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
 		
 		// ==== PROPOSITIONAL FUNCTIONS ====
-//		PropositionalFunction atGoal = new AtGoalPF(PFATGOAL, DOMAIN,
-//				new String[]{CLASSAGENT, CLASSGOAL});
-//		PropositionalFunction IsAtLocation = new IsAtLocationPF(ISATLOC, DOMAIN,
-//				new String[]{"Integer", "Integer", "Integer"});
-//		PropositionalFunction isWalkable = new IsWalkablePF(ISWALK, DOMAIN,
-//				new String[]{"Integer", "Integer", "Integer"});
-//		PropositionalFunction IsAdjPlane = new IsAdjPlane(ISPLANE, DOMAIN, 
-//				new String[]{"Integer", "Integer", "Integer"});
-		
-		
-		
 		
 		return DOMAIN;
 	}
@@ -277,10 +267,28 @@ public class MinecraftDomain implements DomainGenerator{
 	public static boolean isAdjPlane(State st, int ax, int ay, int az) {
 		// Returns true if the block in front of, behind, to the left of, and to the right of the agent are EMPTY, and have a block under them
 		// Otherwise, false
+//		if ((!isCellEmpty(st, ax + 1, ay, az - 1)) && (!isCellEmpty(st, ax - 1, ay, az - 1))
+//			&& (!isCellEmpty(st, ax, ay + 1, az - 1)) && (!isCellEmpty(st, ax, ay - 1, az - 1))
+//			&& (isCellEmpty(st, ax, ay + 1, az)) && (isCellEmpty(st, ax, ay - 1, az))
+//			&& (isCellEmpty(st, ax, ay + 1, az)) && (isCellEmpty(st, ax, ay - 1, az))) {
+//			return true;
+//		}
 		if ((!isCellEmpty(st, ax + 1, ay, az - 1)) && (!isCellEmpty(st, ax - 1, ay, az - 1))
-			&& (!isCellEmpty(st, ax, ay + 1, az - 1)) && (!isCellEmpty(st, ax, ay - 1, az - 1))
-			&& (isCellEmpty(st, ax, ay + 1, az)) && (isCellEmpty(st, ax, ay - 1, az))
-			&& (isCellEmpty(st, ax, ay + 1, az)) && (isCellEmpty(st, ax, ay - 1, az))) {
+				&& (!isCellEmpty(st, ax, ay + 1, az - 1)) && (!isCellEmpty(st, ax, ay - 1, az - 1))) {
+				return true;
+			}
+		else {
+			return false;
+		}
+	}
+	
+	public static boolean isAdjTrench(State st, int ax, int ay, int az) {
+		// Returns true if the block in front of, behind, to the left of, or to the right of the agent is a trench
+		
+		if (((ay == 0) || (ax == 0) || (ay == MAXY) || (ax == MAXX))) {
+			return false;
+		}
+		if (isCellEmpty(st, ax, ay - 1, az - 1)) {
 			return true;
 		}
 		else {
@@ -443,7 +451,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			place(st, 0, 1, 0);
-//			System.out.println("Action Performed: " + this.name);
+			System.out.println("Action Performed: " + this.name);
 			return st;
 		}
 	}
@@ -842,7 +850,39 @@ public class MinecraftDomain implements DomainGenerator{
 			int az = agent.getDiscValForAttribute(ATTZ);
 
 			
-			if (isAdjPlane(st, ax, ay, az)) {
+			if (!isAdjTrench(st, ax, ay, az)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
+	}
+	
+	public static class IsAdjTrench extends PropositionalFunction {
+
+		public IsAdjTrench(String name, Domain domain, String[] parameterClasses) {
+			super(name, domain, parameterClasses);
+		}
+		
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+		}
+
+		@Override
+		public boolean isTrue(State st) {
+			// Assume everything is walkable for now.
+//			// The first three elements of params are the amount of change
+//			// in the x, y, and z directions
+			ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+
+			
+			if (isAdjTrench(st, ax, ay, az)) {
 				return true;
 			}
 			else {
