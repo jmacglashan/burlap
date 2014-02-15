@@ -214,11 +214,18 @@ public class ValueIteration extends ValueFunctionPlanner{
 				continue;
 			}
 			
-			//otherwise do expansion
-			//first get all grounded actions for this state
+			// Select action set with affordance KB
 			List <GroundedAction> gas = new ArrayList<GroundedAction>();
 			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb));
+				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb, this.domain));
+			}
+			
+			// Fall back on regular VI (Affordance pruned ALL actions, so fall back on using all)
+			// In other words, we don't have a relevant affordance to dictate actions here
+			if (gas.size() == 0) {
+				for(Action a : actions){
+					gas.addAll(sh.s.getAllGroundedActionsFor(a));
+				}
 			}
 			
 			//then get the transition dynamics for each action and queue up new states

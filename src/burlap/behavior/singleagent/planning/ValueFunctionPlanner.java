@@ -305,7 +305,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			}
 			
 		}
-		
+
 		return allTransitions;
 	}
 	
@@ -454,7 +454,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	protected double computeQ(State s, ActionTransitions trans){
 		
 		double q = 0.;
-		
+
 		if(trans.ga.action instanceof Option){
 			
 			Option o = (Option)trans.ga.action;

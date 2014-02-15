@@ -508,7 +508,7 @@ public class State {
 	 * @param a the action from which to generate GroundedAction objects.
 	 * @return all GroundedAction objects for the source action a in this state.
 	 */
-	public List <GroundedAction> getAllGroundedAffordanceActionsFor(Action a, ArrayList<Affordance> kb){
+	public List <GroundedAction> getAllGroundedAffordanceActionsFor(Action a, ArrayList<Affordance> kb, Domain domain){
 		
 		List <GroundedAction> res = new ArrayList<GroundedAction>();
 		
@@ -520,7 +520,7 @@ public class State {
 		}
 		
 		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
-		
+
 		for(List <String> params : bindings){
 			String [] aprams = params.toArray(new String[params.size()]);
 			if(a.applicableInAffordanceState(this, kb)){

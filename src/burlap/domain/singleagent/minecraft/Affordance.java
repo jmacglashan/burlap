@@ -32,11 +32,16 @@ public class Affordance {
 	
 	public boolean isApplicable(State s, PropositionalFunction goal) {
 		
-		if ((this.pf.isTrue(s)) && (goal.getClass() == this.goal.getClass())) {
+		// Ignores goal right now
+		if (this.pf.isTrue(s)) {
 			return true;
 		}
 		
 		return false;
+	}
+	
+	public boolean containsAction(Action a) {
+		return this.actions.contains(a);
 	}
 
 }

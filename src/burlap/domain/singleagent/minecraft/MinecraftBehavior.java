@@ -255,6 +255,11 @@ public class MinecraftBehavior {
 	// Affordances Planner
 	public String AffordancePlanner(ArrayList<Affordance> kb){
 		
+		// Generate Goal Condition
+		rf = new SingleGoalPFRF(domain.getPropFunction(MinecraftDomain.PFATGOAL), 10, -1); 
+		tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
+		goalCondition = new TFGoalCondition(tf);
+		
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
 		
 		planner.planFromStateAffordance(initialState, kb);
@@ -262,7 +267,6 @@ public class MinecraftBehavior {
 		// Create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
-		// Record the plan results to a file
 		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
 		
 		return actionSequence;	
@@ -310,7 +314,6 @@ public class MinecraftBehavior {
 		ArrayList<Affordance> kb = mcb.generateAffordanceKB();
 		String actionSequence = mcb.AffordancePlanner(kb);
 		
-
 		System.out.println(actionSequence);
 
 		

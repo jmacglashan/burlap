@@ -190,11 +190,27 @@ public abstract class Action {
 	 * @return true if this action can be applied in this specified state with the specified parameters; false otherwise.
 	 */
 	public final boolean applicableInAffordanceState(State s, ArrayList<Affordance> kb){
-		System.out.println("WOOHOO");
-		return true;
+		double x  = Math.random();
+		System.out.println(x);
+		if (x > 0.3) {
+			return true;
+		}
+		return false;
 		
-		// ALL AFFORDANCE PLANNING HERe
-		
+//		for(Affordance aff : kb) {
+//			// The affordance is applicable in this state, given the goal
+//			if (aff.isApplicable(s, this.domain.getPropFunction("AtGoal"))) {
+//				if (aff.getActions().contains(this)) {
+//					// This action is applicable based on the affordance
+//					return true;
+//				}
+//
+//			}
+//		}
+//		
+//		// No Affordances indicated that this was a good action in this state given the goal
+//		return false;
+
 	}
 	
 	/**
