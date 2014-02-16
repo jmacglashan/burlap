@@ -266,8 +266,12 @@ public class MinecraftBehavior {
 		
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
 		
+		System.out.println((initialState.getStateDescription()));
+		
 		planner.planFromStateAffordance(initialState, kb);
 
+		
+		
 		// Create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
@@ -315,18 +319,18 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("flatland.map");
+		MinecraftBehavior mcb = new MinecraftBehavior("bridgeland.map");
 
 		// VANILLA OOMDP/VI
 		// String actionSequence = mcb.ValueIterationPlanner();
 		
 		// SUBGOALS
-		ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
-		String actionSequence = mcb.SubgoalPlanner(kb);
+//		ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
+//		String actionSequence = mcb.SubgoalPlanner(kb);
 		
 		// AFFORDANCES
-//		ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-//		String actionSequence = mcb.AffordancePlanner(kb);
+		ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+		String actionSequence = mcb.AffordancePlanner(kb);
 		
 		System.out.println(actionSequence);
 
