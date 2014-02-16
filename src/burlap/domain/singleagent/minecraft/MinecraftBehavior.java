@@ -295,27 +295,27 @@ public class MinecraftBehavior {
 		isPlaneActions.add(this.mcdg.left);
 		isPlaneActions.add(this.mcdg.right);
 //		
-//		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
-//		isTrenchActions.add(this.mcdg.forward);
-//		isTrenchActions.add(this.mcdg.backward);
-//		isTrenchActions.add(this.mcdg.left);
-//		isTrenchActions.add(this.mcdg.right);
-//		isTrenchActions.add(this.mcdg.placeF);
+		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
+		isTrenchActions.add(this.mcdg.forward);
+		isTrenchActions.add(this.mcdg.backward);
+		isTrenchActions.add(this.mcdg.left);
+		isTrenchActions.add(this.mcdg.right);
+		isTrenchActions.add(this.mcdg.placeF);
 		
-		ArrayList<Action> isDoorActions = new ArrayList<Action>();
-		isDoorActions.add(this.mcdg.forward);
-		isDoorActions.add(this.mcdg.backward);
-		isDoorActions.add(this.mcdg.left);
-		isDoorActions.add(this.mcdg.right);
-		isDoorActions.add(this.mcdg.openF);
+//		ArrayList<Action> isDoorActions = new ArrayList<Action>();
+//		isDoorActions.add(this.mcdg.forward);
+//		isDoorActions.add(this.mcdg.backward);
+//		isDoorActions.add(this.mcdg.left);
+//		isDoorActions.add(this.mcdg.right);
+//		isDoorActions.add(this.mcdg.openF);
 		
 		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
-//		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
-		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
+		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
+//		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
 		
 		affordances.add(affIsPlane);
-		affordances.add(affIsAdjDoor);
-//		affordances.add(affIsAdjTrench);
+//		affordances.add(affIsAdjDoor);
+		affordances.add(affIsAdjTrench);
 		
 		
 		return affordances;
@@ -330,10 +330,10 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("doorworld.map");
-
+		MinecraftBehavior mcb = new MinecraftBehavior("bridgeworld10.map");
+		
 		// VANILLA OOMDP/VI
-		// String actionSequence = mcb.ValueIterationPlanner();
+//		 String actionSequence = mcb.ValueIterationPlanner();
 		
 		// SUBGOALS
 //		ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
@@ -342,7 +342,7 @@ public class MinecraftBehavior {
 		// AFFORDANCES
 		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
 		 String actionSequence = mcb.AffordancePlanner(kb);
-		
+//		
 		System.out.println(actionSequence);
 
 		

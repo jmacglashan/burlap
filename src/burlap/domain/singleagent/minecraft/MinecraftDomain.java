@@ -90,7 +90,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					CLASSGOAL = "goal";
 	public static final String					CLASSBLOCK = "block";
 	public static final String					CLASSDOOR = "door";
-	public static final int						MAXX = 9; // 0 - 9, gives us a 10x10 surface
+	public static final int						MAXX = 19; // 0 - 9, gives us a 10x10 surface
 	public static final int						MAXY = 9;
 	public static final int						MAXZ = 8;
 	public static final int						MAXBLKNUM = 4;
@@ -175,7 +175,7 @@ public class MinecraftDomain implements DomainGenerator{
 		this.left = new LeftAction(ACTIONLEFT, DOMAIN, "");
 
 		
-		boolean blockMode = false;
+		boolean blockMode = true;
 		if (blockMode == true) {
 			// Placement
 			this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
