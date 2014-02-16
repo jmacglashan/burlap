@@ -83,6 +83,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ISAYMORE = "IsAgentYMore";
 	public static final String					ISPLANE = "IsAdjPlane";
 	public static final String					ISADJTRENCH = "IsAdjTrench";
+	public static final String 					ISADJDOOR = "IsAdjDoor";
 	
 	// ----- CONSTANTS -----
 	public static final String					CLASSAGENT = "agent";
@@ -93,6 +94,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final int						MAXY = 9;
 	public static final int						MAXZ = 8;
 	public static final int						MAXBLKNUM = 4;
+
 	
 	// ----- MAP & DOMAIN -----
 	public static AtGoalPF 						AtGoalPF = null;
@@ -134,7 +136,7 @@ public class MinecraftDomain implements DomainGenerator{
 		destroyableatt.setDiscValuesForRange(0, 1, 1);
 		
 		Attribute dooropenatt = new Attribute(DOMAIN, ATTDOOR, Attribute.AttributeType.DISC);
-		destroyableatt.setDiscValuesForRange(0, 1, 1);
+		dooropenatt.setDiscValuesForRange(0, 1, 1);
 
 		
 		// CREATE AGENT
@@ -172,17 +174,21 @@ public class MinecraftDomain implements DomainGenerator{
 		this.right = new RightAction(ACTIONRIGHT, DOMAIN, "");
 		this.left = new LeftAction(ACTIONLEFT, DOMAIN, "");
 
-		// Placement
-		this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
-		this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
-		this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
-		this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
 		
-		// Destruction
-		this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
-		this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
-		this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
-		this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
+		boolean blockMode = false;
+		if (blockMode == true) {
+			// Placement
+			this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
+			this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
+			this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
+			this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
+			
+			// Destruction
+			this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
+			this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
+			this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
+			this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
+		}
 		
 		// Open Door
 		this.openF = new OpenActionF(ACTIONOPENF, DOMAIN, "");
@@ -337,6 +343,18 @@ public class MinecraftDomain implements DomainGenerator{
 //		}
 		if ((!isCellEmpty(st, ax + 1, ay, az - 1)) && (!isCellEmpty(st, ax - 1, ay, az - 1))
 				&& (!isCellEmpty(st, ax, ay + 1, az - 1)) && (!isCellEmpty(st, ax, ay - 1, az - 1))) {
+				return true;
+			}
+		else {
+			return false;
+		}
+	}
+	
+	public static boolean isAdjDoor(State st, int ax, int ay, int az) {
+		// Returns true if the block in front of, behind, to the left of, or to the right of the agent contains a door
+
+		if ((isDoorAt(st, ax + 1, ay, az - 1)) || (isDoorAt(st, ax - 1, ay, az - 1))
+				|| (isDoorAt(st, ax, ay + 1, az - 1)) || (isDoorAt(st, ax, ay - 1, az - 1))) {
 				return true;
 			}
 		else {
@@ -1144,6 +1162,38 @@ public class MinecraftDomain implements DomainGenerator{
 
 			
 			if (isAdjTrench(st, ax, ay, az)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
+	}
+	
+	public static class IsAdjDoor extends PropositionalFunction {
+
+		public IsAdjDoor(String name, Domain domain, String[] parameterClasses) {
+			super(name, domain, parameterClasses);
+		}
+		
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+		}
+
+		@Override
+		public boolean isTrue(State st) {
+			// Assume everything is walkable for now.
+//			// The first three elements of params are the amount of change
+//			// in the x, y, and z directions
+			ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+
+			
+			if (isAdjDoor(st, ax, ay, az)) {
 				return true;
 			}
 			else {

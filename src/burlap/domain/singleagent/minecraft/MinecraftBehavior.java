@@ -50,6 +50,7 @@ public class MinecraftBehavior {
 	
 	PropositionalFunction		pfIsPlane;
 	PropositionalFunction		pfIsAdjTrench;
+	PropositionalFunction		pfIsAdjDoor;
 	PropositionalFunction		pfIsThrQWay;
 	PropositionalFunction		pfIsHalfWay;
 	PropositionalFunction		pfIsOneQWay;
@@ -85,6 +86,9 @@ public class MinecraftBehavior {
 				new String[]{this.mcdg.CLASSAGENT});
 		
 		pfIsAdjTrench = new IsAdjTrench(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT});
+		
+		pfIsAdjDoor = new IsAdjTrench(this.mcdg.ISADJDOOR, this.mcdg.DOMAIN,
 				new String[]{this.mcdg.CLASSAGENT});
 		
 		pfIsThrQWay = new IsNthOfTheWay("IsThrQWay", this.mcdg.DOMAIN,
@@ -290,19 +294,28 @@ public class MinecraftBehavior {
 		isPlaneActions.add(this.mcdg.backward);
 		isPlaneActions.add(this.mcdg.left);
 		isPlaneActions.add(this.mcdg.right);
+//		
+//		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
+//		isTrenchActions.add(this.mcdg.forward);
+//		isTrenchActions.add(this.mcdg.backward);
+//		isTrenchActions.add(this.mcdg.left);
+//		isTrenchActions.add(this.mcdg.right);
+//		isTrenchActions.add(this.mcdg.placeF);
 		
-		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
-		isTrenchActions.add(this.mcdg.forward);
-		isTrenchActions.add(this.mcdg.backward);
-		isTrenchActions.add(this.mcdg.left);
-		isTrenchActions.add(this.mcdg.right);
-		isTrenchActions.add(this.mcdg.placeF);
+		ArrayList<Action> isDoorActions = new ArrayList<Action>();
+		isDoorActions.add(this.mcdg.forward);
+		isDoorActions.add(this.mcdg.backward);
+		isDoorActions.add(this.mcdg.left);
+		isDoorActions.add(this.mcdg.right);
+		isDoorActions.add(this.mcdg.openF);
 		
 		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
-		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
+//		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
+		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
 		
 		affordances.add(affIsPlane);
-		affordances.add(affIsAdjTrench);
+		affordances.add(affIsAdjDoor);
+//		affordances.add(affIsAdjTrench);
 		
 		
 		return affordances;
@@ -317,7 +330,7 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("flatland.map");
+		MinecraftBehavior mcb = new MinecraftBehavior("doorworld.map");
 
 		// VANILLA OOMDP/VI
 		// String actionSequence = mcb.ValueIterationPlanner();
@@ -327,8 +340,8 @@ public class MinecraftBehavior {
 //		String actionSequence = mcb.SubgoalPlanner(kb);
 		
 		// AFFORDANCES
-		ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-		String actionSequence = mcb.AffordancePlanner(kb);
+		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+		 String actionSequence = mcb.AffordancePlanner(kb);
 		
 		System.out.println(actionSequence);
 
