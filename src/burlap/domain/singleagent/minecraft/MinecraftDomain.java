@@ -84,14 +84,15 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ISPLANE = "IsAdjPlane";
 	public static final String					ISADJTRENCH = "IsAdjTrench";
 	public static final String 					ISADJDOOR = "IsAdjDoor";
+	public static final String					ISADJDWALL = "IsAdjDstableWall";
 	
 	// ----- CONSTANTS -----
 	public static final String					CLASSAGENT = "agent";
 	public static final String					CLASSGOAL = "goal";
 	public static final String					CLASSBLOCK = "block";
 	public static final String					CLASSDOOR = "door";
-	public static final int						MAXX = 19; // 0 - 9, gives us a 10x10 surface
-	public static final int						MAXY = 9;
+	public static final int						MAXX = 39; // 0 - 9, gives us a 10x10 surface
+	public static final int						MAXY = 39;
 	public static final int						MAXZ = 8;
 	public static final int						MAXBLKNUM = 4;
 
@@ -175,7 +176,7 @@ public class MinecraftDomain implements DomainGenerator{
 		this.left = new LeftAction(ACTIONLEFT, DOMAIN, "");
 
 		
-		boolean blockMode = true;
+		boolean blockMode = false;
 		if (blockMode == true) {
 			// Placement
 			this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
@@ -297,6 +298,7 @@ public class MinecraftDomain implements DomainGenerator{
 		block.setValue(ATTX, x);
 		block.setValue(ATTY, y);
 		block.setValue(ATTZ, z);
+		block.setValue(ATTDEST, 1); // blocks you place can be destroyed
 		s.addObject(block);
 	}
 	
@@ -376,6 +378,20 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 	}
 	
+	public static boolean isAdjDstableWall(State st, int ax, int ay, int az) {
+		// Returns true if the block in front of, behind, to the left of, or to the right of the agent is a trench
+		
+		if (((getBlockAt(st, ax + 1, ay, az) != null) && (getBlockAt(st, ax + 1, ay, az).getDiscValForAttribute(ATTDEST) == 1))
+				|| ((getBlockAt(st, ax - 1, ay, az) != null) && (getBlockAt(st, ax - 1, ay, az).getDiscValForAttribute(ATTDEST) == 1))
+				|| ((getBlockAt(st, ax, ay + 1, az) != null) && (getBlockAt(st, ax, ay + 1, az).getDiscValForAttribute(ATTDEST) == 1))
+				|| ((getBlockAt(st, ax, ay - 1, az) != null) && (getBlockAt(st, ax, ay - 1, az).getDiscValForAttribute(ATTDEST) == 1))){
+				// We're next to a destroyable block
+				return true;
+			}
+		else {
+			return false;
+		}
+	}
 	
 	/* =====ACTIONS===== */
 	
@@ -648,7 +664,7 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static class PlaceActionL extends Action{
 
-		public PlaceActionL(String name, Domain domain, String parameterClasses){
+	public PlaceActionL(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
 		}
 		
@@ -658,6 +674,8 @@ public class MinecraftDomain implements DomainGenerator{
 			return st;
 		}	
 	}
+	
+	
 	
 	public static class DestActionF extends Action{
 
@@ -1202,6 +1220,39 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 	}
+	
+	public static class IsAdjDstableWall extends PropositionalFunction {
+
+		public IsAdjDstableWall(String name, Domain domain, String[] parameterClasses) {
+			super(name, domain, parameterClasses);
+		}
+		
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+		}
+
+		@Override
+		public boolean isTrue(State st) {
+			// Assume everything is walkable for now.
+//			// The first three elements of params are the amount of change
+//			// in the x, y, and z directions
+			ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+
+			
+			if (isAdjDstableWall(st, ax, ay, az)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
+	}
+	
 	
 	public static void main(String[] args) {
 		

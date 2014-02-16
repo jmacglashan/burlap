@@ -57,6 +57,7 @@ public class MinecraftBehavior {
 	PropositionalFunction		pfIsAtGoal;
 	PropositionalFunction		pfIsAtLocation;
 	PropositionalFunction		pfIsWalkable;
+	PropositionalFunction 		pfIsAdjDstableWall;
 	
 	
 	public MinecraftBehavior(String mapfile) {
@@ -89,6 +90,9 @@ public class MinecraftBehavior {
 				new String[]{this.mcdg.CLASSAGENT});
 		
 		pfIsAdjDoor = new IsAdjTrench(this.mcdg.ISADJDOOR, this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT});
+		
+		pfIsAdjDstableWall = new IsAdjDstableWall(this.mcdg.ISADJDWALL, this.mcdg.DOMAIN,
 				new String[]{this.mcdg.CLASSAGENT});
 		
 		pfIsThrQWay = new IsNthOfTheWay("IsThrQWay", this.mcdg.DOMAIN,
@@ -268,7 +272,7 @@ public class MinecraftBehavior {
 		tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
 		goalCondition = new TFGoalCondition(tf);
 		
-		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 1, Integer.MAX_VALUE);
+		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, .1, Integer.MAX_VALUE);
 		
 		System.out.println((initialState.getStateDescription()));
 		
@@ -295,12 +299,12 @@ public class MinecraftBehavior {
 		isPlaneActions.add(this.mcdg.left);
 		isPlaneActions.add(this.mcdg.right);
 //		
-		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
-		isTrenchActions.add(this.mcdg.forward);
-		isTrenchActions.add(this.mcdg.backward);
-		isTrenchActions.add(this.mcdg.left);
-		isTrenchActions.add(this.mcdg.right);
-		isTrenchActions.add(this.mcdg.placeF);
+//		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
+//		isTrenchActions.add(this.mcdg.forward);
+//		isTrenchActions.add(this.mcdg.backward);
+//		isTrenchActions.add(this.mcdg.left);
+//		isTrenchActions.add(this.mcdg.right);
+//		isTrenchActions.add(this.mcdg.placeF);
 		
 //		ArrayList<Action> isDoorActions = new ArrayList<Action>();
 //		isDoorActions.add(this.mcdg.forward);
@@ -309,13 +313,22 @@ public class MinecraftBehavior {
 //		isDoorActions.add(this.mcdg.right);
 //		isDoorActions.add(this.mcdg.openF);
 		
+//		ArrayList<Action> isDstableWallActions = new ArrayList<Action>();
+//		isDstableWallActions.add(this.mcdg.forward);
+//		isDstableWallActions.add(this.mcdg.backward);
+//		isDstableWallActions.add(this.mcdg.left);
+//		isDstableWallActions.add(this.mcdg.right);
+//		isDstableWallActions.add(this.mcdg.destF);
+		
 		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
-		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
+//		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
 //		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
+//		Affordance affIsDstableWall = new Affordance(this.pfIsAdjDstableWall, this.pfIsAtGoal, isDstableWallActions);
 		
 		affordances.add(affIsPlane);
 //		affordances.add(affIsAdjDoor);
-		affordances.add(affIsAdjTrench);
+//		affordances.add(affIsAdjTrench);
+//		affordances.add(affIsDstableWall);
 		
 		
 		return affordances;
@@ -330,7 +343,7 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("bridgeworld10.map");
+		MinecraftBehavior mcb = new MinecraftBehavior("bigworld.map");
 		
 		// VANILLA OOMDP/VI
 //		 String actionSequence = mcb.ValueIterationPlanner();
