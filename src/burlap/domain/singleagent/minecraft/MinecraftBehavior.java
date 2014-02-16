@@ -319,7 +319,7 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("bridgeland.map");
+		MinecraftBehavior mcb = new MinecraftBehavior("flatland.map");
 
 		// VANILLA OOMDP/VI
 		// String actionSequence = mcb.ValueIterationPlanner();

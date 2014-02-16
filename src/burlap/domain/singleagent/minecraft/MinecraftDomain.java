@@ -28,6 +28,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ATTX = "x";
 	public static final String					ATTY = "y";
 	public static final String					ATTZ = "z";
+	public static final String 					ATTDEST = "attDestroyable";
 	public static final String					BLKTYPE = "blkType";
 	public static final String					ATTBLKNUM = "bNum";
 	
@@ -42,6 +43,10 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ACTIONPLACER = "placeRight";
 	public static final String					ACTIONPLACEL = "placeLeft";
 	
+	public static final String					ACTIONDESTF = "destroyForward";
+	public static final String					ACTIONDESTB = "destroyBack";
+	public static final String					ACTIONDESTR = "destroyRight";
+	public static final String					ACTIONDESTL = "destroyLeft";
 	// ----- ACTIONS -----
 	public Action								forward;
 	public Action								backward;
@@ -51,7 +56,11 @@ public class MinecraftDomain implements DomainGenerator{
 	public Action								placeB;
 	public Action								placeR;
 	public Action								placeL;
-
+	public Action		 						destF;
+	public Action								destB;
+	public Action		 						destL;
+	public Action								destR;
+	
 	// ----- PROPOSITIONAL FUNCTION STRINGS -----
 	public static final String					PFATGOAL = "AtGoal";
 	public static final String					ISATLOC = "IsAtLocation";
@@ -109,6 +118,10 @@ public class MinecraftDomain implements DomainGenerator{
 		Attribute blknumatt = new Attribute(DOMAIN, ATTBLKNUM, Attribute.AttributeType.DISC);
 		blknumatt.setDiscValuesForRange(0, MAXBLKNUM, 1);
 
+		Attribute destroyableatt = new Attribute(DOMAIN, ATTDEST, Attribute.AttributeType.DISC);
+		blknumatt.setDiscValuesForRange(0, 1, 1);
+
+		
 		// CREATE AGENT
 		agentClass = new ObjectClass(DOMAIN, CLASSAGENT);
 		agentClass.addAttribute(xatt);
@@ -127,6 +140,7 @@ public class MinecraftDomain implements DomainGenerator{
 		blockClass.addAttribute(xatt);
 		blockClass.addAttribute(yatt);
 		blockClass.addAttribute(zatt);
+		blockClass.addAttribute(destroyableatt);
 		
 		// ==== CREATE ACTIONS ====
 		
@@ -141,6 +155,12 @@ public class MinecraftDomain implements DomainGenerator{
 		this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
 		this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
 		this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
+		
+		// Destruction
+		this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
+		this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
+		this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
+		this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
 		
 		// ==== PROPOSITIONAL FUNCTIONS ====
 		
@@ -248,16 +268,14 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static void removeBlock(State s, int x, int y, int z) {
 		ObjectInstance block = s.getObject("block" + Integer.toString(x) + Integer.toString(y) + Integer.toString(z));
-//		ObjectInstance block = s.getObservableObjectAt(x * MAXY + y + (z - 1) * MAXY * MAXX);
-//		ObjectInstance block = getBlockAt(s, x, y, z);
 		s.removeObject(block);
-		
 	}
 	
 	/* === Class Accessors === */
 	
 	public static ObjectInstance getBlockAt(State st, int x, int y, int z){
-		return st.getObject("block" + Integer.toString(x) + Integer.toString(y) + Integer.toString(z));
+		ObjectInstance o = st.getObject("block" + Integer.toString(x) + Integer.toString(y) + Integer.toString(z));
+		return o;
 	}
 	
 	public static boolean isCellEmpty(State st, int x, int y, int z){
@@ -386,6 +404,44 @@ public class MinecraftDomain implements DomainGenerator{
 		
 	}
 
+	public static void destroy(State s, int dx, int dy, int dz) {
+		
+		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		
+		// Agent's global coordinates
+		int ax = agent.getDiscValForAttribute(ATTX);
+		int ay = agent.getDiscValForAttribute(ATTY);
+		int az = agent.getDiscValForAttribute(ATTZ);
+		
+		// Get global coordinates of the loc to destroy the block
+		int bx = ax+dx;
+		int by = ay+dy;
+		int bz = az+dz; // Try one below, first
+		
+		
+		// Make sure we are destroying a block in bounds
+		if (bx < 0 || bx > MAXX || by < 0 || by > MAXY || bz < 0 || bz > MAXZ) {
+			return;
+		}
+		
+		// If block loc is not empty (z-1 from bot), and the loc above is empty, we can destroy there.
+		if (bz - 1 >= 0 && getBlockAt(s,bx,by,bz - 1) != null && getBlockAt(s,bx,by,bz) == null){
+			// Remove the block
+			if (getBlockAt(s,bx,by,bz - 1).getDiscValForAttribute("attDestroyable") == 1) {
+				// Only destroy destroyable blocks
+				removeBlock(s, bx, by, bz - 1);
+			}
+
+		}
+		// Now try destroying one on agent's z level if it couldn't destroy one at z - 1
+		else if (getBlockAt(s, bx, by, bz) != null){
+			// Remove the block
+			if (getBlockAt(s,bx,by,bz).getDiscValForAttribute("attDestroyable") == 1) {
+				// Only destroy destroyable blocks
+				removeBlock(s, bx, by, bz);
+			}
+		}
+	}
 
 	public static class ForwardAction extends Action{
 
@@ -490,6 +546,58 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		protected State performActionHelper(State st, String[] params) {
 			place(st, 1, 0, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}	
+	}
+	
+	public static class DestActionF extends Action{
+
+		public DestActionF(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			destroy(st, 0, -1, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}
+	}
+	
+	public static class DestActionB extends Action{
+
+		public DestActionB(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			destroy(st, 0, 1, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}	
+	}
+	
+	public static class DestActionR extends Action{
+
+		public DestActionR(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			destroy(st, -1, 0, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}	
+	}
+	
+	public static class DestActionL extends Action{
+
+		public DestActionL(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			destroy(st, 1, 0, 0);
 //			System.out.println("Action Performed: " + this.name);
 			return st;
 		}	
@@ -850,7 +958,15 @@ public class MinecraftDomain implements DomainGenerator{
 			int az = agent.getDiscValForAttribute(ATTZ);
 
 			
+			
+//			 Works
 			if (!isAdjTrench(st, ax, ay, az)) {
+				return true;
+			}
+			if ((ax == 0) || (ay == 0) || (ax == MAXX) || (ay == MAXY)) {
+				return true;
+			}
+			if (isAdjPlane(st, ax, ay, az)) {
 				return true;
 			}
 			else {
@@ -900,7 +1016,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		// === Build Map === //
 
-		MCStateGenerator mcsg = new MCStateGenerator("bridgeland.map");
+		MCStateGenerator mcsg = new MCStateGenerator("uwall.map");
 
 		State initialState = mcsg.getCleanState(d);
 			
@@ -912,9 +1028,13 @@ public class MinecraftDomain implements DomainGenerator{
 		exp.addActionShortHand("r", ACTIONRIGHT);
 		exp.addActionShortHand("l", ACTIONLEFT);
 		exp.addActionShortHand("pf", ACTIONPLACEF);
-//		exp.addActionShortHand("pb", ACTIONPLACEB);
-//		exp.addActionShortHand("pr", ACTIONPLACER);
+		exp.addActionShortHand("pb", ACTIONPLACEB);
+		exp.addActionShortHand("pr", ACTIONPLACER);
 		exp.addActionShortHand("pl", ACTIONPLACEL);
+		exp.addActionShortHand("df", ACTIONDESTF);
+		exp.addActionShortHand("db", ACTIONDESTB);
+		exp.addActionShortHand("dr", ACTIONDESTR);
+		exp.addActionShortHand("dl", ACTIONDESTL);
 				
 		exp.exploreFromState(initialState);
 	}

@@ -32,6 +32,7 @@ public class MCStateGenerator {
 	private static final char aSym = 'a';
 	private static final char bRmSym = '-';
 	private static final char dummySym = '.';
+	private static final char wallSym = '=';
 	
 	/**
 	 * @param path the file path for the map file.
@@ -98,18 +99,28 @@ public class MCStateGenerator {
 			case bAddSym:
 				addBlock(s, d, ncol, nrow, 1);
 				ncol++;
+				break;
 			case aSym:
 				System.out.println("nrow, ncol, 1 |   " + nrow + "," + ncol + ",1");
 				addAgent(s, d, ncol, nrow, 1);
 				ncol++;
+				break;
 			case gSym:
 				addGoal(s, d, ncol, nrow, 1);
 				ncol++;
+				break;
 			case bRmSym:
 				removeBlock(s, d, ncol, nrow, 0);
 				ncol++;
+				break;
 			case dummySym:
 				ncol++;
+				break;
+			case wallSym:
+				addBlock(s, d, ncol, nrow, 0); // Add a block under the wall
+				addWall(s, d, ncol, nrow, 1);
+				ncol++;
+				break;
 			default:
 				continue;
 			}
@@ -117,9 +128,22 @@ public class MCStateGenerator {
 	}
 	
 	
+	private static void addWall(State s, Domain d, int x, int y, int z) {
+		ObjectInstance block = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
+		block.setValue("x", x);
+		block.setValue("y", y);
+		block.setValue("z", z);
+		block.setValue("attDestroyable", 0); // Walls cannot be destroyed
+		s.addObject(block);
+	}
+	
 	private static void addBlock(State s, Domain d, int x, int y, int z) {
 		ObjectInstance block = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
-		addObject(block, s, d, x, y, z);
+		block.setValue("x", x);
+		block.setValue("y", y);
+		block.setValue("z", z);
+		block.setValue("attDestroyable", 1); // By default blocks can be destroyed
+		s.addObject(block);
 	}
 	
 	private static void removeBlock(State s, Domain d, int x, int y, int z) {
