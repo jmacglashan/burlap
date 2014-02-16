@@ -270,8 +270,6 @@ public class MinecraftBehavior {
 		
 		planner.planFromStateAffordance(initialState, kb);
 
-		
-		
 		// Create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		

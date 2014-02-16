@@ -119,7 +119,7 @@ public class MinecraftDomain implements DomainGenerator{
 		blknumatt.setDiscValuesForRange(0, MAXBLKNUM, 1);
 
 		Attribute destroyableatt = new Attribute(DOMAIN, ATTDEST, Attribute.AttributeType.DISC);
-		blknumatt.setDiscValuesForRange(0, 1, 1);
+		destroyableatt.setDiscValuesForRange(0, 1, 1);
 
 		
 		// CREATE AGENT

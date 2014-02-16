@@ -94,14 +94,12 @@ public class MCStateGenerator {
 			if (ch != ' ') {
 				addBlock(s, d, ncol, nrow, 0);
 			}
-			System.out.println(ch);
 			switch (ch) {
 			case bAddSym:
 				addBlock(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
 			case aSym:
-				System.out.println("nrow, ncol, 1 |   " + nrow + "," + ncol + ",1");
 				addAgent(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
@@ -114,10 +112,10 @@ public class MCStateGenerator {
 				ncol++;
 				break;
 			case dummySym:
+				addBlock(s, d, ncol, nrow, 0);
 				ncol++;
 				break;
 			case wallSym:
-				addBlock(s, d, ncol, nrow, 0); // Add a block under the wall
 				addWall(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
@@ -129,12 +127,13 @@ public class MCStateGenerator {
 	
 	
 	private static void addWall(State s, Domain d, int x, int y, int z) {
-		ObjectInstance block = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
-		block.setValue("x", x);
-		block.setValue("y", y);
-		block.setValue("z", z);
-		block.setValue("attDestroyable", 0); // Walls cannot be destroyed
-		s.addObject(block);
+		addBlock(s, d, x, y, 0); // Add a block under the wall
+		ObjectInstance wall = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
+		wall.setValue("x", x);
+		wall.setValue("y", y);
+		wall.setValue("z", z);
+		wall.setValue("attDestroyable", 0); // Walls cannot be destroyed
+		s.addObject(wall);
 	}
 	
 	private static void addBlock(State s, Domain d, int x, int y, int z) {

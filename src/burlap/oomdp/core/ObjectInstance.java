@@ -247,7 +247,6 @@ public class ObjectInstance {
 	 * @return a string representation of this object including its name and value attribute value assignment.
 	 */
 	public String getObjectDescription(){
-		
 		String desc = name + " (" + this.getTrueClassName() + ")\n";
 		for(Value v : values){
 			desc = desc + "\t" + v.attName() + ":\t" + v.getStringVal() + "\n";
