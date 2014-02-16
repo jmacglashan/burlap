@@ -31,6 +31,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String 					ATTDEST = "attDestroyable";
 	public static final String					BLKTYPE = "blkType";
 	public static final String					ATTBLKNUM = "bNum";
+	public static final String					ATTDOOR = "doorOpen";
 	
 	// ----- ACTION STRINGS -----
 	public static final String					ACTIONFORWARD = "forward";
@@ -47,6 +48,12 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ACTIONDESTB = "destroyBack";
 	public static final String					ACTIONDESTR = "destroyRight";
 	public static final String					ACTIONDESTL = "destroyLeft";
+	
+	public static final String					ACTIONOPENF = "openForward";
+	public static final String					ACTIONOPENB = "openBack";
+	public static final String					ACTIONOPENR = "openRight";
+	public static final String					ACTIONOPENL = "openLeft";
+	
 	// ----- ACTIONS -----
 	public Action								forward;
 	public Action								backward;
@@ -60,6 +67,10 @@ public class MinecraftDomain implements DomainGenerator{
 	public Action								destB;
 	public Action		 						destL;
 	public Action								destR;
+	public Action								openF;
+	public Action								openB;
+	public Action								openR;
+	public Action								openL;
 	
 	// ----- PROPOSITIONAL FUNCTION STRINGS -----
 	public static final String					PFATGOAL = "AtGoal";
@@ -77,6 +88,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					CLASSAGENT = "agent";
 	public static final String					CLASSGOAL = "goal";
 	public static final String					CLASSBLOCK = "block";
+	public static final String					CLASSDOOR = "door";
 	public static final int						MAXX = 9; // 0 - 9, gives us a 10x10 surface
 	public static final int						MAXY = 9;
 	public static final int						MAXZ = 8;
@@ -120,6 +132,9 @@ public class MinecraftDomain implements DomainGenerator{
 
 		Attribute destroyableatt = new Attribute(DOMAIN, ATTDEST, Attribute.AttributeType.DISC);
 		destroyableatt.setDiscValuesForRange(0, 1, 1);
+		
+		Attribute dooropenatt = new Attribute(DOMAIN, ATTDOOR, Attribute.AttributeType.DISC);
+		destroyableatt.setDiscValuesForRange(0, 1, 1);
 
 		
 		// CREATE AGENT
@@ -142,6 +157,13 @@ public class MinecraftDomain implements DomainGenerator{
 		blockClass.addAttribute(zatt);
 		blockClass.addAttribute(destroyableatt);
 		
+		// CREATE DOORS
+		ObjectClass doorClass = new ObjectClass(DOMAIN, CLASSDOOR);
+		doorClass.addAttribute(xatt);
+		doorClass.addAttribute(yatt);
+		doorClass.addAttribute(zatt);
+		doorClass.addAttribute(dooropenatt);
+		
 		// ==== CREATE ACTIONS ====
 		
 		// Movement
@@ -161,6 +183,12 @@ public class MinecraftDomain implements DomainGenerator{
 		this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
 		this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
 		this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
+		
+		// Open Door
+		this.openF = new OpenActionF(ACTIONOPENF, DOMAIN, "");
+		this.openB = new OpenActionB(ACTIONOPENB, DOMAIN, "");
+		this.openR = new OpenActionL(ACTIONOPENR, DOMAIN, "");
+		this.openL = new OpenActionR(ACTIONOPENL, DOMAIN, "");
 		
 		// ==== PROPOSITIONAL FUNCTIONS ====
 		
@@ -278,6 +306,22 @@ public class MinecraftDomain implements DomainGenerator{
 		return o;
 	}
 	
+	public static boolean isDoorAt(State st, int x, int y, int z) {
+		ObjectInstance o = st.getObject("door" + Integer.toString(x) + Integer.toString(y) + Integer.toString(z));
+		if (o != null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public static ObjectInstance getDoorAt(State st, int x, int y, int z) {
+		ObjectInstance o = st.getObject("door" + Integer.toString(x) + Integer.toString(y) + Integer.toString(z));
+		return o;
+	}
+	
+	
 	public static boolean isCellEmpty(State st, int x, int y, int z){
 		return (getBlockAt(st, x, y, z) == null);
 	}
@@ -338,6 +382,18 @@ public class MinecraftDomain implements DomainGenerator{
 		if (nx < 0 || nx > MAXX || ny < 0 || ny > MAXY || nz < 0 || nz > MAXZ) {
 			// Trying to move out of bounds, return.
 			return;
+		}
+		
+		if (isDoorAt(s, nx, ny, nz)) {
+			ObjectInstance o = getDoorAt(s, nx, ny, nz);
+			if (o.getDiscValForAttribute(ATTDOOR) == 1) {
+				// There is an open door where we are trying to move.
+				agent.setValue(ATTX, nx);
+				agent.setValue(ATTY, ny);
+				agent.setValue(ATTZ, nz);
+				return;
+			}
+			System.out.println("CLOSED DOOR IN THE WAY");
 		}
 		
 		if (nz - 1 > -1 && getBlockAt(s, nx, ny, nz - 1) == null) {
@@ -443,6 +499,40 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 	}
 
+	public static void open(State s, int dx, int dy, int dz) {
+		
+		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		
+		// Agent's global coordinates
+		int ax = agent.getDiscValForAttribute(ATTX);
+		int ay = agent.getDiscValForAttribute(ATTY);
+		int az = agent.getDiscValForAttribute(ATTZ);
+		
+		// Get global coordinates of the loc to open the door
+		int bx = ax+dx;
+		int by = ay+dy;
+		int bz = az+dz; // Try one below, first
+		
+		
+		// Make sure we are trying to open a door in bounds
+		if (bx < 0 || bx > MAXX || by < 0 || by > MAXY || bz < 0 || bz > MAXZ) {
+			return;
+		}
+		
+		if (isDoorAt(s, bx, by, bz)) {
+			ObjectInstance o = getDoorAt(s, bx, by, bz);
+			int newVal = o.getDiscValForAttribute(ATTDOOR) ^ 1;
+			System.out.println("CHANGING DOORS STATE");
+			o.setValue(ATTDOOR, newVal);
+		}
+		else {
+			return;
+		}
+		
+		
+	}
+
+	
 	public static class ForwardAction extends Action{
 
 		public ForwardAction(String name, Domain domain, String parameterClasses){
@@ -602,6 +692,61 @@ public class MinecraftDomain implements DomainGenerator{
 			return st;
 		}	
 	}
+	
+	
+	public static class OpenActionF extends Action{
+
+		public OpenActionF(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			open(st, 0, -1, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}
+	}
+	
+	public static class OpenActionB extends Action{
+
+		public OpenActionB(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			open(st, 0, 1, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}	
+	}
+	
+	public static class OpenActionR extends Action{
+
+		public OpenActionR(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			open(st, -1, 0, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}	
+	}
+	
+	public static class OpenActionL extends Action{
+
+		public OpenActionL(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			open(st, 1, 0, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}	
+	}
+	
+	
 	
 	/* ==== Propositional Functions ==== */
 	public static class IsAgentXLess extends PropositionalFunction{
@@ -1016,7 +1161,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		// === Build Map === //
 
-		MCStateGenerator mcsg = new MCStateGenerator("uwall.map");
+		MCStateGenerator mcsg = new MCStateGenerator("doorworld.map");
 
 		State initialState = mcsg.getCleanState(d);
 			
@@ -1035,6 +1180,10 @@ public class MinecraftDomain implements DomainGenerator{
 		exp.addActionShortHand("db", ACTIONDESTB);
 		exp.addActionShortHand("dr", ACTIONDESTR);
 		exp.addActionShortHand("dl", ACTIONDESTL);
+		exp.addActionShortHand("of", ACTIONOPENF);
+		exp.addActionShortHand("ob", ACTIONOPENB);
+		exp.addActionShortHand("or", ACTIONOPENR);
+		exp.addActionShortHand("ol", ACTIONOPENL);
 				
 		exp.exploreFromState(initialState);
 	}

@@ -33,6 +33,7 @@ public class MCStateGenerator {
 	private static final char bRmSym = '-';
 	private static final char dummySym = '.';
 	private static final char wallSym = '=';
+	private static final char doorSym = 'd';
 	
 	/**
 	 * @param path the file path for the map file.
@@ -119,6 +120,10 @@ public class MCStateGenerator {
 				addWall(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
+			case doorSym:
+				addDoor(s, d, ncol, nrow, 1);
+				ncol++;
+				break;
 			default:
 				continue;
 			}
@@ -134,6 +139,16 @@ public class MCStateGenerator {
 		wall.setValue("z", z);
 		wall.setValue("attDestroyable", 0); // Walls cannot be destroyed
 		s.addObject(wall);
+	}
+	
+	private static void addDoor(State s, Domain d, int x, int y, int z) {
+		addBlock(s, d, x, y, 0); // Add a block under the wall
+		ObjectInstance door = new ObjectInstance(d.getObjectClass("door"), "door"+x+y+z);
+		door.setValue("x", x);
+		door.setValue("y", y);
+		door.setValue("z", z);
+		door.setValue("doorOpen", 0); // door is closed at first.
+		s.addObject(door);
 	}
 	
 	private static void addBlock(State s, Domain d, int x, int y, int z) {
