@@ -190,6 +190,19 @@ public class MountainCar implements DomainGenerator {
 	
 	
 	/**
+	 * Returns a state with the agent in the specified position at the specified velocity.
+	 * @param domain the domain object in which the state is associated
+	 * @param x the position of the agent
+	 * @param v the velocity of the agent
+	 * @return a new state with the agent in the specified position
+	 */
+	public State getState(Domain domain, double x, double v){
+		State s = this.getCleanState(domain);
+		setAgent(s, x, v);
+		return s;
+	}
+	
+	/**
 	 * Sets the agent position in the provided state to the given position and with the given velocity.
 	 * @param s the state in which the agent should be set.
 	 * @param x the position of the agent.
@@ -200,6 +213,9 @@ public class MountainCar implements DomainGenerator {
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTV, v);
 	}
+	
+	
+	
 	
 	
 	/**
