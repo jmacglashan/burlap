@@ -58,7 +58,7 @@ public class MinecraftBehavior {
 	PropositionalFunction		pfIsAtLocation;
 	PropositionalFunction		pfIsWalkable;
 	PropositionalFunction 		pfIsAdjDstableWall;
-	
+	PropositionalFunction 		pfAgentHasBread;
 	
 	public MinecraftBehavior(String mapfile) {
 		mcdg = new MinecraftDomain();
@@ -112,11 +112,13 @@ public class MinecraftBehavior {
 		
 		pfIsWalkable = new IsWalkablePF(this.mcdg.ISWALK, this.mcdg.DOMAIN,
 				new String[]{"Integer", "Integer", "Integer"});
-		
+
+		pfAgentHasBread = new AgentHasBreadPF(this.mcdg.AGENTHASBREAD, this.mcdg.DOMAIN,
+				new String[]{this.mcdg.CLASSAGENT});
 		
 		// Generate Goal Condition
-		rf = new SingleGoalPFRF(domain.getPropFunction(MinecraftDomain.PFATGOAL), 10, -1); 
-		tf = new SinglePFTF(domain.getPropFunction(MinecraftDomain.PFATGOAL)); 
+		rf = new SingleGoalPFRF(pfAgentHasBread, 10, -1); 
+		tf = new SinglePFTF(pfAgentHasBread); 
 		goalCondition = new TFGoalCondition(tf);
 		
 		
@@ -295,9 +297,9 @@ public class MinecraftBehavior {
 		
 		ArrayList<Action> isPlaneActions = new ArrayList<Action>();
 		isPlaneActions.add(this.mcdg.forward);
-		isPlaneActions.add(this.mcdg.backward);
+//		isPlaneActions.add(this.mcdg.backward);
 		isPlaneActions.add(this.mcdg.left);
-		isPlaneActions.add(this.mcdg.right);
+//		isPlaneActions.add(this.mcdg.right);
 //		
 //		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
 //		isTrenchActions.add(this.mcdg.forward);
@@ -343,18 +345,18 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("bigworld.map");
+		MinecraftBehavior mcb = new MinecraftBehavior("breadworld.map");
 		
 		// VANILLA OOMDP/VI
-//		 String actionSequence = mcb.ValueIterationPlanner();
+		 String actionSequence = mcb.ValueIterationPlanner();
 		
 		// SUBGOALS
 //		ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
 //		String actionSequence = mcb.SubgoalPlanner(kb);
 		
 		// AFFORDANCES
-		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-		 String actionSequence = mcb.AffordancePlanner(kb);
+//		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+//		 String actionSequence = mcb.AffordancePlanner(kb);
 //		
 		System.out.println(actionSequence);
 

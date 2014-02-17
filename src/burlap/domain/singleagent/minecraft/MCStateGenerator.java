@@ -34,6 +34,8 @@ public class MCStateGenerator {
 	private static final char dummySym = '.';
 	private static final char wallSym = '=';
 	private static final char doorSym = 'd';
+	private static final char grainSym = '*';
+	private static final char ovenSym = 'o';
 	
 	/**
 	 * @param path the file path for the map file.
@@ -91,8 +93,11 @@ public class MCStateGenerator {
 		row = row.replace(" ", "");
 		
 		while (ncol < row.length()) {
+			if (row.contains("*")) {
+				int asdf = 0;
+			}
 			ch = row.charAt(ncol);
-			if (ch != ' ') {
+			if (ch != ' ' && ch != '*') {
 				addBlock(s, d, ncol, nrow, 0);
 			}
 			switch (ch) {
@@ -117,11 +122,22 @@ public class MCStateGenerator {
 				ncol++;
 				break;
 			case wallSym:
+//				addBlock(s, d, ncol, nrow, 0); // Add a block under the wall
 				addWall(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
 			case doorSym:
+//				addBlock(s, d, ncol, nrow, 0); // Add a block under the door
 				addDoor(s, d, ncol, nrow, 1);
+				ncol++;
+				break;
+			case grainSym:
+				addGrain(s, d, ncol, nrow, 0);
+				ncol++;
+				break;
+			case ovenSym:
+//				addBlock(s, d, ncol, nrow, 0);
+				addOven(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
 			default:
@@ -132,7 +148,6 @@ public class MCStateGenerator {
 	
 	
 	private static void addWall(State s, Domain d, int x, int y, int z) {
-		addBlock(s, d, x, y, 0); // Add a block under the wall
 		ObjectInstance wall = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
 		wall.setValue("x", x);
 		wall.setValue("y", y);
@@ -142,7 +157,6 @@ public class MCStateGenerator {
 	}
 	
 	private static void addDoor(State s, Domain d, int x, int y, int z) {
-		addBlock(s, d, x, y, 0); // Add a block under the wall
 		ObjectInstance door = new ObjectInstance(d.getObjectClass("door"), "door"+x+y+z);
 		door.setValue("x", x);
 		door.setValue("y", y);
@@ -151,11 +165,30 @@ public class MCStateGenerator {
 		s.addObject(door);
 	}
 	
+	private static void addGrain(State s, Domain d, int x, int y, int z) {
+		ObjectInstance grain = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
+		grain.setValue("x", x);
+		grain.setValue("y", y);
+		grain.setValue("z", z);
+		grain.setValue("isGrain", 1); // door is closed at first.
+		grain.setValue("attDestroyable", 1); // By default blocks can be destroyed
+		s.addObject(grain);
+	}
+	
+	private static void addOven(State s, Domain d, int x, int y, int z) {
+		ObjectInstance oven = new ObjectInstance(d.getObjectClass("oven"), "oven"+x+y+z);
+		oven.setValue("x", x);
+		oven.setValue("y", y);
+		oven.setValue("z", z);
+		s.addObject(oven);
+	}
+	
 	private static void addBlock(State s, Domain d, int x, int y, int z) {
 		ObjectInstance block = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
 		block.setValue("x", x);
 		block.setValue("y", y);
 		block.setValue("z", z);
+		block.setValue("isGrain", 0); //
 		block.setValue("attDestroyable", 1); // By default blocks can be destroyed
 		s.addObject(block);
 	}
@@ -168,6 +201,8 @@ public class MCStateGenerator {
 	private static void addAgent(State s, Domain d, int x, int y, int z) {
 		ObjectInstance agent = new ObjectInstance(d.getObjectClass("agent"), "agent0");
 		agent.setValue("bNum", 1);  // Expliticly set the number of blocks agent can carry to 1
+		agent.setValue("agentHasGrain", 0);
+		agent.setValue("agentHasBread", 0);
 		addBlock(s, d, x, y, z - 1); // Agent needs to be on top of a block
 		addObject(agent, s, d, x, y, z);
 	}
