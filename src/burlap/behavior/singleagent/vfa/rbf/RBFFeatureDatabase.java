@@ -1,7 +1,9 @@
 package burlap.behavior.singleagent.vfa.rbf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
@@ -14,7 +16,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 /**
  * A feature database of RBF units that can be used for linear value function approximation.
- * @author James MacGlashan
+ * @author Anubhav Malhotra and Daniel Fernandez and Spandan Dutta; modified by James MacGlashan
  *
  */
 public class RBFFeatureDatabase implements FeatureDatabase {
@@ -34,6 +36,17 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	 * Specifies whether an offset RBF unit with a constant response value is included in the feature set.
 	 */
 	protected boolean hasOffset;
+	
+	/**
+	 * A map for return a multiplier to the number of RBF statefeatures for each action. Effecitively
+	 * this ensures a unieque feature ID fo reach RBF for each action.
+	 */
+	protected Map<String, Integer> actionFeatureMultiplier = new HashMap<String, Integer>();
+	
+	/**
+	 * The next action RBF size multiplier to use for the next newly seen action.
+	 */
+	protected int nextActionMultiplier = 0;
 	
 	
 	/**
@@ -87,36 +100,22 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	@Override
 	public List<ActionFeaturesQuery> getActionFeaturesSets(State s, List<GroundedAction> actions)
 	{
+		
 		List<ActionFeaturesQuery> lstAFQ = new ArrayList<ActionFeaturesQuery>();
-		int actionCount = actions.size();
-		int id = 0;
 		
-		for(GroundedAction ga : actions)
-		{
-			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga);
-			lstAFQ.add(afq);
-		}
+		List<StateFeature> sfs = this.getStateFeatures(s);
 		
-		for(RBF r : rbfs)
-		{
-			double value = r.responseFor(s);
+		for(GroundedAction ga : actions){
+			int actionMult = this.getActionMultiplier(ga);
+			int indexOffset = actionMult*this.nRbfs;
 			
-			for(int i = 0; i < actionCount; i++)
-			{
-				StateFeature sf = new StateFeature(id, value);
-				lstAFQ.get(i).addFeature(sf);
-				id++;
+			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga);
+			for(StateFeature sf : sfs){
+				afq.addFeature(new StateFeature(sf.id + indexOffset, sf.value));
 			}
-		}
-		
-		if(hasOffset)
-		{
-			for(int i = 0; i < actionCount; i++)
-			{
-				StateFeature sf = new StateFeature(id, 1.0);
-				lstAFQ.get(i).addFeature(sf);
-				id++;
-			}
+			
+			lstAFQ.add(afq);
+			
 		}
 		
 		return lstAFQ;
@@ -137,6 +136,31 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	public ValueFunctionApproximation generateVFA(double defaultWeightValue)
 	{
 		return new LinearVFA(this, defaultWeightValue);
+	}
+	
+	
+	
+	/**
+	 * This method returns the action multiplier for the specified grounded action.
+	 * If the action is not stored, a new action multiplier will created, stored, and returned.
+	 * If the action is parameterized a runtime exception is thrown.
+	 * @param ga the grounded action for which the multiplier will be returned
+	 * @return the action multiplier to be applied to a state feature id.
+	 */
+	protected int getActionMultiplier(GroundedAction ga){
+		
+		if(ga.isParameterized()){
+			throw new RuntimeException("RBF Feature Database does not support parameterized actions.");
+		}
+		
+		Integer stored = this.actionFeatureMultiplier.get(ga.actionName());
+		if(stored == null){
+			this.actionFeatureMultiplier.put(ga.actionName(), this.nextActionMultiplier);
+			stored = this.nextActionMultiplier;
+			this.nextActionMultiplier++;
+		}
+		
+		return stored;
 	}
 
 }
