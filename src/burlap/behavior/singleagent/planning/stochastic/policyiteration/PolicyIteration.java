@@ -124,7 +124,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	}
 	
 	/**
-	 * Calling this method will force the planner to recompute the reachable states when the {@link planFromState(State)} method is called next.
+	 * Calling this method will force the planner to recompute the reachable states when the {@link #planFromState(State)} method is called next.
 	 * This may be useful if the transition dynamics from the last planning call have changed and if planning needs to be restarted as a result.
 	 */
 	public void recomputeReachableStates(){
@@ -200,7 +200,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	
 	
 	/**
-	 * This method will find all reachable states that will be used by the {@link runVI()} method and will cache all the transition dynamics.
+	 * This method will find all reachable states that will be used when computing the value function.
 	 * This method will not do anything if all reachable states from the input state have been discovered from previous calls to this method.
 	 * @param si the source state from which all reachable states will be found
 	 * @return true if a reachability analysis had never been performed from this state; false otherwise.

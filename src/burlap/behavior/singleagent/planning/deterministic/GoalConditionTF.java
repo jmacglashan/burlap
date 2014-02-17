@@ -7,7 +7,7 @@ import burlap.oomdp.core.TerminalFunction;
 
 /**
  * Creates a terminal function that indicates terminal states are any states that satisfy a goal condition
- * where the goal condition is specified by a {@link burlap.behavior.singleagent.StateConditionTest} object. 
+ * where the goal condition is specified by a {@link burlap.behavior.singleagent.planning.StateConditionTest} object. 
  * No other states are set as terminal states.
  * @author James MacGlashan
  *

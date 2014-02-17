@@ -200,7 +200,7 @@ public abstract class Domain {
 	 * will not alter the list of propositional functions that define this domain, because it returns a
 	 * shallow copy. Modifying the propositional functions in the returned list will, however, 
 	 * modify the propositional functions in this domain.
-	 * @return
+	 * @return a list of the propositional functions that define this domain
 	 */
 	public List <PropositionalFunction> getPropFunctions(){
 		return new ArrayList <PropositionalFunction>(propFunctions);
@@ -222,7 +222,7 @@ public abstract class Domain {
 	 * shallow copy. Modifying the actions in the returned list will, however, 
 	 * modify the actions in this domain. This method will throw a runtime exception
 	 * if it is not an instance of the single agent domain (SADomain).
-	 * @return
+	 * @return a list of the single agent actions that define this domain
 	 */
 	public abstract List <Action> getActions();
 	
@@ -232,7 +232,7 @@ public abstract class Domain {
 	 * shallow copy. Modifying the actions in the returned list will, however, 
 	 * modify the actions in this domain. This method will throw a runtime exception
 	 * if it is not an instance of the stochastic game domain (SGDomain).
-	 * @return
+	 * @return a list of the stochastic game actions that that can be taken by individual agents in this domain
 	 */
 	public abstract List <SingleAction> getSingleActions();
 	

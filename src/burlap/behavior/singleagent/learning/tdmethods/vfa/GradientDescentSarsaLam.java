@@ -134,64 +134,64 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	
 	/**
 	 * Initializes SARSA(\lambda) with 0.1 epsilon greedy policy and places no limit on the number of steps the 
-	 * agent can take in an episode. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * agent can take in an episode. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
-	 * @param ValueFunctionApproximation the value function approximation method to use for estimate Q-values
+	 * @param vfa the value function approximation method to use for estimate Q-values
 	 * @param learningRate the learning rate
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
 	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
-			double learningRate, double lamda) {
+			double learningRate, double lambda) {
 		
-		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE, lamda);
+		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE, lambda);
 		
 	}
 	
 	
 	/**
-	 * Initializes SARSA(\lambda) with 0.1 epsilon greedy policy. By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * Initializes SARSA(\lambda) with 0.1 epsilon greedy policy. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
-	 * @param ValueFunctionApproximation the value function approximation method to use for estimate Q-values
+	 * @param vfa the value function approximation method to use for estimate Q-values
 	 * @param learningRate the learning rate
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
 	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
-			double learningRate, int maxEpisodeSize, double lamda) {
+			double learningRate, int maxEpisodeSize, double lambda) {
 		
-		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize, lamda);
+		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize, lambda);
 		
 	}
 	
 	
 	/**
-	 * Initializes SARSA(\lambda) By default the agent will only save the last learning episode and a call to the {@link planFromState(State)} method
+	 * Initializes SARSA(\lambda) By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
-	 * @param ValueFunctionApproximation the value function approximation method to use for estimate Q-values
+	 * @param vfa the value function approximation method to use for estimate Q-values
 	 * @param learningRate the learning rate
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
 	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
-			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lamda) {
+			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 	
-		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, learningPolicy, maxEpisodeSize, lamda);
+		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, learningPolicy, maxEpisodeSize, lambda);
 	}
 
 	
@@ -247,8 +247,8 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	
 	
 	/**
-	 * Sets the maximum number of episodes that will be performed when the {@link planFromState(State)} method is called.
-	 * @param n the maximum number of episodes that will be performed when the {@link planFromState(State)} method is called.
+	 * Sets the maximum number of episodes that will be performed when the {@link #planFromState(State)} method is called.
+	 * @param n the maximum number of episodes that will be performed when the {@link #planFromState(State)} method is called.
 	 */
 	public void setMaximumEpisodesForPlanning(int n){
 		if(n > 0){
@@ -261,7 +261,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	
 	
 	/**
-	 * Sets a max change in the VFA weight threshold that will cause the {@link planFromState(State)} to stop planning
+	 * Sets a max change in the VFA weight threshold that will cause the {@link #planFromState(State)} to stop planning
 	 * when it is achieved.
 	 * @param m the maximum allowable change in the VFA weights before planning stops
 	 */

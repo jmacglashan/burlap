@@ -105,7 +105,7 @@ public class VisualExplorer extends JFrame{
 	
 	/**
 	 * Returns a special action that causes the state to reset to the initial state.
-	 * @return
+	 * @return a special action that causes the state to reset to the initial state.
 	 */
 	public StateResetSpecialAction getResetSpecialAction(){
 		return (StateResetSpecialAction)keySpecialMap.get("`");

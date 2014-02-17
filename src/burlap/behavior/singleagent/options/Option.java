@@ -34,7 +34,7 @@ import burlap.oomdp.singleagent.common.NullAction;
  * This is an abstract class to provide support to learning and planning with options [1], which are
  * temporally extended actions. Options may be Markov or non-Markov. An example of a non-Markov
  * option is a macro action whose termination depends on its action history. Because options
- * are subclasses of the {@link burlap.oomdp.singleanget.Action} class, they may be trivally
+ * are subclasses of the {@link burlap.oomdp.singleagent.Action} class, they may be trivally
  * added to any planning or learning algorithm. Some planning and learning algorithms should
  * handle options specially; for instance Q-learning needs to treat the return from options
  * specially. However, the current planning and learning algorithms all handle options in the
@@ -45,7 +45,7 @@ import burlap.oomdp.singleagent.common.NullAction;
  * since they began execution. This abstract class has data structures and code in place to automatically
  * handle that information so that any subclass of this Option class should "just work." When
  * an option is added to an {@link burlap.behavior.singleagent.planning.OOMDPPlanner} object
- * through the {@link burlap.behavior.singleagent.planning.OOMDPPlanner.addNonDomainReferencedAction(Action)}
+ * through the {@link burlap.behavior.singleagent.planning.OOMDPPlanner#addNonDomainReferencedAction(Action)}
  * method, it will automatically tell the Option which reward function and discount factor it should be using
  * to keep track of the cumulative reward.
  * <p/>
@@ -59,16 +59,16 @@ import burlap.oomdp.singleagent.common.NullAction;
  * As a result, the transition dynamics computation will stop searching for states at given
  * horizons that are less than some small probability of occurring (by default set to
  * 0.001). This threshold hold may be modified. However, if these transition dynamics can be specified
- * a priori, it is recommended that the {@link getTransitions(State, String [])} method is overridden
+ * a priori, it is recommended that the {@link #getTransitions(State, String [])} method is overridden
  * and specified by hand rather than requiring this class to have to enumerate the results. Finally,
- * note that the {@link getTransitions(State, String [])} returns {@link burlap.oomdp.core.TransitionProbaility} 
- * elements, where each {@link burlap.oomdp.core.TransitionProbaility} holds the probability of transitioning to a state discounted
- * by the the expected length of time. That is, the probability value in each {@link burlap.oomdp.core.TransitionProbaility} is
+ * note that the {@link #getTransitions(State, String [])} returns {@link burlap.oomdp.core.TransitionProbability} 
+ * elements, where each {@link burlap.oomdp.core.TransitionProbability} holds the probability of transitioning to a state discounted
+ * by the the expected length of time. That is, the probability value in each {@link burlap.oomdp.core.TransitionProbability} is
  * <br/> 
  * \sum_k \gamma^k * p(s, s', k) <br/>
  * where p(s, s', k) is the
  * probability that the option will terminate in s' after being initiated in state s and taking k steps, gamma is the discount
- * factor and s' is the state associated with the probability value in the {@link burlap.oomdp.core.TransitionProbaility} object.
+ * factor and s' is the state associated with the probability value in the {@link burlap.oomdp.core.TransitionProbability} object.
  * <p/>
  * 1. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction 
  * in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
@@ -219,7 +219,7 @@ public abstract class Option extends Action {
 	public abstract double probabilityOfTermination(State s, String [] params);
 	
 	/**
-	 * This method is always called when an option is initated and begins execution. Specifically, it is called from the {@link performActionHelper(State, String [])}
+	 * This method is always called when an option is initated and begins execution. Specifically, it is called from the {@link #performActionHelper(State, String [])}
 	 * For Markov options, this method probably does not need to do anything, but for non-Markov options, like Macro actions, it may need
 	 * to initialize some structures for determining termination and action selection.
 	 * @param s the state in which the option was initiated
@@ -230,10 +230,10 @@ public abstract class Option extends Action {
 	
 	/**
 	 * This method causes the option to take a single step in the given state, when the option was initiated with the provided parameters.
-	 * This method will be called by the {@link performActionHelper(State, String [])} method until it is determined that the option terminates.
+	 * This method will be called by the {@link #performActionHelper(State, String [])} method until it is determined that the option terminates.
 	 * @param s the state in which an action should be selected.
 	 * @param params the parameters that were passed to the option when it was initiated
-	 * @return the action the option has selected to take in State {@link s}
+	 * @return the action the option has selected to take in State <code>s</code>
 	 */
 	public abstract GroundedAction oneStepActionSelection(State s, String [] params);
 	
@@ -474,7 +474,7 @@ public abstract class Option extends Action {
 	
 	/**
 	 * Tells the option that it is being initiated in the given state with the given parameters. Will set auxiliary data such as the cumulative reward
-	 * received in the last execution to 0 since the option is about to be executed again. The {@link initiateInStateHelper(State, String[])
+	 * received in the last execution to 0 since the option is about to be executed again. The {@link #initiateInStateHelper(State, String[])}
 	 * method will be called before exiting.
 	 * @param s the state in which the option is being initiated.
 	 * @param params the parameters passed to the option 
@@ -513,7 +513,7 @@ public abstract class Option extends Action {
 	
 	
 	/**
-	 * Performs one step of execution of the option. This method assumes that the {@link initiateInState(State, String [])}
+	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(State, String [])}
 	 * method was called previously for the state in which this option was initiated.
 	 * @param s the state in which a single step of the option is to be taken.
 	 * @param params the parameters that were passed to the option at initiation

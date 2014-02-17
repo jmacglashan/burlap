@@ -76,7 +76,7 @@ public class Tiling {
 	/**
 	 * Returns the multi-dimensional tile from this tiling that corresponds to the given input state.
 	 * @param s
-	 * @return
+	 * @return the multi-dimensional tile from this tiling that corresponds to the given input state.
 	 */
 	public StateTile getStateTile(State s){
 		return new StateTile(s);

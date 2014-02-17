@@ -71,8 +71,8 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	/**
 	 * Initializes the planner. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
-	 * for performing rollouts. Use the {@link setValueFunctionInitialization(ValueFunctionInitialization)} method
-	 * to change the value function initialization and the {@link setRollOutPolicy(Policy} method to change the rollout policy to something else. vInit
+	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
+	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
@@ -102,8 +102,8 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	/**
 	 * Initializes the planner. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
-	 * for performing rollouts. Use the {@link setValueFunctionInitialization(ValueFunctionInitialization)} method
-	 * to change the value function initialization and the {@link setRollOutPolicy(Policy} method to change the rollout policy to something else. vInit
+	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
+	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function

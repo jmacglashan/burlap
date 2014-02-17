@@ -8,9 +8,9 @@ import burlap.oomdp.core.TransitionProbability;
 
 /**
  * This abstract class provides the interface and comment mechanisms for defining
- * a stochastic game's transition dynamics. The {@link performJointAction(State, JointAction)} method
- * first makes a copy of a state and passes it to the {@link actionHelper(State, JointAction)} method,
- * which is what should be overridden by subclasses. The {@link transitionProbsFor(State, JointAction)}
+ * a stochastic game's transition dynamics. The {@link #performJointAction(State, JointAction)} method
+ * first makes a copy of a state and passes it to the {@link #actionHelper(State, JointAction)} method,
+ * which is what should be overridden by subclasses. The {@link #transitionProbsFor(State, JointAction)}
  * method defines the transition probabilities and should also be overridden by subclasses if
  * this model is to be used with planning algorithms that require it.
  * 

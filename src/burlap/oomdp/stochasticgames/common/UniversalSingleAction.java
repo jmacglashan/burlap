@@ -32,7 +32,7 @@ public class UniversalSingleAction extends SingleAction {
 	 * is automatically added to the given domain
 	 * @param d the domain to which this action belongs
 	 * @param name the name of this action
-	 * @param parameterTypes the object class names for the possible parameters of this action.
+	 * @param types the object class names for the possible parameters of this action.
 	 */
 	public UniversalSingleAction(SGDomain d, String name, String [] types){
 		super(d, name, types);
@@ -45,7 +45,7 @@ public class UniversalSingleAction extends SingleAction {
 	 * is automatically added to the given domain
 	 * @param d the domain to which this action belongs
 	 * @param name the name of this action
-	 * @param parameterTypes the object class names for the possible parameters of this action.
+	 * @param types the object class names for the possible parameters of this action.
 	 * @param parameterOrderGroups the parameter order groups to use
 	 */
 	public UniversalSingleAction(SGDomain d, String name, String [] types, String [] parameterOrderGroups){

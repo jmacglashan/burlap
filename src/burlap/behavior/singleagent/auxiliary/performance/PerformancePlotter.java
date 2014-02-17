@@ -49,13 +49,13 @@ import burlap.oomdp.singleagent.RewardFunction;
  * may be displayed in any order specified by the user and plots are displayed in a matrix format with a maximum number of columns that are filled out first.
  * If the number of plots would causw a window hight larger than a maximimum specified, then the plots are placed in a scroll view.
  * <p/>
- * The way this class should be used is the constructor is first called. Then the {@link startGUI()} method. A trial indicates a single evaluation of
+ * The way this class should be used is the constructor is first called. Then the {@link #startGUI()} method. A trial indicates a single evaluation of
  * a learning algorithm for some number of steps or episodes. Multiple trials are used to produce the average trial plots. Each trial should reinitialize
- * the learning algorithm so that it learns from scratch. At the start of each trial the {@link startNewtrial()} method should be called. At the end
- * of each episode in a trial, the {@link endEpisode()} method should be called. At the end of a trial the {@link endTrial()} method should be called. When
- * all trials for the current agent are complete and a new agent is to tested to be compared, the {@link startNewAgent(String)} method should be called,
+ * the learning algorithm so that it learns from scratch. At the start of each trial the {@link #startNewTrial()} method should be called. At the end
+ * of each episode in a trial, the {@link #endEpisode()} method should be called. At the end of a trial the {@link #endTrial()} method should be called. When
+ * all trials for the current agent are complete and a new agent is to tested to be compared, the {@link #startNewAgent(String)} method should be called,
  * providing the name of the new agent to be tested. Since the constructor takes the name of the first agent, this method does not have to be called for
- * the first agent. When all testing for all agents is complete, a call to the {@link endTrialsForCurrentAgent()} method should be made.
+ * the first agent. When all testing for all agents is complete, a call to the {@link #endTrialsForCurrentAgent()} method should be made.
  * <p/>
  * To ensure proper use of this class, it is highly reccomended that the {@link LearningAlgorithmExperimenter} class is used, since it handles all of these
  * method calls behind the scenes.

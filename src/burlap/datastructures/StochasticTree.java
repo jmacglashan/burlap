@@ -77,7 +77,7 @@ public class StochasticTree <T>{
 	
 	/**
 	 * Returns the number of objects in this tree
-	 * @return
+	 * @return the number of objects in this tree
 	 */
 	public int size(){
 		return nodeMap.size();

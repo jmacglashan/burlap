@@ -122,7 +122,7 @@ public class ObjectInstance {
 	 * Sets the relational value of the attribute named attName for this object instance. If the
 	 * attribute is a multi-target relational attribute, then this value is added to the target list.
 	 * @param attName the name of the relational attribute that will have a relational target added/set
-	 * @param v the name of the object reference that is to be added as a target.
+	 * @param target the name of the object reference that is to be added as a target.
 	 */
 	public void addRelationalTarget(String attName, String target){
 		int ind = obClass.attributeIndex(attName);

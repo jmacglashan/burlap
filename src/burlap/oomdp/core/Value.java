@@ -74,7 +74,7 @@ public abstract class Value {
 	
 	/**
 	 * Creates a deep copy of this value object.
-	 * @return
+	 * @return a deep copy of this value object.
 	 */
 	public abstract Value copy();
 	
@@ -151,7 +151,7 @@ public abstract class Value {
 	/**
 	 * Returns a numeric double representation of this value. If the value is discerete, the int
 	 * will be type cast as a double.
-	 * @return
+	 * @return a numeric double representation of this value
 	 */
 	public abstract double getNumericRepresentation();
 	

@@ -86,7 +86,7 @@ public class Visualizer extends MultiLayerRenderer{
 	
 	/**
 	 * Returns the {@link StateRenderLayer} instance for visualizing OO-MDP states.
-	 * @return
+	 * @return the {@link StateRenderLayer} instance for visualizing OO-MDP states.
 	 */
 	public StateRenderLayer getStateRenderLayer(){
 		return this.srender;

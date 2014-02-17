@@ -43,7 +43,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 	
 	
 	/**
-	 * This method is called at the start of the {@link planFromState(State)} method and can be used initialize any special
+	 * This method is called at the start of the {@link #planFromState(State)} method and can be used initialize any special
 	 * data structures needed by the subclass. By default it does nothing.
 	 */
 	public void prePlanPrep(){
@@ -52,7 +52,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 	
 	
 	/**
-	 * This method is called at the end of the {@link planFromState(State)} method and can be used clean up any special
+	 * This method is called at the end of the {@link #planFromState(State)} method and can be used clean up any special
 	 * data structures needed by the subclass. By default it does nothing.
 	 */
 	public void postPlanPrep(){

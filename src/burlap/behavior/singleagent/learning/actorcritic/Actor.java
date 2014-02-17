@@ -10,7 +10,7 @@ import burlap.oomdp.singleagent.Action;
  * identical to policies since they effectively specify how the agent should act; in fact, this abstract class extends the Policy
  * class. However, the extra important functionality that an actor must incorporate is the ability to adjust its policy
  * in response to some critique of its behavior. In this class, this functionality should be implemented in the
- * {@link updateFromCritqique(CritiqueResult)} method.
+ * {@link #updateFromCritqique(CritiqueResult)} method.
  * 
  * 
  * 

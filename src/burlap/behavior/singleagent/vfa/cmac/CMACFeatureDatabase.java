@@ -128,11 +128,11 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	
 	
 	/**
-	 * Initializes with a set of {@link nTilings} and sets
-	 * the offset arrangement for subsequent tilings to be determined according to {@link arrangement}.
+	 * Initializes with a set of <code>nTilings</code> and sets
+	 * the offset arrangement for subsequent tilings to be determined according to <code>arrangement</code>.
 	 * The OO-MDP object classes attributes over which the tilings will be defined are unspecified at the start
-	 * and will need to be set using other methods on this object such as {@link addSpecificationForAllTilings(String, Attribute, double)}
-	 * or {@link addSpecificaitonForTiling(int, String, Attribute, double)}.
+	 * and will need to be set using other methods on this object such as {@link #addSpecificationForAllTilings(String, Attribute, double)}
+	 * or {@link #addSpecificaitonForTiling(int, String, Attribute, double)}.
 	 * @param nTilings the number of tilings that will be created.
 	 * @param arrangement either RANDOMJITTER or UNIFORM.
 	 */
@@ -159,7 +159,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	
 	/**
 	 * Causes all tilings in this CMAC to be defined over the given attribute for the given OO-MDP class. Along that
-	 * dimension, tilings will have a width of {@link windowSize}.
+	 * dimension, tilings will have a width of <code>windowSize</code>.
 	 * @param className the OO-MDP class name for which the provided attribute will be tiled.
 	 * @param attribute the OO-MDP attribute that will be tiled
 	 * @param windowSize the width of tilings over the specified attribute and OO-MDP class.
@@ -174,8 +174,8 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	
 	
 	/**
-	 * Causes the {@link i}th tiling in this CMAC to be defined over the given attribute for the given OO-MDP class. Along that
-	 * dimension, the tiling will have a width of {@link windowSize}.
+	 * Causes the <code>i</code>th tiling in this CMAC to be defined over the given attribute for the given OO-MDP class. Along that
+	 * dimension, the tiling will have a width of <code>windowSize</code>.
 	 * @param className the OO-MDP class name for which the provided attribute will be tiled.
 	 * @param attribute the OO-MDP attribute that will be tiled
 	 * @param windowSize the width of tilings over the specified attribute and OO-MDP class.
@@ -202,7 +202,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	 * After all the tiling specifications have been set, this method can be called to produce a linear
 	 * VFA object.
 	 * @param defaultWeightValue the default value weights for the CMAC features will use.
-	 * @return
+	 * @return a linear ValueFunctionApproximation object that uses this feature database
 	 */
 	public ValueFunctionApproximation generateVFA(double defaultWeightValue){
 		return new LinearVFA(this, defaultWeightValue);

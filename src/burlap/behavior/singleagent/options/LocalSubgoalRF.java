@@ -76,7 +76,7 @@ public class LocalSubgoalRF implements RewardFunction {
 	/**
 	 * Initializes with a set of states in which an option is applicable and which the agent should not enter and a set of 
 	 * subgoal states
-	 * @param applicableStateTest the applicable states. Transitioning to a non-applicable state causes a reward of {@link failReward}.
+	 * @param applicableStateTest the applicable states. Transitioning to a non-applicable state causes a reward of <code>failReward</code>.
 	 * @param subgoalStateTest the subgoal states
 	 */
 	public LocalSubgoalRF(StateConditionTest applicableStateTest, StateConditionTest subgoalStateTest) {
@@ -87,7 +87,7 @@ public class LocalSubgoalRF implements RewardFunction {
 	
 	/**
 	 * Initializes
-	 * @param applicableStateTest Defines the set of states in which the option is applicable. Transitioning to a non-applicable state causes a reward of {@link failReward}.
+	 * @param applicableStateTest Defines the set of states in which the option is applicable. Transitioning to a non-applicable state causes a reward of <code>failReward</code>.
 	 * @param subgoalStateTest the subgoal states
 	 * @param defaultReward the default reward
 	 * @param failReward the reward for transitioning to a non-subgoal non-applicable state

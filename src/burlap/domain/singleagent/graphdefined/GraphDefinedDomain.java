@@ -79,7 +79,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	
 	
 	/**
-	 * Sets the probability {@link p} for transitioning to state node {@link tNode} after taking action number {@link action} in state node {@link srcNode}.
+	 * Sets the probability <code>p</code> for transitioning to state node <code>tNode</code> after taking action number <code>action</code> in state node <code>srcNode</code>.
 	 * Note that this method also defines from which nodes an action can be executed. If this method is never called for source node i and action j, then
 	 * it will be assumed that action j cannot be executed in state node i.
 	 * @param srcNode the source node number from which an action will be taken

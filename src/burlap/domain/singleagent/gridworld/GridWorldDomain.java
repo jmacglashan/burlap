@@ -31,7 +31,7 @@ import burlap.oomdp.visualizer.Visualizer;
  * two object classes: an agent class and a location class, each of which is defined by
  * and x and y position. Locations also have an attribute defining which type of location it is.
  * The number of
- * possible types can be set using the {@link setNumberOfLocationTypes(int)} mutator.
+ * possible types can be set using the {@link #setNumberOfLocationTypes(int)} mutator.
  * Setting location types may be useful if terminating "pits" and goal locations exist in the world
  * (or any other similar reason), because pits can be marked as on type of location and goals another.
  * <br/> 

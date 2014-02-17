@@ -26,7 +26,7 @@ public interface ActionIdMap {
 	
 	/**
 	 * The maximum number of int values for actions
-	 * @return
+	 * @return maximum number of int values for actions
 	 */
 	public int maxValue();
 	

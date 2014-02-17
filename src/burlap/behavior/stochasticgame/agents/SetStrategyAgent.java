@@ -26,7 +26,7 @@ public class SetStrategyAgent extends Agent {
 	/**
 	 * Initializes for the given domain in which the agent will play and the strategy that they will follow.
 	 * @param domain the domain in which the agent will play
-	 * @param strategy the strategy that the agent will follow
+	 * @param policy the strategy that the agent will follow
 	 */
 	public SetStrategyAgent(SGDomain domain, Policy policy){
 		this.init(domain);

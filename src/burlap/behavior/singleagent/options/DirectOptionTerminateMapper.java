@@ -30,7 +30,7 @@ public interface DirectOptionTerminateMapper {
 	
 	/**
 	 * Returns the number of steps that would have occurred for taking the option associated with this object
-	 * from state {@link s} and terminating in state {@link sp}.
+	 * from state <code>s</code> and terminating in state <code>sp</code>.
 	 * @param s the initiation state in which the option associated with this object will be applied.
 	 * @param sp the terminal state the option will reach
 	 * @return the number of steps that would have occurred

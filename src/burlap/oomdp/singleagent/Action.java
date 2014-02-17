@@ -177,7 +177,7 @@ public abstract class Action {
 	
 	/**
 	 * Returns true if this action can be applied in this specified state with the specified parameters.
-	 * Default behavior is that an action can be applied in any state, but the {@link applicableInState(State, String [])}
+	 * Default behavior is that an action can be applied in any state, but the {@link #applicableInState(State, String [])}
 	 * method will need to be override if this is not the case.
 	 * @param s the state in which to check if this action can be applied
 	 * @param params a comma delineated String specifying the action object parameters
@@ -254,8 +254,8 @@ public abstract class Action {
 	 * Transition probabilities are specified as list of {@link burlap.oomdp.core.TransitionProbability} objects. The list
 	 * is only required to contain transitions with non-zero probability. By default, this method assumes that transition
 	 * dynamics are deterministic and it returns a list with a single TransitionProbability with probability 1 whose
-	 * state is determined by querying the {@link performAction(State, String [])} method. If the transition dynamics
-	 * are stochastic, then the analogous method {@link getTransitions(State, String [])} needs to be overridden.
+	 * state is determined by querying the {@link #performAction(State, String [])} method. If the transition dynamics
+	 * are stochastic, then the analogous method {@link #getTransitions(State, String [])} needs to be overridden.
 	 * @param s the state from which the transition probabilities when applying this action will be returned.
 	 * @param params a comma delineated String specifying the action object parameters
 	 * @return a List of transition probabilities for applying this action in the given state with the given set of parameters
@@ -271,7 +271,7 @@ public abstract class Action {
 	 * Transition probabilities are specified as list of {@link burlap.oomdp.core.TransitionProbability} objects. The list
 	 * is only required to contain transitions with non-zero probability. By default, this method assumes that transition
 	 * dynamics are deterministic and it returns a list with a single TransitionProbability with probability 1 whose
-	 * state is determined by querying the {@link performAction(State, String [])} method. If the transition dynamics
+	 * state is determined by querying the {@link #performAction(State, String [])} method. If the transition dynamics
 	 * are stochastic, then this method needs to be overridden.
 	 * @param s the state from which the transition probabilities when applying this action will be returned.
 	 * @param params a String array specifying the action object parameters

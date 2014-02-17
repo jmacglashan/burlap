@@ -45,8 +45,8 @@ public class BFSRTDP extends RTDP {
 	
 	/**
 	 * Initializes the planner. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
-	 * for performing rollouts. Use the {@link setValueFunctionInitialization(ValueFunctionInitialization)} method
-	 * to change the value function initialization and the {@link setRollOutPolicy(Policy} method to change the rollout policy to something else.
+	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
+	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
 	 * @param tf the terminal state function
@@ -70,8 +70,8 @@ public class BFSRTDP extends RTDP {
 	
 	/**
 	 * Initializes the planner. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
-	 * for performing rollouts. Use the {@link setValueFunctionInitialization(ValueFunctionInitialization)} method
-	 * to change the value function initialization and the {@link setRollOutPolicy(Policy} method to change the rollout policy to something else.
+	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
+	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
 	 * @param tf the terminal state function

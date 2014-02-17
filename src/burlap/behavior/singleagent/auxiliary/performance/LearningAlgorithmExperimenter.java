@@ -13,9 +13,9 @@ import burlap.oomdp.singleagent.SADomain;
  * This class is used to simplify the comparison of different learning algorithms. It takes as input a reward function to measure peformance, an initial state
  * generator, a number of trials, the length of the trials, and an array of learning agent factories used to generated agent instances and compare their performance.
  * The length of the trials by default is assumed to be in episodes, but it may also be changed to indicate length in total number of steps using the 
- * {@link toggleTrialLengthInterpretation(boolean)} method.
+ * {@link #toggleTrialLengthInterpretation(boolean)} method.
  * <p/>
- * Performacne results are displayed in plots using the {@link PerformancePlotter} class, but visualization may also be disabled with the {@link toggleVisualPlots(boolean)}
+ * Performacne results are displayed in plots using the {@link PerformancePlotter} class, but visualization may also be disabled with the {@link #toggleVisualPlots(boolean)}
  * method. Results may be saved to csv files after the experiment is complete.
  * <p/>
  * The folow the experimenter is to test an agent for a specified number of trials. At the beginning of each trial, a new agent is generated using the designated
@@ -25,7 +25,7 @@ import burlap.oomdp.singleagent.SADomain;
  * <p/>
  * By default the cumulative reward per step will be plotted and if more than one trial is specified, the both the most recent trail and the trial average plot will be shown.
  * If only one trial is specified, then only the most recent trial plot will be shown. To control the kinds of plots displayed use the 
- * {@link setUpPlottingConfiguration(int, int, int, int, TrialMode, PerformanceMetric...)} method. 
+ * {@link #setUpPlottingConfiguration(int, int, int, int, TrialMode, PerformanceMetric...)} method. 
  * 
  * @author James MacGlashan
  *
@@ -114,7 +114,7 @@ public class LearningAlgorithmExperimenter {
 	/**
 	 * Initializes.
 	 * The trialLength will be interpreted as the number of episodes, but it can be reinterpreted as a total number of steps per trial using the
-	 * {@link toggleTrialLengthInterpretation(boolean)}.
+	 * {@link #toggleTrialLengthInterpretation(boolean)}.
 	 * @param domain the domain in which agents will be tested
 	 * @param rf the reward function used to measure performance
 	 * @param sg the state generated used to generate states at the beginning of each episode

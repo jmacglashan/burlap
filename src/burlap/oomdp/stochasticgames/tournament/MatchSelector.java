@@ -15,7 +15,7 @@ public interface MatchSelector {
 	public List<MatchEntry> getNextMatch();
 	
 	/**
-	 * Resets the match selections and causes the {@link getNextMatch()} method to start from the beginning of matches
+	 * Resets the match selections and causes the {@link #getNextMatch()} method to start from the beginning of matches
 	 */
 	public void resetMatchSelections();
 }

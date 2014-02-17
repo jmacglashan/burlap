@@ -20,7 +20,7 @@ public abstract class AbstractGroundedAction {
 	
 	
 	/**
-	 * Returns true if this grounded action can be directly executed on a state with the {@link executeIn(State)} method. For example, a single agent domain grounded action is executable; a stochastic games single grounded action
+	 * Returns true if this grounded action can be directly executed on a state with the {@link #executeIn(State)} method. For example, a single agent domain grounded action is executable; a stochastic games single grounded action
 	 * is not, because the action of all other agents must also be known in order to get the next state.
 	 * @return true if this grounded action can be directly executed on a state; false otherwise.
 	 */

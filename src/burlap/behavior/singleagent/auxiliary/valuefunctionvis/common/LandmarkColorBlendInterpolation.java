@@ -56,7 +56,7 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 	
 	/**
 	 * Returns the power to raise the normalized distance
-	 * @return
+	 * @return the power to raise the normalized distance
 	 */
 	public double getPolynomialDegree(){
 		return this.polyDegree;

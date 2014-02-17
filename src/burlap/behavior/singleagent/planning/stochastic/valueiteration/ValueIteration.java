@@ -81,7 +81,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	
 	
 	/**
-	 * Calling this method will force the planner to recompute the reachable states when the {@link planFromState(State)} method is called next.
+	 * Calling this method will force the planner to recompute the reachable states when the {@link #planFromState(State)} method is called next.
 	 * This may be useful if the transition dynamics from the last planning call have changed and if planning needs to be restarted as a result.
 	 */
 	public void recomputeReachableStates(){
@@ -110,9 +110,9 @@ public class ValueIteration extends ValueFunctionPlanner{
 	}
 	
 	/**
-	 * Runs VI until the specified termination conditions are met. In general, this method should only be called indirectly through the {@link planFromState(State)} method.
-	 * The {@link performReachabilityFrom(State)} must have been performed at least once
-	 * in the past or a runtime exception will be thrown. The {@link planFromState(State)} method will automatically call the {@link performReachabilityFrom(State)} 
+	 * Runs VI until the specified termination conditions are met. In general, this method should only be called indirectly through the {@link #planFromState(State)} method.
+	 * The {@link #performReachabilityFrom(State)} must have been performed at least once
+	 * in the past or a runtime exception will be thrown. The {@link #planFromState(State)} method will automatically call the {@link #performReachabilityFrom(State)} 
 	 * method first and then this if it hasn't been run.
 	 */
 	public void runVI(){
@@ -147,7 +147,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	
 	
 	/**
-	 * This method will find all reachable states that will be used by the {@link runVI()} method and will cache all the transition dynamics.
+	 * This method will find all reachable states that will be used by the {@link #runVI()} method and will cache all the transition dynamics.
 	 * This method will not do anything if all reachable states from the input state have been discovered from previous calls to this method.
 	 * @param si the source state from which all reachable states will be found
 	 * @return true if a reachability analysis had never been performed from this state; false otherwise.

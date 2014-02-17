@@ -31,7 +31,7 @@ import burlap.oomdp.singleagent.interfaces.rlglue.RLGlueEnvironment;
  * some algorithms may be limited to working with states that have explicit enumerated values and with an entire state space already defined. In particular,
  * if you are interfacing with code external to BURLAP this may be required. This domain generator can take any input domain that does not have parameterized
  * actions and turn it into a domain in which states are represented by a single int attribute and are fully enumerated. 
- * The state space used must be enumerated before calling the {@link generateDomain()} method and is performed
+ * The state space used must be enumerated before calling the {@link #generateDomain()} method and is performed
  * using a BURLAP state enumerator. In particular, seed states must be passed to this object and it will find all reachable states from the seed state
  * and enumerate them.
  * @author James MacGlashan

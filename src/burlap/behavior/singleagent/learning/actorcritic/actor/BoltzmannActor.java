@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 /**
  * And Actor component whose policy is defined by a Boltzmann distribution over action preferences. This actor stores
- * state-action preferences tabularly and therefore requires a {@link burlap.behavior.singleagent.statehashing.StateHashFactory} to perform lookups.
+ * state-action preferences tabularly and therefore requires a {@link burlap.behavior.statehashing.StateHashFactory} to perform lookups.
  * @author James MacGlashan
  *
  */

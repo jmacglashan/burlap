@@ -427,7 +427,7 @@ public class LunarLanderDomain implements DomainGenerator {
 
 	/**
 	 * Sets the maximum x position of the lander (the agent cannot cross this boundary)
-	 * @param xmin the maximum x position of the lander (the agent cannot cross this boundary)
+	 * @param xmax the maximum x position of the lander (the agent cannot cross this boundary)
 	 */
 	public void setXmax(double xmax) {
 		this.xmax = xmax;

@@ -36,7 +36,7 @@ public class GreedyQPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	/**
 	 * Initializes with a QComputablePlanner
-	 * @param qplanner the QComputablePlanner to use
+	 * @param planner the QComputablePlanner to use
 	 */
 	public GreedyQPolicy(QComputablePlanner planner){
 		qplanner = planner;

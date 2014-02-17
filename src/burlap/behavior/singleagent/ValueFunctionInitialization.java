@@ -55,7 +55,7 @@ public interface ValueFunctionInitialization {
 		
 		
 		/**
-		 * Will cause this object to return {@link value} for all initialization values.
+		 * Will cause this object to return <code>value</code> for all initialization values.
 		 * @param value the value to return for all initializations.
 		 */
 		public ConstantValueFunctionInitialization(double value){

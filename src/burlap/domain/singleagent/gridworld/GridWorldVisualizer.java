@@ -235,7 +235,6 @@ public class GridWorldVisualizer {
 		
 		/**
 		 * Initializes painter
-		 * @param col the color to paint the cell
 		 * @param map the wall map matrix where 1s indicate a wall in that cell and 0s indicate it is clear of walls
 		 */
 		public LocationPainter(int [][] map) {

@@ -43,7 +43,7 @@ public class DPrint {
 	
 	
 	/**
-	 * A universal print line whose behavior is determined by the {@link universalPrint} field
+	 * A universal print line whose behavior is determined by the <code>universalPrint</code> field
 	 * @param s the string to print
 	 */
 	public static void ul(String s){
@@ -52,7 +52,7 @@ public class DPrint {
 	
 	
 	/**
-	 * A universal print whose behavior is determined by the {@link universalPrint} field
+	 * A universal print whose behavior is determined by the <code>universalPrint</code> field
 	 * @param s the string to print
 	 */
 	public static void u(String s){
@@ -63,7 +63,7 @@ public class DPrint {
 	
 	
 	/**
-	 * A universal printf whose behavior is determined by the {@link universalPrint} field
+	 * A universal printf whose behavior is determined by the <code>universalPrint</code> field
 	 * @param s the format string
 	 * @param args the arguments for the formatted string
 	 */

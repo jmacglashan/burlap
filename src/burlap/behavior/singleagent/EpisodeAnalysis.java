@@ -29,7 +29,7 @@ public class EpisodeAnalysis {
 	
 	
 	/**
-	 * Creates a new EpisodeAnalysis object. Before recording transitions, the {@link initializeEpisideWithInitialState(State)} method
+	 * Creates a new EpisodeAnalysis object. Before recording transitions, the {@link #initializeEpisideWithInitialState(State)} method
 	 * should be called to set the initial state of the episode.
 	 */
 	public EpisodeAnalysis(){
@@ -62,8 +62,8 @@ public class EpisodeAnalysis {
 	
 	
 	/**
-	 * Adds a state to the state sequence. In general, it is recommended that {@link initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * Adds a state to the state sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
+	 * along with subsequent calls to the {@link #recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
 	 * method can be used to manually add a state.
 	 * @param s the state to add
 	 */
@@ -72,8 +72,8 @@ public class EpisodeAnalysis {
 	}
 	
 	/**
-	 * Adds a GroundedAction to the action sequence. In general, it is recommended that {@link initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * Adds a GroundedAction to the action sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
+	 * along with subsequent calls to the {@link #recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
 	 * method can be used to manually add a GroundedAction.
 	 * @param ga the GroundedAction to add
 	 */
@@ -82,8 +82,8 @@ public class EpisodeAnalysis {
 	}
 	
 	/**
-	 * Adds a reward to the reward sequence. In general, it is recommended that {@link initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * Adds a reward to the reward sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
+	 * along with subsequent calls to the {@link #recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
 	 * method can be used to manually add a reward.
 	 * @param r the reward to add
 	 */
@@ -128,7 +128,7 @@ public class EpisodeAnalysis {
 	 * Returns the ith reward received in this episode. i=0 refers to the reward received 
 	 * after taking the first action in the initial state.
 	 * @param i
-	 * @return
+	 * @return the ith reward received in this episode
 	 */
 	public double getReward(int i){
 		return rewardSequence.get(i);

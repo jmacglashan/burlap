@@ -99,7 +99,7 @@ public class DeterminisitcTerminationOption extends Option {
 	
 	/**
 	 * Initializes the option by creating the policy uses some provided option. The planner is called repeatedly on each state in the
-	 * the list {@link seedStatesForPlanning} and then
+	 * the list <code>seedStatesForPlanning</code> and then
 	 * sets this options policy to the planner derived policy that is provided.
 	 * @param name the name of the option
 	 * @param init the initiation conditions of the option

@@ -73,7 +73,7 @@ public abstract class SingleAction {
 	 * is automatically added to the given domain
 	 * @param d the domain to which this action belongs
 	 * @param name the name of this action
-	 * @param parameterTypes the object class names for the possible parameters of this action.
+	 * @param types the object class names for the possible parameters of this action.
 	 * @param parameterOrderGroups the parameter order groups to use
 	 */
 	public SingleAction(SGDomain d, String name, String [] types, String [] parameterOrderGroups){

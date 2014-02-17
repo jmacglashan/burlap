@@ -48,7 +48,7 @@ public class StateReachability {
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @param a terminal function that prevents expansion from terminal states.
+	 * @param tf a terminal function that prevents expansion from terminal states.
 	 * @return the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
 	public static List <State> getReachableStates(State from, SADomain inDomain, StateHashFactory usingHashFactory, TerminalFunction tf){
@@ -80,7 +80,7 @@ public class StateReachability {
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @param a terminal function that prevents expansion from terminal states.
+	 * @param tf a terminal function that prevents expansion from terminal states.
 	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
 	public static Set <StateHashTuple> getReachableHashedStates(State from, SADomain inDomain, StateHashFactory usingHashFactory, TerminalFunction tf){

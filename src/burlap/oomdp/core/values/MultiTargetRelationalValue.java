@@ -23,8 +23,8 @@ public class MultiTargetRelationalValue extends Value {
 	
 	
 	/**
-	 * Sets whether this value is observable to the agent or not.
-	 * @param isObservable true if this value is observable to the agent; false otherwise.
+	 * Initializes the value to be associted with the given attribute
+	 * @param attribute the attribute with which this value is associated
 	 */
 	public MultiTargetRelationalValue(Attribute attribute){
 		super(attribute);

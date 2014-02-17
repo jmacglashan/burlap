@@ -30,7 +30,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * Q-values by using the transition dynamics and the stored value function.
  * <p/>
  * Note that by default ValueFunction planners will cache the transition dynamics so that they do not have to be procedurally generated
- * by the {@link burlap.oomdp.singleaction.Action}. Transition dynamic caching can be disable by calling the {@link toggleUseCachedTransitionDynamics(boolean)}
+ * by the {@link burlap.oomdp.singleagent.Action}. Transition dynamic caching can be disable by calling the {@link #toggleUseCachedTransitionDynamics(boolean)}
  * method. This may be desirable if the transition dynamics are expected to change with time, such as when the model is being learned in model-based RL.
  * @author James MacGlashan
  *
@@ -133,7 +133,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	/**
 	 * Returns the value function evaluation of the given hashed state. If the value is not stored, then the default value
 	 * specified by the ValueFunctionInitialization object of this class is returned.
-	 * @param s the hashed state to evaluate.
+	 * @param sh the hashed state to evaluate.
 	 * @return the value function evaluation of the given state.
 	 */
 	public double value(StateHashTuple sh){

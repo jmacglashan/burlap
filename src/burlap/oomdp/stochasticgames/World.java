@@ -155,7 +155,7 @@ public class World {
 	
 	/**
 	 * Returns the last joint action taken in this world; null if none have been taken yet.
-	 * @return
+	 * @return the last joint action taken in this world; null if none have been taken yet
 	 */
 	public JointAction getLastJointAction(){
 		return this.lastJointAction;
@@ -285,8 +285,8 @@ public class World {
 	}
 	
 	/**
-	 * Returns the {@link JOintActionModel} used in this world.
-	 * @return the {@link JOintActionModel} used in this world.
+	 * Returns the {@link JointActionModel} used in this world.
+	 * @return the {@link JointActionModel} used in this world.
 	 */
 	public JointActionModel getActionModel(){
 		return worldModel;

@@ -9,7 +9,7 @@ import burlap.oomdp.core.State;
  * planning and learning algorithms that make use of hash-backed sets or maps for fast retrieval.
  * In general, hash codes should only be computed once, and only once the hashCode method is called.
  * If something about the StateHashTuple changes, then needsToRecomputeHashCode boolean flag should be
- * set to true so that the next time the hashCode is called it is recomputed. Likewise, once the {@link computeHashCode()}
+ * set to true so that the next time the hashCode is called it is recomputed. Likewise, once the {@link #computeHashCode()}
  * method has been called, it should set the needToRecomputeHashCode flag to false.
  * <p/>
  * By default, equality checks use the standard {@link burlap.oomdp.core.State} object equality check. If you need
@@ -35,7 +35,9 @@ public abstract class StateHashTuple {
 	}
 	
 	
-	
+	/**
+	 * This method computes the hashCode for this object and saves it to the <code>hashCode</code> field beloning to the abstract class.
+	 */
 	public abstract void computeHashCode();
 	
 	

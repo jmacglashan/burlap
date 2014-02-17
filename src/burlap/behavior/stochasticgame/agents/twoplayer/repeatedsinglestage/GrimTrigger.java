@@ -13,7 +13,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
 
 /**
  * A class for an agent that plays grim trigger. The agent starts by following a "cooperate" action. If at any point their opponent plays
- * a "defect" action, then this agent will play their "defect" action for the rest of the repeated game (until the {@link gameStarting()} method is called again).
+ * a "defect" action, then this agent will play their "defect" action for the rest of the repeated game (until the {@link #gameStarting()} method is called again).
  * @author James MacGlashan
  *
  */

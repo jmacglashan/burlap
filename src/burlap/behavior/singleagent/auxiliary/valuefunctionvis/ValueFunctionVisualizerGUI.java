@@ -143,7 +143,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	
 	/**
 	 * Sets the canvas background color
-	 * @param bgColor the canvas background color
+	 * @param col the canvas background color
 	 */
 	public void setBgColor(Color col){
 		this.visualizer.setBGColor(col);
@@ -152,7 +152,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	
 	/**
 	 * Sets the policy to render
-	 * @param policy the policy to render
+	 * @param p the policy to render
 	 */
 	public void setPolicy(Policy p){
 		this.pLayer.setPolicy(p);

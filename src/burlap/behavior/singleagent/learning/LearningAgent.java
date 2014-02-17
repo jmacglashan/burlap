@@ -7,7 +7,7 @@ import burlap.oomdp.core.State;
 
 /**
  * This is the standard interface for defining an agent that learns how to behave in the world through experience. The primary method
- * is the {@link runLearningEpisodeFrom(State)} method which causes the agent to interact with the world until it reaches a terminal state.
+ * is the {@link #runLearningEpisodeFrom(State)} method which causes the agent to interact with the world until it reaches a terminal state.
  * The interface also provides some common mechanisms for getting the last learning episode the agent performed, storing a history
  * of learning episodes, and returning the history of stored episodes. 
  * @author James MacGlashan

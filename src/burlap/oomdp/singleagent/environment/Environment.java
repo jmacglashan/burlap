@@ -51,7 +51,7 @@ public abstract class Environment {
 	/**
 	 * Returns a terminal function that returns true when the current state of the environment is terminal, regardless
 	 * of the state parameter passed to the method.
-	 * @return
+	 * @return a terminal function that returns true when the current state of the environment is terminal
 	 */
 	public TerminalFunction getEnvironmentTerminalStateTFWrapper(){
 		return new CurStateTerminalTF();

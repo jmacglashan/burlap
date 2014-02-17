@@ -31,11 +31,11 @@ import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
  * actions and the actions available to each player may have different names. The SingleAction's are created such that a player can only execute a single
  * action if that action is available to that player. Therefore, when agents joint a world for one of these games, their 
  * {@link burlap.oomdp.stochasticgames.AgentType} can be specified to have
- * all of the possible actions, because they will only be able to execute the relevant ones. The method {@link getAgentTypeForAllPlayers(Domain)} will return
+ * all of the possible actions, because they will only be able to execute the relevant ones. The method {@link #getAgentTypeForAllPlayers(SGDomain)} will return
  * such an {@link burlap.oomdp.stochasticgames.AgentType} class that can be used for all agents.
  * <p/>
  * In addition to this generator being able to return the domain object, it may also be used to return the corresponding joint reward function. The method
- * {@link getRepatedGameActionModel()} will return a joint action mode that always returns to the same state, which can be used for repeated game playing.
+ * {@link #getRepatedGameActionModel()} will return a joint action mode that always returns to the same state, which can be used for repeated game playing.
  * <p/>
  * This class also provides static methods for returning generators for a number of classic bimatrix games: prisoner's dilemma, chicken, hawk dove,
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
@@ -195,9 +195,9 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Sets the pay out that player number {@link playerNumber} receives for a given strategy profile
+	 * Sets the pay out that player number <code>playerNumber</code> receives for a given strategy profile
 	 * @param playerNumber the index of the player whose payout should be specified (index starts at 0)
-	 * @param payout the payout the {@link playerNumber}th receives
+	 * @param payout the payout the <code>playerNumber</code>th receives
 	 * @param actions the strategy profile; array specifying the names of the actions taken by each player, ordered by their player number
 	 */
 	public void setPayout(int playerNumber, double payout, String...actions){
@@ -209,9 +209,9 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	}
 	
 	/**
-	 * Sets the pay out that player number {@link playerNumber} receives for a given strategy profile
+	 * Sets the pay out that player number <code>playerNumber</code> receives for a given strategy profile
 	 * @param playerNumber the index of the player whose payout should be specified (index starts at 0)
-	 * @param payout the payout the {@link playerNumber}th receives
+	 * @param payout the payout the <code>playerNumber</code>th receives
 	 * @param actions the strategy profile; array specifying the int index of the actions taken by each player, ordered by their player number
 	 */
 	public void setPayout(int playerNumber, double payout, int...actions){
@@ -221,10 +221,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns the name of the {@link an} action of player {@link pn}
+	 * Returns the name of the <code>an</code> action of player <code>pn</code>
 	 * @param pn the player number
 	 * @param an the action index
-	 * @return the name of the {@link an} action of player {@link pn}
+	 * @return the name of the <code>an</code> action of player <code>pn</code>
 	 */
 	public String actionName(int pn, int an){
 		return this.actionSets.get(pn).get(an);
@@ -232,10 +232,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns the action index of the action named {@link actionName} of player {@link pn}
+	 * Returns the action index of the action named <code>actionName</code> of player <code>pn</code>
 	 * @param pn the player number
 	 * @param actionName the name of the action
-	 * @return the action index of the action named {@link actionName} of player {@link pn}
+	 * @return the action index of the action named <code>actionName</code> of player <code>pn</code>
 	 */
 	public int actionIndex(int pn, String actionName){
 		return this.actionNameToIndex[pn].get(actionName);
@@ -243,10 +243,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns the payout that player {@link pn} receives for the given strategy profile.
+	 * Returns the payout that player <code>pn</code> receives for the given strategy profile.
 	 * @param pn the player number
 	 * @param actions the strategy profile specified as an array of action names, ordered by the player number of the player that took the action.
-	 * @return the payout that player {@link pn} receives for the given strategy profile.
+	 * @return the payout that player <code>pn</code> receives for the given strategy profile.
 	 */
 	public double getPayout(int pn, String...actions){
 		int [] iprofile = new int[actions.length];
@@ -258,10 +258,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns the payout that player {@link pn} receives for the given strategy profile.
+	 * Returns the payout that player <code>pn</code> receives for the given strategy profile.
 	 * @param pn the player number
 	 * @param actions the strategy profile specified as an array of action indices, ordered by the player number of the player that took the action.
-	 * @return the payout that player {@link pn} receives for the given strategy profile.
+	 * @return the payout that player <code>pn</code> receives for the given strategy profile.
 	 */
 	public double getPayout(int pn, int...actions){
 		StrategyProfile sp = new StrategyProfile(actions);
@@ -271,7 +271,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	/**
 	 * Returns the number of players in the domain to be generated
-	 * @return
+	 * @return the number of players in the domain to be generated
 	 */
 	public int getNumPlayers(){
 		return this.nPlayers;
@@ -359,7 +359,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	/**
 	 * Returns a repeated game joint action model. This action model always returns to the same state.
-	 * @return
+	 * @return a repeated game joint action model.
 	 */
 	public static JointActionModel getRepatedGameActionModel(){
 		return new StaticRepeatedGameActionModel();
