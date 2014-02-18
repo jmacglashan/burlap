@@ -93,9 +93,7 @@ public class MCStateGenerator {
 		row = row.replace(" ", "");
 		
 		while (ncol < row.length()) {
-			if (row.contains("*")) {
-				int asdf = 0;
-			}
+
 			ch = row.charAt(ncol);
 			if (ch != ' ' && ch != '*') {
 				addBlock(s, d, ncol, nrow, 0);

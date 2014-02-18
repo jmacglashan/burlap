@@ -30,7 +30,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ATTZ = "z";
 	public static final String 					ATTDEST = "attDestroyable";
 	public static final String					ATTBLKNUM = "bNum";
-	public static final String					ATTDOOR = "doorOpen";
+	public static final String					ATTDOOROPEN = "doorOpen";
 	public static final String					ATTGRAIN = "isGrain";
 	public static final String					ATTAGHASGRAIN = "agentHasGrain";
 	public static final String					ATTAGHASBREAD = "agentHasBread";
@@ -63,6 +63,10 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ACTIONUSEOVENR = "useOvenRight";
 	public static final String					ACTIONUSEOVENL = "useOvenLeft";
 	
+	public static final String					ACTIONJUMPF = "jumpF";
+	public static final String					ACTIONJUMPB = "jumpB";
+	public static final String					ACTIONJUMPR = "jumpR";
+	public static final String					ACTIONJUMPL = "jumpL";
 	
 	// ----- ACTIONS -----
 	public Action								forward;
@@ -86,7 +90,10 @@ public class MinecraftDomain implements DomainGenerator{
 	public Action								useOvenB;
 	public Action								useOvenR;
 	public Action								useOvenL;
-	
+	public Action								jumpF;
+	public Action								jumpB;
+	public Action								jumpR;
+	public Action								jumpL;
 	
 	// ----- PROPOSITIONAL FUNCTION STRINGS -----
 	public static final String					PFATGOAL = "AtGoal";
@@ -100,17 +107,20 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					ISPLANE = "IsAdjPlane";
 	public static final String					ISADJTRENCH = "IsAdjTrench";
 	public static final String 					ISADJDOOR = "IsAdjDoor";
+	public static final String 					ISADJOVEN = "IsAdjOven";
+	public static final String 					ISONGRAIN = "IsOnGrain";
 	public static final String					ISADJDWALL = "IsAdjDstableWall";
 	public static final String 					AGENTHASBREAD = "AgentHasBread";
-	
+	public static final String 					ISDOOROPEN = "IsDoorOpen";
+
 	// ----- CONSTANTS -----
 	public static final String					CLASSAGENT = "agent";
 	public static final String					CLASSGOAL = "goal";
 	public static final String					CLASSBLOCK = "block";
 	public static final String					CLASSDOOR = "door";
 	public static final String					CLASSOVEN = "oven";
-	public static final int						MAXX = 39; // 0 - 9, gives us a 10x10 surface
-	public static final int						MAXY = 39;
+	public static final int						MAXX = 14; // 0 - 9, gives us a 10x10 surface
+	public static final int						MAXY = 14;
 	public static final int						MAXZ = 8;
 	public static final int						MAXBLKNUM = 4;
 
@@ -155,7 +165,7 @@ public class MinecraftDomain implements DomainGenerator{
 		Attribute destroyableatt = new Attribute(DOMAIN, ATTDEST, Attribute.AttributeType.DISC);
 		destroyableatt.setDiscValuesForRange(0, 1, 1);
 		
-		Attribute dooropenatt = new Attribute(DOMAIN, ATTDOOR, Attribute.AttributeType.DISC);
+		Attribute dooropenatt = new Attribute(DOMAIN, ATTDOOROPEN, Attribute.AttributeType.DISC);
 		dooropenatt.setDiscValuesForRange(0, 1, 1);
 		
 		Attribute isgrainatt = new Attribute(DOMAIN, ATTGRAIN, Attribute.AttributeType.DISC);
@@ -163,8 +173,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		Attribute hasgrainatt = new Attribute(DOMAIN, ATTAGHASGRAIN, Attribute.AttributeType.DISC);
 		hasgrainatt.setDiscValuesForRange(0, 1, 1);
-		
-		
+
 		Attribute hasbreadatt = new Attribute(DOMAIN, ATTAGHASBREAD, Attribute.AttributeType.DISC);
 		hasbreadatt.setDiscValuesForRange(0, 1, 1);
 
@@ -213,37 +222,46 @@ public class MinecraftDomain implements DomainGenerator{
 		this.right = new RightAction(ACTIONRIGHT, DOMAIN, "");
 		this.left = new LeftAction(ACTIONLEFT, DOMAIN, "");
 
+		boolean allActMode = true;
 		
-		boolean blockMode = false;
-		if (blockMode == true) {
-			// Placement
-			this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
-			this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
-			this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
-			this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
+		if (allActMode) {
+		
+			boolean blockMode = false;
+			if (blockMode) {
+				// Placement
+				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
+				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
+				this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
+				this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
+				
+				// Destruction
+				this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
+				this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
+				this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
+				this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
+			}
 			
-			// Destruction
-			this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
-			this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
-			this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
-			this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
+			// Open Door
+			this.openF = new OpenActionF(ACTIONOPENF, DOMAIN, "");
+			this.openB = new OpenActionB(ACTIONOPENB, DOMAIN, "");
+			this.openR = new OpenActionL(ACTIONOPENR, DOMAIN, "");
+			this.openL = new OpenActionR(ACTIONOPENL, DOMAIN, "");
+
+			// Pick Up Grain
+			this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
+			
+			// Use Oven
+			this.useOvenF = new useOvenActionF(ACTIONUSEOVENF, DOMAIN, "");
+			this.useOvenB = new useOvenActionB(ACTIONUSEOVENB, DOMAIN, "");
+			this.useOvenR = new useOvenActionR(ACTIONUSEOVENR, DOMAIN, "");
+			this.useOvenL = new useOvenActionL(ACTIONUSEOVENL, DOMAIN, "");
+			
+			// Jump
+			this.jumpF = new JumpActionF(ACTIONJUMPF, DOMAIN, "");
+			this.jumpB = new JumpActionB(ACTIONJUMPB, DOMAIN, "");
+			this.jumpR = new JumpActionR(ACTIONJUMPR, DOMAIN, "");
+			this.jumpL = new JumpActionL(ACTIONJUMPL, DOMAIN, "");
 		}
-		
-		// Open Door
-		this.openF = new OpenActionF(ACTIONOPENF, DOMAIN, "");
-		this.openB = new OpenActionB(ACTIONOPENB, DOMAIN, "");
-		this.openR = new OpenActionL(ACTIONOPENR, DOMAIN, "");
-		this.openL = new OpenActionR(ACTIONOPENL, DOMAIN, "");
-		
-		// Pick Up Grain
-		this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
-		
-		// USE OVEN
-		this.useOvenF = new useOvenActionF(ACTIONUSEOVENF, DOMAIN, "");
-		this.useOvenB = new useOvenActionB(ACTIONUSEOVENB, DOMAIN, "");
-		this.useOvenR = new useOvenActionR(ACTIONUSEOVENR, DOMAIN, "");
-		this.useOvenL = new useOvenActionL(ACTIONUSEOVENL, DOMAIN, "");
-		
 		
 		// ==== PROPOSITIONAL FUNCTIONS ====
 		
@@ -403,8 +421,20 @@ public class MinecraftDomain implements DomainGenerator{
 	public static boolean isAdjDoor(State st, int ax, int ay, int az) {
 		// Returns true if the block in front of, behind, to the left of, or to the right of the agent contains a door
 
-		if ((isInstanceOfAt(st, ax + 1, ay, az - 1, CLASSDOOR)) || (isInstanceOfAt(st, ax - 1, ay, az - 1, CLASSDOOR))
-				|| (isInstanceOfAt(st, ax, ay + 1, az - 1, CLASSDOOR)) || (isInstanceOfAt(st, ax, ay - 1, az - 1, CLASSDOOR))) {
+		if ((isInstanceOfAt(st, ax + 1, ay, az, CLASSDOOR)) || (isInstanceOfAt(st, ax - 1, ay, az, CLASSDOOR))
+				|| (isInstanceOfAt(st, ax, ay + 1, az, CLASSDOOR)) || (isInstanceOfAt(st, ax, ay - 1, az, CLASSDOOR))) {
+				return true;
+			}
+		else {
+			return false;
+		}
+	}
+	
+	public static boolean isAdjOven(State st, int ax, int ay, int az) {
+		// Returns true if the block in front of, behind, to the left of, or to the right of the agent contains a door
+
+		if ((isInstanceOfAt(st, ax + 1, ay, az, CLASSOVEN)) || (isInstanceOfAt(st, ax - 1, ay, az, CLASSOVEN))
+				|| (isInstanceOfAt(st, ax, ay + 1, az, CLASSOVEN)) || (isInstanceOfAt(st, ax, ay - 1, az, CLASSOVEN))) {
 				return true;
 			}
 		else {
@@ -468,14 +498,18 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		if (isInstanceOfAt(s, nx, ny, nz, CLASSDOOR)) {
 			ObjectInstance o = getInstanceOfAt(s, nx, ny, nz, CLASSDOOR);
-			if (o.getDiscValForAttribute(ATTDOOR) == 1) {
+			if (o.getDiscValForAttribute(ATTDOOROPEN) == 1) {
 				// There is an open door where we are trying to move.
 				agent.setValue(ATTX, nx);
 				agent.setValue(ATTY, ny);
 				agent.setValue(ATTZ, nz);
 				return;
 			}
-			System.out.println("CLOSED DOOR IN THE WAY");
+			else {
+				// Closed door in the way, can't move there.
+//				System.out.println("CLOSED DOOR IN THE WAY");
+				return;
+			}
 		}
 		
 		if (nz - 1 > -1 && getBlockAt(s, nx, ny, nz - 1) == null) {
@@ -488,6 +522,67 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		else {
 			// Place we're moving is unobstructed and there is solid ground below us, move
+			agent.setValue(ATTX, nx);
+			agent.setValue(ATTY, ny);
+			agent.setValue(ATTZ, nz);
+		}
+
+	}
+	
+	public static void jump(State st, int xd, int yd, int zd){
+		
+		ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		int ax = agent.getDiscValForAttribute(ATTX);
+		int ay = agent.getDiscValForAttribute(ATTY);
+		int az = agent.getDiscValForAttribute(ATTZ);
+		
+		int nx = ax+xd;
+		int ny = ay+yd;
+		int nz = az+zd;
+		
+		if (nx < 0 || nx > MAXX || ny < 0 || ny > MAXY || nz < 0 || nz > MAXZ) {
+			// Trying to move out of bounds, return.
+			return;
+		}
+		
+		if (isInstanceOfAt(st, nx, ny, nz, CLASSDOOR)) {
+			ObjectInstance o = getInstanceOfAt(st, nx, ny, nz, CLASSDOOR);
+			if (o.getDiscValForAttribute(ATTDOOROPEN) == 1) {
+				// There is an open door where we are trying to move.
+				agent.setValue(ATTX, nx);
+				agent.setValue(ATTY, ny);
+				agent.setValue(ATTZ, nz);
+				return;
+			}
+			else {
+				// Can't move here
+//				System.out.println("CLOSED DOOR IN THE WAY");
+				return;
+			}
+
+		}
+		
+		if (nz - 1 > -1 && getBlockAt(st, nx, ny, nz - 1) == null) {
+			// There is no block under us, return.
+			return;
+		}
+		else if (getBlockAt(st, nx, ny, nz) != null) {
+			// There is a block where we are trying to move, return.
+			return;
+		}
+		else {
+			// Place we're moving is unobstructed and there is solid ground below us, move
+			
+			// Assuming only jump 2 units for now
+			
+			if (getBlockAt(st, ax + xd/2, ay + yd/2, az + zd/2) != null
+					|| (getInstanceOfAt(st, ax + xd/2, ay + yd/2, az + zd/2, CLASSDOOR) != null
+						&& getInstanceOfAt(st, ax + xd/2, ay + yd/2, az + zd/2, CLASSDOOR).getDiscValForAttribute(ATTDOOROPEN) == 0)) {
+				// Something is in the way, can't jump
+				return;
+			}
+			
+			// Path is clear, jump!
 			agent.setValue(ATTX, nx);
 			agent.setValue(ATTY, ny);
 			agent.setValue(ATTZ, nz);
@@ -603,9 +698,9 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		if (isInstanceOfAt(s, bx, by, bz, CLASSDOOR)) {
 			ObjectInstance o = getInstanceOfAt(s, bx, by, bz, CLASSDOOR);
-			int newVal = o.getDiscValForAttribute(ATTDOOR) ^ 1;
-			System.out.println("CHANGING DOORS STATE");
-			o.setValue(ATTDOOR, newVal);
+			int newVal = o.getDiscValForAttribute(ATTDOOROPEN) ^ 1;
+//			System.out.println("CHANGING DOORS STATE");
+			o.setValue(ATTDOOROPEN, newVal);
 		}
 		else {
 			return;
@@ -730,7 +825,63 @@ public class MinecraftDomain implements DomainGenerator{
 		}	
 	}
 	
-	public static class PlaceActionF extends Action{
+	public static class JumpActionF extends Action{
+
+		public JumpActionF(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			jump(st, 0, -2, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}
+		
+	}
+	public static class JumpActionB extends Action{
+
+		public JumpActionB(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			jump(st, 0, 2, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}		
+	}
+	public static class JumpActionR extends Action{
+
+		public JumpActionR(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			jump(st, 2, 0, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}
+	}
+	
+	public static class JumpActionL extends Action{
+		public JumpActionL(String name, Domain domain, String parameterClasses){
+			super(name, domain, parameterClasses);
+		}
+		
+		protected State performActionHelper(State st, String[] params) {
+			jump(st, -2, 0, 0);
+//			System.out.println("Action Performed: " + this.name);
+			return st;
+		}	
+	}
+		
+	
+		
+		
+		
+		
+		
+		public static class PlaceActionF extends Action{
 
 		public PlaceActionF(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
@@ -1089,9 +1240,10 @@ public class MinecraftDomain implements DomainGenerator{
 			int ay = agent.getDiscValForAttribute(ATTY);
 			int az = agent.getDiscValForAttribute(ATTZ);
 			
-			int hx = (int) Math.ceil(this.frac*(ox + gx));
-			int hy = (int) Math.ceil(this.frac*(oy + gy));
-			int hz = (int) Math.ceil(this.frac*(oz + gz));
+			int hx = (int) Math.ceil(this.frac * gx + (1 - this.frac) * ox);
+			int hy = (int) Math.ceil(this.frac * gy + (1 - this.frac) * oy);
+			int hz = (int) Math.ceil(this.frac * gz + (1 - this.frac) * oz);
+//			System.out.println("frac: " + this.frac +  " hx: " + hx + " hy: " + hy + " hz: " + hz);
 
 			return (ax == hx && ay == hy && az == hz);
 		}
@@ -1105,7 +1257,10 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static class IsAtLocationPF extends PropositionalFunction{
 
-		private String[] params;
+		private int locX;
+		private int locY;
+		private int locZ;
+		
 
 		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
@@ -1113,7 +1268,9 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses, String[] params) {
 			super(name, domain, parameterClasses);
-			this.params = params;
+			this.locX = Integer.parseInt(params[0]);
+			this.locY = Integer.parseInt(params[1]);
+			this.locZ = Integer.parseInt(params[2]);
 		}
 		
 		@Override
@@ -1127,11 +1284,7 @@ public class MinecraftDomain implements DomainGenerator{
 			int ay = agent.getDiscValForAttribute(ATTY);
 			int az = agent.getDiscValForAttribute(ATTZ);
 			
-			int nx = Integer.parseInt(this.params[0]);
-			int ny = Integer.parseInt(this.params[1]);
-			int nz = Integer.parseInt(this.params[2]);
-			
-			if(ax == nx && ay == ny && az == nz){
+			if(ax == this.locX && ay == this.locY && az == this.locZ){
 				return true;
 			}
 			
@@ -1140,22 +1293,7 @@ public class MinecraftDomain implements DomainGenerator{
 
 		@Override
 		public boolean isTrue(State st, String[] params) {
-			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
-			
-			//get the agent coordinates
-			int ax = agent.getDiscValForAttribute(ATTX);
-			int ay = agent.getDiscValForAttribute(ATTY);
-			int az = agent.getDiscValForAttribute(ATTZ);
-			
-			int nx = Integer.parseInt(params[0]);
-			int ny = Integer.parseInt(params[1]);
-			int nz = Integer.parseInt(params[2]);
-			
-			if(ax == nx && ay == ny && az == nz){
-				return true;
-			}
-			
-			return false;
+			return isTrue(st);
 		}
 		
 		// Returns the x,y,z delta(s) needed to satisfy the atGoalPF
@@ -1181,6 +1319,7 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			return dist;
 		}
+		
 	}
 	
 	public static class AtGoalPF extends PropositionalFunction{
@@ -1264,6 +1403,24 @@ public class MinecraftDomain implements DomainGenerator{
 		
 	}
 	
+	public static class AgentHasGrainPF extends PropositionalFunction{
+
+		public AgentHasGrainPF(String name, Domain domain, String[] parameterClasses) {
+			super(name, domain, parameterClasses);
+		}
+
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
+			return (agent.getDiscValForAttribute(ATTAGHASGRAIN) == 1);
+		}
+		@Override
+		public boolean isTrue(State st) {
+			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
+			return (agent.getDiscValForAttribute(ATTAGHASGRAIN) == 1);
+		}
+		
+	}
 	
 	public static class IsWalkablePF extends PropositionalFunction {
 
@@ -1333,9 +1490,9 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			
 //			 Works
-			if (!isAdjTrench(st, ax, ay, az)) {
-				return true;
-			}
+//			if (!isAdjTrench(st, ax, ay, az)) {
+//				return true;
+//			}
 			if ((ax == 0) || (ay == 0) || (ax == MAXX) || (ay == MAXY)) {
 				return true;
 			}
@@ -1412,6 +1569,109 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 	}
+	public static class IsAdjOven extends PropositionalFunction {
+
+		public IsAdjOven(String name, Domain domain, String[] parameterClasses) {
+			super(name, domain, parameterClasses);
+		}
+		
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+		}
+
+		@Override
+		public boolean isTrue(State st) {
+			// Assume everything is walkable for now.
+//			// The first three elements of params are the amount of change
+//			// in the x, y, and z directions
+			ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+
+			
+			if (isAdjOven(st, ax, ay, az)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
+	}
+	
+	public static class IsOnGrain extends PropositionalFunction {
+
+		public IsOnGrain(String name, Domain domain, String[] parameterClasses) {
+			super(name, domain, parameterClasses);
+		}
+		
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+		}
+
+		@Override
+		public boolean isTrue(State st) {
+			// Assume everything is walkable for now.
+//			// The first three elements of params are the amount of change
+//			// in the x, y, and z directions
+			ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+
+			
+			if (getBlockAt(st, ax, ay, az - 1) != null && getBlockAt(st, ax, ay, az - 1).getDiscValForAttribute(ATTGRAIN) == 1) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
+	}
+	
+	public static class IsDoorOpen extends PropositionalFunction {
+
+		private int doorX;
+		private int doorY;
+		private int doorZ;
+
+		public IsDoorOpen(String name, Domain domain, String[] parameterClasses, String[] params) {
+			super(name, domain, parameterClasses);
+			this.doorX = Integer.parseInt(params[0]);
+			this.doorY = Integer.parseInt(params[1]);
+			this.doorZ = Integer.parseInt(params[2]);		}
+		
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+		}
+
+		@Override
+		public boolean isTrue(State st) {
+
+			List<ObjectInstance> doors = st.getObjectsOfTrueClass(CLASSDOOR);
+			
+			for (ObjectInstance d: doors) {
+				int x = d.getDiscValForAttribute(ATTX);
+				int y = d.getDiscValForAttribute(ATTY);
+				int z= d.getDiscValForAttribute(ATTZ);
+				
+				if (x == doorX && y == doorY && z == doorZ) {
+					// We've found the correct door
+					return (d.getDiscValForAttribute(ATTDOOROPEN) == 1);
+				}
+				
+			}
+
+			
+			return false;
+		}
+		
+	}
 	
 	public static class IsAdjDstableWall extends PropositionalFunction {
 
@@ -1454,7 +1714,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		// === Build Map === //
 
-		MCStateGenerator mcsg = new MCStateGenerator("breadworld.map");
+		MCStateGenerator mcsg = new MCStateGenerator("hardworld.map");
 
 		State initialState = mcsg.getCleanState(d);
 			
@@ -1482,6 +1742,11 @@ public class MinecraftDomain implements DomainGenerator{
 		exp.addActionShortHand("bbb", ACTIONUSEOVENB);
 		exp.addActionShortHand("bbl", ACTIONUSEOVENL);
 		exp.addActionShortHand("bbr", ACTIONUSEOVENR);
+		
+		exp.addActionShortHand("jf", ACTIONJUMPF);
+		exp.addActionShortHand("jb", ACTIONJUMPB);
+		exp.addActionShortHand("jl", ACTIONJUMPL);
+		exp.addActionShortHand("jr", ACTIONJUMPR);
 		
 		exp.exploreFromState(initialState);
 	}

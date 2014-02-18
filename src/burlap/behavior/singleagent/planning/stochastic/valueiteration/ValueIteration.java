@@ -50,6 +50,23 @@ public class ValueIteration extends ValueFunctionPlanner{
 	}
 	
 	@Override
+	public double planFromStateAndTime(State initialState, boolean timeReachability){
+		long start = 0;
+		this.initializeOptionsForExpectationComputations();
+		if (timeReachability) {
+			start = System.nanoTime();
+		}
+		if(this.performReachabilityFrom(initialState)){
+			if (!timeReachability) {
+				start = System.nanoTime();
+			}
+			this.runVI();
+		}
+		return (double)(System.nanoTime() - start) / 1000000000;
+			
+	}
+	
+	@Override
 	public void planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
 		this.initializeOptionsForExpectationComputations();
 		if(this.performAffordanceReachabilityFrom(initialState, kb)){

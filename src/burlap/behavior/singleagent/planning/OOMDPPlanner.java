@@ -264,6 +264,12 @@ public abstract class OOMDPPlanner {
 	}
 
 
+	public double planFromStateAndTime(State initialState, boolean timeReachability) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
 
 	
 }
