@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.stochastic.rtdp;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
+import burlap.domain.singleagent.minecraft.Affordance;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -182,6 +184,11 @@ public class RTDP extends ValueFunctionPlanner {
 
 	}
 	
+	@Override
+	public void planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
+		this.affordanceRTDP(initialState, kb);
+	}
+	
 
 
 	
@@ -208,6 +215,47 @@ public class RTDP extends ValueFunctionPlanner {
 				
 				//select an action and take it
 				GroundedAction ga = this.rollOutPolicy.getAction(curState);
+				curState = ga.executeIn(curState);
+				nSteps++;
+			}
+			
+			totalStates += nSteps;
+			
+			DPrint.cl(debugCode, "Pass: " + i + "; Num states: " + nSteps + " (total: " + totalStates + ")");
+			
+			if(delta < this.maxDelta){
+				break;
+			}
+			
+			
+		}
+		
+	}
+	
+	
+	/**
+	 * Runs normal RTDP in which bellman updates are performed 
+	 * @param initiaState the initial state from which to plan
+	 */
+	protected void affordanceRTDP(State initialState, ArrayList<Affordance> kb){
+		
+		int totalStates = 0;
+		for(int i = 0; i < numRollouts; i++){
+			
+			State curState = initialState;
+			int nSteps = 0;
+			double delta = 0;
+			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
+				
+				StateHashTuple sh = this.hashingFactory.hashState(curState);
+				
+				//update this state's value
+				double curV = this.value(sh);
+				double nV = this.performBellmanUpdateOn(sh);
+				delta = Math.max(Math.abs(nV - curV), delta); 
+				
+				//select an action and take it
+				GroundedAction ga = this.rollOutPolicy.getAffordanceAction(curState, kb);
 				curState = ga.executeIn(curState);
 				nSteps++;
 			}

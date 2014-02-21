@@ -192,6 +192,7 @@ public abstract class Action {
 	public final boolean applicableInAffordanceState(State s, ArrayList<Affordance> kb){
 		for(Affordance aff : kb) {
 			// The affordance is applicable in this state, given the goal
+//			System.out.println(this);
 			if (aff.isApplicable(s, this.domain.getPropFunction("AtGoal"))) {
 				if (aff.getActions().contains(this)) {
 					// This action is applicable based on the affordance

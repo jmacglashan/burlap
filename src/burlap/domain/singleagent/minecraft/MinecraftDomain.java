@@ -226,19 +226,19 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		if (allActMode) {
 		
-			boolean blockMode = false;
+			boolean blockMode = true;
 			if (blockMode) {
 				// Placement
-				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
-				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
-				this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
-				this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
+//				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
+//				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
+//				this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
+//				this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
 				
 				// Destruction
-				this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
-				this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
-				this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
-				this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
+//				this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
+//				this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
+//				this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
+//				this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
 			}
 			
 			// Open Door
@@ -249,14 +249,14 @@ public class MinecraftDomain implements DomainGenerator{
 
 			// Pick Up Grain
 			this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
-			
-			// Use Oven
+//			
+//			// Use Oven
 			this.useOvenF = new useOvenActionF(ACTIONUSEOVENF, DOMAIN, "");
 			this.useOvenB = new useOvenActionB(ACTIONUSEOVENB, DOMAIN, "");
 			this.useOvenR = new useOvenActionR(ACTIONUSEOVENR, DOMAIN, "");
 			this.useOvenL = new useOvenActionL(ACTIONUSEOVENL, DOMAIN, "");
-			
-			// Jump
+//			
+//			// Jump
 			this.jumpF = new JumpActionF(ACTIONJUMPF, DOMAIN, "");
 			this.jumpB = new JumpActionB(ACTIONJUMPB, DOMAIN, "");
 			this.jumpR = new JumpActionR(ACTIONJUMPR, DOMAIN, "");
@@ -365,6 +365,7 @@ public class MinecraftDomain implements DomainGenerator{
 		block.setValue(ATTY, y);
 		block.setValue(ATTZ, z);
 		block.setValue(ATTDEST, 1); // blocks you place can be destroyed
+		block.setValue(ATTGRAIN, 0); // Block is not grain.
 		s.addObject(block);
 	}
 	
@@ -486,6 +487,15 @@ public class MinecraftDomain implements DomainGenerator{
 		int ax = agent.getDiscValForAttribute(ATTX);
 		int ay = agent.getDiscValForAttribute(ATTY);
 		int az = agent.getDiscValForAttribute(ATTZ);
+		
+//		Random rand = new Random();
+//		double threshhold = rand.nextDouble();
+//		
+//		if (threshhold < 0.3) {
+//			xd = -xd;
+//			yd = -yd;
+//		}
+		
 		
 		int nx = ax+xd;
 		int ny = ay+yd;

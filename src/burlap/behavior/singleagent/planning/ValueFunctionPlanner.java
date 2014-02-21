@@ -351,7 +351,44 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		return allTransitions;
 	}
 	
-	
+	/**
+	 * Returns the stored action transitions for the given state. If the action transitions
+	 * are not already cached and this object is set to use caching, then they will be cached.
+	 * @param sh the input state from which to get the transitions
+	 * @return the stored action transitions for the given state
+	 */
+	protected List <ActionTransitions> getAffordanceActionsTransitions(StateHashTuple sh, ArrayList<Affordance> kb){
+		List <ActionTransitions> allTransitions = transitionDynamics.get(sh);
+		
+		if(allTransitions == null){
+			//need to create them
+			
+			//indicate how this state is stored
+			mapToStateIndex.put(sh, sh);
+			
+			// Select action set with affordance KB
+			List <GroundedAction> gas = new ArrayList<GroundedAction>();
+			for(Action a : actions){
+				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb, this.domain));
+			}
+			
+			// Fall back on regular VI (Affordance pruned ALL actions, so fall back on using all)
+			// In other words, we don't have a relevant affordance to dictate actions here
+			if (gas.size() == 0) {
+				for(Action a : actions){
+					gas.addAll(sh.s.getAllGroundedActionsFor(a));
+				}
+			}
+			
+			//set it if we're caching
+			if(this.useCachedTransitions){
+				transitionDynamics.put(sh, allTransitions);
+			}
+			
+		}
+
+		return allTransitions;
+	}
 	
 	
 	/**
@@ -398,6 +435,52 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		if(this.useCachedTransitions){
 		
 			List<ActionTransitions> transitions = this.getActionsTransitions(sh);
+			for(ActionTransitions at : transitions){
+				double q = this.computeQ(sh.s, at);
+				if(q > maxQ){
+					maxQ = q;
+				}
+			}
+			
+		}
+		else{
+			
+			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			for(GroundedAction ga : gas){
+				double q = this.computeQ(sh, ga);
+				if(q > maxQ){
+					maxQ = q;
+				}
+			}
+			
+		}
+		
+		valueFunction.put(sh, maxQ);
+		
+		return maxQ;
+	}
+	
+	
+	/**
+	 * Performs a Bellman value function update on the provided (hashed) state. Results are stored in the value function map as well as returned.
+	 * If this object is set to used cached transition dynamics and the transition dynamics for this state are not cached, then they will be created and cached.
+	 * @param sh the hashed state on which to perform the Bellman update.
+	 * @return the new value of the state.
+	 */
+	protected double performAffordanceBellmanUpdateOn(StateHashTuple sh, ArrayList<Affordance> kb){
+		
+		if(this.tf.isTerminal(sh.s)){
+			//terminal states always have a state value of 0
+			valueFunction.put(sh, 0.);
+			return 0.;
+		}
+		
+		
+		double maxQ = Double.NEGATIVE_INFINITY;
+		
+		if(this.useCachedTransitions){
+		
+			List<ActionTransitions> transitions = this.getAffordanceActionsTransitions(sh, kb);
 			for(ActionTransitions at : transitions){
 				double q = this.computeQ(sh.s, at);
 				if(q > maxQ){
