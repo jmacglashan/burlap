@@ -13,6 +13,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.domain.singleagent.minecraft.Affordance;
+import burlap.domain.singleagent.minecraft.MinecraftDomain;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -48,6 +49,18 @@ public class ValueIteration extends ValueFunctionPlanner{
 		}
 			
 	}
+
+	@Override
+	public int planFromState(State initialState, MinecraftDomain mcDomain){
+		boolean oldDetFlag = mcDomain.deterministicMode;
+		mcDomain.deterministicMode = true;
+		this.initializeOptionsForExpectationComputations();
+		if(this.performReachabilityFrom(initialState)){
+			mcDomain.deterministicMode = oldDetFlag;
+			return this.runVI();
+		}
+		return -1;
+	}
 	
 	@Override
 	public double planFromStateAndTime(State initialState, boolean timeReachability){
@@ -67,12 +80,12 @@ public class ValueIteration extends ValueFunctionPlanner{
 	}
 	
 	@Override
-	public void planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
+	public int planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
 		this.initializeOptionsForExpectationComputations();
 		if(this.performAffordanceReachabilityFrom(initialState, kb)){
-			this.runVI();
+			return this.runVI();
 		}
-			
+		return -1;
 	}
 	
 
@@ -87,14 +100,17 @@ public class ValueIteration extends ValueFunctionPlanner{
 		Set <StateHashTuple> states = mapToStateIndex.keySet();
 		
 		int i = 0;
+		int nStates = 0;
 		for(i = 0; i < this.maxPasses; i++){
 //			System.out.println(i);
 			double delta = 0.;
+			nStates = states.size();
 			for(StateHashTuple sh : states){
 
 				if(tf.isTerminal(sh.s)){
 					//no need to compute this state; always zero because it is terminal and agent cannot behave here
 					valueFunction.put(sh, 0.);
+					nStates--;
 					continue;
 					
 				}
@@ -127,7 +143,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 
 		
 		DPrint.cl(10, "Passes: " + i);
-		return i;
+		return i * states.size();
 	}
 	
 	

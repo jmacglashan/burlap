@@ -13,6 +13,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.domain.singleagent.minecraft.Affordance;
+import burlap.domain.singleagent.minecraft.MinecraftDomain;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -184,9 +185,20 @@ public class RTDP extends ValueFunctionPlanner {
 
 	}
 	
+	public int planFromStateAndCount(State initialState) {
+		
+		if(!useBatch){
+			return this.normalRTDP(initialState);
+		}
+		else{
+			return this.batchRTDP(initialState);
+		}
+
+	}
+	
 	@Override
-	public void planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
-		this.affordanceRTDP(initialState, kb);
+	public int planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
+		return this.affordanceRTDP(initialState, kb);
 	}
 	
 
@@ -196,7 +208,7 @@ public class RTDP extends ValueFunctionPlanner {
 	 * Runs normal RTDP in which bellman updates are performed 
 	 * @param initiaState the initial state from which to plan
 	 */
-	protected void normalRTDP(State initialState){
+	protected int normalRTDP(State initialState){
 		
 		int totalStates = 0;
 		for(int i = 0; i < numRollouts; i++){
@@ -229,7 +241,7 @@ public class RTDP extends ValueFunctionPlanner {
 			
 			
 		}
-		
+		return totalStates;
 	}
 	
 	
@@ -237,7 +249,7 @@ public class RTDP extends ValueFunctionPlanner {
 	 * Runs normal RTDP in which bellman updates are performed 
 	 * @param initiaState the initial state from which to plan
 	 */
-	protected void affordanceRTDP(State initialState, ArrayList<Affordance> kb){
+	protected int affordanceRTDP(State initialState, ArrayList<Affordance> kb){
 		
 		int totalStates = 0;
 		for(int i = 0; i < numRollouts; i++){
@@ -270,7 +282,7 @@ public class RTDP extends ValueFunctionPlanner {
 			
 			
 		}
-		
+		return totalStates;
 	}
 	
 	
@@ -278,7 +290,7 @@ public class RTDP extends ValueFunctionPlanner {
 	 * Performs Bellman updates only after a rollout is complete and in reverse order
 	 * @param initialState the initial state from which to plan
 	 */
-	protected void batchRTDP(State initialState){
+	protected int batchRTDP(State initialState){
 		
 		int totalStates = 0;
 		
@@ -299,7 +311,7 @@ public class RTDP extends ValueFunctionPlanner {
 			}
 		}
 		
-		
+		return totalStates;
 	}
 	
 	
@@ -322,6 +334,15 @@ public class RTDP extends ValueFunctionPlanner {
 		
 		return delta;
 		
+	}
+
+
+
+
+	@Override
+	public int planFromState(State initialState, MinecraftDomain mcd) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 

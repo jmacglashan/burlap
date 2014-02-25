@@ -21,7 +21,7 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.HashMap;
 
-
+	
 public class MinecraftDomain implements DomainGenerator{
 
 	// ----- ATTRIBUTES -----
@@ -109,6 +109,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String 					ISADJDOOR = "IsAdjDoor";
 	public static final String 					ISADJOVEN = "IsAdjOven";
 	public static final String 					ISONGRAIN = "IsOnGrain";
+	public static final String 					ISINLAVA = "IsInLava";
 	public static final String					ISADJDWALL = "IsAdjDstableWall";
 	public static final String 					AGENTHASBREAD = "AgentHasBread";
 	public static final String 					ISDOOROPEN = "IsDoorOpen";
@@ -119,8 +120,9 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final String					CLASSBLOCK = "block";
 	public static final String					CLASSDOOR = "door";
 	public static final String					CLASSOVEN = "oven";
-	public static final int						MAXX = 14; // 0 - 9, gives us a 10x10 surface
-	public static final int						MAXY = 14;
+	public static final String					CLASSLAVA = "lava";
+	public static int							MAXX = 14; // 0 - 9, gives us a 10x10 surface
+	public static int							MAXY = 14;
 	public static final int						MAXZ = 8;
 	public static final int						MAXBLKNUM = 4;
 
@@ -133,15 +135,21 @@ public class MinecraftDomain implements DomainGenerator{
 	public static Stack<OldAffordanceSubgoal>		goalStack;
 	private ObjectClass 							agentClass = null;
 	private ObjectClass 							goalClass = null;
-	public static SADomain							DOMAIN = null;	
+	public SADomain									DOMAIN = null;
+	public static boolean 							deterministicMode = true;
 	
 	
 	/**
 	 * Constructs an empty map with deterministic transitions
 	 * @param width width of the map
 	 * @param height height of the map
+	 * 
+	 * NOTE: Refactor this at some point so it is a constructor.
 	 */
-	public Domain generateDomain() {
+	public Domain generateDomain(int rows, int cols) {
+		MAXX = rows;
+		MAXY = cols;
+		
 		if(DOMAIN != null){
 			return DOMAIN;
 		}
@@ -173,6 +181,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		Attribute hasgrainatt = new Attribute(DOMAIN, ATTAGHASGRAIN, Attribute.AttributeType.DISC);
 		hasgrainatt.setDiscValuesForRange(0, 1, 1);
+//		 String actionSequenc
 
 		Attribute hasbreadatt = new Attribute(DOMAIN, ATTAGHASBREAD, Attribute.AttributeType.DISC);
 		hasbreadatt.setDiscValuesForRange(0, 1, 1);
@@ -214,6 +223,11 @@ public class MinecraftDomain implements DomainGenerator{
 		ovenClass.addAttribute(yatt);
 		ovenClass.addAttribute(zatt);
 		
+		// CREATE OVENS
+		ObjectClass lavaClass = new ObjectClass(DOMAIN, CLASSLAVA);
+		lavaClass.addAttribute(xatt);
+		lavaClass.addAttribute(yatt);
+		lavaClass.addAttribute(zatt);
 		// ==== CREATE ACTIONS ====
 		
 		// Movement
@@ -229,10 +243,10 @@ public class MinecraftDomain implements DomainGenerator{
 			boolean blockMode = true;
 			if (blockMode) {
 				// Placement
-//				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
-//				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
-//				this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
-//				this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
+				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
+				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
+				this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
+				this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
 				
 				// Destruction
 //				this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
@@ -248,19 +262,19 @@ public class MinecraftDomain implements DomainGenerator{
 			this.openL = new OpenActionR(ACTIONOPENL, DOMAIN, "");
 
 			// Pick Up Grain
-			this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
-//			
+//			this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
+			
 //			// Use Oven
-			this.useOvenF = new useOvenActionF(ACTIONUSEOVENF, DOMAIN, "");
-			this.useOvenB = new useOvenActionB(ACTIONUSEOVENB, DOMAIN, "");
-			this.useOvenR = new useOvenActionR(ACTIONUSEOVENR, DOMAIN, "");
-			this.useOvenL = new useOvenActionL(ACTIONUSEOVENL, DOMAIN, "");
+//			this.useOvenF = new useOvenActionF(ACTIONUSEOVENF, DOMAIN, "");
+//			this.useOvenB = new useOvenActionB(ACTIONUSEOVENB, DOMAIN, "");
+//			this.useOvenR = new useOvenActionR(ACTIONUSEOVENR, DOMAIN, "");
+//			this.useOvenL = new useOvenActionL(ACTIONUSEOVENL, DOMAIN, "");
 //			
 //			// Jump
-			this.jumpF = new JumpActionF(ACTIONJUMPF, DOMAIN, "");
-			this.jumpB = new JumpActionB(ACTIONJUMPB, DOMAIN, "");
-			this.jumpR = new JumpActionR(ACTIONJUMPR, DOMAIN, "");
-			this.jumpL = new JumpActionL(ACTIONJUMPL, DOMAIN, "");
+//			this.jumpF = new JumpActionF(ACTIONJUMPF, DOMAIN, "");
+//			this.jumpB = new JumpActionB(ACTIONJUMPB, DOMAIN, "");
+//			this.jumpR = new JumpActionR(ACTIONJUMPR, DOMAIN, "");
+//			this.jumpL = new JumpActionL(ACTIONJUMPL, DOMAIN, "");
 		}
 		
 		// ==== PROPOSITIONAL FUNCTIONS ====
@@ -268,49 +282,7 @@ public class MinecraftDomain implements DomainGenerator{
 		return DOMAIN;
 	}
 	
-	/**
-	 * Will return a state object with a single agent object and a single goal object, and the blocks placed in the world.
-	 * @param d the domain object that is used to specify the min/max dimensions
-	 * @return a state object with a single agent object and a single goal object
-	 */
-	public static State makeTestMap(Domain domain, List <Integer> blockX, List <Integer> blockY){
-		
-		State s = new State();
-		
-		//start by creating the block objects
-		for(int i = 0; i < blockX.size(); i++){
-			int x = blockX.get(i);
 
-			for(int j = 0;j < blockY.get(i); j++) {				
-				int y = j;
-				if (x == 1) continue;
-				if (x == 7) continue;
-				if (y == 7) continue;
-				
-				addBlock(s, x, y, 1);
-			}
-		}
-		
-		addBlock(s, 1, 8, 1);
-		addBlock(s, 7, 8, 1);
-		addBlock(s, 0, 7, 1);
-		addBlock(s, 8, 7, 1);
-		addBlock(s, 1, 0, 1);
-		addBlock(s, 7, 0, 1);
-//		addBlock(s, 0, 8, 1);
-		
-		
-		
-		//create exit
-		s.addObject(new ObjectInstance(domain.getObjectClass(CLASSGOAL), CLASSGOAL+0));
-		
-		//create agent
-		s.addObject(new ObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT+0));
-		
-		return s;
-		
-	}
-	
 	public HashMap<String,OldAffordance> getAffordances() {
 		return affordances;
 	}
@@ -359,8 +331,8 @@ public class MinecraftDomain implements DomainGenerator{
 		block.setValue(ATTZ, z);
 	}
 	
-	public static void addBlock(State s, int x, int y, int z){
-		ObjectInstance block = new ObjectInstance(DOMAIN.getObjectClass(CLASSBLOCK), CLASSBLOCK+x+y+z);
+	public void addBlock(State s, int x, int y, int z){
+		ObjectInstance block = new ObjectInstance(this.DOMAIN.getObjectClass(CLASSBLOCK), CLASSBLOCK+x+y+z);
 		block.setValue(ATTX, x);
 		block.setValue(ATTY, y);
 		block.setValue(ATTZ, z);
@@ -446,10 +418,8 @@ public class MinecraftDomain implements DomainGenerator{
 	public static boolean isAdjTrench(State st, int ax, int ay, int az) {
 		// Returns true if the block in front of, behind, to the left of, or to the right of the agent is a trench
 		
-		if (((ay == 0) || (ax == 0) || (ay == MAXY) || (ax == MAXX))) {
-			return false;
-		}
-		if (isCellEmpty(st, ax, ay - 1, az - 1)) {
+		if (isCellEmpty(st, ax, ay - 1, az - 1) || isCellEmpty(st, ax, ay + 1, az - 1)
+				|| isCellEmpty(st, ax - 1, ay, az - 1) || isCellEmpty(st, ax + 1, ay, az - 1)) {
 			return true;
 		}
 		else {
@@ -488,14 +458,16 @@ public class MinecraftDomain implements DomainGenerator{
 		int ay = agent.getDiscValForAttribute(ATTY);
 		int az = agent.getDiscValForAttribute(ATTZ);
 		
-//		Random rand = new Random();
-//		double threshhold = rand.nextDouble();
-//		
-//		if (threshhold < 0.3) {
-//			xd = -xd;
-//			yd = -yd;
-//		}
-		
+
+		if (!deterministicMode) {
+			Random rand = new Random();
+			double threshhold = rand.nextDouble();
+			
+			if (threshhold < 0.2) {
+				xd = -xd;
+				yd = -yd;
+			}
+		}
 		
 		int nx = ax+xd;
 		int ny = ay+yd;
@@ -522,7 +494,7 @@ public class MinecraftDomain implements DomainGenerator{
 			}
 		}
 		
-		if (nz - 1 > -1 && getBlockAt(s, nx, ny, nz - 1) == null) {
+		if (nz - 1 > -1 && getBlockAt(s, nx, ny, nz - 1) == null && !isInstanceOfAt(s, nx, ny, nz - 1, CLASSLAVA)) {
 			// There is no block under us, return.
 			return;
 		}
@@ -600,7 +572,7 @@ public class MinecraftDomain implements DomainGenerator{
 
 	}
 	
-	public static void place(State s, int dx, int dy, int dz) {
+	public void place(State s, int dx, int dy, int dz) {
 		
 		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
 		
@@ -891,7 +863,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		
 		
-		public static class PlaceActionF extends Action{
+		public class PlaceActionF extends Action{
 
 		public PlaceActionF(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
@@ -904,7 +876,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 	}
 	
-	public static class PlaceActionB extends Action{
+	public class PlaceActionB extends Action{
 
 		public PlaceActionB(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
@@ -917,7 +889,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}	
 	}
 	
-	public static class PlaceActionR extends Action{
+	public class PlaceActionR extends Action{
 
 		public PlaceActionR(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
@@ -930,7 +902,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}	
 	}
 	
-	public static class PlaceActionL extends Action{
+	public class PlaceActionL extends Action{
 
 	public PlaceActionL(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
@@ -942,7 +914,6 @@ public class MinecraftDomain implements DomainGenerator{
 			return st;
 		}	
 	}
-	
 	
 	
 	public static class DestActionF extends Action{
@@ -1394,6 +1365,32 @@ public class MinecraftDomain implements DomainGenerator{
 		
 	}
 	
+	public static class IsInLava extends PropositionalFunction{
+
+		public IsInLava(String name, Domain domain, String[] parameterClasses) {
+			super(name, domain, parameterClasses);
+		}
+
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+			
+		}
+		
+		@Override
+		public boolean isTrue(State st) {
+			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
+			
+			//get the agent coordinates
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int az = agent.getDiscValForAttribute(ATTZ);
+						
+			return isInstanceOfAt(st, ax, ay, az - 1, CLASSLAVA);
+		}
+		
+	}
+	
 	public static class AgentHasBreadPF extends PropositionalFunction{
 
 		public AgentHasBreadPF(String name, Domain domain, String[] parameterClasses) {
@@ -1800,6 +1797,12 @@ public class MinecraftDomain implements DomainGenerator{
 		String[] localCoords = {nx.toString(), ny.toString(), nz.toString()};
 		
 		return localCoords;
+	}
+
+	@Override
+	public Domain generateDomain() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

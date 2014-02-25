@@ -12,6 +12,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.domain.singleagent.minecraft.Affordance;
+import burlap.domain.singleagent.minecraft.MinecraftDomain;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -82,8 +83,11 @@ public abstract class OOMDPPlanner {
 	 */
 	public abstract void planFromState(State initialState);
 	
+	public abstract int planFromState(State initialState, MinecraftDomain mcd);
+	
 
-	public void planFromStateAffordance(State initialState, ArrayList<Affordance> kb) {
+	public int planFromStateAffordance(State initialState, ArrayList<Affordance> kb) {
+		return 0;
 		// TODO Auto-generated method stub
 		
 	}
@@ -267,6 +271,13 @@ public abstract class OOMDPPlanner {
 	public double planFromStateAndTime(State initialState, boolean timeReachability) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+
+	public int planFromStateAndCount(State initialState) {
+		return -1;
+		// TODO Auto-generated method stub
+		
 	}
 
 

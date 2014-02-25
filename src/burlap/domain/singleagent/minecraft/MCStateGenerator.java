@@ -36,6 +36,9 @@ public class MCStateGenerator {
 	private static final char doorSym = 'd';
 	private static final char grainSym = '*';
 	private static final char ovenSym = 'o';
+	private static final char lavaSym = 'L';
+	private int numRows;
+	private int numCols;
 	
 	/**
 	 * @param path the file path for the map file.
@@ -45,9 +48,22 @@ public class MCStateGenerator {
 		
 		// Convert relative path to absolute.
 		String root = System.getProperty("user.dir");
-		String abspath = root + "/maps/" + path;
-		
+		String abspath = root + "/maps/mutablemaps/" + path;
 		this.fpath = abspath;
+	}
+	
+	public int[] getDimensions() {
+		try {
+			Scanner scnr = new Scanner(new File(this.fpath));
+			while (scnr.hasNextLine()) {
+				this.numRows++;
+				this.numCols = scnr.nextLine().replace(" ", "").length() - 1;
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		this.numRows--;
+		return new int[]{this.numCols, this.numRows};
 	}
 	
 	/**
@@ -87,10 +103,11 @@ public class MCStateGenerator {
 	 * @param row the current map row in ascii format
 	 * @param nrow the row number
 	 */
-	public static void processRow(State s, Domain d, String row, int nrow) {
+	public void processRow(State s, Domain d, String row, int nrow) {
 		char ch;
 		int ncol = 0;
 		row = row.replace(" ", "");
+		
 		
 		while (ncol < row.length()) {
 
@@ -125,7 +142,7 @@ public class MCStateGenerator {
 				ncol++;
 				break;
 			case doorSym:
-//				addBlock(s, d, ncol, nrow, 0); // Add a block under the door
+//				addBlock(s, d, ncol, nrow . . . . . . . . . . . . . ., 0); // Add a block under the door
 				addDoor(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
@@ -138,6 +155,9 @@ public class MCStateGenerator {
 				addOven(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
+			case lavaSym:
+				addLava(s, d, ncol, nrow, 0);
+				ncol++;
 			default:
 				continue;
 			}
@@ -211,6 +231,14 @@ public class MCStateGenerator {
 		addObject(goal, s, d, x, y, z);
 	}
 	
+	private static void addLava(State s, Domain d, int x, int y, int z) {
+		ObjectInstance lava = new ObjectInstance(d.getObjectClass("lava"), "lava"+x+y+z);
+		lava.setValue("x", x);
+		lava.setValue("y", y);
+		lava.setValue("z", z);
+		s.addObject(lava);
+	}
+	
 	private static void addObject(ObjectInstance obj, State s, Domain d, int x, int y, int z) {
 		obj.setValue("x", x);
 		obj.setValue("y", y);
@@ -228,5 +256,13 @@ public class MCStateGenerator {
 		System.out.println(domain.toString());
 
 	}
+	
+	public int getMaxX() {
+		return this.numCols;
+	}
+	public int getMaxY() {
+		return this.numRows;
+	}
+	
 
 }

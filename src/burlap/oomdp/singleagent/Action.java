@@ -194,6 +194,7 @@ public abstract class Action {
 			// The affordance is applicable in this state, given the goal
 //			System.out.println(this);
 			if (aff.isApplicable(s, this.domain.getPropFunction("AtGoal"))) {
+
 				if (aff.getActions().contains(this)) {
 					// This action is applicable based on the affordance
 					return true;
