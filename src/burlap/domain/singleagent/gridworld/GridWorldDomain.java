@@ -33,7 +33,6 @@ import burlap.oomdp.visualizer.Visualizer;
  * The number of
  * possible types can be set using the {@link #setNumberOfLocationTypes(int)} mutator.
  * Setting location types may be useful if terminating "pits" and goal locations exist in the world
- * (or any other similar reason), because pits can be marked as on type of location and goals another.
  * <br/> 
  * Walls are not considered objects. Instead walls are
  * considered part of the transition dynamics. There are 2 types of walls supported. Walls that are more like obstacles
