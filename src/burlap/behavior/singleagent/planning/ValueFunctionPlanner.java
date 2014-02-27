@@ -205,18 +205,35 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		
 		
+		// AFFRTDP: call to affordances to get distribution over actions.
+		
 		List <QValue> res = new ArrayList<QValue>();
-		for(Action a : actions){
-			List <GroundedAction> applications = s.getAllGroundedAffordanceActionsFor(a, kb, this.domain); // THIS IS 
-			for(GroundedAction ga : applications){
-				res.add(this.getQ(sh, ga, matching));
-			}
+		
+//		 new ArrayList<GroundedAction>();
+		
+		for (GroundedAction ga: this.getAffordanceGroundedActions(s, kb)) {
+			res.add(this.getQ(sh, ga, matching));
 		}
+//		for(Affordance aff : kb) {
+//			// TODO: Second argument should reflect CURRENT goal, not AtGoal
+//			List <GroundedAction> applications = aff.getApplicableActions(s, domain.getPropFunction("AtGoal"));  
+//			for (GroundedAction ga: applications) {
+//				res.add(this.getQ(sh, ga, matching));
+//			}
+//		}
+
+//		TODO: Delete this
+//		for(Action a : actions){
+//			List <GroundedAction> applications = s.getAllGroundedAffordanceActionsFor(a, kb, this.domain);
+//			for(GroundedAction ga : applications){
+//				res.add(this.getQ(sh, ga, matching));
+//			}
+//		}
 		
 		// If Affordance trimmed off all useful actions, default to normal action set
 		if (res.size() == 0) {
 			for(Action a : actions){
-				List <GroundedAction> applications = s.getAllGroundedActionsFor(a); // THIS IS 
+				List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
 				for(GroundedAction ga : applications){
 					res.add(this.getQ(sh, ga, matching));
 				}
@@ -225,6 +242,15 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		return res;
 		
+	}
+	
+	public List<GroundedAction> getAffordanceGroundedActions(State st, ArrayList<Affordance> kb) {
+		ArrayList<GroundedAction> res = new ArrayList<GroundedAction>();
+		for(Affordance aff : kb) {
+			// TODO: Second argument should reflect CURRENT goal, not AtGoal
+			res.addAll(aff.getApplicableActions(st, domain.getPropFunction("AtGoal")));  
+		}
+		return res;
 	}
 	
 	
@@ -367,14 +393,15 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			mapToStateIndex.put(sh, sh);
 			
 			// Select action set with affordance KB
-			List <GroundedAction> gas = new ArrayList<GroundedAction>();
-			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb, this.domain));
-			}
-			
+//			List <GroundedAction> gas = new ArrayList<GroundedAction>();
+//			for(Action a : actions){
+//				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb, this.domain));
+//			}
+			List <GroundedAction> gas = this.getAffordanceGroundedActions(sh.s, kb);
 			// Fall back on regular VI (Affordance pruned ALL actions, so fall back on using all)
 			// In other words, we don't have a relevant affordance to dictate actions here
 			if (gas.size() == 0) {
+				System.out.println("FALLING BACK ON VI ACTIONS");
 				for(Action a : actions){
 					gas.addAll(sh.s.getAllGroundedActionsFor(a));
 				}

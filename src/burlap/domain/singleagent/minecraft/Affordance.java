@@ -6,6 +6,7 @@ import java.util.List;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
 
 public class Affordance {
 	
@@ -51,12 +52,21 @@ public class Affordance {
 		return false;
 	}
 	
-	public List<Action> getApplicableActions(State s, PropositionalFunction goal) {
-		List<Action> result = new ArrayList<Action>();
+	public List<GroundedAction> getApplicableActions(State st, PropositionalFunction goal) {
+		List<GroundedAction> result = new ArrayList<GroundedAction>();
 		
 		for(Action a : this.actions) {
-			if (this.pf.isTrue(s)) {
-				result.add(a);
+			
+			// Check if this affordance applies (NEED TO ADD GOAL RELATIVE PART)
+			if (this.pf.isTrue(st)) {
+				
+				// Do weird state binding thing
+				List <List <String>> bindings = st.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
+				for(List <String> params : bindings){
+					String [] aprams = params.toArray(new String[params.size()]);
+						GroundedAction gp = new GroundedAction(a, aprams);
+						result.add(gp);
+				}				
 			}
 		}
 		return result;
@@ -65,5 +75,6 @@ public class Affordance {
 	public boolean containsAction(Action a) {
 		return this.actions.contains(a);
 	}
+	
 
 }

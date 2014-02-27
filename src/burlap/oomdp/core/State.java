@@ -508,29 +508,33 @@ public class State {
 	 * @param a the action from which to generate GroundedAction objects.
 	 * @return all GroundedAction objects for the source action a in this state.
 	 */
-	public List <GroundedAction> getAllGroundedAffordanceActionsFor(Action a, ArrayList<Affordance> kb, Domain domain){
-		
-		List <GroundedAction> res = new ArrayList<GroundedAction>();
-		
-		if(a.getParameterClasses().length == 0){
-			if(a.applicableInAffordanceState(this, kb)){
-				res.add(new GroundedAction(a, new String[]{}));
-			}
-			return res; //no parameters so just the single ga without params
-		}
-		
-		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
-
-		for(List <String> params : bindings){
-			String [] aprams = params.toArray(new String[params.size()]);
-			if(a.applicableInAffordanceState(this, kb)){
-				GroundedAction gp = new GroundedAction(a, aprams);
-				res.add(gp);
-			}
-		}
-		
-		return res;
-	}
+//	public List <GroundedAction> getAllGroundedAffordanceActionsFor(Action a, ArrayList<Affordance> kb, Domain domain){
+//		
+//		List <GroundedAction> res = new ArrayList<GroundedAction>();
+//		
+//		for(Affordance aff : kb) {
+//			res.addAll(aff.getApplicableActions(this, domain.getPropFunction("AtGoal")));
+//		}
+//
+//		if(a.getParameterClasses().length == 0){
+//			if(a.applicableInAffordanceState(this, kb)){
+//				res.add(new GroundedAction(a, new String[]{}));
+//			}
+//			return res; //no parameters so just the single ga without params
+//		}
+//		
+//		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
+//
+//		for(List <String> params : bindings){
+//			String [] aprams = params.toArray(new String[params.size()]);
+//			if(a.applicableInAffordanceState(this, kb)){
+//				GroundedAction gp = new GroundedAction(a, aprams);
+//				res.add(gp);
+//			}
+//		}
+//		
+//		return res;
+//	}
 
 	
 	/**

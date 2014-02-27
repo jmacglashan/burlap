@@ -181,6 +181,7 @@ public abstract class Policy {
 		
 		State cur = s;
 		while(!tf.isTerminal(cur)){
+//			System.out.println(cur.getFirstObjectOfClass("agent").getObjectDescription());
 			cur = this.followAndRecordPolicy(res, cur, rf);
 		}
 		

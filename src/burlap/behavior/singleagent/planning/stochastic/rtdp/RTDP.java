@@ -219,7 +219,7 @@ public class RTDP extends ValueFunctionPlanner {
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
 				StateHashTuple sh = this.hashingFactory.hashState(curState);
-				
+
 				//update this state's value
 				double curV = this.value(sh);
 				double nV = this.performBellmanUpdateOn(sh);
@@ -266,7 +266,7 @@ public class RTDP extends ValueFunctionPlanner {
 				double nV = this.performBellmanUpdateOn(sh);
 				delta = Math.max(Math.abs(nV - curV), delta); 
 				
-				//select an action and take it
+				// select an action and take it
 				GroundedAction ga = this.rollOutPolicy.getAffordanceAction(curState, kb);
 				curState = ga.executeIn(curState);
 				nSteps++;

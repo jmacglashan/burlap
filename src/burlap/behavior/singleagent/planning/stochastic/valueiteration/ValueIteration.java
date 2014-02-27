@@ -248,14 +248,16 @@ public class ValueIteration extends ValueFunctionPlanner{
 			}
 			
 			// Select action set with affordance KB
-			List <GroundedAction> gas = new ArrayList<GroundedAction>();
-			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb, this.domain));
-			}
+//			List <GroundedAction> gas = new ArrayList<GroundedAction>();
+//			for(Action a : actions){
+//				gas.addAll(sh.s.getAllGroundedAffordanceActionsFor(a, kb, this.domain));
+//			}
 			
+			List <GroundedAction> gas = this.getAffordanceGroundedActions(sh.s, kb);
 			// Fall back on regular VI (Affordance pruned ALL actions, so fall back on using all)
 			// In other words, we don't have a relevant affordance to dictate actions here
 			if (gas.size() == 0) {
+				System.out.println("REACHABILITY: BACKING OFF TO VI ACTIONS");
 				for(Action a : actions){
 					gas.addAll(sh.s.getAllGroundedActionsFor(a));
 				}

@@ -223,11 +223,12 @@ public class MinecraftDomain implements DomainGenerator{
 		ovenClass.addAttribute(yatt);
 		ovenClass.addAttribute(zatt);
 		
-		// CREATE OVENS
+		// CREATE LAVA
 		ObjectClass lavaClass = new ObjectClass(DOMAIN, CLASSLAVA);
 		lavaClass.addAttribute(xatt);
 		lavaClass.addAttribute(yatt);
 		lavaClass.addAttribute(zatt);
+		
 		// ==== CREATE ACTIONS ====
 		
 		// Movement
@@ -245,8 +246,8 @@ public class MinecraftDomain implements DomainGenerator{
 				// Placement
 				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
 				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
-				this.placeR = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
-				this.placeL = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
+				this.placeL = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
+				this.placeR = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
 				
 				// Destruction
 //				this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
@@ -370,7 +371,27 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	
 	public static boolean isCellEmpty(State st, int x, int y, int z){
+		
+		if (x < 0 || x > MAXX || y < 0 || y > MAXY || z < 0 || x > MAXZ) {
+			return false; // TODO: make sure this works.
+		}
+		
 		return (getBlockAt(st, x, y, z) == null);
+	}
+	
+	public static int getCellContents(State st, int x, int y, int z){
+		
+		if (x < 0 || x > MAXX || y < 0 || y > MAXY || z < 0 || x > MAXZ) {
+			// Beyond the edge of the universe
+			return -1;
+		}
+		
+		if (getBlockAt(st, x, y, z) == null) {
+			// There is nothing at this location
+			return 0;
+		}
+		
+		return 1; //There is something there
 	}
 	
 	public static boolean isAdjPlane(State st, int ax, int ay, int az) {
@@ -382,8 +403,8 @@ public class MinecraftDomain implements DomainGenerator{
 //			&& (isCellEmpty(st, ax, ay + 1, az)) && (isCellEmpty(st, ax, ay - 1, az))) {
 //			return true;
 //		}
-		if ((!isCellEmpty(st, ax + 1, ay, az - 1)) && (!isCellEmpty(st, ax - 1, ay, az - 1))
-				&& (!isCellEmpty(st, ax, ay + 1, az - 1)) && (!isCellEmpty(st, ax, ay - 1, az - 1))) {
+		if ((getCellContents(st, ax + 1, ay, az - 1) != 0) && (getCellContents(st, ax - 1, ay, az - 1) != 0)
+				&& (getCellContents(st, ax, ay + 1, az - 1) != 0) && (getCellContents(st, ax, ay - 1, az - 1) != 0)) {
 				return true;
 			}
 		else {
@@ -418,8 +439,9 @@ public class MinecraftDomain implements DomainGenerator{
 	public static boolean isAdjTrench(State st, int ax, int ay, int az) {
 		// Returns true if the block in front of, behind, to the left of, or to the right of the agent is a trench
 		
-		if (isCellEmpty(st, ax, ay - 1, az - 1) || isCellEmpty(st, ax, ay + 1, az - 1)
-				|| isCellEmpty(st, ax - 1, ay, az - 1) || isCellEmpty(st, ax + 1, ay, az - 1)) {
+		
+		if (getCellContents(st, ax, ay - 1, az - 1) == 0 || getCellContents(st, ax, ay + 1, az - 1) == 0
+				|| getCellContents(st, ax - 1, ay, az - 1) == 0 || getCellContents(st, ax + 1, ay, az - 1) == 0) {
 			return true;
 		}
 		else {
@@ -587,6 +609,7 @@ public class MinecraftDomain implements DomainGenerator{
 		int ay = agent.getDiscValForAttribute(ATTY);
 		int az = agent.getDiscValForAttribute(ATTZ);
 		
+
 		// Get global coordinates of the loc to place the block
 		int bx = ax+dx;
 		int by = ay+dy;
@@ -598,6 +621,7 @@ public class MinecraftDomain implements DomainGenerator{
 			return;
 		}
 		
+
 		// If block loc is empty (z-1 from bot), and the loc above is empty (i.e. we can "see" the bottom loc), place it.
 		if (bz - 1 >= 0 && getBlockAt(s,bx,by,bz - 1) == null && getBlockAt(s,bx,by,bz) == null){
 			
@@ -605,7 +629,9 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			// Remove the block from the agent's inventory
 			agent.setValue(ATTBLKNUM, numAgentsBlocks - 1);
-			numAgentsBlocks = numAgentsBlocks - 1;
+//			System.out.println("placing BELOW: (dx,dy,dz) | (ax,ay,az) (" + dx + ", " + dy + ", " + dz + ") " + " (" + ax + ", " + ay + ", " + az + ")" + "    " + numAgentsBlocks);
+			
+			
 		}
 		// Now try placing one on agent's z level if it couldn't place one at z - 1
 		else if (getBlockAt(s, bz, by, bz) == null && numAgentsBlocks > 0){
@@ -615,6 +641,9 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			// Remove the block from the agent's inventory
 			agent.setValue(ATTBLKNUM, numAgentsBlocks - 1);
+//			System.out.println("placing EVEN: (dx,dy,dz) | (ax,ay,az) (" + dx + ", " + dy + ", " + dz + ") " + " (" + ax + ", " + ay + ", " + az + ")" + "    " + numAgentsBlocks);
+			
+			
 		}
 		
 	}
@@ -889,9 +918,9 @@ public class MinecraftDomain implements DomainGenerator{
 		}	
 	}
 	
-	public class PlaceActionR extends Action{
+	public class PlaceActionL extends Action{
 
-		public PlaceActionR(String name, Domain domain, String parameterClasses){
+		public PlaceActionL(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
 		}
 		
@@ -902,15 +931,14 @@ public class MinecraftDomain implements DomainGenerator{
 		}	
 	}
 	
-	public class PlaceActionL extends Action{
+	public class PlaceActionR extends Action{
 
-	public PlaceActionL(String name, Domain domain, String parameterClasses){
+	public PlaceActionR(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
 		}
 		
 		protected State performActionHelper(State st, String[] params) {
 			place(st, 1, 0, 0);
-//			System.out.println("Action Performed: " + this.name);
 			return st;
 		}	
 	}
@@ -1185,6 +1213,32 @@ public class MinecraftDomain implements DomainGenerator{
 		public boolean isTrue(State s) {
 			// TODO Auto-generated method stub
 			return false;
+		}
+	}
+	
+	public static class IsAgentYAt extends PropositionalFunction {
+		private int destY;
+		private int blockNum;
+
+		public IsAgentYAt(String name, Domain domain, String[] parameterClasses, int destY, int blockNum) {
+			super(name, domain, parameterClasses);
+			this.destY = destY;
+			this.blockNum = blockNum;  // This is a quick hack to get the agent to a Y location with the correct number of blocks.
+		}
+		
+		public boolean isTrue(State st) {
+			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
+			
+			// Get the agent's current coordinates
+			int ay = agent.getDiscValForAttribute(ATTY);
+			int agentBlockNum = agent.getDiscValForAttribute(ATTBLKNUM);
+			return (ay == this.destY);
+		}
+
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			// TODO Auto-generated method stub
+			return isTrue(st);
 		}
 	}
 	
