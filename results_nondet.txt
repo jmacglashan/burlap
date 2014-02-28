@@ -1,0 +1,60 @@
+Testing with map: 10world.map
+	VI,800
+	RTDP,345
+	AFFVI,800
+	AFFRTDP,377
+
+Testing with map: 13world.map
+	VI,2028
+	RTDP,400
+	AFFVI,2028
+	AFFRTDP,391
+
+Testing with map: 15world.map
+	VI,3150
+	RTDP,400
+	AFFVI,3150
+	AFFRTDP,396
+
+Testing with map: 17world.map
+	VI,4624
+	RTDP,400
+	AFFVI,4624
+	AFFRTDP,400
+
+Testing with map: 20world.map
+	VI,7200
+	RTDP,400
+	AFFVI,7200
+	AFFRTDP,400
+
+Testing with map: doorworld.map
+	VI,6315
+	RTDP,400
+	AFFVI,6315
+	AFFRTDP,400
+
+Testing with map: hardworld.map
+	VI,16588
+	RTDP,400
+	AFFVI,16588
+	AFFRTDP,400
+
+Testing with map: jumpworld.map
+	VI,2940
+	RTDP,400
+	AFFVI,2940
+	AFFRTDP,400
+
+Testing with map: lavaworld.map
+	VI,800
+	RTDP,331
+	AFFVI,800
+	AFFRTDP,347
+
+Testing with map: mazeworld.map
+	VI,4266
+	RTDP,400
+	AFFVI,4266
+	AFFRTDP,400
+

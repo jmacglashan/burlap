@@ -166,6 +166,7 @@ public class MinecraftBehavior {
 		
 		rewardTable = new HashMap<PropositionalFunction, Double>();
 		rewardTable.put(pfAgentAtGoal, (Double) 10.0);
+//		rewardTable.put(pfAgentHasBread, (Double) 10.0);
 		Double lavaRew = -100.0;
 		rewardTable.put(pfIsInLava, lavaRew);
 		
@@ -204,11 +205,11 @@ public class MinecraftBehavior {
 		int statePasses = planner.planFromStateAndCount(initialState);
 
 		// Create a Q-greedy policy from the planner
-		// Policy p = new GreedyQPolicy((QComputablePlanner)planner);
+		 Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
 		// Record the plan results to a file
-//		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
-		
+		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
+		System.out.println(actionSequence);
 		return statePasses;
 	}
 	
@@ -350,22 +351,22 @@ public class MinecraftBehavior {
 //		result.add(sg2);
 //		result.add(sg1);
 		
-		PropositionalFunction pfIsAgentBeforeBridge= new IsAgentYAt("IsBeforeBridge", this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT}, (this.mcdg.MAXY + 1) / 2, 1);
-		
-		Subgoal bridge_sg = new Subgoal(this.pfIsAgentYAt, this.pfIsAtGoal);
-		Subgoal before_bridge = new Subgoal(pfIsAgentBeforeBridge, this.pfIsAgentYAt);
-		result.add(bridge_sg);
-		result.add(before_bridge);
+//		PropositionalFunction pfIsAgentBeforeBridge= new IsAgentYAt("IsBeforeBridge", this.mcdg.DOMAIN,
+//				new String[]{this.mcdg.CLASSAGENT}, (this.mcdg.MAXY + 1) / 2, 1);
+//		
+//		Subgoal bridge_sg = new Subgoal(this.pfIsAgentYAt, this.pfIsAtGoal);
+//		Subgoal before_bridge = new Subgoal(pfIsAgentBeforeBridge, this.pfIsAgentYAt);
+//		result.add(bridge_sg);
+//		result.add(before_bridge);
 		// Jumpworld subgoals
 //		Subgoal pastTrench = new Subgoal(this.pfIsAtLocation, this.pfIsAtGoal);
 //		result.add(pastTrench);
 //		
 		// Breadworld subgoals
-//		PropositionalFunction hasGrainPF = new AgentHasGrainPF(MinecraftDomain.ATTAGHASGRAIN, MinecraftDomain.DOMAIN,
-//				new String[]{MinecraftDomain.CLASSAGENT});
-//		Subgoal hasGrain = new Subgoal(hasGrainPF, pfAgentHasBread);
-//		result.add(hasGrain);
+		PropositionalFunction hasGrainPF = new AgentHasGrainPF(MinecraftDomain.ATTAGHASGRAIN, this.mcdg.DOMAIN,
+				new String[]{MinecraftDomain.CLASSAGENT});
+		Subgoal hasGrain = new Subgoal(hasGrainPF, pfAgentHasBread);
+		result.add(hasGrain);
 		
 		// Doorworld subgoals
 //		PropositionalFunction doorOpenPF = new IsDoorOpen(MinecraftDomain.ISDOOROPEN, MinecraftDomain.DOMAIN,
@@ -411,13 +412,14 @@ public class MinecraftBehavior {
 	// === Affordance RTDP Planner	===
 	public int AffordanceRTDPPlanner(int numRollouts, int maxDepth, ArrayList<Affordance> kb){
 		
-		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, 10 / (1 - 0.99), numRollouts, 0.01, maxDepth);
+		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, (10 / (1 - 0.99)), numRollouts, 0.01, maxDepth);
 		
 		int statePasses = planner.planFromStateAffordance(initialState, kb);
 
 		// Create a Q-greedy policy from the planner
-		 Policy p = new GreedyQPolicy((QComputablePlanner)planner);
+		Policy p = new GreedyQPolicy(planner);
 		
+		System.out.println("Finished Planning");
 		String actionSequence = p.evaluateAffordanceBehavior(initialState, rf, tf, kb).getActionSequenceString();
 		System.out.println(actionSequence);
 		return statePasses;	
@@ -462,7 +464,7 @@ public class MinecraftBehavior {
 //		isTrenchActions.add(this.mcdg.jumpB);
 //		isTrenchActions.add(this.mcdg.jumpR);
 //		isTrenchActions.add(this.mcdg.jumpL);
-//		
+		
 		isTrenchActions.add(this.mcdg.forward);
 		isTrenchActions.add(this.mcdg.backward);
 		isTrenchActions.add(this.mcdg.left);
@@ -494,10 +496,11 @@ public class MinecraftBehavior {
 		isOnGrainActions.add(this.mcdg.pickUpGrain);
 		
 		ArrayList<Action> isAdjOvenActions = new ArrayList<Action>();
-		isAdjOvenActions.add(this.mcdg.useOvenF);
-		isAdjOvenActions.add(this.mcdg.useOvenB);
-		isAdjOvenActions.add(this.mcdg.useOvenR);
-		isAdjOvenActions.add(this.mcdg.useOvenL);
+		isAdjOvenActions.add(this.mcdg.placeGrain);
+//		isAdjOvenActions.add(this.mcdg.useOvenF);
+//		isAdjOvenActions.add(this.mcdg.useOvenB);
+//		isAdjOvenActions.add(this.mcdg.useOvenR);
+//		isAdjOvenActions.add(this.mcdg.useOvenL);
 		
 		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
 		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
@@ -552,7 +555,7 @@ public class MinecraftBehavior {
 //			OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
 
 //			numUpdates += planner.planFromStateAffordance(currState, kb);
-			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, (5 / (1 - .99)), numRollouts, 0.01, maxDepth);
+			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, (10 / (1 - .99)), numRollouts, 0.01, maxDepth);
 			
 			numUpdates += planner.planFromStateAffordance(currState, kb);
 			
@@ -576,12 +579,14 @@ public class MinecraftBehavior {
 	
 	public static void getResults() throws IOException {
 		
-		File fout = new File("test_map_results.txt");
+		File fout = new File("mutable_map_results.txt");
 		FileWriter fw = new FileWriter(fout.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
 		
-		File[] files = new File("maps/testmaps").listFiles();
-		String[] planners = {"VI","RTDP", "SG", "AFFVI", "AFFRTDP", "AFFSG"};
+		File[] files = new File("maps/mutablemaps").listFiles();
+//		String[] planners = {"VI", "RTDP", "AFFVI", "AFFRTDP"};
+//		String[] planners = {"AFFRTDP", "RTDP"};
+		String[] planners = {"VI", "RTDP", "AFFVI"};
 		int statePasses = 0;
 		int numRollouts = 10000;
 		int maxDepth = 250;
@@ -645,22 +650,24 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Collect Results
-//		try {
-//			getResults();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			getResults();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("4bridgeworld.map");
+//		MinecraftBehavior mcb = new MinecraftBehavior("breadworld.map");
 //		int numUpdates = 0;
+//		int numRollouts = 1000;
+//		int maxDepth = 250;
 		// VANILLA OOMDP/VI
 //		 numUpdates = mcb.ValueIterationPlanner();
 //		System.out.println("VI: " + numUpdates);
 
 		// RTDP
-//		String actionSequence = mcb.RTDPPlanner(numRollouts, maxDepth);
+//		numUpdates = mcb.RTDPPlanner(numRollouts, maxDepth);
 		
 		// SUBGOALS
 //		ArrayList<Subgoal> kb = mcb.generateSubgoalKB();
@@ -672,12 +679,12 @@ public class MinecraftBehavior {
 		
 		// AFFORDANCE - RTDP
 //		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-//		 numUpdates = mcb.AffordanceRTDPPlanner(1000, 450, kb);
+//		 numUpdates = mcb.AffordanceRTDPPlanner(numRollouts, maxDepth, kb);
 		
 		// AFFORDANCE - SG
-		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-		 ArrayList<Subgoal> subgoals = mcb.generateSubgoalKB();
-		 int numUpdates = mcb.AffordanceRTDPPlanner(50, 50, kb);
+//		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+//		 ArrayList<Subgoal> subgoals = mcb.generateSubgoalKB();
+//		 numUpdates = mcb.AffordanceSubgoalPlanner(kb, subgoals, numRollouts, maxDepth);
 
 		// END TIMER
 //		timeEnd = System.nanoTime();

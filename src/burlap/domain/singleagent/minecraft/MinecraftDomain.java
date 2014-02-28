@@ -58,16 +58,18 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static final String					ACTIONGRAIN = "pickUpGrain";
 	
-	public static final String					ACTIONUSEOVENF = "useOvenForward";
-	public static final String					ACTIONUSEOVENB = "useOvenBack";
-	public static final String					ACTIONUSEOVENR = "useOvenRight";
-	public static final String					ACTIONUSEOVENL = "useOvenLeft";
+//	public static final String					ACTIONUSEOVENF = "useOvenForward";
+//	public static final String					ACTIONUSEOVENB = "useOvenBack";
+//	public static final String					ACTIONUSEOVENR = "useOvenRight";
+//	public static final String					ACTIONUSEOVENL = "useOvenLeft";
 	
 	public static final String					ACTIONJUMPF = "jumpF";
 	public static final String					ACTIONJUMPB = "jumpB";
 	public static final String					ACTIONJUMPR = "jumpR";
 	public static final String					ACTIONJUMPL = "jumpL";
-	
+
+	public static final String					ACTIONPLACEGRAIN = "PlaceGrain";
+
 	// ----- ACTIONS -----
 	public Action								forward;
 	public Action								backward;
@@ -86,10 +88,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public Action								openR;
 	public Action								openL;
 	public Action								pickUpGrain;
-	public Action								useOvenF;
-	public Action								useOvenB;
-	public Action								useOvenR;
-	public Action								useOvenL;
+	public Action								placeGrain;
 	public Action								jumpF;
 	public Action								jumpB;
 	public Action								jumpR;
@@ -266,6 +265,7 @@ public class MinecraftDomain implements DomainGenerator{
 //			this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
 			
 //			// Use Oven
+//			this.placeGrain = new placeGrainAction(ACTIONPLACEGRAIN, DOMAIN, "");
 //			this.useOvenF = new useOvenActionF(ACTIONUSEOVENF, DOMAIN, "");
 //			this.useOvenB = new useOvenActionB(ACTIONUSEOVENB, DOMAIN, "");
 //			this.useOvenR = new useOvenActionR(ACTIONUSEOVENR, DOMAIN, "");
@@ -739,7 +739,7 @@ public class MinecraftDomain implements DomainGenerator{
 		if (bx < 0 || bx > MAXX || by < 0 || by > MAXY || bz < 0 || bz > MAXZ) {
 			return;
 		}
-		
+
 		ObjectInstance block = getBlockAt(s, bx, by, bz);
 		if ((block != null) && (block.getDiscValForAttribute(ATTGRAIN) == 1)) {
 			// The block we're on "contain's grain", so "pick it up"
@@ -753,36 +753,27 @@ public class MinecraftDomain implements DomainGenerator{
 		
 	}
 
-	public static void useoven(State s, int dx, int dy, int dz) {
+	public static void placeGrain(State st) {
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
 		
 		// Agent's global coordinates
 		int ax = agent.getDiscValForAttribute(ATTX);
 		int ay = agent.getDiscValForAttribute(ATTY);
 		int az = agent.getDiscValForAttribute(ATTZ);
 		
-		// Get global coordinates of the loc to open the door
-		int bx = ax+dx;
-		int by = ay+dy;
-		int bz = az+dz; // Try one below, first
-		
-		
-		// Make sure we are trying to use an oven in bounds
-		if (bx < 0 || bx > MAXX || by < 0 || by > MAXY || bz < 0 || bz > MAXZ) {
-			return;
+		if (agent.getDiscValForAttribute(ATTAGHASGRAIN) == 1) {
+			agent.setValue(ATTAGHASGRAIN, 0);  // Remove grain from agent
+			
+			if (isAdjOven(st, ax, ay, az)) {
+				agent.setValue(ATTAGHASBREAD, 1);				
+			} else {
+				// Put the grain "on the ground"
+				ObjectInstance belowBlock = st.getObject("block" + ax + ay + (az-1));
+				belowBlock.setValue(ATTGRAIN, 1);
+			}
 		}
-		
-		ObjectInstance oven = getInstanceOfAt(s, bx, by, bz, "oven");
-		if ((oven != null) && (agent.getDiscValForAttribute(ATTAGHASGRAIN) == 1)) {
-			// The block we're on "contain's grain", so "pick it up"
-			agent.setValue(ATTAGHASGRAIN, 0);
-			agent.setValue(ATTAGHASBREAD, 1);
-		}
-		else {
-			return;
-		}
-		
+		return;
 		
 	}
 	
@@ -1062,56 +1053,17 @@ public class MinecraftDomain implements DomainGenerator{
 		}	
 	}
 	
-	public static class useOvenActionF extends Action{
+	public static class placeGrainAction extends Action{
 
-		public useOvenActionF(String name, Domain domain, String parameterClasses){
+		public placeGrainAction(String name, Domain domain, String parameterClasses){
 			super(name, domain, parameterClasses);
 		}
 		
 		protected State performActionHelper(State st, String[] params) {
-			useoven(st, 0, -1, 0);
+			placeGrain(st);
 //			System.out.println("Action Performed: " + this.name);
 			return st;
 		}
-	}
-	
-	public static class useOvenActionB extends Action{
-
-		public useOvenActionB(String name, Domain domain, String parameterClasses){
-			super(name, domain, parameterClasses);
-		}
-		
-		protected State performActionHelper(State st, String[] params) {
-			useoven(st, 0, 1, 0);
-//			System.out.println("Action Performed: " + this.name);
-			return st;
-		}	
-	}
-	
-	public static class useOvenActionR extends Action{
-
-		public useOvenActionR(String name, Domain domain, String parameterClasses){
-			super(name, domain, parameterClasses);
-		}
-		
-		protected State performActionHelper(State st, String[] params) {
-			useoven(st, -1, 0, 0);
-//			System.out.println("Action Performed: " + this.name);
-			return st;
-		}	
-	}
-	
-	public static class useOvenActionL extends Action{
-
-	public useOvenActionL(String name, Domain domain, String parameterClasses){
-			super(name, domain, parameterClasses);
-		}
-		
-		protected State performActionHelper(State st, String[] params) {
-			useoven(st, 1, 0, 0);
-//			System.out.println("Action Performed: " + this.name);
-			return st;
-		}	
 	}
 	
 	
@@ -1551,12 +1503,6 @@ public class MinecraftDomain implements DomainGenerator{
 			
 			
 //			 Works
-//			if (!isAdjTrench(st, ax, ay, az)) {
-//				return true;
-//			}
-			if ((ax == 0) || (ay == 0) || (ax == MAXX) || (ay == MAXY)) {
-				return true;
-			}
 			if (isAdjPlane(st, ax, ay, az)) {
 				return true;
 			}
@@ -1799,10 +1745,11 @@ public class MinecraftDomain implements DomainGenerator{
 		exp.addActionShortHand("or", ACTIONOPENR);
 		exp.addActionShortHand("ol", ACTIONOPENL);
 		exp.addActionShortHand("pu", ACTIONGRAIN);
-		exp.addActionShortHand("bbf", ACTIONUSEOVENF);
-		exp.addActionShortHand("bbb", ACTIONUSEOVENB);
-		exp.addActionShortHand("bbl", ACTIONUSEOVENL);
-		exp.addActionShortHand("bbr", ACTIONUSEOVENR);
+		exp.addActionShortHand("pg", ACTIONPLACEGRAIN);
+//		exp.addActionShortHand("bbf", ACTIONUSEOVENF);
+//		exp.addActionShortHand("bbb", ACTIONUSEOVENB);
+//		exp.addActionShortHand("bbl", ACTIONUSEOVENL);
+//		exp.addActionShortHand("bbr", ACTIONUSEOVENR);
 		
 		exp.addActionShortHand("jf", ACTIONJUMPF);
 		exp.addActionShortHand("jb", ACTIONJUMPB);
