@@ -1,0 +1,28 @@
+Testing with map: 4bridgeworld.map
+	VI,51867
+	RTDP,2285
+	SG,46137
+	AFFVI,25990
+	AFFRTDP,2075
+	AFFSG,46025
+
+Testing with map: 6bridgeworld.map
+	VI,234090
+	RTDP,5994
+	SG,202461
+	AFFVI,93840
+	AFFRTDP,4105
+	AFFSG,154725
+
+Testing with map: 8bridgeworld.map
+	VI,679320
+	RTDP,20682
+	SG,596453
+	AFFVI,226320
+	AFFRTDP,5540
+	AFFSG,364821
+
+Testing with map: 10bridgeworld.map
+	VI,1565190
+	RTDP,54115
+	SG,1396497
