@@ -1,0 +1,2 @@
+Testing with map: jumpworld.map
+	VI,2940

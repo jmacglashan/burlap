@@ -1,0 +1,15 @@
+Testing with map: jumpworld.map
+	VI,2940
+	RTDP,2430
+	AFFVI,2940
+
+Testing with map: lavaworld.map
+	VI,800
+	RTDP,698
+	AFFVI,800
+
+Testing with map: mazeworld.map
+	VI,4266
+	RTDP,2857
+	AFFVI,4266
+

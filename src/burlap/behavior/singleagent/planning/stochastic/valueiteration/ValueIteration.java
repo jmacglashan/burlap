@@ -100,17 +100,13 @@ public class ValueIteration extends ValueFunctionPlanner{
 		Set <StateHashTuple> states = mapToStateIndex.keySet();
 		
 		int i = 0;
-		int nStates = 0;
 		for(i = 0; i < this.maxPasses; i++){
-//			System.out.println(i);
 			double delta = 0.;
-			nStates = states.size();
 			for(StateHashTuple sh : states){
 
 				if(tf.isTerminal(sh.s)){
 					//no need to compute this state; always zero because it is terminal and agent cannot behave here
 					valueFunction.put(sh, 0.);
-					nStates--;
 					continue;
 					
 				}

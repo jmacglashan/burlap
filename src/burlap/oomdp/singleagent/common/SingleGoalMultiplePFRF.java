@@ -56,14 +56,7 @@ public class SingleGoalMultiplePFRF implements RewardFunction {
 			if(pf.isTrue(s)) {
 				return reward;
 			}
-			
-//			List<GroundedProp> gps = sprime.getAllGroundedPropsFor(pf);
-//			
-//			for(GroundedProp gp : gps){
-//				if(gp.isTrue(sprime)){
-//					return reward;
-//				}
-//			}			
+				
 		}
 		return normalReward;
 	}

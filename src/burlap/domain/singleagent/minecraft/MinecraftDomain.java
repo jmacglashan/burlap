@@ -145,7 +145,7 @@ public class MinecraftDomain implements DomainGenerator{
 	 * 
 	 * NOTE: Refactor this at some point so it is a constructor.
 	 */
-	public Domain generateDomain(int rows, int cols) {
+	public Domain generateDomain(int rows, int cols, boolean placeMode, boolean destMode) {
 		MAXX = rows;
 		MAXY = cols;
 		
@@ -240,20 +240,21 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		if (allActMode) {
 		
-			boolean blockMode = true;
-			if (blockMode) {
+			if (placeMode) {
 				// Placement
 				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
 				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
 				this.placeL = new PlaceActionL(ACTIONPLACER, DOMAIN, "");
 				this.placeR = new PlaceActionR(ACTIONPLACEL, DOMAIN, "");
-				
-				// Destruction
-//				this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
-//				this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
-//				this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
-//				this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
 			}
+			if (destMode) {
+				// Destruction
+				this.destF = new DestActionF(ACTIONDESTF, DOMAIN, "");
+				this.destB = new DestActionB(ACTIONDESTB, DOMAIN, "");
+				this.destR = new DestActionL(ACTIONDESTR, DOMAIN, "");
+				this.destL = new DestActionR(ACTIONDESTL, DOMAIN, "");
+			}
+
 			
 			// Open Door
 			this.openF = new OpenActionF(ACTIONOPENF, DOMAIN, "");
@@ -262,16 +263,12 @@ public class MinecraftDomain implements DomainGenerator{
 			this.openL = new OpenActionR(ACTIONOPENL, DOMAIN, "");
 
 			// Pick Up Grain
-//			this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
+			this.pickUpGrain = new pickUpGrainAction(ACTIONGRAIN, DOMAIN, "");
 			
-//			// Use Oven
-//			this.placeGrain = new placeGrainAction(ACTIONPLACEGRAIN, DOMAIN, "");
-//			this.useOvenF = new useOvenActionF(ACTIONUSEOVENF, DOMAIN, "");
-//			this.useOvenB = new useOvenActionB(ACTIONUSEOVENB, DOMAIN, "");
-//			this.useOvenR = new useOvenActionR(ACTIONUSEOVENR, DOMAIN, "");
-//			this.useOvenL = new useOvenActionL(ACTIONUSEOVENL, DOMAIN, "");
-//			
-//			// Jump
+			// Use Oven
+			this.placeGrain = new placeGrainAction(ACTIONPLACEGRAIN, DOMAIN, "");
+
+			// Jump
 //			this.jumpF = new JumpActionF(ACTIONJUMPF, DOMAIN, "");
 //			this.jumpB = new JumpActionB(ACTIONJUMPB, DOMAIN, "");
 //			this.jumpR = new JumpActionR(ACTIONJUMPR, DOMAIN, "");
@@ -1247,17 +1244,26 @@ public class MinecraftDomain implements DomainGenerator{
 		private int locX;
 		private int locY;
 		private int locZ;
+		private int bNum = -1;
 		
 
 		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
 		}
 		
-		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses, String[] params) {
+		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses, int x, int y, int z) {
 			super(name, domain, parameterClasses);
-			this.locX = Integer.parseInt(params[0]);
-			this.locY = Integer.parseInt(params[1]);
-			this.locZ = Integer.parseInt(params[2]);
+			this.locX = x;
+			this.locY = y;
+			this.locZ = z;
+		}
+		
+		public IsAtLocationPF(String name, Domain domain, String[] parameterClasses, int x, int y, int z, int bNum) {
+			super(name, domain, parameterClasses);
+			this.locX = x;
+			this.locY = y;
+			this.locZ = z;
+			this.bNum = bNum;
 		}
 		
 		@Override
@@ -1270,8 +1276,9 @@ public class MinecraftDomain implements DomainGenerator{
 			int ax = agent.getDiscValForAttribute(ATTX);
 			int ay = agent.getDiscValForAttribute(ATTY);
 			int az = agent.getDiscValForAttribute(ATTZ);
+			int bNum = agent.getDiscValForAttribute(ATTBLKNUM);
 			
-			if(ax == this.locX && ay == this.locY && az == this.locZ){
+			if(ax == this.locX && ay == this.locY && az == this.locZ && (this.bNum == -1 || this.bNum <= bNum)){
 				return true;
 			}
 			

@@ -3,6 +3,7 @@ package burlap.domain.singleagent.minecraft;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
 import burlap.oomdp.core.Domain;
@@ -39,25 +40,30 @@ public class MCStateGenerator {
 	private static final char lavaSym = 'L';
 	private int numRows;
 	private int numCols;
+	private int numBlocks;
 	
 	/**
 	 * @param path the file path for the map file.
 	 */
 	public MCStateGenerator(String path) {
 		// TODO Auto-generated constructor stub
-		
 		// Convert relative path to absolute.
 		String root = System.getProperty("user.dir");
-		String abspath = root + "/maps/mutablemaps/" + path;
+		String abspath = root + "/maps/" + path;
 		this.fpath = abspath;
+		processHeader();
 	}
 	
 	public int[] getDimensions() {
 		try {
 			Scanner scnr = new Scanner(new File(this.fpath));
+			scnr.nextLine(); // Skip over header
 			while (scnr.hasNextLine()) {
-				this.numRows++;
-				this.numCols = scnr.nextLine().replace(" ", "").length() - 1;
+				String nextLine = scnr.nextLine();
+				if (nextLine.length() > 0) {
+					this.numRows++;
+					this.numCols = nextLine.replace(" ", "").length() - 1;
+				}
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -66,6 +72,25 @@ public class MCStateGenerator {
 		return new int[]{this.numCols, this.numRows};
 	}
 	
+	private void processHeader() {
+		// Sets classwide variables from header
+		try {
+			Scanner scnr = new Scanner(new File(this.fpath));
+			String nextLine = scnr.nextLine(); // Skip over header
+			String[] header = nextLine.split(",");
+			
+			for (String s : header) {
+				String[] item = s.split("=");
+				
+				// ADD HEADER INFONS HERE
+				if (item[0].equals("BN")) {
+					numBlocks = Integer.parseInt(item[1]);
+				}
+			}
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * This is the main method for the MCStateGenerator class.
 	 * A new state is created, and we create an empty 10x10 floor.
@@ -81,6 +106,9 @@ public class MCStateGenerator {
 		
 		try {
 			Scanner scnr = new Scanner(new File(this.fpath));
+			
+			scnr.nextLine(); // Skip over header
+			
 			while (scnr.hasNextLine()) {
 				processRow(s, d, scnr.nextLine(), nrow);
 				nrow++;
@@ -95,6 +123,8 @@ public class MCStateGenerator {
 				
 	}
 	
+
+
 	/**
 	 * Here we read each ascii character in the row and make adjustments to the
 	 * 10x10 empty state.
@@ -121,7 +151,7 @@ public class MCStateGenerator {
 				ncol++;
 				break;
 			case aSym:
-				addAgent(s, d, ncol, nrow, 1);
+				addAgent(s, d, ncol, nrow, 1, numBlocks);
 				ncol++;
 				break;
 			case gSym:
@@ -216,9 +246,9 @@ public class MCStateGenerator {
 		s.removeObject(block);
 	}
 	
-	private static void addAgent(State s, Domain d, int x, int y, int z) {
+	private static void addAgent(State s, Domain d, int x, int y, int z, int agentNumBlocks) {
 		ObjectInstance agent = new ObjectInstance(d.getObjectClass("agent"), "agent0");
-		agent.setValue("bNum", 1);  // Expliticly set the number of blocks agent can carry to 1
+		agent.setValue("bNum", agentNumBlocks);  // Expliticly set the number of blocks agent can carry to 1
 		agent.setValue("agentHasGrain", 0);
 		agent.setValue("agentHasBread", 0);
 		addBlock(s, d, x, y, z - 1); // Agent needs to be on top of a block
@@ -262,6 +292,10 @@ public class MCStateGenerator {
 	}
 	public int getMaxY() {
 		return this.numRows;
+	}
+
+	public int getBNum() {
+		return numBlocks;
 	}
 	
 

@@ -12,7 +12,7 @@ public class Affordance {
 	
 	private PropositionalFunction pf;
 	private PropositionalFunction goal;
-	private List<Action> actions;
+	private final List<Action> actions;
 	private boolean dirFlag;
 	
 	public Affordance(PropositionalFunction pf, PropositionalFunction goal, List<Action> actions) {
@@ -61,6 +61,9 @@ public class Affordance {
 			if (this.pf.isTrue(st)) {
 				
 				// Do weird state binding thing
+				if (st == null || a == null) {
+					int i = 0;
+				}
 				List <List <String>> bindings = st.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
 				for(List <String> params : bindings){
 					String [] aprams = params.toArray(new String[params.size()]);

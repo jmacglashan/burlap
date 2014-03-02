@@ -52,12 +52,12 @@ public class MinecraftBehavior {
 	Domain						domain;
 	StateParser					sp;
 	RewardFunction				rf;
-	TerminalFunction			tf;
-	StateConditionTest			goalCondition;
+	static TerminalFunction			tf;
+	static StateConditionTest			goalCondition;
 	State						initialState;
 	DiscreteStateHashFactory	hashingFactory;
 	
-	PropositionalFunction		pfAgentAtGoal;
+	static PropositionalFunction		pfAgentAtGoal;
 	PropositionalFunction		pfIsPlane;
 	PropositionalFunction		pfIsAdjTrench;
 	PropositionalFunction		pfIsAdjDoor;
@@ -69,17 +69,18 @@ public class MinecraftBehavior {
 	PropositionalFunction		pfIsAtLocation;
 	PropositionalFunction		pfIsWalkable;
 	PropositionalFunction 		pfIsAdjDstableWall;
-	PropositionalFunction 		pfAgentHasBread;
+	static PropositionalFunction 		pfAgentHasBread;
 	PropositionalFunction		pfIsAdjOven;
 	PropositionalFunction		pfIsOnGrain;
 	PropositionalFunction  		pfIsInLava;
 	
 	HashMap<PropositionalFunction, Double> rewardTable;
+	static int 						numRollouts = 2000;
+	static int 						maxDepth = 50;
+//	static double				vInit = (10 / (1 - .99));
+	static double				vInit = 0;
+	static double				goalReward = -1.0;
 	
-	// Timing stuff
-//	private static long			timeStart;
-//	private static long			timeEnd;
-	private static double			timeDelta;
 	
 	public MinecraftBehavior(String mapfile) {
 		MCStateGenerator mcsg = new MCStateGenerator(mapfile);
@@ -89,14 +90,22 @@ public class MinecraftBehavior {
 //		and the second entry is the number of rows.
 		int[] maxDims = mcsg.getDimensions();
 		
-		domain = mcdg.generateDomain(maxDims[0], maxDims[1]);
+		boolean placeMode = false;
+		boolean destMode = false;
+
+
+		if (mcsg.getBNum() > 0) {
+			placeMode = true;
+		}
+		if (mapfile.contains("tunnel")) {
+			destMode = true;
+		}
+		
+		domain = mcdg.generateDomain(maxDims[0], maxDims[1], placeMode, destMode);
 		
 		sp = new MinecraftStateParser(domain);
 
 		// === Build Initial State=== //
-
-
-
 		initialState = mcsg.getCleanState(domain);
 
 		// Set up the state hashing system
@@ -148,7 +157,7 @@ public class MinecraftBehavior {
 		
 		
 		pfIsAtLocation = new IsAtLocationPF(this.mcdg.ISATLOC, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[]{"13", "6", "1"});
+				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, 13, 6, 1);
 		
 		pfIsWalkable = new IsWalkablePF(this.mcdg.ISWALK, this.mcdg.DOMAIN,
 				new String[]{"Integer", "Integer", "Integer"});
@@ -165,8 +174,8 @@ public class MinecraftBehavior {
 //		goalCondition = new TFGoalCondition(tf);
 		
 		rewardTable = new HashMap<PropositionalFunction, Double>();
-		rewardTable.put(pfAgentAtGoal, (Double) 10.0);
-//		rewardTable.put(pfAgentHasBread, (Double) 10.0);
+		rewardTable.put(pfAgentAtGoal, (Double) goalReward);
+		rewardTable.put(pfAgentHasBread, (Double) goalReward);
 		Double lavaRew = -100.0;
 		rewardTable.put(pfIsInLava, lavaRew);
 		
@@ -200,7 +209,7 @@ public class MinecraftBehavior {
 	// === RTDP Planner	===
 	public int RTDPPlanner(int numRollouts, int maxDepth){
 
-		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, (10 / (1 - .99)), numRollouts, 0.01, maxDepth);
+		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
 		
 		int statePasses = planner.planFromStateAndCount(initialState);
 
@@ -228,29 +237,22 @@ public class MinecraftBehavior {
 		
 		// Run VI between each subgoal in the chain
 		State currState = initialState;
-		boolean timeReachability = true;
 		int numUpdates = 0;
 		
 		rewardTable.remove(pfIsAtGoal);
 		while(propfuncChain != null) {
 			System.out.println("Current goal: " + propfuncChain.getPropFunc().toString());
-//			rf = new SingleGoalPFRF(propfuncChain.getPropFunc(), 10, -1);
-			
-			rewardTable.put(propfuncChain.getPropFunc(), (Double) 10.0);
+			rewardTable.put(propfuncChain.getPropFunc(), (Double) goalReward);
 			rf = new SingleGoalMultiplePFRF(rewardTable, -1);
-//			rf = new SingleGoalPFRF(propfuncChain.getPropFunc(), 10, -1); 
-			tf = new SinglePFTF(propfuncChain.getPropFunc()); 
-//			
-//			rf = new SingleGoalMultiplePFRF(rewardTable, -1);
 			tf = new SinglePFTF(propfuncChain.getPropFunc()); 
 			goalCondition = new TFGoalCondition(tf);
 			
-			OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
-//
-			numUpdates += planner.planFromState(currState, this.mcdg);
-//			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, (10 / (1 - .99)), numRollouts, 0.01, maxDepth);
+//			OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
+////
+//			numUpdates += planner.planFromState(currState, this.mcdg);
+			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
 			
-//			numUpdates += planner.planFromStateAndCount(currState);
+			numUpdates += planner.planFromStateAndCount(currState);
 
 			Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 
@@ -264,7 +266,7 @@ public class MinecraftBehavior {
 			propfuncChain = propfuncChain.getParent();
 			
 		}
-		rewardTable.put(pfIsAtGoal, (Double) 10.0);
+		rewardTable.put(pfIsAtGoal, (Double) goalReward);
 		return numUpdates;
 		
 	}
@@ -332,7 +334,7 @@ public class MinecraftBehavior {
 		return curr;
 	}
 	
-	private ArrayList<Subgoal> generateSubgoalKB() {
+	private ArrayList<Subgoal> generateSubgoalKB(String worldName) {
 		// NOTE: ALWAYS add a subgoal with the FINAL goal first
 		ArrayList<Subgoal> result = new ArrayList<Subgoal>();
 		
@@ -344,66 +346,110 @@ public class MinecraftBehavior {
 		// Define desired subgoals here:
 		
 		// Flatworld subgoals
-//		Subgoal sg3 = new Subgoal(this.pfIsHalfWay, this.pfIsAtGoal);
+		if (worldName.equals("lavaworld.map")) {
+		Subgoal sg3 = new Subgoal(this.pfIsHalfWay, this.pfIsAtGoal);
 //		Subgoal sg2 = new Subgoal(this.pfIsHalfWay, this.pfIsThrQWay);
 //		Subgoal sg1 = new Subgoal(this.pfIsOneQWay, this.pfIsHalfWay);
-//		result.add(sg3);
+		result.add(sg3);
 //		result.add(sg2);
 //		result.add(sg1);
+		}
 		
-//		PropositionalFunction pfIsAgentBeforeBridge= new IsAgentYAt("IsBeforeBridge", this.mcdg.DOMAIN,
-//				new String[]{this.mcdg.CLASSAGENT}, (this.mcdg.MAXY + 1) / 2, 1);
+		if (worldName.equals("jumpworld.map")) {
+			Subgoal sg = new Subgoal(this.pfIsOneQWay, this.pfIsAtGoal);
+			result.add(sg);
+		}
+		
+		if (worldName.contains("bridgeworld") && !worldName.contains("door")) {
+			PropositionalFunction pfIsAgentBeforeBridge= new IsAtLocationPF("IsBeforeBridge", this.mcdg.DOMAIN,
+					new String[]{this.mcdg.CLASSAGENT}, (int)Math.floor((this.mcdg.MAXX) / 2), (int)Math.floor((this.mcdg.MAXX) / 2) + 1, 1, 1);
+			PropositionalFunction pfIsAgentOnBridge= new IsAtLocationPF("IsOnBridge", this.mcdg.DOMAIN,
+					new String[]{this.mcdg.CLASSAGENT}, (int)Math.floor((this.mcdg.MAXX) / 2), (int)Math.floor((this.mcdg.MAXX) / 2), 1, 0);
+			
+			Subgoal bridge_sg = new Subgoal(pfIsAgentOnBridge, this.pfIsAtGoal);
+			Subgoal before_bridge = new Subgoal(pfIsAgentBeforeBridge, pfIsAgentOnBridge);
+			result.add(bridge_sg);
+			result.add(before_bridge);
+		}
+
 //		
 //		Subgoal bridge_sg = new Subgoal(this.pfIsAgentYAt, this.pfIsAtGoal);
 //		Subgoal before_bridge = new Subgoal(pfIsAgentBeforeBridge, this.pfIsAgentYAt);
 //		result.add(bridge_sg);
 //		result.add(before_bridge);
-		// Jumpworld subgoals
+//		 Jumpworld subgoals
 //		Subgoal pastTrench = new Subgoal(this.pfIsAtLocation, this.pfIsAtGoal);
 //		result.add(pastTrench);
 //		
 		// Breadworld subgoals
-		PropositionalFunction hasGrainPF = new AgentHasGrainPF(MinecraftDomain.ATTAGHASGRAIN, this.mcdg.DOMAIN,
-				new String[]{MinecraftDomain.CLASSAGENT});
-		Subgoal hasGrain = new Subgoal(hasGrainPF, pfAgentHasBread);
-		result.add(hasGrain);
+		if (worldName.contains("bread")) {
+			PropositionalFunction hasGrainPF = new AgentHasGrainPF(MinecraftDomain.ATTAGHASGRAIN, this.mcdg.DOMAIN,
+					new String[]{MinecraftDomain.CLASSAGENT});
+			Subgoal hasGrain = new Subgoal(hasGrainPF, pfAgentHasBread);
+			result.add(hasGrain);
+		}
+		
+		if (worldName.contains("tunnel")) {
+			PropositionalFunction agentInTunnel= new IsAtLocationPF("IsInTunnel", this.mcdg.DOMAIN,
+					new String[]{this.mcdg.CLASSAGENT}, 1, 1, 1);
+			Subgoal inTunnel = new Subgoal(agentInTunnel, this.pfIsAtGoal);
+			result.add(inTunnel);
+		}
 		
 		// Doorworld subgoals
-//		PropositionalFunction doorOpenPF = new IsDoorOpen(MinecraftDomain.ISDOOROPEN, MinecraftDomain.DOMAIN,
-//				new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"2", "9", "1"});
-//		Subgoal doorOpen = new Subgoal(doorOpenPF, this.pfIsAtGoal);
-//		result.add(doorOpen);
-		
+		if (worldName.equals("doorbridgeworld.map")) {
+			PropositionalFunction doorOpenPF2 = new IsDoorOpen("IsDoorOpen2", this.mcdg.DOMAIN,
+					new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"0", "4", "1"});
+			PropositionalFunction pfIsAgentBeforeBridge= new IsAtLocationPF("IsBeforeBridge", this.mcdg.DOMAIN,
+					new String[]{this.mcdg.CLASSAGENT}, 5, 2, 1, 1);
+			PropositionalFunction pfIsAgentOnBridge= new IsAtLocationPF("IsOnBridge", this.mcdg.DOMAIN,
+					new String[]{this.mcdg.CLASSAGENT}, 5, 1, 1, 0);
+			PropositionalFunction doorOpenPF1 = new IsDoorOpen("IsDoorOpen1", this.mcdg.DOMAIN,
+					new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"2", "0", "1"});
+			
+			Subgoal doorOpen2 = new Subgoal(doorOpenPF2, this.pfIsAtGoal);
+			Subgoal beforeBridge = new Subgoal(pfIsAgentOnBridge, doorOpenPF2);
+			Subgoal onBridge = new Subgoal(pfIsAgentBeforeBridge, pfIsAgentOnBridge);
+			Subgoal doorOpen1 = new Subgoal(doorOpenPF1, pfIsAgentBeforeBridge);
+			
+			result.add(doorOpen2);
+			result.add(beforeBridge);
+			result.add(onBridge);
+//			result.add(doorOpen1);
+		}
 		// Mazeworld subgoals
-//		PropositionalFunction atEntrancePF = new IsAtLocationPF("ATENTRANCE", this.mcdg.DOMAIN,
-//		new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[]{"6", "10", "1"});
-//
-//		PropositionalFunction midwayPF = new IsAtLocationPF("MIDWAY", this.mcdg.DOMAIN,
-//		new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[]{"1", "10", "1"});
-//
-//		PropositionalFunction almostTherePF = new IsAtLocationPF("ALMOST", this.mcdg.DOMAIN,
-//		new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, new String[]{"5", "3", "1"});
-//
-//		Subgoal almostThere = new Subgoal(almostTherePF, this.pfIsAtGoal);
-//		Subgoal halfwahThere = new Subgoal(midwayPF, almostTherePF);
-//		Subgoal atEntrance = new Subgoal(atEntrancePF, midwayPF);
-//		
-//		result.add(almostThere);
-//		result.add(halfwahThere);
-//		result.add(atEntrance);
-
-		// Hardworld subgoals
-//		PropositionalFunction firstDoorOpenPF = new IsDoorOpen("FIRSTDOOROPEN", MinecraftDomain.DOMAIN,
-//				new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"10", "14", "1"});
-//		PropositionalFunction secondDoorOpenPF = new IsDoorOpen("SECONDDOOROPEN", MinecraftDomain.DOMAIN,
-//				new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"1", "9", "1"});
-//		
-//		Subgoal secondDoor = new Subgoal(secondDoorOpenPF, this.pfIsAtGoal);
-//		Subgoal firstDoor = new Subgoal(firstDoorOpenPF, secondDoorOpenPF);
-//
-//		result.add(secondDoor);
-//		result.add(firstDoor);
+		if (worldName.equals("mazeworld.map")) {
+			PropositionalFunction atEntrancePF = new IsAtLocationPF("ATENTRANCE", this.mcdg.DOMAIN,
+			new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, 6, 10, 1);
+	
+			PropositionalFunction midwayPF = new IsAtLocationPF("MIDWAY", this.mcdg.DOMAIN,
+			new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL},1, 10, 1);
+	
+			PropositionalFunction almostTherePF = new IsAtLocationPF("ALMOST", this.mcdg.DOMAIN,
+			new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL}, 5, 3, 1);
+	
+			Subgoal almostThere = new Subgoal(almostTherePF, this.pfIsAtGoal);
+			Subgoal halfwahThere = new Subgoal(midwayPF, almostTherePF);
+			Subgoal atEntrance = new Subgoal(atEntrancePF, midwayPF);
+			
+			result.add(almostThere);
+			result.add(halfwahThere);
+			result.add(atEntrance);
+		}
 		
+		// Hardworld subgoals
+		if (worldName.equals("hardworld.map")) {
+			PropositionalFunction firstDoorOpenPF = new IsDoorOpen("FIRSTDOOROPEN", this.mcdg.DOMAIN,
+					new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"10", "14", "1"});
+			PropositionalFunction secondDoorOpenPF = new IsDoorOpen("SECONDDOOROPEN", this.mcdg.DOMAIN,
+					new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"1", "9", "1"});
+			
+			Subgoal secondDoor = new Subgoal(secondDoorOpenPF, this.pfIsAtGoal);
+			Subgoal firstDoor = new Subgoal(firstDoorOpenPF, secondDoorOpenPF);
+	
+			result.add(secondDoor);
+			result.add(firstDoor);
+		}
 		return result;
 	}
 	
@@ -412,7 +458,7 @@ public class MinecraftBehavior {
 	// === Affordance RTDP Planner	===
 	public int AffordanceRTDPPlanner(int numRollouts, int maxDepth, ArrayList<Affordance> kb){
 		
-		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, (10 / (1 - 0.99)), numRollouts, 0.01, maxDepth);
+		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
 		
 		int statePasses = planner.planFromStateAffordance(initialState, kb);
 
@@ -464,33 +510,36 @@ public class MinecraftBehavior {
 //		isTrenchActions.add(this.mcdg.jumpB);
 //		isTrenchActions.add(this.mcdg.jumpR);
 //		isTrenchActions.add(this.mcdg.jumpL);
-		
+		isTrenchActions.add(this.mcdg.placeF);
+		isTrenchActions.add(this.mcdg.placeB);
+		isTrenchActions.add(this.mcdg.placeL);
+		isTrenchActions.add(this.mcdg.placeR);
 		isTrenchActions.add(this.mcdg.forward);
 		isTrenchActions.add(this.mcdg.backward);
 		isTrenchActions.add(this.mcdg.left);
 		isTrenchActions.add(this.mcdg.right);
 		
-		isTrenchActions.add(this.mcdg.placeF);
-		isTrenchActions.add(this.mcdg.placeB);
-		isTrenchActions.add(this.mcdg.placeL);
-		isTrenchActions.add(this.mcdg.placeR);
+
 		
-//		ArrayList<Action> isDoorActions = new ArrayList<Action>();
-//		isDoorActions.add(this.mcdg.forward);
-//		isDoorActions.add(this.mcdg.backward);
-//		isDoorActions.add(this.mcdg.left);
-//		isDoorActions.add(this.mcdg.right);
-//		isDoorActions.add(this.mcdg.openF);
-//		isDoorActions.add(this.mcdg.openB);
-//		isDoorActions.add(this.mcdg.openR);
-//		isDoorActions.add(this.mcdg.openL);
+		ArrayList<Action> isDoorActions = new ArrayList<Action>();
+		isDoorActions.add(this.mcdg.forward);
+		isDoorActions.add(this.mcdg.backward);
+		isDoorActions.add(this.mcdg.left);
+		isDoorActions.add(this.mcdg.right);
+		isDoorActions.add(this.mcdg.openF);
+		isDoorActions.add(this.mcdg.openB);
+		isDoorActions.add(this.mcdg.openR);
+		isDoorActions.add(this.mcdg.openL);
 		
-//		ArrayList<Action> isDstableWallActions = new ArrayList<Action>();
-//		isDstableWallActions.add(this.mcdg.forward);
-//		isDstableWallActions.add(this.mcdg.backward);
-//		isDstableWallActions.add(this.mcdg.left);
-//		isDstableWallActions.add(this.mcdg.right);
-//		isDstableWallActions.add(this.mcdg.destF);
+		ArrayList<Action> isDstableWallActions = new ArrayList<Action>();
+		isDstableWallActions.add(this.mcdg.forward);
+		isDstableWallActions.add(this.mcdg.backward);
+		isDstableWallActions.add(this.mcdg.left);
+		isDstableWallActions.add(this.mcdg.right);
+		isDstableWallActions.add(this.mcdg.destF);
+		isDstableWallActions.add(this.mcdg.destB);
+		isDstableWallActions.add(this.mcdg.destR);
+		isDstableWallActions.add(this.mcdg.destL);
 		
 		ArrayList<Action> isOnGrainActions = new ArrayList<Action>();
 		isOnGrainActions.add(this.mcdg.pickUpGrain);
@@ -504,17 +553,17 @@ public class MinecraftBehavior {
 		
 		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
 		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
-//		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
-//		Affordance affIsAdjOven = new Affordance(this.pfIsAdjOven, this.pfIsAtGoal, isAdjOvenActions);
-//		Affordance affIsOnGrain = new Affordance(this.pfIsOnGrain, this.pfIsAtGoal, isOnGrainActions);
-//		Affordance affIsDstableWall = new Affordance(this.pfIsAdjDstableWall, this.pfIsAtGoal, isDstableWallActions);
+		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
+		Affordance affIsAdjOven = new Affordance(this.pfIsAdjOven, this.pfIsAtGoal, isAdjOvenActions);
+		Affordance affIsOnGrain = new Affordance(this.pfIsOnGrain, this.pfIsAtGoal, isOnGrainActions);
+		Affordance affIsDstableWall = new Affordance(this.pfIsAdjDstableWall, this.pfIsAtGoal, isDstableWallActions);
 		
 		affordances.add(affIsPlane);
-//		affordances.add(affIsAdjDoor);
-		affordances.add(affIsAdjTrench);
-//		affordances.add(affIsAdjOven);
-//		affordances.add(affIsOnGrain);
-//		affordances.add(affIsDstableWall);
+		affordances.add(affIsAdjDoor);
+//		affordances.add(affIsAdjTrench);
+		affordances.add(affIsAdjOven);
+		affordances.add(affIsOnGrain);
+		affordances.add(affIsDstableWall);
 		
 		
 		return affordances;
@@ -542,7 +591,7 @@ public class MinecraftBehavior {
 			System.out.println("Current goal: " + propfuncChain.getPropFunc().toString());
 //			rf = new SingleGoalPFRF(propfuncChain.getPropFunc(), 10, -1);
 			
-			rewardTable.put(propfuncChain.getPropFunc(), (Double) 10.0);
+			rewardTable.put(propfuncChain.getPropFunc(), (Double) goalReward);
 			rf = new SingleGoalMultiplePFRF(rewardTable, -1);
 //			rf = new SingleGoalPFRF(propfuncChain.getPropFunc(), 10, -1); 
 			tf = new SinglePFTF(propfuncChain.getPropFunc()); 
@@ -555,7 +604,7 @@ public class MinecraftBehavior {
 //			OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
 
 //			numUpdates += planner.planFromStateAffordance(currState, kb);
-			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, (10 / (1 - .99)), numRollouts, 0.01, maxDepth);
+			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
 			
 			numUpdates += planner.planFromStateAffordance(currState, kb);
 			
@@ -570,7 +619,7 @@ public class MinecraftBehavior {
 			propfuncChain = propfuncChain.getParent();
 			
 		}
-		rewardTable.put(pfIsAtGoal, (Double) 10.0);
+		rewardTable.put(pfIsAtGoal, (Double) goalReward);
 		System.out.println(actionSequence);
 		return numUpdates;
 		
@@ -579,26 +628,34 @@ public class MinecraftBehavior {
 	
 	public static void getResults() throws IOException {
 		
-		File fout = new File("mutable_map_results.txt");
+		String dir = "mutable/";
+		File fout = new File("results/" + dir + "results_affvi.txt");
 		FileWriter fw = new FileWriter(fout.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
-		
-		File[] files = new File("maps/mutablemaps").listFiles();
-//		String[] planners = {"VI", "RTDP", "AFFVI", "AFFRTDP"};
-//		String[] planners = {"AFFRTDP", "RTDP"};
-		String[] planners = {"VI", "RTDP", "AFFVI"};
+
+		File[] files = new File("maps/" + dir).listFiles();
+
+		String[] planners = {"AFFVI"};
+
 		int statePasses = 0;
-		int numRollouts = 10000;
-		int maxDepth = 250;
+
 		
 		for (File f: files) {
 			System.out.println("Testing with map: " + f.getName());
 			bw.write("Testing with map: " + f.getName() + "\n");
 			
 			// Minecraft world and knowledge base setup
-			MinecraftBehavior mcb = new MinecraftBehavior(f.getName());
+			MinecraftBehavior mcb = new MinecraftBehavior(dir + f.getName());
 			ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-			ArrayList<Subgoal> subgoals = mcb.generateSubgoalKB();
+			ArrayList<Subgoal> subgoals = mcb.generateSubgoalKB(f.getName());
+			
+			// Change terminal functions depending on map
+			if (f.getName().contains("bread")) {
+				tf = new SinglePFTF(pfAgentHasBread); 
+			} else {
+				tf = new SinglePFTF(pfAgentAtGoal);
+			}
+			goalCondition = new TFGoalCondition(tf);
 			
 			
 			for(String planner : planners) {

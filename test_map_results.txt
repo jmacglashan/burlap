@@ -1,3 +1,0 @@
-Testing with map: doorworld.map
-	VI,6315
-	RTDP,2979
