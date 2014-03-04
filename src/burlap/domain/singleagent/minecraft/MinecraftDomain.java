@@ -124,6 +124,8 @@ public class MinecraftDomain implements DomainGenerator{
 	public static int							MAXY = 14;
 	public static final int						MAXZ = 8;
 	public static final int						MAXBLKNUM = 4;
+	
+	public static final double					nondetThreshold = 0.15;
 
 
 	
@@ -135,7 +137,7 @@ public class MinecraftDomain implements DomainGenerator{
 	private ObjectClass 							agentClass = null;
 	private ObjectClass 							goalClass = null;
 	public SADomain									DOMAIN = null;
-	public static boolean 							deterministicMode = true;
+	public static boolean 							deterministicMode = false;
 	
 	
 	/**
@@ -240,7 +242,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		if (allActMode) {
 		
-			if (placeMode) {
+			if (true) {
 				// Placement
 				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
 				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
@@ -269,10 +271,10 @@ public class MinecraftDomain implements DomainGenerator{
 			this.placeGrain = new placeGrainAction(ACTIONPLACEGRAIN, DOMAIN, "");
 
 			// Jump
-//			this.jumpF = new JumpActionF(ACTIONJUMPF, DOMAIN, "");
-//			this.jumpB = new JumpActionB(ACTIONJUMPB, DOMAIN, "");
-//			this.jumpR = new JumpActionR(ACTIONJUMPR, DOMAIN, "");
-//			this.jumpL = new JumpActionL(ACTIONJUMPL, DOMAIN, "");
+			this.jumpF = new JumpActionF(ACTIONJUMPF, DOMAIN, "");
+			this.jumpB = new JumpActionB(ACTIONJUMPB, DOMAIN, "");
+			this.jumpR = new JumpActionR(ACTIONJUMPR, DOMAIN, "");
+			this.jumpL = new JumpActionL(ACTIONJUMPL, DOMAIN, "");
 		}
 		
 		// ==== PROPOSITIONAL FUNCTIONS ====
@@ -482,7 +484,7 @@ public class MinecraftDomain implements DomainGenerator{
 			Random rand = new Random();
 			double threshhold = rand.nextDouble();
 			
-			if (threshhold < 0.2) {
+			if (threshhold < nondetThreshold) {
 				xd = -xd;
 				yd = -yd;
 			}
@@ -531,6 +533,17 @@ public class MinecraftDomain implements DomainGenerator{
 	}
 	
 	public static void jump(State st, int xd, int yd, int zd){
+		
+		// If non-deterministic mode, there's a chance we act incorrectly.
+		if (!deterministicMode) {
+			Random rand = new Random();
+			double threshhold = rand.nextDouble();
+			
+			if (threshhold < nondetThreshold) {
+				xd = -xd;
+				yd = -yd;
+			}
+		}
 		
 		ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
 		int ax = agent.getDiscValForAttribute(ATTX);
@@ -606,6 +619,16 @@ public class MinecraftDomain implements DomainGenerator{
 		int ay = agent.getDiscValForAttribute(ATTY);
 		int az = agent.getDiscValForAttribute(ATTZ);
 		
+		if (!deterministicMode) {
+			Random rand = new Random();
+			double threshhold = rand.nextDouble();
+			
+			if (threshhold < nondetThreshold) {
+				dz = -dz;
+				dy = -dy;
+			}
+		}
+		
 
 		// Get global coordinates of the loc to place the block
 		int bx = ax+dx;
@@ -646,6 +669,17 @@ public class MinecraftDomain implements DomainGenerator{
 	}
 
 	public static void destroy(State s, int dx, int dy, int dz) {
+		
+		// If non-deterministic mode, there's a chance we act incorrectly.
+		if (!deterministicMode) {
+			Random rand = new Random();
+			double threshhold = rand.nextDouble();
+			
+			if (threshhold < nondetThreshold) {
+				dx = -dx;
+				dy = -dy;
+			}
+		}
 		
 		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
 		

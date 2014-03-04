@@ -1,4 +1,0 @@
-Testing with map: 10world.map
-	VI,800
-	RTDP,688
-	AFFVI,800

@@ -59,10 +59,9 @@ public class Affordance {
 			
 			// Check if this affordance applies (NEED TO ADD GOAL RELATIVE PART)
 			if (this.pf.isTrue(st)) {
-				
 				// Do weird state binding thing
 				if (st == null || a == null) {
-					int i = 0;
+					System.out.println("null)");
 				}
 				List <List <String>> bindings = st.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
 				for(List <String> params : bindings){

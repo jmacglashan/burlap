@@ -13,6 +13,8 @@ import java.util.Stack;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import sun.font.EAttribute;
+
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.core.Domain;
@@ -40,8 +42,6 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
-import burlap.domain.singleagent.minecraft.MinecraftDomain.IsOnGrain;
-import burlap.domain.singleagent.minecraft.MinecraftDomain.IsInLava;
 import burlap.domain.singleagent.minecraft.MinecraftDomain.*;
 
 
@@ -80,6 +80,7 @@ public class MinecraftBehavior {
 //	static double				vInit = (10 / (1 - .99));
 	static double				vInit = 0;
 	static double				goalReward = -1.0;
+	static int					maxSteps = 200;
 	
 	
 	public MinecraftBehavior(String mapfile) {
@@ -190,7 +191,7 @@ public class MinecraftBehavior {
 	// ---------- PLANNERS ---------- 
 	
 	// === VI Planner	===
-	public int ValueIterationPlanner(){
+	public double[] ValueIterationPlanner(){
 		
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
 		
@@ -200,14 +201,19 @@ public class MinecraftBehavior {
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
 		// Record the plan results to a file
-		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
-		System.out.println(actionSequence);
+		EpisodeAnalysis ea = p.evaluateBehavior(initialState, rf, tf, maxSteps);
+		System.out.println(ea.getActionSequenceString());
+		double totalReward = sumReward(ea.rewardSequence);
 		
-		return statePasses;
+		State finalState = ea.getLastState();
+		
+		double completed = goalCondition.satisfies(finalState) ? 1.0 : 0.0;
+		
+		return new double[]{statePasses, totalReward, completed};	
 	}
 	
 	// === RTDP Planner	===
-	public int RTDPPlanner(int numRollouts, int maxDepth){
+	public double[] RTDPPlanner(int numRollouts, int maxDepth){
 
 		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
 		
@@ -217,13 +223,20 @@ public class MinecraftBehavior {
 		 Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
 		// Record the plan results to a file
-		String actionSequence = p.evaluateBehavior(initialState, rf, tf).getActionSequenceString();
-		System.out.println(actionSequence);
-		return statePasses;
+		EpisodeAnalysis ea = p.evaluateBehavior(initialState, rf, tf, maxSteps);
+		System.out.println(ea.getActionSequenceString());
+
+		double totalReward = sumReward(ea.rewardSequence);
+		
+		State finalState = ea.getLastState();
+		
+		double completed = goalCondition.satisfies(finalState) ? 1.0 : 0.0;
+		
+		return new double[]{statePasses, totalReward, completed};	
 	}
 	
 	// === Subgoal Planner	===
-	public int SubgoalPlanner(ArrayList<Subgoal> subgoals, int numRollouts, int maxDepth){
+	public double[] SubgoalPlanner(ArrayList<Subgoal> subgoals, int numRollouts, int maxDepth){
 		
 		// Initialize action plan
 		String actionSequence = new String();
@@ -237,8 +250,8 @@ public class MinecraftBehavior {
 		
 		// Run VI between each subgoal in the chain
 		State currState = initialState;
-		int numUpdates = 0;
-		
+		int statePasses = 0;
+		int totalReward = 0;
 		rewardTable.remove(pfIsAtGoal);
 		while(propfuncChain != null) {
 			System.out.println("Current goal: " + propfuncChain.getPropFunc().toString());
@@ -248,27 +261,34 @@ public class MinecraftBehavior {
 			goalCondition = new TFGoalCondition(tf);
 			
 //			OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
-////
-//			numUpdates += planner.planFromState(currState, this.mcdg);
-			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
+//			statePasses += planner.planFromState(currState, this.mcdg);
 			
-			numUpdates += planner.planFromStateAndCount(currState);
+			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
+			statePasses += planner.planFromStateAndCount(currState);
 
 			Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 
-			EpisodeAnalysis ea = p.evaluateBehavior(currState, rf, tf);
+			EpisodeAnalysis ea = p.evaluateBehavior(currState, rf, tf, maxSteps);
 			
 			// Add low level plan to overall plan and update current state to the end of that subgoal plan
 //			actionSequence += ea.getActionSequenceString() + "; ";
 			currState = ea.getLastState();
 
+			totalReward += sumReward(ea.rewardSequence);
+			
+			
 			rewardTable.remove(propfuncChain.getPropFunc());
 			propfuncChain = propfuncChain.getParent();
 			
 		}
 		rewardTable.put(pfIsAtGoal, (Double) goalReward);
-		return numUpdates;
 		
+		// Record the plan results to a file
+
+		double completed = goalCondition.satisfies(currState) ? 1.0 : 0.0;
+		
+		return new double[]{statePasses, totalReward, completed};		
+
 	}
 	
 	private Node generateGraph(ArrayList<Subgoal> kb) {
@@ -346,7 +366,7 @@ public class MinecraftBehavior {
 		// Define desired subgoals here:
 		
 		// Flatworld subgoals
-		if (worldName.equals("lavaworld.map")) {
+		if (worldName.equals("lavaworld.map") || worldName.equals("10world.map") || worldName.equals("15world.map") || worldName.equals("20world.map")) {
 		Subgoal sg3 = new Subgoal(this.pfIsHalfWay, this.pfIsAtGoal);
 //		Subgoal sg2 = new Subgoal(this.pfIsHalfWay, this.pfIsThrQWay);
 //		Subgoal sg1 = new Subgoal(this.pfIsOneQWay, this.pfIsHalfWay);
@@ -371,16 +391,20 @@ public class MinecraftBehavior {
 			result.add(bridge_sg);
 			result.add(before_bridge);
 		}
-
-//		
-//		Subgoal bridge_sg = new Subgoal(this.pfIsAgentYAt, this.pfIsAtGoal);
-//		Subgoal before_bridge = new Subgoal(pfIsAgentBeforeBridge, this.pfIsAgentYAt);
-//		result.add(bridge_sg);
-//		result.add(before_bridge);
-//		 Jumpworld subgoals
-//		Subgoal pastTrench = new Subgoal(this.pfIsAtLocation, this.pfIsAtGoal);
-//		result.add(pastTrench);
-//		
+		
+		if (worldName.equals("doorworld.map")) {
+			PropositionalFunction doorOpenPF = new IsDoorOpen("IsDoorOpen", this.mcdg.DOMAIN,
+					new String[]{MinecraftDomain.CLASSAGENT}, new String[]{"2", "9", "1"});
+			PropositionalFunction agentBeyondDoor = new IsAtLocationPF("IsBeyondDoor", this.mcdg.DOMAIN,
+					new String[]{this.mcdg.CLASSAGENT}, 2, 8, 1);
+			
+			Subgoal beyondDoor = new Subgoal(agentBeyondDoor, this.pfIsAtGoal);
+			Subgoal doorOpen = new Subgoal(doorOpenPF, agentBeyondDoor);
+			
+			result.add(beyondDoor);
+			result.add(doorOpen);
+		}
+	
 		// Breadworld subgoals
 		if (worldName.contains("bread")) {
 			PropositionalFunction hasGrainPF = new AgentHasGrainPF(MinecraftDomain.ATTAGHASGRAIN, this.mcdg.DOMAIN,
@@ -456,7 +480,7 @@ public class MinecraftBehavior {
 	// ====== AFFORDANCE VERSIONS ======
 	
 	// === Affordance RTDP Planner	===
-	public int AffordanceRTDPPlanner(int numRollouts, int maxDepth, ArrayList<Affordance> kb){
+	public double[] AffordanceRTDPPlanner(int numRollouts, int maxDepth, ArrayList<Affordance> kb){
 		
 		RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
 		
@@ -466,50 +490,68 @@ public class MinecraftBehavior {
 		Policy p = new GreedyQPolicy(planner);
 		
 		System.out.println("Finished Planning");
-		String actionSequence = p.evaluateAffordanceBehavior(initialState, rf, tf, kb).getActionSequenceString();
-		System.out.println(actionSequence);
-		return statePasses;	
+		EpisodeAnalysis ea = p.evaluateAffordanceBehavior(initialState, rf, tf, kb, maxSteps);
+
+		double totalReward = sumReward(ea.rewardSequence);
+		
+		State finalState = ea.getLastState();
+		
+		double completed = goalCondition.satisfies(finalState) ? 1.0 : 0.0;
+		
+		return new double[]{statePasses, totalReward, completed};	
 	}
 	
 	// === Affordance VI Planner	===
-	public int AffordanceVIPlanner(ArrayList<Affordance> kb){
+	public double[] AffordanceVIPlanner(ArrayList<Affordance> kb){
 		
 		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, .1, Integer.MAX_VALUE);
 		
 //		System.out.println((initialState.getStateDescription()));
 		
-		int statePasses = planner.planFromStateAffordance(initialState, kb);
+		double statePasses = planner.planFromStateAffordance(initialState, kb);
 		
 		// Create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
 		
-		String actionSequence = p.evaluateAffordanceBehavior(initialState, rf, tf, kb).getActionSequenceString();
-		System.out.println(actionSequence);
-		return statePasses;	
+		EpisodeAnalysis ea = p.evaluateAffordanceBehavior(initialState, rf, tf, kb, maxSteps);
+
+		double totalReward = sumReward(ea.rewardSequence);
+		
+		State finalState = ea.getLastState();
+		
+		double completed = goalCondition.satisfies(finalState) ? 1.0 : 0.0;
+		
+		return new double[]{statePasses, totalReward, completed};	
 	}
 	
-	public ArrayList<Affordance> generateAffordanceKB() {
+	private double sumReward(List<Double> rewardSeq) {
+		double total = 0;
+		for (double d : rewardSeq) {
+			total += d;
+		}
+		return total;
+	}
+	
+	public ArrayList<Affordance> generateAffordanceKB(String worldName) {
 		ArrayList<Affordance> affordances = new ArrayList<Affordance>();
 		
 		String ax = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTX));
 		String ay = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTY));
 		String az = Integer.toString(this.initialState.getObject("agent0").getDiscValForAttribute(this.mcdg.ATTZ));
 		
+		// ----- DEFINE ACTION SETS -----
+		
 		ArrayList<Action> isPlaneActions = new ArrayList<Action>();
 		isPlaneActions.add(this.mcdg.forward);
 		isPlaneActions.add(this.mcdg.backward);
 		isPlaneActions.add(this.mcdg.left);
 		isPlaneActions.add(this.mcdg.right);
-//		isPlaneActions.add(this.mcdg.jumpF);
-//		isPlaneActions.add(this.mcdg.jumpB);
-//		isPlaneActions.add(this.mcdg.jumpR);
-//		isPlaneActions.add(this.mcdg.jumpL);
+		isPlaneActions.add(this.mcdg.jumpF);
+		isPlaneActions.add(this.mcdg.jumpB);
+		isPlaneActions.add(this.mcdg.jumpL);
+		isPlaneActions.add(this.mcdg.jumpR);
 		
 		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
-//		isTrenchActions.add(this.mcdg.jumpF);
-//		isTrenchActions.add(this.mcdg.jumpB);
-//		isTrenchActions.add(this.mcdg.jumpR);
-//		isTrenchActions.add(this.mcdg.jumpL);
 		isTrenchActions.add(this.mcdg.placeF);
 		isTrenchActions.add(this.mcdg.placeB);
 		isTrenchActions.add(this.mcdg.placeL);
@@ -518,9 +560,11 @@ public class MinecraftBehavior {
 		isTrenchActions.add(this.mcdg.backward);
 		isTrenchActions.add(this.mcdg.left);
 		isTrenchActions.add(this.mcdg.right);
-		
+		isTrenchActions.add(this.mcdg.jumpF);
+		isTrenchActions.add(this.mcdg.jumpB);
+		isTrenchActions.add(this.mcdg.jumpL);
+		isTrenchActions.add(this.mcdg.jumpR);
 
-		
 		ArrayList<Action> isDoorActions = new ArrayList<Action>();
 		isDoorActions.add(this.mcdg.forward);
 		isDoorActions.add(this.mcdg.backward);
@@ -546,11 +590,8 @@ public class MinecraftBehavior {
 		
 		ArrayList<Action> isAdjOvenActions = new ArrayList<Action>();
 		isAdjOvenActions.add(this.mcdg.placeGrain);
-//		isAdjOvenActions.add(this.mcdg.useOvenF);
-//		isAdjOvenActions.add(this.mcdg.useOvenB);
-//		isAdjOvenActions.add(this.mcdg.useOvenR);
-//		isAdjOvenActions.add(this.mcdg.useOvenL);
 		
+		// ----- DEFINE AFFORDANCES -----
 		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
 		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
 		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
@@ -558,19 +599,22 @@ public class MinecraftBehavior {
 		Affordance affIsOnGrain = new Affordance(this.pfIsOnGrain, this.pfIsAtGoal, isOnGrainActions);
 		Affordance affIsDstableWall = new Affordance(this.pfIsAdjDstableWall, this.pfIsAtGoal, isDstableWallActions);
 		
+		// ----- ADD AFFORDANCES -----
 		affordances.add(affIsPlane);
 		affordances.add(affIsAdjDoor);
-//		affordances.add(affIsAdjTrench);
+		affordances.add(affIsAdjTrench);
 		affordances.add(affIsAdjOven);
 		affordances.add(affIsOnGrain);
-		affordances.add(affIsDstableWall);
+		if (worldName.contains("tunnel")) {
+			affordances.add(affIsDstableWall);
+		}
 		
 		
 		return affordances;
 	}
 	
 	// === Affordance SG Planner (RTDP) ===
-	public int AffordanceSubgoalPlanner(ArrayList<Affordance> kb, ArrayList<Subgoal> subgoals, int numRollouts, int maxDepth){
+	public double[] AffordanceSubgoalPlanner(ArrayList<Affordance> kb, ArrayList<Subgoal> subgoals, int numRollouts, int maxDepth){
 		
 		// Initialize action plan
 		String actionSequence = new String();
@@ -584,8 +628,8 @@ public class MinecraftBehavior {
 		
 		// Run VI between each subgoal in the chain
 		State currState = initialState;
-		int numUpdates = 0;
-		
+		int statePasses = 0;
+		int totalReward = 0;
 		rewardTable.remove(pfIsAtGoal);
 		while(propfuncChain != null) {
 			System.out.println("Current goal: " + propfuncChain.getPropFunc().toString());
@@ -602,43 +646,44 @@ public class MinecraftBehavior {
 			
 			
 //			OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
-
-//			numUpdates += planner.planFromStateAffordance(currState, kb);
-			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
+//			statePasses += planner.planFromStateAffordance(currState, kb);
 			
-			numUpdates += planner.planFromStateAffordance(currState, kb);
+			RTDP planner = new RTDP(domain, rf, tf, 0.99, hashingFactory, vInit, numRollouts, 0.01, maxDepth);
+			statePasses += planner.planFromStateAffordance(currState, kb);
 			
 			Policy p = new GreedyQPolicy((QComputablePlanner)planner);
-			EpisodeAnalysis ea = p.evaluateAffordanceBehavior(currState, rf, tf, kb);
+			EpisodeAnalysis ea = p.evaluateAffordanceBehavior(currState, rf, tf, kb, maxSteps);
 			
 			// Add low level plan to overall plan and update current state to the end of that subgoal plan
 			actionSequence += ea.getActionSequenceString() + "; ";
 			currState = ea.getLastState();
+			totalReward += sumReward(ea.rewardSequence);
 			
 			rewardTable.remove(propfuncChain.getPropFunc());
 			propfuncChain = propfuncChain.getParent();
 			
 		}
 		rewardTable.put(pfIsAtGoal, (Double) goalReward);
-		System.out.println(actionSequence);
-		return numUpdates;
+		
+		double completed = goalCondition.satisfies(currState) ? 1.0 : 0.0;
+		
+		
+		return new double[]{statePasses, totalReward, completed};	
 		
 	}
-	
 	
 	public static void getResults() throws IOException {
 		
 		String dir = "mutable/";
-		File fout = new File("results/" + dir + "results_affvi.txt");
+		File fout = new File("results/" + dir.substring(0, dir.length() - 1) + "_nondet_results.txt");
 		FileWriter fw = new FileWriter(fout.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
 
 		File[] files = new File("maps/" + dir).listFiles();
 
-		String[] planners = {"AFFVI"};
+		String[] planners = {"VI", "RTDP", "SG", "AFFVI", "AFFRTDP", "AFFSG"};
 
-		int statePasses = 0;
-
+		double[] info = null;
 		
 		for (File f: files) {
 			System.out.println("Testing with map: " + f.getName());
@@ -646,7 +691,7 @@ public class MinecraftBehavior {
 			
 			// Minecraft world and knowledge base setup
 			MinecraftBehavior mcb = new MinecraftBehavior(dir + f.getName());
-			ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+			ArrayList<Affordance> kb = mcb.generateAffordanceKB(f.getName());
 			ArrayList<Subgoal> subgoals = mcb.generateSubgoalKB(f.getName());
 			
 			// Change terminal functions depending on map
@@ -657,44 +702,44 @@ public class MinecraftBehavior {
 			}
 			goalCondition = new TFGoalCondition(tf);
 			
-			
 			for(String planner : planners) {
 				System.out.println("Using planner: " + planner);
-			
-				// Setup reward function
-				
+							
 				// VANILLA OOMDP/VI
 				if(planner.equals("VI")) {
-					statePasses = mcb.ValueIterationPlanner();
+					info = mcb.ValueIterationPlanner();
 				}
 			
 				// RTDP
 				if(planner.equals("RTDP")) {
-					statePasses = mcb.RTDPPlanner(numRollouts, maxDepth);
+					info = mcb.RTDPPlanner(numRollouts, maxDepth);
 				}
 				
 				// SUBGOAL
 				if(planner.equals("SG")) {
-					statePasses = mcb.SubgoalPlanner(subgoals, numRollouts, maxDepth);
+					info = mcb.SubgoalPlanner(subgoals, numRollouts, maxDepth);
 				}
 				
 				// AFFORDANCE - VI
 				if(planner.equals("AFFVI")) {
-					statePasses = mcb.AffordanceVIPlanner(kb);
+					info = mcb.AffordanceVIPlanner(kb);
 				}
 				
 				// AFFORDANCE - RTDP
 				if(planner.equals("AFFRTDP")) {
-					statePasses = mcb.AffordanceRTDPPlanner(numRollouts, maxDepth, kb);
+					info = mcb.AffordanceRTDPPlanner(numRollouts, maxDepth, kb);
 				}
 				
 				// AFFORDANCE - SUBGOAL
 				if(planner.equals("AFFSG")) {
-					statePasses = mcb.AffordanceSubgoalPlanner(kb, subgoals, numRollouts, maxDepth);
+					info = mcb.AffordanceSubgoalPlanner(kb, subgoals, numRollouts, maxDepth);
 				}
 				
+				double statePasses = info[0];
+				double totalReward = info[1];
+				boolean completed = info[2] == 1.0 ? true : false;
 				
-				bw.write("\t" + planner + "," + statePasses + "\n");
+				bw.write("\t" + planner + "," + statePasses + "," + totalReward + "," + completed + "\n");
 				bw.flush();
 			}
 			bw.write("\n");

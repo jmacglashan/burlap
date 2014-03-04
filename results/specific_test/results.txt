@@ -1,3 +1,12 @@
-Testing with map: 4bridgeworld.map
-	SG,3474
+Testing with map: 10world.map
+	AFFSG,1009
+	AFFRTDP,1400
+
+Testing with map: 15world.map
+	AFFSG,4042
+	AFFRTDP,6016
+
+Testing with map: 20world.map
+	AFFSG,10222
+	AFFRTDP,15435
 

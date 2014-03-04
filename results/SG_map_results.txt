@@ -1,3 +1,0 @@
-Testing with map: hardworld.map
-	VI,16588
-	RTDP,7359
