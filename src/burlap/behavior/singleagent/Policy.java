@@ -7,6 +7,7 @@ import java.util.Random;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
 import burlap.domain.singleagent.minecraft.Affordance;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -225,15 +226,15 @@ public abstract class Policy {
 	 * @param maxSteps the maximum number of steps to take before terminating the policy rollout.
 	 * @return an EpisodeAnalysis object that records the events from following the policy.
 	 */
-	public EpisodeAnalysis evaluateAffordanceBehavior(State s, RewardFunction rf, TerminalFunction tf, ArrayList<Affordance> kb){
+	public EpisodeAnalysis evaluateAffordanceBehavior(State s, RewardFunction rf, TerminalFunction tf, ArrayList<Affordance> kb, int maxSteps){
 		EpisodeAnalysis res = new EpisodeAnalysis();
 		res.addState(s); //add initial state
 		
 		State cur = s;
-		while(!tf.isTerminal(cur)){
-			
+		int nSteps = 0;
+		while(!tf.isTerminal(cur) && nSteps < maxSteps){
 			cur = this.followAndRecordAffordancePolicy(res, cur, rf, kb);
-			
+			nSteps = res.numTimeSteps();
 		}
 		
 		return res;

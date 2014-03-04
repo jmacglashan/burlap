@@ -1,0 +1,14 @@
+Testing with map: 10world.map
+	VI,800.0,-11.0,true
+	RTDP,938.0,-25.0,true
+	SG,737.0,-59.0,false
+	AFFVI,800.0,-11.0,true
+	AFFRTDP,813.0,-8.0,true
+	AFFSG,829.0,-13.0,true
+
+Testing with map: 15world.map
+	VI,3150.0,-29.0,true
+	RTDP,3325.0,-29.0,true
+	SG,2489.0,-61.0,false
+	AFFVI,3150.0,-21.0,true
+	AFFRTDP,2941.0,-19.0,true

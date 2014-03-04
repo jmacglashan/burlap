@@ -263,7 +263,10 @@ public class RTDP extends ValueFunctionPlanner {
 				
 				//update this state's value
 				double curV = this.value(sh);
-				double nV = this.performBellmanUpdateOn(sh);
+//				System.out.println("Before: " + curV);
+				double nV = this.performAffordanceBellmanUpdateOn(sh, kb);
+//				System.out.println("After: " + nV);
+//				System.out.println(sh.s.getFirstObjectOfClass("agent").getObjectDescription());
 				delta = Math.max(Math.abs(nV - curV), delta); 
 				
 				// select an action and take it

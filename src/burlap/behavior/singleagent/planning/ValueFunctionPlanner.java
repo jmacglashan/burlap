@@ -214,31 +214,6 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		for (GroundedAction ga: this.getAffordanceGroundedActions(s, kb)) {
 			res.add(this.getQ(sh, ga, matching));
 		}
-//		for(Affordance aff : kb) {
-//			// TODO: Second argument should reflect CURRENT goal, not AtGoal
-//			List <GroundedAction> applications = aff.getApplicableActions(s, domain.getPropFunction("AtGoal"));  
-//			for (GroundedAction ga: applications) {
-//				res.add(this.getQ(sh, ga, matching));
-//			}
-//		}
-
-//		TODO: Delete this
-//		for(Action a : actions){
-//			List <GroundedAction> applications = s.getAllGroundedAffordanceActionsFor(a, kb, this.domain);
-//			for(GroundedAction ga : applications){
-//				res.add(this.getQ(sh, ga, matching));
-//			}
-//		}
-		
-		// If Affordance trimmed off all useful actions, default to normal action set
-		if (res.size() == 0) {
-			for(Action a : actions){
-				List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
-				for(GroundedAction ga : applications){
-					res.add(this.getQ(sh, ga, matching));
-				}
-			}
-		}
 		
 		return res;
 		
@@ -250,6 +225,16 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			// TODO: Second argument should reflect CURRENT goal, not AtGoal
 			res.addAll(aff.getApplicableActions(st, domain.getPropFunction("AtGoal")));  
 		}
+		
+		// Backing off inside this method. Normal actions are added if we can't find any
+		// for the entire knowledge base.
+		if (res.size() == 0) {
+			System.out.println("REACHABILITY: BACKING OFF TO VI ACTIONS");
+			for(Action a : actions){
+				res.addAll(st.getAllGroundedActionsFor(a));
+			}
+		}
+		
 		return res;
 	}
 	
@@ -407,6 +392,13 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				}
 			}
 			
+			//now add transitions
+			allTransitions = new ArrayList<ActionTransitions>(gas.size());
+			for(GroundedAction ga : gas){
+				ActionTransitions at = new ActionTransitions(sh.s, ga, hashingFactory);
+				allTransitions.add(at);
+			}
+			
 			//set it if we're caching
 			if(this.useCachedTransitions){
 				transitionDynamics.put(sh, allTransitions);
@@ -518,13 +510,15 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		else{
 			
-			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			List <GroundedAction> gas = this.getAffordanceGroundedActions(sh.s, kb);
+
 			for(GroundedAction ga : gas){
 				double q = this.computeQ(sh, ga);
 				if(q > maxQ){
 					maxQ = q;
 				}
 			}
+			
 			
 		}
 		
@@ -679,6 +673,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				
 				double discount = this.gamma;
 				double r = rf.reward(sh.s, ga, tp.s);
+
 				q += tp.p * (r + (discount * vp));
 			}
 			
