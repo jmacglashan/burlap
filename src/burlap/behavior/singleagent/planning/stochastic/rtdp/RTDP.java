@@ -63,6 +63,11 @@ public class RTDP extends ValueFunctionPlanner {
 	 */
 	protected int						maxDepth;
 	
+	/**
+	 * RTDP will be declared "converged" if there are this many consecutive policy rollouts in which the value function change is smaller than the maxDelta value.
+	 * The default value is 10.
+	 */
+	protected int						minNumRolloutsWithSmallValueChange = 3;
 	
 	/**
 	 * If set to use batch mode; Bellman updates will be stalled until a rollout is complete and then run in reverse.
@@ -166,6 +171,15 @@ public class RTDP extends ValueFunctionPlanner {
 	}
 	
 	/**
+	 * Sets the minimum number of consecutive rollsouts with a value function change less than the maxDelta value that will cause RTDP
+	 * to stop.
+	 * @param nRollsouts the minimum number of consecutive rollouts required.
+	 */
+	public void setMinNumRolloutsWithSmallValueChange(int nRollsouts){
+		this.minNumRolloutsWithSmallValueChange = nRollsouts;
+	}
+	
+	/**
 	 * When batch mode is set, Bellman updates will be stalled until a roll out is complete and then run in reverse.
 	 * @param useBatch whether to use batchmode RTDP or not.
 	 */
@@ -205,7 +219,7 @@ public class RTDP extends ValueFunctionPlanner {
 
 	
 	/**
-	 * Runs normal RTDP in which bellman updates are performed 
+	 * Runs normal RTDP in which bellman updates are performed after each action selection.
 	 * @param initiaState the initial state from which to plan
 	 */
 	protected int normalRTDP(State initialState){
@@ -216,17 +230,20 @@ public class RTDP extends ValueFunctionPlanner {
 			State curState = initialState;
 			int nSteps = 0;
 			double delta = 0;
+			int consecutiveSmallDeltas = 0;
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
 				StateHashTuple sh = this.hashingFactory.hashState(curState);
 
+				//select an action and take it
+				GroundedAction ga = this.rollOutPolicy.getAction(curState);
+				
 				//update this state's value
 				double curV = this.value(sh);
 				double nV = this.performBellmanUpdateOn(sh);
 				delta = Math.max(Math.abs(nV - curV), delta); 
 				
-				//select an action and take it
-				GroundedAction ga = this.rollOutPolicy.getAction(curState);
+
 				curState = ga.executeIn(curState);
 				nSteps++;
 			}
@@ -236,7 +253,13 @@ public class RTDP extends ValueFunctionPlanner {
 			DPrint.cl(debugCode, "Pass: " + i + "; Num states: " + nSteps + " (total: " + totalStates + ")");
 			
 			if(delta < this.maxDelta){
-				break;
+				consecutiveSmallDeltas++;
+				if(consecutiveSmallDeltas >= this.minNumRolloutsWithSmallValueChange){
+					break;
+				}
+			}
+			else{
+				consecutiveSmallDeltas = 0;
 			}
 			
 			
@@ -257,6 +280,7 @@ public class RTDP extends ValueFunctionPlanner {
 			State curState = initialState;
 			int nSteps = 0;
 			double delta = 0;
+			int consecutiveSmallDeltas = 0;
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
 				StateHashTuple sh = this.hashingFactory.hashState(curState);
@@ -280,7 +304,13 @@ public class RTDP extends ValueFunctionPlanner {
 			DPrint.cl(debugCode, "Pass: " + i + "; Num states: " + nSteps + " (total: " + totalStates + ")");
 			
 			if(delta < this.maxDelta){
-				break;
+				consecutiveSmallDeltas++;
+				if(consecutiveSmallDeltas >= this.minNumRolloutsWithSmallValueChange){
+					break;
+				}
+			}
+			else{
+				consecutiveSmallDeltas = 0;
 			}
 			
 			
@@ -296,7 +326,7 @@ public class RTDP extends ValueFunctionPlanner {
 	protected int batchRTDP(State initialState){
 		
 		int totalStates = 0;
-		
+		int consecutiveSmallDeltas = 0;
 		for(int i = 0; i < numRollouts; i++){
 			
 			EpisodeAnalysis ea = this.rollOutPolicy.evaluateBehavior(initialState, rf, tf, maxDepth);
@@ -310,7 +340,13 @@ public class RTDP extends ValueFunctionPlanner {
 			DPrint.cl(debugCode, "Pass: " + i + "; Num states: " + orderedStates.size() + " (total: " + totalStates + ")");
 			
 			if(delta < this.maxDelta){
-				break;
+				consecutiveSmallDeltas++;
+				if(consecutiveSmallDeltas >= this.minNumRolloutsWithSmallValueChange){
+					break;
+				}
+			}
+			else{
+				consecutiveSmallDeltas = 0;
 			}
 		}
 		
