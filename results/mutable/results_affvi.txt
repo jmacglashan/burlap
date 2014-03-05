@@ -1,3 +1,9 @@
-Testing with map: tunnelworld.map
-	AFFVI,34040
+Testing with map: 4bridgeworld.map
+	VI,39015
+
+Testing with map: 6bridgeworld.map
+	VI,162945
+
+Testing with map: 8bridgeworld.map
+	VI,496179
 
