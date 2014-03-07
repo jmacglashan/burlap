@@ -74,6 +74,12 @@ public class RLGlueAgentShell implements AgentInterface{
 	
 	
 	/**
+	 * The thread in which the current BURLAP learning algorithm thread is running
+	 */
+	protected Thread						burlapThread;
+	
+	
+	/**
 	 * Whether to print debug statements.
 	 */
 	protected boolean						printDebug = false;
@@ -135,6 +141,12 @@ public class RLGlueAgentShell implements AgentInterface{
 			nextState.notifyAll();
 		}
 		
+		try {
+			this.burlapThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -162,7 +174,7 @@ public class RLGlueAgentShell implements AgentInterface{
 		this.lastStateIsTerminal = false;
 		
 		final State s = this.domainGenerator.stateFromObservation(arg0);
-		Thread burlapThread = new Thread(new Runnable() {
+		this.burlapThread = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
