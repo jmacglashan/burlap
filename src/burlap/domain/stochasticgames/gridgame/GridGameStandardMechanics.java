@@ -120,7 +120,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 
 	@Override
-	protected void actionHelper(State s, JointAction ja) {
+	protected State actionHelper(State s, JointAction ja) {
 		
 		
 		List <GroundedSingleAction> gsas = ja.getActionList();
@@ -158,7 +158,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 			
 		}
 		
-		
+		return s;
 
 	}
 	

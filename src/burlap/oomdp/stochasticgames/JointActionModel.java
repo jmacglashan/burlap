@@ -37,7 +37,7 @@ public abstract class JointActionModel {
 		}
 		
 		State sp = s.copy();
-		this.actionHelper(sp, ja);
+		sp = this.actionHelper(sp, ja);
 		return sp;
 	}
 
@@ -59,8 +59,9 @@ public abstract class JointActionModel {
 	 * The input state should be directly modified.
 	 * @param s the state in which the joint action is performed.
 	 * @param ja the joint action to be performed.
+	 * @return the resulting state of applying this action.
 	 */
-	protected abstract void actionHelper(State s, JointAction ja);
+	protected abstract State actionHelper(State s, JointAction ja);
 	
 
 	

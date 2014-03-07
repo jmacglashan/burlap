@@ -31,8 +31,9 @@ public class StaticRepeatedGameActionModel extends JointActionModel {
 	}
 
 	@Override
-	protected void actionHelper(State s, JointAction ja) {
+	protected State actionHelper(State s, JointAction ja) {
 		//do nothing, the state simply repeats itself
+		return s;
 	}
 
 }
