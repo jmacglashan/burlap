@@ -12,6 +12,8 @@ import burlap.oomdp.stochasticgames.SGDomain;
 
 /**
  * A class for an agent who makes decisions by following a specified strategy and does not respond to the other player's actions.
+ * The policy object that determines actions can leave the actingAgent field empty/null, because this the {@link #getAction(State)} method
+ * will automatically rpelace it with whatever this agent's name is. 
  * @author James MacGlashan
  *
  */
@@ -39,7 +41,9 @@ public class SetStrategyAgent extends Agent {
 
 	@Override
 	public GroundedSingleAction getAction(State s) {
-		return (GroundedSingleAction)this.policy.getAction(s);
+		GroundedSingleAction actSelection = (GroundedSingleAction)this.policy.getAction(s);
+		actSelection.actingAgent = this.worldAgentName;
+		return actSelection;
 	}
 
 	@Override
