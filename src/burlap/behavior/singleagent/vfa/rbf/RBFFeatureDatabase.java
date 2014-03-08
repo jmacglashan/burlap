@@ -7,9 +7,9 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.behavior.singleagent.vfa.LinearVFA;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
