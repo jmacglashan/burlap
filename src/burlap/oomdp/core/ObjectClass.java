@@ -173,6 +173,14 @@ public class ObjectClass {
 		return attributeList.size();
 	}
 	
+	/**
+	 * Returns the number of observable attribtues that define this object class.
+	 * @return the number of observable attribtues that define this object class.
+	 */
+	public int numObservableAttributes(){
+		return this.observableAttributeIndices.size();
+	}
+	
 	
 	
 	
