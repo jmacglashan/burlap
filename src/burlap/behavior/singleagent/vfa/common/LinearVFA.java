@@ -1,10 +1,18 @@
-package burlap.behavior.singleagent.vfa;
+package burlap.behavior.singleagent.vfa.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.singleagent.vfa.ActionApproximationResult;
+import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
+import burlap.behavior.singleagent.vfa.ApproximationResult;
+import burlap.behavior.singleagent.vfa.FeatureDatabase;
+import burlap.behavior.singleagent.vfa.FunctionWeight;
+import burlap.behavior.singleagent.vfa.StateFeature;
+import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.WeightGradient;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -112,9 +120,9 @@ public class LinearVFA implements ValueFunctionApproximation {
 			FunctionWeight fw = this.weights.get(sf.id);
 			if(fw == null){
 				fw = new FunctionWeight(sf.id, defaultWeight);
-				this.weights.put(fw.weightId, fw);
+				this.weights.put(fw.weightId(), fw);
 			}
-			predictedValue += sf.value*fw.weightValue;
+			predictedValue += sf.value*fw.weightValue();
 			activedWeights.add(fw);
 		}
 		
