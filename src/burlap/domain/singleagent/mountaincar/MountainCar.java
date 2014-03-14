@@ -33,7 +33,7 @@ public class MountainCar implements DomainGenerator {
 	public static final String				ATTX = "xAtt";
 	
 	/**
-	 * A constant for the name of the x attribute
+	 * A constant for the name of the velocity attribute
 	 */
 	public static final String				ATTV = "vAtt";
 	
