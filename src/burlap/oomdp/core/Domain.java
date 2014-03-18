@@ -98,7 +98,7 @@ public abstract class Domain {
 	
 	
 	/**
-	 * Add an object class to define this domain
+	 * Add an object class to define this domain. The class will not be added if this domain already has a instance with the same name.
 	 * @param oc the object class to add to this domain.
 	 */
 	public void addObjectClass(ObjectClass oc){
@@ -110,7 +110,7 @@ public abstract class Domain {
 	
 	
 	/**
-	 * Add an attribute that can be used to define object classes of this domain.
+	 * Add an attribute that can be used to define object classes of this domain. The attribute will not be added if this domain already has a instance with the same name.
 	 * @param att the attribtue to add to this domain.
 	 */
 	public void addAttribute(Attribute att){
@@ -123,7 +123,7 @@ public abstract class Domain {
 	
 	/**
 	 * Add a propositional function that can be used to evaluate objects that belong to object classes
-	 * of this domain.
+	 * of this domain. The function will not be added if this domain already has a instance with the same name.
 	 * @param prop the propositional function to add.
 	 */
 	public void addPropositionalFunction(PropositionalFunction prop){
@@ -136,7 +136,7 @@ public abstract class Domain {
 	/**
 	 * Add a single agent action that defines this domain. This method
 	 * will throw a runtime exception if this domain is not an instance of
-	 * the single agent domain (SADomain).
+	 * the single agent domain (SADomain). The action will not be added if this domain already has a instance with the same name.
 	 * @param act the single agent action to add.
 	 */
 	public abstract void addAction(Action act);
@@ -145,7 +145,7 @@ public abstract class Domain {
 	 * Add a stochastic game action that defines this domain that can be executed by an agent in the game.
 	 * The set of single agent actions defines the set of joint actions in the stochastic domain (as the cross product).
 	 * This method will throw a runtime exception if this domain is not an instance of the stochastic
-	 * game domain (SGDomain).
+	 * game domain (SGDomain). The action will not be added if this domain already has a instance with the same name.
 	 * @param sa the stochastic game action that can be executed by an agent in the game.
 	 */
 	public abstract void addSingleAction(SingleAction sa);
