@@ -156,7 +156,8 @@ public class MountainCar implements DomainGenerator {
 			v1 = vmax;
 		}
 		
-		double p1 = p0 + this.timeDelta*v1;
+		double p1 = p0 + this.timeDelta*v1; //original mechanics in paper defined this way
+		//double p1 = p0 + this.timeDelta*v0 + .5*netAccel*this.timeDelta*this.timeDelta; //more accurate estimate
 		
 		if(p1 < xmin){
 			p1 = xmin;
