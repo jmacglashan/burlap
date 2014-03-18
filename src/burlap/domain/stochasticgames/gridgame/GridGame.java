@@ -11,7 +11,6 @@ import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.JointActionModel;
 import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SingleAction;
 import burlap.oomdp.stochasticgames.common.UniversalSingleAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -343,15 +342,15 @@ public class GridGame implements DomainGenerator {
 		vertWall.addAttribute(wtatt);
 		
 		
-		SingleAction actnorth = new UniversalSingleAction(domain, ACTIONNORTH);
-		SingleAction actsouth = new UniversalSingleAction(domain, ACTIONSOUTH);
-		SingleAction acteast = new UniversalSingleAction(domain, ACTIONEAST);
-		SingleAction actwest = new UniversalSingleAction(domain, ACTIONWEST);
-		SingleAction actnoop = new UniversalSingleAction(domain, ACTIONNOOP);
+		new UniversalSingleAction(domain, ACTIONNORTH);
+		new UniversalSingleAction(domain, ACTIONSOUTH);
+		new UniversalSingleAction(domain, ACTIONEAST);
+		new UniversalSingleAction(domain, ACTIONWEST);
+		new UniversalSingleAction(domain, ACTIONNOOP);
 		
 		
-		PropositionalFunction aug = new AgentInUGoal(PFINUGOAL, domain);
-		PropositionalFunction apg = new AgentInPGoal(PFINPGOAL, domain);
+		new AgentInUGoal(PFINUGOAL, domain);
+		new AgentInPGoal(PFINPGOAL, domain);
 		
 		
 		return domain;

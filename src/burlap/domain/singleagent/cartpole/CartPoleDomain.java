@@ -168,8 +168,8 @@ public class CartPoleDomain implements DomainGenerator {
 		cartPoleClass.addAttribute(angleatt);
 		cartPoleClass.addAttribute(anglevatt);
 		
-		domain.addAction(new MovementAction(ACTIONLEFT, domain, -1.));
-		domain.addAction(new MovementAction(ACTIONRIGHT, domain, 1.));
+		new MovementAction(ACTIONLEFT, domain, -1.);
+		new MovementAction(ACTIONRIGHT, domain, 1.);
 		
 		
 		return domain;

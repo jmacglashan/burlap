@@ -76,7 +76,7 @@ public class SGToSADomain implements DomainGenerator {
 		}
 		
 		for(SingleAction sa : useableActions){
-			Action a = new SAActionWrapper(sa);
+			new SAActionWrapper(sa);
 		}
 		
 	}

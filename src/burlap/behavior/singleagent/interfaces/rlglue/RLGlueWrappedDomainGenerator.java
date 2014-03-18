@@ -77,7 +77,7 @@ public class RLGlueWrappedDomainGenerator implements DomainGenerator {
 		}
 		
 		for(int i = 0; i < theTaskSpec.getDiscreteActionRange(0).getRangeSize(); i++){
-			Action act = new RLGlueActionWrapper(this.domain, i);
+			new RLGlueActionWrapper(this.domain, i);
 		}
 		
 		

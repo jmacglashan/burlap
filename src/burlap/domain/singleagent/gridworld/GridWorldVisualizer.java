@@ -12,7 +12,6 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
-import burlap.oomdp.visualizer.RenderLayer;
 import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.StaticPainter;
 import burlap.oomdp.visualizer.Visualizer;

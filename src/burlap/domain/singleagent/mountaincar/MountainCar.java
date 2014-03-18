@@ -122,9 +122,9 @@ public class MountainCar implements DomainGenerator {
 		agentClass.addAttribute(vatt);
 		
 		
-		Action forward = new MovementAction(ACTIONFORWARD, domain, 1);
-		Action backwards = new MovementAction(ACTIONBACKWARDS, domain, -1);
-		Action coast = new MovementAction(ACTIONCOAST, domain, 0);
+		new MovementAction(ACTIONFORWARD, domain, 1);
+		new MovementAction(ACTIONBACKWARDS, domain, -1);
+		new MovementAction(ACTIONCOAST, domain, 0);
 		
 		
 		return domain;

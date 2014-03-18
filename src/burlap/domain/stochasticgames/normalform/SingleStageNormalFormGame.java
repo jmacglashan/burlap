@@ -290,7 +290,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		player.addAttribute(att);
 		
 		for(String aname : this.uniqueActionNames){
-			NFGSingleAction sa = new NFGSingleAction(domain, aname);
+			new NFGSingleAction(domain, aname);
 		}
 		
 		return domain;

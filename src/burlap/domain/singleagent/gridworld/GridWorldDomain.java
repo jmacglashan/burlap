@@ -450,18 +450,18 @@ public class GridWorldDomain implements DomainGenerator {
 		locationClass.addAttribute(yatt);
 		locationClass.addAttribute(ltatt);
 		
-		Action north = new MovementAction(ACTIONNORTH, domain, this.transitionDynamics[0]);
-		Action south = new MovementAction(ACTIONSOUTH, domain, this.transitionDynamics[1]);
-		Action east = new MovementAction(ACTIONEAST, domain, this.transitionDynamics[2]);
-		Action west = new MovementAction(ACTIONWEST, domain, this.transitionDynamics[3]);
+		new MovementAction(ACTIONNORTH, domain, this.transitionDynamics[0]);
+		new MovementAction(ACTIONSOUTH, domain, this.transitionDynamics[1]);
+		new MovementAction(ACTIONEAST, domain, this.transitionDynamics[2]);
+		new MovementAction(ACTIONWEST, domain, this.transitionDynamics[3]);
 		
 		
-		PropositionalFunction atLocationPF = new AtLocationPF(PFATLOCATION, domain, new String[]{CLASSAGENT, CLASSLOCATION});
+		new AtLocationPF(PFATLOCATION, domain, new String[]{CLASSAGENT, CLASSLOCATION});
 		
-		PropositionalFunction wallToNorthPF = new WallToPF(PFWALLNORTH, domain, new String[]{CLASSAGENT}, 0);
-		PropositionalFunction wallToSouthPF = new WallToPF(PFWALLSOUTH, domain, new String[]{CLASSAGENT}, 1);
-		PropositionalFunction wallToEastPF = new WallToPF(PFWALLEAST, domain, new String[]{CLASSAGENT}, 2);
-		PropositionalFunction wallToWestPF = new WallToPF(PFWALLWEST, domain, new String[]{CLASSAGENT}, 3);
+		new WallToPF(PFWALLNORTH, domain, new String[]{CLASSAGENT}, 0);
+		new WallToPF(PFWALLSOUTH, domain, new String[]{CLASSAGENT}, 1);
+		new WallToPF(PFWALLEAST, domain, new String[]{CLASSAGENT}, 2);
+		new WallToPF(PFWALLWEST, domain, new String[]{CLASSAGENT}, 3);
 		
 		return domain;
 	}

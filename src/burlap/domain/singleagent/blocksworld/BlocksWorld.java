@@ -128,15 +128,15 @@ public class BlocksWorld implements DomainGenerator {
 		blockClass.addAttribute(attcolor);
 		
 		
-		Action stack= new StackAction(ACTIONSTACK, domain);
-		Action unstack = new UnstackAction(ACTIONUNSTACK, domain);
+		new StackAction(ACTIONSTACK, domain);
+		new UnstackAction(ACTIONUNSTACK, domain);
 		
 		
-		PropositionalFunction onBlockPF = new OnBlockPF(PFONBLOCK, domain);
-		PropositionalFunction onTablePF = new OnTablePF(PFONTABLE, domain);
-		PropositionalFunction clearPF = new ClearPF(PFCLEAR, domain);
+		new OnBlockPF(PFONBLOCK, domain);
+		new OnTablePF(PFONTABLE, domain);
+		new ClearPF(PFCLEAR, domain);
 		for(String col : colNames){
-			PropositionalFunction cpf = new ColorPF(col, domain);
+			new ColorPF(col, domain);
 		}
 		
 		return domain;

@@ -630,21 +630,21 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		//add actions
-		Action turnl = new ActionTurn(ACTIONTURNL, domain, -1.);
-		Action turnr = new ActionTurn(ACTIONTURNR, domain, 1.);
-		Action idle = new ActionIdle(ACTIONIDLE, domain);
+		new ActionTurn(ACTIONTURNL, domain, -1.);
+		new ActionTurn(ACTIONTURNR, domain, 1.);
+		new ActionIdle(ACTIONIDLE, domain);
 		
 		for(int i = 0; i < thrustValuesTemp.size(); i++){
 			double t = thrustValuesTemp.get(i);
-			Action thrustAction = new ActionThrust(ACTIONTHRUST+i, domain, t);
+			new ActionThrust(ACTIONTHRUST+i, domain, t);
 		}
 		
 		
 		//add pfs
-		PropositionalFunction onpad = new OnPadPF(PFONPAD, domain);
-		PropositionalFunction touchpad = new TouchPadPF(PFTPAD, domain);
-		PropositionalFunction touchsur = new TouchSurfacePF(PFTOUCHSURFACE, domain);
-		PropositionalFunction touchgrd = new TouchGroundPF(PFONGROUND, domain);
+		new OnPadPF(PFONPAD, domain);
+		new TouchPadPF(PFTPAD, domain);
+		new TouchSurfacePF(PFTOUCHSURFACE, domain);
+		new TouchGroundPF(PFONGROUND, domain);
 		
 		
 		

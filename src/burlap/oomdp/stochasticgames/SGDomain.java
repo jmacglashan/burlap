@@ -32,8 +32,10 @@ public class SGDomain extends Domain{
 	
 	@Override
 	public void addSingleAction(SingleAction sa){
-		singleActions.add(sa);
-		singleActionMap.put(sa.actionName, sa);
+		if(!this.singleActionMap.containsKey(sa.actionName)){
+			singleActions.add(sa);
+			singleActionMap.put(sa.actionName, sa);
+		}
 	}
 
 	

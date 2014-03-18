@@ -3,27 +3,18 @@ package burlap.domain.singleagent.tabularized;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.rlcommunity.rlglue.codec.taskspec.ranges.DoubleRange;
-
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.behavior.statehashing.DiscreteMaskHashingFactory;
 import burlap.behavior.statehashing.StateHashFactory;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.interfaces.rlglue.RLGlueEnvironment;
 
 
 /**
@@ -100,7 +91,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 			if(srcAction.getParameterClasses().length > 0){
 				throw new RuntimeException("Tabularized domain cannot wrap domains with parameterized actions");
 			}
-			Action tabAction = new ActionWrapper(tabDomain, srcAction);
+			new ActionWrapper(tabDomain, srcAction);
 		}
 		
 		return tabDomain;
