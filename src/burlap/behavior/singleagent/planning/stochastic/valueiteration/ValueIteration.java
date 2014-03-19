@@ -158,7 +158,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 		
 		StateHashTuple sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
-		if(transitionDynamics.containsKey(sih) && this.foundReachableStates){
+		if(mapToStateIndex.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
 		}
 		
@@ -175,7 +175,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			StateHashTuple sh = openList.poll();
 			
 			//skip this if it's already been expanded
-			if(transitionDynamics.containsKey(sh)){
+			if(mapToStateIndex.containsKey(sh)){
 				continue;
 			}
 			
