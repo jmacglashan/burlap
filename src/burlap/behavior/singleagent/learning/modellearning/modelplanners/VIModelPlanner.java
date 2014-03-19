@@ -1,12 +1,15 @@
 package burlap.behavior.singleagent.learning.modellearning.modelplanners;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -76,6 +79,10 @@ public class VIModelPlanner implements ModelPlanner {
 	 */
 	protected int					maxIterations;
 	
+	/**
+	 * States the agent has observed during learning.
+	 */
+	protected Set<StateHashTuple>	observedStates = new HashSet<StateHashTuple>();
 	
 	
 	/**
@@ -107,22 +114,38 @@ public class VIModelPlanner implements ModelPlanner {
 	@Override
 	public void initializePlannerIn(State s) {
 		this.initialState = s;
+		this.observedStates.add(this.hashingFactory.hashState(s));
 	}
 
 	@Override
 	public void modelChanged(State changedState) {
-		
-		//makes an new instance of vi
-		vi = new ValueIteration(domain, rf, tf, gamma, hashingFactory, maxDelta, maxIterations);
-		this.modelPolicy = new ReplanIfUnseenPolicy(new GreedyQPolicy(vi));
-		
-		this.vi.planFromState(initialState);
-		this.vi.planFromState(changedState);
+		this.observedStates.add(this.hashingFactory.hashState(changedState));
+		this.rerunVI();
 	}
 
 	@Override
 	public Policy modelPlannedPolicy() {
 		return modelPolicy;
+	}
+	
+	/**
+	 * Reruns VI on the new updated model. It will force VI to consider all states the agent has ever previously obsereved, even though not all
+	 * may be connected by the current unkown transition model.
+	 */
+	protected void rerunVI(){
+		
+		//makes an new instance of vi
+		vi = new ValueIteration(domain, rf, tf, gamma, hashingFactory, maxDelta, maxIterations);
+		this.modelPolicy = new ReplanIfUnseenPolicy(new GreedyQPolicy(vi));
+		
+		//seed state space from what we know exists
+		for(StateHashTuple sh : this.observedStates){
+			this.vi.performReachabilityFrom(sh.s);
+		}
+		
+		//run vi
+		this.vi.runVI();
+		
 	}
 	
 	
@@ -150,7 +173,8 @@ public class VIModelPlanner implements ModelPlanner {
 		@Override
 		public AbstractGroundedAction getAction(State s) {
 			if(!VIModelPlanner.this.vi.hasComputedValueFor(s)){
-				VIModelPlanner.this.vi.planFromState(s);
+				VIModelPlanner.this.observedStates.add(VIModelPlanner.this.hashingFactory.hashState(s));
+				VIModelPlanner.this.rerunVI();
 			}
 			return p.getAction(s);
 		}
@@ -159,7 +183,8 @@ public class VIModelPlanner implements ModelPlanner {
 		public List<ActionProb> getActionDistributionForState(State s) {
 			
 			if(!VIModelPlanner.this.vi.hasComputedValueFor(s)){
-				VIModelPlanner.this.vi.planFromState(s);
+				VIModelPlanner.this.observedStates.add(VIModelPlanner.this.hashingFactory.hashState(s));
+				VIModelPlanner.this.rerunVI();
 			}
 			return p.getActionDistributionForState(s);
 		}

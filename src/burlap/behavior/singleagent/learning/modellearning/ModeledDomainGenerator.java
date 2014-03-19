@@ -88,7 +88,9 @@ public class ModeledDomainGenerator implements DomainGenerator{
 	}
 
 	
-	
+	public static boolean isRmaxFictitiousState(State s){
+		return s.getObjectsOfTrueClass(RMAXFICTIOUSSTATENAME).size() > 0;
+	}
 	
 	
 	/**

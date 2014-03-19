@@ -8,13 +8,12 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.DomainMappedPolicy;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
-import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlannerGenerator;
+import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.behavior.singleagent.shaping.potential.PotentialShapedRF;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
@@ -99,7 +98,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
-		this.modeledRewardFunction = new PotentialShapedRF(this.model.getModelRF(), new RMaxPotential(maxReward, gamma), gamma);
+		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), new RMaxPotential(maxReward, gamma));
 		
 		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
@@ -128,7 +127,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
-		this.modeledRewardFunction = new PotentialShapedRF(this.model.getModelRF(), potential, gamma);
+		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
 		
 		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
@@ -157,7 +156,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
-		this.modeledRewardFunction = new PotentialShapedRF(this.model.getModelRF(), potential, gamma);
+		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
 		
 		this.modelPlanner = plannerGenerator.getModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma);
 		
@@ -302,6 +301,53 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 			}
 			return 0;
 		}
+		
+	}
+	
+	
+	
+	/**
+	 * This class is a special version of a potential shaped reward function that does not remove the potential value for transitions to states with uknown action transitions
+	 * that are followed. This is accomplished by returning a value of zero when the fictious RMax state is recached, rather than subtracting off the previous
+	 * states potential.
+	 * @author James MacGlashan
+	 *
+	 */
+	protected class PotentialShapedRMaxRF implements RewardFunction{
+
+		/**
+		 * The source reward function
+		 */
+		protected RewardFunction sourceRF;
+		
+		/**
+		 * The state potential function
+		 */
+		protected PotentialFunction potential;
+		
+		
+		/**
+		 * Initializes.
+		 * @param sourceRF the source reward function to which the potential is added.
+		 * @param potential the state potential function
+		 */
+		public PotentialShapedRMaxRF(RewardFunction sourceRF, PotentialFunction potential){
+			this.sourceRF = sourceRF;
+			this.potential = potential;
+		}
+		
+		@Override
+		public double reward(State s, GroundedAction a, State sprime) {
+			if(ModeledDomainGenerator.isRmaxFictitiousState(sprime)){
+				return 0.; //transitions to fictitious state end potential bonus, but also do not remove potential of previous unknown state
+			}
+			
+			return this.sourceRF.reward(s, a, sprime) 
+					+ (PotentialShapedRMax.this.gamma * this.potential.potentialValue(sprime)) - this.potential.potentialValue(s);
+			
+		}
+		
+		
 		
 	}
 	
