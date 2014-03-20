@@ -225,7 +225,7 @@ public class LearningAlgorithmExperimenter {
 		}
 		
 		
-		this.domain.setActionObserverForAllAction(plotter);
+		this.domain.addActionObserverForAllAction(plotter);
 		
 		if(this.displayPlots){
 			this.plotter.startGUI();

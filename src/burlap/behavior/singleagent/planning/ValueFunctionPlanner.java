@@ -107,6 +107,14 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		this.valueInitializer = vfInit;
 	}
 	
+	/**
+	 * Returns the value initialization function used.
+	 * @return the value initialization function used.
+	 */
+	public ValueFunctionInitialization getValueFunctionInitialization(){
+		return this.valueInitializer;
+	}
+	
 	
 	/**
 	 * Returns whether a value for the given state has been computed previously.

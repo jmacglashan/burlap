@@ -51,7 +51,7 @@ public abstract class Action {
 	/**
 	 * An observer that will be notified of an actions results every time it is executed. By default no observer is specified.
 	 */
-	protected ActionObserver			observer = null;
+	protected List<ActionObserver>		actionObservers = new ArrayList<ActionObserver>();
 	
 	
 	public Action(){
@@ -170,8 +170,8 @@ public abstract class Action {
 	 * Sets an action observer for this action. Set to null to specify no observer or to disable observaiton.
 	 * @param observer the observer that will be told of each event when this action is executed.
 	 */
-	public void setActionObserver(ActionObserver observer){
-		this.observer = observer;
+	public void addActionObserver(ActionObserver observer){
+		this.actionObservers.add(observer);
 	}
 	
 	
@@ -230,8 +230,8 @@ public abstract class Action {
 		
 		resultState = performActionHelper(resultState, params);
 		
-		if(this.observer != null){
-			this.observer.actionEvent(resultState, new GroundedAction(this, params), resultState);
+		for(ActionObserver observer : this.actionObservers){
+			observer.actionEvent(resultState, new GroundedAction(this, params), resultState);
 		}
 		
 		return resultState;
