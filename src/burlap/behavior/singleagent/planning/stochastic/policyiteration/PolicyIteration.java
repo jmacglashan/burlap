@@ -153,7 +153,11 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	}
 	
 	
-	
+	@Override
+	public void resetPlannerResults(){
+		super.resetPlannerResults();
+		this.foundReachableStates = false;
+	}
 	
 	/**
 	 * Computes the value function under following the current evaluative policy.

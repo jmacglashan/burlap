@@ -177,6 +177,15 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 	}
 	
 	
+	@Override
+	public void resetPlannerResults(){
+		this.episodeHistory.clear();
+		this.mapToStateIndex.clear();
+		this.actor.resetData();
+		this.critic.resetData();
+	}
+	
+	
 	/**
 	 * Returns the policy/actor of this learning algorithm. Note that all {@link Actor} objects are also
 	 * Policy objects.

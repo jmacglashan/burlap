@@ -131,5 +131,11 @@ public class LinearVFA implements ValueFunctionApproximation {
 		return result;
 		
 	}
+	
+	
+	@Override
+	public void resetWeights(){
+		this.weights.clear();
+	}
 
 }

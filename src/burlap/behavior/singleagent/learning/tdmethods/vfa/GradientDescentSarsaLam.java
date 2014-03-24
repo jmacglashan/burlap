@@ -92,7 +92,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	/**
 	 * The maximum VFA weight change that occurred in the last learning episode.
 	 */
-	protected double												maxWeightChangeInLastEpisode;
+	protected double												maxWeightChangeInLastEpisode = Double.POSITIVE_INFINITY;
 	
 	
 	/**
@@ -582,7 +582,13 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 
 	}
 	
-	
+	@Override
+	public void resetPlannerResults(){
+		this.vfa.resetWeights();
+		this.eStepCounter = 0;
+		this.maxWeightChangeInLastEpisode = Double.POSITIVE_INFINITY;
+		this.episodeHistory.clear();
+	}
 	
 	
 	/**

@@ -88,7 +88,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	/**
 	 * The maximum Q-value change that occurred in the last learning episode.
 	 */
-	protected double												maxQChangeInLastEpisode;
+	protected double												maxQChangeInLastEpisode = Double.POSITIVE_INFINITY;
 	
 	
 	/**
@@ -538,6 +538,16 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return episodeHistory;
+	}
+	
+	
+	@Override
+	public void resetPlannerResults(){
+		this.mapToStateIndex.clear();
+		this.qIndex.clear();
+		this.episodeHistory.clear();
+		this.eStepCounter = 0;
+		this.maxQChangeInLastEpisode = Double.POSITIVE_INFINITY;
 	}
 
 }

@@ -60,6 +60,11 @@ public abstract class DeterministicPlanner extends OOMDPPlanner{
 
 	}
 	
+	@Override
+	public void resetPlannerResults(){
+		this.mapToStateIndex.clear();
+		this.internalPolicy.clear();
+	}
 
 	/**
 	 * Returns whether the planner has a plan solution from the provided state.

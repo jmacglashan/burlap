@@ -157,6 +157,15 @@ public class UCT extends OOMDPPlanner {
 
 	}
 	
+	@Override
+	public void resetPlannerResults(){
+		this.mapToStateIndex.clear();
+		this.stateDepthIndex.clear();
+		this.statesToStateNodes.clear();
+		this.root = null;
+		this.numRollOutsFromRoot = 0;
+	}
+	
 	/*
 	 * Initializes data members; should be called before {@link treeRollOut(UCTStateNode, int, int)}
 	 */

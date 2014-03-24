@@ -44,4 +44,9 @@ public interface Critic {
 	 */
 	public CritiqueResult critiqueAndUpdate(State s, GroundedAction ga, State sprime);
 	
+	/**
+	 * Used to reset any data that was created/modified during learning so that learning can be begin anew.
+	 */
+	public abstract void resetData();
+	
 }

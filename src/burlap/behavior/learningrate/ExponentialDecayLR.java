@@ -181,6 +181,14 @@ public class ExponentialDecayLR implements LearningRate {
 		
 	}
 	
+	
+	@Override
+	public void resetDecay(){
+		this.universalLR = this.initialLearningRate;
+		this.stateWiseMap.clear();
+	}
+	
+	
 	/**
 	 * Returns the learning rate data structure for the given state. An entry will be created if it does not already exist.
 	 * @param s the state to get a learning rate for

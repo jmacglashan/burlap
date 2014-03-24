@@ -253,6 +253,12 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 	}
 	
 	
+	public void resetPlannerResults(){
+		this.model.resetModel();
+		this.modelPlanner.resetPlannerResults();
+		this.episodeHistory.clear();
+	}
+	
 	
 	/**
 	 * The value funciton planner that operates on the modeled world.

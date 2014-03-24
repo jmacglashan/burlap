@@ -34,6 +34,11 @@ public interface ModelPlanner {
 	 * @return a policy object
 	 */
 	public Policy modelPlannedPolicy();
+	
+	/**
+	 * Resets planner as if no planning had never been called.
+	 */
+	public void resetPlanner();
 
 	
 	public static interface ModelPlannerGenerator{

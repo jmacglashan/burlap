@@ -199,6 +199,12 @@ public class TimeIndexedTDLambda extends TDLambda {
 	}
 	
 	
+	@Override
+	public void resetData(){
+		super.resetData();
+		this.vTIndex.clear();
+	}
+	
 	
 	/**
 	 * Extends the standard {@link TDLambda.StateEligibilityTrace} to include time/depth information.

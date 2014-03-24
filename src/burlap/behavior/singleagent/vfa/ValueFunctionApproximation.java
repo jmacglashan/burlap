@@ -38,5 +38,9 @@ public interface ValueFunctionApproximation {
 	public WeightGradient getWeightGradient(ApproximationResult approximationResult);
 	
 	
+	/**
+	 * Resets the weights as is learning had never been performed.
+	 */
+	public void resetWeights();
 	
 }

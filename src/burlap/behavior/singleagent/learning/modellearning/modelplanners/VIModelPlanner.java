@@ -128,6 +128,11 @@ public class VIModelPlanner implements ModelPlanner {
 		return modelPolicy;
 	}
 	
+	@Override
+	public void resetPlanner(){
+		this.vi.resetPlannerResults();
+	}
+	
 	/**
 	 * Reruns VI on the new updated model. It will force VI to consider all states the agent has ever previously obsereved, even though not all
 	 * may be connected by the current unkown transition model.

@@ -235,6 +235,13 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	}
 
 	
+	@Override
+	public void resetPlannerResults(){
+		this.model.resetModel();
+		this.modelPlanner.resetPlanner();
+		this.episodeHistory.clear();
+	}
+	
 	
 	
 	/**

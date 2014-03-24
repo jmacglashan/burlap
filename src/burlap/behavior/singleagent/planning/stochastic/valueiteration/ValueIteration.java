@@ -109,6 +109,12 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 	}
 	
+	@Override
+	public void resetPlannerResults(){
+		super.resetPlannerResults();
+		this.foundReachableStates = false;
+	}
+	
 	/**
 	 * Runs VI until the specified termination conditions are met. In general, this method should only be called indirectly through the {@link #planFromState(State)} method.
 	 * The {@link #performReachabilityFrom(State)} must have been performed at least once

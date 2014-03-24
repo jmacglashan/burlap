@@ -220,6 +220,12 @@ public class TabularModel extends Model {
 	}
 	
 	
+	@Override
+	public void resetModel(){
+		this.stateNodes.clear();
+		this.terminalStates.clear();
+	}
+	
 	/**
 	 * A class for storing statistics about a state
 	 * @author James MacGlashan
@@ -392,5 +398,6 @@ public class TabularModel extends Model {
 		
 		
 	}
+
 
 }

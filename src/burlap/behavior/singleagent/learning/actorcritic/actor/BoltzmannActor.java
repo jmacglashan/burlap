@@ -201,6 +201,12 @@ public class BoltzmannActor extends Actor {
 		return true; //can always create equal-probable action preferences for a new state
 	}
 	
+	@Override
+	public void resetData() {
+		this.preferences.clear();
+		this.learningRate.resetDecay();
+	}
+	
 	
 	/**
 	 * Returns the stored {@link ActionPreference} that is stored in a policy node. If actions are parameterized and the domain is not name dependent,
@@ -322,5 +328,7 @@ public class BoltzmannActor extends Actor {
 		}
 		
 	}
+
+	
 
 }

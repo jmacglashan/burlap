@@ -99,6 +99,13 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	}
 	
 	
+	@Override
+	public void resetPlannerResults(){
+		this.mapToStateIndex.clear();
+		this.valueFunction.clear();
+		this.transitionDynamics.clear();
+	}
+	
 	/**
 	 * Sets the value function initialization to use.
 	 * @param vfInit the object that defines how to initializes the value function.

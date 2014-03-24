@@ -38,4 +38,9 @@ public class ConstantLR implements LearningRate {
 		return this.learningRate;
 	}
 
+	@Override
+	public void resetDecay() {
+		//no change needed
+	}
+
 }

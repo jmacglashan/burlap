@@ -82,6 +82,17 @@ public abstract class OOMDPPlanner {
 	
 	
 	/**
+	 * Use this method to reset all planner results so that planning can be started fresh with a call to {@link OOMDPPlanner#planFromState(State)}
+	 * as if no planning had ever been performed before. Specifically, data produced from calls to the 
+	 * {@link OOMDPPlanner#planFromState(State)} will be cleared, but all other planner settings should remain the same.
+	 * This is useful if the reward function or transition dynamics have changed, thereby
+	 * requiring new results to be computed. If there were other objects this planner was provided that may have changed
+	 * and need to be reset, you will need to reset them yourself. For instance, if you told a planner to follow a policy
+	 * that had a temperature parameter decrease with time, you will need to reset the policy's temperature yourself.
+	 */
+	public abstract void resetPlannerResults();
+	
+	/**
 	 * Initializes the planner with the common planning elements
 	 * @param domain the domain in which planning will be performed
 	 * @param rf the reward function

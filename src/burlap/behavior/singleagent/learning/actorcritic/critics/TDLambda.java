@@ -212,6 +212,13 @@ public class TDLambda implements Critic {
 		
 		return critique;
 	}
+	
+	@Override
+	public void resetData(){
+		this.vIndex.clear();
+		this.traces.clear();
+		this.learningRate.resetDecay();
+	}
 
 	
 	/**

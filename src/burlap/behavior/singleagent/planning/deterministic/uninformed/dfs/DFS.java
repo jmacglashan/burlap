@@ -179,6 +179,12 @@ public class DFS extends DeterministicPlanner {
 	}
 	
 	
+	@Override
+	public void resetPlannerResults(){
+		super.resetPlannerResults();
+		this.numVisted = 0;
+	}
+	
 	
 	/**
 	 * Runs DFS from a given search node, keeping track of its current depth. This method is recursive.

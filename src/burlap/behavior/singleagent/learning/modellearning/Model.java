@@ -90,6 +90,11 @@ public abstract class Model {
 	public abstract void updateModel(State s, GroundedAction ga, State sprime, double r, boolean sprimeIsTerminal);
 	
 	
+	/**
+	 * Resets the model data so that learning can begin anew.
+	 */
+	public abstract void resetModel();
+	
 	
 	/**
 	 * Will return a sampled outcome state by calling the {@link getTransitionProbabilities(State, GroundedAction)} method and randomly drawing a state

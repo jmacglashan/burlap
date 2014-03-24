@@ -30,5 +30,11 @@ public abstract class Actor extends Policy {
 	 * @param a an action not apart of the of the domain definition that this actor should be able to use.
 	 */
 	public abstract void addNonDomainReferencedAction(Action a);
+	
+	
+	/**
+	 * Used to reset any data that was created/modified during learning so that learning can be begin anew.
+	 */
+	public abstract void resetData();
 
 }

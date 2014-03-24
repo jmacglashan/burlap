@@ -29,4 +29,10 @@ public interface LearningRate {
 	public double pollLearningRate(State s, AbstractGroundedAction ga);
 	
 	
+	/**
+	 * Causes any learnign rate decay to reset to where it started.
+	 */
+	public void resetDecay();
+	
+	
 }
