@@ -176,6 +176,14 @@ public abstract class Action {
 	
 	
 	/**
+	 * Clears all action observers associated with this action
+	 */
+	public void clearAllActionsObservers(){
+		this.actionObservers.clear();
+	}
+	
+	
+	/**
 	 * Returns true if this action can be applied in this specified state with the specified parameters.
 	 * Default behavior is that an action can be applied in any state, but the {@link #applicableInState(State, String [])}
 	 * method will need to be override if this is not the case.

@@ -29,6 +29,17 @@ public class SADomain extends Domain {
 
 	
 	/**
+	 * Clears all action observers for all actions in this domain and then sets them to have the single action observer provided
+	 * @param observer the single action observer to set all actions to use.
+	 */
+	public void setActionObserverForAllAction(ActionObserver observer){
+		for(Action a : this.actions){
+			a.clearAllActionsObservers();
+			a.addActionObserver(observer);
+		}
+	}
+	
+	/**
 	 * Adss the action observer to all actions associated with this domain. Actions added to this domain after this method is called
 	 * will have to have the observer set for them independently or by a subsequent call to this method.
 	 * @param observer the observer to set all actions to use.
@@ -38,6 +49,16 @@ public class SADomain extends Domain {
 			a.addActionObserver(observer);
 		}
 	}
+	
+	/**
+	 * Clears all action observers for all action in this domain.
+	 */
+	public void clearAllActionObserversForAllActions(){
+		for(Action a : this.actions){
+			a.clearAllActionsObservers();
+		}
+	}
+	
 	
 	@Override
 	public void addAction(Action act){
