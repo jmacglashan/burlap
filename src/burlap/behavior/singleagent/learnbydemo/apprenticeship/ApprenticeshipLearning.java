@@ -38,8 +38,11 @@ import com.joptimizer.util.Utils;
 
 /**
  * 
+ * **NOTE** This code is under development and subject to change soon. It is reccommended that you do not use it yet.
+ * 
  * This algorithm will take expert trajectors and return a policy that models them. It is an implementation of the algorithm described by Abbel and Ng [1].
  * Both the projection method and quadractic programming version are available.
+ * 
  * 
  * 
  * 1. Abbeel, Peter and Ng, Andrew. "Apprenticeship Learning via Inverse Reinforcement Learning"
