@@ -9,6 +9,14 @@ import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.PropositionalFunction;
 
+
+/**
+ *  * **NOTE** This code is under development and subject to change soon. It is reccommended that you do not use it yet.
+ * 
+ * 
+ * @author Stephen Brawner and Mark Ho
+ *
+ */
 public class ApprenticeshipLearningRequest {
 	private Domain 						domain;
 	private OOMDPPlanner 				planner;
