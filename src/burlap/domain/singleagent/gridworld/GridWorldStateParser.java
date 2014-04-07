@@ -13,6 +13,8 @@ import burlap.oomdp.core.State;
  * <br/>
  * where ax and ay is the agent x and y position and lix liy is the ith location objects x and y position.
  * 
+ * test
+ * 
  * @author James MacGlashan
  *
  */
