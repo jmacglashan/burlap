@@ -44,10 +44,10 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	protected Visualizer							painter;
 	protected TextArea								propViewer;
 	
-	protected JList<Object>							episodeList;
+	protected JList									episodeList;
 	protected JScrollPane							episodeScroller;
 	
-	protected JList<Object>							iterationList;
+	protected JList									iterationList;
 	protected JScrollPane							iterationScroller;
 	
 	protected Container								controlContainer;
@@ -59,11 +59,11 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	
 	//Backend
 	protected List <String>							episodeFiles;
-	protected DefaultListModel<Object>				episodesListModel;
+	protected DefaultListModel						episodesListModel;
 	protected StateParser							sp;
 	
 	protected EpisodeAnalysis						curEA;
-	protected DefaultListModel<Object>				iterationListModel;
+	protected DefaultListModel						iterationListModel;
 	
 	protected Domain								domain;
 	
@@ -132,7 +132,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//set episode component
-		episodeList = new JList<Object>(episodesListModel);
+		episodeList = new JList(episodesListModel);
 		
 		
 		episodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -152,8 +152,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//set iteration component
-		iterationListModel = new DefaultListModel<Object>();
-		iterationList = new JList<Object>(iterationListModel);
+		iterationListModel = new DefaultListModel();
+		iterationList = new JList(iterationListModel);
 		
 		iterationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		iterationList.setLayoutOrientation(JList.VERTICAL);
@@ -218,7 +218,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		String[] children = dir.list(filter);
 		
 		episodeFiles = new ArrayList<String>(children.length);
-		episodesListModel = new DefaultListModel<Object>();
+		episodesListModel = new DefaultListModel();
 		
 		for(int i = 0; i < children.length; i++){
 			episodeFiles.add(directory + "/" + children[i]);
