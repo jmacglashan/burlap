@@ -1,3 +1,0 @@
-Testing with map: breadworld.map
-	VI,16406.0,-10.0,true
-	RTDP,5391.0,-199.0,false

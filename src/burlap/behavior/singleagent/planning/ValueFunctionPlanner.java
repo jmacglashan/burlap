@@ -45,7 +45,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 * should be set to false if it is expected that the transition dynamics can change over time which might be the case
 	 * in model learning scenarios.
 	 */
-	protected boolean												useCachedTransitions = true;
+	protected boolean												useCachedTransitions = false;
 	
 	
 	/**
@@ -212,6 +212,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 //		 new ArrayList<GroundedAction>();
 		
 		for (GroundedAction ga: this.getAffordanceGroundedActions(s, kb)) {
+//			System.out.println("--- SECOND CALL ---");
 			res.add(this.getQ(sh, ga, matching));
 		}
 		
@@ -220,6 +221,12 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	}
 	
 	public List<GroundedAction> getAffordanceGroundedActions(State st, ArrayList<Affordance> kb) {
+		if (st.hasMemoizedGroundedActions()) {
+			// Not the first call to this method for this state in this rollout
+			return st.getMemoizedGroundedActions();
+		}
+		
+		
 		ArrayList<GroundedAction> res = new ArrayList<GroundedAction>();
 		for(Affordance aff : kb) {
 			// TODO: Second argument should reflect CURRENT goal, not AtGoal
@@ -234,6 +241,8 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				res.addAll(st.getAllGroundedActionsFor(a));
 			}
 		}
+		
+		st.memoizeGroundedActions(res);
 		
 		return res;
 	}
@@ -314,6 +323,9 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				matchingAt = at;
 				break;
 			}
+		}
+		if (matchingAt == null) {
+//			System.out.println("NULL");
 		}
 		
 		double q = this.computeQ(sh.s, matchingAt);
@@ -509,7 +521,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			
 		}
 		else{
-			
+//			System.out.println("--- FIRST CALL ---");
 			List <GroundedAction> gas = this.getAffordanceGroundedActions(sh.s, kb);
 
 			for(GroundedAction ga : gas){
@@ -523,7 +535,6 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		
 		valueFunction.put(sh, maxQ);
-		
 		return maxQ;
 	}
 	

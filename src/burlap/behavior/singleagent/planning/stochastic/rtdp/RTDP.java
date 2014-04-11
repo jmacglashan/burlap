@@ -67,7 +67,7 @@ public class RTDP extends ValueFunctionPlanner {
 	 * RTDP will be declared "converged" if there are this many consecutive policy rollouts in which the value function change is smaller than the maxDelta value.
 	 * The default value is 10.
 	 */
-	protected int						minNumRolloutsWithSmallValueChange = 3;
+	protected int						minNumRolloutsWithSmallValueChange = 1;
 	
 	/**
 	 * If set to use batch mode; Bellman updates will be stalled until a rollout is complete and then run in reverse.
@@ -296,6 +296,9 @@ public class RTDP extends ValueFunctionPlanner {
 				// select an action and take it
 				GroundedAction ga = this.rollOutPolicy.getAffordanceAction(curState, kb);
 				curState = ga.executeIn(curState);
+				curState.clearMemoizedGroundedActions();
+//				System.out.println("\n");
+
 				nSteps++;
 			}
 			

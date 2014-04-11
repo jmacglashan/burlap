@@ -20,7 +20,7 @@ public class State {
 	private Map <String, ObjectInstance>					objectMap;					//map from object names to their instances
 	
 	private Map <String, List <ObjectInstance>>				objectIndexByTrueClass;		//map of object instances organized by class name
-
+	private ArrayList<GroundedAction>						memoizedGroundedActions;	// This is necessary for SOFT affordances so we aren't generating different action sets for the same bellman update
 	
 	
 	public State(){
@@ -110,6 +110,24 @@ public class State {
 			
 		}
 		
+	}
+	
+	public void memoizeGroundedActions(ArrayList<GroundedAction> gas) {
+//		System.out.println("Setting grounded actions " + gas);
+		this.memoizedGroundedActions = gas;
+	}
+	
+	public ArrayList<GroundedAction> getMemoizedGroundedActions() {
+		return this.memoizedGroundedActions;
+	}
+	
+	public boolean hasMemoizedGroundedActions() {
+//		System.out.println("Checking memoized actions " + this.memoizedGroundedActions);
+		return (this.memoizedGroundedActions != null);
+	}
+	
+	public void clearMemoizedGroundedActions() {
+		this.memoizedGroundedActions = null;
 	}
 	
 	

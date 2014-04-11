@@ -551,6 +551,18 @@ public class MinecraftBehavior {
 		isPlaneActions.add(this.mcdg.jumpL);
 		isPlaneActions.add(this.mcdg.jumpR);
 		
+		HashMap<Action, Double> isPlaneSoftActions = new HashMap<Action, Double>();
+		
+		isPlaneSoftActions.put(this.mcdg.forward, 0.9);
+		isPlaneSoftActions.put(this.mcdg.backward, 0.1);
+		isPlaneSoftActions.put(this.mcdg.left, 0.9);
+		isPlaneSoftActions.put(this.mcdg.right, 0.1);
+		isPlaneSoftActions.put(this.mcdg.jumpF, 0.9);
+		isPlaneSoftActions.put(this.mcdg.jumpB, 0.1);
+		isPlaneSoftActions.put(this.mcdg.jumpL, 0.9);
+		isPlaneSoftActions.put(this.mcdg.jumpR, 0.1);
+		
+		
 		ArrayList<Action> isTrenchActions = new ArrayList<Action>();
 		isTrenchActions.add(this.mcdg.placeF);
 		isTrenchActions.add(this.mcdg.placeB);
@@ -591,8 +603,12 @@ public class MinecraftBehavior {
 		ArrayList<Action> isAdjOvenActions = new ArrayList<Action>();
 		isAdjOvenActions.add(this.mcdg.placeGrain);
 		
+		
 		// ----- DEFINE AFFORDANCES -----
-		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneActions);
+		
+		// Soft (test)
+		Affordance affIsPlane = new Affordance(this.pfIsPlane, this.pfIsAtGoal, isPlaneSoftActions);
+		
 		Affordance affIsAdjTrench = new Affordance(this.pfIsAdjTrench, this.pfIsAtGoal, isTrenchActions);
 		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
 		Affordance affIsAdjOven = new Affordance(this.pfIsAdjOven, this.pfIsAtGoal, isAdjOvenActions);
@@ -681,7 +697,8 @@ public class MinecraftBehavior {
 
 		File[] files = new File("maps/" + dir).listFiles();
 
-		String[] planners = {"VI", "RTDP", "SG", "AFFVI", "AFFRTDP", "AFFSG"};
+//		String[] planners = {"VI", "RTDP", "SG", "AFFVI", "AFFRTDP", "AFFSG"};
+		String[] planners = {"RTDP", "SG", "AFFRTDP", "AFFSG"};
 
 		double[] info = null;
 		
@@ -752,18 +769,21 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Collect Results
-		try {
-			getResults();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			getResults();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		// Setup Minecraft World
-//		MinecraftBehavior mcb = new MinecraftBehavior("breadworld.map");
-//		int numUpdates = 0;
-//		int numRollouts = 1000;
-//		int maxDepth = 250;
+		// Setup Minecraft World and Meta Information
+		String worldName = "10world";
+		MinecraftBehavior mcb = new MinecraftBehavior("static/" + worldName + ".map");
+		double numUpdates = 0.0;
+		int numRollouts = 1000;
+		int maxDepth = 250;
+		
+		
 		// VANILLA OOMDP/VI
 //		 numUpdates = mcb.ValueIterationPlanner();
 //		System.out.println("VI: " + numUpdates);
@@ -780,9 +800,13 @@ public class MinecraftBehavior {
 //		 numUpdates = mcb.AffordanceVIPlanner(kb);
 		
 		// AFFORDANCE - RTDP
-//		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
-//		 numUpdates = mcb.AffordanceRTDPPlanner(numRollouts, maxDepth, kb);
+		 ArrayList<Affordance> kb = mcb.generateAffordanceKB(worldName);
+		 double[] results = mcb.AffordanceRTDPPlanner(numRollouts, maxDepth, kb);
+		 
+		 numUpdates = results[0];
 		
+		 System.out.println(results[0] + "," + results[1] + "," + results[2]);
+		 
 		// AFFORDANCE - SG
 //		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
 //		 ArrayList<Subgoal> subgoals = mcb.generateSubgoalKB();

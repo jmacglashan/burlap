@@ -1,15 +1,19 @@
 package burlap.domain.singleagent.minecraft;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.List;
+
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
-
-
+import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 
 /**
@@ -41,6 +45,53 @@ public class MCStateGenerator {
 	private int numRows;
 	private int numCols;
 	private int numBlocks;
+	private int nTrenches = 0; // For use in random map generation
+	
+	
+	public MCStateGenerator() {
+		// TODO Auto-generated constructor stub
+		// Convert relative path to absolute.
+		String root = System.getProperty("user.dir");
+		String abspath = root + "/maps/random/";
+		
+		// Generate a map based on the given LGD
+		
+		String[] map = generateRandomMap();
+
+		Random r = new Random();
+		try {
+			abspath += r.nextInt(1000) + ".map";
+			File f = new File(abspath);
+			if (!f.exists()) {
+				f.createNewFile();
+				System.out.println("Created file");
+			} else {
+				System.out.println("File exists");
+			}
+			BufferedWriter bw = new BufferedWriter(new FileWriter(f.getAbsoluteFile()));
+			
+			bw.write("BN=" + nTrenches + "\n");
+			for(int i = 0;i < map.length; i++) {
+				for(int j = 0; j < map[i].length() - 1; j++) {
+					bw.write(map[i].charAt(j) + " ");
+				}
+				bw.write(map[i].charAt(map[i].length() - 1) + "\n");
+				bw.flush();
+			}
+			bw.close();
+			
+		}
+		catch(IOException ex) {
+			System.out.println("Inside catch");
+			ex.printStackTrace();
+			return;
+		}
+
+		// Write map to file, ProcessHeader()
+		this.fpath = abspath;
+		processHeader();
+		
+	}
 	
 	/**
 	 * @param path the file path for the map file.
@@ -54,6 +105,83 @@ public class MCStateGenerator {
 		processHeader();
 	}
 	
+	public String[] generateRandomMap() {
+		
+		// Pick dimensions
+		Random r = new Random();
+		int n = r.nextInt(3) + 4;  // Generates a random number between 4 and 6
+		
+		String[] map = generateEmptyGrid(n);
+		
+		String trench = "";
+		for (int i = 0; i < n; i++) {
+			trench += bRmSym;
+		}
+		
+
+		int maxTrenches = n / 2;
+		double probOfTrench = 0.2;
+		for (int i = 0; i < n; i++){
+			// Flip a weighted coin for adding a trench or not
+			if (r.nextDouble() < probOfTrench && nTrenches <= maxTrenches) {
+				nTrenches++;
+				// Flip a coin for orientation
+				if (r.nextBoolean()) {
+					// Horizontal
+					map[i] = trench;
+				}
+				else {
+					// Vertical
+					for (int j = 0; j < n; j++) {
+						map[j] = map[j].substring(0, i) + bRmSym + map[j].substring(i + 1);
+					}
+				}
+			}
+
+		}
+		
+		addRandomAgent(map);
+		addRandomGoal(map);
+
+		return map;		
+	}
+	
+	private String[] generateEmptyGrid(int n) {
+		String[] map = new String[n];
+		
+		String row = "";
+		for (int i = 0; i < n; i++) {
+			row += dummySym;
+		}
+		
+		for (int i = 0; i < n; i++) {
+			map[i] = row;
+		}
+		
+		return map;
+	}
+	
+	private void addRandomAgent(String[] map) {
+		addRandomSym(map, aSym);
+	}
+	
+	private void addRandomGoal(String[] map) {
+		addRandomSym(map, gSym);
+	}
+	
+	private void addRandomSym(String[] map, char sym) {
+		Random r = new Random();
+		while (true) {
+			int x = r.nextInt(map.length);
+			int y = r.nextInt(map.length);
+			
+			if (map[x].charAt(y) == dummySym) {
+				map[x] = map[x].substring(0, y) + sym + map[x].substring(y + 1);
+				break;
+			}
+		}
+		
+	}
 	public int[] getDimensions() {
 		try {
 			Scanner scnr = new Scanner(new File(this.fpath));
@@ -281,10 +409,7 @@ public class MCStateGenerator {
 		MinecraftDomain mcdg = new MinecraftDomain();
 		Domain domain = mcdg.generateDomain();
 		
-		MCStateGenerator mcsg = new MCStateGenerator("/Users/dabel/Projects/workspace/burlap/src/burlap/domain/singleagent/minecraft/test.txt");
-		mcsg.getCleanState(domain);
-		System.out.println(domain.toString());
-
+		MCStateGenerator mcsg = new MCStateGenerator();
 	}
 	
 	public int getMaxX() {
