@@ -640,6 +640,9 @@ public class MinecraftBehavior {
 		
 		// ----- DEFINE ACTION SETS -----
 		
+<<<<<<< HEAD
+		
+		
 		ArrayList<Action> isPlaneFActions = new ArrayList<Action>();
 		isPlaneFActions.add(this.mcdg.forward);
 		isPlaneFActions.add(this.mcdg.jumpF);

@@ -1,0 +1,55 @@
+Testing with map: breadworld.map
+	VI,16406.0,-17.0,true
+	RTDP,3903.0,-199.0,false
+	SG,5087.0,-206.0,false
+	AFFVI,962.0,-10.0,true
+	AFFRTDP,790.0,-10.0,true
+	AFFSG,398.0,-37.0,true
+
+Testing with map: 4bridgeworld.map
+	VI,71604.0,-5.0,true
+	RTDP,572.0,-87.0,true
+	SG,1162.0,-95.0,true
+	AFFVI,17480.0,-6.0,true
+	AFFRTDP,182.0,-4.0,true
+	AFFSG,5521.0,-404.0,false
+
+Testing with map: 6bridgeworld.map
+	VI,413559.0,-6.0,true
+	RTDP,3448.0,-29.0,true
+	SG,1830.0,-276.0,true
+	AFFVI,1631.0,-6.0,true
+	AFFRTDP,467.0,-199.0,false
+	AFFSG,739.0,-206.0,true
+
+Testing with map: 8bridgeworld.map
+	VI,1439883.0,-10.0,true
+	RTDP,11391.0,-53.0,true
+	SG,38910.0,-400.0,true
+	AFFVI,3987.0,-8.0,true
+	AFFRTDP,1856.0,-199.0,false
+	AFFSG,1976.0,-249.0,true
+
+Testing with map: doorbridgeworld.map
+	VI,861084.0,-13.0,true
+	RTDP,9331.0,-16.0,true
+	SG,16539.0,-597.0,false
+	AFFVI,214820.0,-24.0,true
+	AFFRTDP,3014.0,-116.0,true
+	AFFSG,1305.0,-219.0,true
+
+Testing with map: lavabridgeworld.map
+	VI,413559.0,-6.0,true
+	RTDP,2899.0,-14.0,true
+	SG,1709.0,-12.0,true
+	AFFVI,51060.0,-7.0,true
+	AFFRTDP,704.0,-14.0,true
+	AFFSG,484.0,-12.0,true
+	
+Testing with map: tunnelworld.map
+	VI,203796.0,-6.0,true
+	RTDP,677.0,-14.0,true
+	SG,865.0,-398.0,false
+	AFFVI,5290.0,-5.0,true
+	AFFRTDP,200.0,-43.0,true
+	AFFSG,125.0,-46.0,true
