@@ -31,6 +31,7 @@ import burlap.oomdp.core.State;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.options.PolicyDefinedSubgoalOption;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.StateConditionTest;
@@ -564,6 +565,9 @@ public class MinecraftBehavior {
 		isTrenchActions.add(this.mcdg.jumpB);
 		isTrenchActions.add(this.mcdg.jumpL);
 		isTrenchActions.add(this.mcdg.jumpR);
+		
+		// Add option
+		isTrenchActions.add(new PolicyDefinedSubgoalOption("Build Bridge", new ForwardPolicy(this.mcdg.forward), new SubgoalTests.BridgeSubgoal(this.pfIsAdjTrench)));
 
 		ArrayList<Action> isDoorActions = new ArrayList<Action>();
 		isDoorActions.add(this.mcdg.forward);
