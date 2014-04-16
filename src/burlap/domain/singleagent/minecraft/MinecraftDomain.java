@@ -125,7 +125,7 @@ public class MinecraftDomain implements DomainGenerator{
 	public static final int						MAXZ = 8;
 	public static final int						MAXBLKNUM = 4;
 	
-	public static final double					nondetThreshold = 0.15;
+	public static final double					nondetThreshold = 0.1;
 
 
 	
@@ -242,7 +242,7 @@ public class MinecraftDomain implements DomainGenerator{
 		
 		if (allActMode) {
 		
-			if (true) {
+			if (placeMode) {
 				// Placement
 				this.placeF = new PlaceActionF(ACTIONPLACEF, DOMAIN, "");
 				this.placeB = new PlaceActionB(ACTIONPLACEB, DOMAIN, "");
@@ -293,44 +293,6 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	/* === Mutators === */
 	
-	/**
-	 * Sets the first agent object in s to the specified x,y,z position.
-	 * @param s the state with the agent whose position to set
-	 * @param x the x position of the agent
-	 * @param y the y position of the agent
-	 * @param z the z position of the agent
-	 */
-	public static void setAgent(State s, int x, int y, int z, int numBlocks){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
-		
-		o.setValue(ATTX, x);
-		o.setValue(ATTY, y);
-		o.setValue(ATTZ, z);
-		o.setValue(ATTBLKNUM, numBlocks);
-	}
-	
-	/**
-	 * Sets the first goal object in s to the specified x,y,z position.
-	 * @param s the state with the goal whose position to set
-	 * @param x the x position of the goal
-	 * @param y the y position of the goal
-	 * @param z the z position of the goal
-	 */
-	public static void setGoal(State s, int x, int y, int z) {
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSGOAL).get(0);
-		
-		o.setValue(ATTX, x);
-		o.setValue(ATTY, y);
-		o.setValue(ATTZ, z);
-	}
-	
-	public static void setBlock(State s, int i, int x, int y, int z){
-		ObjectInstance block = s.getObjectsOfTrueClass(CLASSBLOCK).get(i);
-		block.setValue(ATTX, x);
-		block.setValue(ATTY, y);
-		block.setValue(ATTZ, z);
-	}
-	
 	public void addBlock(State s, int x, int y, int z){
 		ObjectInstance block = new ObjectInstance(this.DOMAIN.getObjectClass(CLASSBLOCK), CLASSBLOCK+x+y+z);
 		block.setValue(ATTX, x);
@@ -371,7 +333,7 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static boolean isCellEmpty(State st, int x, int y, int z){
 		
-		if (x < 0 || x > MAXX || y < 0 || y > MAXY || z < 0 || x > MAXZ) {
+		if (x < 0 || x > MAXX || y < 0 || y > MAXY || z < 0 || z > MAXZ) {
 			return false; // TODO: make sure this works.
 		}
 		
@@ -380,7 +342,7 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static int getCellContents(State st, int x, int y, int z){
 		
-		if (x < 0 || x > MAXX || y < 0 || y > MAXY || z < 0 || x > MAXZ) {
+		if (x < 0 || x > MAXX || y < 0 || y > MAXY || z < 0 || z > MAXZ) {
 			// Beyond the edge of the universe
 			return -1;
 		}
@@ -641,9 +603,10 @@ public class MinecraftDomain implements DomainGenerator{
 			return;
 		}
 		
+//		System.out.println("numBlocks: " + numAgentsBlocks);
 
 		// If block loc is empty (z-1 from bot), and the loc above is empty (i.e. we can "see" the bottom loc), place it.
-		if (bz - 1 >= 0 && getBlockAt(s,bx,by,bz - 1) == null && getBlockAt(s,bx,by,bz) == null){
+		if (numAgentsBlocks > 0 && bz - 1 >= 0 && getBlockAt(s,bx,by,bz - 1) == null && getBlockAt(s,bx,by,bz) == null){
 			
 			addBlock(s, bx, by, bz - 1);
 			
@@ -704,6 +667,7 @@ public class MinecraftDomain implements DomainGenerator{
 			// Remove the block
 			if (getBlockAt(s,bx,by,bz - 1).getDiscValForAttribute("attDestroyable") == 1) {
 				// Only destroy destroyable blocks
+//				System.out.println("DEST BELOW: (A) (B)" + "(" + ax + "," + ay + "," + az + ") " + " (" + bx + "," + by + "," + (bz - 1) + ")");
 				removeBlock(s, bx, by, bz - 1);
 			}
 
@@ -713,6 +677,8 @@ public class MinecraftDomain implements DomainGenerator{
 			// Remove the block
 			if (getBlockAt(s,bx,by,bz).getDiscValForAttribute("attDestroyable") == 1) {
 				// Only destroy destroyable blocks
+				System.out.println("DEST EVEN: (A) (B)" + "(" + ax + "," + ay + "," + az + ") " + " (" + bx + "," + by + "," + bz + ")");
+				
 				removeBlock(s, bx, by, bz);
 			}
 		}
@@ -1127,25 +1093,26 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static class IsAgentXMore extends PropositionalFunction{
 		
-		public IsAgentXMore(String name, Domain domain, String[] parameterClasses) {
+		private int destX;
+
+		public IsAgentXMore(String name, Domain domain, String[] parameterClasses, int destX) {
 			super(name, domain, parameterClasses);
+			this.destX = destX;
 		}
 		
 		public boolean isTrue(State st, String[] params) {
-			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
-			
-			//get the agent coordinates
-			int ax = agent.getDiscValForAttribute(ATTX);
-			
-			int nx = Integer.parseInt(params[0]);
-			
-			return (ax > nx);
+			return isTrue(st);
 		}
 
 		@Override
-		public boolean isTrue(State s) {
+		public boolean isTrue(State st) {
 			// TODO Auto-generated method stub
-			return false;
+			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
+			
+			//get the agent coordinates
+			int ay = agent.getDiscValForAttribute(ATTX);
+						
+			return (ay > this.destX);
 		}
 	}
 	
@@ -1176,26 +1143,26 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static class IsAgentYMore extends PropositionalFunction{
 		
-		public IsAgentYMore(String name, Domain domain, String[] parameterClasses) {
+		private int destY;
+
+		public IsAgentYMore(String name, Domain domain, String[] parameterClasses, int destY) {
 			super(name, domain, parameterClasses);
+			this.destY = destY;
 		}
 		
 		public boolean isTrue(State st, String[] params) {
+			return isTrue(st);
+		}
+
+		@Override
+		public boolean isTrue(State st) {
+			// TODO Auto-generated method stub
 			ObjectInstance agent = st.getObject(CLASSAGENT + "0");
 			
 			//get the agent coordinates
 			int ay = agent.getDiscValForAttribute(ATTY);
-			
-			//get destination coordinates
-			int ny = Integer.parseInt(params[1]);
-			
-			return (ay > ny);
-		}
-
-		@Override
-		public boolean isTrue(State s) {
-			// TODO Auto-generated method stub
-			return false;
+						
+			return (ay > this.destY);
 		}
 	}
 	
@@ -1522,8 +1489,21 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static class IsAdjPlane extends PropositionalFunction {
 
+		private int dx;
+		private int dy;
+		private int dz;
+		private boolean dirFlag = false;
+		
 		public IsAdjPlane(String name, Domain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
+		}
+		
+		public IsAdjPlane(String name, Domain domain, String[] parameterClasses, int[] dir) {			
+			super(name, domain, parameterClasses);
+			this.dx = dir[0];
+			this.dy = dir[1];
+			this.dz = dir[2];
+			this.dirFlag = true;
 		}
 		
 		@Override
@@ -1542,9 +1522,11 @@ public class MinecraftDomain implements DomainGenerator{
 			int az = agent.getDiscValForAttribute(ATTZ);
 
 			
-			
-//			 Works
-			if (isAdjPlane(st, ax, ay, az)) {
+//			Dirflag is set and there is a block beneath agent and no block at its level (in the direction)
+			if (this.dirFlag && (getCellContents(st, ax + dx, ay + dy, az - 1) == 1 && getCellContents(st, ax + dx, ay + dy, az) == 0)) {
+				return true;
+			}
+			else if (!this.dirFlag && isAdjPlane(st, ax, ay, az)) {
 				return true;
 			}
 			else {
@@ -1556,8 +1538,21 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static class IsAdjTrench extends PropositionalFunction {
 
+		private int dx;
+		private int dy;
+		private int dz;
+		private boolean dirFlag = false;
+		
 		public IsAdjTrench(String name, Domain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
+		}
+		
+		public IsAdjTrench(String name, Domain domain, String[] parameterClasses, int[] dir) {			
+			super(name, domain, parameterClasses);
+			this.dx = dir[0];
+			this.dy = dir[1];
+			this.dz = dir[2];
+			this.dirFlag = true;
 		}
 		
 		@Override
@@ -1567,16 +1562,16 @@ public class MinecraftDomain implements DomainGenerator{
 
 		@Override
 		public boolean isTrue(State st) {
-			// Assume everything is walkable for now.
-//			// The first three elements of params are the amount of change
-//			// in the x, y, and z directions
 			ObjectInstance agent = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
 			int ax = agent.getDiscValForAttribute(ATTX);
 			int ay = agent.getDiscValForAttribute(ATTY);
 			int az = agent.getDiscValForAttribute(ATTZ);
 
 			
-			if (isAdjTrench(st, ax, ay, az)) {
+			if (this.dirFlag && getCellContents(st, ax + this.dx, ay + this.dy, az - 1) == 0) {
+				return true;
+			}
+			else if (!this.dirFlag && isAdjTrench(st, ax, ay, az)) {
 				return true;
 			}
 			else {
@@ -1585,6 +1580,7 @@ public class MinecraftDomain implements DomainGenerator{
 		}
 		
 	}
+	
 	
 	public static class IsAdjDoor extends PropositionalFunction {
 
@@ -1723,8 +1719,21 @@ public class MinecraftDomain implements DomainGenerator{
 	
 	public static class IsAdjDstableWall extends PropositionalFunction {
 
+		private int dx;
+		private int dy;
+		private int dz;
+		private boolean dirFlag = false;
+		
 		public IsAdjDstableWall(String name, Domain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
+		}
+		
+		public IsAdjDstableWall(String name, Domain domain, String[] parameterClasses, int[] dir) {			
+			super(name, domain, parameterClasses);
+			this.dx = dir[0];
+			this.dy = dir[1];
+			this.dz = dir[2];
+			this.dirFlag = true;
 		}
 		
 		@Override
@@ -1743,7 +1752,11 @@ public class MinecraftDomain implements DomainGenerator{
 			int az = agent.getDiscValForAttribute(ATTZ);
 
 			
-			if (isAdjDstableWall(st, ax, ay, az)) {
+			if (dirFlag && getCellContents(st, ax + dx, ay + dy, az) == 1) {
+//				There is a block in the direction, check to see if it is destroyable
+				return (getBlockAt(st, ax + dx, ay + dy, az).getDiscValForAttribute(ATTDEST) == 1);
+			}
+			else if (!dirFlag && isAdjDstableWall(st, ax, ay, az)) {
 				return true;
 			}
 			else {
