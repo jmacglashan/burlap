@@ -67,7 +67,8 @@ public class RTDP extends ValueFunctionPlanner {
 	 * RTDP will be declared "converged" if there are this many consecutive policy rollouts in which the value function change is smaller than the maxDelta value.
 	 * The default value is 10.
 	 */
-	protected int						minNumRolloutsWithSmallValueChange = 1;
+
+	protected int						minNumRolloutsWithSmallValueChange = 5;
 	
 	/**
 	 * If set to use batch mode; Bellman updates will be stalled until a rollout is complete and then run in reverse.
@@ -225,12 +226,12 @@ public class RTDP extends ValueFunctionPlanner {
 	protected int normalRTDP(State initialState){
 		
 		int totalStates = 0;
+		int consecutiveSmallDeltas = 0;
 		for(int i = 0; i < numRollouts; i++){
 			
 			State curState = initialState;
 			int nSteps = 0;
 			double delta = 0;
-			int consecutiveSmallDeltas = 0;
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
 				StateHashTuple sh = this.hashingFactory.hashState(curState);
@@ -275,12 +276,12 @@ public class RTDP extends ValueFunctionPlanner {
 	protected int affordanceRTDP(State initialState, ArrayList<Affordance> kb){
 		
 		int totalStates = 0;
+		int consecutiveSmallDeltas = 0;
 		for(int i = 0; i < numRollouts; i++){
 			
 			State curState = initialState;
 			int nSteps = 0;
 			double delta = 0;
-			int consecutiveSmallDeltas = 0;
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
 				StateHashTuple sh = this.hashingFactory.hashState(curState);

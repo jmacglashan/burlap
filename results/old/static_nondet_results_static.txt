@@ -1,0 +1,54 @@
+Testing with map: 10world.map
+	VI,800.0,-8.0,true
+	RTDP,1205.0,-8.0,true
+	SG,1263.0,-10.0,true
+	AFFVI,800.0,-8.0,true
+	AFFRTDP,985.0,-8.0,true
+	AFFSG,960.0,-8.0,true
+
+Testing with map: 15world.map
+	VI,3150.0,-12.0,true
+	RTDP,3939.0,-14.0,true
+	SG,3328.0,-17.0,true
+	AFFVI,3150.0,-12.0,true
+	AFFRTDP,3089.0,-16.0,true
+	AFFSG,2331.0,-12.0,true
+
+Testing with map: 20world.map
+	VI,7200.0,-18.0,true
+	RTDP,10719.0,-21.0,true
+	SG,8738.0,-22.0,true
+	AFFVI,7200.0,-18.0,true
+	AFFRTDP,8004.0,-20.0,true
+	AFFSG,6099.0,-54.0,true
+
+Testing with map: doorworld.map
+	VI,6315.0,-15.0,true
+	RTDP,5646.0,-15.0,true
+	SG,4104.0,-21.0,true
+	AFFVI,6315.0,-15.0,true
+	AFFRTDP,4059.0,-299.0,false
+	AFFSG,2886.0,-15.0,true
+
+Testing with map: jumpworld.map
+	VI,2940.0,-13.0,true
+	RTDP,4313.0,-20.0,true
+	SG,4262.0,-14.0,true
+	AFFVI,2940.0,-13.0,true
+	AFFRTDP,3548.0,-17.0,true
+	AFFSG,2922.0,-19.0,true
+
+Testing with map: lavaworld.map
+	VI,800.0,-8.0,true
+	RTDP,1328.0,-8.0,true
+	SG,1003.0,-221.0,true
+	AFFVI,800.0,-8.0,true
+	AFFRTDP,861.0,-8.0,true
+	AFFSG,772.0,-402.0,false
+
+Testing with map: mazeworld.map
+	VI,4266.0,-17.0,true
+	RTDP,5648.0,-25.0,true
+	SG,2586.0,-31.0,true
+	AFFVI,4266.0,-17.0,true
+	AFFRTDP,3453.0,-18.0,true

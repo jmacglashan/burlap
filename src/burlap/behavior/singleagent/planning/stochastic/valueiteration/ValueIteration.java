@@ -79,10 +79,12 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 	}
 	
-	@Override
-	public int planFromStateAffordance(State initialState, ArrayList<Affordance> kb){
+	public int planFromStateAffordance(State initialState, ArrayList<Affordance> kb, MinecraftDomain mcDomain){
+		boolean oldDetFlag = mcDomain.deterministicMode;
+		mcDomain.deterministicMode = true;
 		this.initializeOptionsForExpectationComputations();
 		if(this.performAffordanceReachabilityFrom(initialState, kb)){
+			mcDomain.deterministicMode = oldDetFlag;
 			return this.runVI();
 		}
 		return -1;

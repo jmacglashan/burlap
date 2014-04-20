@@ -41,7 +41,8 @@ public class MCStateGenerator {
 	private static final char doorSym = 'd';
 	private static final char grainSym = '*';
 	private static final char ovenSym = 'o';
-	private static final char lavaSym = 'L';
+	private static final char lavaSym = 'V';
+	private static final char twoBlockSym = '^';
 	private int numRows;
 	private int numCols;
 	private int numBlocks;
@@ -256,6 +257,10 @@ public class MCStateGenerator {
 	/**
 	 * Here we read each ascii character in the row and make adjustments to the
 	 * 10x10 empty state.
+	 * 
+	 * Floor is at z = 0. Everything else is added to z = 1. When a trench is read
+	 * the block at z = 0 is removed.
+	 * 
 	 * @param s the state we are building
 	 * @param d the uninitialized domain
 	 * @param row the current map row in ascii format
@@ -270,51 +275,54 @@ public class MCStateGenerator {
 		while (ncol < row.length()) {
 
 			ch = row.charAt(ncol);
+			
 			if (ch != ' ' && ch != '*') {
-				addBlock(s, d, ncol, nrow, 0);
-			}
-			switch (ch) {
-			case bAddSym:
+				// Floor placement
+				addIndBlock(s, d, ncol, nrow, 0);
 				addBlock(s, d, ncol, nrow, 1);
+			}
+			
+			switch (ch) {
+			case twoBlockSym:
+				addBlock(s, d, ncol, nrow, 3);
+			case bAddSym:
+				addBlock(s, d, ncol, nrow, 2);
 				ncol++;
 				break;
 			case aSym:
-				addAgent(s, d, ncol, nrow, 1, numBlocks);
+				addAgent(s, d, ncol, nrow, 2, numBlocks);
 				ncol++;
 				break;
 			case gSym:
-				addGoal(s, d, ncol, nrow, 1);
+				addGoal(s, d, ncol, nrow, 2);
 				ncol++;
 				break;
 			case bRmSym:
-				removeBlock(s, d, ncol, nrow, 0);
+				removeBlock(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
 			case dummySym:
-				addBlock(s, d, ncol, nrow, 0);
 				ncol++;
 				break;
 			case wallSym:
-//				addBlock(s, d, ncol, nrow, 0); // Add a block under the wall
-				addWall(s, d, ncol, nrow, 1);
+				addIndBlock(s, d, ncol, nrow, 2);
 				ncol++;
 				break;
 			case doorSym:
-//				addBlock(s, d, ncol, nrow . . . . . . . . . . . . . ., 0); // Add a block under the door
-				addDoor(s, d, ncol, nrow, 1);
+				addDoor(s, d, ncol, nrow, 2);
 				ncol++;
 				break;
 			case grainSym:
-				addGrain(s, d, ncol, nrow, 0);
+				addIndBlock(s, d, ncol, nrow, 0);
+				addGrain(s, d, ncol, nrow, 1);
 				ncol++;
 				break;
 			case ovenSym:
-//				addBlock(s, d, ncol, nrow, 0);
-				addOven(s, d, ncol, nrow, 1);
+				addOven(s, d, ncol, nrow, 2);
 				ncol++;
 				break;
 			case lavaSym:
-				addLava(s, d, ncol, nrow, 0);
+				addLava(s, d, ncol, nrow, 1);
 				ncol++;
 			default:
 				continue;
@@ -322,12 +330,12 @@ public class MCStateGenerator {
 		}
 	}
 	
-	
-	private static void addWall(State s, Domain d, int x, int y, int z) {
+	private static void addIndBlock(State s, Domain d, int x, int y, int z) {
 		ObjectInstance wall = new ObjectInstance(d.getObjectClass("block"), "block"+x+y+z);
 		wall.setValue("x", x);
 		wall.setValue("y", y);
 		wall.setValue("z", z);
+		wall.setValue("isGrain", 0); //
 		wall.setValue("attDestroyable", 0); // Walls cannot be destroyed
 		s.addObject(wall);
 	}
@@ -379,7 +387,6 @@ public class MCStateGenerator {
 		agent.setValue("bNum", agentNumBlocks);  // Expliticly set the number of blocks agent can carry to 1
 		agent.setValue("agentHasGrain", 0);
 		agent.setValue("agentHasBread", 0);
-		addBlock(s, d, x, y, z - 1); // Agent needs to be on top of a block
 		addObject(agent, s, d, x, y, z);
 	}
 

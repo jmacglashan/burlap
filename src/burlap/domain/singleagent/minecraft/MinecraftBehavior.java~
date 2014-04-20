@@ -22,7 +22,6 @@ import burlap.oomdp.core.PropositionalFunction;
 
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.common.MultiplePFTF;
 import burlap.oomdp.singleagent.common.SingleGoalMultiplePFRF;
 import burlap.oomdp.singleagent.common.SingleGoalPFRF;
 import burlap.oomdp.singleagent.common.SinglePFTF;
@@ -32,7 +31,6 @@ import burlap.oomdp.core.State;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.PolicyDefinedSubgoalOption;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
@@ -45,15 +43,12 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
-import burlap.domain.singleagent.minecraft.MinecraftDomain.NotInWorldPF;
 import burlap.domain.singleagent.minecraft.MinecraftDomain.*;
 
 
 
 public class MinecraftBehavior {
 
-	boolean						debug = true;
-	
 	MinecraftDomain				mcdg;
 	Domain						domain;
 	StateParser					sp;
@@ -65,8 +60,7 @@ public class MinecraftBehavior {
 	
 	static PropositionalFunction		pfAgentAtGoal;
 	static PropositionalFunction 		pfAgentHasBread;
-	static PropositionalFunction 		pfAgentNotInWorld;
-
+	
 	PropositionalFunction		pfIsPlane;
 	PropositionalFunction		pfIsAdjTrench;
 	PropositionalFunction		pfIsAdjDoor;
@@ -93,9 +87,8 @@ public class MinecraftBehavior {
 	PropositionalFunction		pfIsDstableWallB;
 	PropositionalFunction		pfIsDstableWallL;
 	PropositionalFunction		pfIsDstableWallR;
-
+	
 	HashMap<PropositionalFunction, Double> rewardTable;
-
 	static int 					numRollouts = 5000;
 	static int 					maxDepth = 50;
 //	static double				vInit = (10 / (1 - .99));
@@ -103,7 +96,6 @@ public class MinecraftBehavior {
 	static double				goalReward = -1.0;
 	static int					maxSteps = 300;
 	static double				maxDelta = 0.01;
-	static double				gamma = 0.99;
 	
 	
 	public MinecraftBehavior(String mapfile) {
@@ -152,16 +144,16 @@ public class MinecraftBehavior {
 				new String[]{this.mcdg.CLASSAGENT});
 		
 		pfIsTrenchF = new IsAdjTrench(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT}, new int[] {0,-1,0}, 1);
+				new String[]{this.mcdg.CLASSAGENT}, new int[] {0,-1,0});
 		
 		pfIsTrenchB = new IsAdjTrench(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT}, new int[] {0,1,0}, 1);
+				new String[]{this.mcdg.CLASSAGENT}, new int[] {0,1,0});
 		
 		pfIsTrenchR = new IsAdjTrench(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT}, new int[] {-1,0,0}, 1);
+				new String[]{this.mcdg.CLASSAGENT}, new int[] {-1,0,0});
 		
 		pfIsTrenchL = new IsAdjTrench(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT}, new int[] {1,0,0}, 1);
+				new String[]{this.mcdg.CLASSAGENT}, new int[] {1,0,0});
 		
 		// ===== DSTABLE WALL =====
 		pfIsDstableWallF = new IsAdjDstableWall(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
@@ -238,9 +230,6 @@ public class MinecraftBehavior {
 		pfAgentAtGoal = new AtGoalPF(this.mcdg.PFATGOAL, this.mcdg.DOMAIN,
 				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL});
 		
-		pfAgentNotInWorld = new NotInWorldPF(this.mcdg.PFNINWORLD, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT, this.mcdg.CLASSGOAL});
-		
 		// Generate Goal Condition
 //		rf = new SingleGoalPFRF(pfAgentHasBread, 10, -1); 
 //		tf = new SinglePFTF(pfAgentHasBread); 
@@ -248,7 +237,6 @@ public class MinecraftBehavior {
 		
 		rewardTable = new HashMap<PropositionalFunction, Double>();
 		rewardTable.put(pfAgentAtGoal, (Double) goalReward);
-		rewardTable.put(pfAgentNotInWorld, (Double) 1.0 - 99999999.9);
 		rewardTable.put(pfAgentHasBread, (Double) goalReward);
 		Double lavaRew = -100.0;
 		rewardTable.put(pfIsInLava, lavaRew);
@@ -266,7 +254,7 @@ public class MinecraftBehavior {
 	// === VI Planner	===
 	public double[] ValueIterationPlanner(){
 		
-		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, gamma, hashingFactory, 0.01, Integer.MAX_VALUE);
+		OOMDPPlanner planner = new ValueIteration(domain, rf, tf, 0.99, hashingFactory, 0.01, Integer.MAX_VALUE);
 		
 		int statePasses = planner.planFromState(initialState, this.mcdg);
 
@@ -630,10 +618,6 @@ public class MinecraftBehavior {
 		
 		State finalState = ea.getLastState();
 		
-		if (debug) {
-			System.out.println(ea.getActionSequenceString());
-		}
-		
 		double completed = goalCondition.satisfies(finalState) ? 1.0 : 0.0;
 		
 		return new double[]{statePasses, totalReward, completed};	
@@ -656,29 +640,24 @@ public class MinecraftBehavior {
 		
 		// ----- DEFINE ACTION SETS -----
 		
-
+<<<<<<< HEAD
+		
+		
 		ArrayList<Action> isPlaneFActions = new ArrayList<Action>();
 		isPlaneFActions.add(this.mcdg.forward);
-		isPlaneFActions.add(this.mcdg.jump);
-		
-//		Option myFirstOption = new PolicyDefinedSubgoalOption("Sprint Forward", new StubbornPolicy(this.mcdg.forward), new OptionConditionTest(this.pfIsPlaneF, true), this.domain);
-//		myFirstOption.keepTrackOfRewardWith(rf, gamma);
-//		isPlaneFActions.add(myFirstOption);
-//		
-		PropositionalFunction nBridgePF = new IsAdjTrench(this.mcdg.ISADJTRENCH, this.mcdg.DOMAIN,
-				new String[]{this.mcdg.CLASSAGENT}, new int[] {0,-1,0}, 2);
-		
-		Option bridgeBuilder = new PolicyDefinedSubgoalOption("Bridge Builder", new BridgeBuilderPolicy(this.mcdg.forward, this.mcdg.placeF, this.pfIsPlaneF, this.pfIsTrenchF), new OptionConditionTest(nBridgePF, true), this.domain);
-		bridgeBuilder.keepTrackOfRewardWith(rf, gamma);
+		isPlaneFActions.add(this.mcdg.jumpF);
 
 		ArrayList<Action> isPlaneBActions = new ArrayList<Action>();
 		isPlaneBActions.add(this.mcdg.backward);
+		isPlaneBActions.add(this.mcdg.jumpB);
 		
 		ArrayList<Action> isPlaneRActions = new ArrayList<Action>();
 		isPlaneRActions.add(this.mcdg.right);
+		isPlaneRActions.add(this.mcdg.jumpR);
 		
 		ArrayList<Action> isPlaneLActions = new ArrayList<Action>();
 		isPlaneLActions.add(this.mcdg.left);
+		isPlaneLActions.add(this.mcdg.jumpL);
 		
 		
 		ArrayList<Action> isTrenchFActions = new ArrayList<Action>();
@@ -688,17 +667,18 @@ public class MinecraftBehavior {
 		
 		if (worldName.contains("bridge") || worldName.contains("epic")) {
 			// Add option
-//			isTrenchFActions.add(this.mcdg.placeF);
-//			isTrenchBActions.add(this.mcdg.placeB);
-//			isTrenchLActions.add(this.mcdg.placeL);
-//			isTrenchRActions.add(this.mcdg.placeR);
+			// isTrenchActions.add(new PolicyDefinedSubgoalOption("Build Bridge", new ForwardPolicy(this.mcdg.forward), new SubgoalTests.BridgeSubgoal(this.pfIsAdjTrench)));
+			isTrenchFActions.add(this.mcdg.placeF);
+			isTrenchBActions.add(this.mcdg.placeB);
+			isTrenchLActions.add(this.mcdg.placeL);
+			isTrenchRActions.add(this.mcdg.placeR);
 
-//			isTrenchFActions.add(this.mcdg.jumpF);
-			isTrenchFActions.add(bridgeBuilder); // bridgeBuilder Option
-//			isTrenchBActions.add(this.mcdg.jumpB);
-//			isTrenchLActions.add(this.mcdg.jumpL);
-//			isTrenchRActions.add(this.mcdg.jumpR);
+			isTrenchFActions.add(this.mcdg.jumpF);
+			isTrenchBActions.add(this.mcdg.jumpB);
+			isTrenchLActions.add(this.mcdg.jumpL);
+			isTrenchRActions.add(this.mcdg.jumpR);
 		}
+		
 		
 			
 		ArrayList<Action> isDoorActions = new ArrayList<Action>();
@@ -726,9 +706,7 @@ public class MinecraftBehavior {
 		ArrayList<Action> isAdjOvenActions = new ArrayList<Action>();
 		isAdjOvenActions.add(this.mcdg.placeGrain);
 		
-		
 		// ----- DEFINE AFFORDANCES -----
-
 		Affordance affIsPlaneF = new Affordance(this.pfIsPlaneF, this.pfIsAtGoal, isPlaneFActions);
 		Affordance affIsPlaneB = new Affordance(this.pfIsPlaneB, this.pfIsAtGoal, isPlaneBActions);
 		Affordance affIsPlaneR = new Affordance(this.pfIsPlaneR, this.pfIsAtGoal, isPlaneRActions);
@@ -743,7 +721,7 @@ public class MinecraftBehavior {
 		Affordance affIsDstableWallB = new Affordance(this.pfIsDstableWallB, this.pfIsAtGoal, isDstableWallBActions);
 		Affordance affIsDstableWallR = new Affordance(this.pfIsDstableWallR, this.pfIsAtGoal, isDstableWallRActions);
 		Affordance affIsDstableWallL = new Affordance(this.pfIsDstableWallL, this.pfIsAtGoal, isDstableWallLActions);
-
+		
 		Affordance affIsAdjDoor = new Affordance(this.pfIsAdjDoor, this.pfIsAtGoal, isDoorActions);
 		Affordance affIsAdjOven = new Affordance(this.pfIsAdjOven, this.pfIsAtGoal, isAdjOvenActions);
 		Affordance affIsOnGrain = new Affordance(this.pfIsOnGrain, this.pfIsAtGoal, isOnGrainActions);
@@ -836,15 +814,18 @@ public class MinecraftBehavior {
 		
 	}
 	
-	public static void getResults(String dir, String[] planners) throws IOException {
+	public static void getResults() throws IOException {
 		
-//		String dir = "static/";
+		String dir = "static/";
 		File fout = new File("results/" + dir.substring(0, dir.length() - 1) + "_nondet_results.txt");
 		FileWriter fw = new FileWriter(fout.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
 
 		File[] files = new File("maps/" + dir).listFiles();
 
+		String[] planners = {"VI", "RTDP", "SG", "AFFVI", "AFFRTDP", "AFFSG"};
+//		String[] planners = {"SG", "AFFVI", "AFFSG", "AFFRTDP"}; 
+		
 	
 		double[] info = null;
 		
@@ -915,28 +896,21 @@ public class MinecraftBehavior {
 	public static void main(String[] args) {
 		
 		// Collect Results
-//		String[] planners = {"VI", "RTDP", "SG", "AFFVI", "AFFRTDP", "AFFSG"};
-//		try {
-//			getResults("specific_test/", new String[]{"VI"});
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+		try {
+			getResults();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// Setup Minecraft World
-		MinecraftBehavior mcb = new MinecraftBehavior("specific_test/newjumpworld.map");
-		
-		tf = new MultiplePFTF(new PropositionalFunction[]{pfAgentAtGoal, pfAgentNotInWorld});
-		goalCondition = new TFGoalCondition(tf);
-		
-		double[] numUpdates = {0.0};
-		int numRollouts = 1000;
-		int maxDepth = 250;
-
+//		MinecraftBehavior mcb = new MinecraftBehavior("breadworld.map");
+//		int numUpdates = 0;
+//		int numRollouts = 1000;
+//		int maxDepth = 250;
 		// VANILLA OOMDP/VI
-		numUpdates = mcb.ValueIterationPlanner();
-		System.out.println("VI: " + numUpdates[0]);
+//		 numUpdates = mcb.ValueIterationPlanner();
+//		System.out.println("VI: " + numUpdates);
 
 		// RTDP
 //		numUpdates = mcb.RTDPPlanner(numRollouts, maxDepth);
@@ -950,13 +924,9 @@ public class MinecraftBehavior {
 //		 numUpdates = mcb.AffordanceVIPlanner(kb);
 		
 		// AFFORDANCE - RTDP
-//		 ArrayList<Affordance> kb = mcb.generateAffordanceKB(worldName);
-//		 double[] results = mcb.AffordanceRTDPPlanner(numRollouts, maxDepth, kb);
-//		 
-//		 numUpdates = results;
-//		
-//		 System.out.println(results[0] + "," + results[1] + "," + results[2]);
-		 
+//		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
+//		 numUpdates = mcb.AffordanceRTDPPlanner(numRollouts, maxDepth, kb);
+		
 		// AFFORDANCE - SG
 //		 ArrayList<Affordance> kb = mcb.generateAffordanceKB();
 //		 ArrayList<Subgoal> subgoals = mcb.generateSubgoalKB();
