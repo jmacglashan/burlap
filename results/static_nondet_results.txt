@@ -1,2 +1,2 @@
 Testing with map: 10world.map
-	VI,800.0,-14.0,true
+	VI,800.0,-8.0,true

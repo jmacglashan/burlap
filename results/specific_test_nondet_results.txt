@@ -1,3 +1,0 @@
-Testing with map: mazeworld.map
-	AFFRTDP,2864.0,-19.0,true
-

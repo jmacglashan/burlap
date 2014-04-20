@@ -5,6 +5,7 @@ import java.util.List;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.Policy.ActionProb;
 import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -39,6 +40,21 @@ public class PolicyDefinedSubgoalOption extends Option {
 		this.name = name;
 		this.parameterClasses = new String[0];
 		this.parameterOrderGroup = new String[0];
+	}
+
+	/**
+	 * Initializes.
+	 * @param name the name of the option
+	 * @param p the policy of the option
+	 * @param sg the subgoals it is meant to reach
+	 */
+	public PolicyDefinedSubgoalOption(String name, Policy p, StateConditionTest sg, Domain domain){
+		this.policy = p;
+		this.subgoalTest = sg;
+		this.name = name;
+		this.parameterClasses = new String[0];
+		this.parameterOrderGroup = new String[0];
+		domain.addAction(this);
 	}
 	
 	@Override

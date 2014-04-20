@@ -1,0 +1,6 @@
+Testing with map: 8bridgeworld.map
+	AFFVI,801.0,-9.0,true
+
+Testing with map: 6bridgeworld.map
+	AFFVI,103730.0,-11.0,true
+
