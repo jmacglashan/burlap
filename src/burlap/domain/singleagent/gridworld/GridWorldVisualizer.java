@@ -33,9 +33,24 @@ public class GridWorldVisualizer {
 	 * @param map the wall map matrix where 0s indicate it is clear of walls, 1s indicate a full cell wall in that cell, 2s indicate a 1D north wall, 3s indicate a 1D east wall, and 4s indicate a 1D north and east wall. 
 	 * @return a grid world domain visualizer
 	 */
+	@Deprecated
 	public static Visualizer getVisualizer(Domain d, int [][] map){
 		
 		StateRenderLayer r = getRenderLayer(d, map);
+		Visualizer v = new Visualizer(r);
+		
+		return v;
+	}
+	
+	/**
+	 * Returns visualizer for a grid world domain with the provided wall map.
+	 * @param d the domain of the grid world
+	 * @param map the wall map matrix where 0s indicate it is clear of walls, 1s indicate a full cell wall in that cell, 2s indicate a 1D north wall, 3s indicate a 1D east wall, and 4s indicate a 1D north and east wall. 
+	 * @return a grid world domain visualizer
+	 */
+	public static Visualizer getVisualizer(int [][] map){
+		
+		StateRenderLayer r = getRenderLayer(map);
 		Visualizer v = new Visualizer(r);
 		
 		return v;
@@ -48,11 +63,29 @@ public class GridWorldVisualizer {
 	 * @param map the wall map matrix where 0s indicate it is clear of walls, 1s indicate a full cell wall in that cell, 2s indicate a 1D north wall, 3s indicate a 1D east wall, and 4s indicate a 1D north and east wall.
 	 * @return a grid world domain state render layer
 	 */
+	@Deprecated
 	public static StateRenderLayer getRenderLayer(Domain d, int [][] map){
 		
 		StateRenderLayer r = new StateRenderLayer();
 		
-		r.addStaticPainter(new MapPainter(d, map));
+		r.addStaticPainter(new MapPainter(map));
+		r.addObjectClassPainter(GridWorldDomain.CLASSLOCATION, new LocationPainter(map));
+		r.addObjectClassPainter(GridWorldDomain.CLASSAGENT, new CellPainter(1, Color.gray, map));
+		
+		return r;
+		
+	}
+	
+	/**
+	 * Returns state render layer for a gird world domain with the provided wall map.
+	 * @param map the wall map matrix where 0s indicate it is clear of walls, 1s indicate a full cell wall in that cell, 2s indicate a 1D north wall, 3s indicate a 1D east wall, and 4s indicate a 1D north and east wall.
+	 * @return a grid world domain state render layer
+	 */
+	public static StateRenderLayer getRenderLayer(int [][] map){
+		
+		StateRenderLayer r = new StateRenderLayer();
+		
+		r.addStaticPainter(new MapPainter(map));
 		r.addObjectClassPainter(GridWorldDomain.CLASSLOCATION, new LocationPainter(map));
 		r.addObjectClassPainter(GridWorldDomain.CLASSAGENT, new CellPainter(1, Color.gray, map));
 		
@@ -78,7 +111,7 @@ public class GridWorldVisualizer {
 		 * @param domain the domain of the grid world
 		 * @param map the wall map matrix where 1s indicate a wall in that cell and 0s indicate it is clear of walls
 		 */
-		public MapPainter(Domain domain, int [][] map) {
+		public MapPainter(int [][] map) {
 			this.dwidth = map.length;
 			this.dheight = map[0].length;
 			this.map = map;

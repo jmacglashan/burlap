@@ -425,6 +425,24 @@ public class GridWorldDomain implements DomainGenerator {
 	}
 	
 
+	/**
+	 * Returns this grid world's width
+	 * @return this grid world's width
+	 */
+	public int getWidth() {
+		return this.width;
+	}
+
+	/**
+	 * Returns this grid world's height
+	 * @return this grid world's height
+	 */
+	public int getHeight() {
+		return this.height;
+	}
+	
+	
+	
 	@Override
 	public Domain generateDomain() {
 		
@@ -466,6 +484,25 @@ public class GridWorldDomain implements DomainGenerator {
 		return domain;
 	}
 
+	
+	
+
+	/**
+	 * Will return a state object with a single agent object and no location objects
+	 * @param d the domain object that is used to specify the min/max dimensions
+	 * @return a state object with a single agent object and a single location object
+	 */
+	public static State getOneAgentNoLocationState(Domain d){
+		
+		State s = new State();
+
+		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+				
+		return s;
+		
+	}
+	
+	
 	
 	/**
 	 * Will return a state object with a single agent object and a single location object
