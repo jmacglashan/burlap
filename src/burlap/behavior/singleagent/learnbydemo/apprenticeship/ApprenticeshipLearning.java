@@ -14,12 +14,13 @@ import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.statehashing.NameDependentStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
+import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
@@ -36,10 +37,7 @@ import com.joptimizer.optimizers.OptimizationResponse;
 import com.joptimizer.util.Utils;
 
 
-/**
- * 
- * **NOTE** This code is under development and subject to change soon. It is reccommended that you do not use it yet.
- * 
+/** 
  * This algorithm will take expert trajectors and return a policy that models them. It is an implementation of the algorithm described by Abbel and Ng [1].
  * Both the projection method and quadractic programming version are available.
  * 
@@ -47,12 +45,15 @@ import com.joptimizer.util.Utils;
  * 
  * 1. Abbeel, Peter and Ng, Andrew. "Apprenticeship Learning via Inverse Reinforcement Learning"
  * 
- * @author Stephen Brawner and Mark Ho
+ * @author Stephen Brawner and Mark Ho; modified by James MacGlashan
  *
  */
 public class ApprenticeshipLearning {
 	
 	public static final int								FEATURE_EXPECTATION_SAMPLES = 10;
+	
+	public static final int								debugCodeScore = 746329;
+	public static final int								debugCodeRFWeights = 636392;
 
 	/**
 	 * Calculates the Feature Expectations given one demonstration, a feature mapping and a discount factor gamma
@@ -62,7 +63,7 @@ public class ApprenticeshipLearning {
 	 * @return The Feature Expectations generated (double array that matches the length of the featureMapping)
 	 */
 	public static double[] estimateFeatureExpectation(
-			EpisodeAnalysis episodeAnalysis, PropositionalFunction[] featureFunctions, Double gamma) {
+			EpisodeAnalysis episodeAnalysis, StateToFeatureVectorGenerator featureFunctions, Double gamma) {
 		return ApprenticeshipLearning.estimateFeatureExpectation(
 				Arrays.asList(episodeAnalysis), featureFunctions, gamma);
 	}
@@ -76,14 +77,19 @@ public class ApprenticeshipLearning {
 	 * @return The Feature Expectations generated (double array that matches the length of the featureMapping)
 	 */
 	public static double[] estimateFeatureExpectation(
-			List<EpisodeAnalysis> episodes, PropositionalFunction[] featureFunctions, Double gamma) {
-		double[] featureExpectations = new double[featureFunctions.length];
+			List<EpisodeAnalysis> episodes, StateToFeatureVectorGenerator featureFunctions, Double gamma) {
+
+		double[] featureExpectations = null;
 
 		for (EpisodeAnalysis episodeAnalysis : episodes) {
 			for (int i = 0; i < episodeAnalysis.stateSequence.size(); ++i) {
+				double [] fvi = featureFunctions.generateFeatureVectorFrom(episodeAnalysis.stateSequence.get(i));
+				if(featureExpectations == null){
+					featureExpectations = new double[fvi.length];
+				}
 				for (int j = 0; j < featureExpectations.length; ++j) {
-					if (featureFunctions[j].isTrue(episodeAnalysis.stateSequence.get(i), new String[]{})) {
-						featureExpectations[j] += Math.pow(gamma, i);
+					if(fvi[j] != 0.){
+						featureExpectations[j] += fvi[j] * Math.pow(gamma, i);
 					}
 				}
 			}
@@ -105,18 +111,17 @@ public class ApprenticeshipLearning {
 	 * @return An anonymous instance of RewardFunction
 	 */
 	public static RewardFunction generateRewardFunction(
-			PropositionalFunction[] featureFunctions, FeatureWeights featureWeights) {
-		final PropositionalFunction[] newFeatureFunctions = featureFunctions.clone();
+			StateToFeatureVectorGenerator featureFunctions, FeatureWeights featureWeights) {
+		final StateToFeatureVectorGenerator newFeatureFunctions = featureFunctions;
 		final FeatureWeights newFeatureWeights = new FeatureWeights(featureWeights);
 		return new RewardFunction() {
 			@Override
 			public double reward(State state, GroundedAction a, State sprime) {
 				double[] featureWeightValues = newFeatureWeights.getWeights();
 				double sumReward = 0;
-				for (int i = 0; i < newFeatureFunctions.length; ++i) {
-					if (newFeatureFunctions[i].isTrue(state, new String[]{})) {
-						sumReward += featureWeightValues[i];
-					}
+				double [] fv = newFeatureFunctions.generateFeatureVectorFrom(state);
+				for (int i = 0; i < fv.length; ++i) {
+					sumReward += featureWeightValues[i] * fv[i];
 				}
 				return sumReward;
 			}
@@ -124,25 +129,6 @@ public class ApprenticeshipLearning {
 		};
 	}
 
-	/**
-	 * OLD VERSION
-	 * Checks and returns initial state if all expert episodes share the same starting state
-	 * 
-	 * @param episodes A list of expert demonstrated episodes
-	 * @return The initial state shared by all policies, null if there are multiple initial states
-	 */
-	/*public static State getInitialState(List<EpisodeAnalysis> episodes) {
-		if (episodes.size() > 0 && episodes.get(0).numTimeSteps() > 0) {
-			State state = episodes.get(0).getState(0);
-			for (int i = 1; i < episodes.size(); ++i) {
-				if (episodes.get(i).numTimeSteps() > 0 && !state.equals(episodes.get(i).getState(0))) {
-					return null;
-				}
-			}
-			return state;
-		}
-		return null;
-	}*/
 	
 	
 	/**
@@ -204,7 +190,7 @@ public class ApprenticeshipLearning {
 		Domain domain = request.getDomain();
 		Policy policy = new RandomPolicy(domain);
 
-		PropositionalFunction[] featureFunctions = request.getFeatureFunctions();
+		StateToFeatureVectorGenerator featureFunctions = request.getFeatureGenerator();
 		List<double[]> featureExpectationsHistory = new ArrayList<double[]>();
 		double[] expertExpectations = 
 				ApprenticeshipLearning.estimateFeatureExpectation(expertEpisodes, featureFunctions, request.getGamma());
@@ -223,11 +209,14 @@ public class ApprenticeshipLearning {
 			// (2) Compute t^(i) = max_w min_j (wT (uE - u^(j)))
 			FeatureWeights featureWeights = null;
 
-			int index = 0;
 			while(featureWeights == null) {
 				 featureWeights = solveFeatureWeights(expertExpectations, featureExpectationsHistory);
-				 System.out.println(i + ", " + index++);
 			}
+			
+			for(int z = 0; z < featureWeights.weights.length; z++){
+				DPrint.c(debugCodeRFWeights, z + ": " + featureWeights.weights[z] + "; ");
+			}
+			DPrint.cl(debugCodeRFWeights, "");
 
 			// (3) if t^(i) <= epsilon, terminate
 			if (featureWeights == null || Math.abs(featureWeights.getScore()) <= request.getEpsilon()) {
@@ -235,7 +224,7 @@ public class ApprenticeshipLearning {
 				return policy;
 			}
 			tHistory[i] = featureWeights.getScore();
-			System.out.println(tHistory[i]);
+			DPrint.cl(debugCodeScore, "Score: "+tHistory[i]);
 			// (4a) Calculate R = (w^(i))T * phi 
 			RewardFunction rewardFunction = 
 					ApprenticeshipLearning.generateRewardFunction(featureFunctions, featureWeights);
@@ -308,7 +297,7 @@ public class ApprenticeshipLearning {
 		List<Policy> policyHistory = new ArrayList<Policy>();
 		List<double[]> featureExpectationsHistory = new ArrayList<double[]>();
 
-		PropositionalFunction[] featureFunctions = request.getFeatureFunctions();
+		StateToFeatureVectorGenerator featureFunctions = request.getFeatureGenerator();
 		double[] expertExpectations = 
 				ApprenticeshipLearning.estimateFeatureExpectation(expertEpisodes, featureFunctions, request.getGamma());
 
@@ -344,6 +333,7 @@ public class ApprenticeshipLearning {
 			}
 			FeatureWeights featureWeights = getWeightsProjectionMethod(expertExpectations, newProjFE);
 			tHistory[i] = featureWeights.getScore();
+			DPrint.cl(debugCodeScore, "Score: "+tHistory[i]);
 			lastProjFE = newProjFE; //don't forget to set the old projection to the new one!
 
 
@@ -352,6 +342,12 @@ public class ApprenticeshipLearning {
 				return policy;
 			}
 
+			for(int z = 0; z < featureWeights.weights.length; z++){
+				DPrint.c(debugCodeRFWeights, z + ": " + featureWeights.weights[z] + "; ");
+			}
+			DPrint.cl(debugCodeRFWeights, "");
+			
+			
 			// (4a) Calculate R = (w^(i))T * phi 
 			RewardFunction rewardFunction = 
 					ApprenticeshipLearning.generateRewardFunction(featureFunctions, featureWeights);
@@ -496,31 +492,7 @@ public class ApprenticeshipLearning {
 
 
 
-	/**
-	 * Class that returns rewards based on a FeatureMapping and Map from Features to rewards
-	 * Reward in a state will always be based on a combination of propositions satisfied.
-	 * @author markho
-	 *
-	 */
-	public static class FeatureBasedRewardFunction implements RewardFunction {
-		private Map<String, Double> rewards;
-		private PropositionalFunction[] propositionalFunctions;
-
-		public FeatureBasedRewardFunction(PropositionalFunction[] functions, Map<String, Double> rewards) {
-			this.propositionalFunctions = functions.clone();
-			this.rewards = new HashMap<String, Double>(rewards);
-		}
-		@Override
-		public double reward(State s, GroundedAction a, State sprime) {
-			double reward = 0;
-			for (PropositionalFunction function : this.propositionalFunctions) {
-				if (function.isTrue(s, "")) {
-					reward += this.rewards.get(function.getName());
-				}
-			}
-			return reward;
-		}
-	}
+	
 
 	/**
 	 * This takes the Expert's feature expectation and a projection, and calculates the weight
