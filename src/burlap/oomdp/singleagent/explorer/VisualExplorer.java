@@ -362,7 +362,9 @@ public class VisualExplorer extends JFrame{
 		else{
 			GroundedAction ga = new GroundedAction(action, params);
 			State nextState = ga.executeIn(curState);
-			this.currentEpisode.recordTransitionTo(nextState, ga, this.trackingRewardFunction.reward(curState, ga, nextState));
+			if(this.currentEpisode != null){
+				this.currentEpisode.recordTransitionTo(nextState, ga, this.trackingRewardFunction.reward(curState, ga, nextState));
+			}
 			curState = nextState;
 			numSteps++;
 			
@@ -403,7 +405,9 @@ public class VisualExplorer extends JFrame{
 			else{
 				GroundedAction ga = new GroundedAction(action, params);
 				State nextState = ga.executeIn(curState);
-				this.currentEpisode.recordTransitionTo(nextState, ga, this.trackingRewardFunction.reward(curState, ga, nextState));
+				if(this.currentEpisode != null){
+					this.currentEpisode.recordTransitionTo(nextState, ga, this.trackingRewardFunction.reward(curState, ga, nextState));
+				}
 				curState = nextState;
 				numSteps++;
 			}
@@ -418,7 +422,9 @@ public class VisualExplorer extends JFrame{
 			if(sea instanceof StateResetSpecialAction){
 				System.out.println("Number of steps before reset: " + numSteps);
 				numSteps = 0;
-				this.currentEpisode = new EpisodeAnalysis(curState);
+				if(this.currentEpisode != null){
+					this.currentEpisode = new EpisodeAnalysis(curState);
+				}
 			}
 		}
 				
