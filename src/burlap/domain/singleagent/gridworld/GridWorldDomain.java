@@ -887,7 +887,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 		else if(expMode == 1){
 			
-			Visualizer v = GridWorldVisualizer.getVisualizer(d, gwdg.getMap());
+			Visualizer v = GridWorldVisualizer.getVisualizer(gwdg.getMap());
 			VisualExplorer exp = new VisualExplorer(d, v, s);
 			
 			//use w-s-a-d-x
