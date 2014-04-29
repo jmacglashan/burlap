@@ -1,15 +1,21 @@
 package burlap.domain.stochasticgames.gridgame;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.common.UniversalSingleAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
@@ -20,11 +26,11 @@ import burlap.oomdp.visualizer.Visualizer;
  * a stochastic game. Each agent in the world has an OO-MDO object instance of OO-MDP class "agent"
  * which is defined by an x position, a y position, and a player number. Agents can either move north, south, east,
  * west, or do nothing. There is also an OO-MDP object class for 1-dimensional walls (both for horizontal
- * walls or vertical walls). Each wall can take on a different type; a solid wall that can never be passed,
- * and a semi-wall, can be passed with some stochastic probability. Finally, there is also an OO-MDP
+ * walls or vertical walls). Each wall can take on a different type; a solid wall that can never be passed (type 0),
+ * and a semi-wall, can be passed with some stochastic probability (type 1). Finally, there is also an OO-MDP
  * class for goal locations, which also have different types. There is a type that can be indicated
- * as a universal goal/reward location for all agents, and type that is only useful to each individual
- * agent.
+ * as a universal goal/reward location for all agents (type 0), and type that is only useful to each individual
+ * agent (type i is a personal goal for player i-1).
  * @author James MacGlashan
  *
  */
@@ -42,12 +48,12 @@ public class GridGame implements DomainGenerator {
 	public static final String				ATTY = "y";
 	
 	/**
-	 * A constant for the name of the player number attribute
+	 * A constant for the name of the player number attribute. The first player number is 0.
 	 */
 	public static final String				ATTPN = "playerNum";
 	
 	/**
-	 * A constant for the name of the goal type attribute
+	 * A constant for the name of the goal type attribute. Type 0 corresponds to a universal goal. Type i corresponds to a personal goal for player i-1.
 	 */
 	public static final String				ATTGT = "gt";
 	
@@ -175,6 +181,7 @@ public class GridGame implements DomainGenerator {
 		
 		SGDomain d = (SGDomain)gg.generateDomain();
 		
+		/*
 		State s = getCleanState(d, 2, 3, 3, 2, 5, 5);
 		
 		setAgent(s, 0, 0, 0, 0);
@@ -185,14 +192,17 @@ public class GridGame implements DomainGenerator {
 		setGoal(s, 2, 4, 4, 2);
 		
 		setHorizontalWall(s, 2, 4, 1, 3, 1);
+		*/
 		
+		//State s = GridGame.getCorrdinationGameInitialState(d);
+		State s = GridGame.getTurkeyInitialState(d);
 		
 		//System.out.println(s.getCompleteStateDescription());
 		
 		
 		JointActionModel jam = new GridGameStandardMechanics(d);
 		
-		Visualizer v = GGVisualizer.getVisualizer(5, 5);
+		Visualizer v = GGVisualizer.getVisualizer(9, 9);
 		SGVisualExplorer exp = new SGVisualExplorer(d, v, s, jam);
 		
 		exp.setJAC("c"); //press c to execute the constructed joint action
@@ -360,7 +370,7 @@ public class GridGame implements DomainGenerator {
 	
 	/**
 	 * Returns a state with with the specified number of objects for each object class and with the specified boundary of
-	 * the playing area
+	 * the playing area. The number of walls *MUST* include the world boundary walls; that is, there must be at least 2 horizontal walls and 2 vertical walls.
 	 * @param d the domain object of the grid world
 	 * @param na the number of agents/players
 	 * @param ng the number of goal objects
@@ -384,6 +394,101 @@ public class GridGame implements DomainGenerator {
 		return s;
 	}
 	
+	
+	
+	/**
+	 * Returns the initial state for a classic coordination game, where the agent's personal goals are on opposite sides.
+	 * @param d the grid games domain object
+	 * @return the coordination game initial state
+	 */
+	public static State getCorrdinationGameInitialState(Domain d){
+		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 3, 3);
+		
+		GridGame.setAgent(s, 0, 0, 0, 0);
+		GridGame.setAgent(s, 1, 2, 0, 1);
+		
+		GridGame.setGoal(s, 0, 0, 2, 2);
+		GridGame.setGoal(s, 1, 2, 2, 1);
+		
+		return s;
+	}
+	
+	
+	/**
+	 * Returns the initial state for a classic prisoner's dilemma formulated in a Grid Game.
+	 * @param d the grid game's domain object
+	 * @return the grid game prisoner's dilemma initial state
+	 */
+	public static State getPrisonersDilemmaInitialState(Domain d){
+		State s = GridGame.getCleanState(d, 2, 3, 2, 2, 9, 1);
+		
+		GridGame.setAgent(s, 0, 3, 0, 0);
+		GridGame.setAgent(s, 1, 5, 0, 1);
+		
+		GridGame.setGoal(s, 0, 0, 0, 1);
+		GridGame.setGoal(s, 1, 4, 0, 0);
+		GridGame.setGoal(s, 2, 8, 9, 2);
+		
+		return s;
+	}
+	
+	
+	/**
+	 * Returns the initial state for Friend Foe game.
+	 * @param d the grid game's domain object
+	 * @return the initial state for Friend Foe
+	 */
+	public static State getFriendFoeInitialState(Domain d){
+		
+		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 8, 1);
+		
+		GridGame.setAgent(s, 0, 3, 0, 0);
+		GridGame.setAgent(s, 1, 6, 0, 1);
+		
+		GridGame.setGoal(s, 0, 0, 0, 1);
+		GridGame.setGoal(s, 1, 4, 0, 0);
+		
+		return s;
+	}
+	
+	
+	/**
+	 * Returns the initial state for the Incredible game (a game in which player 0 can give an incredible threat).
+	 * @param d the grid game's domain object
+	 * @return the initial state for the Incredible game.
+	 */
+	public static State getIncredibleInitialState(Domain d){
+		
+		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 4, 1);
+		
+		GridGame.setAgent(s, 0, 2, 0, 0);
+		GridGame.setAgent(s, 1, 3, 0, 1);
+		
+		GridGame.setGoal(s, 0, 0, 0, 1);
+		GridGame.setGoal(s, 1, 1, 0, 2);
+		
+		return s;
+		
+	}
+	
+	
+	public static State getTurkeyInitialState(Domain d){
+		
+		State s = GridGame.getCleanState(d, 2, 3, 4, 2, 3, 4);
+		
+		GridGame.setHorizontalWall(s, 2, 1, 0, 0, 1);
+		GridGame.setHorizontalWall(s, 3, 1, 2, 2, 1);
+		
+		GridGame.setAgent(s, 0, 0, 0, 0);
+		GridGame.setAgent(s, 1, 2, 0, 1);
+		
+		GridGame.setGoal(s, 0, 0, 3, 1);
+		GridGame.setGoal(s, 1, 1, 2, 0);
+		GridGame.setGoal(s, 2, 2, 3, 2);
+		
+		return s;
+		
+	}
 	
 	/**
 	 * AddsN objects of a specific object class to a state object
@@ -497,7 +602,7 @@ public class GridGame implements DomainGenerator {
 	 * @param p the y position of the vertical wall
 	 * @param e1 the left end point of the wall
 	 * @param e2 the right end point of the wall
-	 * @param wt the type of the wall
+	 * @param wt the type of the wall (0 is solid, 1 is semi)
 	 */
 	public static void setHorizontalWall(State s, int i, int p, int e1, int e2, int wt){
 		setWallInstance(s.getObjectsOfTrueClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
@@ -607,6 +712,204 @@ public class GridGame implements DomainGenerator {
 		
 	}
 	
+	
+	/**
+	 * Specifies goal rewards and default rewards for agents. Defaults rewards to 0 reward everywhere except transition to unviersal or personal goals which return a reward 1.
+	 * @author James MacGlashan
+	 *
+	 */
+	public static class GGJointRewardFunction implements JointReward {
+
+		PropositionalFunction agentInPersonalGoal;
+		PropositionalFunction agentInUniversalGoal;
+		
+		double stepCost = 0.;
+		double pGoalReward = 1.;
+		double uGoalReward = 1.;
+		boolean noopIncursCost = false;
+		Map<Integer, Double> personalGoalRewards = null;
+		
+		/**
+		 * Initializes for a given domain. Defaults rewards to 0 reward everywhere except transition to unviersal or personal goals which return a reward 1.
+		 * @param ggDomain the domain
+		 */
+		public GGJointRewardFunction(Domain ggDomain){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+		}
+		
+		/**
+		 * Initializes for a given domain, step cost reward and goal reward.
+		 * @param ggDomain the domain
+		 * @param stepCost the reward returned for all transitions except transtions to goal locations
+		 * @param goalReward the reward returned for transitioning to a personal or universal goal
+		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
+		 */
+		public GGJointRewardFunction(Domain ggDomain, double stepCost, double goalReward, boolean noopIncursStepCost){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+			this.stepCost = stepCost;
+			this.pGoalReward = this.uGoalReward = goalReward;
+			this.noopIncursCost = noopIncursStepCost;
+		}
+		
+		
+		/**
+		 * Initializes for a given domain, step cost reward, personal goal reward, and universal goal reward.
+		 * @param ggDomain the domain
+		 * @param stepCost the reward returned for all transitions except transtions to goal locations
+		 * @param personalGoalReward the reward returned for transitions to a personal goal
+		 * @param universalGoalReward the reward returned for transitions to a universal goal
+		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
+		 */
+		public GGJointRewardFunction(Domain ggDomain, double stepCost, double personalGoalReward, double universalGoalReward, boolean noopIncursStepCost){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+			this.stepCost = stepCost;
+			this.pGoalReward = personalGoalReward;
+			this.uGoalReward = universalGoalReward;
+			this.noopIncursCost = noopIncursStepCost;
+		}
+		
+		/**
+		 * Initializes for a given domain, step cost reward, universal goal reward, and unique personal goal reward for each player.
+		 * @param ggDomain the domain
+		 * @param stepCost the reward returned for all transitions except transtions to goal locations
+		 * @param universalGoalReward the reward returned for transitions to a universal goal
+		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
+		 * @param personalGoalRewards a map from player numbers to their personal goal reward (the first player number is 0)
+		 */
+		public GGJointRewardFunction(Domain ggDomain, double stepCost, double universalGoalReward, boolean noopIncursStepCost, Map<Integer, Double> personalGoalRewards){
+			
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+			this.stepCost = stepCost;
+			this.uGoalReward = universalGoalReward;
+			this.noopIncursCost = noopIncursStepCost;
+			this.personalGoalRewards = personalGoalRewards;
+			
+		}
+		
+		@Override
+		public Map<String, Double> reward(State s, JointAction ja, State sp) {
+			
+			Map <String, Double> rewards = new HashMap<String, Double>();
+			
+			//get all agents and initialize reward to default
+			List <ObjectInstance> obs = sp.getObjectsOfTrueClass(GridGame.CLASSAGENT);
+			for(ObjectInstance o : obs){
+				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
+			}
+			
+			
+			//check for any agents that reached a universal goal location and give them a goal reward if they did
+			List<GroundedProp> upgps = sp.getAllGroundedPropsFor(agentInUniversalGoal);
+			for(GroundedProp gp : upgps){
+				String agentName = gp.params[0];
+				if(gp.isTrue(sp)){
+					rewards.put(agentName, uGoalReward);
+				}
+			}
+			
+			
+			//check for any agents that reached a personal goal location and give them a goal reward if they did
+			List<GroundedProp> ipgps = sp.getAllGroundedPropsFor(agentInPersonalGoal);
+			for(GroundedProp gp : ipgps){
+				String agentName = gp.params[0];
+				if(gp.isTrue(sp)){
+					rewards.put(agentName, this.getPersonalGoalReward(sp, agentName));
+				}
+			}
+			
+			
+			return rewards;
+			
+		}
+		
+		
+		/**
+		 * Returns a default cost for an agent assuming the agent didn't transition to a goal state. If noops incur step cost, then this is always the step cost.
+		 * If noops do not incur step costs and the agent took a noop, then 0 is returned.
+		 * @param aname the name of the agent for which the default reward should be returned.
+		 * @param ja the joint action set
+		 * @return the default reward; either step cost or 0.
+		 */
+		protected double defaultCost(String aname, JointAction ja){
+			if(this.noopIncursCost){
+				return this.stepCost;
+			}
+			else if(ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
+				return 0.;
+			}
+			return this.stepCost;
+		}
+		
+		
+		/**
+		 * Returns the personal goal rewards. If a single common personal goal reward was set then that is returned. If different personal goal rewards were defined for each
+		 * player number, then that is queried and returned instead.
+		 * @param s the state in which the agent player numbers are defined
+		 * @param agentName the agent name for which the person goal reward is to be returned
+		 * @return the personal goal reward for the specified agent.
+		 */
+		protected double getPersonalGoalReward(State s, String agentName){
+			if(this.personalGoalRewards == null){
+				return this.pGoalReward;
+			}
+			
+			int pn = s.getObject(agentName).getDiscValForAttribute(GridGame.ATTPN);
+			return this.personalGoalRewards.get(pn);
+			
+		}
+
+	}
+	
+	
+	/**
+	 * Causes termination when any agent reaches a personal or universal goal location.
+	 * @author James MacGlashan
+	 *
+	 */
+	public static class GGTerminalFunction implements TerminalFunction {
+
+		PropositionalFunction agentInPersonalGoal;
+		PropositionalFunction agentInUniversalGoal;
+		
+		
+		/**
+		 * Initializes for the given domain
+		 * @param ggDomain the specific grid world domain.
+		 */
+		public GGTerminalFunction(Domain ggDomain){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+		}
+		
+		
+		@Override
+		public boolean isTerminal(State s) {
+			
+			//check personal goals; if anyone reached their personal goal, it's game over
+			List<GroundedProp> ipgps = s.getAllGroundedPropsFor(agentInPersonalGoal);
+			for(GroundedProp gp : ipgps){
+				if(gp.isTrue(s)){
+					return true;
+				}
+			}
+			
+			
+			//check universal goals; if anyone reached a universal goal, it's game over
+			List<GroundedProp> upgps = s.getAllGroundedPropsFor(agentInUniversalGoal);
+			for(GroundedProp gp : upgps){
+				if(gp.isTrue(s)){
+					return true;
+				}
+			}
+			
+			return false;
+		}
+
+	}
 	
 	
 }

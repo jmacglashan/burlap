@@ -29,6 +29,7 @@ public class World {
 	protected List <Agent>						agents;
 	protected Map<AgentType, List<Agent>>		agentsByType;
 	protected Map<String, Double>				agentCumulativeReward;
+	protected Map<String, AgentType>			agentDefinitions;
 	
 	protected JointActionModel 					worldModel;
 	protected JointReward						jointRewardModel;
@@ -82,6 +83,7 @@ public class World {
 		
 		agents = new ArrayList<Agent>();
 		agentsByType = new HashMap<AgentType, List<Agent>>();
+		this.agentDefinitions = new HashMap<String, AgentType>();
 		
 		agentCumulativeReward = new HashMap<String, Double>();
 		
@@ -244,7 +246,7 @@ public class World {
 		
 		
 		
-		JointAction ja = new JointAction(agents.size());
+		JointAction ja = new JointAction();
 		State abstractedCurrent = abstractionForAgents.abstraction(currentState);
 		for(Agent a : agents){
 			ja.addAction(a.getAction(abstractedCurrent));
@@ -318,6 +320,10 @@ public class World {
 		return new ArrayList<Agent>(agents);
 	}
 	
+	public Map<String, AgentType> getAgentDefinitions(){
+		return this.agentDefinitions;
+	}
+	
 	
 	/**
 	 * Returns the player index for the agent with the given name.
@@ -350,6 +356,8 @@ public class World {
 		aots.add(a);
 		
 		agentCumulativeReward.put(name, 0.);
+		
+		this.agentDefinitions.put(name, type);
 		
 		return name;
 	}

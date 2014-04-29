@@ -24,7 +24,7 @@ public abstract class AbstractGroundedAction {
 	 * is not, because the action of all other agents must also be known in order to get the next state.
 	 * @return true if this grounded action can be directly executed on a state; false otherwise.
 	 */
-	public abstract boolean isExcutable();
+	public abstract boolean isExecutable();
 	
 	
 	/**

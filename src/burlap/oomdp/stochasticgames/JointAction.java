@@ -3,8 +3,13 @@ package burlap.oomdp.stochasticgames;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
+import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.State;
 
 
 /**
@@ -15,21 +20,14 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class JointAction implements Iterable<GroundedSingleAction>{
+public class JointAction extends AbstractGroundedAction implements Iterable<GroundedSingleAction>{
 
 	public Map <String, GroundedSingleAction>		actions;
 	
 	public JointAction(){
-		actions = new HashMap<String, GroundedSingleAction>();
+		actions = new TreeMap<String, GroundedSingleAction>();
 	}
 	
-	/**
-	 * Initializes the internal data structure to keep a keep space for capacity number of actions.
-	 * @param capacity
-	 */
-	public JointAction(int capacity){
-		actions = new HashMap<String, GroundedSingleAction>(capacity);
-	}
 	
 	
 	/**
@@ -94,6 +92,26 @@ public class JointAction implements Iterable<GroundedSingleAction>{
 		
 	}
 	
+	
+	/**
+	 * Returns a string representation of this joint aciton without including the parameters of any parameterized actions.
+	 * This method can be useful for generating hash codes since two grounded single actions with different parameter orders may be
+	 * the same action if the parameters belong to the same order group.
+	 * @return a string representation of this joint aciton without including the parameters of any parameterized actions
+	 */
+	public String noParametersActionDescription(){
+		StringBuffer buf = new StringBuffer(100);
+		List <GroundedSingleAction> gsas = this.getActionList();
+		for(int i = 0; i < gsas.size(); i++){
+			if(i > 0){
+				buf.append(';');
+			}
+			buf.append(gsas.get(i).actionName());
+		}
+		
+		return buf.toString();
+	}
+	
 	@Override
 	public String toString(){
 		StringBuffer buf = new StringBuffer(100);
@@ -106,6 +124,12 @@ public class JointAction implements Iterable<GroundedSingleAction>{
 		}
 		
 		return buf.toString();
+	}
+	
+	
+	@Override
+	public int hashCode(){
+		return this.noParametersActionDescription().hashCode();
 	}
 	
 
@@ -133,6 +157,177 @@ public class JointAction implements Iterable<GroundedSingleAction>{
 			
 		};
 	}
+	
+	
+
+
+	public JointAction copy() {
+		JointAction ja = new JointAction();
+		for(GroundedSingleAction gsa : this.actions.values()){
+			ja.addAction((GroundedSingleAction)gsa.copy());
+		}
+		return ja;
+	}
+	
+	
+	@Override
+	public boolean equals(Object o){
+		
+		if(!(o instanceof JointAction)){
+			return false;
+		}
+		
+		JointAction oja = (JointAction)o;
+		if(oja.size() != this.size()){
+			return false;
+		}
+		
+		Iterator<Map.Entry<String, GroundedSingleAction>> taIter = this.actions.entrySet().iterator();
+		Iterator<Map.Entry<String, GroundedSingleAction>> oaIter = oja.actions.entrySet().iterator();
+		
+		while(taIter.hasNext()){
+			Map.Entry<String, GroundedSingleAction> tae = taIter.next();
+			Map.Entry<String, GroundedSingleAction> oae = oaIter.next();
+			
+			if(!tae.getValue().equals(oae.getValue())){
+				return false;
+			}
+			
+		}
+		
+		return true;
+	}
+	
+	
+	@Override
+	public String actionName() {
+		return this.toString();
+	}
+
+
+
+	@Override
+	public boolean isExecutable() {
+		return false;
+	}
+
+
+
+	@Override
+	public State executeIn(State s) {
+		throw new RuntimeException("Joint action cannnot be directly executed; apply with it a joint action model instead.");
+	}
+
+
+
+	@Override
+	public boolean actionDomainIsObjectIdentifierDependent() {
+		for(GroundedSingleAction gsa : this.actions.values()){
+			return gsa.action.domain.isObjectIdentifierDependent();
+		}
+		return false;
+	}
+
+
+	@Override
+	public AbstractGroundedAction translateParameters(State sourceState, State targetState){
+		
+		if(this.actionDomainIsObjectIdentifierDependent()){
+			return this;
+		}
+		
+		JointAction nja = new JointAction();
+		
+		for(GroundedSingleAction gsa : this.actions.values()){
+			GroundedSingleAction ngsa = (GroundedSingleAction) gsa.translateParameters(sourceState, targetState);
+			nja.addAction(ngsa);
+		}
+		
+		return nja;
+		
+	}
+	
+	@Override
+	public boolean isParameterized(){
+		for(GroundedSingleAction gsa : this.actions.values()){
+			if(gsa.isParameterized()){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	public static List<JointAction> getAllJointActions(State s, List<Agent> agents){
+		
+		
+		//get all possible individual choices
+		List<List<GroundedSingleAction>> individualActionChoices = new ArrayList<List<GroundedSingleAction>>(agents.size());
+		for(Agent agent : agents){
+			List<GroundedSingleAction> gsas = SingleAction.getAllPossibleGroundedSingleActions(s, agent.worldAgentName, agent.agentType.actions);
+			individualActionChoices.add(gsas);
+		}
+	
+		
+		//get all joint actions from all combinations of individual actions
+		List<JointAction> allJointActions = new LinkedList<JointAction>();
+		allJointActionsHelper(individualActionChoices, 0, new LinkedList<GroundedSingleAction>(), allJointActions);
+		
+		
+		return allJointActions;
+		
+	}
+	
+	
+	
+	public static List<JointAction> getAllJointActions(State s, Map<String, AgentType> agents){
+		
+		
+		//get all possible individual choices
+		List<List<GroundedSingleAction>> individualActionChoices = new ArrayList<List<GroundedSingleAction>>(agents.size());
+		for(Map.Entry<String, AgentType> e : agents.entrySet()){
+			List<GroundedSingleAction> gsas = SingleAction.getAllPossibleGroundedSingleActions(s, e.getKey(), e.getValue().actions);
+			individualActionChoices.add(gsas);
+		}
+		
+		
+		//get all joint actions from all combinations of individual actions
+		List<JointAction> allJointActions = new LinkedList<JointAction>();
+		allJointActionsHelper(individualActionChoices, 0, new LinkedList<GroundedSingleAction>(), allJointActions);
+		
+		
+		return allJointActions;
+		
+	}
+	
+	
+	
+	
+	protected static void allJointActionsHelper(List<List<GroundedSingleAction>> individualActionChoices, int i, LinkedList<GroundedSingleAction> currentSelections, List<JointAction> allJointActions){
+		
+		if(i >= individualActionChoices.size()){ //base case
+			JointAction ja = new JointAction();
+			for(GroundedSingleAction gsa : currentSelections){
+				ja.addAction(gsa);
+			}
+			allJointActions.add(ja);
+			return ;
+		}
+		
+		List<GroundedSingleAction> agentsChoices = individualActionChoices.get(i);
+		for(GroundedSingleAction gsa : agentsChoices){
+			currentSelections.push(gsa);
+			allJointActionsHelper(individualActionChoices, i+1, currentSelections, allJointActions);
+			currentSelections.pop();
+		}
+	}
+
+
+
+	
+
+	
 	
 	
 }

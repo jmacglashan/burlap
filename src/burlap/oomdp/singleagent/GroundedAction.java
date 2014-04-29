@@ -124,7 +124,7 @@ public class GroundedAction extends AbstractGroundedAction{
 
 
 	@Override
-	public boolean isExcutable() {
+	public boolean isExecutable() {
 		return true;
 	}
 

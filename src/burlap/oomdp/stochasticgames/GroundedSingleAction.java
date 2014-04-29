@@ -102,6 +102,11 @@ public class GroundedSingleAction extends AbstractGroundedAction{
 		}
 		
 		GroundedSingleAction go = (GroundedSingleAction)other;
+		
+		if(!this.actingAgent.equals(go.actingAgent)){
+			return false;
+		}
+		
 		if(!this.action.actionName.equals(go.action.actionName)){
 			return false;
 		}
@@ -126,6 +131,12 @@ public class GroundedSingleAction extends AbstractGroundedAction{
 		
 		return true;
 	}
+	
+	@Override
+	public int hashCode(){
+		String shortName = this.actingAgent + "::" + this.actionName();
+		return shortName.hashCode();
+	}
 
 
 	@Override
@@ -135,7 +146,7 @@ public class GroundedSingleAction extends AbstractGroundedAction{
 
 
 	@Override
-	public boolean isExcutable() {
+	public boolean isExecutable() {
 		return false;
 	}
 
