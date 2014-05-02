@@ -68,6 +68,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	
 	protected Domain								domain;
 	
+	protected boolean								alreadyInitedGUI = false;
+	
 	
 	
 	/**
@@ -119,6 +121,11 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	 */
 	public void initGUI(){
 		
+		if(this.alreadyInitedGUI){
+			return;
+		}
+		
+		this.alreadyInitedGUI = true;
 
 		//set viewer components
 		propViewer = new TextArea();

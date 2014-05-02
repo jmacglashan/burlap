@@ -8,6 +8,8 @@ import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.stochasticgame.GameAnalysis;
+import burlap.behavior.stochasticgame.GameSequenceVisualizer;
 import burlap.behavior.stochasticgame.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap.HashMapAgentQSourceMap;
@@ -23,6 +25,8 @@ import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GGVisualizer;
 import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics;
+import burlap.oomdp.auxiliary.StateParser;
+import burlap.oomdp.auxiliary.common.StateYAMLParser;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
@@ -168,7 +172,7 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 		Visualizer v = GGVisualizer.getVisualizer(9, 9);
 		VisualWorldObserver wob = new VisualWorldObserver(domain, v);
 		wob.setFrameDelay(1000);
-		wob.initGUI();
+		//wob.initGUI();
 		
 		
 		//make a single agent type that can use all actions and refers to the agent class of grid game that we will use for both our agents
@@ -222,18 +226,25 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 		//don't have the world print out debug info (comment out if you want to see it!)
 		DPrint.toggleCode(w.getDebugId(), false);
 		
+		StateParser sp = new StateYAMLParser(domain);
+		
 		
 		System.out.println("Starting training");
-		int ngames = 5000;
+		int ngames = 2500;
 		for(int i = 0; i < ngames; i++){
 			if(i % 10 == 0){
 				System.out.println("Game: " + i);
 			}
-			w.runGame();
+			GameAnalysis ga = w.runGame();
+			ga.writeToFile(String.format("sgTests/%4d", i), sp);
 		}
 		
 		System.out.println("Finished training");
 		
+		
+		GameSequenceVisualizer gvis = new GameSequenceVisualizer(v, domain, sp, "sgTests/");
+		
+		/*
 		v.updateState(s);
 		w.addWorldObserver(wob);
 		try {
@@ -250,7 +261,7 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 		
 		//run game to observe behavior
 		w.runGame();
-		
+		*/
 		
 	}
 	

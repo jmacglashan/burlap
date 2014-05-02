@@ -360,7 +360,7 @@ public class GameAnalysis {
 	 * @param sp a state parser that can parse the state string representation in the file
 	 * @return an {@link GameAnalysis} object.
 	 */
-	public static GameAnalysis parseFileIntoEA(String path, SGDomain domain, StateParser sp){
+	public static GameAnalysis parseFileIntoGA(String path, SGDomain domain, StateParser sp){
 		
 		//read whole file into string first
 		String fcont = null;
