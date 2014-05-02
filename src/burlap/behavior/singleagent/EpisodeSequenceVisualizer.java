@@ -31,7 +31,8 @@ import burlap.oomdp.visualizer.Visualizer;
 
 
 /**
- * This class is used to visualize a set of episodes that have been saves to files in a common directory.
+ * This class is used to visualize a set of episodes that have been saves to files in a common directory. In an episode list, the action name is
+ * selected action in the currently rendered state.
  * @author James MacGlashan
  *
  */
@@ -236,13 +237,14 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		//clear the old contents
 		iterationListModel.clear();
 		
-		//add the initial state
-		iterationListModel.addElement("initial state");
 		
-		//add each action (which upon selecting would render the state resulting from that action)
+		//add each action (which is taken in the state being renderd)
 		for(GroundedAction ga : curEA.actionSequence){
 			iterationListModel.addElement(ga.toString());
 		}
+		
+		//add the final state
+		iterationListModel.addElement("final state");
 		
 	}
 	

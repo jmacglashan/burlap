@@ -17,14 +17,35 @@ import burlap.oomdp.singleagent.common.NullAction;
 
 
 /**
- * This class is used to keep track of all events that occur in an episode.
+ * This class is used to keep track of all events that occur in an episode. This class should be created by either calling the constructor with the initial state of the episode,
+ * or by calling the default constructor and then calling the {@link #initializeEpisideWithInitialState(State)} method to set the initil state of the episode, before recording
+ * any transitions. It is then advised that transitions are recorded with the {@link #recordTransitionTo(GroundedAction, State, double)} method, which takes as input
+ * the next state to which the agent transitioned, the action applied in the last recorded state, and the reward received fro the transition.
+ * <p/>
+ * When querying about the state, action, and reward sequences, use the {@link #getState(int)}, {@link #getAction(int)}, and {@link #getReward(int)} methods.
+ * These methods take as input the time step of the element you want. Note that t = 0 refers to the initial state step so calling getState(0) and getAction(0)
+ * will return the initial state and the action taken in the initial state, respectively. However, rewards are always received in the next time step
+ * from the state and action that produced them. Therefore, getReward(0) is undefined. Instead, the first reward received will be at time step 1: getReward(1).
+ * 
+ * 
  * @author James MacGlashan
  *
  */
 public class EpisodeAnalysis {
 
+	/**
+	 * The sequence of states observed
+	 */
 	public List<State>									stateSequence;
+	
+	/**
+	 * The sequence of actions taken
+	 */
 	public List<GroundedAction>							actionSequence;
+	
+	/**
+	 * The sequence of rewards received. Note the reward stored at index i is the reward received at time step i+1.
+	 */
 	public List<Double>									rewardSequence;
 	
 	
@@ -63,7 +84,7 @@ public class EpisodeAnalysis {
 	
 	/**
 	 * Adds a state to the state sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link #recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * along with subsequent calls to the {@link #recordTransitionTo(GroundedAction, State, double)} method is used instead, but this
 	 * method can be used to manually add a state.
 	 * @param s the state to add
 	 */
@@ -73,7 +94,7 @@ public class EpisodeAnalysis {
 	
 	/**
 	 * Adds a GroundedAction to the action sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link #recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * along with subsequent calls to the {@link #recordTransitionTo(GroundedAction, State, double)} method is used instead, but this
 	 * method can be used to manually add a GroundedAction.
 	 * @param ga the GroundedAction to add
 	 */
@@ -83,7 +104,7 @@ public class EpisodeAnalysis {
 	
 	/**
 	 * Adds a reward to the reward sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link #recordTransitionTo(State, GroundedAction, double)} method is used instead, but this
+	 * along with subsequent calls to the {@link #recordTransitionTo(GroundedAction, State, double)} method is used instead, but this
 	 * method can be used to manually add a reward.
 	 * @param r the reward to add
 	 */
@@ -99,6 +120,7 @@ public class EpisodeAnalysis {
 	 * @param usingAction the action the agent used that caused the transition
 	 * @param r the reward the agent received for this transition.
 	 */
+	@Deprecated
 	public void recordTransitionTo(State next, GroundedAction usingAction, double r){
 		stateSequence.add(next);
 		actionSequence.add(usingAction);
@@ -107,40 +129,69 @@ public class EpisodeAnalysis {
 	
 	
 	/**
-	 * Returns the ith state in this episode. i=0 refers to the initial state.
-	 * @param i the index of the state in this episode
-	 * @return the ith state in this episode
+	 * Records an transition event where the agent applied the usingAction action in the last
+	 * state in this object's state sequence, transitioned to state nextState, and received reward r,. 
+	 * @param usingAction the action the agent used that caused the transition
+	 * @param nextState the next state to which the agent transitioned
+	 * @param r the reward the agent received for this transition.
 	 */
-	public State getState(int i){
-		return stateSequence.get(i);
+	public void recordTransitionTo(GroundedAction usingAction, State nextState, double r){
+		stateSequence.add(nextState);
+		actionSequence.add(usingAction);
+		rewardSequence.add(r);
+	}
+	
+	
+	
+	/**
+	 * Returns the state observed at time step t. t=0 refers to the initial state.
+	 * @param t the time step of the episode
+	 * @return the state at time step t
+	 */
+	public State getState(int t){
+		return stateSequence.get(t);
 	}
 	
 	/**
-	 * Returns the ith action taken in this episode. i=0 refers to the action taken in the initial state.
-	 * @param i the index of the action in this episode
-	 * @return the ith action taken in this episode
+	 * Returns the action taken in the state at time step t. t=0 refers to the action taken in the initial state.
+	 * @param t the time step of the episode
+	 * @return the action taken at time step t
 	 */
-	public GroundedAction getAction(int i){
-		return actionSequence.get(i);
+	public GroundedAction getAction(int t){
+		return actionSequence.get(t);
 	}
 	
 	/**
-	 * Returns the ith reward received in this episode. i=0 refers to the reward received 
+	 * Returns the reward received at timestep t. Note that the fist received reward will be at time step 1, which is the reward received
 	 * after taking the first action in the initial state.
-	 * @param i
+	 * @param t the time step of the episode
 	 * @return the ith reward received in this episode
 	 */
-	public double getReward(int i){
-		return rewardSequence.get(i);
+	public double getReward(int t){
+		if(t == 0){
+			throw new RuntimeException("Cannot return the reward received at time step 0; the first received reward occurs after the initial state at time step 1");
+		}
+		if(t > rewardSequence.size()){
+			throw new RuntimeException("There are only " + this.rewardSequence.size() + " rewards recorded; cannot return the reward for time step " + t);
+		}
+		return rewardSequence.get(t-1);
 	}
 	
 	/**
-	 * Returns the number of time steps in this episode, which is equivalent to the number of states. Note that there
-	 * will always be one less action and reward than there are time steps, since the agent will not act in the final state.
+	 * Returns the number of time steps in this episode, which is equivalent to the number of states.
 	 * @return the number of time steps in this episode
 	 */
 	public int numTimeSteps(){
 		return stateSequence.size(); //state sequence will always have the most because of initial state and terminal state
+	}
+	
+	
+	/**
+	 * Returns the maximimum time step index in this episode which is the {@link #numTimeSteps()}-1.
+	 * @return the maximum time step index in this episode
+	 */
+	public int maxTimeStep(){
+		return this.stateSequence.size()-1;
 	}
 	
 	
@@ -168,7 +219,7 @@ public class EpisodeAnalysis {
 	 */
 	public void appendAndMergeEpisodeAnalysis(EpisodeAnalysis e){
 		for(int i = 0; i < e.numTimeSteps()-1; i++){
-			this.recordTransitionTo(e.getState(i+1), e.getAction(i), e.getReward(i));
+			this.recordTransitionTo(e.getAction(i), e.getState(i+1), e.getReward(i+1));
 		}
 	}
 	
@@ -205,7 +256,7 @@ public class EpisodeAnalysis {
 	
 	
 	/**
-	 * Writes this episode to a file. If the the directories for the specified file path do not exist, then they will be created.
+	 * Writes this episode to a file. If the the directory for the specified file path do not exist, then they will be created.
 	 * If the file extension is not ".episode" will automatically be added.
 	 * @param path the path to the file in which to write this episode.
 	 * @param sp the state parser to use to convert state objects to string representations.
@@ -307,7 +358,7 @@ public class EpisodeAnalysis {
 			State s = sp.stringToState(parts[0]);
 			if(i < elComps.length-1){
 				String [] ars = parts[1].split("\n");
-				ea.recordTransitionTo(s, getGAFromSpaceDelimGASTring(d, ars[0]), Double.parseDouble(ars[1]));
+				ea.recordTransitionTo(getGAFromSpaceDelimGASTring(d, ars[0]), s, Double.parseDouble(ars[1]));
 			}
 			else{
 				ea.addState(s);
