@@ -475,7 +475,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 			if(action.action.isPrimitive()){
 				r = rf.reward(curState.s, action, nextState.s);
 				eStepCounter++;
-				ea.recordTransitionTo(nextState.s, action, r);
+				ea.recordTransitionTo(action, nextState.s, r);
 			}
 			else{
 				Option o = (Option)action.action;
@@ -487,7 +487,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 					ea.appendAndMergeEpisodeAnalysis(o.getLastExecutionResults());
 				}
 				else{
-					ea.recordTransitionTo(nextState.s, action, r);
+					ea.recordTransitionTo(action, nextState.s, r);
 				}
 			}
 			

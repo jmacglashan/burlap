@@ -370,7 +370,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 			if(action.action.isPrimitive()){
 				r = rf.reward(curState, action, nextState);
 				eStepCounter++;
-				ea.recordTransitionTo(nextState, action, r);
+				ea.recordTransitionTo(action, nextState, r);
 			}
 			else{
 				Option o = (Option)action.action;
@@ -382,7 +382,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 					ea.appendAndMergeEpisodeAnalysis(o.getLastExecutionResults());
 				}
 				else{
-					ea.recordTransitionTo(nextState, action, r);
+					ea.recordTransitionTo(action, nextState, r);
 				}
 			}
 			

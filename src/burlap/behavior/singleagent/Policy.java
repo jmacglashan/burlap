@@ -247,7 +247,7 @@ public abstract class Policy {
 			double r = rf.reward(cur, ga, next);
 			
 			//record result
-			ea.recordTransitionTo(next, ga, r);
+			ea.recordTransitionTo(ga, next, r);
 		}
 		else{
 			//then we need to decompose the option
@@ -266,11 +266,11 @@ public abstract class Policy {
 					GroundedAction annotatedPrimitiveGA = new GroundedAction(annotatedPrimitive, cga.params);
 					
 					//record it
-					ea.recordTransitionTo(next, annotatedPrimitiveGA, r);
+					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
 				}
 				else{
 					//otherwise just record the primitive that was taken
-					ea.recordTransitionTo(next, cga, r);
+					ea.recordTransitionTo(cga, next, r);
 				}
 				
 				cur = next;

@@ -363,7 +363,7 @@ public class VisualExplorer extends JFrame{
 			GroundedAction ga = new GroundedAction(action, params);
 			State nextState = ga.executeIn(curState);
 			if(this.currentEpisode != null){
-				this.currentEpisode.recordTransitionTo(nextState, ga, this.trackingRewardFunction.reward(curState, ga, nextState));
+				this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
 			}
 			curState = nextState;
 			numSteps++;
@@ -406,7 +406,7 @@ public class VisualExplorer extends JFrame{
 				GroundedAction ga = new GroundedAction(action, params);
 				State nextState = ga.executeIn(curState);
 				if(this.currentEpisode != null){
-					this.currentEpisode.recordTransitionTo(nextState, ga, this.trackingRewardFunction.reward(curState, ga, nextState));
+					this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
 				}
 				curState = nextState;
 				numSteps++;
