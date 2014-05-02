@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import burlap.behavior.singleagent.Policy;
+import burlap.behavior.stochasticgame.JointPolicy;
 import burlap.behavior.stochasticgame.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgame.agents.mavf.MultiAgentVFPlanningAgent;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap;
 import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MultiAgentQSourceProvider;
+import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
@@ -107,9 +110,6 @@ public class EGreedyJointPolicy extends MAQSourcePolicy {
 				selected = jasWithMax.get(rand.nextInt(jasWithMax.size()));
 			}
 			
-			if(maxQ > 0.){
-				//System.out.println("choosing action with a Q greater than 0");
-			}
 			
 		}
 		
@@ -118,7 +118,49 @@ public class EGreedyJointPolicy extends MAQSourcePolicy {
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		throw new RuntimeException("Action distribution currently unsupported for epsilon greedy max wellfare.");
+		
+		List<JointAction> jas = this.getAllJointActions(s);
+		AgentQSourceMap qSources = this.qSourceProvider.getQSources();
+		
+		HashedAggregator<JointAction> sumProb = new HashedAggregator<JointAction>();
+		double eCont = this.epsilon / jas.size();
+		
+		for(JointAction ja : jas){
+			sumProb.add(ja, eCont);
+		}
+		
+		
+		List<JointAction> jasWithMax = new ArrayList<JointAction>(jas.size());
+		double maxQ = Double.NEGATIVE_INFINITY;
+		for(JointAction ja : jas){
+			
+			double q = qSources.agentQSource(this.targetAgentQName).getQValueFor(s, ja).q;
+
+			if(q == maxQ){
+				jasWithMax.add(ja);
+			}
+			else if(q > maxQ){
+				jasWithMax.clear();
+				jasWithMax.add(ja);
+				maxQ = q;
+			}
+		}
+		
+		double maxCont = (1. - this.epsilon) / jasWithMax.size();
+		for(JointAction ja : jasWithMax){
+			sumProb.add(ja, maxCont);
+		}
+		
+		List<ActionProb> aps = new ArrayList<Policy.ActionProb>(jas.size());
+		for(JointAction ja : jas){
+			double p = sumProb.v(ja);
+			if(p > 0.){
+				aps.add(new ActionProb(ja, p));
+			}
+		}
+		
+		return aps;
+		
 	}
 
 	@Override
@@ -139,6 +181,16 @@ public class EGreedyJointPolicy extends MAQSourcePolicy {
 	@Override
 	public void setTargetAgent(String agentName) {
 		this.targetAgentQName = agentName;
+	}
+
+
+	@Override
+	public JointPolicy copy() {
+		EGreedyJointPolicy np = new EGreedyJointPolicy(this.epsilon);
+		np.setAgentsInJointPolicy(this.agentsInJointPolicy);
+		np.setQSourceProvider(this.qSourceProvider);
+		np.setTargetAgent(this.targetAgentQName);
+		return np;
 	}
 
 }

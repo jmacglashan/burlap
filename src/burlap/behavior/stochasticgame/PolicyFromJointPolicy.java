@@ -94,5 +94,15 @@ public class PolicyFromJointPolicy extends Policy {
 	}
 	
 	
+	/**
+	 * Returns a copy of this policy, which entails of first making a copy of the joint policy.
+	 * @return a copy of this policy.
+	 */
+	public PolicyFromJointPolicy copy(){
+		PolicyFromJointPolicy np = new PolicyFromJointPolicy(this.jointPolicy.copy());
+		np.setActingAgentName(this.actingAgentName);
+		return np;
+	}
+	
 
 }

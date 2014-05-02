@@ -22,9 +22,18 @@ import java.util.Random;
 import burlap.debugtools.RandomFactory;
 
 
+
+/**
+ * This class provides static methods for solving Nash equilbrum in Bimatrix games. The algorithms implemented follow the Lemke-Howson algorithm.
+ * This code was originally developed by Junling Hu and Yilian Zhang, which is where the original code header is from. Some modfication were subsequently
+ * made by Eric Sodomka, Elizabeth M. Hilliard; then by Esha Gosh, John Meehan and Michalis Michaelidis; and then by James MacGlashan.
+ * @author Junling Hu and Yilian Zhang; modifications by others.
+ *
+ */
 public class BimatrixGeneralSumSolver {
 
-	static class Joint<E> extends ArrayList<E> {
+	
+	public static class Joint<E> extends ArrayList<E> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -44,6 +53,11 @@ public class BimatrixGeneralSumSolver {
 	static Random random = RandomFactory.getMapped(0);
 	
 	
+	
+	/**
+	 * Example usage main method.
+	 * @param args empty
+	 */
 	public static void main(String [] args){
 		
 		/*
@@ -62,6 +76,13 @@ public class BimatrixGeneralSumSolver {
 		System.out.println(generalSumNash(p1, p2)[0]);
 	}
 	
+	
+	/**
+	 * Computes the Nash equilibrium for a bimatrix game and returns the expected payoff for each agent for one of those equilibriums.
+	 * @param payoffs1 the payoff matrix for player 1 (rows indicate player 1 actions, columns player 2 actions).
+	 * @param payoffs2 the payoff matrix for player 2 (rows indicate player 1 actions, columns player 2 actions).
+	 * @return a length to double array with index 0 containing the expected payoff of player 1 and index 0 containing the expected payoff of player 2 
+	 */
 	public static double[] generalSumNash(double[][] payoffs1, double[][] payoffs2){
 
         Joint<double[]> strategies = solveForMixedStrategies(payoffs1, payoffs2);
@@ -74,8 +95,6 @@ public class BimatrixGeneralSumSolver {
 		double ExpectedpayoffforPlayer1 = getExpectedPayoffsForPlayer(payoffs1, outcomeProbability);
 		double ExpectedpayoffforPlayer2 = getExpectedPayoffsForPlayer(payoffs2, outcomeProbability);
 
-		//System.out.println("player1Strategy: " + Arrays.toString(strategies.getForPlayer(0)) + "player1payoff" + ExpectedpayoffforPlayer1 );
-		//System.out.println("player2Strategy: " + Arrays.toString(strategies.getForPlayer(1)) +"player2payoff" + ExpectedpayoffforPlayer2);
 		
 		return new double[]{ExpectedpayoffforPlayer1, ExpectedpayoffforPlayer2};
 
@@ -85,6 +104,13 @@ public class BimatrixGeneralSumSolver {
 	}
 
 
+	/**
+	 * Returns one of the Nash equilibrium strategies. Each player's strategy is represented by a double array indicating the probability of the player
+	 * selecting each action.
+	 * @param payoffs1 the payoff matrix for player 1 (rows indicate player 1 actions, columns player 2 actions).
+	 * @param payoffs2 the payoff matrix for player 2 (rows indicate player 1 actions, columns player 2 actions).
+	 * @return A Joint, which is an ArrayList wrapper, of length 2 containing each player's strategy from a Nash equilirbium
+	 */
 	public static Joint<double[]> solveForMixedStrategies(
 			double[][] player1Payoffs,
 			double[][] player2Payoffs) {
@@ -114,6 +140,12 @@ public class BimatrixGeneralSumSolver {
 		return mixedStrategies;
 	}
 	
+	/**
+	 * Takes the strategy of the two players and returns the joint action probability distribution
+	 * @param player1Mix player 1's strategy
+	 * @param player2Mix player 2's strategy
+	 * @return the probabiltiy distribtuion over joint actions
+	 */
 	public static double[][] getDistributionOverJointActions(double[] player1Mix, double[] player2Mix) {
 		int numPlayer1Actions = player1Mix.length; 
 		int numPlayer2Actions = player2Mix.length;
@@ -130,10 +162,10 @@ public class BimatrixGeneralSumSolver {
 	
 	/**
 	 * Computes the expected payoff for a player, given that player's payoff matrix and the probability of each
-	 * outcome.
-	 * @param playerPayoffMatrix
-	 * @param outcomeProbability
-	 * @return
+	 * joint action selection.
+	 * @param playerPayoffMatrix the player payoff matrix with rows indicating player 1's actions and columns player's
+	 * @param outcomeProbability the probabiltiy of each joint action
+	 * @return the expected payoff for the player
 	 */
 	public static double getExpectedPayoffsForPlayer(double[][] playerPayoffMatrix, double[][] outcomeProbability) {
 		int numPlayer1Actions = playerPayoffMatrix.length;
@@ -228,7 +260,7 @@ public class BimatrixGeneralSumSolver {
 			else{
 				// get to original step 
 				Pivot(Q,M,j1,r,dimM);
-				if (k==2) QMprint(M,dimM,dimM);
+				//if (k==2) QMprint(M,dimM,dimM);
 				while(j1!=-1&&WList[j1][1]!=k){
 					//System.out.println("In while loop... j1=" + j1 + ", WList[j1][1]=" + WList[j1][1] + ", k=" + k);
 	
@@ -251,7 +283,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// calculate  A1 = alpha * A0 , scalar multiplication
-	public static void Multiple2(double A0[][], double A1[][],int s,int t,double p){
+	private static void Multiple2(double A0[][], double A1[][],int s,int t,double p){
 	
 		for (int i=0;i<s;i++){
 			for (int j=0;j<t;j++){
@@ -261,7 +293,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// calculate  A1 = alpha * A0 , scalar multiply, A0 and A1 are integers
-	public static void Multiple2(int A0[][], int A1[][],int s,int t,int prod){
+	private static void Multiple2(int A0[][], int A1[][],int s,int t,int prod){
 	
 		for (int i=0;i<s;i++){
 			for (int j=0;j<t;j++){
@@ -271,7 +303,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// calculate  A1[k] = alpha * A0[k], scalar multiply on one row
-	public static void Multiple1(double A0[][], double A1[][],int t,double product,int k)
+	private static void Multiple1(double A0[][], double A1[][],int t,double product,int k)
 	{
 		for (int i=0;i<t;i++){ 
 			A1[k][i] = product*A0[k][i];
@@ -279,7 +311,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// construct the M matrix
-	public static void Comp(double A0[][],double A1[][],double M1[][], int row, int col, int dimM){
+	private static void Comp(double A0[][],double A1[][],double M1[][], int row, int col, int dimM){
 		// want M be a positive matrix at the beginning
 		double MaxA,MaxB;
 		MaxA = find_abs_max(A0, row, col);MaxB = find_abs_max(A1, row, col); 
@@ -301,7 +333,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// find the absolute maxium of Matrix A0
-	public static double find_abs_max(double A0[][], int row, int col){
+	private static double find_abs_max(double A0[][], int row, int col){
 		double Max=0;
 		double temp;
 	
@@ -314,7 +346,7 @@ public class BimatrixGeneralSumSolver {
 		return Max;
 	}
 	
-	public static int find_min_col(double L1[][],int k, int col){
+	private static int find_min_col(double L1[][],int k, int col){
 		double min = 200000;
 		int c=0;
 		    for(int j=0;j<col;j++){
@@ -326,7 +358,7 @@ public class BimatrixGeneralSumSolver {
 		return c;
 	}
 	
-	public static int find_min_row(double L1[][],int c, int row){
+	private static int find_min_row(double L1[][],int c, int row){
 		double min = 200000;
 		int r=0;
 		for(int i=0;i<row;i++){
@@ -338,7 +370,7 @@ public class BimatrixGeneralSumSolver {
 		return r;
 	}
 	
-	public static void Pivot(double Q1[],double M1[][], int r1, int c1, int dimM){
+	private static void Pivot(double Q1[],double M1[][], int r1, int c1, int dimM){
 	
 		double pPoint ;
 		double MLocal[][];
@@ -372,7 +404,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	//exchange rth row of WList and cth row of ZList 
-	public static void  Exchange_element(int WList1[][],int ZList1[][],int r,int c){
+	private static void  Exchange_element(int WList1[][],int ZList1[][],int r,int c){
 		int temp1,temp2;	
 		temp1 = WList1[r][0]; temp2  = WList1[r][1];
 		WList1[r][0]= ZList1[c][0]; WList1[r][1]=ZList1[c][1];
@@ -380,7 +412,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// This function is modified, get the final solution
-	public static void  get_final_z(int WList1[][],double Q1[],double Z1[][],int k, int dimM){
+	private static void  get_final_z(int WList1[][],double Q1[],double Z1[][],int k, int dimM){
 	
 		int j;
 		for (int i=0;i<dimM;i++){
@@ -390,7 +422,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// minumum ratio test
-	public static int find_min_ratio(double Q1[],double M1[][], int r, int dimM){
+	private static int find_min_ratio(double Q1[],double M1[][], int r, int dimM){
 		double min;
 		double R[];
 		int j=-1;
@@ -441,7 +473,7 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	// returns the position index of the complement of Wlistj in Zlist 
-	public static int find_complement(int j,int WList1[][],int ZList1[][], int dimM){
+	private static int find_complement(int j,int WList1[][],int ZList1[][], int dimM){
 		int l = -1;
 		int temp1,temp2;
 	
@@ -460,28 +492,29 @@ public class BimatrixGeneralSumSolver {
 	}
 	
 	
-	public static void QMprint(double M[][],int row,int col){
-	//	for (int i=0;i<row;i++){
-	//		for (int j=0;j<col;j++){
-	//			System.out.print(M[i][j]+" ");
-	//		}
-	//		//	    System.out.print("     " +Q[i]);
-	//		System.out.print("\n");
-	//	}
+	/*
+	private static void QMprint(double M[][],int row,int col){
+		for (int i=0;i<row;i++){
+			for (int j=0;j<col;j++){
+				System.out.print(M[i][j]+" ");
+			}
+			System.out.print("     " +Q[i]);
+			System.out.print("\n");
+		}
 	}
 	
-	public static void QMprint(int M[][],int row,int col){
-	//	for (int i=0;i<row;i++){
-	//		for (int j=0;j<col;j++){
-	//			System.out.print(M[i][j]+" ");
-	//		}
-	//		//	    System.out.print("     " +Q[i]);
-	//		System.out.print("\n");
-	//	}
+	private static void QMprint(int M[][],int row,int col){
+		for (int i=0;i<row;i++){
+			for (int j=0;j<col;j++){
+				System.out.print(M[i][j]+" ");
+		}
+			System.out.print("     " +Q[i]);
+			System.out.print("\n");
+		}
 	}
+	*/
 	
-	
-	public static void normalize(double LZ1[][],int k, int row, int dimM) {
+	private static void normalize(double LZ1[][],int k, int row, int dimM) {
 		double sum1=0 ,sum2 = 0;
 		for (int i=0;i<row;i++)
 			sum1 = sum1+ Math.abs(LZ1[k][i]);

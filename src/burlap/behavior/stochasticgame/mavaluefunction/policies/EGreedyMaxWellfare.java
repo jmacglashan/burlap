@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import burlap.behavior.singleagent.Policy;
+import burlap.behavior.stochasticgame.JointPolicy;
 import burlap.behavior.stochasticgame.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgame.agents.mavf.MultiAgentVFPlanningAgent;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap;
 import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MultiAgentQSourceProvider;
+import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
@@ -17,7 +20,9 @@ import burlap.oomdp.stochasticgames.JointAction;
 
 /**
  * An epsilon greedy joint policy, in which the joint aciton with the highest aggregate Q-values for each agent is returned a 1-epsilon fraction of the time and a random
- * joint action an epsilon fraction of the time. Ties are broken randomly. This policy is typically used for CoCo-Q agents.
+ * joint action an epsilon fraction of the time. Ties are broken deterministically (the first joint aciton
+ * with the maximum value is selected), but can be set to default to break ties randomly. The former is useful to maintain consistency between agents selecting their action indepdently from each other. 
+ * This policy is typically used for CoCo-Q agents.
  * @author James MacGlashan
  *
  */
@@ -40,6 +45,12 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	protected Random						rand = RandomFactory.getMapped(0);
 	
 	
+	/**
+	 * Whether ties should be broken randomly or not.
+	 */
+	protected boolean						breakTiesRandomly = false;
+	
+	
 	
 	/**
 	 * Initializes for a given epsilon value. The set of agents for which joint actions are returned
@@ -51,6 +62,20 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	 */
 	public EGreedyMaxWellfare(double epsilon){
 		this.epsilon = epsilon;
+	}
+	
+	/**
+	 * Initializes for a given epsilon value and whether to break ties randomly. The set of agents for which joint actions are returned
+	 * and multi-agent q-source provider will need to be set manually with the methods {@link #setAgentsInJointPolicy(java.util.Map)}, 
+	 * and {@link #setQSourceProvider(MultiAgentQSourceProvider)} before the policy can be queried.
+	 * Note that the {@link MultiAgentQLearning} and {@link MultiAgentVFPlanningAgent} agents may do this themselves. Consult the documentation
+	 * to check.
+	 * @param epsilon the fraction of the time [0, 1] that the agent selections random actions.
+	 * @param breakTiesRandomly whether ties should be broken randomly (true) or not (false)
+	 */
+	public EGreedyMaxWellfare(double epsilon, boolean breakTiesRandomly){
+		this.epsilon = epsilon;
+		this.breakTiesRandomly = breakTiesRandomly;
 	}
 	
 	
@@ -66,6 +91,29 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 		this.epsilon = epsilon;
 	}
 	
+	/**
+	 * Initializes for a multi-agent Q-learning object and epsilon value. The set of agents for which joint actions are to be returned
+	 * must be subsequently defined with the {@link #setAgentsInJointPolicy(java.util.Map)}. Note that the {@link MultiAgentQLearning} and {@link MultiAgentVFPlanningAgent} 
+	 * agents may do this themselves. Consult the documentation to check. 
+	 * @param actingAgent the agent who will use this policy.
+	 * @param epsilon the fraction of the time [0, 1] that the agent selections random actions.
+	 * @param breakTiesRandomly whether ties should be broken randomly (true) or not (false)
+	 */
+	public EGreedyMaxWellfare(MultiAgentQLearning actingAgent, double epsilon, boolean breakTiesRandomly) {
+		this.qSourceProvider = actingAgent;
+		this.epsilon = epsilon;
+		this.breakTiesRandomly = breakTiesRandomly;
+	}
+	
+	
+	/**
+	 * Whether to break ties randomly or deterministically. The former is useful for exploration during learning. The latter is useful
+	 * to synchronize action selection for agents that must select an action indepdently from the same joint policy.
+	 * @param breakTiesRandomly true if ties will be broken randomly; false if ties will be broken detemrinistically.
+	 */
+	public void setBreakTiesRandomly(boolean breakTiesRandomly){
+		this.breakTiesRandomly = breakTiesRandomly;
+	}
 	
 	@Override
 	public void setQSourceProvider(MultiAgentQSourceProvider provider){
@@ -93,7 +141,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 				for(String aname : ja.getAgentNames()){
 					sumQ += qSources.agentQSource(aname).getQValueFor(s, ja).q;
 				}
-				if(sumQ == maxSumQ){
+				if(sumQ == maxSumQ && this.breakTiesRandomly){
 					jasWithMax.add(ja);
 				}
 				else if(sumQ > maxSumQ){
@@ -118,12 +166,53 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		throw new RuntimeException("Action distribution currently unsupported for epsilon greedy max wellfare.");
+		
+		List<JointAction> jas = this.getAllJointActions(s);
+		AgentQSourceMap qSources = this.qSourceProvider.getQSources();
+		HashedAggregator<JointAction> sumProb = new HashedAggregator<JointAction>();
+		double eCont = this.epsilon / jas.size();
+		
+		for(JointAction ja : jas){
+			sumProb.add(ja, eCont);
+		}
+		
+		List<JointAction> jasWithMax = new ArrayList<JointAction>(jas.size());
+		double maxSumQ = Double.NEGATIVE_INFINITY;
+		for(JointAction ja : jas){
+			double sumQ = 0.;
+			for(String aname : ja.getAgentNames()){
+				sumQ += qSources.agentQSource(aname).getQValueFor(s, ja).q;
+			}
+			if(sumQ == maxSumQ && this.breakTiesRandomly){
+				jasWithMax.add(ja);
+			}
+			else if(sumQ > maxSumQ){
+				jasWithMax.clear();
+				jasWithMax.add(ja);
+				maxSumQ = sumQ;
+			}
+		}
+		
+		double maxCont = (1. - this.epsilon) / jasWithMax.size();
+		for(JointAction ja : jasWithMax){
+			sumProb.add(ja, maxCont);
+		}
+		
+		List<ActionProb> aps = new ArrayList<Policy.ActionProb>(jas.size());
+		for(JointAction ja : jas){
+			double p = sumProb.v(ja);
+			if(p > 0.){
+				aps.add(new ActionProb(ja, p));
+			}
+		}
+		
+		return aps;
+		
 	}
 
 	@Override
 	public boolean isStochastic() {
-		return true;
+		return this.epsilon > 0. || this.breakTiesRandomly;
 	}
 
 	@Override
@@ -134,6 +223,14 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	@Override
 	public void setTargetAgent(String agentName) {
 		//do nothing
+	}
+
+	@Override
+	public JointPolicy copy() {
+		EGreedyMaxWellfare np = new EGreedyMaxWellfare(this.epsilon, this.breakTiesRandomly);
+		np.setAgentsInJointPolicy(this.agentsInJointPolicy);
+		np.setQSourceProvider(this.qSourceProvider);
+		return np;
 	}
 
 }

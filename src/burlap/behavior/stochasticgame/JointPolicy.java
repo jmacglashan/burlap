@@ -77,5 +77,14 @@ public abstract class JointPolicy extends Policy {
 	 * @param agentName the name of the target agent.
 	 */
 	public abstract void setTargetAgent(String agentName);
+	
+	
+	
+	/**
+	 * Creates a copy of this joint policy and returns it. This is useful when generating different agents using the same kind of policy, but have different target
+	 * agents evaluating it.
+	 * @return a copy of this joint policy.
+	 */
+	public abstract JointPolicy copy();
 
 }
