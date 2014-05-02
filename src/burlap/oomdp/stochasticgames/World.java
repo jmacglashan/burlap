@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.stochasticgame.GameAnalysis;
+import burlap.behavior.stochasticgame.JointPolicy;
+import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
@@ -16,7 +19,7 @@ import burlap.oomdp.core.TerminalFunction;
  * This class provides a means to have agents play against each other and synchronize all of their actions and observations.
  * Any number of agents can join a World instance and they will be told when a game is starting, when a game ends, when
  * they need to provide an action, and what happened to all agents after every agent made their action selection. The world
- * may also make use of an option {@link burlap.oomdp.auxiliary.StateAbstraction} object so that agents are provided an 
+ * may also make use of an optional {@link burlap.oomdp.auxiliary.StateAbstraction} object so that agents are provided an 
  * abstract and simpler representation of the world. A game can be run until a terminal state is hit, or for a specific
  * number of stages, the latter of which is useful for repeated games.
  * @author James MacGlashan
@@ -28,7 +31,7 @@ public class World {
 	protected State								currentState;
 	protected List <Agent>						agents;
 	protected Map<AgentType, List<Agent>>		agentsByType;
-	protected Map<String, Double>				agentCumulativeReward;
+	protected HashedAggregator<String>			agentCumulativeReward;
 	protected Map<String, AgentType>			agentDefinitions;
 	
 	protected JointActionModel 					worldModel;
@@ -43,6 +46,10 @@ public class World {
 	
 	
 	protected List<WorldObserver>				worldObservers;
+	
+	
+	protected GameAnalysis						currentGameRecord;
+	protected boolean							isRecordingGame = false;
 	
 	protected int								debugId;
 	
@@ -85,7 +92,7 @@ public class World {
 		agentsByType = new HashMap<AgentType, List<Agent>>();
 		this.agentDefinitions = new HashMap<String, AgentType>();
 		
-		agentCumulativeReward = new HashMap<String, Double>();
+		agentCumulativeReward = new HashedAggregator<String>();
 		
 		worldObservers = new ArrayList<WorldObserver>();
 		
@@ -117,7 +124,7 @@ public class World {
 	 * @return the cumulative reward the agent has received in this world.
 	 */
 	public double getCumulativeRewardForAgent(String aname){
-		return agentCumulativeReward.get(aname);
+		return agentCumulativeReward.v(aname);
 	}
 	
 	
@@ -190,13 +197,15 @@ public class World {
 	/**
 	 * Runs a game until a terminal state is hit.
 	 */
-	public void runGame(){
+	public GameAnalysis runGame(){
 		
 		for(Agent a : agents){
 			a.gameStarting();
 		}
 		
 		currentState = initialStateGenerator.generateState(agents);
+		this.currentGameRecord = new GameAnalysis(currentState);
+		this.isRecordingGame = true;
 		
 		while(!tf.isTerminal(currentState)){
 			this.runStage();
@@ -208,19 +217,25 @@ public class World {
 		
 		DPrint.cl(debugId, currentState.getCompleteStateDescription());
 		
+		this.isRecordingGame = false;
+		
+		return this.currentGameRecord;
+		
 	}
 	
 	/**
 	 * Runs a game until a terminal state is hit for maxStages have occurred
 	 * @param maxStages the maximum number of stages to play in the game before its forced to end.
 	 */
-	public void runGame(int maxStages){
+	public GameAnalysis runGame(int maxStages){
 		
 		for(Agent a : agents){
 			a.gameStarting();
 		}
 		
 		currentState = initialStateGenerator.generateState(agents);
+		this.currentGameRecord = new GameAnalysis(currentState);
+		this.isRecordingGame = true;
 		int t = 0;
 		
 		while(!tf.isTerminal(currentState) && t < maxStages){
@@ -234,6 +249,57 @@ public class World {
 		
 		DPrint.cl(debugId, currentState.getCompleteStateDescription());
 		
+		this.isRecordingGame = false;
+		
+		return this.currentGameRecord;
+		
+	}
+	
+	/**
+	 * Rollsout a joint policy until a terminate state is reached for a maximum number of stages.
+	 * @param jp the joint policy to rollout
+	 * @param maxStages the maximum number of stages
+	 * @return a {@link GameAnalysis} that has recorded the result.
+	 */
+	public GameAnalysis rolloutJointPolicy(JointPolicy jp, int maxStages){
+		currentState = initialStateGenerator.generateState(agents);
+		this.currentGameRecord = new GameAnalysis(currentState);
+		this.isRecordingGame = true;
+		int t = 0;
+		
+		while(!tf.isTerminal(currentState) && t < maxStages){
+			this.rolloutOneStageOfJointPolicy(jp);
+			t++;
+		}
+		
+		this.isRecordingGame = false;
+		
+		return this.currentGameRecord;
+	}
+	
+	
+	
+	/**
+	 * Rollsout a joint policy from a given state until a terminate state is reached for a maximum number of stages.
+	 * @param jp the joint policy to rollout
+	 * @param s the state from which the joint policy should be rolled out
+	 * @param maxStages the maximum number of stages
+	 * @return a {@link GameAnalysis} that has recorded the result.
+	 */
+	public GameAnalysis rolloutJointPolicyFromState(JointPolicy jp, State s, int maxStages){
+		currentState = s;
+		this.currentGameRecord = new GameAnalysis(currentState);
+		this.isRecordingGame = true;
+		int t = 0;
+		
+		while(!tf.isTerminal(currentState) && t < maxStages){
+			this.rolloutOneStageOfJointPolicy(jp);
+			t++;
+		}
+		
+		this.isRecordingGame = false;
+		
+		return this.currentGameRecord;
 	}
 	
 	/**
@@ -266,9 +332,9 @@ public class World {
 		
 		//index reward
 		for(String aname : jointReward.keySet()){
-			double curCumR = agentCumulativeReward.get(aname);
+			double curCumR = agentCumulativeReward.v(aname);
 			curCumR += jointReward.get(aname);
-			agentCumulativeReward.put(aname, curCumR);
+			agentCumulativeReward.add(aname, curCumR);
 		}
 		
 		//tell all the agents about it
@@ -283,6 +349,56 @@ public class World {
 		
 		//update the state
 		currentState = sp;
+		
+		//record events
+		if(this.isRecordingGame){
+			this.currentGameRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
+		}
+		
+	}
+	
+	
+	/**
+	 * Runs a single stage following a joint policy for the current world state
+	 * @param jp the joint policy to follow
+	 */
+	protected void rolloutOneStageOfJointPolicy(JointPolicy jp){
+		
+		if(tf.isTerminal(currentState)){
+			return ; //cannot continue this game
+		}
+		
+		this.lastJointAction = (JointAction)jp.getAction(this.currentState);
+		
+		DPrint.cl(debugId, this.lastJointAction.toString());
+		
+		
+		//now that we have the joint action, perform it
+		State sp = worldModel.performJointAction(currentState, this.lastJointAction);
+		Map<String, Double> jointReward = jointRewardModel.reward(currentState, this.lastJointAction, sp);
+		
+		DPrint.cl(debugId, jointReward.toString());
+		
+		//index reward
+		for(String aname : jointReward.keySet()){
+			double curCumR = agentCumulativeReward.v(aname);
+			curCumR += jointReward.get(aname);
+			agentCumulativeReward.add(aname, curCumR);
+		}
+		
+		
+		//tell observers
+		for(WorldObserver o : this.worldObservers){
+			o.observe(currentState, this.lastJointAction, jointReward, sp);
+		}
+		
+		//update the state
+		currentState = sp;
+		
+		//record events
+		if(this.isRecordingGame){
+			this.currentGameRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
+		}
 		
 	}
 	
@@ -320,6 +436,11 @@ public class World {
 		return new ArrayList<Agent>(agents);
 	}
 	
+	
+	/**
+	 * Returns the agent definitions for the agents registered in this world.
+	 * @return the agent definitions for the agents registered in this world.
+	 */
 	public Map<String, AgentType> getAgentDefinitions(){
 		return this.agentDefinitions;
 	}
@@ -342,6 +463,12 @@ public class World {
 	}
 	
 	
+	/**
+	 * Returns a unique agent name for the given agent object and agent type for that agent.
+	 * @param a the agent for which a unique name is to be returned
+	 * @param type the agent type of the agent
+	 * @return a unique name for the agent
+	 */
 	protected String getNewWorldNameForAgentAndIndex(Agent a, AgentType type){
 	
 		
@@ -355,13 +482,18 @@ public class World {
 		agents.add(a);
 		aots.add(a);
 		
-		agentCumulativeReward.put(name, 0.);
 		
 		this.agentDefinitions.put(name, type);
 		
 		return name;
 	}
 	
+	
+	/**
+	 * Returns whether the reference for the given agent already exists in the registered agents
+	 * @param a the agent reference to check for
+	 * @return true if that agent reference is already registered; false otherwise
+	 */
 	protected boolean agentInstanceExists(Agent a){
 		for(Agent A : agents){
 			if(A == a){
