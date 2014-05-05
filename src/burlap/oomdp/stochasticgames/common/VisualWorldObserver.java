@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
+import burlap.behavior.stochasticgame.GameAnalysis;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
@@ -17,6 +18,13 @@ import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.WorldObserver;
 import burlap.oomdp.visualizer.Visualizer;
 
+
+/**
+ * A {@link WorldObserver} that visualizes each transition with a fixed refresh delay between when the transition is rendered and when control
+ * is returned to the client.
+ * @author James MacGlashan
+ *
+ */
 public class VisualWorldObserver extends JFrame implements WorldObserver {
 
 
@@ -55,11 +63,24 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 	protected long				actionRenderDelay = 17;
 	
 	
+	
+	/**
+	 * Iniitalizes for the given domain and visualizer.
+	 * @param domain the stochastic games domain to be visualized
+	 * @param v the visualizer to use
+	 */
 	public VisualWorldObserver(SGDomain domain, Visualizer v){
 		this(domain, v, 800, 800);
 	}
 	
 	
+	/**
+	 * Initializes
+	 * @param domain the stochastic games domain to be visualized
+	 * @param v the visualize to use
+	 * @param cWidth the canvas width of the visuzlier
+	 * @param cHeight the canvas height of the visualizer
+	 */
 	public VisualWorldObserver(SGDomain domain, Visualizer v, int cWidth, int cHeight){
 		this.domain = domain;
 		this.painter = v;
@@ -124,6 +145,42 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 			e.printStackTrace();
 		}
 
+	}
+	
+	
+	/**
+	 * Causes the visualizer to be replayed for the given {@link GameAnalysis} object. The initial state
+	 * of the provided game is first rendered for the given refresh delay of this object, and then each
+	 * joint action is played.
+	 * @param ga the game analysis object to be replayed.
+	 */
+	public void replayGame(GameAnalysis ga){
+		
+		this.painter.updateState(ga.getState(0));
+		this.updatePropTextArea(ga.getState(0));
+		Thread waitThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(actionRenderDelay);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		waitThread.start();
+		
+		try {
+			waitThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		for(int i = 0; i < ga.maxTimeStep(); i++){
+			this.observe(ga.getState(i), ga.getJointAction(i), ga.getJointReward(i+1), ga.getState(i+1));
+		}
 	}
 	
 	

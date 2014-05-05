@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
@@ -70,6 +71,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver {
 	public VisualActionObserver(Domain domain, Visualizer painter){
 		this(domain, painter, 800, 800);
 	}
+	
 	
 	
 	/**
@@ -143,6 +145,41 @@ public class VisualActionObserver extends JFrame implements ActionObserver {
 		}
 	}
 
+	
+	/**
+	 * Casues the visualizer to replay through the provided {@link EpisodeAnalysis} object. The initial state
+	 * of the provided episode is first rendered for the given refresh delay of this object, and then each
+	 * action and resulting state in the episode is feed through the {@link #actionEvent(State, GroundedAction, State)}
+	 * method of this object.
+	 * @param ea the episode to be replayed.
+	 */
+	public void replayEpisode(EpisodeAnalysis ea){
+		this.painter.updateState(ea.getState(0));
+		this.updatePropTextArea(ea.getState(0));
+		Thread waitThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(actionRenderDelay);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		waitThread.start();
+		
+		try {
+			waitThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		for(int i = 0; i < ea.maxTimeStep(); i++){
+			this.actionEvent(ea.getState(i), ea.getAction(i), ea.getState(i+1));
+		}
+	}
 	
 	
 	private void updatePropTextArea(State s){
