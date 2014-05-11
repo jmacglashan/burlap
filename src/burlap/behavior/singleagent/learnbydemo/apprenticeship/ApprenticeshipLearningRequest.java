@@ -5,30 +5,74 @@ import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.PropositionalFunction;
 
 
 /**
- *  * **NOTE** This code is under development and subject to change soon. It is reccommended that you do not use it yet.
+ * A datastructure for setting all the parameters of Max Margin Apprenticeship learning.
  * 
  * 
  * @author Stephen Brawner and Mark Ho
  *
  */
 public class ApprenticeshipLearningRequest {
-	private Domain 						domain;
-	private OOMDPPlanner 				planner;
-	private PropositionalFunction[] 	featureFunctions;
-	private List<EpisodeAnalysis> 		expertEpisodes;
-	private StateGenerator 				startStateGenerator;
-	private double 						gamma;
-	private double 						epsilon;
-	private int 						maxIterations;
-	private int 						policyCount;
-	private double[] 					tHistory;
-	private boolean 					useMaxMargin;
+	
+	/**
+	 * The domain in which IRL is to be performed
+	 */
+	protected Domain 								domain;
+	
+	/**
+	 * The planning algorithm used to compute the policy for a given reward function
+	 */
+	protected OOMDPPlanner 							planner;
+	
+	/**
+	 * The state feature generator that turns a state into a feature vector on which the reward function is assumed to be modeled
+	 */
+	protected StateToFeatureVectorGenerator 		featureGenerator;
+	
+	/**
+	 * The input trajectories/episodes that are to be modeled.
+	 */
+	protected List<EpisodeAnalysis> 				expertEpisodes;
+	
+	/**
+	 * The initial state generator that models the initial states from which the expert trajectories were drawn
+	 */
+	protected StateGenerator 						startStateGenerator;
+	
+	/**
+	 * The discount factor of the problem
+	 */
+	protected double 								gamma;
+	
+	/**
+	 * The maximum feature score to cause termination of Apprenticeship learning
+	 */
+	protected double 								epsilon;
+	
+	/**
+	 * The maximum number of iterations of apprenticeship learning
+	 */
+	protected int 									maxIterations;
+	
+	/**
+	 * The maximum number of times a policy is rolled out and evaluated
+	 */
+	protected int 									policyCount;
+	
+	/**
+	 * the history of scores across each reward function improvement
+	 */
+	protected double[] 								tHistory;
+	
+	/**
+	 * If true, use the full max margin method (expensive); if false, use the cheaper projection method 
+	 */
+	protected boolean 								useMaxMargin;
 
 
 	public static final double 			DEFAULT_GAMMA = 0.99;
@@ -41,11 +85,11 @@ public class ApprenticeshipLearningRequest {
 		this.initDefaults();
 	}
 
-	public ApprenticeshipLearningRequest(Domain domain, OOMDPPlanner planner, PropositionalFunction[] featureFunctions, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
+	public ApprenticeshipLearningRequest(Domain domain, OOMDPPlanner planner, StateToFeatureVectorGenerator featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
 		this.initDefaults();
 		this.setDomain(domain);
 		this.setPlanner(planner);
-		this.setFeatureFunctions(featureFunctions);
+		this.setFeatureGenerator(featureGenerator);
 		this.setExpertEpisodes(expertEpisodes);
 		this.setStartStateGenerator(startStateGenerator);
 	}
@@ -65,7 +109,7 @@ public class ApprenticeshipLearningRequest {
 		if (this.planner == null) {
 			return false;
 		}
-		if (this.featureFunctions == null || this.featureFunctions.length == 0) {
+		if (this.featureGenerator == null) {
 			return false;
 		}
 		if (this.expertEpisodes.size() == 0) {
@@ -98,8 +142,8 @@ public class ApprenticeshipLearningRequest {
 		this.planner = p;
 	}
 
-	public void setFeatureFunctions(PropositionalFunction[] functions) {
-		this.featureFunctions= functions.clone();
+	public void setFeatureGenerator(StateToFeatureVectorGenerator stateFeaturesGenerator) {
+		this.featureGenerator = stateFeaturesGenerator;
 	}
 
 	public void setExpertEpisodes(List<EpisodeAnalysis> episodeList) {
@@ -124,7 +168,7 @@ public class ApprenticeshipLearningRequest {
 
 	public OOMDPPlanner getPlanner() {return this.planner;}
 
-	public PropositionalFunction[] getFeatureFunctions() {return this.featureFunctions.clone();}	
+	public StateToFeatureVectorGenerator getFeatureGenerator() {return this.featureGenerator;}	
 
 	public List<EpisodeAnalysis> getExpertEpisodes() { return new ArrayList<EpisodeAnalysis>(this.expertEpisodes);}
 
