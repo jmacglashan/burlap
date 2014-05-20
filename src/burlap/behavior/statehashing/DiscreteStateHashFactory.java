@@ -209,9 +209,7 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 			Collections.sort(objectClasses);
 			return objectClasses;
 		}
-		
-		
-		
+
 		
 	}
 	
