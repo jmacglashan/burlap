@@ -227,7 +227,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		LunarLanderDomain lld = new LunarLanderDomain();
 		Domain domain = lld.generateDomain();
 		
-		State clean = getCleanState(domain, 1);
+		State clean = getCleanState(domain, 0);
 
 		/*//these commented items just have different task configuration; just choose one
 		lld.setAgent(clean, 0., 5, 0.);
@@ -243,7 +243,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		setAgent(clean, 0., 5, 0.);
-		setObstacle(clean, 0, 20., 50., 0., 20.);
+		//setObstacle(clean, 0, 20., 50., 0., 20.);
 		setPad(clean, 80., 95., 0., 10.);
 		
 		
