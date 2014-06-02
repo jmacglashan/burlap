@@ -57,7 +57,10 @@ public class StateYAMLParser implements StateParser {
 					Boolean bval = new Boolean(o.getDiscValForAttribute(a.name) == 1);
 					objectData.put(a.name, bval);
 				}
-				else if(a.type == AttributeType.DISC || a.type == AttributeType.INT){
+				else if(a.type == AttributeType.DISC){
+					objectData.put(a.name, o.getStringValForAttribute(a.name));
+				}
+				else if(a.type == AttributeType.INT){
 					objectData.put(a.name, o.getDiscValForAttribute(a.name));
 				}
 				else if(a.type == AttributeType.REAL || a.type == AttributeType.REALUNBOUND){
@@ -107,7 +110,10 @@ public class StateYAMLParser implements StateParser {
 						ob.setValue(a.name, 0);
 					}
 				}
-				else if(a.type == AttributeType.DISC || a.type == AttributeType.INT){
+				else if(a.type == AttributeType.DISC ){
+					ob.setValue(a.name, (String)oMap.get(a.name));
+				}
+				else if(a.type == AttributeType.INT){
 					ob.setValue(a.name, (Integer)oMap.get(a.name));
 				}
 				else if(a.type == AttributeType.REAL || a.type == AttributeType.REALUNBOUND){

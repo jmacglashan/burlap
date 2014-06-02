@@ -6,6 +6,7 @@ import java.util.Random;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
+import burlap.oomdp.auxiliary.common.StateYAMLParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
@@ -449,11 +450,11 @@ public class GridWorldDomain implements DomainGenerator {
 		Domain domain = new SADomain();
 		
 		//Creates a new Attribute object
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.DISC);
-		xatt.setDiscValuesForRange(0, this.width-1, 1); //-1 due to inclusivity vs exclusivity
+		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.INT);
+		xatt.setLims(0, this.width-1);
 		
-		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.DISC);
-		yatt.setDiscValuesForRange(0, this.height-1, 1); //-1 due to inclusivity vs exclusivity
+		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.INT);
+		yatt.setLims(0., this.height-1);
 		
 		Attribute ltatt = new Attribute(domain, ATTLOCTYPE, Attribute.AttributeType.DISC);
 		ltatt.setDiscValuesForRange(0, numLocationTypes-1, 1);
@@ -862,7 +863,6 @@ public class GridWorldDomain implements DomainGenerator {
 		State s = getOneAgentOneLocationState(d);
 		setAgent(s, 0, 0);
 		setLocation(s, 0, 10, 10, 0);
-		
 		
 		int expMode = 1;
 		if(args.length > 0){

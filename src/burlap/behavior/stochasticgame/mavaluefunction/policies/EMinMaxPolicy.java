@@ -10,6 +10,8 @@ import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MultiAgentQSourceProvider;
 import burlap.behavior.stochasticgame.mavaluefunction.QSourceForSingleAgent;
 import burlap.behavior.stochasticgame.solvers.BimatrixGeneralSumSolver;
+import burlap.behavior.stochasticgame.solvers.GeneralBimatrixSolverTools;
+import burlap.behavior.stochasticgame.solvers.MinMaxSolver;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
@@ -105,7 +107,6 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 		List<GroundedSingleAction> otherAgentGSAs = SingleAction.getAllPossibleGroundedSingleActions(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
 		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
-		double [][] payout2 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		
 		
 		for(int i = 0; i < forAgentGSAs.size(); i++){
@@ -118,14 +119,15 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 				double q2 = otherAgentQSource.getQValueFor(s, ja).q;
 				
 				payout1[i][j] = (q1-q2)/2.;
-				payout2[i][j] = (q2-q1)/2;
 				
 				
 			}
 		}
 		
-		BimatrixGeneralSumSolver.Joint<double[]> strategies = BimatrixGeneralSumSolver.solveForMixedStrategies(payout1, payout2);
-		double[][] outcomeProbability = BimatrixGeneralSumSolver.getDistributionOverJointActions(strategies.getForPlayer(0), strategies.getForPlayer(1));
+		double [] forAgentStrat = MinMaxSolver.getRowPlayersStrategy(payout1);
+		double [] otherAgentStrat = MinMaxSolver.getColPlayersStrategy(GeneralBimatrixSolverTools.getNegatedMatrix(payout1));
+		double[][] outcomeProbability = GeneralBimatrixSolverTools.jointActionProbabilities(forAgentStrat, otherAgentStrat);
+		
 		
 		List<ActionProb> aps = new ArrayList<ActionProb>();
 		double eCont = this.epsilon / (forAgentGSAs.size() + otherAgentGSAs.size());

@@ -9,6 +9,8 @@ import burlap.behavior.stochasticgame.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MAValueFunctionPlanner;
 import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CoCoQ;
+import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CorrelatedQ;
+import burlap.behavior.stochasticgame.mavaluefunction.policies.ECorrelatedQJOintPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.policies.EGreedyMaxWellfare;
 import burlap.behavior.stochasticgame.mavaluefunction.vfplanners.MAValueIteration;
 import burlap.domain.stochasticgames.gridgame.GGVisualizer;
@@ -80,7 +82,8 @@ public class MultiAgentVFPlanningAgent extends Agent {
 		//make a single agent type that can use all actions and refers to the agent class of grid game that we will use for both our agents
 		AgentType at = new AgentType("default", domain.getObjectClass(GridGame.CLASSAGENT), domain.getSingleActions());
 		
-		MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CoCoQ(), 0.00, 30);
+		//MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CoCoQ(), 0.00, 30);
+		MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CorrelatedQ(), 0.00, 30);
 		
 		//create our world
 		World w = new World(domain, new GridGameStandardMechanics(domain), rf, new GridGame.GGTerminalFunction(domain), 
@@ -91,11 +94,18 @@ public class MultiAgentVFPlanningAgent extends Agent {
 		wob.setFrameDelay(1000);
 		wob.initGUI();
 		
+		
+		/*
 		EGreedyMaxWellfare jp0 = new EGreedyMaxWellfare(0.0);
 		jp0.setBreakTiesRandomly(false);
 		
 		EGreedyMaxWellfare jp1 = new EGreedyMaxWellfare(0.0);
 		jp1.setBreakTiesRandomly(false);
+		*/
+		
+		ECorrelatedQJOintPolicy jp0 = new ECorrelatedQJOintPolicy(0.0);
+		ECorrelatedQJOintPolicy jp1 = new ECorrelatedQJOintPolicy(0.0);
+		
 		
 		MultiAgentVFPlanningAgent a0 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp0));
 		MultiAgentVFPlanningAgent a1 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp1));
@@ -112,7 +122,7 @@ public class MultiAgentVFPlanningAgent extends Agent {
 		
 		
 		
-		for(int i = 0; i < 1; i++){
+		for(int i = 0; i < 5; i++){
 			v.updateState(s);
 			if(i > 0){
 				try {
