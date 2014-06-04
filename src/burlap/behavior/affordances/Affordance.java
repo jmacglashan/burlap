@@ -8,7 +8,7 @@ import burlap.oomdp.logicalexpressions.LogicalExpression;
 public abstract class Affordance {
 
 	protected LogicalExpression preCondition;
-	protected LogicalExpression	goalDesription;
+	protected LogicalExpression	goalDescription;
 	
 	
 	public abstract Collection<AbstractGroundedAction> sampleNewLiftedActionSet();

@@ -12,7 +12,7 @@ public abstract class LogicalExpression {
 	protected Map<String, String>			variablesAndTypes = new HashMap<String, String>();
 	protected LogicalExpression 			parentExpression = null;
 	protected List<LogicalExpression>		childExpressions = new ArrayList<LogicalExpression>();
-	
+	protected String						name; // For Debugging purposes
 	
 	
 	/**
@@ -116,8 +116,17 @@ public abstract class LogicalExpression {
 			this.variableName = variableName;
 		}
 		
-		
-		
+	}
+	
+	
+	// For debugging purposes
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	// For debugging purposes
+	public String toString() {
+		return this.name;
 	}
 	
 }
