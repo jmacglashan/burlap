@@ -19,10 +19,7 @@ import burlap.oomdp.singleagent.RewardFunction;
 /**
  * Implementation of Affordance-Aware Real-time dynamic programming [1]. The planning algorithm uses a Q-value derived policy to sample rollouts in the domain. During
  * each step of the rollout, the current state has its value updated using the Bellman operator and the action for the current state
- * is selected using a greedy Q policy in which ties are randomly broken. Alternatively, this algorithm may be set to batch mode. In batch mode,
- * all Bellman updates are stalled until rollout
- * is complete, after which the Bellman update is performed on each state that was visited
- * in reverse.
+ * is selected using a greedy Q policy in which ties are randomly broken. Affordances are used to prune away irrelevant actions from the considered action set in each state.
  * <p/>
  * To ensure optimality, an optimistic value function initialization should be used. However, RTDP excels when a good value function initialization
  * (e.g., an admissible heuristic) can be provided.
@@ -32,7 +29,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * 1. Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
  * 
  * 
- * @author David Abel
+ * @author James MacGlashan, David Abel
  *
  */
 public class AffordanceRTDP extends RTDP {
