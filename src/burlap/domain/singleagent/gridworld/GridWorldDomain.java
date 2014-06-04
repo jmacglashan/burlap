@@ -123,7 +123,27 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static final String							PFWALLWEST = "wallToWest";
 	
+	/**
+	 * Constant for the name of the empty cell to north propositional function
+	 */
+	public static final String							PFEMPTYNORTH = "emptyToNorth";
 	
+	/**
+	 * Constant for the name of the empty cell to south propositional function
+	 */
+	public static final String							PFEMPTYSOUTH = "emptyToSouth";
+	
+	/**
+	 * Constant for the name of the empty cell to east propositional function
+	 */
+	public static final String							PFEMPTYEAST = "emptyToEast";
+	
+	/**
+	 * Constant for the name of the empty cell to west propositional function
+	 */
+	public static final String							PFEMPTYWEST = "emptyToWest";
+	
+
 	
 	/**
 	 * The width of the grid world
@@ -424,6 +444,7 @@ public class GridWorldDomain implements DomainGenerator {
 		return this.map.clone();
 	}
 	
+	
 
 	@Override
 	public Domain generateDomain() {
@@ -462,6 +483,11 @@ public class GridWorldDomain implements DomainGenerator {
 		new WallToPF(PFWALLSOUTH, domain, new String[]{CLASSAGENT}, 1);
 		new WallToPF(PFWALLEAST, domain, new String[]{CLASSAGENT}, 2);
 		new WallToPF(PFWALLWEST, domain, new String[]{CLASSAGENT}, 3);
+		
+		new EmptyCellToPF(PFEMPTYNORTH, domain, new String[]{CLASSAGENT}, 0);
+		new EmptyCellToPF(PFEMPTYSOUTH, domain, new String[]{CLASSAGENT}, 1);
+		new EmptyCellToPF(PFEMPTYEAST, domain, new String[]{CLASSAGENT}, 2);
+		new EmptyCellToPF(PFEMPTYWEST, domain, new String[]{CLASSAGENT}, 3);
 		
 		return domain;
 	}
@@ -796,6 +822,61 @@ public class GridWorldDomain implements DomainGenerator {
 			if(cx < 0 || cx >= GridWorldDomain.this.width || cy < 0 || cy >= GridWorldDomain.this.height || GridWorldDomain.this.map[cx][cy] == 1 || 
 					(xdelta > 0 && (GridWorldDomain.this.map[ax][ay] == 3 || GridWorldDomain.this.map[ax][ay] == 4)) || (xdelta < 0 && (GridWorldDomain.this.map[cx][cy] == 3 || GridWorldDomain.this.map[cx][cy] == 4)) ||
 					(ydelta > 0 && (GridWorldDomain.this.map[ax][ay] == 2 || GridWorldDomain.this.map[ax][ay] == 4)) || (ydelta < 0 && (GridWorldDomain.this.map[cx][cy] == 2 || GridWorldDomain.this.map[cx][cy] == 4)) ){
+				return true;
+			}
+			
+			return false;
+		}
+		
+		
+		
+	}
+	
+	/**
+	 * Propositional function for indicating if a wall is in a given position relative to the agent position
+	 * @author James MacGlashan
+	 *
+	 */
+	public class EmptyCellToPF extends PropositionalFunction{
+
+		/**
+		 * The relative x distance from the agent of the cell to check
+		 */
+		protected int xdelta;
+		
+		/**
+		 * The relative y distance from the agent of the cell to check
+		 */
+		protected int ydelta;
+		
+		
+		
+		/**
+		 * Initializes the function.
+		 * @param name the name of the function
+		 * @param domain the domain of the function
+		 * @param parameterClasses the object class parameter types
+		 * @param direction the unit distance direction from the agent to check for a wall (0,1,2,3 corresponds to north,south,east,west).
+		 */
+		public EmptyCellToPF(String name, Domain domain, String[] parameterClasses, int direction) {
+			super(name, domain, parameterClasses);
+			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(direction);
+			xdelta = dcomps[0];
+			ydelta = dcomps[1];
+		}
+
+		@Override
+		public boolean isTrue(State st, String[] params) {
+			
+			ObjectInstance agent = st.getObject(params[0]);
+			
+			int ax = agent.getDiscValForAttribute(ATTX);
+			int ay = agent.getDiscValForAttribute(ATTY);
+			
+			int cx = ax + xdelta;
+			int cy = ay + ydelta;
+			
+			if(cx > 0 && cx < GridWorldDomain.this.width && cy > 0 && cy < GridWorldDomain.this.height && GridWorldDomain.this.map[cx][cy] == 0){
 				return true;
 			}
 			

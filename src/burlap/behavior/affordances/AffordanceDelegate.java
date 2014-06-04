@@ -22,6 +22,7 @@ public class AffordanceDelegate {
 	 
 	 public void setCurrentGoal(LogicalExpression currentGoal){
 		 //TODO: fill this in; should set current goal; check if this affordance does not satisfy; and handle variable bindings with lifted affordance goal if it is satisifed.
+		 //
 	 }
 	 
 	 /**
@@ -35,12 +36,19 @@ public class AffordanceDelegate {
 	  * @return true if this affordance is active, false if it is not.
 	  */
 	 public boolean primeAndCheckIfActiveInState(State s){
-		 //TODO: fill this in
+		 //TODO: Add goal description here
+		 if(this.affordance.preCondition.evaluateIn(s)) {
+			 return true;
+		 }
+		 
 		 return false;
 	 }
 	 
 	 public boolean actionIsRelevant(AbstractGroundedAction action){
-		 //TODO: fill this in
+		 if(this.listedActionSet.contains(action)) {
+			 return true;
+		 }
+		 
 		 return false;
 	 }
 	 
