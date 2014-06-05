@@ -124,6 +124,9 @@ public class CorrelatedEquilibriumSolver {
 			}
 		}
 		
+		//shrink G to just nonzero rows
+		G = removeZeroRows(G);
+		
 		double [] h = GeneralBimatrixSolverTools.constantDoubleArray(0., G.length);
 		
 		
@@ -197,6 +200,49 @@ public class CorrelatedEquilibriumSolver {
 	
 	protected static int [] rowCol(int i, int nCols){
 		return new int[]{i / nCols, i % nCols};
+	}
+	
+	
+	
+	protected static double [][] removeZeroRows(double [][] m){
+		
+		//first fill in only non zero rows
+		int n = 0;
+		double [][] m2 = new double[m.length][m[0].length];
+		for(int i = 0; i < m.length; i++){
+			if(!isZeroArray(m[i])){
+				for(int j = 0; j < m[i].length; j++){
+					m2[n][j] = m[i][j];
+				}
+				n++;
+			}
+		}
+		
+		if(n == m.length){
+			return m2;
+		}
+		
+		//now shrink to only rows that matter
+		double [][] m3 = new double[n][m[0].length];
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < m2[i].length; j++){
+				m3[i][j] = m2[i][j];
+			}
+		}
+		
+		
+		
+		return m3;
+	}
+	
+	
+	protected static boolean isZeroArray(double [] a){
+		for(double d : a){
+			if(d != 0.){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 }

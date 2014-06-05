@@ -63,6 +63,8 @@ public class MultiAgentVFPlanningAgent extends Agent {
 	
 	public static void main(String [] args){
 		
+		
+		
 		//create domain
 		GridGame domainGen = new GridGame();
 		final SGDomain domain = (SGDomain)domainGen.generateDomain();

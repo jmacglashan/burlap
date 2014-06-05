@@ -332,9 +332,8 @@ public class World {
 		
 		//index reward
 		for(String aname : jointReward.keySet()){
-			double curCumR = agentCumulativeReward.v(aname);
-			curCumR += jointReward.get(aname);
-			agentCumulativeReward.add(aname, curCumR);
+			double r = jointReward.get(aname);
+			agentCumulativeReward.add(aname, r);
 		}
 		
 		//tell all the agents about it
@@ -381,9 +380,8 @@ public class World {
 		
 		//index reward
 		for(String aname : jointReward.keySet()){
-			double curCumR = agentCumulativeReward.v(aname);
-			curCumR += jointReward.get(aname);
-			agentCumulativeReward.add(aname, curCumR);
+			double r = jointReward.get(aname);
+			agentCumulativeReward.add(aname, r);
 		}
 		
 		
