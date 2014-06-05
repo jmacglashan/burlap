@@ -10,8 +10,6 @@ public abstract class Affordance {
 	protected LogicalExpression preCondition;
 	protected LogicalExpression	goalDescription;
 	
-	
 	public abstract Collection<AbstractGroundedAction> sampleNewLiftedActionSet();
-		
 	
 }

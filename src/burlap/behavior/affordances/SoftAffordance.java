@@ -29,7 +29,7 @@ public class SoftAffordance extends Affordance {
 	private double dirichletHyperParam = 1.0;
 	
 	/**
-	 * Constructor for SoftAffordance
+	 * Constructor SoftAffordances. Maps a <Predicate,GoalDescription> pair to a subset of the action space
 	 * @param preCond: the precondition for the affordance
 	 * @param goalDescr: the goal description for the affordance
 	 * @param actions: the list of all actions used for the affordance
@@ -128,6 +128,7 @@ public class SoftAffordance extends Affordance {
 		return hyper;
 	}
 	
+	// --- Accessors ---
 	public LogicalExpression getPreCondition() {
 		return this.preCondition;
 	}
@@ -140,6 +141,7 @@ public class SoftAffordance extends Affordance {
 		return this.allActions;
 	}
 	
+	// --- Mutators ---
 	public void setActionCounts(HashMap<AbstractGroundedAction, Integer> actionCounts) {
 		this.actionCounts = actionCounts;
 	}

@@ -13,7 +13,9 @@ import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 
 /**
- * @author dabel
+ * A greedy policy that breaks ties by randomly choosing an action amongst the tied actions. This class requires a QComputablePlanner.
+ * The set of actions considered is determined by pruning the action set according to a set of Affordances.
+ * @author James MacGlashan and David Abel
  *
  */
 public class AffordanceGreedyQPolicy extends GreedyQPolicy {
@@ -41,12 +43,9 @@ public class AffordanceGreedyQPolicy extends GreedyQPolicy {
 		
 		// If Affordances prune away all actions, back off to full action set 
 		if (filteredQValues.isEmpty()) {
-//			System.out.println("Backing off to full action set");
 			filteredQValues = allQValues;
 		}
-//		else {
-//			System.out.println("     NOT BACKING OFF");
-//		}
+
 		List <QValue> maxActions = new ArrayList<QValue>();
 		maxActions.add(filteredQValues.get(0));
 		double maxQ = filteredQValues.get(0).q;

@@ -24,7 +24,9 @@ import burlap.oomdp.singleagent.RewardFunction;
  * To ensure optimality, an optimistic value function initialization should be used. However, RTDP excels when a good value function initialization
  * (e.g., an admissible heuristic) can be provided.
  * 
- * 
+ * Note: SoftAffordances are (as of yet) required to work with ARTDP - HardAffordances may be used only two value functions, where the first is initialized optimistically
+ * to encourage exploration, and the second is initialized pessimistically. During rollouts, the optimistic value function is used, but during each bellman update, both
+ * value functions are updated. This is not currently implemented, but is an option for those interested in HardAffordances. 
  * 
  * 1. Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
  * 
@@ -50,9 +52,7 @@ public class AffordanceRTDP extends RTDP {
 	}
 	
 	public void planFromState(State initialState) {
-		
 		this.affordanceRTDP(initialState);
-
 	}
 
 	/**
@@ -76,17 +76,17 @@ public class AffordanceRTDP extends RTDP {
 				this.affController.resampleActionSets();
 				StateHashTuple sh = this.hashingFactory.hashState(curState);
 				
-				//select an action
+				// Select an action
 				GroundedAction ga = (GroundedAction)this.rollOutPolicy.getAction(curState);
 
-				//update this state's value
+				// Update this state's value
 				double curV = this.value(sh);
 
 				double nV = this.performBellmanUpdateOn(sh);
 				
 				delta = Math.max(Math.abs(nV - curV), delta); 
 
-				//take the action
+				// Take the action
 				curState = ga.executeIn(curState);
 				nSteps++;
 			}
@@ -105,7 +105,6 @@ public class AffordanceRTDP extends RTDP {
 			else{
 				consecutiveSmallDeltas = 0;
 			}
-			
 			
 		}
 		

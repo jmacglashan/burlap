@@ -60,7 +60,7 @@ public class AffordancesController {
 	}
 	
 	/**
-	 * Resets all of the action sets for each affordance (resamples from each Dirichlet)
+	 * Resets all of the action sets for each affordance (resamples)
 	 */
 	public void resampleActionSets(){
 		for(AffordanceDelegate aff : this.affordances){
@@ -95,6 +95,5 @@ public class AffordancesController {
 		
 		return filteredList;
 	}
-	
 	
 }

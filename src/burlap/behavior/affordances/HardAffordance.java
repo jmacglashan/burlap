@@ -10,6 +10,12 @@ public class HardAffordance extends Affordance {
 
 	private List<AbstractGroundedAction> prunedActions;
 
+	/**
+	 * A class for Hard Affordances, where a <Predicate,GoalDescription> pair maps to a specific set of actions
+	 * @param preCondition
+	 * @param goalDescription
+	 * @param actions
+	 */
 	public HardAffordance(LogicalExpression preCondition, LogicalExpression goalDescription, List<AbstractGroundedAction> actions) {
 		this.preCondition = preCondition;
 		this.goalDescription = goalDescription;
