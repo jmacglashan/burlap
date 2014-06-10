@@ -171,10 +171,10 @@ public class AffordancesExample {
 			
 			HashMap<AbstractGroundedAction,Integer> northAlpha = new HashMap<AbstractGroundedAction,Integer>(); 
 			
-			northAlpha.put(this.northAction, 500);
-			northAlpha.put(this.southAction, 2);
-			northAlpha.put(this.eastAction, 4);
-			northAlpha.put(this.westAction, 4);
+			northAlpha.put(this.northAction, 5000);
+			northAlpha.put(this.southAction, 0);
+			northAlpha.put(this.eastAction, 0);
+			northAlpha.put(this.westAction, 0);
 			
 			int[] northBeta = new int[]{0,2,6,4,1};
 			
@@ -183,14 +183,14 @@ public class AffordancesExample {
 			
 			// == SOUTH ==
 			
-			affSouth = new SoftAffordance(northPFAtom, goalPFAtom, southActions);
+			affSouth = new SoftAffordance(this.southPFAtom, this.goalPFAtom, this.southActions);
 			
 			HashMap<AbstractGroundedAction,Integer> southAlpha = new HashMap<AbstractGroundedAction,Integer>(); 
 			
-			southAlpha.put(this.northAction, 1);
-			southAlpha.put(this.southAction, 500);
-			southAlpha.put(this.eastAction, 3);
-			southAlpha.put(this.westAction, 3);
+			southAlpha.put(this.northAction, 0);
+			southAlpha.put(this.southAction, 5000);
+			southAlpha.put(this.eastAction, 0);
+			southAlpha.put(this.westAction, 0);
 	
 			int[] southBeta = new int[]{0,3,4,2,1};
 	
@@ -199,14 +199,14 @@ public class AffordancesExample {
 			
 			// == EAST ==
 			
-			affEast = new SoftAffordance(northPFAtom, goalPFAtom, eastActions);
+			affEast = new SoftAffordance(this.eastPFAtom, this.goalPFAtom, this.eastActions);
 			
 			HashMap<AbstractGroundedAction,Integer> eastAlpha = new HashMap<AbstractGroundedAction,Integer>(); 
 			
-			eastAlpha.put(this.northAction, 2);
-			eastAlpha.put(this.southAction, 2);
-			eastAlpha.put(this.eastAction, 500);
-			eastAlpha.put(this.westAction, 4);
+			eastAlpha.put(this.northAction, 0);
+			eastAlpha.put(this.southAction, 0);
+			eastAlpha.put(this.eastAction, 5000);
+			eastAlpha.put(this.westAction, 0);
 	
 			int[] eastBeta = new int[]{0,2,3,2,1};
 	
@@ -215,14 +215,14 @@ public class AffordancesExample {
 			
 			// == WEST ==
 			
-			affWest = new SoftAffordance(northPFAtom, goalPFAtom, westActions);
+			affWest = new SoftAffordance(this.westPFAtom, this.goalPFAtom, this.westActions);
 			
 			HashMap<AbstractGroundedAction,Integer> westAlpha = new HashMap<AbstractGroundedAction,Integer>(); 
 	
-			westAlpha.put(this.northAction, 2);
-			westAlpha.put(this.southAction, 2);
-			westAlpha.put(this.eastAction, 4);
-			westAlpha.put(this.westAction, 500);
+			westAlpha.put(this.northAction, 0);
+			westAlpha.put(this.southAction, 0);
+			westAlpha.put(this.eastAction, 0);
+			westAlpha.put(this.westAction, 5000);
 	
 			int[] westBeta = new int[]{0,2,3,4,1};
 	
