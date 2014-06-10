@@ -876,7 +876,7 @@ public class GridWorldDomain implements DomainGenerator {
 			int cx = ax + xdelta;
 			int cy = ay + ydelta;
 			
-			if(cx > 0 && cx < GridWorldDomain.this.width && cy > 0 && cy < GridWorldDomain.this.height && GridWorldDomain.this.map[cx][cy] == 0){
+			if(cx >= 0 && cx < GridWorldDomain.this.width && cy >= 0 && cy < GridWorldDomain.this.height && GridWorldDomain.this.map[cx][cy] == 0){
 				return true;
 			}
 			

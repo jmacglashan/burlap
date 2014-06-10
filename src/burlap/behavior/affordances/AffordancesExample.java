@@ -15,11 +15,14 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyph
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D.PolicyGlyphRenderStyle;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.AffordanceGreedyQPolicy;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.rtdp.AffordanceRTDP;
 import burlap.behavior.singleagent.planning.stochastic.rtdp.RTDP;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.AffordanceValueIteration;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.behavior.statehashing.StateHashFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -155,10 +158,10 @@ public class AffordancesExample {
 		
 		// --> Hard
 		if (hardAffordanceFlag) {
-			affNorth = new HardAffordance(northPFAtom, goalPFAtom, northActions);
-			affSouth = new HardAffordance(northPFAtom, goalPFAtom, southActions);
-			affEast = new HardAffordance(northPFAtom, goalPFAtom, eastActions);
-			affWest = new HardAffordance(northPFAtom, goalPFAtom, westActions);
+			affNorth = new HardAffordance(this.northPFAtom, this.goalPFAtom, northActions);
+			affSouth = new HardAffordance(this.southPFAtom, this.goalPFAtom, southActions);
+			affEast = new HardAffordance(this.eastPFAtom, this.goalPFAtom, eastActions);
+			affWest = new HardAffordance(this.westPFAtom, this.goalPFAtom, westActions);
 		} 
 		// --> Soft
 		else {
@@ -286,10 +289,10 @@ public class AffordancesExample {
 		double gamma = 0.99;
 		
 		boolean affordanceMode = true;
-		RTDP planner;
+		ValueFunctionPlanner planner;
 		Policy p;
 		if(affordanceMode) {
-			planner = new AffordanceRTDP(domain, rf, tf, gamma, hashingFactory, vInit, numRollouts, maxDelta, maxDepth, gridWorldExample.affController);
+			planner = new AffordanceValueIteration(domain, rf, tf, gamma, hashingFactory, maxDelta, maxDepth, gridWorldExample.affController);
 			planner.planFromState(initialState);
 			
 			// Create a Q-greedy policy from the planner
