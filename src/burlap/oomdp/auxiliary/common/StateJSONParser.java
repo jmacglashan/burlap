@@ -34,7 +34,8 @@ import burlap.oomdp.core.State;
 
 /**
  * A StateParser class that uses the JSON file format and can can convert states to JSON strings (and back from them) for any possible input domain. Use of
- * this class requires the Jackson java library
+ * this class requires the Jackson java library. This class also provides methods for preparing an OO-MDP {@link State} into a datastructure that can be easily
+ * parsed into an JSON representation and for taking a datastructure preapred for a JSON representation and converting it into an OO-MDP {@link State}.
  * @author James MacGlashan, Stephen Brawner
  *
  */
@@ -103,13 +104,10 @@ public class StateJSONParser implements StateParser {
 			jsonGenerator = jsonFactory.createGenerator(writer);
 			objectMapper.writeValue(jsonGenerator, data);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -119,7 +117,6 @@ public class StateJSONParser implements StateParser {
 	@Override
 	public State stringToState(String str) {
 		
-		State s = new State();
 		JsonFactory jsonFactory = new JsonFactory();
 		List<Map<String, Object>> objects = new ArrayList<Map<String, Object>>();
 		try {
@@ -135,6 +132,21 @@ public class StateJSONParser implements StateParser {
 			e.printStackTrace();
 		}
 		
+		
+		return this.JSONPreparedToState(objects);
+	}
+	
+	
+	/**
+	 * Takes a JSON prepared datastructure representation of a state and turns it into an actual state object. The JSON
+	 * prepared version is a list of maps. Each map represents an object instance which stores the objects name, name
+	 * of the object's class, and the value for each attribute.
+	 * @param objects the list of OO-MDP object instances
+	 * @return and OO-MDP {@link State} object.
+	 */
+	public State JSONPreparedToState(List<Map<String, Object>> objects){
+		
+		State s = new State();
 		
 		for(Map<String, Object> oMap : objects){
 			String obName = (String)oMap.get("name");
