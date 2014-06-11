@@ -15,17 +15,37 @@ import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SingleAction;
 
+
+/**
+ * A correlated Q backup operator [1] for using in stochastic game multi-agent Q-learning or dynamic programming.
+ * 
+ * <p/>
+ * 1. Greenwald, Amy, Keith Hall, and Roberto Serrano. "Correlated Q-learning." ICML. Vol. 3. 2003.
+ * @author James MacGlashan
+ *
+ */
 public class CorrelatedQ implements SGBackupOperator {
 
+	/**
+	 * The correlated equilibrium objective to be solved.
+	 */
 	protected CorrelatedEquilibriumObjective objectiveType = CorrelatedEquilibriumObjective.UTILITARIAN;
 	
+	
+	/**
+	 * Initializes an operator for the given correlated equilibrium objective.
+	 * @param objectiveType the correlated equilibrium objective being solved.
+	 */
+	public CorrelatedQ(CorrelatedEquilibriumObjective objectiveType){
+		this.objectiveType = objectiveType;
+	}
 	
 	@Override
 	public double performBackup(State s, String forAgent,
 			Map<String, AgentType> agentDefinitions, AgentQSourceMap qSourceMap) {
 		
 		if(agentDefinitions.size() != 2){
-			throw new RuntimeException("CoCoQ only defined for two agents.");
+			throw new RuntimeException("Correlated Q only defined for two agents.");
 		}
 		
 		String otherAgentName = null;

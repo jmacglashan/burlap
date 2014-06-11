@@ -189,24 +189,17 @@ public class MAValueIteration extends MAValueFunctionPlanner {
 		for(i = 0; i < this.maxIterations; i++){
 			
 			double maxChange = Double.NEGATIVE_INFINITY;
-			int k = 0;
 			for(StateHashTuple sh : this.states){
-				if(k == 41){
-					Visualizer v = GGVisualizer.getVisualizer(7, 7);
-					VisualExplorer exp = new VisualExplorer(this.domain, v, sh.s);
-					exp.initGUI();
-				}
 				double change = this.backupAllQs(sh.s);
 				maxChange = Math.max(change, maxChange);
-				k++;
-				System.out.println("Finished state: " + k);
+				//System.out.println("Finished state: " + k);
 			}
 			
 			if(maxChange < this.maxDelta){
 				break ;
 			}
 			
-			System.out.println("Finished pass: " + i + " with max change: " + maxChange);
+			DPrint.cl(this.debugCode, "Finished pass: " + i + " with max change: " + maxChange);
 			
 		}
 		

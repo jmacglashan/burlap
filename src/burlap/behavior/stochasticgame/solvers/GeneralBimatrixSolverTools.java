@@ -137,6 +137,23 @@ public class GeneralBimatrixSolverTools {
 	
 	
 	/**
+	 * Returns a negated version of the input array in a new array object. That is,
+	 * a new double array (b) is created with b[i] value set to -1 * a[i].
+	 * @param a the input double array
+	 * @return a negated version of the input array
+	 */
+	public static double [] getNegatedArray(double [] a){
+		double [] b = new double[a.length];
+		
+		for(int i = 0; i < a.length; i++){
+			b[i] = -a[i];
+		}
+		
+		return b;
+	}
+	
+	
+	/**
 	 * Creates a new matrix (m2) whose values are the values of m shifted by a constant amount c such that all the values
 	 * in m2 are positive. If all entries in m are already postive, then c = 0 (no shift). Otherwise, c = 1 - min(m).
 	 * @param m the input matrix.
@@ -183,6 +200,21 @@ public class GeneralBimatrixSolverTools {
 		}
 		
 		return m2;
+	}
+	
+	
+	/**
+	 * Returns the dot product of two vectors
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product
+	 */
+	public static double dot(double [] a, double [] b){
+		double sum = 0.;
+		for(int i = 0; i < a.length; i++){
+			sum += a[i] * b[i];
+		}
+		return sum;
 	}
 	
 }

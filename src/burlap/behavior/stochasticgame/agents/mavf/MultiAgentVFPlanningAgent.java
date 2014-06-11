@@ -10,9 +10,10 @@ import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MAValueFunctionPlanner;
 import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CoCoQ;
 import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CorrelatedQ;
-import burlap.behavior.stochasticgame.mavaluefunction.policies.ECorrelatedQJOintPolicy;
+import burlap.behavior.stochasticgame.mavaluefunction.policies.ECorrelatedQJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.policies.EGreedyMaxWellfare;
 import burlap.behavior.stochasticgame.mavaluefunction.vfplanners.MAValueIteration;
+import burlap.behavior.stochasticgame.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
 import burlap.domain.stochasticgames.gridgame.GGVisualizer;
 import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics;
@@ -76,6 +77,7 @@ public class MultiAgentVFPlanningAgent extends Agent {
 		hashingFactory.addAttributeForClass(GridGame.CLASSAGENT, domain.getAttribute(GridGame.ATTPN));
 		
 		final State s = GridGame.getTurkeyInitialState(domain);
+		//final State s = GridGame.getPrisonersDilemmaInitialState(domain);
 		
 		JointReward rf = new GridGame.GGJointRewardFunction(domain, -1, 100, false);
 		TerminalFunction tf = new GridGame.GGTerminalFunction(domain);
@@ -84,8 +86,8 @@ public class MultiAgentVFPlanningAgent extends Agent {
 		//make a single agent type that can use all actions and refers to the agent class of grid game that we will use for both our agents
 		AgentType at = new AgentType("default", domain.getObjectClass(GridGame.CLASSAGENT), domain.getSingleActions());
 		
-		//MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CoCoQ(), 0.00, 30);
-		MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CorrelatedQ(), 0.00, 30);
+		//MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CoCoQ(), 0.0001, 30);
+		MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CorrelatedQ(CorrelatedEquilibriumObjective.UTILITARIAN), 0.0001, 30);
 		
 		//create our world
 		World w = new World(domain, new GridGameStandardMechanics(domain), rf, new GridGame.GGTerminalFunction(domain), 
@@ -105,12 +107,13 @@ public class MultiAgentVFPlanningAgent extends Agent {
 		jp1.setBreakTiesRandomly(false);
 		*/
 		
-		ECorrelatedQJOintPolicy jp0 = new ECorrelatedQJOintPolicy(0.0);
-		ECorrelatedQJOintPolicy jp1 = new ECorrelatedQJOintPolicy(0.0);
+		
+		ECorrelatedQJointPolicy jp0 = new ECorrelatedQJointPolicy(0.0);
+		//ECorrelatedQJointPolicy jp1 = new ECorrelatedQJointPolicy(0.0);
 		
 		
-		MultiAgentVFPlanningAgent a0 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp0));
-		MultiAgentVFPlanningAgent a1 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp1));
+		MultiAgentVFPlanningAgent a0 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp0, true));
+		MultiAgentVFPlanningAgent a1 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp0, true));
 		
 		a0.joinWorld(w, at);
 		a1.joinWorld(w, at);

@@ -1,10 +1,13 @@
 package burlap.behavior.stochasticgame;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import burlap.behavior.singleagent.Policy;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
@@ -21,6 +24,10 @@ import burlap.oomdp.stochasticgames.World;
  * It is not uncommon for some joint policies to be defined from a privledged agent's position. This class also contains an abstract method
  * for setting that target privledge agent: {@link #setTargetAgent(String)}. If the joint policy is agent agnostic, then this method
  * does not need to do anything.
+ * <p/>
+ * This class can also be used to synchonize the action selection of multiple agents according to the same sampled joint action. This is achieved
+ * by using the {@link #getAgentSynchronizedActionSelection(String, State)} method, which returns the single action for each agent (of the specified
+ * name) from the same sampled joint action until all agents defined in the policy have queried the method for their action selection.
  * @author James MacGlashan
  *
  */
@@ -30,6 +37,23 @@ public abstract class JointPolicy extends Policy {
 	 * The agent definitions that define the set of possible joint actions in each state.
 	 */
 	protected Map<String, AgentType>		agentsInJointPolicy;
+	
+	/**
+	 * The last synchronized joint action that was selected
+	 */
+	protected JointAction					lastSynchronizedJointAction = null;
+	
+	/**
+	 * The agents whose actiosn have been syncrhonized so far
+	 */
+	protected Set<String>					agentsSyncrhonizedSoFar = new HashSet<String>();
+	
+	/**
+	 * The last state in which synchronized actions were queried.
+	 */
+	protected State							lastSyncedState = null;
+	
+	
 	
 	
 	/**
@@ -70,6 +94,52 @@ public abstract class JointPolicy extends Policy {
 	public List<JointAction> getAllJointActions(State s){
 		return JointAction.getAllJointActions(s, agentsInJointPolicy);
 	}
+	
+	
+	/**
+	 * Returns a map specifying the agents who contribute actions to this joint policy. The map goes from
+	 * agent names to their agent type.
+	 * @return a map specifying the agents who contribute actions to this joint policy
+	 */
+	public Map<String, AgentType> getAgentsInJointPolicy(){
+		return this.agentsInJointPolicy;
+	}
+	
+	
+	/**
+	 * This method returns the action for a single agent by a synchonrized sampling of this joint policy,
+	 * which enables multiple agents to query this policy object and act according to the same selected joint
+	 * actions from it. This is useful when decisions are made from a "referee" who selects the joint action
+	 * that dictates the behavior of each agent. The synchonization is implemented by selecting a joint action.
+	 * Each time an agent queries for their action, it is drawn from the previously sampled joint action.
+	 * A new joint action is only selected after each agent defined in this objects {@link #agentsInJointPolicy} member 
+	 * has queried this method for their action or until an action for a different state is queried (that is, *either* condition
+	 * will cause the joint action to be resampled).
+	 * @param agentName the agent name whose action in this joint policy is being queried
+	 * @param s the state in which the action is to be selected.
+	 * @return the single agent action to be taken according to the synchonrized joint action that was selected.
+	 */
+	public AbstractGroundedAction getAgentSynchronizedActionSelection(String agentName, State s){
+		
+		if(this.lastSyncedState == null || !this.lastSyncedState.equals(s)){
+			//then reset syncrhonization
+			this.lastSyncedState = s;
+			this.agentsSyncrhonizedSoFar.clear();
+			this.lastSynchronizedJointAction = (JointAction)this.getAction(s);
+		}
+		
+		AbstractGroundedAction a = this.lastSynchronizedJointAction.action(agentName);
+		this.agentsSyncrhonizedSoFar.add(agentName);
+		if(this.agentsSyncrhonizedSoFar.containsAll(this.agentsInJointPolicy.keySet())){
+			//then we're finished getting the actions for all agents and enable the next query
+			this.lastSyncedState = null;
+			this.agentsSyncrhonizedSoFar.clear();
+		}
+		
+		return a;
+		
+	}
+	
 	
 	
 	/**

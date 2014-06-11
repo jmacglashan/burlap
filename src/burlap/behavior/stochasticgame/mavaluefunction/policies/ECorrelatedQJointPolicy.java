@@ -16,7 +16,15 @@ import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SingleAction;
 
-public class ECorrelatedQJOintPolicy extends MAQSourcePolicy {
+
+/**
+ * A joint policy that computes the correlated equilibrium using the Q-values of the agents as input and then either
+ * follows that policy or returns a random action with probability epsilon. If the equilibrium is a mixed strategy,
+ * then epislon has the effect of smoothing the probability of each joint action. This class is only defined for 2 player games.
+ * @author James MacGlashan
+ *
+ */
+public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 
 	
 	/**
@@ -35,16 +43,30 @@ public class ECorrelatedQJOintPolicy extends MAQSourcePolicy {
 	protected CorrelatedEquilibriumObjective	objectiveType = CorrelatedEquilibriumObjective.UTILITARIAN;
 	
 	
-	public ECorrelatedQJOintPolicy(double epsilon){
+	
+	/**
+	 * Initializes with the epislon probability of a random joint action.
+	 * @param epsilon the probability that a random joint action is returned.
+	 */
+	public ECorrelatedQJointPolicy(double epsilon){
 		this.epsilon = epsilon;
 	}
 	
-	public ECorrelatedQJOintPolicy(CorrelatedEquilibriumObjective objectiveType, double epsilon){
+	/**
+	 * Initializes with the correlated equilibrium objective and the epsilon probability of a random joint action.
+	 * @param objectiveType the correlated equilibirum objective.
+	 * @param epsilon the probability that a random joint action is returned.
+	 */
+	public ECorrelatedQJointPolicy(CorrelatedEquilibriumObjective objectiveType, double epsilon){
 		this.objectiveType = objectiveType;
 		this.epsilon = epsilon;
 	}
 	
 	
+	/**
+	 * Sets the correlated equilibrium objective to be solved.
+	 * @param objectiveType the correlated equilibrium objective to be solved.
+	 */
 	public void setCorrelatedQObjective(CorrelatedEquilibriumObjective objectiveType){
 		this.objectiveType = objectiveType;
 	}
@@ -56,7 +78,7 @@ public class ECorrelatedQJOintPolicy extends MAQSourcePolicy {
 
 	@Override
 	public JointPolicy copy() {
-		ECorrelatedQJOintPolicy jp = new ECorrelatedQJOintPolicy(this.objectiveType, this.epsilon);
+		ECorrelatedQJointPolicy jp = new ECorrelatedQJointPolicy(this.objectiveType, this.epsilon);
 		jp.setQSourceProvider(this.qSourceProvider);
 		jp.setAgentsInJointPolicy(this.agentsInJointPolicy);
 		return jp;

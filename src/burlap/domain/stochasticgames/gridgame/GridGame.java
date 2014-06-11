@@ -427,7 +427,7 @@ public class GridGame implements DomainGenerator {
 		
 		GridGame.setGoal(s, 0, 0, 0, 1);
 		GridGame.setGoal(s, 1, 4, 0, 0);
-		GridGame.setGoal(s, 2, 8, 9, 2);
+		GridGame.setGoal(s, 2, 8, 0, 2);
 		
 		return s;
 	}
