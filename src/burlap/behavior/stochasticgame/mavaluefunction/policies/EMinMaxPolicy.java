@@ -9,7 +9,6 @@ import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap;
 import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MultiAgentQSourceProvider;
 import burlap.behavior.stochasticgame.mavaluefunction.QSourceForSingleAgent;
-import burlap.behavior.stochasticgame.solvers.BimatrixGeneralSumSolver;
 import burlap.behavior.stochasticgame.solvers.GeneralBimatrixSolverTools;
 import burlap.behavior.stochasticgame.solvers.MinMaxSolver;
 import burlap.oomdp.core.AbstractGroundedAction;
