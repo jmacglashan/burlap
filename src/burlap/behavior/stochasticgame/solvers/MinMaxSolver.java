@@ -1,10 +1,9 @@
 package burlap.behavior.stochasticgame.solvers;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-
-import com.joptimizer.optimizers.LPOptimizationRequest;
-import com.joptimizer.optimizers.LPPrimalDualMethod;
+import scpsolver.constraints.LinearBiggerThanEqualsConstraint;
+import scpsolver.lpsolver.LinearProgramSolver;
+import scpsolver.lpsolver.SolverFactory;
+import scpsolver.problems.LinearProgram;
 
 public class MinMaxSolver {
 
@@ -24,8 +23,6 @@ public class MinMaxSolver {
 	
 	
 	
-	
-	
 	/**
 	 * Computes the minmax strategy for the column player of the given payoff matrix.
 	 * The entries of the payoff matrix are assumed to be the payouts for the *column* player.
@@ -34,48 +31,33 @@ public class MinMaxSolver {
 	 */
 	public static double [] getColPlayersStrategy(double [][] payoffMatrix){
 		
-		org.apache.log4j.BasicConfigurator.configure();
-		LogManager.getRootLogger().setLevel(Level.OFF);
-		
 		//get positive matrix (finds the minimum value and adds -min + 1 to all elements)
-		double [][] posMatrix = GeneralBimatrixSolverTools.getPositiveMatrix(payoffMatrix);
+		double [][] G = GeneralBimatrixSolverTools.getPositiveMatrix(payoffMatrix);
 		
-		//because we want to switch to <= that joptimizer wants, multiply by -1
-		double [][] G = GeneralBimatrixSolverTools.getNegatedMatrix(posMatrix);
+		LinearProgram lp = new LinearProgram(GeneralBimatrixSolverTools.constantDoubleArray(1., G[0].length));
 		
-		//RHS of inequality is also inverted to -1s
-		double [] h = GeneralBimatrixSolverTools.constantDoubleArray(-1., G.length);
-
-		//lower bound
-		double [] lb = GeneralBimatrixSolverTools.constantDoubleArray(0., G[0].length);
+		int cCount = 0;
 		
-		//objective
-		double [] c = GeneralBimatrixSolverTools.constantDoubleArray(1., G[0].length);
-		
-		//optimization problem
-		LPOptimizationRequest or = new LPOptimizationRequest();
-		or.setC(c);
-		or.setG(G);
-		or.setH(h);
-		or.setLb(lb);
-		or.setDumpProblem(true); 
-		
-		//optimization
-		LPPrimalDualMethod opt = new LPPrimalDualMethod();		
-		opt.setLPOptimizationRequest(or);
-
-		try {
-			opt.optimize();
-		} catch (Exception e) {
-			e.printStackTrace();
+		//add payoff matrix constraints
+		for(int i = 0; i < G.length; i++){
+			lp.addConstraint(new LinearBiggerThanEqualsConstraint(G[i], 1., "c" + cCount));
+			cCount++;
 		}
 		
+		//add lower bound constraints
+		for(int i = 0; i < G[0].length; i++){
+			lp.addConstraint(new LinearBiggerThanEqualsConstraint(GeneralBimatrixSolverTools.zero1Array(i, G[0].length), 0., "c" + cCount));
+			cCount++;
+		}
 		
-		double[] sol = opt.getOptimizationResponse().getSolution();
+		//solve it
+		lp.setMinProblem(true);
+		LinearProgramSolver solver = SolverFactory.newDefault(); 
+		double[] sol = solver.solve(lp);
 		
 		//convert LP solution into probability vector.
 		double z = 0.;
-		for(Double d : sol){
+		for(double d : sol){
 			z += d;
 		}
 		
@@ -88,8 +70,8 @@ public class MinMaxSolver {
 		
 		
 		return sol;
-		
 	}
+	
 	
 	
 	

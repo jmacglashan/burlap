@@ -217,4 +217,24 @@ public class GeneralBimatrixSolverTools {
 		return sum;
 	}
 	
+	
+	/**
+	 * Creates an array that is all zeros except one index which has a value of 1. For example zero1Array(2, 4) will return {0., 0., 1., 0.}.
+	 * @param index the index which will have a valu of 1
+	 * @param dim the dimension of the array to create
+	 * @return an array that is all zeros except one index which has a value of 1.
+	 */
+	public static double [] zero1Array(int index, int dim){
+		double [] a = new double[dim];
+		for(int i = 0; i < dim; i++){
+			if(i != index){
+				a[i] = 0.;
+			}
+			else{
+				a[i] = 1.;
+			}
+		}
+		return a;
+	}
+	
 }

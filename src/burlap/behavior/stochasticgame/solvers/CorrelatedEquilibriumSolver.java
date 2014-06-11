@@ -376,7 +376,7 @@ public class CorrelatedEquilibriumSolver {
 		
 		//add lower bound constraints; one for each of the joint action variables (not any auxiliary variables)
 		for(int i = 0; i < nn; i++){
-			double [] lb = zero1Array(i, n);
+			double [] lb = GeneralBimatrixSolverTools.zero1Array(i, n);
 			lp.addConstraint(new LinearBiggerThanEqualsConstraint(lb, 0., "c" + cCount));
 			cCount++;
 		}
@@ -549,7 +549,7 @@ public class CorrelatedEquilibriumSolver {
 		int nCols = payoffRow[0].length;
 		int n = (nRows * nCols) + 1;
 		
-		double [] objective = zero1Array(n-1, n);
+		double [] objective = GeneralBimatrixSolverTools.zero1Array(n-1, n);
 		
 		
 		return objective;
@@ -680,23 +680,6 @@ public class CorrelatedEquilibriumSolver {
 	}
 	
 	
-	/**
-	 * Creates an array that is all zeros except one index which has a value of 1. For example zero1Array(2, 4) will return {0., 0., 1., 0.}.
-	 * @param index the index which will have a valu of 1
-	 * @param dim the dimension of the array to create
-	 * @return an array that is all zeros except one index which has a value of 1.
-	 */
-	public static double [] zero1Array(int index, int dim){
-		double [] a = new double[dim];
-		for(int i = 0; i < dim; i++){
-			if(i != index){
-				a[i] = 0.;
-			}
-			else{
-				a[i] = 1.;
-			}
-		}
-		return a;
-	}
+	
 	
 }
