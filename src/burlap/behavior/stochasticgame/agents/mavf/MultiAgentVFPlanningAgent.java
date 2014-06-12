@@ -1,35 +1,17 @@
 package burlap.behavior.stochasticgame.agents.mavf;
 
-import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.singleagent.Policy.ActionProb;
-import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.behavior.stochasticgame.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MAValueFunctionPlanner;
-import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CoCoQ;
-import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CorrelatedQ;
-import burlap.behavior.stochasticgame.mavaluefunction.policies.ECorrelatedQJointPolicy;
-import burlap.behavior.stochasticgame.mavaluefunction.policies.EGreedyMaxWellfare;
-import burlap.behavior.stochasticgame.mavaluefunction.vfplanners.MAValueIteration;
-import burlap.behavior.stochasticgame.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
-import burlap.domain.stochasticgames.gridgame.GGVisualizer;
-import burlap.domain.stochasticgames.gridgame.GridGame;
-import burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics;
 import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
-import burlap.oomdp.stochasticgames.common.VisualWorldObserver;
-import burlap.oomdp.visualizer.Visualizer;
 
 
 /**
@@ -62,98 +44,6 @@ public class MultiAgentVFPlanningAgent extends Agent {
 	protected boolean						setAgentDefinitions = false;
 	
 	
-	public static void main(String [] args){
-		
-		
-		
-		//create domain
-		GridGame domainGen = new GridGame();
-		final SGDomain domain = (SGDomain)domainGen.generateDomain();
-		
-		//create hashing factory that only hashes on the agent positions (ignores wall attributes)
-		final DiscreteStateHashFactory hashingFactory = new DiscreteStateHashFactory();
-		hashingFactory.addAttributeForClass(GridGame.CLASSAGENT, domain.getAttribute(GridGame.ATTX));
-		hashingFactory.addAttributeForClass(GridGame.CLASSAGENT, domain.getAttribute(GridGame.ATTY));
-		hashingFactory.addAttributeForClass(GridGame.CLASSAGENT, domain.getAttribute(GridGame.ATTPN));
-		
-		//final State s = GridGame.getTurkeyInitialState(domain);
-		final State s = GridGame.getPrisonersDilemmaInitialState(domain);
-		
-		JointReward rf = new GridGame.GGJointRewardFunction(domain, -1, 100, false);
-		TerminalFunction tf = new GridGame.GGTerminalFunction(domain);
-		JointActionModel jam = new GridGameStandardMechanics(domain);
-		
-		//make a single agent type that can use all actions and refers to the agent class of grid game that we will use for both our agents
-		AgentType at = new AgentType("default", domain.getObjectClass(GridGame.CLASSAGENT), domain.getSingleActions());
-		
-		MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CoCoQ(), 0.00015, 50);
-		//MAValueIteration vi = new MAValueIteration(domain, jam, rf, tf, 0.99, hashingFactory, 0., new CorrelatedQ(CorrelatedEquilibriumObjective.UTILITARIAN), 0.0001, 30);
-		
-		//create our world
-		World w = new World(domain, new GridGameStandardMechanics(domain), rf, new GridGame.GGTerminalFunction(domain), 
-				new ConstantSGStateGenerator(s));
-		
-		Visualizer v = GGVisualizer.getVisualizer(9, 9);
-		VisualWorldObserver wob = new VisualWorldObserver(domain, v);
-		wob.setFrameDelay(1000);
-		wob.initGUI();
-		
-		
-		
-		EGreedyMaxWellfare jp0 = new EGreedyMaxWellfare(0.0);
-		jp0.setBreakTiesRandomly(false);
-		
-		EGreedyMaxWellfare jp1 = new EGreedyMaxWellfare(0.0);
-		jp1.setBreakTiesRandomly(false);
-		
-		
-		
-		//ECorrelatedQJointPolicy jp0 = new ECorrelatedQJointPolicy(0.0);
-		//ECorrelatedQJointPolicy jp1 = new ECorrelatedQJointPolicy(0.0);
-		
-		
-		MultiAgentVFPlanningAgent a0 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp0));
-		MultiAgentVFPlanningAgent a1 = new MultiAgentVFPlanningAgent(domain, vi, new PolicyFromJointPolicy(jp1));
-		
-		a0.joinWorld(w, at);
-		a1.joinWorld(w, at);
-		
-		w.addWorldObserver(wob);
-		
-		EGreedyMaxWellfare jp = new EGreedyMaxWellfare(0.0);
-		jp.setAgentsInJointPolicyFromWorld(w);
-		jp.setQSourceProvider(vi);
-		jp.setBreakTiesRandomly(false);
-		
-		
-		
-		for(int i = 0; i < 5; i++){
-			v.updateState(s);
-			if(i > 0){
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			w.runGame();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		List<ActionProb> aps = jp.getActionDistributionForState(s);
-		
-		for(ActionProb ap : aps){
-			System.out.println(ap.pSelection + ": " + ap.ga.toString());
-		}
-		
-		
-		
-		
-	}
 	
 	/**
 	 * Initializes. The underlining joint policy of the policy must be an instance of {@link MAQSourcePolicy} or a runtime exception will be thrown.

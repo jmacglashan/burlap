@@ -6,10 +6,7 @@ import java.util.Map;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
-import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.stochasticgame.GameAnalysis;
-import burlap.behavior.stochasticgame.GameSequenceVisualizer;
 import burlap.behavior.stochasticgame.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap.HashMapAgentQSourceMap;
@@ -19,25 +16,14 @@ import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MultiAgentQSourceProvider;
 import burlap.behavior.stochasticgame.mavaluefunction.QSourceForSingleAgent;
 import burlap.behavior.stochasticgame.mavaluefunction.SGBackupOperator;
-import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CoCoQ;
 import burlap.behavior.stochasticgame.mavaluefunction.policies.EGreedyMaxWellfare;
-import burlap.debugtools.DPrint;
-import burlap.domain.stochasticgames.gridgame.GGVisualizer;
-import burlap.domain.stochasticgames.gridgame.GridGame;
-import burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics;
-import burlap.oomdp.auxiliary.StateParser;
-import burlap.oomdp.auxiliary.common.StateYAMLParser;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
-import burlap.oomdp.stochasticgames.common.VisualWorldObserver;
-import burlap.oomdp.visualizer.Visualizer;
 
 
 /**
@@ -133,137 +119,6 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 	 */
 	protected JAQValue									qToUpdate = null;
 	
-	
-	
-	public static void main(String [] args){
-		
-		//create domain
-		GridGame domainGen = new GridGame();
-		final SGDomain domain = (SGDomain)domainGen.generateDomain();
-		
-		//create hashing factory that only hashes on the agent positions (ignores wall attributes)
-		final DiscreteStateHashFactory hashingFactory = new DiscreteStateHashFactory();
-		hashingFactory.addAttributeForClass(GridGame.CLASSAGENT, domain.getAttribute(GridGame.ATTX));
-		hashingFactory.addAttributeForClass(GridGame.CLASSAGENT, domain.getAttribute(GridGame.ATTY));
-		hashingFactory.addAttributeForClass(GridGame.CLASSAGENT, domain.getAttribute(GridGame.ATTPN));
-		
-		//parameters for q-learning
-		final double discount = 0.95;
-		final double learningRate = 0.1;
-		final double defaultQ = 100;
-		
-		/*
-		final State s = GridGame.getCleanState(domain, 2, 3, 3, 2, 5, 5);
-		GridGame.setAgent(s, 0, 0, 0, 0);
-		GridGame.setAgent(s, 1, 4, 0, 1);
-		GridGame.setGoal(s, 0, 0, 4, 1);
-		GridGame.setGoal(s, 1, 2, 4, 0);
-		GridGame.setGoal(s, 2, 4, 4, 2);
-		GridGame.setHorizontalWall(s, 2, 4, 1, 3, 0);
-		*/
-		final State s = GridGame.getTurkeyInitialState(domain);
-		
-		JointReward rf = new GridGame.GGJointRewardFunction(domain, -1, 100, false);
-		
-		//create our world
-		World w = new World(domain, new GridGameStandardMechanics(domain), rf, new GridGame.GGTerminalFunction(domain), 
-				new ConstantSGStateGenerator(s));
-		
-		Visualizer v = GGVisualizer.getVisualizer(9, 9);
-		VisualWorldObserver wob = new VisualWorldObserver(domain, v);
-		wob.setFrameDelay(1000);
-		//wob.initGUI();
-		
-		
-		//make a single agent type that can use all actions and refers to the agent class of grid game that we will use for both our agents
-		AgentType at = new AgentType("default", domain.getObjectClass(GridGame.CLASSAGENT), domain.getSingleActions());
-		
-		/*
-		MultiAgentQLearning a0 = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, defaultQ, new MaxBackup(), true);
-		MultiAgentQLearning a1 = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, defaultQ, new MaxBackup(), true);
-		*/
-		
-		MultiAgentQLearning a0 = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, defaultQ, new CoCoQ(), true);
-		MultiAgentQLearning a1 = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, defaultQ, new CoCoQ(), true);
-		
-		/*
-		SetStrategyAgent a1 = new SetStrategyAgent(domain, new Policy() {
-			
-			@Override
-			public boolean isStochastic() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-			@Override
-			public boolean isDefinedFor(State s) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-			@Override
-			public List<ActionProb> getActionDistributionForState(State s) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-			@Override
-			public AbstractGroundedAction getAction(State s) {
-				GroundedSingleAction gsas[] = new GroundedSingleAction[]{new GroundedSingleAction("me", domain.getSingleAction(GridGame.ACTIONNOOP), ""),
-																		 new GroundedSingleAction("me", domain.getSingleAction(GridGame.ACTIONNORTH), ""),
-																		 new GroundedSingleAction("me", domain.getSingleAction(GridGame.ACTIONSOUTH), ""),
-																		 new GroundedSingleAction("me", domain.getSingleAction(GridGame.ACTIONEAST), ""),
-																		 new GroundedSingleAction("me", domain.getSingleAction(GridGame.ACTIONWEST), "")};
-				return gsas[RandomFactory.getMapped(0).nextInt(5)];
-				//return gsas[0];
-			}
-		});*/
-		
-		a0.joinWorld(w, at);
-		a1.joinWorld(w, at);
-		
-		
-		//don't have the world print out debug info (comment out if you want to see it!)
-		DPrint.toggleCode(w.getDebugId(), false);
-		
-		StateParser sp = new StateYAMLParser(domain);
-		
-		
-		System.out.println("Starting training");
-		int ngames = 2500;
-		for(int i = 0; i < ngames; i++){
-			if(i % 10 == 0){
-				System.out.println("Game: " + i);
-			}
-			GameAnalysis ga = w.runGame();
-			ga.writeToFile(String.format("sgTests/%4d", i), sp);
-		}
-		
-		System.out.println("Finished training");
-		
-		
-		GameSequenceVisualizer gvis = new GameSequenceVisualizer(v, domain, sp, "sgTests/");
-		
-		/*
-		v.updateState(s);
-		w.addWorldObserver(wob);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		//turn debug back on if we want to observe the behavior of agents after they have already learned how to behave
-		DPrint.toggleCode(w.getDebugId(), true);
-		
-		a0.setLearningPolicy(new PolicyFromJointPolicy(a0.getAgentName(), new EGreedyMaxWellfare(a0, 0.0)));
-		a1.setLearningPolicy(new PolicyFromJointPolicy(a1.getAgentName(), new EGreedyMaxWellfare(a0, 0.0)));
-		
-		//run game to observe behavior
-		w.runGame();
-		*/
-		
-	}
 	
 	
 	/**

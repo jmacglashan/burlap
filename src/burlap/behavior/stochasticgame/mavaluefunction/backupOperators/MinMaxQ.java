@@ -22,7 +22,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * @author James MacGlashan
  *
  */
-public class MinMaxBackup implements SGBackupOperator {
+public class MinMaxQ implements SGBackupOperator {
 
 	@Override
 	public double performBackup(State s, String forAgent,

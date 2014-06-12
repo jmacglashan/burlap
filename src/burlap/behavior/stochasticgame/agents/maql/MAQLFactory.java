@@ -7,7 +7,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.stochasticgame.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.SGBackupOperator;
 import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.CoCoQ;
-import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.MaxBackup;
+import burlap.behavior.stochasticgame.mavaluefunction.backupOperators.MaxQ;
 import burlap.behavior.stochasticgame.mavaluefunction.policies.EGreedyJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.policies.EGreedyMaxWellfare;
 import burlap.oomdp.stochasticgames.Agent;
@@ -146,7 +146,7 @@ public class MAQLFactory implements AgentFactory {
 	public static class MAMaxQLearningFactory extends MAQLFactory{
 		
 		public MAMaxQLearningFactory(SGDomain d, double discount, LearningRate learningRate, StateHashFactory hashFactory, ValueFunctionInitialization qInit, boolean queryOtherAgentsForTheirQValues, double epsilon){
-			this.init(d, discount, learningRate, hashFactory, qInit, new MaxBackup(), queryOtherAgentsForTheirQValues, new PolicyFromJointPolicy(new EGreedyJointPolicy(epsilon)));
+			this.init(d, discount, learningRate, hashFactory, qInit, new MaxQ(), queryOtherAgentsForTheirQValues, new PolicyFromJointPolicy(new EGreedyJointPolicy(epsilon)));
 		}
 		
 	}

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import burlap.behavior.stochasticgame.solvers.GeneralBimatrixSolverTools;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
@@ -83,7 +84,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * A constructor for bimatrix games.
+	 * A constructor for bimatrix games with specified action names.
 	 * @param actionSets a 2x2 array of strings giving the names for each action. actionSets[0][1] returns the name of the second action for the first player.
 	 * @param twoPlayerPayoutMatrix A 2x2x2 payout matrix. twoPlayerPayoutMatrix[0][0][1] gives the payout player 1 receives when player takes its first action and player two takes its second action.
 	 */
@@ -116,8 +117,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 		
 		for(int i = 0; i < this.nPlayers; i++){
-			for(int j = 0; j < 2; j++){
-				for(int k = 0; k < 2; k++){
+			for(int j = 0; j < actionSets[0].length; j++){
+				for(int k = 0; k < actionSets[1].length; k++){
 					StrategyProfile sp = new StrategyProfile(j,k);
 					this.payouts[i].set(sp, twoPlayerPayoutMatrix[i][j][k]);
 				}
@@ -128,7 +129,73 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * A constructor for games with a symmetric number of actions for each player.
+	 * A construtor for a bimatrix game where the row player payoffs and colum player payoffs are provided in two different 2D double matrices. The action
+	 * names for each row/column will be named "action0" ... "actionN" where N is the maximum number of rows/columns. 
+	 * @param rowPayoff the payoff matrix for the row player
+	 * @param colPayoff the payoff matrix for the column player
+	 */
+	public SingleStageNormalFormGame(double [][] rowPayoff, double [][] colPayoff){
+		
+		if(rowPayoff.length != colPayoff.length || rowPayoff[0].length != colPayoff[0].length){
+			throw new RuntimeException("Payoff matrices for the row and column player are not the same dimensionality.");
+		}
+		
+		this.nPlayers = 2;
+		int nRows = rowPayoff.length;
+		int nCols = rowPayoff[0].length;
+		this.actionSets = new ArrayList<List<String>>();
+		List <String> actionsP1 = new ArrayList<String>();
+		for(int i = 0; i < nRows; i++){
+			actionsP1.add("action" + i);
+		}
+		this.actionSets.add(actionsP1);
+		
+		List <String> actionsP2 = new ArrayList<String>();
+		for(int i = 0; i < nCols; i++){
+			actionsP2.add("action" + i);
+		}
+		this.actionSets.add(actionsP2);
+		
+		this.payouts = new AgentPayoutFunction[2];
+		for(int i = 0; i < payouts.length; i++){
+			this.payouts[i] = new AgentPayoutFunction();
+		}
+		
+		
+		this.uniqueActionNames = new HashSet<String>();
+		this.actionNameToIndex = new ActionNameMap[this.actionSets.size()];
+		for(int i = 0; i < this.actionSets.size(); i++){
+			this.actionNameToIndex[i] = new ActionNameMap();
+			for(int j = 0; j < this.actionSets.get(i).size(); j++){
+				this.actionNameToIndex[i].put(this.actionSets.get(i).get(j), j);
+				this.uniqueActionNames.add(this.actionSets.get(i).get(j));
+			}
+		}
+		
+		
+		for(int i = 0; i < nRows; i++){
+			for(int j = 0; j < nCols; j++){
+				StrategyProfile sp = new StrategyProfile(i,j);
+				this.payouts[0].set(sp, rowPayoff[i][j]);
+				this.payouts[1].set(sp, colPayoff[i][j]);
+			}
+		}
+		
+		
+	}
+	
+	/**
+	 * A constructor for a bimatrix zero sum game. The action
+	 * names for each row/column will be named "action0" ... "actionN" where N is the maximum number of rows/columns. 
+	 * @param zeroSumRowPayoff the payoffs for the row player
+	 */
+	public SingleStageNormalFormGame(double [][] zeroSumRowPayoff){
+		this(zeroSumRowPayoff, GeneralBimatrixSolverTools.getNegatedMatrix(zeroSumRowPayoff));
+	}
+	
+	
+	/**
+	 * A constructor for games with a symmetric number of actions for each player. The payoffs will not be set.
 	 * @param actionSets an nxm matrix specifying the m actions names for each of the n players. actionSets[i][j] specifies the jth action name for player i
 	 */
 	public SingleStageNormalFormGame(String [][] actionSets){

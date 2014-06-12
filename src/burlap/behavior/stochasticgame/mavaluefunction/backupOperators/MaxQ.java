@@ -16,7 +16,7 @@ import burlap.oomdp.stochasticgames.JointAction;
  * @author James MacGlashan
  *
  */
-public class MaxBackup implements SGBackupOperator {
+public class MaxQ implements SGBackupOperator {
 
 	@Override
 	public double performBackup(State s, String forAgent, Map<String, AgentType> agentDefinitions, AgentQSourceMap qSourceMap) {
