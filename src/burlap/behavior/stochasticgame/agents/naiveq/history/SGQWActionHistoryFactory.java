@@ -1,5 +1,7 @@
 package burlap.behavior.stochasticgame.agents.naiveq.history;
 
+import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentFactory;
@@ -49,6 +51,17 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	 */
 	protected ActionIdMap												actionMap = null;
 	
+	/**
+	 * A default Q-value initializer
+	 */
+	protected ValueFunctionInitialization								qinit = null;
+	
+	/**
+	 * The epislon value for epislon greedy policy. If negative, then the policy of the created agent
+	 * will not be different than its default.
+	 */
+	protected double													epsilon = -1.;
+	
 	
 	
 	/**
@@ -84,13 +97,42 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 		this.stateHash = stateHash;
 		this.historySize = historySize;
 	}
+	
+	/**
+	 * Sets the Q-value initialization function that will be used by the agent.
+	 * @param qinit the Q-value initialization function.
+	 */
+	public void setQValueInitializer(ValueFunctionInitialization qinit){
+		this.qinit = qinit;
+	}
+	
+	/**
+	 * Sets the epislon parmaeter (for epsilon greedy policy). If set to a negative, then the default policy of the create agent will be used.
+	 * @param epsilon the epsilon value to use
+	 */
+	public void setEpislon(double epsilon){
+		this.epsilon = epsilon;
+	}
 
 	@Override
 	public Agent generateAgent() {
+		SGQWActionHistory agent = null;
 		if(this.actionMap != null){
-			return new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
+			agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
 		}
-		return new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize);
+		else{
+			agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize);
+		}
+		if(this.qinit != null){
+			agent.setQValueInitializer(qinit);
+		}
+		if(this.epsilon >= 0.){
+			EpsilonGreedy egreedy = new EpsilonGreedy(agent, this.epsilon);
+			agent.setStrategy(egreedy);
+		}
+		
+		return agent;
+		
 	}
 
 }
