@@ -110,7 +110,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	 * Sets the epislon parmaeter (for epsilon greedy policy). If set to a negative, then the default policy of the create agent will be used.
 	 * @param epsilon the epsilon value to use
 	 */
-	public void setEpislon(double epsilon){
+	public void setEpsilon(double epsilon){
 		this.epsilon = epsilon;
 	}
 
