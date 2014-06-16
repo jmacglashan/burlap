@@ -30,7 +30,7 @@ import burlap.oomdp.core.State;
  */
 public class DiscreteStateHashFactory implements StateHashFactory {
 
-	Map<String, List<Attribute>>	attributesForHashCode;
+	protected Map<String, List<Attribute>>	attributesForHashCode;
 	
 	/**
 	 * Initializes this hashing factory to compute hash codes with all attributes of all object classes.
