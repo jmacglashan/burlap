@@ -47,7 +47,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	/**
 	 * An action mapping to map from actions to int values
 	 */
-	protected ActionIdMap												actionMap;
+	protected ActionIdMap												actionMap = null;
 	
 	
 	
@@ -69,10 +69,28 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 		this.maxPlayers = maxPlayers;
 		this.actionMap = actionMap;
 	}
+	
+	/**
+	 * Initializes the factory
+	 * @param d the stochastic games domain in which the agent will act
+	 * @param discount The discount rate the Q-learning algorithm will use
+	 * @param learningRate The learning rate the Q-learning algorithm will use
+	 * @param stateHash The state hashing factory the Q-learning algorithm will use
+	 * @param historySize How much history the agent should remember
+	 */
+	public SGQWActionHistoryFactory(SGDomain d, double discount, double learningRate, StateHashFactory stateHash, int historySize) {
+		this.domain = d;
+		this.learningRate = learningRate;
+		this.stateHash = stateHash;
+		this.historySize = historySize;
+	}
 
 	@Override
 	public Agent generateAgent() {
-		return new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
+		if(this.actionMap != null){
+			return new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
+		}
+		return new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize);
 	}
 
 }

@@ -46,6 +46,14 @@ import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
 public class SingleStageNormalFormGame implements DomainGenerator {
 
 	/**
+	 * When this generator is constructed with a generic bimatrix or zero sum definition ({@link #SingleStageNormalFormGame(String[][], double[][][])} or
+	 * {@link #SingleStageNormalFormGame(String[][])}, respectively), action names for each row/column
+	 * will take the form of: DEFAULTBIMATRIXACTIONBASENAMEi where i is the row/column index. More specifically,
+	 * it will be "actioni", since DEFAULTBIMATRIXACTIONBASENAME = "action"
+	 */
+	public static final String				DEFAULTBIMATRIXACTIONBASENAME = "action";
+	
+	/**
 	 * Attribute name for player number
 	 */
 	public static final String				ATTPN = "playerNum";
@@ -146,13 +154,13 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		this.actionSets = new ArrayList<List<String>>();
 		List <String> actionsP1 = new ArrayList<String>();
 		for(int i = 0; i < nRows; i++){
-			actionsP1.add("action" + i);
+			actionsP1.add(DEFAULTBIMATRIXACTIONBASENAME + i);
 		}
 		this.actionSets.add(actionsP1);
 		
 		List <String> actionsP2 = new ArrayList<String>();
 		for(int i = 0; i < nCols; i++){
-			actionsP2.add("action" + i);
+			actionsP2.add(DEFAULTBIMATRIXACTIONBASENAME + i);
 		}
 		this.actionSets.add(actionsP2);
 		
