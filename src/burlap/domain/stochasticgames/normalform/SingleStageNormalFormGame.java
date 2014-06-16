@@ -9,18 +9,24 @@ import java.util.Set;
 
 import burlap.behavior.stochasticgame.solvers.GeneralBimatrixSolverTools;
 import burlap.oomdp.auxiliary.DomainGenerator;
+import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SGStateGenerator;
 import burlap.oomdp.stochasticgames.SingleAction;
+import burlap.oomdp.stochasticgames.World;
+import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.oomdp.stochasticgames.common.StaticRepeatedGameActionModel;
 import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
 
@@ -40,6 +46,11 @@ import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
  * <p/>
  * This class also provides static methods for returning generators for a number of classic bimatrix games: prisoner's dilemma, chicken, hawk dove,
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
+ * <p/>
+ * Finally, this class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
+ * in the constructed game. For this use either the {@link #createRepeatedGameWorld(Agent...)} or {@link #createRepeatedGameWorld(SGDomain, Agent...)}
+ * method. The former method will create an new domain instance using the {@link #generateDomain()} method; the latter will
+ * use an already generated version of the domain that you provide to it.
  * @author James MacGlashan
  *
  */
@@ -369,6 +380,56 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 		
 		return domain;
+	}
+	
+	/**
+	 * Creates a world instance for this game in which the provided agents join in the order they are passed.
+	 * @param agents the agents to join the created world.
+	 * @return a world instance with the provided agents having already joined.
+	 */
+	public World createRepeatedGameWorld(Agent...agents){
+		
+		SGDomain domain = (SGDomain)this.generateDomain();
+		return this.createRepeatedGameWorld(domain, agents);
+		
+	}
+	
+	/**
+	 * Creates a world instance for this game in which the provided agents join in the order they are passed. This object
+	 * uses the provided domain instance generated from this object instead of generating a new one.
+	 * @param agents the agents to join the created world.
+	 * @return a world instance with the provided agents having already joined.
+	 */
+	public World createRepeatedGameWorld(SGDomain domain, Agent...agents){
+		
+		//action model for repeating single stage games; just returns to the same state
+		JointActionModel jam = new StaticRepeatedGameActionModel(); 
+		
+		//grab the joint reward function from our bimatrix game in the more general BURLAP joint reward function interface
+		JointReward jr = this.getJointRewardFunction(); 
+		
+		//game repeats forever unless manually stopped after T times.
+		TerminalFunction tf = new NullTermination();
+		
+		//set up the initial state generator for the world, which for a bimatrix game is trivial
+		SGStateGenerator sg = new ConstantSGStateGenerator(SingleStageNormalFormGame.getState(domain));
+		
+		//agent type defines the action set of players and OO-MDP class associated with their state information
+		//in this case that's just their player number. We can use the same action type for all players, regardless of wether
+		//each agent can play a different number of actions, because the actions have preconditions that prevent a player from taking actions
+		//that don't belong to them.
+		AgentType at = SingleStageNormalFormGame.getAgentTypeForAllPlayers(domain);
+		
+		
+		//create a world to synchronize the actions of agents in this domain and record results
+		World w = new World(domain, jam, jr, tf, sg);
+		
+		for(Agent a : agents){
+			a.joinWorld(w, at);
+		}
+		
+		return w;
+		
 	}
 	
 	
