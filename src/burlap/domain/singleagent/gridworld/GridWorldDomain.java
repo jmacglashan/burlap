@@ -491,7 +491,7 @@ public class GridWorldDomain implements DomainGenerator {
 	/**
 	 * Will return a state object with a single agent object and no location objects
 	 * @param d the domain object that is used to specify the min/max dimensions
-	 * @return a state object with a single agent object and a single location object
+	 * @return a state object with a single agent object and no location objects
 	 */
 	public static State getOneAgentNoLocationState(Domain d){
 		
