@@ -120,15 +120,15 @@ public class MAValueIteration extends MAValueFunctionPlanner {
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount
 	 * @param hashingFactory the hashing factory to use for storing states
-	 * @param qInit the default Q-value to initialize all values to
+	 * @param vInit the default value to initialize all state values to
 	 * @param backupOperator the backup operator that defines the solution concept being solved
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
 	public MAValueIteration(SGDomain domain, Map<String, AgentType> agentDefinitions, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction, 
-			double discount, StateHashFactory hashingFactory, double qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+			double discount, StateHashFactory hashingFactory, double vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, agentDefinitions, jointActionModel, jointReward, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), backupOperator);
+		this.initMAVF(domain, agentDefinitions, jointActionModel, jointReward, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit), backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -145,15 +145,15 @@ public class MAValueIteration extends MAValueFunctionPlanner {
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount
 	 * @param hashingFactory the hashing factory to use for storing states
-	 * @param qInit the q-value initialization function to use.
+	 * @param vInit the state value initialization function to use.
 	 * @param backupOperator the backup operator that defines the solution concept being solved
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
 	public MAValueIteration(SGDomain domain, Map<String, AgentType> agentDefinitions, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction, 
-			double discount, StateHashFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+			double discount, StateHashFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, agentDefinitions, jointActionModel, jointReward, terminalFunction, discount, hashingFactory, qInit, backupOperator);
+		this.initMAVF(domain, agentDefinitions, jointActionModel, jointReward, terminalFunction, discount, hashingFactory, vInit, backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -190,16 +190,17 @@ public class MAValueIteration extends MAValueFunctionPlanner {
 			
 			double maxChange = Double.NEGATIVE_INFINITY;
 			for(StateHashTuple sh : this.states){
-				double change = this.backupAllQs(sh.s);
+				double change = this.backupAllValueFunctions(sh.s);
 				maxChange = Math.max(change, maxChange);
-				//System.out.println("Finished state: " + k);
 			}
+			
+			DPrint.cl(this.debugCode, "Finished pass: " + i + " with max change: " + maxChange);
 			
 			if(maxChange < this.maxDelta){
 				break ;
 			}
 			
-			DPrint.cl(this.debugCode, "Finished pass: " + i + " with max change: " + maxChange);
+			
 			
 		}
 		

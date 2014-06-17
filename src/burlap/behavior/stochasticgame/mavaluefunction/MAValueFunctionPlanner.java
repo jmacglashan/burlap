@@ -7,8 +7,8 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap.HashMapAgentQSourceMap;
-import burlap.behavior.stochasticgame.mavaluefunction.QSourceForSingleAgent.HashBackedQSource;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
@@ -73,7 +73,7 @@ public abstract class MAValueFunctionPlanner implements MultiAgentQSourceProvide
 	/**
 	 * The Q-value initialization function to use.
 	 */
-	protected ValueFunctionInitialization	qInit;
+	protected ValueFunctionInitialization	vInit;
 	
 	/**
 	 * The backup operating defining the solution concept to use.
@@ -103,11 +103,11 @@ public abstract class MAValueFunctionPlanner implements MultiAgentQSourceProvide
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount factor
 	 * @param hashingFactory the state hashing factorying to use to lookup Q-values for individual states
-	 * @param qInit the Q-value initialization function to use
+	 * @param vInit the value function initialization function to use
 	 * @param backupOperator the solution concept backup operator to use.
 	 */
 	public void initMAVF(SGDomain domain, Map<String, AgentType> agentDefinitions, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction, 
-			double discount, StateHashFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator){
+			double discount, StateHashFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
 	
 		this.domain = domain;
 		this.jointActionModel = jointActionModel;
@@ -115,7 +115,7 @@ public abstract class MAValueFunctionPlanner implements MultiAgentQSourceProvide
 		this.terminalFunction = terminalFunction;
 		this.discount = discount;
 		this.hashingFactory = hashingFactory;
-		this.qInit = qInit;
+		this.vInit = vInit;
 		this.backupOperator = backupOperator;
 		
 		
@@ -156,7 +156,7 @@ public abstract class MAValueFunctionPlanner implements MultiAgentQSourceProvide
 		
 		Map<String, QSourceForSingleAgent> hQSources = new HashMap<String, QSourceForSingleAgent>();
 		for(String agent : this.agentDefinitions.keySet()){
-			HashBackedQSource qs = new QSourceForSingleAgent.HashBackedQSource(this.hashingFactory, this.qInit);
+			QSourceForSingleAgent qs = new BackupBasedQSource(agent);
 			hQSources.put(agent, qs);
 		}
 		this.qSources = new AgentQSourceMap.HashMapAgentQSourceMap(hQSources);
@@ -176,93 +176,29 @@ public abstract class MAValueFunctionPlanner implements MultiAgentQSourceProvide
 	}
 	
 	
-	
 	/**
-	 * Backups all the q-values for the given state for all agents defined in the agent definitions.
-	 * @param s the state for which Q-value backups will be performed.
-	 * @return the maximum Q-value change from this backup.
+	 * Backups the state value function for all agent's value functions in state s.
+	 * @param s the state in which the value functions should be backed up.
+	 * @return the maximum value-function change from this backup.
 	 */
-	public double backupAllQs(State s){
+	public double backupAllValueFunctions(State s){
 		
-		this.planningStarted = true;
-		
-		List<JointActionTransitions> jats = this.getAllJATs(s);
+		StateHashTuple sh = this.hashingFactory.hashState(s);
 		
 		double maxChange = Double.NEGATIVE_INFINITY;
-		
-		for(JointActionTransitions jat : jats){
-			double change = this.backupAllQsForAction(s, jat);
-			maxChange = Math.max(maxChange, change);
+		for(String agentName : this.agentDefinitions.keySet()){
+			BackupBasedQSource qsource = (BackupBasedQSource)this.qSources.agentQSource(agentName);
+			double oldVal = qsource.getValue(sh);
+			double newVal = this.backupOperator.performBackup(s, agentName, this.agentDefinitions, this.qSources);
+			maxChange = Math.max(maxChange, Math.abs(newVal-oldVal));
+			qsource.setValue(sh, newVal);
 		}
 		
 		return maxChange;
+		
 	}
 	
 	
-	/**
-	 * Returns all possible joint action transition dynamics from a state in a list of {@link JointActionTransitions} objects.
-	 * @param s the state from which all joint action transtion dynamics will be returned.
-	 * @return all possible joint action transition dynamics from a state in a list of {@link JointActionTransitions} objects.
-	 */
-	protected List<JointActionTransitions> getAllJATs(State s){
-		List<JointAction> jas = JointAction.getAllJointActions(s, this.agentDefinitions);
-		List<JointActionTransitions> jats = new ArrayList<MAValueFunctionPlanner.JointActionTransitions>(jas.size());
-		for(JointAction ja : jas){
-			jats.add(new JointActionTransitions(s, ja));
-		}
-		return jats;
-	}
-	
-	/**
-	 * Perfoms all agent's Q-value backup for the given state and joint action specified in the {@link JointActionTransitions}.
-	 * @param s the state for which Q-value backups will be performed.
-	 * @param jat the {@link JointActionTransitions} object containing all possible joint action transitons from state s for a given joint action.
-	 * @return the maximum Q-value change.
-	 */
-	protected double backupAllQsForAction(State s, JointActionTransitions jat){
-		
-		this.planningStarted = true;
-		
-		double maxChange = Double.NEGATIVE_INFINITY;
-		
-		for(String a : agentDefinitions.keySet()){
-			
-			QSourceForSingleAgent qs = qSources.agentQSource(a);
-			JAQValue curQ = qs.getQValueFor(s, jat.ja);
-			
-			double sumNextQ = 0.;
-			
-			if(!this.terminalFunction.isTerminal(s)){
-			
-				for(int i = 0; i < jat.tps.size(); i++){
-					TransitionProbability tp = jat.tps.get(i);
-					double p = tp.p;
-					State sp = tp.s;
-					double r = jat.jrs.get(i).get(a);
-					double bpQ = 0.;
-					
-					if(!this.terminalFunction.isTerminal(sp)){
-						bpQ = this.backupOperator.performBackup(sp, a, this.agentDefinitions, this.qSources);
-					}
-					
-					
-					double contribution = r + this.discount*bpQ;
-					double weightedContribution = p*contribution;
-					
-					sumNextQ += weightedContribution;
-					
-				}
-				
-			}
-			
-			double change = Math.abs(sumNextQ - curQ.q);
-			maxChange = Math.max(maxChange, change);
-			curQ.q = sumNextQ;
-			
-		}
-		
-		return maxChange;
-	}
 	
 	
 	/**
@@ -292,6 +228,99 @@ public abstract class MAValueFunctionPlanner implements MultiAgentQSourceProvide
 				Map<String, Double> jr = MAValueFunctionPlanner.this.jointReward.reward(s, ja, tp.s);
 				this.jrs.add(jr);
 			}
+		}
+		
+	}
+	
+	
+	/**
+	 * A {@link QSourceForSingleAgent} implementation which stores a value function for an agent and produces Joint action Q-values
+	 * by marginalizing over the transition dynamics the reward and discounted next state value.
+	 * @author James MacGlashan
+	 *
+	 */
+	protected class BackupBasedQSource implements QSourceForSingleAgent{
+
+		/**
+		 * The agent name for which this value function is assigned.
+		 */
+		protected String agentName;
+		
+		/**
+		 * The tabular value function
+		 */
+		protected Map<StateHashTuple, Double> valueFunction = new HashMap<StateHashTuple, Double>();
+		
+		
+		/**
+		 * Initializes a value function for the agent of the given name.
+		 * @param agentName the name of the agent for which the value function corresponds.
+		 */
+		public BackupBasedQSource(String agentName){
+			this.agentName = agentName;
+		}
+		
+		@Override
+		public JAQValue getQValueFor(State s, JointAction ja) {
+			
+			
+			
+			JointActionTransitions jat = new JointActionTransitions(s, ja);
+			double sumQ = 0.;
+			
+			if(!MAValueFunctionPlanner.this.terminalFunction.isTerminal(s)){
+			
+				for(int i = 0; i < jat.tps.size(); i++){
+					TransitionProbability tp = jat.tps.get(i);
+					double p = tp.p;
+					StateHashTuple sh = MAValueFunctionPlanner.this.hashingFactory.hashState(tp.s);
+					double r = jat.jrs.get(i).get(this.agentName);
+					double vprime = this.getValue(sh);
+					
+					
+					double contribution = r + MAValueFunctionPlanner.this.discount*vprime;
+					double weightedContribution = p*contribution;
+					
+					sumQ += weightedContribution;
+					
+				}
+				
+			}
+			
+			JAQValue q = new JAQValue(s, ja, sumQ);
+			
+			
+			return q;
+		}
+		
+		
+		/**
+		 * Returns the stored state value for hashed state sh, or creates an entry with an initial value corresponding to the {@link MAValueFunctionPlanner}
+		 * instance's value function initialization object and returns that value if the the quried state has never previously been indexed.
+		 * @param sh the state for which the value is to be returned.
+		 * @return the value of the state.
+		 */
+		public double getValue(StateHashTuple sh){
+			Double stored = this.valueFunction.get(sh);
+			if(stored != null){
+				return stored;
+			}
+			double v = 0.;
+			if(!MAValueFunctionPlanner.this.terminalFunction.isTerminal(sh.s)){
+				v = MAValueFunctionPlanner.this.vInit.value(sh.s);
+			}
+			this.valueFunction.put(sh, v);
+			return v;
+		}
+		
+		
+		/**
+		 * Sets the value of the state in this objects value function map.
+		 * @param sh the hashed state for which the value is to be set
+		 * @param v the value to set the state to.
+		 */
+		public void setValue(StateHashTuple sh, double v){
+			this.valueFunction.put(sh, v);
 		}
 		
 	}
