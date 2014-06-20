@@ -172,8 +172,25 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 					index += o.getDiscValForAttribute(att.name)*vol;
 					vol *= 31;
 				}
+				else if(att.type==AttributeType.STRING){
+					index += o.getStringValForAttribute(att.name).hashCode()*vol;
+					vol *= 31;
+				}
+				else if(att.type==AttributeType.INTARRAY){
+					index += this.intArrayCode(o.getIntArrayValue(att.name))*vol;
+					vol *= 31;
+				}
 				else if(att.type==AttributeType.REAL || att.type == AttributeType.REALUNBOUND){
 					index += this.getDiscrteizedValue(att, o.getRealValForAttribute(att.name))*vol;
+					vol *= 31;
+				}
+				else if(att.type==AttributeType.DOUBLEARRAY){
+					double [] dblArray = o.getDoubleArrayValue(att.name);
+					int [] intArray = new int[dblArray.length];
+					for(int i = 0; i < intArray.length; i++){
+						intArray[i] = this.getDiscrteizedValue(att, dblArray[i]);
+					}
+					index += this.intArrayCode(o.getIntArrayValue(att.name))*vol;
 					vol *= 31;
 				}
 				else{
@@ -184,6 +201,20 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 			
 			return index;
 			
+		}
+		
+		/**
+		 * Returns an int value for an int array
+		 * @param array the int array
+		 * @return an int value for it
+		 */
+		protected int intArrayCode(int [] array){
+			int sum = 0;
+			for(int i : array){
+				sum *= 31;
+				sum += i;
+			}
+			return sum;
 		}
 		
 		protected int getDiscrteizedValue(Attribute att, double val){
@@ -203,10 +234,13 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
 					vol *= att.discValues.size();
 				}
-				else if(att.type==AttributeType.INT){
+				else if(att.type==AttributeType.INT || att.type == AttributeType.STRING){
 					vol *= 31;
 				}
 				else if(att.type==AttributeType.REAL || att.type == AttributeType.REALUNBOUND){
+					vol *= 31;
+				}
+				else if(att.type == AttributeType.INTARRAY || att.type == AttributeType.DOUBLEARRAY){
 					vol *= 31;
 				}
 				else{
@@ -302,7 +336,8 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 		protected boolean objectsMatch(ObjectInstance o, ObjectInstance oo){
 			
 			for(Attribute att : o.getObjectClass().attributeList){
-				if(att.type == AttributeType.BOOLEAN || att.type == AttributeType.DISC || att.type == AttributeType.INT){
+				if(att.type == AttributeType.BOOLEAN || att.type == AttributeType.DISC || att.type == AttributeType.INT 
+						|| att.type == AttributeType.STRING || att.type == AttributeType.INTARRAY){
 					Value ov = o.getValueForAttribute(att.name);
 					Value oov = oo.getValueForAttribute(att.name);
 					if(!ov.equals(oov)){
@@ -328,6 +363,18 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 						return false;
 					}
 					
+				}
+				else if(att.type == AttributeType.DOUBLEARRAY){
+					double [] dblArray1 = o.getDoubleArrayValue(att.name);
+					double [] dblArray2 = oo.getDoubleArrayValue(att.name);
+					if(dblArray1.length != dblArray2.length){
+						return false;
+					}
+					for(int i = 0; i < dblArray1.length; i++){
+						if(this.getDiscrteizedValue(att, dblArray1[i]) != this.getDiscrteizedValue(att, dblArray2[i])){
+							return false;
+						}
+					}
 				}
 			}
 			
