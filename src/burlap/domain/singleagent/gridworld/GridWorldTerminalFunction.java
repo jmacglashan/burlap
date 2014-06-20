@@ -26,7 +26,7 @@ public class GridWorldTerminalFunction implements TerminalFunction {
 	protected Set<IntPair> terminalPositions = new HashSet<GridWorldTerminalFunction.IntPair>();
 	
 	/**
-	 * Initializes without any terminal states specified.
+	 * Initializes without any terminal positions specified.
 	 */
 	public GridWorldTerminalFunction(){
 		
