@@ -57,6 +57,16 @@ public class DiscreteValue extends Value{
 	}
 	
 	@Override
+	public void setValue(boolean v) {
+		if(v){
+			this.discVal = 1;
+		}
+		else{
+			this.discVal = 0;
+		}
+	}
+	
+	@Override
 	public void setValue(String v){
 		int intv = attribute.discValuesHash.get(v);
 		discVal = intv;
@@ -129,8 +139,34 @@ public class DiscreteValue extends Value{
 		
 	}
 
-	
+	@Override
+	public boolean getBooleanValue() {
+		return this.discVal != 0;
+	}
 
+	
+	@Override
+	public void setValue(int[] intArray) {
+		throw new UnsupportedOperationException("Value is discrete; cannot be set to an int array.");
+	}
+
+
+	@Override
+	public void setValue(double[] doubleArray) {
+		throw new UnsupportedOperationException("Value is discrete; cannot be set to a double array.");
+	}
+
+
+	@Override
+	public int[] getIntArray() {
+		throw new UnsupportedOperationException("Value is discrete; cannot return an int array.");
+	}
+
+
+	@Override
+	public double[] getDoubleArray() {
+		throw new UnsupportedOperationException("Value is discrete; cannot return a double array.");
+	}
 	
 
 	

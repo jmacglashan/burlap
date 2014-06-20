@@ -56,6 +56,11 @@ public class RelationalValue extends Value {
 	public void setValue(double v) {
 		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to a double value"));
 	}
+	
+	@Override
+	public void setValue(boolean v) {
+		throw new UnsupportedOperationException("Value is relational; cannot be set to a boolean value.");
+	}
 
 	@Override
 	public void setValue(String v) {
@@ -121,6 +126,36 @@ public class RelationalValue extends Value {
 		
 		return this.target.equals(op.target);
 		
+	}
+
+
+	@Override
+	public boolean getBooleanValue() {
+		throw new UnsupportedOperationException("Value is relational, cannot return boolean representation.");
+	}
+
+
+	@Override
+	public void setValue(int[] intArray) {
+		throw new UnsupportedOperationException("Value is relational; cannot be set to an int array.");
+	}
+
+
+	@Override
+	public void setValue(double[] doubleArray) {
+		throw new UnsupportedOperationException("Value is relational; cannot be set to a double array.");
+	}
+
+
+	@Override
+	public int[] getIntArray() {
+		throw new UnsupportedOperationException("Value is relational; cannot return an int array.");
+	}
+
+
+	@Override
+	public double[] getDoubleArray() {
+		throw new UnsupportedOperationException("Value is relational; cannot return a double array.");
 	}
 
 

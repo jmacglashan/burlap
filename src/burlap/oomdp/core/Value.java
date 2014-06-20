@@ -120,6 +120,23 @@ public abstract class Value {
 	 */
 	public abstract void removeRelationalTarget(String target);
 	
+	/**
+	 * Sets the internalvalue representation using a boolean value
+	 * @param v the boolean value
+	 */
+	public abstract void setValue(boolean v);
+	
+	/**
+	 * Sets the int array value.
+	 * @param intArray the int array value to set.
+	 */
+	public abstract void setValue(int [] intArray);
+	
+	/**
+	 * Sets the double array value.
+	 * @param doubleArray the double array value to set.
+	 */
+	public abstract void setValue(double [] doubleArray);
 	
 	/**
 	 * Returns the discrete integer value of this Value object
@@ -146,6 +163,25 @@ public abstract class Value {
 	 */
 	public abstract Set <String> getAllRelationalTargets();
 	
+	/**
+	 * Returns the boolean value of this attibute. For int values, this means 0 = false and all other values = true.
+	 * @return the boolean value of this attribute.
+	 */
+	public abstract boolean getBooleanValue();
+	
+	
+	/**
+	 * Returns an int array value
+	 * @return an int array value
+	 */
+	public abstract int [] getIntArray();
+	
+	
+	/**
+	 * Returns a double array value
+	 * @return a double array value.
+	 */
+	public abstract double [] getDoubleArray();
 	
 	
 	/**

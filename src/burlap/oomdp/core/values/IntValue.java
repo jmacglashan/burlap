@@ -59,6 +59,16 @@ public class IntValue extends Value {
 	public void setValue(String v) {
 		this.intVal = Integer.parseInt(v);
 	}
+	
+	@Override
+	public void setValue(boolean v) {
+		if(v){
+			this.intVal = 1;
+		}
+		else{
+			this.intVal = 0;
+		}
+	}
 
 	@Override
 	public void addRelationalTarget(String t) {
@@ -115,6 +125,35 @@ public class IntValue extends Value {
 		
 		return this.intVal == o.intVal;
 		
+	}
+
+
+	@Override
+	public boolean getBooleanValue() {
+		return this.intVal != 0;
+	}
+	
+	@Override
+	public void setValue(int[] intArray) {
+		throw new UnsupportedOperationException("Value is int; cannot be set to an int array.");
+	}
+
+
+	@Override
+	public void setValue(double[] doubleArray) {
+		throw new UnsupportedOperationException("Value is int; cannot be set to a double array.");
+	}
+
+
+	@Override
+	public int[] getIntArray() {
+		throw new UnsupportedOperationException("Value is int; cannot return an int array.");
+	}
+
+
+	@Override
+	public double[] getDoubleArray() {
+		throw new UnsupportedOperationException("Value is int; cannot return a double array.");
 	}
 
 }

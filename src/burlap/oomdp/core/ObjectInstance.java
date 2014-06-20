@@ -119,6 +119,39 @@ public class ObjectInstance {
 	}
 	
 	/**
+	 * Sets the value of the attribute named attName for this object instance.
+	 * @param attName the name of the attribute whose value is to be set.
+	 * @param v the int rep value to which the attribute of this object instance should be set.
+	 */
+	public void setValue(String attName, boolean v){
+		int ind = obClass.attributeIndex(attName);
+		values.get(ind).setValue(v);
+		
+	}
+	
+	/**
+	 * Sets the value of the attribute named attName for this object instance.
+	 * @param attName the name of the attribute whose value is to be set.
+	 * @param v the int array rep value to which the attribute of this object instance should be set.
+	 */
+	public void setValue(String attName, int [] v){
+		int ind = obClass.attributeIndex(attName);
+		values.get(ind).setValue(v);
+		
+	}
+	
+	/**
+	 * Sets the value of the attribute named attName for this object instance.
+	 * @param attName the name of the attribute whose value is to be set.
+	 * @param v the double array rep value to which the attribute of this object instance should be set.
+	 */
+	public void setValue(String attName, double [] v){
+		int ind = obClass.attributeIndex(attName);
+		values.get(ind).setValue(v);
+		
+	}
+	
+	/**
 	 * Sets the relational value of the attribute named attName for this object instance. If the
 	 * attribute is a multi-target relational attribute, then this value is added to the target list.
 	 * @param attName the name of the relational attribute that will have a relational target added/set
@@ -230,6 +263,37 @@ public class ObjectInstance {
 	public Set <String> getAllRelationalTargets(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getAllRelationalTargets();
+	}
+	
+	/**
+	 * Returns the boolean value of the attribute (only defined for boolean attributes, int, and disc values).
+	 * @param attName the name of the attribute whose value should be returned
+	 * @return true if the value for the attribute evaluates to true, false otherwise.
+	 */
+	public boolean getBooleanValue(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getBooleanValue();
+	}
+	
+	/**
+	 * Returns the int array value of the attribute (only defined for int array attributes).
+	 * @param attName the name of the attribute whose value should be returned.
+	 * @return the int array value.
+	 */
+	public int [] getIntArrayValue(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getIntArray();
+	}
+	
+	
+	/**
+	 * Returns the int array value of the attribute (only defined for int array attributes).
+	 * @param attName the name of the attribute whose value should be returned.
+	 * @return the int array value.
+	 */
+	public double [] getDoubleArrayValue(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getDoubleArray();
 	}
 	
 	

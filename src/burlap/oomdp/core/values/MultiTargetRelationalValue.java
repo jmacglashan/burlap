@@ -66,6 +66,11 @@ public class MultiTargetRelationalValue extends Value {
 	}
 	
 	@Override
+	public void setValue(boolean v) {
+		throw new UnsupportedOperationException("Value is of relational; cannot be set to a boolean value.");
+	}
+	
+	@Override
 	public void addRelationalTarget(String t) {
 		this.targetObjects.add(t);
 	}
@@ -143,6 +148,33 @@ public class MultiTargetRelationalValue extends Value {
 	}
 
 
+	@Override
+	public boolean getBooleanValue() {
+		throw new UnsupportedOperationException("Value is MultiTargetRelational, cannot return boolean representation.");
+	}
+
+	@Override
+	public void setValue(int[] intArray) {
+		throw new UnsupportedOperationException("Value is relational; cannot be set to an int array.");
+	}
+
+
+	@Override
+	public void setValue(double[] doubleArray) {
+		throw new UnsupportedOperationException("Value is relational; cannot be set to a double array.");
+	}
+
+
+	@Override
+	public int[] getIntArray() {
+		throw new UnsupportedOperationException("Value is relational; cannot return an int array.");
+	}
+
+
+	@Override
+	public double[] getDoubleArray() {
+		throw new UnsupportedOperationException("Value is relational; cannot return a double array.");
+	}
 	
 
 }
