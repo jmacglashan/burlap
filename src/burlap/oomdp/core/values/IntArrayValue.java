@@ -82,14 +82,12 @@ public class IntArrayValue extends Value {
 	@Override
 	public String getStringVal() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("\"");
 		for(int i = 0; i < this.intArray.length; i++){
 			if(i > 0){
 				buf.append(",");
 			}
 			buf.append(this.intArray[i]);
 		}
-		buf.append("\"");
 		return buf.toString();
 	}
 
