@@ -294,6 +294,64 @@ public abstract class Action {
 		return transition;
 	}
 	
+	
+	
+	/**
+	 * Returns all possible groundings of this action that can be applied in the provided {@link State}. To check if a grounded
+	 * action is applicable in the state, the {@link #applicableInState(State, String[])} method is checked.
+	 * The default behavior of this method is to treat the parameters as possible object bindings, finding all bindings
+	 * that satisfy the object class typing specified and then checking them against the {@link #applicableInState(State, String[])}
+	 * method. However, this class can also be overridden to provide custom
+	 * grounding behavior or non-object based parameterizations.
+	 * @param s the {@link State} in which all applicable grounded actions of this {@link Action} object should be returned.
+	 * @return a list of all applicable {@link GroundedAction}s of this {@link Action} object in in the given {@link State}
+	 */
+	public List<GroundedAction> getAllApplicableGroundedActions(State s){
+		
+		List <GroundedAction> res = new ArrayList<GroundedAction>();
+		if(this.parameterClasses.length == 0){
+			//parameterless action
+			if(this.applicableInState(s, "")){
+				res.add(new GroundedAction(this, ""));
+			}
+			return res; //no parameters to ground
+		}
+		
+		//otherwise need to do parameter binding
+		List <List <String>> bindings = s.getPossibleBindingsGivenParamOrderGroups(this.getParameterClasses(), this.getParameterOrderGroups());
+		
+		for(List <String> params : bindings){
+			String [] aprams = params.toArray(new String[params.size()]);
+			if(this.applicableInState(s, aprams)){
+				GroundedAction gp = new GroundedAction(this, aprams);
+				res.add(gp);
+			}
+		}
+		
+		return res;
+	
+	}
+	
+	
+	/**
+	 * Returns all {@link GroundedAction}s that are applicable in the given {@link State} for all {@link Action} objects in the provided list. This method
+	 * operates by calling the {@link #getAllApplicableGroundedActions(State)} method on each action and adding all the results
+	 * to a list that is then returned.
+	 * @param actions The list of all actions for which grounded actions should be returned.
+	 * @param s the state
+	 * @return a list of all the {@link GroundedAction}s for all {@link Action} in the list that are applicable in the given {@link State}
+	 */
+	public static List<GroundedAction> getAllApplicableGroundedActionsFromActionSet(List<Action> actions, State s){
+		List<GroundedAction> res = new ArrayList<GroundedAction>();
+		for(Action a : actions){
+			res.addAll(a.getAllApplicableGroundedActions(s));
+		}
+		return res;
+	}
+	
+	
+	
+	
 	/**
 	 * This method determines what happens when an action is applied in the given state with the given parameters. The State
 	 * object s may be directly modified in this method since the parent method first copies the input state to pass
@@ -306,7 +364,7 @@ public abstract class Action {
 	
 	
 	
-	
+	@Override
 	public boolean equals(Object obj){
 		Action op = (Action)obj;
 		if(op.name.equals(name))
@@ -314,6 +372,8 @@ public abstract class Action {
 		return false;
 	}
 	
+	
+	@Override
 	public int hashCode(){
 		return name.hashCode();
 	}
