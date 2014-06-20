@@ -72,6 +72,9 @@ public class StateYAMLParser implements StateParser {
 				else if(a.type == AttributeType.MULTITARGETRELATIONAL){
 					objectData.put(a.name, o.getAllRelationalTargets(a.name));
 				}
+				else if(a.type == AttributeType.STRING || a.type == AttributeType.INTARRAY || a.type == AttributeType.DOUBLEARRAY){
+					objectData.put(a.name, o.getStringValForAttribute(a.name));
+				}
 			}
 			yamlData.add(objectData);
 		}
@@ -127,6 +130,9 @@ public class StateYAMLParser implements StateParser {
 					for(Object rtarget : rset){
 						ob.addRelationalTarget(a.name, (String)rtarget);
 					}
+				}
+				else if(a.type == AttributeType.STRING || a.type == AttributeType.INTARRAY || a.type == AttributeType.DOUBLEARRAY){
+					ob.setValue(a.name, (String)oMap.get(a.name));
 				}
 			}
 			s.addObject(ob);

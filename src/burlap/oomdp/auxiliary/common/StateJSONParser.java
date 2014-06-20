@@ -8,28 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-
-
-
-
-
-//import org.yaml.snakeyaml.Yaml;
-//import com.fasterxml.jackson.core.json.JsonParser;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 
 /**
@@ -86,6 +79,9 @@ public class StateJSONParser implements StateParser {
 				else if(a.type == AttributeType.MULTITARGETRELATIONAL){
 					objectData.put(a.name, o.getAllRelationalTargets(a.name));
 				}
+				else if(a.type == AttributeType.STRING || a.type == AttributeType.INTARRAY || a.type == AttributeType.DOUBLEARRAY){
+					objectData.put(a.name, o.getStringValForAttribute(a.name));
+				}
 			}
 			jsonData.add(objectData);
 		}
@@ -125,10 +121,8 @@ public class StateJSONParser implements StateParser {
 					new TypeReference<List<Map<String, Object>>>() {};
 			objects = objectMapper.readValue(str, listTypeRef);
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -176,6 +170,9 @@ public class StateJSONParser implements StateParser {
 					for(Object rtarget : rset){
 						ob.addRelationalTarget(a.name, (String)rtarget);
 					}
+				}
+				else if(a.type == AttributeType.STRING || a.type == AttributeType.INTARRAY || a.type == AttributeType.DOUBLEARRAY){
+					ob.setValue(a.name, (String)oMap.get(a.name));
 				}
 			}
 			s.addObject(ob);
