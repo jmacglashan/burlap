@@ -115,7 +115,7 @@ public class StringValue extends Value {
 			return false;
 		}
 		
-		return this.stringVal == o.stringVal;
+		return this.stringVal.equals(o.stringVal);
 		
 	}
 
