@@ -588,7 +588,8 @@ public class ApprenticeshipLearning {
 			StateHashTuple stateHashTuple = this.hashFactory.hashState(state);
 
 			// Get all possible actions from this state
-			List<GroundedAction> groundedActions = state.getAllGroundedActionsFor(this.actions);
+			//List<GroundedAction> groundedActions = state.getAllGroundedActionsFor(this.actions);
+			List<GroundedAction> groundedActions = Action.getAllApplicableGroundedActionsFromActionList(this.actions, state);
 			Double[] probabilities = new Double[groundedActions.size()];
 			Double sum = 0.0;
 

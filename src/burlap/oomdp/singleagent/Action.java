@@ -339,9 +339,9 @@ public abstract class Action {
 	 * to a list that is then returned.
 	 * @param actions The list of all actions for which grounded actions should be returned.
 	 * @param s the state
-	 * @return a list of all the {@link GroundedAction}s for all {@link Action} in the list that are applicable in the given {@link State}
+	 * @return a {@link List} of all the {@link GroundedAction}s for all {@link Action} in the list that are applicable in the given {@link State}
 	 */
-	public static List<GroundedAction> getAllApplicableGroundedActionsFromActionSet(List<Action> actions, State s){
+	public static List<GroundedAction> getAllApplicableGroundedActionsFromActionList(List<Action> actions, State s){
 		List<GroundedAction> res = new ArrayList<GroundedAction>();
 		for(Action a : actions){
 			res.addAll(a.getAllApplicableGroundedActions(s));

@@ -191,7 +191,8 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		List <QValue> res = new ArrayList<QValue>();
 		for(Action a : actions){
-			List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
+			//List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
+			List<GroundedAction> applications = a.getAllApplicableGroundedActions(s);
 			for(GroundedAction ga : applications){
 				res.add(this.getQ(sh, ga, matching));
 			}
@@ -303,10 +304,12 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			
 			
 			//first get all grounded actions for this state
+			/*
 			List <GroundedAction> gas = new ArrayList<GroundedAction>();
 			for(Action a : actions){
 				gas.addAll(sh.s.getAllGroundedActionsFor(a));
-			}
+			}*/
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			
 			//now add transitions
 			allTransitions = new ArrayList<ActionTransitions>(gas.size());
@@ -382,7 +385,8 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		else{
 			
-			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			for(GroundedAction ga : gas){
 				double q = this.computeQ(sh, ga);
 				if(q > maxQ){
@@ -437,7 +441,8 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		else{
 			
-			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			for(GroundedAction ga : gas){
 				
 				double policyProb = Policy.getProbOfActionGivenDistribution(sh.s, ga, policyDistribution);

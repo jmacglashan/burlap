@@ -1,6 +1,5 @@
 package burlap.behavior.singleagent.planning.deterministic.uninformed.bfs;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,11 +86,13 @@ public class BFS extends DeterministicPlanner {
 			}
 			
 			//first get all grounded actions for this state
-			List <GroundedAction> gas = new ArrayList<GroundedAction>();
+			/*List <GroundedAction> gas = new ArrayList<GroundedAction>();
 			for(Action a : actions){
 				gas.addAll(s.getAllGroundedActionsFor(a));
+				
 			}
-			
+			*/
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
 			
 			
 			//add children reach from each deterministic action

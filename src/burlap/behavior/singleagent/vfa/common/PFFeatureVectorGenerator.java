@@ -53,7 +53,8 @@ public class PFFeatureVectorGenerator implements StateToFeatureVectorGenerator {
 		
 		List<Double> featureValueList = new LinkedList<Double>();
 		for(PropositionalFunction pf : this.pfsToUse){
-			List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
 				if(gp.isTrue(s)){
 					featureValueList.add(1.);

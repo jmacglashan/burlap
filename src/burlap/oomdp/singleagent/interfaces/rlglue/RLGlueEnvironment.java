@@ -151,7 +151,8 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		State exampleState = this.stateGenerator.generateState();
 		int actionInd = 0;
 		for(burlap.oomdp.singleagent.Action a : this.domain.getActions()){
-			List<GroundedAction> gas = exampleState.getAllGroundedActionsFor(a);
+			//List<GroundedAction> gas = exampleState.getAllGroundedActionsFor(a);
+			List<GroundedAction> gas = a.getAllApplicableGroundedActions(exampleState);
 			for(GroundedAction ga : gas){
 				ActionIndexParameterization ap = new ActionIndexParameterization(ga, exampleState);
 				this.actionMap.put(actionInd, ap);

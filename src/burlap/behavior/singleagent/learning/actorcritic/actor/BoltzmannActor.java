@@ -175,7 +175,8 @@ public class BoltzmannActor extends Actor {
 	 */
 	protected PolicyNode getNode(StateHashTuple sh){
 		
-		List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 		
 		PolicyNode node = this.preferences.get(sh);
 		if(node == null){

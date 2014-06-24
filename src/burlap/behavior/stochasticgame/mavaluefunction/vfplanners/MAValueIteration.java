@@ -12,17 +12,14 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.stochasticgame.mavaluefunction.MAValueFunctionPlanner;
 import burlap.behavior.stochasticgame.mavaluefunction.SGBackupOperator;
 import burlap.debugtools.DPrint;
-import burlap.domain.stochasticgames.gridgame.GGVisualizer;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.visualizer.Visualizer;
 
 
 /**

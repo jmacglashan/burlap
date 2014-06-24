@@ -44,7 +44,7 @@ public class SinglePFTF implements TerminalFunction {
 	
 	
 	/**
-	 * Sets whether to be terminal state it is required for there to be a true grounded version of this classes propositional function
+	 * Sets whether to be terminal state it is required for there to be a true grounded version of this class' propositional function
 	 * or whether it is required for there to be a false grounded version.
 	 * @param terminateOnTrue if true then there must be a true grounded prop; if false then there must be a false grounded prop.
 	 */
@@ -54,7 +54,8 @@ public class SinglePFTF implements TerminalFunction {
 	
 	@Override
 	public boolean isTerminal(State s) {
-		List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+		//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+		List<GroundedProp> gps = this.pf.getAllGroundedPropsForState(s);
 		if(terminateOnTrue){
 			for(GroundedProp gp : gps){
 				if(gp.isTrue(s)){

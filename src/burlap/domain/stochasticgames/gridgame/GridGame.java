@@ -803,7 +803,8 @@ public class GridGame implements DomainGenerator {
 			
 			
 			//check for any agents that reached a universal goal location and give them a goal reward if they did
-			List<GroundedProp> upgps = sp.getAllGroundedPropsFor(agentInUniversalGoal);
+			//List<GroundedProp> upgps = sp.getAllGroundedPropsFor(agentInUniversalGoal);
+			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(sp);
 			for(GroundedProp gp : upgps){
 				String agentName = gp.params[0];
 				if(gp.isTrue(sp)){
@@ -813,7 +814,8 @@ public class GridGame implements DomainGenerator {
 			
 			
 			//check for any agents that reached a personal goal location and give them a goal reward if they did
-			List<GroundedProp> ipgps = sp.getAllGroundedPropsFor(agentInPersonalGoal);
+			//List<GroundedProp> ipgps = sp.getAllGroundedPropsFor(agentInPersonalGoal);
+			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(sp);
 			for(GroundedProp gp : ipgps){
 				String agentName = gp.params[0];
 				if(gp.isTrue(sp)){
@@ -890,7 +892,8 @@ public class GridGame implements DomainGenerator {
 		public boolean isTerminal(State s) {
 			
 			//check personal goals; if anyone reached their personal goal, it's game over
-			List<GroundedProp> ipgps = s.getAllGroundedPropsFor(agentInPersonalGoal);
+			//List<GroundedProp> ipgps = s.getAllGroundedPropsFor(agentInPersonalGoal);
+			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : ipgps){
 				if(gp.isTrue(s)){
 					return true;
@@ -899,7 +902,8 @@ public class GridGame implements DomainGenerator {
 			
 			
 			//check universal goals; if anyone reached a universal goal, it's game over
-			List<GroundedProp> upgps = s.getAllGroundedPropsFor(agentInUniversalGoal);
+			//List<GroundedProp> upgps = s.getAllGroundedPropsFor(agentInUniversalGoal);
+			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : upgps){
 				if(gp.isTrue(s)){
 					return true;

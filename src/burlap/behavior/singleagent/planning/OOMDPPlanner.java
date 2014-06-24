@@ -271,7 +271,8 @@ public abstract class OOMDPPlanner {
 	 */
 	protected List <GroundedAction> getAllGroundedActions(State s){
 		
-		return s.getAllGroundedActionsFor(this.actions);
+		//return s.getAllGroundedActionsFor(this.actions);
+		return Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
 		
 	}
 	
