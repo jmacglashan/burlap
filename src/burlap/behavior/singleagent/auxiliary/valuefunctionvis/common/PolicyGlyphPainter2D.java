@@ -11,6 +11,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StatePolicyPainter
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.Attribute.AttributeType;
 
 
 /**
@@ -236,33 +237,35 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 		float width = 0f;
 		float height = 0f;
 		
-		if(xAtt.type == Attribute.AttributeType.DISC){
-			
-			if(this.numXCells != -1){
-				domainXScale = this.numXCells;
-			}
-			else{
-				domainXScale = xAtt.discValues.size();
-			}
-			
-			width = cWidth / domainXScale;
-			xval = xOb.getDiscValForAttribute(xAttName)*width;
-			
+		if(this.numXCells != -1){
+			domainXScale = this.numXCells;
 		}
+		else if(xAtt.type == Attribute.AttributeType.DISC){
+			domainXScale = xAtt.discValues.size();
+		}
+		else if(xAtt.type == AttributeType.INT){
+			domainXScale = (float)(xAtt.upperLim - xAtt.lowerLim + 1);
+		}
+		else {
+			domainXScale = (float)(xAtt.upperLim - xAtt.lowerLim);
+		}
+		width = cWidth / domainXScale;
+		xval = ((float)(xOb.getNumericValForAttribute(xAttName) - xAtt.lowerLim))*width;
 		
-		if(yAtt.type == Attribute.AttributeType.DISC){
-			
-			if(this.numYCells != -1){
-				domainYScale = this.numYCells;
-			}
-			else{
-				domainYScale = yAtt.discValues.size();
-			}
-			
-			height = cHeight / domainYScale;
-			yval = cHeight - height - yOb.getDiscValForAttribute(yAttName)*height;
-			
+		if(this.numYCells != -1){
+			domainYScale = this.numYCells;
 		}
+		else if(yAtt.type == AttributeType.DISC){
+			domainYScale = yAtt.discValues.size();
+		}
+		else if(yAtt.type == AttributeType.INT){
+			domainYScale = (float)(yAtt.upperLim - yAtt.lowerLim + 1);
+		}
+		else{
+			domainYScale = (float)(yAtt.upperLim - yAtt.lowerLim);
+		}
+		height = cHeight / domainYScale;
+		yval = cHeight - height - ((float)(yOb.getNumericValForAttribute(yAttName) - yAtt.lowerLim))*height;
 		
 		
 		List<ActionProb> pdist = policy.getActionDistributionForState(s);
