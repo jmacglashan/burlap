@@ -257,6 +257,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	/**
 	 * Gets a Q-Value for a hashed state, grounded action, and object instance matching from the hashed states an internally stored hashed transition dynamics.
+	 * If the input state is a terminal state, then the value 0 is returned.
 	 * @param sh the input state
 	 * @param a the action to get the Q-value for
 	 * @param matching the object instance matching from sh to the corresponding state stored in the value function
@@ -280,7 +281,10 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			}
 		}
 		
-		double q = this.computeQ(sh.s, matchingAt);
+		double q = 0.;
+		if(!this.tf.isTerminal(sh.s)){
+			q = this.computeQ(sh.s, matchingAt);
+		}
 		
 		return new QValue(sh.s, a, q);
 	}
