@@ -62,6 +62,7 @@ public class GroundedSingleAction extends AbstractGroundedAction{
 	
 	
 	
+	
 	/**
 	 * Returns a string specifying the action name and parameters used in this GroundedSingleAction.
 	 * @return a string specifying the action name and parameters used in this GroundedSingleAction.
@@ -166,6 +167,12 @@ public class GroundedSingleAction extends AbstractGroundedAction{
 	@Override
 	public AbstractGroundedAction copy() {
 		return new GroundedSingleAction(this.actingAgent, this.action, this.params);
+	}
+
+
+	@Override
+	public boolean parametersAreObjects() {
+		return this.action.parametersAreObjects();
 	}
 
 }

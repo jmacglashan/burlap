@@ -219,7 +219,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				mapToStateIndex.put(indexSH, indexSH);
 			}
 			
-			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
+			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
 				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 			}
 			return this.getQ(sh, (GroundedAction)a, matching);
@@ -267,7 +267,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		//translate grounded action if necessary
 		GroundedAction ta = a;
-		if(matching != null){
+		if(matching != null && a.parametersAreObjects()){
 			ta = this.translateAction(ta, matching);
 		}
 		

@@ -139,5 +139,11 @@ public class GroundedAction extends AbstractGroundedAction{
 	public AbstractGroundedAction copy() {
 		return new GroundedAction(action, params);
 	}
+
+
+	@Override
+	public boolean parametersAreObjects() {
+		return this.action.parametersAreObjects();
+	}
 	
 }

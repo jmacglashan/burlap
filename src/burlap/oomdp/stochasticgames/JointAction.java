@@ -214,7 +214,7 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 
 	@Override
 	public State executeIn(State s) {
-		throw new RuntimeException("Joint action cannnot be directly executed; apply with it a joint action model instead.");
+		throw new RuntimeException("Joint action cannnot be directly executed; apply it with a joint action model instead.");
 	}
 
 
@@ -320,6 +320,13 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 			allJointActionsHelper(individualActionChoices, i+1, currentSelections, allJointActions);
 			currentSelections.pop();
 		}
+	}
+
+
+
+	@Override
+	public boolean parametersAreObjects() {
+		return false;
 	}
 
 

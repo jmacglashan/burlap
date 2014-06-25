@@ -368,7 +368,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	protected QValue getQ(StateHashTuple s, GroundedAction a) {
 		QLearningStateNode node = this.getStateNode(s);
 		
-		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent()){
+		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
 			Map<String, String> matching = s.s.getObjectMatchingTo(node.s.s, false);
 			a = this.translateAction(a, matching);
 		}

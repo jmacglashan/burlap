@@ -4,6 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.SingleAction;
+
 public abstract class AbstractGroundedAction {
 
 	/**
@@ -60,6 +64,15 @@ public abstract class AbstractGroundedAction {
 	
 	
 	/**
+	 * Returns true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
+	 * This method will query the refenced action object to evaluate. (e.g., {@link GroundedAction} will query
+	 * its referenced {@link Action} object; {@link GroundedSingleAction} will query its referenced {@link SingleAction}.
+	 * @return true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
+	 */
+	public abstract boolean parametersAreObjects();
+	
+	
+	/**
 	 * This method will translate this object's parameters that were assigned for a given source state, into object parameters in the
 	 * target state that are equal. This method is useful if a domain uses parameterized actions and is object identifier invariant.
 	 * If the domain of this grounded aciton's action is object identifier dependent, then no translation will occur
@@ -70,8 +83,8 @@ public abstract class AbstractGroundedAction {
 	 */
 	public AbstractGroundedAction translateParameters(State sourceState, State targetState){
 		
-		if(this.params.length == 0 || this.actionDomainIsObjectIdentifierDependent()){
-			//no need to translate a parameterless action or an action that belongs to a name dependent domain
+		if(this.params.length == 0 || this.actionDomainIsObjectIdentifierDependent() || !this.parametersAreObjects()){
+			//no need to translate a parameterless action or an action that belongs to a name dependent domain or actions that do not have objects as parameters
 			return this;
 		}
 		

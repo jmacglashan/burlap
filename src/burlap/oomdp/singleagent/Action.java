@@ -159,6 +159,15 @@ public abstract class Action {
 	}
 	
 	/**
+	 * Returns true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
+	 * The default behavior is to return True; but this can be overriden for special actions.
+	 * @return true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
+	 */
+	public boolean parametersAreObjects(){
+		return true;
+	}
+	
+	/**
 	 * Returns the domain to which this action belongs.
 	 * @return the domain to which this action belongs.
 	 */

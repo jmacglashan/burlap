@@ -99,6 +99,15 @@ public abstract class SingleAction {
 	
 	
 	/**
+	 * Returns true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
+	 * The default behavior is to return True; but this can be overriden for special actions.
+	 * @return true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
+	 */
+	public boolean parametersAreObjects(){
+		return true;
+	}
+	
+	/**
 	 * Returns all possible grounded versions of the provided list of SingleAction objects that an agent can take in the given state. 
 	 * @param s the state in which to execute actions
 	 * @param actingAgent the agent who will be executing the actions

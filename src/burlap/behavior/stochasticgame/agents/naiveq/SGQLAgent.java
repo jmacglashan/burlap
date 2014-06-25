@@ -283,7 +283,7 @@ public class SGQLAgent extends Agent implements QComputablePlanner{
 		Map <String, String> matching = null;
 		for(GroundedSingleAction gsa :gsas){
 			GroundedSingleAction transgsa = gsa;
-			if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent()){
+			if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent() && gsa.parametersAreObjects()){
 				if(matching == null){
 					matching = shq.s.getObjectMatchingTo(storedRep, false);
 				}
@@ -336,7 +336,7 @@ public class SGQLAgent extends Agent implements QComputablePlanner{
 			return q;
 		}
 		
-		if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent()){
+		if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
 			//then we'll need to translate this action to match the internal state representation
 			Map <String, String> matching = shq.s.getObjectMatchingTo(storedRep, false);
 			gsa = this.translateAction(gsa, matching);
