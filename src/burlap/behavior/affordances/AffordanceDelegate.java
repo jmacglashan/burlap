@@ -109,7 +109,7 @@ public class AffordanceDelegate {
 				PropositionalFunction preCondPF = d.getPropFunction(pfName);
 				
 				// Get grounded prop free variables
-				String[] groundedPropPreCondFreeVars = makeFreeVarListFromOrderGroups(preCondPF.getParameterOrderGroups(), preCondPF.getParameterClasses());
+				String[] groundedPropPreCondFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
 				
 				GroundedProp preCondGroundedProp = new GroundedProp(preCondPF, groundedPropPreCondFreeVars);
 				preCondition = new PFAtom(preCondGroundedProp);
@@ -118,7 +118,7 @@ public class AffordanceDelegate {
 				PropositionalFunction goalPF = d.getPropFunction(pfName);
 				
 				// TODO: BETTER FREE VARIABLE BINDINGS
-				String[] groundedPropGoalFreeVars = makeFreeVarListFromOrderGroups(preCondPF.getParameterOrderGroups(), preCondPF.getParameterClasses());
+				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
 				
 				GroundedProp goalGroundedProp = new GroundedProp(goalPF, groundedPropGoalFreeVars);
 				goal = new PFAtom(goalGroundedProp);
@@ -134,7 +134,7 @@ public class AffordanceDelegate {
 				
 				// Get action free variables
 				Action act = d.getAction(actName);
-				String[] actionParams = makeFreeVarListFromOrderGroups(act.getParameterOrderGroups(), act.getParameterClasses());
+				String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
 				
 				GroundedAction ga = new GroundedAction(act, actionParams);
 				actionCounts.put(ga, count);
@@ -165,13 +165,13 @@ public class AffordanceDelegate {
 	 * @param objectClasses
 	 * @return: String[] - a list of free variables
 	 */
-	public static String[] makeFreeVarListFromOrderGroups(String[] orderGroups, String[] objectClasses){
+	public static String[] makeFreeVarListFromObjectClasses(String[] objectClasses){
 		List<String> groundedPropFreeVariablesList = new ArrayList<String>();
 		
 		// TODO: improve variable binding stuff
 		// Make variables free
-		for(String orderGroup : orderGroups){
-			String freeVar = "?" + orderGroup;
+		for(String objectClass : objectClasses){
+			String freeVar = "?" + objectClass.charAt(0);
 			groundedPropFreeVariablesList.add(freeVar);
 		}
 		String[] groundedPropFreeVars = new String[groundedPropFreeVariablesList.size()];

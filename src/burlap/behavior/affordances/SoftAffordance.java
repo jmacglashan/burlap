@@ -59,7 +59,7 @@ public class SoftAffordance extends Affordance {
 		// Loop over sizes until we find the one that was sampled
 		for (int i = 0; i < sizes.length; i++) {
 			if (sizes[i] > 0) {
-				n = i + 1;
+				n = i;
 				break;
 			}
 		}
@@ -176,6 +176,10 @@ public class SoftAffordance extends Affordance {
 	}
 	
 	public String toString() {
+		return this.preCondition.toString();
+	}
+	
+	public String toFile() {
 		String out = "";
 
 		// Header information (what the affordance's PF and LGD are)
