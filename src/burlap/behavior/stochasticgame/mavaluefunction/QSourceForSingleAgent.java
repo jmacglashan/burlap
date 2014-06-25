@@ -13,7 +13,7 @@ import burlap.oomdp.stochasticgames.JointAction;
 
 /**
  * And interface for objects that can store and retrive Q-value objects for a specific agent and state and joint action query. The 
- * @{link JAQValue} returned can have their q datamember directly modified to modify the Q-values stored and retreived in this object.
+ * {@link JAQValue} returned can have their q datamember directly modified to modify the Q-values stored and retreived in this object.
  * A hash-backed implementation is also provided in this interface definition.
  * @author James MacGlashan
  *

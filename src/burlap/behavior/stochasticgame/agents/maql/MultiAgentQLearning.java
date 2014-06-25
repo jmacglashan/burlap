@@ -15,6 +15,7 @@ import burlap.behavior.stochasticgame.mavaluefunction.JAQValue;
 import burlap.behavior.stochasticgame.mavaluefunction.MAQSourcePolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.MultiAgentQSourceProvider;
 import burlap.behavior.stochasticgame.mavaluefunction.QSourceForSingleAgent;
+import burlap.behavior.stochasticgame.mavaluefunction.QSourceForSingleAgent.HashBackedQSource;
 import burlap.behavior.stochasticgame.mavaluefunction.SGBackupOperator;
 import burlap.behavior.stochasticgame.mavaluefunction.policies.EGreedyMaxWellfare;
 import burlap.oomdp.core.State;
@@ -122,7 +123,7 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 	
 	
 	/**
-	 * Initializes this Q-learning agent. This agent's Q-source will use a {@link QSourceForSingleAgent.HashBackedQSource} q-source and the learning policy is defaulted
+	 * Initializes this Q-learning agent. This agent's Q-source will use a {@link HashBackedQSource} q-source and the learning policy is defaulted
 	 * to an epsilon = 0.1 maximum wellfare ({@link EGreedyMaxWellfare}) derived policy. If queryOtherAgentsForTheirQValues is set to true, then this agent will
 	 * only store its own Q-values and will use the other agent's stored Q-values to determine theirs.
 	 * @param d the domain in which to perform learing
@@ -149,7 +150,7 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 	
 	
 	/**
-	 * Initializes this Q-learning agent. This agent's Q-source will use a {@link QSourceForSingleAgent.HashBackedQSource} q-source and the learning policy is defaulted
+	 * Initializes this Q-learning agent. This agent's Q-source will use a {@link HashBackedQSource} q-source and the learning policy is defaulted
 	 * to an epsilon = 0.1 maximum wellfare ({@link EGreedyMaxWellfare}) derived policy. If queryOtherAgentsForTheirQValues is set to true, then this agent will
 	 * only store its own Q-values and will use the other agent's stored Q-values to determine theirs.
 	 * @param d the domain in which to perform learing

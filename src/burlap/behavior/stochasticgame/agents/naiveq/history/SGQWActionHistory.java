@@ -113,8 +113,6 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	 * @param learningRate the learning rate
 	 * @param hashFactory the state hashing factory to use
 	 * @param historySize the number of previous steps to remember and with which to augment the state space
-	 * @param maxPlayers the maximum number of players that will be in the game
-	 * @param actionMap a mapping from actions to integer identifiers for them
 	 */
 	public SGQWActionHistory(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory, int historySize) {
 		super(d, discount, learningRate, hashFactory);

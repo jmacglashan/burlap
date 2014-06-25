@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  *  Actions are created using instances of
  * the {@link ModeledAction} class and their execution and transition dynamics should be defined by
  * the given model that was learned by some {@link Model} class. To retrieve the Domain object that
- * was created, make a call to the {@link generateDomain} method.
+ * was created, make a call to the {@link #generateDomain()} method.
  * @author James MacGlashan
  *
  */
@@ -48,7 +48,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 	 * Actions are created using
 	 * the {@link ModeledAction} class and their execution and transition dynamics should be defined by
 	 * the given model that was learned by some {@link Model} class. To retrieve the Domain object that
-	 * was created, make a call to the {@link generateDomain} method.
+	 * was created, make a call to the {@link #generateDomain()} method.
 	 * @param sourceDomain the source domain that the create domain will reflect.
 	 */
 	public ModeledDomainGenerator(Domain sourceDomain, Model model, boolean useRMaxTransitionsAndFictitousState){

@@ -80,8 +80,8 @@ private static final long serialVersionUID = 1L;
 	 * @param d the domain in which the games took place
 	 * @param sp a state parser that can be used to parse the states stored in the game files
 	 * @param experimentDirectory the path to the directory containing the game files.
-	 * @param w the width of the state visualizer canvas
-	 * @param h the height of the state visualizer canvas
+	 * @param width the width of the state visualizer canvas
+	 * @param height the height of the state visualizer canvas
 	 */
 	public GameSequenceVisualizer(Visualizer v, SGDomain d, StateParser sp, String experimentDirectory, int width, int height){
 		this.init(v, d, sp, experimentDirectory, width, height);

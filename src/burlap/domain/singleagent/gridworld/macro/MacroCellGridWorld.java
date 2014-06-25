@@ -160,7 +160,7 @@ public class MacroCellGridWorld extends GridWorldDomain {
 	/**
 	 * Returns an array of the propositional functions that detect if the agent is in a macro cell.
 	 * @param domain the domain object containing the propositional functions.
-	 * @param gridWorld the {@link MacroGridWorld} domain generator.
+	 * @param gridWorld the {@link MacroCellGridWorld} domain generator.
 	 * @return an array of the propositional functions that detect if the agent is in a macro cell.
 	 */
 	public static PropositionalFunction[] getMacroCellPropositionalFunctions(Domain domain, MacroCellGridWorld gridWorld) {
