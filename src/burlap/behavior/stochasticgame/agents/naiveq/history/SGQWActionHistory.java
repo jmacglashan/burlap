@@ -9,7 +9,7 @@ import burlap.behavior.singleagent.QValue;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
-import burlap.behavior.stochasticgame.agents.naiveq.SGQLAgent;
+import burlap.behavior.stochasticgame.agents.naiveq.SGNaiveQLAgent;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
@@ -34,7 +34,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * @author James MacGlashan
  *
  */
-public class SGQWActionHistory extends SGQLAgent {
+public class SGQWActionHistory extends SGNaiveQLAgent {
 
 	
 	/**

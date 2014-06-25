@@ -8,11 +8,11 @@ import burlap.oomdp.stochasticgames.SGDomain;
 
 
 /**
- * And agent factor that produces QLearning agents.
+ * An agent factory that produces {@link SGNaiveQLAgent}s.
  * @author James MacGlashan
  *
  */
-public class SGQFactory implements AgentFactory {
+public class SGNaiveQFactory implements AgentFactory {
 
 	/**
 	 * The stochastic games domain in which the agent will act
@@ -56,7 +56,7 @@ public class SGQFactory implements AgentFactory {
 	 * @param defaultQ The default Q-value to which Q-values will be initialized
 	 * @param stateHash The state hashing factory the Q-learning algorithm will use
 	 */
-	public SGQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash) {
+	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash) {
 		this.domain = domain;
 		this.discount = discount;
 		this.learningRate = learningRate;
@@ -75,7 +75,7 @@ public class SGQFactory implements AgentFactory {
 	 * @param stateHash The state hashing factory the Q-learning algorithm will use
 	 * @param storedAbstraction the state abstraction the Q-learning algorithm will use
 	 */
-	public SGQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash, StateAbstraction storedAbstraction) {
+	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash, StateAbstraction storedAbstraction) {
 		this.domain = domain;
 		this.discount = discount;
 		this.learningRate = learningRate;
@@ -95,7 +95,7 @@ public class SGQFactory implements AgentFactory {
 
 	@Override
 	public Agent generateAgent() {
-		SGQLAgent agent = new SGQLAgent(domain, discount, learningRate, defaultQ, stateHash);
+		SGNaiveQLAgent agent = new SGNaiveQLAgent(domain, discount, learningRate, defaultQ, stateHash);
 		if(storedAbstraction != null){
 			agent.setStoredMapAbstraction(storedAbstraction);
 		}
