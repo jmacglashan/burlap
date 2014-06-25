@@ -60,6 +60,9 @@ public class ValueIteration extends ValueFunctionPlanner{
 	protected boolean												stopReachabilityFromTerminalStates = false;
 	
 	
+	protected boolean												hasRunVI = false;
+	
+	
 	/**
 	 * Initializers the planner.
 	 * @param domain the domain in which to plan
@@ -103,7 +106,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	@Override
 	public void planFromState(State initialState){
 		this.initializeOptionsForExpectationComputations();
-		if(this.performReachabilityFrom(initialState)){
+		if(this.performReachabilityFrom(initialState) || !this.hasRunVI){
 			this.runVI();
 		}
 			
@@ -113,6 +116,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	public void resetPlannerResults(){
 		super.resetPlannerResults();
 		this.foundReachableStates = false;
+		this.hasRunVI = false;
 	}
 	
 	/**
@@ -124,7 +128,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	public void runVI(){
 		
 		if(!this.foundReachableStates){
-			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use planFromState method at least once or instead.");
+			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use the planFromState or performReachabilityFrom method at least once before calling runVI.");
 		}
 		
 		Set <StateHashTuple> states = mapToStateIndex.keySet();
@@ -148,6 +152,8 @@ public class ValueIteration extends ValueFunctionPlanner{
 		}
 		
 		DPrint.cl(this.debugCode, "Passes: " + i);
+		
+		this.hasRunVI = true;
 		
 	}
 	
@@ -212,6 +218,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + mapToStateIndex.size());
 		
 		this.foundReachableStates = true;
+		this.hasRunVI = false;
 		
 		return true;
 		
