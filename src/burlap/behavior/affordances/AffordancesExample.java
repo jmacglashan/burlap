@@ -285,20 +285,20 @@ public class AffordancesExample {
 		int numRollouts = 1000; // RTDP
 		int maxDepth = 30; // RTDP
 		double vInit = 0;
-		double maxDelta = 0.01;
+		double minDelta = 0.01;
 		double gamma = 0.99;
 		
 		boolean affordanceMode = true;
 		ValueFunctionPlanner planner;
 		Policy p;
 		if(affordanceMode) {
-			planner = new AffordanceValueIteration(domain, rf, tf, gamma, hashingFactory, maxDelta, maxDepth, gridWorldExample.affController);
+			planner = new AffordanceRTDP(domain, rf, tf, gamma, hashingFactory, vInit, numRollouts, minDelta, maxDepth, gridWorldExample.affController);
 			planner.planFromState(initialState);
 			
 			// Create a Q-greedy policy from the planner
 			p = new AffordanceGreedyQPolicy(gridWorldExample.affController, (QComputablePlanner)planner);
 		} else {
-			planner = new RTDP(domain, rf, tf, gamma, hashingFactory, vInit, numRollouts, maxDelta, maxDepth);
+			planner = new RTDP(domain, rf, tf, gamma, hashingFactory, vInit, numRollouts, minDelta, maxDepth);
 			planner.planFromState(initialState);
 			
 			// Create a Q-greedy policy from the planner

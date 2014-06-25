@@ -11,7 +11,11 @@ import java.util.Random;
 
 import cc.mallet.types.Dirichlet;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.logicalexpressions.LogicalExpression;
+import burlap.oomdp.logicalexpressions.PFAtom;
 
 /**
  * @author dabel
@@ -40,6 +44,7 @@ public class SoftAffordance extends Affordance {
 			this.allActions = actions;
 			
 			initCounts();
+			postProcess();
 	}
 	
 	/**
