@@ -296,7 +296,9 @@ public class GameAnalysis {
 		}
 		
 		File f = (new File(path)).getParentFile();
-		f.mkdirs();
+		if(f != null){
+			f.mkdirs();
+		}
 		
 		
 		try{
