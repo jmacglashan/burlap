@@ -24,6 +24,11 @@ public class Conjunction extends LogicalExpression {
 		
 	}
 	
+	public void addChild(LogicalExpression newChild) {
+		newChild.parentExpression = this;
+		this.childExpressions.add(newChild);
+	}
+	
 	@Override
 	public LogicalExpression duplicate() {
 	
@@ -53,6 +58,17 @@ public class Conjunction extends LogicalExpression {
 	@Override
 	protected void remapVariablesInThisExpression(Map<String, String> fromToVariableMap) {
 		//nothing necssary, not an atomic expression
+	}
+	
+	public String toString() {
+		String result = "( ";
+		
+		for(int i = 0; i < this.childExpressions.size() - 1; i++) {
+			result += this.childExpressions.get(i) + " ^ ";
+		}
+		result += this.childExpressions.get(this.childExpressions.size()-1);
+		
+		return result + " )";
 	}
 
 	

@@ -22,6 +22,10 @@ public class PFAtom extends LogicalExpression {
 		this.setName(this.gp.pf.getName());
 	}
 	
+	public PFAtom() {
+		// Blank constructor for use in parsing from knowledge base.
+	}
+	
 	public GroundedProp getGroundedProp(){
 		return this.gp;
 	}
@@ -47,6 +51,10 @@ public class PFAtom extends LogicalExpression {
 		for(int i = 0; i < this.gp.params.length; i++){
 			this.gp.params[i] = fromToVariableMap.get(this.gp.params[i]);
 		}
+	}
+	
+	public String toString() {
+		return this.gp.pf.getClassName();
 	}
 
 }

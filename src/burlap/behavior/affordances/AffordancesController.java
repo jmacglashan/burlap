@@ -1,43 +1,11 @@
 package burlap.behavior.affordances;
 
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.auxiliary.StateReachability;
-import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
-import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph;
-import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.LandmarkColorBlendInterpolation;
-import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
-import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D.PolicyGlyphRenderStyle;
-import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.singleagent.planning.commonpolicies.AffordanceGreedyQPolicy;
-import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
-import burlap.behavior.singleagent.planning.stochastic.rtdp.AffordanceRTDP;
-import burlap.behavior.singleagent.planning.stochastic.rtdp.RTDP;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import burlap.behavior.statehashing.DiscreteStateHashFactory;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.logicalexpressions.LogicalExpression;
-import burlap.oomdp.logicalexpressions.PFAtom;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.common.SinglePFTF;
-import burlap.oomdp.singleagent.common.UniformCostRF;
 
 public class AffordancesController {
 

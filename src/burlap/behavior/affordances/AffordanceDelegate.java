@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -103,23 +102,22 @@ public class AffordanceDelegate {
 				// We haven't read the header yet, so do that
 				
 				// TODO: Change to parsing a logical expression (instead of assuming a single pf)
-				String pfName = info[0];
+				String preCondLE= info[0];
 				String goalName = info[1];
 				
 				// -- Create Precondition -- 
-				PropositionalFunction preCondPF = d.getPropFunction(pfName);
+				PropositionalFunction preCondPF = d.getPropFunction(preCondLE);
 				
 				// Get grounded prop free variables
 				String[] groundedPropPreCondFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
-				
 				GroundedProp preCondGroundedProp = new GroundedProp(preCondPF, groundedPropPreCondFreeVars);
 				preCondition = new PFAtom(preCondGroundedProp);
 				
 				// -- Create GOAL --
-				PropositionalFunction goalPF = d.getPropFunction(pfName);
+				PropositionalFunction goalPF = d.getPropFunction(preCondLE);
 				
+				// Get grounded prop free variables
 				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
-				
 				GroundedProp goalGroundedProp = new GroundedProp(goalPF, groundedPropGoalFreeVars);
 				goal = new PFAtom(goalGroundedProp);
 				

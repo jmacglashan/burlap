@@ -126,7 +126,15 @@ public abstract class LogicalExpression {
 	
 	// For debugging purposes
 	public String toString() {
-		return this.name;
+		String result = "";
+		for(LogicalExpression child : this.childExpressions) {
+			result += child.toString();
+		}
+		return result;
+	}
+	
+	public void load(String logicalExpressionString) {
+		
 	}
 	
 }

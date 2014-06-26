@@ -6,6 +6,10 @@ import burlap.oomdp.core.State;
 
 public class Negation extends LogicalExpression {
 
+	public Negation() {
+		// Empty constructor in case child is not known yet (as in reading in from a file)
+	}
+	
 	public Negation(LogicalExpression childExpression) {
 		this.childExpressions.add(childExpression);
 	}
@@ -24,6 +28,14 @@ public class Negation extends LogicalExpression {
 	@Override
 	protected void remapVariablesInThisExpression(Map<String, String> fromToVariableMap) {
 		// Nothing necessary, not an atomic expression
+	}
+	
+	public void setChild(LogicalExpression child) {
+		this.childExpressions.add(child);
+	}
+	
+	public String toString() {
+		return "!" + this.childExpressions.get(0);
 	}
 
 }
