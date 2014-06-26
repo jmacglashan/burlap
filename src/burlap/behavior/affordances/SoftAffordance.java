@@ -9,13 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import cc.mallet.types.Dirichlet;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
 import burlap.oomdp.logicalexpressions.LogicalExpression;
-import burlap.oomdp.logicalexpressions.PFAtom;
+import cc.mallet.types.Dirichlet;
 
 /**
  * @author dabel
@@ -27,7 +23,6 @@ public class SoftAffordance extends Affordance {
 	private Collection<AbstractGroundedAction> prunedActions;
 	private HashMap<AbstractGroundedAction, Integer> actionCounts;
 	private int[] actionNumCounts;
-	private Random r = new Random();
 	private Dirichlet actionDistr;
 	private Dirichlet actionNumDistr;
 	private double dirichletHyperParam = 1.0;
@@ -59,7 +54,7 @@ public class SoftAffordance extends Affordance {
 		// Loop over sizes until we find the one that was sampled
 		for (int i = 0; i < sizes.length; i++) {
 			if (sizes[i] > 0) {
-				n = i;
+				n = i + 1; // i + 1 since 0:(k-1) set sizes indicates sets of size 1:k
 				break;
 			}
 		}
