@@ -117,7 +117,6 @@ public class AffordanceDelegate {
 				// -- Create GOAL --
 				PropositionalFunction goalPF = d.getPropFunction(pfName);
 				
-				// TODO: BETTER FREE VARIABLE BINDINGS
 				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
 				
 				GroundedProp goalGroundedProp = new GroundedProp(goalPF, groundedPropGoalFreeVars);

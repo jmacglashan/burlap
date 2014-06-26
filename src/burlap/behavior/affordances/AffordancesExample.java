@@ -71,22 +71,26 @@ public class AffordancesExample {
 	 */
 	public void setupActions(Domain domain, GridWorldDomain gwdg, State initialState){
 		// ---- GET ACTIONS ----
-		
+
 		// NORTH
 		Action northAct = domain.getAction(gwdg.ACTIONNORTH);
-		this.northAction = initialState.getAllGroundedActionsFor(northAct).get(0);
+		String[] northFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(northAct.getParameterClasses());
+		this.northAction = new GroundedAction(northAct, northFreeParams);
 		
 		// SOUTH
 		Action southAct = domain.getAction(gwdg.ACTIONSOUTH);
-		this.southAction = initialState.getAllGroundedActionsFor(southAct).get(0);
+		String[] southFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(southAct.getParameterClasses());
+		this.southAction = new GroundedAction(southAct, southFreeParams);
 		
 		// EAST
 		Action eastAct = domain.getAction(gwdg.ACTIONEAST);
-		this.eastAction = initialState.getAllGroundedActionsFor(eastAct).get(0);
+		String[] eastFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(eastAct.getParameterClasses());
+		this.eastAction = new GroundedAction(eastAct, eastFreeParams);
 
 		// WEST
 		Action westAct = domain.getAction(gwdg.ACTIONWEST);
-		this.westAction = initialState.getAllGroundedActionsFor(westAct).get(0);
+		String[] westFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(westAct.getParameterClasses());
+		this.westAction = new GroundedAction(westAct, westFreeParams);
 		
 		// ---- ADD ACTIONS ----
 		
@@ -108,12 +112,50 @@ public class AffordancesExample {
 	}
 	
 	/**
-	 * Create instances of PFAtoms for use in the affordances
+	 * Create instances of PFAtoms with free variables for use in affordances 
 	 * @param domain
 	 * @param gwdg
 	 * @param initialState
 	 */
 	public void setupPFAtoms(Domain domain, GridWorldDomain gwdg, State initialState) {
+		// NORTH
+		PropositionalFunction northProp = domain.getPropFunction(gwdg.PFEMPTYNORTH);
+		String[] northFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(northProp.getParameterClasses());
+		GroundedProp northGroundedProp = new GroundedProp(northProp, northFreeParams);
+		this.northPFAtom = new PFAtom(northGroundedProp);
+		
+		// SOUTH
+		PropositionalFunction southProp = domain.getPropFunction(gwdg.PFEMPTYSOUTH);
+		String[] southFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(southProp.getParameterClasses());
+		GroundedProp southGroundedProp = new GroundedProp(southProp, southFreeParams);
+		this.southPFAtom = new PFAtom(southGroundedProp);
+		
+		// EAST
+		PropositionalFunction eastProp = domain.getPropFunction(gwdg.PFEMPTYEAST);
+		String[] eastFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(eastProp.getParameterClasses());
+		GroundedProp eastGroundedProp = new GroundedProp(eastProp, eastFreeParams);
+		this.eastPFAtom = new PFAtom(eastGroundedProp);
+		
+		// WEST
+		PropositionalFunction westProp = domain.getPropFunction(gwdg.PFEMPTYWEST);
+		String[] westFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(westProp.getParameterClasses());
+		GroundedProp westGroundedProp = new GroundedProp(westProp, westFreeParams);
+		this.westPFAtom = new PFAtom(westGroundedProp);
+		
+		// GOAL
+		PropositionalFunction goalProp = domain.getPropFunction(GridWorldDomain.PFATLOCATION);
+		String[] goalFreeParams = AffordanceDelegate.makeFreeVarListFromObjectClasses(goalProp.getParameterClasses());
+		GroundedProp goalGroundedProp = new GroundedProp(goalProp, goalFreeParams);
+		this.goalPFAtom = new PFAtom(goalGroundedProp);
+	}
+	
+	/**
+	 * Create instances of PFAtoms with bound variables for use in the affordances 
+	 * @param domain
+	 * @param gwdg
+	 * @param initialState
+	 */
+	public void setupPFAtomsGrounded(Domain domain, GridWorldDomain gwdg, State initialState) {
 		// NORTH
 		PropositionalFunction northProp = domain.getPropFunction(gwdg.PFEMPTYNORTH);
 		List<GroundedProp> northGroundedProps = initialState.getAllGroundedPropsFor(northProp);
@@ -273,7 +315,7 @@ public class AffordancesExample {
 		gridWorldExample.setupActions(domain, gwdg, initialState);
 		
 		// ---- SETUP PROP FUNCS ----
-		gridWorldExample.setupPFAtoms(domain, gwdg, initialState);
+		gridWorldExample.setupPFAtomsGrounded(domain, gwdg, initialState);
 		
 		// ---- AFFORDANCES ----
 		boolean hardAffordanceFlag = false;
