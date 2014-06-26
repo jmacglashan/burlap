@@ -11,7 +11,11 @@ import java.util.Random;
 
 import cc.mallet.types.Dirichlet;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.logicalexpressions.LogicalExpression;
+import burlap.oomdp.logicalexpressions.PFAtom;
 
 /**
  * @author dabel
@@ -40,6 +44,7 @@ public class SoftAffordance extends Affordance {
 			this.allActions = actions;
 			
 			initCounts();
+			postProcess();
 	}
 	
 	/**
@@ -54,7 +59,7 @@ public class SoftAffordance extends Affordance {
 		// Loop over sizes until we find the one that was sampled
 		for (int i = 0; i < sizes.length; i++) {
 			if (sizes[i] > 0) {
-				n = i + 1;
+				n = i;
 				break;
 			}
 		}
@@ -129,6 +134,7 @@ public class SoftAffordance extends Affordance {
 	}
 	
 	// --- Accessors ---
+
 	public LogicalExpression getPreCondition() {
 		return this.preCondition;
 	}
@@ -142,6 +148,7 @@ public class SoftAffordance extends Affordance {
 	}
 	
 	// --- Mutators ---
+	
 	public void setActionCounts(HashMap<AbstractGroundedAction, Integer> actionCounts) {
 		this.actionCounts = actionCounts;
 	}
@@ -173,6 +180,10 @@ public class SoftAffordance extends Affordance {
 	}
 	
 	public String toString() {
+		return this.preCondition.toString();
+	}
+	
+	public String toFile() {
 		String out = "";
 
 		// Header information (what the affordance's PF and LGD are)

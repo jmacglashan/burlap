@@ -19,6 +19,7 @@ public class PFAtom extends LogicalExpression {
 				this.addVariable(varName, varType);
 			}
 		}
+		this.setName(this.gp.pf.getName());
 	}
 	
 	public GroundedProp getGroundedProp(){
