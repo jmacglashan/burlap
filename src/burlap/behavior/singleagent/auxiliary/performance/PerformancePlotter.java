@@ -41,13 +41,13 @@ import burlap.oomdp.singleagent.RewardFunction;
 
 
 /**
- * This class is an aciton observer used to collect and plot performance data of a learning agent either by itself or against another learning agent. There are 
+ * This class is an action observer used to collect and plot performance data of a learning agent either by itself or against another learning agent. There are 
  * six possible performance metrics that can be used to plot performance, as specified in the {@link PerformanceMetric} enumerator.  A plot showing the most recent
  * "trial" of an agent can be displayed, the average of the metric over all trials with confidence intervals, or both may be displayed; which plots are shown is specfied by the
  * {@link TrialMode} enumerator.
  * Any subset of these metrics
  * may be displayed in any order specified by the user and plots are displayed in a matrix format with a maximum number of columns that are filled out first.
- * If the number of plots would causw a window hight larger than a maximimum specified, then the plots are placed in a scroll view.
+ * If the number of plots would cause a window height larger than a maximimum specified, then the plots are placed in a scroll view.
  * <p/>
  * The way this class should be used is the constructor is first called. Then the {@link #startGUI()} method. A trial indicates a single evaluation of
  * a learning algorithm for some number of steps or episodes. Multiple trials are used to produce the average trial plots. Each trial should reinitialize
@@ -60,7 +60,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * To ensure proper use of this class, it is highly reccomended that the {@link LearningAlgorithmExperimenter} class is used, since it handles all of these
  * method calls behind the scenes.
  * <p/>
- * When testing is done, you may optionally request all data to be printed to CSV files. One CSV file will produce to the step-wise performance
+ * When testing is done, you may optionally request all data to be printed to CSV files. One CSV file will produce the step-wise performance
  * metric (cumulaitve reward by step) for all agents and trials. Another will produce all the episode-wise performance metric data. This data
  * can be produced regardless of which metrics you requested to be plotted.
  * <p/>
@@ -554,7 +554,7 @@ public class PerformancePlotter extends JFrame implements ActionObserver {
 	
 	
 	/**
-	 * Writes an episode-wise data to a csv file.
+	 * Writes the step-wise data to a csv file.
 	 * If the file path does not include the .csv extension, it will automatically be added.
 	 * @param filePath the path to the csv file to write to.
 	 */
@@ -592,7 +592,7 @@ public class PerformancePlotter extends JFrame implements ActionObserver {
 	
 	
 	/**
-	 * Writes an step-wise data to a csv file.
+	 * Writes the episode-wise data to a csv file.
 	 * If the file path does not include the .csv extension, it will automatically be added.
 	 * @param filePath the path to the csv file to write to.
 	 */

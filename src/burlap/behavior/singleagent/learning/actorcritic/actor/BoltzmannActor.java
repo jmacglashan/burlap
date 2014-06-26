@@ -150,7 +150,7 @@ public class BoltzmannActor extends Actor {
 			
 			List <ActionProb> translated = new ArrayList<ActionProb>(probs.size());
 			for(ActionProb ap : probs){
-				if(ap.ga.params.length == 0){
+				if(ap.ga.params.length == 0 || !ap.ga.parametersAreObjects()){
 					translated.add(ap);
 				}
 				else{
@@ -175,7 +175,8 @@ public class BoltzmannActor extends Actor {
 	 */
 	protected PolicyNode getNode(StateHashTuple sh){
 		
-		List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 		
 		PolicyNode node = this.preferences.get(sh);
 		if(node == null){
@@ -219,7 +220,7 @@ public class BoltzmannActor extends Actor {
 	protected ActionPreference getMatchingPreference(StateHashTuple sh, GroundedAction ga, PolicyNode node){
 		
 		GroundedAction translatedAction = ga;
-		if(ga.params.length > 0  && !this.domain.isObjectIdentifierDependent()){
+		if(ga.params.length > 0  && !this.domain.isObjectIdentifierDependent() && ga.parametersAreObjects()){
 			Map <String, String> matching = sh.s.getObjectMatchingTo(node.sh.s, false);
 			translatedAction = this.translateAction(ga, matching);
 		}

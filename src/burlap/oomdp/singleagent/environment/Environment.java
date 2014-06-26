@@ -59,6 +59,18 @@ public abstract class Environment {
 	
 	
 	/**
+	 * This method is used to pass a {@link GroundedAction} to be executed in this environment. This method
+	 * simply unpacks the action name and paraemters from the {@link GroundedAction} and sends it to the {@link #executeAction(String, String[])}
+	 * method. Unpacking is performed to ensure that there is no mix up between the action objects that refer to this
+	 * Environment and underlying Actions that this environment executes.
+	 * @param ga the GroundedAction that is to be performed in this environment.
+	 * @return the resulting state from applying the given GroundedAction in this environment.
+	 */
+	public final State executeAction(GroundedAction ga){
+		return this.executeAction(ga.actionName(), ga.params);
+	}
+	
+	/**
 	 * Tells the environment to execute the action with the given name and with the given parameters.
 	 * @param aname the name of the action to execute
 	 * @param params the parameters of the action

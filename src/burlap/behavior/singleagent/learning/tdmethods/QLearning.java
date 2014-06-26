@@ -206,7 +206,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
-	 * @param qInit a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param qInitFunction a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
 	 * @param learningRate the learning rate
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
@@ -368,7 +368,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	protected QValue getQ(StateHashTuple s, GroundedAction a) {
 		QLearningStateNode node = this.getStateNode(s);
 		
-		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent()){
+		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
 			Map<String, String> matching = s.s.getObjectMatchingTo(node.s.s, false);
 			a = this.translateAction(a, matching);
 		}
@@ -475,7 +475,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 			if(action.action.isPrimitive()){
 				r = rf.reward(curState.s, action, nextState.s);
 				eStepCounter++;
-				ea.recordTransitionTo(nextState.s, action, r);
+				ea.recordTransitionTo(action, nextState.s, r);
 			}
 			else{
 				Option o = (Option)action.action;
@@ -487,7 +487,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 					ea.appendAndMergeEpisodeAnalysis(o.getLastExecutionResults());
 				}
 				else{
-					ea.recordTransitionTo(nextState.s, action, r);
+					ea.recordTransitionTo(action, nextState.s, r);
 				}
 			}
 			

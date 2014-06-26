@@ -9,28 +9,31 @@ import java.util.Map;
 import javax.management.RuntimeErrorException;
 
 import burlap.oomdp.core.values.DiscreteValue;
+import burlap.oomdp.core.values.DoubleArrayValue;
+import burlap.oomdp.core.values.IntArrayValue;
 import burlap.oomdp.core.values.IntValue;
 import burlap.oomdp.core.values.MultiTargetRelationalValue;
 import burlap.oomdp.core.values.RealValue;
 import burlap.oomdp.core.values.RelationalValue;
+import burlap.oomdp.core.values.StringValue;
 
 /**
  * The attribute class defines attributes that define OO-MDP object classes. There are different types of attributes
- * to support different types of value. Currently, there are attributes to support discrete values, real values, and
- * relational values. Discrete values are represented by an integer, but these integers can be specified to correspond
- * to categorical values represented as string. Discrete attributes require a finite domain (that is, it must be specified
- * how many different discrete values there are). There are two different kinds of real attributed; bounded and unbounded.
+ * to support different types of value. Currently, there are attributes to support discrete values, real values, string values, and
+ * relational values. There are two different kinds of discrete values, int and disc. While both are internally stored as integers,
+ * the int value may be unbounded in range, whereas disc values have a finite domain and also refer to specific categorical values 
+ * represented as string. Discrete attributes require a finite domain (that is, it must be specified
+ * how many different discrete values there are). There are two different kinds of real attributes; bounded and unbounded.
  * A a bounded real attribute should have a lower limit value and an upper limit value. Unbounded real attributes may span any
  * range. Both attributes' values are represented by double data types. There are also two kinds of relational
  * attributes: single target and multi-target. A single target relational attribute can only be linked to one other
- * object, whereas a multi-target relational attribute can be linked to set of other objects. In both cases, the relational
- * attribute can be unset to any target. The single-target relational attribute values are represented by strings the specify
+ * object, whereas a multi-target relational attribute can be linked to a set of other objects. In both cases, the relational
+ * attribute can be unset to any target. The single-target relational attribute values are represented by strings that specify
  * the name reference of the object to which they are connected. Multi-target relational attribute values are represented
  * by an ordered set of string values indicating the targets to which the attribute is connected.
  * 
  * Attributes may also be specified as "hidden," which means that they should not be used by the agent planning/learning algorithms when resolving
- * the state. Hidden attributes may be useful for defining POMDP domains or in facilitating the generation of values
- * for observable attributes.
+ * the state.
  *  
  * @author James MacGlashan
  * 
@@ -51,6 +54,9 @@ public class Attribute {
 	 * 4: MULTITARGETRELATIONAL (multi-target relation)
 	 * 5: INT (discrete int, but not categorical)
 	 * 6: BOOLEAN (0, or 1, discrete value for false, true)
+	 * 7: STRING (a string)
+	 * 8: INTARRAY (an attribute whose value is an int[] type)
+	 * 9: DOUBLEARRAY (an attribute whose value is a double[] type)
 	 * @author James MacGlashan
 	 *
 	 */
@@ -62,7 +68,10 @@ public class Attribute {
 		RELATIONAL(3),
 		MULTITARGETRELATIONAL(4),
 		INT(5),
-		BOOLEAN(6);
+		BOOLEAN(6),
+		STRING(7),
+		INTARRAY(8),
+		DOUBLEARRAY(9);
 		
 		private final int intVal;
 		
@@ -90,6 +99,12 @@ public class Attribute {
 					return INT;
 				case 6:
 					return BOOLEAN;
+				case 7: 
+					return STRING;
+				case 8:
+					return INTARRAY;
+				case 9:
+					return DOUBLEARRAY;
 				default:
 					return NOTYPE;
 			}
@@ -302,7 +317,7 @@ public class Attribute {
 	}
 	
 	/**
-	 * Sets the possible range of discrete values for the attribute. The categorical values
+	 * Sets the possible range of discrete (@link {@link AttributeType#DISC}) values for the attribute. The categorical values
 	 * will be set to the the string representation of each integer number.
 	 * @param low the minimum int value for the attribute
 	 * @param high the maximum int value for the attribute
@@ -351,6 +366,15 @@ public class Attribute {
 		}
 		else if(this.type == AttributeType.INT){
 			return new IntValue(this);
+		}
+		else if(this.type == AttributeType.STRING){
+			return new StringValue(this);
+		}
+		else if(this.type == AttributeType.INTARRAY){
+			return new IntArrayValue(this);
+		}
+		else if(this.type == AttributeType.DOUBLEARRAY){
+			return new DoubleArrayValue(this);
 		}
 		
 		throw new RuntimeErrorException(new Error("Unknown attribute type; cannot construct a corresponding Value for it."));

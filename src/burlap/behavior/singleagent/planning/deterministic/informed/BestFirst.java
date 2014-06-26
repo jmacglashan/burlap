@@ -131,7 +131,8 @@ public abstract class BestFirst extends DeterministicPlanner {
 		
 			//generate successors
 			for(Action a : actions){
-				List<GroundedAction> gas = s.getAllGroundedActionsFor(a);
+				//List<GroundedAction> gas = s.getAllGroundedActionsFor(a);
+				List<GroundedAction> gas = a.getAllApplicableGroundedActions(s);
 				for(GroundedAction ga : gas){
 					State ns = ga.executeIn(s);
 					StateHashTuple nsh = this.stateHash(ns);

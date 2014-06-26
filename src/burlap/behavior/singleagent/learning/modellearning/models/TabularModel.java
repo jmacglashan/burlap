@@ -14,6 +14,7 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -198,7 +199,8 @@ public class TabularModel extends Model {
 			sn = new StateNode(sh);
 			this.stateNodes.put(sh, sn);
 			
-			List <GroundedAction> allActions = sh.s.getAllGroundedActionsFor(this.sourceDomain.getActions());
+			//List <GroundedAction> allActions = sh.s.getAllGroundedActionsFor(this.sourceDomain.getActions());
+			List<GroundedAction> allActions = Action.getAllApplicableGroundedActionsFromActionList(this.sourceDomain.getActions(), sh.s);
 			for(GroundedAction tga : allActions){
 				StateActionNode san = sn.addActionNode(tga);
 				if(tga.equals(ga)){

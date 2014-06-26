@@ -1,5 +1,7 @@
 package burlap.behavior.stochasticgame.agents.naiveq.history;
 
+import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentFactory;
@@ -47,7 +49,18 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	/**
 	 * An action mapping to map from actions to int values
 	 */
-	protected ActionIdMap												actionMap;
+	protected ActionIdMap												actionMap = null;
+	
+	/**
+	 * A default Q-value initializer
+	 */
+	protected ValueFunctionInitialization								qinit = null;
+	
+	/**
+	 * The epislon value for epislon greedy policy. If negative, then the policy of the created agent
+	 * will not be different than its default.
+	 */
+	protected double													epsilon = -1.;
 	
 	
 	
@@ -69,10 +82,57 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 		this.maxPlayers = maxPlayers;
 		this.actionMap = actionMap;
 	}
+	
+	/**
+	 * Initializes the factory
+	 * @param d the stochastic games domain in which the agent will act
+	 * @param discount The discount rate the Q-learning algorithm will use
+	 * @param learningRate The learning rate the Q-learning algorithm will use
+	 * @param stateHash The state hashing factory the Q-learning algorithm will use
+	 * @param historySize How much history the agent should remember
+	 */
+	public SGQWActionHistoryFactory(SGDomain d, double discount, double learningRate, StateHashFactory stateHash, int historySize) {
+		this.domain = d;
+		this.learningRate = learningRate;
+		this.stateHash = stateHash;
+		this.historySize = historySize;
+	}
+	
+	/**
+	 * Sets the Q-value initialization function that will be used by the agent.
+	 * @param qinit the Q-value initialization function.
+	 */
+	public void setQValueInitializer(ValueFunctionInitialization qinit){
+		this.qinit = qinit;
+	}
+	
+	/**
+	 * Sets the epislon parmaeter (for epsilon greedy policy). If set to a negative, then the default policy of the create agent will be used.
+	 * @param epsilon the epsilon value to use
+	 */
+	public void setEpsilon(double epsilon){
+		this.epsilon = epsilon;
+	}
 
 	@Override
 	public Agent generateAgent() {
-		return new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
+		SGQWActionHistory agent = null;
+		if(this.actionMap != null){
+			agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
+		}
+		else{
+			agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize);
+		}
+		if(this.qinit != null){
+			agent.setQValueInitializer(qinit);
+		}
+		if(this.epsilon >= 0.){
+			EpsilonGreedy egreedy = new EpsilonGreedy(agent, this.epsilon);
+			agent.setStrategy(egreedy);
+		}
+		
+		return agent;
+		
 	}
 
 }

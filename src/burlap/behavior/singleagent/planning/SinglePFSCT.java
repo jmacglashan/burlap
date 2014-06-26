@@ -27,7 +27,8 @@ public class SinglePFSCT implements StateConditionTest {
 	@Override
 	public boolean satisfies(State s) {
 		
-		List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+		//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+		List<GroundedProp> gps = this.pf.getAllGroundedPropsForState(s);
 		
 		for(GroundedProp gp : gps){
 			if(gp.isTrue(s)){

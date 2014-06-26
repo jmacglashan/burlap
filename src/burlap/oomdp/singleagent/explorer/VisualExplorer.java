@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +17,17 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.oomdp.auxiliary.StateGenerator;
+import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.common.NullRewardFunction;
 import burlap.oomdp.visualizer.Visualizer;
 
 /**
@@ -29,8 +36,12 @@ import burlap.oomdp.visualizer.Visualizer;
  * by either pressing keys that are mapped to actions or by typing the actions into the action command field. 
  * Action parameters in the action field are specified by space delineated input. For instance: "stack block0 block1" will cause
  * the stack action to called with action parameters block0 and block1. The ` key
- * causes the state to reset to the initial state provided to the explorer. Other special kinds of actions
- * not described in the domain can be added and executed by pressing corresponding keys for them.
+ * causes the state to reset to the initial state provided to the explorer or to a state that is sampled from a provided {@link StateGenerator} object. 
+ * Other special kinds of actions
+ * not described in the domain can be added and executed by pressing corresponding keys for them. The episodes of action taken by a user may also be recorded
+ * to a list of recorded episodes and then subsequentlly polled by a client object. To enable episode recording, use the method
+ * {@link #enableEpisodeRecording(String, String)} or {@link #enableEpisodeRecording(String, String, RewardFunction)}. To check if the user
+ * is still recording episodes, use the method {@link #isRecording()}. To retrieve the recorded episodes, use the method {@link #getRecordedEpisodes()}.
  * @author James MacGlashan
  *
  */
@@ -39,20 +50,27 @@ public class VisualExplorer extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
 	
-	private Domain									domain;
-	private Map <String, String>					keyActionMap;
-	private Map <String, SpecialExplorerAction>		keySpecialMap;
-	State											baseState;
-	State											curState;
+	protected Domain										domain;
+	protected Map <String, String>							keyActionMap;
+	protected Map <String, SpecialExplorerAction>			keySpecialMap;
+	protected State											baseState;
+	protected State											curState;
 	
-	Visualizer 										painter;
-	TextArea										propViewer;
-	TextField										actionField;
-	JButton											actionButton;
-	int												cWidth;
-	int												cHeight;
+	protected Visualizer 									painter;
+	protected TextArea										propViewer;
+	protected TextField										actionField;
+	protected JButton										actionButton;
+	protected int											cWidth;
+	protected int											cHeight;
 	
-	int												numSteps;
+	protected int											numSteps;
+	
+	//recording data members
+	protected EpisodeAnalysis 								currentEpisode = null;
+	protected List<EpisodeAnalysis>							recordedEpisodes = null;
+	protected RewardFunction								trackingRewardFunction = new NullRewardFunction();
+	
+	protected boolean										isRecording = false;
 	
 	
 	
@@ -64,7 +82,7 @@ public class VisualExplorer extends JFrame{
 	 */
 	public VisualExplorer(Domain domain, Visualizer painter, State baseState){
 		
-		this.init(domain, painter, baseState, 800, 800);
+		this.init(domain, painter, new ConstantStateGenerator(baseState), 800, 800);
 	}
 	
 	
@@ -78,19 +96,32 @@ public class VisualExplorer extends JFrame{
 	 * @param h the height of the visualizer canvas
 	 */
 	public VisualExplorer(Domain domain, Visualizer painter, State baseState, int w, int h){
-		this.init(domain, painter, baseState, w, h);
+		this.init(domain, painter, new ConstantStateGenerator(baseState), w, h);
 	}
 	
-	protected void init(Domain domain, Visualizer painter, State baseState, int w, int h){
+	/**
+	 * Initializes the visual explorer with the domain to explorer, the visualizer to use, and an initial state generator from which to explore,
+	 * and the dimensions of the visualizer.
+	 * @param domain the domain to explore
+	 * @param painter the 2D state visualizer
+	 * @param initialStateGenerator a generator for initial states that is polled everytime the special reset action is called
+	 * @param w the width of the visualizer canvas
+	 * @param h the height of the visualizer canvas
+	 */
+	public VisualExplorer(Domain domain, Visualizer painter, StateGenerator initialStateGenerator, int w, int h){
+		this.init(domain, painter, initialStateGenerator, w, h);
+	}
+	
+	protected void init(Domain domain, Visualizer painter, StateGenerator stateGeneratorForReset, int w, int h){
 		
 		this.domain = domain;
-		this.baseState = baseState;
+		this.baseState = stateGeneratorForReset.generateState();
 		this.curState = baseState.copy();
 		this.painter = painter;
 		this.keyActionMap = new HashMap <String, String>();
 		this.keySpecialMap = new HashMap <String, SpecialExplorerAction>();
 		
-		StateResetSpecialAction reset = new StateResetSpecialAction(this.baseState);
+		StateResetSpecialAction reset = new StateResetSpecialAction(stateGeneratorForReset);
 		this.addSpecialAction("`", reset);
 		
 		this.cWidth = w;
@@ -131,6 +162,102 @@ public class VisualExplorer extends JFrame{
 		keySpecialMap.put(key, action);
 	}
 	
+	
+	/**
+	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
+	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
+	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
+	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
+	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}. Rewards stored in the recorded episode will
+	 * all be zero.
+	 * @param recordLastEpisodeKey the key to press to indidcate that the last episode should be recorded/saved.
+	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
+	 */
+	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey){
+		this.currentEpisode = new EpisodeAnalysis(this.baseState);
+		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
+		this.isRecording = true;
+		
+		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
+			
+			@Override
+			public State applySpecialAction(State curState) {
+				synchronized(VisualExplorer.this) {
+					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
+				}
+				return curState;
+			}
+		});
+		
+		this.keySpecialMap.put(finishedRecordingKey, new SpecialExplorerAction() {
+			
+			@Override
+			public State applySpecialAction(State curState) {
+				synchronized(VisualExplorer.this) {
+					VisualExplorer.this.isRecording = false;
+				}
+				return curState;
+			}
+		});
+		
+	}
+	
+	/**
+	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
+	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
+	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
+	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
+	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
+	 * @param recordLastEpisodeKey the key to press to indidcate that the last episode should be recorded/saved.
+	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
+	 * @param rewardFunction the reward function to use to record the reward received for each action taken.
+	 */
+	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey, RewardFunction rewardFunction){
+		this.currentEpisode = new EpisodeAnalysis(this.baseState);
+		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
+		this.isRecording = true;
+		this.trackingRewardFunction = rewardFunction;
+		
+		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
+			
+			@Override
+			public State applySpecialAction(State curState) {
+				synchronized(VisualExplorer.this) {
+					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
+				}
+				return curState;
+			}
+		});
+		
+		this.keySpecialMap.put(finishedRecordingKey, new SpecialExplorerAction() {
+			
+			@Override
+			public State applySpecialAction(State curState) {
+				synchronized(VisualExplorer.this) {
+					VisualExplorer.this.isRecording = false;
+				}
+				return curState;
+			}
+		});
+		
+	}
+	
+	/**
+	 * Returns whether episodes are still be recorded by a user.
+	 * @return true is the user is still recording episode; false otherwise.
+	 */
+	public boolean isRecording(){
+		return this.isRecording;
+	}
+	
+	
+	/**
+	 * Returns the list of episodes recorded by a user.
+	 * @return the list of episodes recorded by a user.
+	 */
+	public List<EpisodeAnalysis> getRecordedEpisodes(){
+		return this.recordedEpisodes;
+	}
 	
 	/**
 	 * Initializes the visual explorer GUI and presents it to the user.
@@ -233,7 +360,12 @@ public class VisualExplorer extends JFrame{
 			System.out.println("Unknown action: " + actionName);
 		}
 		else{
-			curState = action.performAction(curState, params);
+			GroundedAction ga = new GroundedAction(action, params);
+			State nextState = ga.executeIn(curState);
+			if(this.currentEpisode != null){
+				this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
+			}
+			curState = nextState;
 			numSteps++;
 			
 			painter.updateState(curState);
@@ -271,7 +403,12 @@ public class VisualExplorer extends JFrame{
 				System.out.println("Unknown action: " + actionName);
 			}
 			else{
-				curState = action.performAction(curState, params);
+				GroundedAction ga = new GroundedAction(action, params);
+				State nextState = ga.executeIn(curState);
+				if(this.currentEpisode != null){
+					this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
+				}
+				curState = nextState;
 				numSteps++;
 			}
 			
@@ -285,6 +422,9 @@ public class VisualExplorer extends JFrame{
 			if(sea instanceof StateResetSpecialAction){
 				System.out.println("Number of steps before reset: " + numSteps);
 				numSteps = 0;
+				if(this.currentEpisode != null){
+					this.currentEpisode = new EpisodeAnalysis(curState);
+				}
 			}
 		}
 				
@@ -304,7 +444,8 @@ public class VisualExplorer extends JFrame{
 		
 		List <PropositionalFunction> props = domain.getPropFunctions();
 		for(PropositionalFunction pf : props){
-			List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
 				if(gp.isTrue(s)){
 					buf.append(gp.toString()).append("\n");

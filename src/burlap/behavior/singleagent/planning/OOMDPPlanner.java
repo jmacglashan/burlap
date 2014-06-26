@@ -115,6 +115,14 @@ public abstract class OOMDPPlanner {
 		this.actions = new ArrayList<Action>(actions.size());
 		for(Action a : actions){
 			this.actions.add(a);
+			if(a instanceof Option){
+				Option o = (Option)a;
+				o.keepTrackOfRewardWith(rf, gamma);
+				o.setExernalTermination(tf);
+				if(!(this.rf instanceof OptionEvaluatingRF)){
+					this.rf = new OptionEvaluatingRF(this.rf);
+				}
+			}
 			if(a.getParameterClasses().length > 0){
 				containsParameterizedActions = true;
 			}
@@ -263,7 +271,8 @@ public abstract class OOMDPPlanner {
 	 */
 	protected List <GroundedAction> getAllGroundedActions(State s){
 		
-		return s.getAllGroundedActionsFor(this.actions);
+		//return s.getAllGroundedActionsFor(this.actions);
+		return Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
 		
 	}
 	

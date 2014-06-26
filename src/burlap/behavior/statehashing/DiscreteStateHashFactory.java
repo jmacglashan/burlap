@@ -30,7 +30,7 @@ import burlap.oomdp.core.State;
  */
 public class DiscreteStateHashFactory implements StateHashFactory {
 
-	Map<String, List<Attribute>>	attributesForHashCode;
+	protected Map<String, List<Attribute>>	attributesForHashCode;
 	
 	/**
 	 * Initializes this hashing factory to compute hash codes with all attributes of all object classes.
@@ -153,15 +153,23 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 			int index = 0;
 			int vol = 1;
 			for(Attribute att : attributes){
-				index += o.getDiscValForAttribute(att.name)*vol;
+				if(att.type == AttributeType.STRING){
+					index += o.getStringValForAttribute(att.name).hashCode()*vol;
+				}
+				else if(att.type == AttributeType.INTARRAY){
+					index += this.intArrayCode(o.getIntArrayValue(att.name))*vol;
+				}
+				else{
+					index += o.getDiscValForAttribute(att.name)*vol;
+				}
 				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
 					vol *= att.discValues.size();
 				}
-				else if(att.type==AttributeType.INT){
+				else if(att.type==AttributeType.INT || att.type==AttributeType.STRING || att.type==AttributeType.INTARRAY){
 					vol *= 31;
 				}
 				else{
-					throw new RuntimeException("DiscreteStateHashFactory cannot compute hash for non discrete (discrete, boolean, or int) values");
+					throw new RuntimeException("DiscreteStateHashFactory cannot compute hash for non discrete (discrete, boolean, string, or int) values");
 				}
 				
 			}
@@ -179,11 +187,11 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
 					vol *= att.discValues.size();
 				}
-				else if(att.type==AttributeType.INT){
+				else if(att.type==AttributeType.INT || att.type==AttributeType.STRING || att.type==AttributeType.INTARRAY){
 					vol *= 31;
 				}
 				else{
-					throw new RuntimeException("DiscreteStateHashFactory cannot compute hash for non discrete (discrete, boolean, or int) values");
+					throw new RuntimeException("DiscreteStateHashFactory cannot compute hash for non discrete (discrete, boolean, string, or int) values");
 				}
 			}
 			
@@ -211,7 +219,20 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 		}
 		
 		
-		
+		/**
+		 * Returns an int value for an int array
+		 * @param array the int array
+		 * @return an int value for it
+		 */
+		protected int intArrayCode(int [] array){
+			int sum = 0;
+			for(int i : array){
+				sum *= 31;
+				sum += i;
+			}
+			return sum;
+		}
+
 		
 	}
 	

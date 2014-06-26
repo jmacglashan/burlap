@@ -1,5 +1,8 @@
 package burlap.oomdp.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * The propositional function class defines evaluations of object instances in an OO-MDP state and are part of the definition for an OO-MDP domain.
@@ -20,11 +23,31 @@ package burlap.oomdp.core;
  */
 public abstract class PropositionalFunction {
 
-	protected String					name;					//name of the propositional function
-	protected Domain					domain;					//domain that hosts this function
-	protected String []					parameterClasses;		//list of class names for each parameter of the function
-	protected String []					parameterOrderGroup;	//setting two or more parameters to the same order group indicates that the function evaluate the same regardless of which specific object is set to each parameter
-	protected String					pfClass;				//optional; allows propositional functions to be grouped by class names
+	/*
+	 * name of the propositional function
+	 */
+	protected String					name;
+	
+	/*
+	 * domain that hosts this function
+	 */
+	protected Domain					domain;
+	
+	/*
+	 * list of class names for each parameter of the function
+	 */
+	protected String []					parameterClasses;
+	
+	/*
+	 * Defines symmetry between parameters. For example, setting two or more parameters to the same order group 
+	 * indicates that the function evaluate the same regardless of which specific object is set to each parameter
+	 */
+	protected String []					parameterOrderGroup;
+	
+	/**
+	 * optional; allows propositional functions to be grouped by class names
+	 */
+	protected String					pfClass;
 	
 	
 	/**
@@ -225,6 +248,68 @@ public abstract class PropositionalFunction {
 	public abstract boolean isTrue(State s, String [] params);
 	
 	
+	
+	/**
+	 * Returns all possible groundings for all of the {@link PropositionalFunction}s in the provided list for the given {@link State}.
+	 * @param pfs The list of {@link PropositionalFunction}s for which all groundings will be returned.
+	 * @param s the {@link State} in which the groundings should be produced.
+	 * @return a {@link List} of all possible groundings for all of the {@link PropositionalFunction}s in the provided list for the given {@link State}
+	 */
+	public static List<GroundedProp> getAllGroundedPropsFromPFList(List<PropositionalFunction> pfs, State s){
+		List<GroundedProp> res = new ArrayList<GroundedProp>();
+		for(PropositionalFunction pf : pfs){
+			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
+			res.addAll(gps);
+		}
+		return res;
+	}
+	
+	
+	/**
+	 * Returns all possible groundings of this {@link PropositionalFunction} for the given {@link State}
+	 * @param s the {@link State} in which all groundings will be returned
+	 * @return a {@link List} of all possible groundings of this {@link PropositionalFunction} for the given {@link State}
+	 */
+	public List<GroundedProp> getAllGroundedPropsForState(State s){
+		
+		List <GroundedProp> res = new ArrayList<GroundedProp>();
+		
+		if(this.getParameterClasses().length == 0){
+			res.add(new GroundedProp(this, new String[]{}));
+			return res; //no parameters so just the single gp without params
+		}
+		
+		List <List <String>> bindings = s.getPossibleBindingsGivenParamOrderGroups(this.getParameterClasses(), this.getParameterOrderGroups());
+		
+		for(List <String> params : bindings){
+			String [] aprams = params.toArray(new String[params.size()]);
+			GroundedProp gp = new GroundedProp(this, aprams);
+			res.add(gp);
+		}
+		
+		return res;
+
+	}
+	
+	/**
+	 * Returns true if there existing a {@link GroundedProp} for the provided {@link State} that is in true in the {@link State}.
+	 * @param s the {@link State} to test.
+	 * @return true if there existing a {@link GroundedProp} for the provided {@link State} that is in true in the {@link State}; false otherwise.
+	 */
+	public boolean somePFGroundingIsTrue(State s){
+		List<GroundedProp> gps = this.getAllGroundedPropsForState(s);
+		for(GroundedProp gp : gps){
+			if(gp.isTrue(s)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	
+	@Override
 	public boolean equals(Object obj){
 		PropositionalFunction op = (PropositionalFunction)obj;
 		if(op.name.equals(name))
@@ -232,10 +317,12 @@ public abstract class PropositionalFunction {
 		return false;
 	}
 	
+	@Override
 	public String toString() {
 		return this.name;
 	}
 
+	@Override
 	public int hashCode(){
 		return name.hashCode();
 	}

@@ -1,8 +1,5 @@
 package burlap.oomdp.singleagent.common;
 
-import java.util.List;
-
-import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -52,15 +49,12 @@ public class SingleGoalPFRF implements RewardFunction {
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
 		
-		List<GroundedProp> gps = sprime.getAllGroundedPropsFor(pf);
-		
-		for(GroundedProp gp : gps){
-			if(gp.isTrue(sprime)){
-				return goalReward;
-			}
+		if(this.pf.somePFGroundingIsTrue(sprime)){
+			return goalReward;
 		}
-		
 		return nonGoalReward;
+		
+		
 	}
 
 }

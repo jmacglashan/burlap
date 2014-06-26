@@ -55,7 +55,8 @@ public class UCTStateNode {
 		actionNodes = new ArrayList<UCTActionNode>();
 		
 		for(Action a : actions){
-			List <GroundedAction> gas = s.s.getAllGroundedActionsFor(a);
+			//List <GroundedAction> gas = s.s.getAllGroundedActionsFor(a);
+			List<GroundedAction> gas = a.getAllApplicableGroundedActions(s.s);
 			for(GroundedAction ga : gas){
 				UCTActionNode an = constructor.generate(ga);
 				actionNodes.add(an);

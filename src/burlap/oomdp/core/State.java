@@ -14,11 +14,26 @@ import burlap.oomdp.singleagent.GroundedAction;
 public class State {
 
 	
-	private List <ObjectInstance>							objectInstances;			//list of observable object instances that define the state
-	private List <ObjectInstance>							hiddenObjectInstances;		//list of hidden object instances that facilitate domain dynamics and infer observable values
-	private Map <String, ObjectInstance>					objectMap;					//map from object names to their instances
+	/**
+	 * List of observable object instances that define the state
+	 */
+	protected List <ObjectInstance>							objectInstances;
 	
-	private Map <String, List <ObjectInstance>>				objectIndexByTrueClass;		//map of object instances organized by class name
+	/**
+	 * List of hidden object instances that facilitate domain dynamics and infer observable values
+	 */
+	protected List <ObjectInstance>							hiddenObjectInstances;
+	
+	/**
+	 * Map from object names to their instances
+	 */
+	protected Map <String, ObjectInstance>					objectMap;
+	
+	
+	/**
+	 * Map of object instances organized by class name
+	 */
+	protected Map <String, List <ObjectInstance>>			objectIndexByTrueClass;
 
 	
 	
@@ -474,10 +489,12 @@ public class State {
 	
 	
 	/**
+	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActions(State)} method instead.
 	 * Returns all GroundedAction objects for the source action a in this state.
 	 * @param a the action from which to generate GroundedAction objects.
 	 * @return all GroundedAction objects for the source action a in this state.
 	 */
+	@Deprecated
 	public List <GroundedAction> getAllGroundedActionsFor(Action a){
 		
 		List <GroundedAction> res = new ArrayList<GroundedAction>();
@@ -504,10 +521,12 @@ public class State {
 	
 	
 	/**
+	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActionsFromActionList(List, State)} method instead.
 	 * Returns a list of GroundedAction objects for all grounded actions that can be generated from the provided list of actions.
 	 * @param actions the list of actions from which to generate GroudnedAction objects.
 	 * @return a list of GroundedAction objects for all grounded actions that can be generated from the provided list of actions.
 	 */
+	@Deprecated
 	public List <GroundedAction> getAllGroundedActionsFor(List <Action> actions){
 		List <GroundedAction> res = new ArrayList<GroundedAction>(actions.size());
 		for(Action a : actions){
@@ -519,10 +538,12 @@ public class State {
 	
 	
 	/**
+	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#getAllGroundedPropsForState(State)} method instead.
 	 * Returns all GroundedProp objects for the source propositional function pf in this state.
 	 * @param pf the propositional function from which to generate GroundedProp objects.
 	 * @return all GroundedProp objects for the source propositional function pf in this state.
 	 */
+	@Deprecated
 	public List <GroundedProp> getAllGroundedPropsFor(PropositionalFunction pf){
 		
 		List <GroundedProp> res = new ArrayList<GroundedProp>();
@@ -545,10 +566,12 @@ public class State {
 	
 	
 	/**
+	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#somePFGroundingIsTrue(State)} method instead.
 	 * Returns whether some GroundedProp of pf is true in this state
 	 * @param pf the propositional function to check
 	 * @return true if some GroundedProp of pf is true in this state; false otherwise
 	 */
+	@Deprecated
 	public boolean somePFGroundingIsTrue(PropositionalFunction pf){
 		List <GroundedProp> gps = this.getAllGroundedPropsFor(pf);
 		for(GroundedProp gp : gps){

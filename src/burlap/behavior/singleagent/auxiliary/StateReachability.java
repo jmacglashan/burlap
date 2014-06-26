@@ -102,7 +102,8 @@ public class StateReachability {
 				continue; //don't expand
 			}
 			
-			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
+			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
 			for(GroundedAction ga : gas){
 				List <TransitionProbability> tps = ga.action.getTransitions(sh.s, ga.params);
 				for(TransitionProbability tp : tps){

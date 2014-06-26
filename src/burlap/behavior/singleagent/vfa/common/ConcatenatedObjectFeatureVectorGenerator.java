@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.vfa.common;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
@@ -37,7 +37,7 @@ public class ConcatenatedObjectFeatureVectorGenerator implements
 	@Override
 	public double[] generateFeatureVectorFrom(State s) {
 		
-		List<ObjectInstance> objectsToAdd = new ArrayList<ObjectInstance>();
+		List<ObjectInstance> objectsToAdd = new LinkedList<ObjectInstance>();
 		int d = 0;
 		
 		for (String oclassName : this.objectClassOrder) {

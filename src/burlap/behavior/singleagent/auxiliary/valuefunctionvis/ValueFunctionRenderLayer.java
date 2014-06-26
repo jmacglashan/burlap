@@ -7,8 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import burlap.behavior.singleagent.QValue;
+import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.visualizer.RenderLayer;
 
 
@@ -121,6 +123,22 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 	 * @return the value for a state
 	 */
 	protected double getVValue(State s){
+		
+		/*
+		 * check the terminal function for the planner if we can get it. If
+		 * the input state is a terminal state, then reutrn 0 since the value of all terminal states is 0.
+		 */
+		TerminalFunction tf = null;
+		if(this.planner instanceof OOMDPPlanner){
+			tf = ((OOMDPPlanner)this.planner).getTF();
+		}
+		
+		if(tf != null){
+			if(tf.isTerminal(s)){
+				return 0.;
+			}
+		}
+		
 		List <QValue> qs = this.planner.getQs(s);
 		double max = Double.NEGATIVE_INFINITY;
 		for(QValue q : qs){

@@ -109,9 +109,9 @@ public abstract class Policy {
 	 * the subclass needs to only define the getActionDistribution method and the getAction method can simply
 	 * call this method to return an action.
 	 * @param s
-	 * @return a GroundedAction to take
+	 * @return an {@link AbstractGroundedAction} to take
 	 */
-	protected GroundedAction sampleFromActionDistribution(State s){
+	protected AbstractGroundedAction sampleFromActionDistribution(State s){
 		Random rand = RandomFactory.getMapped(0);
 		double roll = rand.nextDouble();
 		List <ActionProb> probs = this.getActionDistributionForState(s);
@@ -122,11 +122,12 @@ public abstract class Policy {
 		for(ActionProb ap : probs){
 			sump += ap.pSelection;
 			if(roll < sump){
-				return (GroundedAction)ap.ga;
+				return ap.ga;
 			}
 		}
 		
-		return null;
+		throw new RuntimeException("Tried to sample policy action distribution, but it did not sum to 1.");
+		
 	}
 	
 	
@@ -247,7 +248,7 @@ public abstract class Policy {
 			double r = rf.reward(cur, ga, next);
 			
 			//record result
-			ea.recordTransitionTo(next, ga, r);
+			ea.recordTransitionTo(ga, next, r);
 		}
 		else{
 			//then we need to decompose the option
@@ -266,11 +267,11 @@ public abstract class Policy {
 					GroundedAction annotatedPrimitiveGA = new GroundedAction(annotatedPrimitive, cga.params);
 					
 					//record it
-					ea.recordTransitionTo(next, annotatedPrimitiveGA, r);
+					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
 				}
 				else{
 					//otherwise just record the primitive that was taken
-					ea.recordTransitionTo(next, cga, r);
+					ea.recordTransitionTo(cga, next, r);
 				}
 				
 				cur = next;

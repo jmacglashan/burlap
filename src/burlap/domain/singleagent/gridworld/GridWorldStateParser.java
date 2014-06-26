@@ -9,9 +9,10 @@ import burlap.oomdp.core.State;
 
 /**
  * Simplified state parser for grid world states. Format:<br/>
- * ax ay, l1x l1y, l2x l2y, ..., lnx lny 
+ * ax ay, l1x l1y l1t, l2x l2y lt2, ..., lnx lny lnt 
  * <br/>
- * where ax and ay is the agent x and y position and lix liy is the ith location objects x and y position.
+ * where ax and ay is the agent x and y position and lix liy is the ith location objects x and y position and lit is the type of the ith locaiton object.
+ * 
  * 
  * @author James MacGlashan
  *
@@ -40,10 +41,11 @@ public class GridWorldStateParser implements StateParser {
 		
 		String xa = GridWorldDomain.ATTX;
 		String ya = GridWorldDomain.ATTY;
+		String lt = GridWorldDomain.ATTLOCTYPE;
 		
 		sbuf.append(a.getDiscValForAttribute(xa)).append(" ").append(a.getDiscValForAttribute(ya));
 		for(ObjectInstance l : locs){
-			sbuf.append(", ").append(l.getDiscValForAttribute(xa)).append(" ").append(l.getDiscValForAttribute(ya));
+			sbuf.append(", ").append(l.getDiscValForAttribute(xa)).append(" ").append(l.getDiscValForAttribute(ya)).append(" ").append(l.getDiscValForAttribute(lt));
 		}
 		
 		
@@ -69,7 +71,13 @@ public class GridWorldStateParser implements StateParser {
 			int lx = Integer.parseInt(lcomps[0]);
 			int ly = Integer.parseInt(lcomps[1]);
 			
-			GridWorldDomain.setLocation(s, i-1, lx, ly);
+			if(lcomps.length < 3){
+				GridWorldDomain.setLocation(s, i-1, lx, ly);
+			}
+			else{
+				int lt = Integer.parseInt(lcomps[2]);
+				GridWorldDomain.setLocation(s, i-1, lx, ly, lt);
+			}
 			
 		}
 		

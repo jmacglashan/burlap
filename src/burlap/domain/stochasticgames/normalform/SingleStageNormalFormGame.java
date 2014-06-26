@@ -7,19 +7,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import burlap.behavior.stochasticgame.solvers.GeneralBimatrixSolverTools;
 import burlap.oomdp.auxiliary.DomainGenerator;
+import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.SGStateGenerator;
 import burlap.oomdp.stochasticgames.SingleAction;
+import burlap.oomdp.stochasticgames.World;
+import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.oomdp.stochasticgames.common.StaticRepeatedGameActionModel;
 import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
 
@@ -39,11 +46,24 @@ import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
  * <p/>
  * This class also provides static methods for returning generators for a number of classic bimatrix games: prisoner's dilemma, chicken, hawk dove,
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
+ * <p/>
+ * Finally, this class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
+ * in the constructed game. For this use either the {@link #createRepeatedGameWorld(Agent...)} or {@link #createRepeatedGameWorld(SGDomain, Agent...)}
+ * method. The former method will create an new domain instance using the {@link #generateDomain()} method; the latter will
+ * use an already generated version of the domain that you provide to it.
  * @author James MacGlashan
  *
  */
 public class SingleStageNormalFormGame implements DomainGenerator {
 
+	/**
+	 * When this generator is constructed with a generic bimatrix or zero sum definition ({@link #SingleStageNormalFormGame(String[][], double[][][])} or
+	 * {@link #SingleStageNormalFormGame(String[][])}, respectively), action names for each row/column
+	 * will take the form of: DEFAULTBIMATRIXACTIONBASENAMEi where i is the row/column index. More specifically,
+	 * it will be "actioni", since DEFAULTBIMATRIXACTIONBASENAME = "action"
+	 */
+	public static final String				DEFAULTBIMATRIXACTIONBASENAME = "action";
+	
 	/**
 	 * Attribute name for player number
 	 */
@@ -83,7 +103,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * A constructor for bimatrix games.
+	 * A constructor for bimatrix games with specified action names.
 	 * @param actionSets a 2x2 array of strings giving the names for each action. actionSets[0][1] returns the name of the second action for the first player.
 	 * @param twoPlayerPayoutMatrix A 2x2x2 payout matrix. twoPlayerPayoutMatrix[0][0][1] gives the payout player 1 receives when player takes its first action and player two takes its second action.
 	 */
@@ -116,8 +136,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 		
 		for(int i = 0; i < this.nPlayers; i++){
-			for(int j = 0; j < 2; j++){
-				for(int k = 0; k < 2; k++){
+			for(int j = 0; j < actionSets[0].length; j++){
+				for(int k = 0; k < actionSets[1].length; k++){
 					StrategyProfile sp = new StrategyProfile(j,k);
 					this.payouts[i].set(sp, twoPlayerPayoutMatrix[i][j][k]);
 				}
@@ -128,7 +148,73 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * A constructor for games with a symmetric number of actions for each player.
+	 * A construtor for a bimatrix game where the row player payoffs and colum player payoffs are provided in two different 2D double matrices. The action
+	 * names for each row/column will be named "action0" ... "actionN" where N is the maximum number of rows/columns. 
+	 * @param rowPayoff the payoff matrix for the row player
+	 * @param colPayoff the payoff matrix for the column player
+	 */
+	public SingleStageNormalFormGame(double [][] rowPayoff, double [][] colPayoff){
+		
+		if(rowPayoff.length != colPayoff.length || rowPayoff[0].length != colPayoff[0].length){
+			throw new RuntimeException("Payoff matrices for the row and column player are not the same dimensionality.");
+		}
+		
+		this.nPlayers = 2;
+		int nRows = rowPayoff.length;
+		int nCols = rowPayoff[0].length;
+		this.actionSets = new ArrayList<List<String>>();
+		List <String> actionsP1 = new ArrayList<String>();
+		for(int i = 0; i < nRows; i++){
+			actionsP1.add(DEFAULTBIMATRIXACTIONBASENAME + i);
+		}
+		this.actionSets.add(actionsP1);
+		
+		List <String> actionsP2 = new ArrayList<String>();
+		for(int i = 0; i < nCols; i++){
+			actionsP2.add(DEFAULTBIMATRIXACTIONBASENAME + i);
+		}
+		this.actionSets.add(actionsP2);
+		
+		this.payouts = new AgentPayoutFunction[2];
+		for(int i = 0; i < payouts.length; i++){
+			this.payouts[i] = new AgentPayoutFunction();
+		}
+		
+		
+		this.uniqueActionNames = new HashSet<String>();
+		this.actionNameToIndex = new ActionNameMap[this.actionSets.size()];
+		for(int i = 0; i < this.actionSets.size(); i++){
+			this.actionNameToIndex[i] = new ActionNameMap();
+			for(int j = 0; j < this.actionSets.get(i).size(); j++){
+				this.actionNameToIndex[i].put(this.actionSets.get(i).get(j), j);
+				this.uniqueActionNames.add(this.actionSets.get(i).get(j));
+			}
+		}
+		
+		
+		for(int i = 0; i < nRows; i++){
+			for(int j = 0; j < nCols; j++){
+				StrategyProfile sp = new StrategyProfile(i,j);
+				this.payouts[0].set(sp, rowPayoff[i][j]);
+				this.payouts[1].set(sp, colPayoff[i][j]);
+			}
+		}
+		
+		
+	}
+	
+	/**
+	 * A constructor for a bimatrix zero sum game. The action
+	 * names for each row/column will be named "action0" ... "actionN" where N is the maximum number of rows/columns. 
+	 * @param zeroSumRowPayoff the payoffs for the row player
+	 */
+	public SingleStageNormalFormGame(double [][] zeroSumRowPayoff){
+		this(zeroSumRowPayoff, GeneralBimatrixSolverTools.getNegatedMatrix(zeroSumRowPayoff));
+	}
+	
+	
+	/**
+	 * A constructor for games with a symmetric number of actions for each player. The payoffs will not be set.
 	 * @param actionSets an nxm matrix specifying the m actions names for each of the n players. actionSets[i][j] specifies the jth action name for player i
 	 */
 	public SingleStageNormalFormGame(String [][] actionSets){
@@ -294,6 +380,56 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 		
 		return domain;
+	}
+	
+	/**
+	 * Creates a world instance for this game in which the provided agents join in the order they are passed.
+	 * @param agents the agents to join the created world.
+	 * @return a world instance with the provided agents having already joined.
+	 */
+	public World createRepeatedGameWorld(Agent...agents){
+		
+		SGDomain domain = (SGDomain)this.generateDomain();
+		return this.createRepeatedGameWorld(domain, agents);
+		
+	}
+	
+	/**
+	 * Creates a world instance for this game in which the provided agents join in the order they are passed. This object
+	 * uses the provided domain instance generated from this object instead of generating a new one.
+	 * @param agents the agents to join the created world.
+	 * @return a world instance with the provided agents having already joined.
+	 */
+	public World createRepeatedGameWorld(SGDomain domain, Agent...agents){
+		
+		//action model for repeating single stage games; just returns to the same state
+		JointActionModel jam = new StaticRepeatedGameActionModel(); 
+		
+		//grab the joint reward function from our bimatrix game in the more general BURLAP joint reward function interface
+		JointReward jr = this.getJointRewardFunction(); 
+		
+		//game repeats forever unless manually stopped after T times.
+		TerminalFunction tf = new NullTermination();
+		
+		//set up the initial state generator for the world, which for a bimatrix game is trivial
+		SGStateGenerator sg = new ConstantSGStateGenerator(SingleStageNormalFormGame.getState(domain));
+		
+		//agent type defines the action set of players and OO-MDP class associated with their state information
+		//in this case that's just their player number. We can use the same action type for all players, regardless of wether
+		//each agent can play a different number of actions, because the actions have preconditions that prevent a player from taking actions
+		//that don't belong to them.
+		AgentType at = SingleStageNormalFormGame.getAgentTypeForAllPlayers(domain);
+		
+		
+		//create a world to synchronize the actions of agents in this domain and record results
+		World w = new World(domain, jam, jr, tf, sg);
+		
+		for(Agent a : agents){
+			a.joinWorld(w, at);
+		}
+		
+		return w;
+		
 	}
 	
 	

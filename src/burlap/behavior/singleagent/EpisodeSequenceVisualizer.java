@@ -31,7 +31,8 @@ import burlap.oomdp.visualizer.Visualizer;
 
 
 /**
- * This class is used to visualize a set of episodes that have been saves to files in a common directory.
+ * This class is used to visualize a set of episodes that have been saves to files in a common directory. In an episode list, the action name is
+ * selected action in the currently rendered state.
  * @author James MacGlashan
  *
  */
@@ -44,10 +45,10 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	protected Visualizer							painter;
 	protected TextArea								propViewer;
 	
-	protected JList<Object>							episodeList;
+	protected JList									episodeList;
 	protected JScrollPane							episodeScroller;
 	
-	protected JList<Object>							iterationList;
+	protected JList									iterationList;
 	protected JScrollPane							iterationScroller;
 	
 	protected Container								controlContainer;
@@ -59,13 +60,15 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	
 	//Backend
 	protected List <String>							episodeFiles;
-	protected DefaultListModel<Object>				episodesListModel;
+	protected DefaultListModel						episodesListModel;
 	protected StateParser							sp;
 	
 	protected EpisodeAnalysis						curEA;
-	protected DefaultListModel<Object>				iterationListModel;
+	protected DefaultListModel						iterationListModel;
 	
 	protected Domain								domain;
+	
+	protected boolean								alreadyInitedGUI = false;
 	
 	
 	
@@ -118,6 +121,11 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	 */
 	public void initGUI(){
 		
+		if(this.alreadyInitedGUI){
+			return;
+		}
+		
+		this.alreadyInitedGUI = true;
 
 		//set viewer components
 		propViewer = new TextArea();
@@ -132,7 +140,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//set episode component
-		episodeList = new JList<Object>(episodesListModel);
+		episodeList = new JList(episodesListModel);
 		
 		
 		episodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -152,8 +160,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//set iteration component
-		iterationListModel = new DefaultListModel<Object>();
-		iterationList = new JList<Object>(iterationListModel);
+		iterationListModel = new DefaultListModel();
+		iterationList = new JList(iterationListModel);
 		
 		iterationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		iterationList.setLayoutOrientation(JList.VERTICAL);
@@ -218,7 +226,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		String[] children = dir.list(filter);
 		
 		episodeFiles = new ArrayList<String>(children.length);
-		episodesListModel = new DefaultListModel<Object>();
+		episodesListModel = new DefaultListModel();
 		
 		for(int i = 0; i < children.length; i++){
 			episodeFiles.add(directory + "/" + children[i]);
@@ -236,13 +244,14 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		//clear the old contents
 		iterationListModel.clear();
 		
-		//add the initial state
-		iterationListModel.addElement("initial state");
 		
-		//add each action (which upon selecting would render the state resulting from that action)
+		//add each action (which is taken in the state being renderd)
 		for(GroundedAction ga : curEA.actionSequence){
 			iterationListModel.addElement(ga.toString());
 		}
+		
+		//add the final state
+		iterationListModel.addElement("final state");
 		
 	}
 	
@@ -306,7 +315,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		List <PropositionalFunction> props = domain.getPropFunctions();
 		for(PropositionalFunction pf : props){
-			List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
+			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
 				if(gp.isTrue(s)){
 					buf.append(gp.toString()).append("\n");

@@ -191,7 +191,8 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		List <QValue> res = new ArrayList<QValue>();
 		for(Action a : actions){
-			List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
+			//List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
+			List<GroundedAction> applications = a.getAllApplicableGroundedActions(s);
 			for(GroundedAction ga : applications){
 				res.add(this.getQ(sh, ga, matching));
 			}
@@ -218,7 +219,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				mapToStateIndex.put(indexSH, indexSH);
 			}
 			
-			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
+			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
 				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 			}
 			return this.getQ(sh, (GroundedAction)a, matching);
@@ -256,6 +257,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	/**
 	 * Gets a Q-Value for a hashed state, grounded action, and object instance matching from the hashed states an internally stored hashed transition dynamics.
+	 * If the input state is a terminal state, then the value 0 is returned.
 	 * @param sh the input state
 	 * @param a the action to get the Q-value for
 	 * @param matching the object instance matching from sh to the corresponding state stored in the value function
@@ -265,7 +267,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		
 		//translate grounded action if necessary
 		GroundedAction ta = a;
-		if(matching != null){
+		if(matching != null && a.parametersAreObjects()){
 			ta = this.translateAction(ta, matching);
 		}
 		
@@ -279,7 +281,10 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			}
 		}
 		
-		double q = this.computeQ(sh.s, matchingAt);
+		double q = 0.;
+		if(!this.tf.isTerminal(sh.s)){
+			q = this.computeQ(sh.s, matchingAt);
+		}
 		
 		return new QValue(sh.s, a, q);
 	}
@@ -303,10 +308,12 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			
 			
 			//first get all grounded actions for this state
+			/*
 			List <GroundedAction> gas = new ArrayList<GroundedAction>();
 			for(Action a : actions){
 				gas.addAll(sh.s.getAllGroundedActionsFor(a));
-			}
+			}*/
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			
 			//now add transitions
 			allTransitions = new ArrayList<ActionTransitions>(gas.size());
@@ -382,7 +389,8 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		else{
 			
-			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			for(GroundedAction ga : gas){
 				double q = this.computeQ(sh, ga);
 				if(q > maxQ){
@@ -437,7 +445,8 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		else{
 			
-			List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			for(GroundedAction ga : gas){
 				
 				double policyProb = Policy.getProbOfActionGivenDistribution(sh.s, ga, policyDistribution);

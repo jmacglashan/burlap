@@ -124,7 +124,7 @@ public class GroundedAction extends AbstractGroundedAction{
 
 
 	@Override
-	public boolean isExcutable() {
+	public boolean isExecutable() {
 		return true;
 	}
 
@@ -138,6 +138,12 @@ public class GroundedAction extends AbstractGroundedAction{
 	@Override
 	public AbstractGroundedAction copy() {
 		return new GroundedAction(action, params);
+	}
+
+
+	@Override
+	public boolean parametersAreObjects() {
+		return this.action.parametersAreObjects();
 	}
 	
 }

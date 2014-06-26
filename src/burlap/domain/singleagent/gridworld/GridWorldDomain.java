@@ -446,17 +446,35 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 
+	/**
+	 * Returns this grid world's width
+	 * @return this grid world's width
+	 */
+	public int getWidth() {
+		return this.width;
+	}
+
+	/**
+	 * Returns this grid world's height
+	 * @return this grid world's height
+	 */
+	public int getHeight() {
+		return this.height;
+	}
+	
+	
+	
 	@Override
 	public Domain generateDomain() {
 		
 		Domain domain = new SADomain();
 		
 		//Creates a new Attribute object
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.DISC);
-		xatt.setDiscValuesForRange(0, this.width-1, 1); //-1 due to inclusivity vs exclusivity
+		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.INT);
+		xatt.setLims(0, this.width-1);
 		
-		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.DISC);
-		yatt.setDiscValuesForRange(0, this.height-1, 1); //-1 due to inclusivity vs exclusivity
+		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.INT);
+		yatt.setLims(0., this.height-1);
 		
 		Attribute ltatt = new Attribute(domain, ATTLOCTYPE, Attribute.AttributeType.DISC);
 		ltatt.setDiscValuesForRange(0, numLocationTypes-1, 1);
@@ -492,6 +510,25 @@ public class GridWorldDomain implements DomainGenerator {
 		return domain;
 	}
 
+	
+	
+
+	/**
+	 * Will return a state object with a single agent object and no location objects
+	 * @param d the domain object that is used to specify the min/max dimensions
+	 * @return a state object with a single agent object and no location objects
+	 */
+	public static State getOneAgentNoLocationState(Domain d){
+		
+		State s = new State();
+
+		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+				
+		return s;
+		
+	}
+	
+	
 	
 	/**
 	 * Will return a state object with a single agent object and a single location object
@@ -907,7 +944,6 @@ public class GridWorldDomain implements DomainGenerator {
 		setAgent(s, 0, 0);
 		setLocation(s, 0, 10, 10, 0);
 		
-		
 		int expMode = 1;
 		if(args.length > 0){
 			if(args[0].equals("v")){
@@ -931,7 +967,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 		else if(expMode == 1){
 			
-			Visualizer v = GridWorldVisualizer.getVisualizer(d, gwdg.getMap());
+			Visualizer v = GridWorldVisualizer.getVisualizer(gwdg.getMap());
 			VisualExplorer exp = new VisualExplorer(d, v, s);
 			
 			//use w-s-a-d-x

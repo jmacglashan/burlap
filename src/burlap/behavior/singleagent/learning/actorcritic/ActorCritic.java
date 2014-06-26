@@ -134,7 +134,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 			State nextState = ga.executeIn(curState);
 			double r = this.rf.reward(curState, ga, nextState);
 			
-			ea.recordTransitionTo(nextState, ga, r);
+			ea.recordTransitionTo(ga, nextState, r);
 			
 			CritiqueResult critqiue = this.critic.critiqueAndUpdate(curState, ga, nextState);
 			this.actor.updateFromCritqique(critqiue);

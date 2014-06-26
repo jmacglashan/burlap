@@ -184,7 +184,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 			State nextState = ga.executeIn(curState);
 			double r = this.rf.reward(curState, ga, nextState);
 			
-			ea.recordTransitionTo(nextState, ga, r);
+			ea.recordTransitionTo(ga, nextState, r);
 			
 			if(!this.model.transitionIsModeled(curState, ga)){
 				this.model.updateModel(curState, ga, nextState, r, this.tf.isTerminal(nextState));

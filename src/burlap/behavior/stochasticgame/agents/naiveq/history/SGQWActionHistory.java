@@ -9,7 +9,7 @@ import burlap.behavior.singleagent.QValue;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
-import burlap.behavior.stochasticgame.agents.naiveq.SGQLAgent;
+import burlap.behavior.stochasticgame.agents.naiveq.SGNaiveQLAgent;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
@@ -23,14 +23,18 @@ import burlap.oomdp.stochasticgames.SGDomain;
 
 /**
  * A Tabular Q-learning [1] algorithm for stochastic games formalisms that augments states with the actions each agent took in n
- * previous time steps. 
+ * previous time steps. If the constructor is not passed the maximum number of players and an {@link ActionIdMap} to use,
+ * then when the first game starts, it will be initialized to an {@link ParameterNaiveActionIdMap} and the number of
+ * players will be set to the number of players in the world which this agent has joined. If the world contains
+ * parameterized actions, this may be a problem and you should use the {@link #SGQWActionHistory(SGDomain, double, double, StateHashFactory, int, int, ActionIdMap)}
+ * constructor to resolve action parameterization instead.
  * 
  * <p/>
  * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
  * @author James MacGlashan
  *
  */
-public class SGQWActionHistory extends SGQLAgent {
+public class SGQWActionHistory extends SGNaiveQLAgent {
 
 	
 	/**
@@ -46,7 +50,7 @@ public class SGQWActionHistory extends SGQLAgent {
 	/**
 	 * a map from actions to int values which can be used to fill in an action history attribute value
 	 */
-	protected ActionIdMap						actionMap;
+	protected ActionIdMap						actionMap = null;
 	
 	
 	/**
@@ -98,7 +102,28 @@ public class SGQWActionHistory extends SGQLAgent {
 		this.actionMap = actionMap;
 		
 		
-		//set up history augmentation object information
+		this.initializeHistoryAugmentedDomain(maxPlayers);
+		
+	}
+	
+	/**
+	 * Initializes the learning algorithm using 0.1 epsilon greedy learning strategy/policy
+	 * @param d the domain in which the agent will act
+	 * @param discount the discount factor
+	 * @param learningRate the learning rate
+	 * @param hashFactory the state hashing factory to use
+	 * @param historySize the number of previous steps to remember and with which to augment the state space
+	 */
+	public SGQWActionHistory(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory, int historySize) {
+		super(d, discount, learningRate, hashFactory);
+		this.historySize = historySize;
+	}
+	
+	/**
+	 * Initializes the history augmented domain/state representation the agent will use
+	 * @param maxPlayers the maximum number of players in the game
+	 */
+	protected void initializeHistoryAugmentedDomain(int maxPlayers){
 		Domain augmentingDomain = new SGDomain();
 		
 		Attribute histNum = new Attribute(augmentingDomain, ATTHNUM, Attribute.AttributeType.DISC);
@@ -108,7 +133,7 @@ public class SGQWActionHistory extends SGQLAgent {
 		histPN.setDiscValuesForRange(0, maxPlayers-1, 1);
 		
 		Attribute histAID = new Attribute(augmentingDomain, ATTHAID, Attribute.AttributeType.DISC);
-		histAID.setDiscValuesForRange(0, actionMap.maxValue(), 1); //maxValue is when it the action is undefined from no history occurance
+		histAID.setDiscValuesForRange(0, this.actionMap.maxValue(), 1); //maxValue is when it the action is undefined from no history occurance
 		
 		classHistory = new ObjectClass(augmentingDomain, CLASSHISTORY);
 		classHistory.addAttribute(histNum);
@@ -130,6 +155,20 @@ public class SGQWActionHistory extends SGQLAgent {
 	@Override
 	public void gameStarting() {
 		this.history = new LinkedList<JointAction>();
+		if(this.actionMap == null){
+			this.initializeActionMapAndAugmentedDomain();
+		}
+	}
+	
+	/**
+	 * Initializes the action map to be an instance of {@link ParameterNaiveActionIdMap} and then initializes
+	 * the history augmented domain using the max players as the number of players in the world which this agent
+	 * has joined.
+	 */
+	protected void initializeActionMapAndAugmentedDomain(){
+		this.actionMap = new ParameterNaiveActionIdMap(this.domain);
+		int maxPlayers = this.world.getRegisteredAgents().size();
+		this.initializeHistoryAugmentedDomain(maxPlayers);
 	}
 	
 	

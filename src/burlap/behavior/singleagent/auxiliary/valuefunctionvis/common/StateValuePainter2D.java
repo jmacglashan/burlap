@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
@@ -8,6 +9,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StateValuePainter;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.Attribute.AttributeType;
 
 
 /**
@@ -69,6 +71,41 @@ public class StateValuePainter2D extends StateValuePainter {
 	protected int								numYCells = -1;
 	
 	
+	//TODO: setters for the below
+	
+	/**
+	 * Whether the numeric string for the value of the state should be rendered in its cell or not.
+	 */
+	protected boolean							renderValueString = true;
+	
+	/**
+	 * The font point size of the value string
+	 */
+	protected int								vsFontSize = 10;
+	
+	/**
+	 * The font color of the value strings
+	 */
+	protected Color								vsFontColor = Color.BLACK;
+	
+	/**
+	 * A value between 0 and 1 indicating how far from the left of a value cell the value string should start being rendered.
+	 * 0 indicates stating at the left of the cell; 1 the right;
+	 */
+	protected float								vsOffsetFromLeft = 0f;
+	
+	/**
+	 * A value betweeen 0 and 1 indicating how from from the top of a value cell the value string should start be rendered.
+	 * 0 indicates stating at the top of the cell; 1 the botton;
+	 */
+	protected float								vsOffsetFromTop = 0.75f;
+	
+	/**
+	 * The precision (numer of decimals) shown in the value string.
+	 */
+	protected int								vsPrecision = 2;
+	
+	
 	/**
 	 * Initializes the value painter.
 	 * @param colorBlend the object to use for returning the color with which to fill the state cell given its value.
@@ -116,6 +153,31 @@ public class StateValuePainter2D extends StateValuePainter {
 	}
 
 	
+	/**
+	 * Enables or disables the rendering the text specifying the value of a state in its cell.
+	 * @param renderValueString if true, then text specifying the value of the state will be rendered; if false then it will not be rendered.
+	 */
+	public void toggleValueStringRendering(boolean renderValueString){
+		this.renderValueString = renderValueString;
+	}
+	
+	
+	/**
+	 * Sets the rendering format of the string displaying the value of each state.
+	 * @param fontSize the font size of the string
+	 * @param fontColor the color of the font
+	 * @param precision the precision of the value text printed (e.g., 2 means displaying 2 decimal places)
+	 * @param offsetFromLeft the offset from the left side of a state's cell that the text will begin being rendered. 0 means starting on the left boundary, 1 on the right boundary.
+	 * @param offsetFromTop the offset from the top side of a state's cell that the text will begin being rendered. 0 means starting on the top boundary, 1 on the bottom boundary.
+	 */
+	public void setValueStringRenderingFormat(int fontSize, Color fontColor, int precision, float offsetFromLeft, float offsetFromTop){
+		this.vsFontSize = fontSize;
+		this.vsFontColor = fontColor;
+		this.vsPrecision = precision;
+		this.vsOffsetFromLeft = offsetFromLeft;
+		this.vsOffsetFromTop = offsetFromTop;
+	}
+	
 	
 	/**
 	 * Sets the number of states that will be rendered along a row
@@ -162,38 +224,55 @@ public class StateValuePainter2D extends StateValuePainter {
 		float width = 0f;
 		float height = 0f;
 		
-		if(xAtt.type == Attribute.AttributeType.DISC){
-			
-			if(this.numXCells != -1){
-				domainXScale = this.numXCells;
-			}
-			else{
-				domainXScale = xAtt.discValues.size();
-			}
-			
-			width = cWidth / domainXScale;
-			xval = xOb.getDiscValForAttribute(xAttName)*width;
-			
+		if(this.numXCells != -1){
+			domainXScale = this.numXCells;
 		}
+		else if(xAtt.type == Attribute.AttributeType.DISC){
+			domainXScale = xAtt.discValues.size();
+		}
+		else if(xAtt.type == AttributeType.INT){
+			domainXScale = (float)(xAtt.upperLim - xAtt.lowerLim + 1);
+		}
+		else {
+			domainXScale = (float)(xAtt.upperLim - xAtt.lowerLim);
+		}
+		width = cWidth / domainXScale;
+		xval = ((float)(xOb.getNumericValForAttribute(xAttName) - xAtt.lowerLim))*width;
 		
-		if(yAtt.type == Attribute.AttributeType.DISC){
-			
-			if(this.numYCells != -1){
-				domainYScale = this.numYCells;
-			}
-			else{
-				domainYScale = yAtt.discValues.size();
-			}
-			
-			height = cHeight / domainYScale;
-			yval = cHeight - height - yOb.getDiscValForAttribute(yAttName)*height;
-			
+		if(this.numYCells != -1){
+			domainYScale = this.numYCells;
 		}
+		else if(yAtt.type == AttributeType.DISC){
+			domainYScale = yAtt.discValues.size();
+		}
+		else if(yAtt.type == AttributeType.INT){
+			domainYScale = (float)(yAtt.upperLim - yAtt.lowerLim + 1);
+		}
+		else{
+			domainYScale = (float)(yAtt.upperLim - yAtt.lowerLim);
+		}
+		height = cHeight / domainYScale;
+		yval = cHeight - height - ((float)(yOb.getNumericValForAttribute(yAttName) - yAtt.lowerLim))*height;
+		
+		
 		
 		Color col = this.colorBlend.color(value);
 		g2.setColor(col);
 		
 		g2.fill(new Rectangle2D.Float(xval, yval, width, height));
+		
+		if(this.renderValueString){
+			
+			g2.setColor(this.vsFontColor);
+			g2.setFont(new Font("sansserif", Font.BOLD, this.vsFontSize));
+			String fstring = String.format("%."+this.vsPrecision+"f", value);
+			
+			float sxval = xval + this.vsOffsetFromLeft*width;
+			float syval = yval + this.vsOffsetFromTop*height;
+			
+			g2.drawString(fstring, sxval, syval);
+			
+		}
 		
 
 	}

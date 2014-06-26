@@ -26,14 +26,14 @@ import burlap.oomdp.stochasticgames.SingleAction;
 
 /**
  * A Tabular Q-learning [1] algorithm for stochastic games formalisms. This algorithm ignores the actions of other agents and treats the outcomes
- * from their decisions as if they're part of the environment transition dynamics.
+ * from their decisions as if they're part of the environment transition dynamics, hence the "naive" qualifier.
  * 
  * <p/>
  * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
  * @author James MacGlashan
  *
  */
-public class SGQLAgent extends Agent implements QComputablePlanner{
+public class SGNaiveQLAgent extends Agent implements QComputablePlanner{
 
 	/**
 	 * The tabular map from (hashed) states to the list of Q-values for each action in those states
@@ -87,7 +87,7 @@ public class SGQLAgent extends Agent implements QComputablePlanner{
 	 * @param learningRate the learning rate
 	 * @param hashFactory the state hashing factory
 	 */
-	public SGQLAgent(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory) {
+	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
@@ -110,7 +110,7 @@ public class SGQLAgent extends Agent implements QComputablePlanner{
 	 * @param defaultQ the default to which all Q-values will be initialized
 	 * @param hashFactory the state hashing factory
 	 */
-	public SGQLAgent(SGDomain d, double discount, double learningRate, double defaultQ, StateHashFactory hashFactory) {
+	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, double defaultQ, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
@@ -132,7 +132,7 @@ public class SGQLAgent extends Agent implements QComputablePlanner{
 	 * @param qInitizalizer the Q-value initialization method
 	 * @param hashFactory the state hashing factory
 	 */
-	public SGQLAgent(SGDomain d, double discount, double learningRate, ValueFunctionInitialization qInitizalizer, StateHashFactory hashFactory) {
+	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, ValueFunctionInitialization qInitizalizer, StateHashFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
@@ -283,7 +283,7 @@ public class SGQLAgent extends Agent implements QComputablePlanner{
 		Map <String, String> matching = null;
 		for(GroundedSingleAction gsa :gsas){
 			GroundedSingleAction transgsa = gsa;
-			if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent()){
+			if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent() && gsa.parametersAreObjects()){
 				if(matching == null){
 					matching = shq.s.getObjectMatchingTo(storedRep, false);
 				}
@@ -336,7 +336,7 @@ public class SGQLAgent extends Agent implements QComputablePlanner{
 			return q;
 		}
 		
-		if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent()){
+		if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
 			//then we'll need to translate this action to match the internal state representation
 			Map <String, String> matching = shq.s.getObjectMatchingTo(storedRep, false);
 			gsa = this.translateAction(gsa, matching);
