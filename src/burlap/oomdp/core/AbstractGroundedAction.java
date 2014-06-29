@@ -7,8 +7,16 @@ import java.util.Set;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SingleAction;
 
+/**
+ * This is an abstract superclass for grounded actions. A grounded action is a refernce to an action along with the specific parameters with which the action
+ * is to be applied. Subclasses for this class include the single agent action grounding ({@link GroundedAction}), an action grounding for a specific agent
+ * in a stochastic game {@link GroundedSingleAction}, and a joint action in a stochastic game ({@link JointAction}).
+ * @author James MacGlashan
+ *
+ */
 public abstract class AbstractGroundedAction {
 
 	/**
