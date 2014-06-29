@@ -86,7 +86,12 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		@Override
 		public List<GroundedAction> getAllApplicableGroundedActions(State s){
 			State anMDPState = BeliefMDPGenerator.this.podomain.getStateEnumerator().getStateForEnumertionId(0);
-			return this.mdpAction.getAllApplicableGroundedActions(anMDPState);
+			List<GroundedAction> mdpGAs = this.mdpAction.getAllApplicableGroundedActions(anMDPState);
+			List<GroundedAction> beliefGAs = new ArrayList<GroundedAction>(mdpGAs.size());
+			for(GroundedAction mga : mdpGAs){
+				beliefGAs.add(new GroundedAction(this, mga.params));
+			}
+			return beliefGAs;
 		}
 
 		@Override
