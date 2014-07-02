@@ -51,6 +51,18 @@ public class AffordanceRTDP extends RTDP {
 		
 	}
 	
+	public AffordanceRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth, AffordancesController affController, int minRolloutsRequiredForConvergance){
+		super(domain, rf, tf, gamma,hashingFactory, vInit, numRollouts, maxDelta, maxDepth);
+		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.affController = affController;
+		this.numRollouts = numRollouts;
+		this.maxDelta = maxDelta;
+		this.maxDepth = maxDepth;
+		this.rollOutPolicy = new AffordanceGreedyQPolicy(affController, this);
+		this.valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit);
+		this.minNumRolloutsWithSmallValueChange = minRolloutsRequiredForConvergance;
+	}
+	
 	public void planFromState(State initialState) {
 		this.affordanceRTDP(initialState);
 	}

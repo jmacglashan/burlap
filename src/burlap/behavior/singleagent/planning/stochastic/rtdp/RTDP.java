@@ -65,7 +65,7 @@ public class RTDP extends ValueFunctionPlanner {
 	 * RTDP will be delcared "converged" if there are this many consecutive policy rollouts in which the value function change is smaller than the maxDelta value.
 	 * The default value is 10.
 	 */
-	protected int						minNumRolloutsWithSmallValueChange = 3;
+	protected int						minNumRolloutsWithSmallValueChange = 10;
 	
 	
 	/**

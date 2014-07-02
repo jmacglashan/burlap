@@ -28,6 +28,11 @@ public class AffordanceDelegate {
 	 
 	 public void resampleActionSet(){
 		 this.listedActionSet = affordance.sampleNewLiftedActionSet();
+//		 System.out.println("ACTION SET: ");
+//		 for(AbstractGroundedAction a : this.listedActionSet) {
+//			 System.out.println(a.actionName());
+//		 }
+//		 System.out.println("\n");
 	 }
 	 
 	 public void setCurrentGoal(LogicalExpression currentGoal){
@@ -136,7 +141,8 @@ public class AffordanceDelegate {
 				
 				GroundedAction ga = new GroundedAction(act, actionParams);
 				actionCounts.put(ga, count);
-			} else {
+			} 
+			else {
 				// Read the action set size counts
 				Integer size = Integer.parseInt(info[0]);
 				Integer count = Integer.parseInt(info[1]);
@@ -151,6 +157,7 @@ public class AffordanceDelegate {
 		Affordance aff = new SoftAffordance(preCondition, goal, allActions);
 		((SoftAffordance)aff).setActionCounts(actionCounts);
 		((SoftAffordance)aff).setActionNumCounts(actionNumCounts);
+		((SoftAffordance)aff).postProcess();
 
 		AffordanceDelegate affDelegate = new AffordanceDelegate(aff);
 		

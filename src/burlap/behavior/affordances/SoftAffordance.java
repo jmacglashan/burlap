@@ -148,7 +148,7 @@ public class SoftAffordance extends Affordance {
 		this.actionCounts = actionCounts;
 	}
 
-	public void setActionNumCounts(int[] actionNumCounts) {
+	public void setActionNumCounts(int[] actionNumCounts) {		
 		this.actionNumCounts = actionNumCounts;
 	}
 	

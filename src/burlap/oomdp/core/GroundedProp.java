@@ -1,5 +1,7 @@
 package burlap.oomdp.core;
 
+import burlap.behavior.affordances.AffordanceDelegate;
+
 
 /**
  * Propositional functions are defined to be evaluated on object parameters and this class provides a
@@ -23,7 +25,6 @@ public class GroundedProp implements Cloneable{
 		pf = p;
 		params = par;
 	}
-	
 	
 	public Object clone()
 	{

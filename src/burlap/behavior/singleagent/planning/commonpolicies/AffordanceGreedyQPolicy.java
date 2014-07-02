@@ -60,6 +60,12 @@ public class AffordanceGreedyQPolicy extends GreedyQPolicy {
 				maxQ = q.q;
 			}
 		}
+//		System.out.println("Action set: ");
+//		for(QValue q : maxActions) {
+//			System.out.println(q.a.actionName());
+//		}
+//		System.out.println("\n");
+		
 		return maxActions.get(rand.nextInt(maxActions.size())).a;
 	}
 	
