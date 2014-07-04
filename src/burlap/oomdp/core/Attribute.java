@@ -178,7 +178,7 @@ public class Attribute {
 	/**
 	 * Constructs with a given attribute type. If the attribute type is set to boolean, the categorical values will automatically
 	 * be initialized to "false" and "true" with a range from 0 to 1. If the attribute type is relational,
-	 * then the domain is automatically set to object identifer dependent.
+	 * then the domain is automatically set to object identifier dependent.
 	 * @param domain the domain that the attribute exists in
 	 * @param name the name of the attribute
 	 * @param type the type of the attribute (discrete or real)
@@ -261,7 +261,7 @@ public class Attribute {
 	 * Sets the type for this attribute.
 	 * If the attribute type is set to boolean, the categorical values will automatically
 	 * be initialized to "false" and "true" with a range from 0 to 1. If the attribute type is relational,
-	 * then the domain is automatically set to object identifer dependent.
+	 * then the domain is automatically set to object identifier dependent.
 	 * @param type the attribute type to which this attribute should be set
 	 */
 	public void setType(AttributeType type){
