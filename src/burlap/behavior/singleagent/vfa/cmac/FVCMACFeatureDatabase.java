@@ -167,6 +167,12 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	}
 	
 	
+	@Override
+	public int numberOfFeatures() {
+		return Math.max(this.nextActionFeatureId, this.nextStateFeatureId);
+	}
+	
+	
 	/**
 	 * Returns the stored feature id or creates, stores and returns one. If a feature id is created, then the {@link #nextStateFeatureId} data member of this
 	 * object is incremented.
