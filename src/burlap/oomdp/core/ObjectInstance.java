@@ -357,6 +357,31 @@ public class ObjectInstance {
 	}
 	
 	
+	/**
+	 * Returns a normalized double vector of all the observable values in this object instance. This method relies on the lowerlims and upperlims 
+	 * being set for the corresponding attribute. Furthermore, this method will throw a runtime exception
+	 * if the object instance includes attributes that are *not* type REAL or INT.
+	 * @return a normalized double vector of all the observable values in this object instance.
+	 */
+	public double [] getNormalizedObservableFeatureVec(){
+		
+		double [] obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
+		for(int i = 0; i < obsFeatureVec.length; i++){
+			int ind = obClass.observableAttributeIndices.get(i);
+			Value v = values.get(ind);
+			Attribute a = v.getAttribute();
+			if(a.type != AttributeType.REAL && a.type != AttributeType.INT){
+				throw new RuntimeException("Cannot get a normalized numeric value for attribute " + a.name + " because it is not a REAL or INT type.");
+			}
+			double dv = values.get(ind).getNumericRepresentation();
+			double n = (dv - a.lowerLim) / (a.upperLim - a.lowerLim);
+			obsFeatureVec[i] = n;
+		}
+		
+		return obsFeatureVec;
+		
+	}
+	
 	
 	
 	public boolean equals(Object obj){
