@@ -202,7 +202,9 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 		}
 		
 
-		qe.q = qe.q + this.learningRate.pollLearningRate(s, myAction) * (r + (this.discount * maxQ) - qe.q);
+		qe.q = qe.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, s, myAction) * (r + (this.discount * maxQ) - qe.q);
+		
+		this.totalNumberOfSteps++;
 
 		
 	}

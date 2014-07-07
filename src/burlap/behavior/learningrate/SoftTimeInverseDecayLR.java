@@ -71,6 +71,11 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	protected StateHashFactory hashingFactory;
 	
 	
+	/**
+	 * The last agent time at which they polled the learning rate
+	 */
+	protected int lastPollTime = -1;
+	
 	
 	/**
 	 * Initializes with an initial learning rate and decay constant shift for a state independent learning rate. Minimum learning rate that can be returned will be Double.MIN_NORMAL
@@ -166,23 +171,32 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
 		if(!useStateWise){
 			double oldVal = this.learningRate(this.universalTime);
-			this.universalTime++;
+			if(agentTime > this.lastPollTime){
+				this.universalTime++;
+				this.lastPollTime = agentTime;
+			}
 			return oldVal;
 		}
 		
 		StateWiseTimeIndex slr = this.getStateWiseTimeIndex(s);
 		if(!useStateActionWise){
 			double oldVal = this.learningRate(slr.timeIndex);
-			slr.timeIndex++;
+			if(agentTime > slr.lastPollTime){
+				slr.timeIndex++;
+				slr.lastPollTime = agentTime;
+			}
 			return oldVal;
 		}
 		
 		MutableInt md = slr.getActionTimeIndexEntry(ga);
 		double oldVal = this.learningRate(slr.getActionTimeIndexEntry(ga).mi);
-		md.mi++;
+		if(agentTime > md.lastPollTime){
+			md.mi++;
+			md.lastPollTime = agentTime;
+		}
 		return oldVal;
 	}
 	
@@ -203,17 +217,23 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 
 
 	@Override
-	public double pollLearningRate(int featureId) {
+	public double pollLearningRate(int agentTime, int featureId) {
 		if(!useStateWise){
 			double oldVal = this.learningRate(this.universalTime);
-			this.universalTime++;
+			if(agentTime > this.lastPollTime){
+				this.universalTime++;
+				this.lastPollTime = agentTime;
+			}
 			return oldVal;
 		}
 		
 		StateWiseTimeIndex slr = this.getFeatureWiseTimeIndex(featureId);
 
 		double oldVal = this.learningRate(slr.timeIndex);
-		slr.timeIndex++;
+		if(agentTime > slr.lastPollTime){
+			slr.timeIndex++;
+			slr.lastPollTime = agentTime;
+		}
 		return oldVal;
 		
 		
@@ -287,6 +307,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	protected class StateWiseTimeIndex{
 		int timeIndex;
 		Map<String, MutableInt> actionLearningRates = null;
+		int lastPollTime = -1;
 		
 		public StateWiseTimeIndex(){
 			this.timeIndex = 1;
@@ -320,6 +341,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	 */
 	protected class MutableInt{
 		int mi;
+		int lastPollTime = -1;
 		public MutableInt(int mi){
 			this.mi = mi;
 		}

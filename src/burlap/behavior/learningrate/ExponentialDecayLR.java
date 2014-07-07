@@ -70,6 +70,13 @@ public class ExponentialDecayLR implements LearningRate {
 	protected StateHashFactory hashingFactory;
 	
 	
+	/**
+	 * The last agent time at which they polled the learning rate
+	 */
+	protected int lastPollTime = -1;
+	
+	
+	
 	
 	/**
 	 * Initializes with an initial learning rate and decay rate for a state independent learning rate. Minimum learning rate that can be returned will be Double.MIN_NORMAL
@@ -169,24 +176,38 @@ public class ExponentialDecayLR implements LearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
+		
 		
 		if(!useStateWise){
 			double oldVal = this.universalLR;
-			this.universalLR = this.nextLRVal(oldVal);
+			if(agentTime > this.lastPollTime){
+				this.universalLR = this.nextLRVal(oldVal);
+				this.lastPollTime = agentTime;
+			}
+			
 			return oldVal;
 		}
 		
 		StateWiseLearningRate slr = this.getStateWiseLearningRate(s);
 		if(!useStateActionWise){
+			
 			double oldVal = slr.learningRate;
-			slr.learningRate = this.nextLRVal(oldVal);
+			if(agentTime > slr.lastPollTime){
+				slr.learningRate = this.nextLRVal(oldVal);
+				slr.lastPollTime = agentTime;
+			}
+			
 			return oldVal;
 		}
 		
 		MutableDouble md = slr.getActionLearningRateEntry(ga);
 		double oldVal = md.md;
-		md.md = this.nextLRVal(oldVal);
+		if(agentTime > md.lastPollTime){
+			md.md = this.nextLRVal(oldVal);
+			md.lastPollTime = agentTime;
+		}
+		
 		return oldVal;
 		
 	}
@@ -208,17 +229,24 @@ public class ExponentialDecayLR implements LearningRate {
 
 
 	@Override
-	public double pollLearningRate(int featureId) {
+	public double pollLearningRate(int agentTime, int featureId) {
+		
 		
 		if(!useStateWise){
 			double oldVal = this.universalLR;
-			this.universalLR = this.nextLRVal(oldVal);
+			if(agentTime > this.lastPollTime){
+				this.universalLR = this.nextLRVal(oldVal);
+				this.lastPollTime = agentTime;
+			}
 			return oldVal;
 		}
 		
 		StateWiseLearningRate slr = this.getFeatureWiseLearningRate(featureId);
 		double oldVal = slr.learningRate;
-		slr.learningRate = this.nextLRVal(oldVal);
+		if(agentTime > slr.lastPollTime){
+			slr.learningRate = this.nextLRVal(oldVal);
+			slr.lastPollTime = agentTime;
+		}
 		return oldVal;
 		
 		
@@ -288,6 +316,7 @@ public class ExponentialDecayLR implements LearningRate {
 	protected class StateWiseLearningRate{
 		double learningRate;
 		Map<String, MutableDouble> actionLearningRates = null;
+		int lastPollTime = -1;
 		
 		public StateWiseLearningRate(){
 			this.learningRate = initialLearningRate;
@@ -321,6 +350,7 @@ public class ExponentialDecayLR implements LearningRate {
 	 */
 	protected class MutableDouble{
 		double md;
+		int lastPollTime = -1;
 		public MutableDouble(double md){
 			this.md = md;
 		}

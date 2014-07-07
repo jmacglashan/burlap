@@ -135,7 +135,10 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	protected boolean												shouldAnnotateOptions = true;
 	
 	
-	
+	/**
+	 * The total number of learning steps performed by this agent.
+	 */
+	protected int													totalNumberOfSteps = 0;
 	
 	
 	/**
@@ -426,7 +429,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 			
 			double learningRate = 0.;
 			if(!this.useFeatureWiseLearningRate){
-				learningRate = this.learningRate.pollLearningRate(curState, action);
+				learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState, action);
 			}
 			
 			
@@ -436,7 +439,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 				
 				int weightId = et.weight.weightId();
 				if(this.useFeatureWiseLearningRate){
-					learningRate = this.learningRate.pollLearningRate(et.weight.weightId());
+					learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.weight.weightId());
 				}
 				
 				
@@ -464,7 +467,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 					
 					//then it's new and we need to add it
 					if(this.useFeatureWiseLearningRate){
-						learningRate = this.learningRate.pollLearningRate(weightId);
+						learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, weightId);
 					}
 					
 					EligibilityTraceVector et = new EligibilityTraceVector(fw, gradient.getPartialDerivative(weightId));
@@ -496,6 +499,8 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 			action = nextAction;
 			curApprox = nextApprox;
 			allCurApproxResults = allNextApproxResults;
+			
+			this.totalNumberOfSteps++;
 			
 		}
 		

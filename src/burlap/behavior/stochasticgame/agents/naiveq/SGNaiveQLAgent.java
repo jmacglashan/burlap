@@ -81,6 +81,12 @@ public class SGNaiveQLAgent extends Agent implements QComputablePlanner{
 	
 	
 	/**
+	 * The total number of learning steps performed by this agent.
+	 */
+	protected int													totalNumberOfSteps = 0;
+	
+	
+	/**
 	 * Initializes with a default Q-value of 0 and a 0.1 epsilon greedy policy/strategy
 	 * @param d the domain in which the agent will act
 	 * @param discount the discount factor
@@ -200,7 +206,9 @@ public class SGNaiveQLAgent extends Agent implements QComputablePlanner{
 		}
 		
 
-		qv.q = qv.q + this.learningRate.pollLearningRate(s, myAction) * (r + (this.discount * maxQ) - qv.q);
+		qv.q = qv.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, s, myAction) * (r + (this.discount * maxQ) - qv.q);
+		
+		this.totalNumberOfSteps++;
 
 	}
 

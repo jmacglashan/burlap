@@ -120,6 +120,11 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 	 */
 	protected JAQValue									qToUpdate = null;
 	
+	/**
+	 * The total number of learning steps performed by this agent.
+	 */
+	protected int													totalNumberOfSteps = 0;
+	
 	
 	
 	/**
@@ -263,9 +268,9 @@ public class MultiAgentQLearning extends Agent implements MultiAgentQSourceProvi
 			backUpValue = this.backupOperator.performBackup(sprime, this.worldAgentName, this.world.getAgentDefinitions(), this.qSourceMap);
 		}
 		
-		this.nextQValue = qToUpdate.q + this.learningRate.pollLearningRate(s, jointAction) * (r + (this.discount * backUpValue) - this.qToUpdate.q);
+		this.nextQValue = qToUpdate.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, s, jointAction) * (r + (this.discount * backUpValue) - this.qToUpdate.q);
 		
-		
+		this.totalNumberOfSteps++;
 
 	}
 

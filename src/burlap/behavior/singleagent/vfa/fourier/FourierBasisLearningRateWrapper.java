@@ -52,7 +52,7 @@ public class FourierBasisLearningRateWrapper implements LearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
 		throw new UnsupportedOperationException("FourierBasisLearningRateWrapper is not defined for returning learning rates on whole OO-MDP state objects. Client code should use the feature-wise poll method instead");
 	}
 
@@ -68,8 +68,8 @@ public class FourierBasisLearningRateWrapper implements LearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(int featureId) {
-		double l = this.sourceLearningRateFunction.pollLearningRate(featureId);
+	public double pollLearningRate(int agentTime, int featureId) {
+		double l = this.sourceLearningRateFunction.pollLearningRate(agentTime, featureId);
 		double norm = this.fouierBasisFunctions.coefficientNorm(featureId);
 		if(norm == 0){
 			return l;

@@ -59,6 +59,11 @@ public class BoltzmannActor extends Actor {
 	 */
 	protected boolean								containsParameterizedActions = false;
 	
+	/**
+	 * The total number of learning steps performed by this agent.
+	 */
+	protected int													totalNumberOfSteps = 0;
+	
 	
 	
 	/**
@@ -100,10 +105,12 @@ public class BoltzmannActor extends Actor {
 		StateHashTuple sh = this.hashingFactory.hashState(critqiue.getS());
 		PolicyNode node = this.getNode(sh);
 		
-		double learningRate = this.learningRate.pollLearningRate(sh.s, critqiue.getA());
+		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s, critqiue.getA());
 		
 		ActionPreference pref = this.getMatchingPreference(sh, critqiue.getA(), node);
 		pref.preference += learningRate * critqiue.getCritique();
+		
+		this.totalNumberOfSteps++;
 		
 
 	}

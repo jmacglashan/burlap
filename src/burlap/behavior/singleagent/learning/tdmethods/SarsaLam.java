@@ -208,7 +208,7 @@ public class SarsaLam extends QLearning {
 					}
 				}
 				
-				double learningRate = this.learningRate.pollLearningRate(et.sh.s, et.q.a);
+				double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.sh.s, et.q.a);
 				
 				et.q.q = et.q.q + (learningRate * et.eligibility * delta);
 				et.eligibility = et.eligibility * lambda * discount;
@@ -222,7 +222,7 @@ public class SarsaLam extends QLearning {
 			
 			if(!foundCurrentQTrace){
 				//then update and add it
-				double learningRate = this.learningRate.pollLearningRate(curQ.s, curQ.a);
+				double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, curQ.s, curQ.a);
 				curQ.q = curQ.q + (learningRate * delta);
 				EligibilityTrace et = new EligibilityTrace(curState, curQ, lambda*discount);
 				
@@ -241,6 +241,7 @@ public class SarsaLam extends QLearning {
 			action = nextAction;
 			curQ = nextQ;
 			
+			this.totalNumberOfSteps++;
 			
 		}
 		
