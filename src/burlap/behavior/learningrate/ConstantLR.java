@@ -43,4 +43,14 @@ public class ConstantLR implements LearningRate {
 		//no change needed
 	}
 
+	@Override
+	public double peekAtLearningRate(int featureId) {
+		return this.learningRate;
+	}
+
+	@Override
+	public double pollLearningRate(int featureId) {
+		return this.learningRate;
+	}
+
 }
