@@ -38,7 +38,7 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	protected boolean hasOffset;
 	
 	/**
-	 * A map for return a multiplier to the number of RBF statefeatures for each action. Effectively
+	 * A map for returning a multiplier to the number of RBF statefeatures for each action. Effectively
 	 * this ensures a unieque feature ID for each RBF for each action.
 	 */
 	protected Map<String, Integer> actionFeatureMultiplier = new HashMap<String, Integer>();
@@ -155,7 +155,7 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 		
 		Integer stored = this.actionFeatureMultiplier.get(ga.toString());
 		if(stored == null){
-			this.actionFeatureMultiplier.put(ga.actionName(), this.nextActionMultiplier);
+			this.actionFeatureMultiplier.put(ga.toString(), this.nextActionMultiplier);
 			stored = this.nextActionMultiplier;
 			this.nextActionMultiplier++;
 		}
