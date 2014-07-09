@@ -90,10 +90,12 @@ public class AffordanceRTDP extends RTDP {
 				
 				// Select an action
 				GroundedAction ga = (GroundedAction)this.rollOutPolicy.getAction(curState);
-
+				
+//				System.out.println("(affRTDP)Action : " + ga.actionName());
+				
 				// Update this state's value
 				double curV = this.value(sh);
-				double nV = this.performBellmanUpdateOn(sh);
+				double nV = this.performAffordanceBellmanUpdateOn(sh, affController);
 				delta = Math.max(Math.abs(nV - curV), delta); 
 
 				// Take the action

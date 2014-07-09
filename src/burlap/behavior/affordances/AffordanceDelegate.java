@@ -137,6 +137,7 @@ public class AffordanceDelegate {
 				
 				// Get action free variables
 				Action act = d.getAction(actName);
+				System.out.println("(affDelegate)actionName: " + actName);
 				String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
 				
 				GroundedAction ga = new GroundedAction(act, actionParams);
@@ -159,6 +160,88 @@ public class AffordanceDelegate {
 		((SoftAffordance)aff).setActionNumCounts(actionNumCounts);
 		((SoftAffordance)aff).postProcess();
 
+		AffordanceDelegate affDelegate = new AffordanceDelegate(aff);
+		
+		return affDelegate;
+	}
+	
+	/**
+	 * Reads in a hard affordance from a knowledge base file.
+	 * Assumes that the header is on the first line it reads
+	 * @param d: domain
+	 * @param scnr: scanner associated with the knowledge base file
+	 */
+	public static AffordanceDelegate loadHard(Domain d, Scanner scnr) {
+		String line;
+		boolean readHeader = true;
+		boolean readActCounts = true;
+		
+		LogicalExpression preCondition = null;
+		LogicalExpression goal = null;
+		
+		List<AbstractGroundedAction> actions = new ArrayList<AbstractGroundedAction>();
+		while (scnr.hasNextLine()) {
+			line = scnr.nextLine();
+			
+			if (line.equals("===")) {
+				// Reached the end of an affordance definition
+				break;
+			}
+			
+			if (line.equals("---")) {
+				// Finished reading action counts -- skip reading action set sizes (scanner jumps over rest)
+				readActCounts = false;
+				continue;
+			}
+			
+			String[] info = line.split(",");
+			
+			if (readHeader) {
+				// We haven't read the header yet, so do that
+				
+				// TODO: Change to parsing a logical expression (instead of assuming a single pf)
+				String preCondLE= info[0];
+				String goalName = info[1];
+				
+				// -- Create Precondition -- 
+				PropositionalFunction preCondPF = d.getPropFunction(preCondLE);
+				
+				// Get grounded prop free variables
+				String[] groundedPropPreCondFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
+				GroundedProp preCondGroundedProp = new GroundedProp(preCondPF, groundedPropPreCondFreeVars);
+				preCondition = new PFAtom(preCondGroundedProp);
+				
+				// -- Create GOAL --
+				PropositionalFunction goalPF = d.getPropFunction(preCondLE);
+				
+				// Get grounded prop free variables
+				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
+				GroundedProp goalGroundedProp = new GroundedProp(goalPF, groundedPropGoalFreeVars);
+				goal = new PFAtom(goalGroundedProp);
+				
+				readHeader = false;
+				continue;
+			}
+			
+			if (readActCounts) {
+				// Read the action counts
+				String actName = info[0];
+				Integer count = Integer.parseInt(info[1]);
+				if(count > 0) {
+					// Get action free variables
+					Action act = d.getAction(actName);
+					System.out.println("(affDelegate)actionName: " + actName);
+					String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
+					
+					GroundedAction ga = new GroundedAction(act, actionParams);
+					actions.add(ga);
+				}
+			}
+			
+		}
+		
+		// Create the Hard Affordance
+		Affordance aff = new HardAffordance(preCondition, goal, actions);
 		AffordanceDelegate affDelegate = new AffordanceDelegate(aff);
 		
 		return affDelegate;

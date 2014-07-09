@@ -223,6 +223,8 @@ public class RTDP extends ValueFunctionPlanner {
 				//select an action
 				GroundedAction ga = (GroundedAction)this.rollOutPolicy.getAction(curState);
 				
+//				System.out.println("(rtdp)Action : " + ga.actionName());
+				
 				//update this state's value
 				double curV = this.value(sh);
 				double nV = this.performBellmanUpdateOn(sh);

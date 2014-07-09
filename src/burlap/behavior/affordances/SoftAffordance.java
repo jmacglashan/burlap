@@ -40,6 +40,7 @@ public class SoftAffordance extends Affordance {
 			
 			initCounts();
 			postProcess();
+			this.sampleNewLiftedActionSet();
 	}
 	
 	/**
