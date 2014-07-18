@@ -198,7 +198,10 @@ public class FourierBasis implements FeatureDatabase {
 		if(this.coefficientVectors == null){
 			return 0;
 		}
-		return this.coefficientVectors.size();
+		if(this.nextActionMultiplier == 0){
+			return this.coefficientVectors.size();
+		}
+		return this.coefficientVectors.size()*this.nextActionMultiplier;
 	}
 	
 	
