@@ -143,6 +143,14 @@ public class SoftAffordance extends Affordance {
 		return this.allActions;
 	}
 	
+	public HashMap<AbstractGroundedAction, Integer> getActionCounts() {
+		return actionCounts;
+	}
+	
+	public int[] getActionSetSizeCounts() {
+		return actionNumCounts;
+	}
+	
 	// --- Mutators ---
 	
 	public void setActionCounts(HashMap<AbstractGroundedAction, Integer> actionCounts) {

@@ -20,6 +20,9 @@ public class AffordanceDelegate {
 
 	 protected Affordance								affordance;
 	 protected Collection<AbstractGroundedAction>		listedActionSet;
+	 protected boolean									active = false;
+	 protected boolean									goalActive = false;
+	 private static int										actCountThreshold = 10;
 	 
 	 public AffordanceDelegate(Affordance affordance){
 		 this.affordance = affordance;
@@ -37,7 +40,9 @@ public class AffordanceDelegate {
 	 
 	 public void setCurrentGoal(LogicalExpression currentGoal){
 		 //TODO: fill this in; should set current goal; check if this affordance does not satisfy; and handle variable bindings with lifted affordance goal if it is satisifed.
-		 //
+		 if(this.affordance.goalDescription.toString().equals(currentGoal.toString())) {
+			 this.goalActive = true;
+		 }
 	 }
 	 
 	 /**
@@ -50,17 +55,21 @@ public class AffordanceDelegate {
 	  * @param s the state in which to prime the affordance
 	  * @return true if this affordance is active, false if it is not.
 	  */
-	 public boolean primeAndCheckIfActiveInState(State s){
-		 //TODO: Add goal description here
-		 if(this.affordance.preCondition.evaluateIn(s)) {
+	 public boolean primeAndCheckIfActiveInState(State s, LogicalExpression lgd){
+//		 if(!this.goalActive) {
+//			 this.active = false;
+//			 return false;
+//		 }
+		 if(this.affordance.goalDescription.toString().equals(lgd.toString()) && this.affordance.preCondition.evaluateIn(s)) {
+			 this.active = true;
 			 return true;
 		 }
-		 
+		 this.active = false;
 		 return false;
 	 }
 	 
 	 public boolean actionIsRelevant(AbstractGroundedAction action){
-		 if(this.listedActionSet.contains(action)) {
+		 if(this.active && this.listedActionSet.contains(action)) {
 			 return true;
 		 }
 		 
@@ -137,7 +146,7 @@ public class AffordanceDelegate {
 				
 				// Get action free variables
 				Action act = d.getAction(actName);
-				System.out.println("(affDelegate)actionName: " + actName);
+//				System.out.println("(affDelegate)actionName: " + actName);
 				String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
 				
 				GroundedAction ga = new GroundedAction(act, actionParams);
@@ -212,10 +221,10 @@ public class AffordanceDelegate {
 				preCondition = new PFAtom(preCondGroundedProp);
 				
 				// -- Create GOAL --
-				PropositionalFunction goalPF = d.getPropFunction(preCondLE);
-				
+				PropositionalFunction goalPF = d.getPropFunction(goalName);
+				System.out.println("(AffordanceDelegate) goalPf: " + goalPF.getName());
 				// Get grounded prop free variables
-				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
+				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(goalPF.getParameterClasses());
 				GroundedProp goalGroundedProp = new GroundedProp(goalPF, groundedPropGoalFreeVars);
 				goal = new PFAtom(goalGroundedProp);
 				
@@ -227,10 +236,10 @@ public class AffordanceDelegate {
 				// Read the action counts
 				String actName = info[0];
 				Integer count = Integer.parseInt(info[1]);
-				if(count > 0) {
+				if(count > actCountThreshold) {
 					// Get action free variables
 					Action act = d.getAction(actName);
-					System.out.println("(affDelegate)actionName: " + actName);
+//					System.out.println("(affDelegate)actionName: " + actName);
 					String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
 					
 					GroundedAction ga = new GroundedAction(act, actionParams);
@@ -266,6 +275,10 @@ public class AffordanceDelegate {
 		groundedPropFreeVars = groundedPropFreeVariablesList.toArray(groundedPropFreeVars);
 		
 		return groundedPropFreeVars;
+	}
+	
+	public String toString() {
+		return "[" + this.affordance.preCondition + "," + this.affordance.goalDescription + "]";
 	}
 	 
 }

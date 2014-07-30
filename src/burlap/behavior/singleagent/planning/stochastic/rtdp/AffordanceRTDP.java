@@ -13,6 +13,7 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.logicalexpressions.LogicalExpression;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -46,7 +47,7 @@ public class AffordanceRTDP extends RTDP {
 		this.maxDelta = maxDelta;
 		this.maxDepth = maxDepth;
 		this.rollOutPolicy = new AffordanceGreedyQPolicy(affController, this);
-		
+
 		this.valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit);
 		
 	}
@@ -63,18 +64,19 @@ public class AffordanceRTDP extends RTDP {
 		this.minNumRolloutsWithSmallValueChange = minRolloutsRequiredForConvergance;
 	}
 	
-	public void planFromState(State initialState) {
-		this.affordanceRTDP(initialState);
+	public int planFromStateAndCount(State initialState) {
+		return this.affordanceRTDP(initialState);
 	}
 
 	/**
 	 * Runs Affordance Aware RTDP
 	 * @param initialState
 	 */
-	private void affordanceRTDP(State initialState) {
+	private int affordanceRTDP(State initialState) {
 
 		int totalStates = 0;
 		int consecutiveSmallDeltas = 0;
+		int numBellmanUpdates = 0;
 
 		for(int i = 0; i < numRollouts; i++){
 			
@@ -96,6 +98,7 @@ public class AffordanceRTDP extends RTDP {
 				// Update this state's value
 				double curV = this.value(sh);
 				double nV = this.performAffordanceBellmanUpdateOn(sh, affController);
+				numBellmanUpdates++;
 				delta = Math.max(Math.abs(nV - curV), delta); 
 
 				// Take the action
@@ -117,5 +120,8 @@ public class AffordanceRTDP extends RTDP {
 				consecutiveSmallDeltas = 0;
 			}
 		}
+		
+		return numBellmanUpdates;
 	}
+	
 }

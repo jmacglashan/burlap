@@ -4,19 +4,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import minecraft.MinecraftStateParser;
+import minecraft.NameSpace;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.logicalexpressions.LogicalExpression;
+import burlap.oomdp.singleagent.Action;
 
 public class AffordancesController {
 
 	protected List<AffordanceDelegate> affordances;
-	protected LogicalExpression currentGoal;
+	public LogicalExpression currentGoal;
 	protected HashMap<State,List<AbstractGroundedAction>> stateActionHash = new HashMap<State,List<AbstractGroundedAction>>();
-	protected boolean cacheActionSets = true;
+	protected boolean cacheActionSets = false; // True when we only sample action sets each time we enter a state, then cache for later use. 
+	
 	
 	public AffordancesController(List<AffordanceDelegate> affs) {
 		this.affordances = affs;
+	}
+	
+	public AffordancesController(List<AffordanceDelegate> affs, boolean cacheActionsInEachState) {
+		this.affordances = affs;
+		this.cacheActionSets = cacheActionsInEachState;
 	}
 	
 	/**
@@ -53,9 +63,9 @@ public class AffordancesController {
 		List<AbstractGroundedAction> actions = new ArrayList<AbstractGroundedAction>();
 		for(AffordanceDelegate aff : this.affordances){
 			// If affordance is active
-			if(aff.primeAndCheckIfActiveInState(s)){
+			if(aff.primeAndCheckIfActiveInState(s, currentGoal)){
 				for(AbstractGroundedAction aga : aff.listedActionSet) {
-					// If that action wasn't added yet then we add all of them.
+					// If that action wasn't added yet then add it
 					if(!actions.contains(aga)) {
 						actions.add(aga);
 					}
@@ -63,6 +73,10 @@ public class AffordancesController {
 			}
 			
 		}
+		
+//		if (actions.size() == 0) {
+//			 return full action set
+//		}
 		
 		// If we're caching, add the action set we just computed
 		if(cacheActionSets) {
@@ -88,15 +102,9 @@ public class AffordancesController {
 		// Build active affordance list
 		List<AffordanceDelegate> activeAffordances = new ArrayList<AffordanceDelegate>(this.affordances.size());
 		for(AffordanceDelegate aff : this.affordances){
-			if(aff.primeAndCheckIfActiveInState(s)){
+			if(aff.primeAndCheckIfActiveInState(s, currentGoal)){
 				activeAffordances.add(aff);
 			}
-			else {
-				System.out.println("(affController)aff not active in state: " + aff.getAffordance().toString());
-			}
-		}
-		if(activeAffordances.size() == 0) {
-			System.out.println("(affController)No affordances Active");
 		}
 		
 		// Prune actions according to affordances
@@ -109,13 +117,23 @@ public class AffordancesController {
 				}
 			}
 		}
-		
+
 		// If we're caching, add the action set we just computed
 		if(cacheActionSets) {
 			stateActionHash.put(s, filteredList);
 		}
 		
 		return filteredList;
+	}
+	
+	public void addAffordanceDelegate(AffordanceDelegate aff) {
+		if(!this.affordances.contains(aff)) {
+			this.affordances.add(aff);
+		}
+	}
+	
+	public void removeAffordance(AffordanceDelegate aff) {
+		this.affordances.remove(aff);
 	}
 	
 }

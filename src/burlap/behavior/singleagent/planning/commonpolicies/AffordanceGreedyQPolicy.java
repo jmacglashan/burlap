@@ -11,6 +11,7 @@ import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
+import burlap.oomdp.logicalexpressions.LogicalExpression;
 
 /**
  * A greedy policy that breaks ties by randomly choosing an action amongst the tied actions. This class requires a QComputablePlanner.
@@ -43,8 +44,6 @@ public class AffordanceGreedyQPolicy extends GreedyQPolicy {
 		
 		// If Affordances prune away all actions, back off to full action set 
 		if (filteredQValues.isEmpty()) {
-			System.out.println("---BACKING OFF TO FULL ACTION SET---");
-
 			filteredQValues = allQValues;
 		}
 		

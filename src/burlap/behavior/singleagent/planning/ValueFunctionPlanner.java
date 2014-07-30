@@ -20,6 +20,7 @@ import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.logicalexpressions.LogicalExpression;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -365,7 +366,6 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		double maxQ = Double.NEGATIVE_INFINITY;
 		
 		if(this.useCachedTransitions){
-		
 			List<ActionTransitions> transitions = this.getActionsTransitions(sh);
 			for(ActionTransitions at : transitions){
 //				System.out.println((valuefuncplanner)at.ga.actionName());
@@ -379,8 +379,11 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		else{
 			
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
+			
+			
+//			System.out.println(gas.size());
 			for(GroundedAction ga : gas){
-//				System.out.println((valuefuncplanner)at.ga.actionName());
+//				System.out.println("(valuefuncplanner)" + ga.actionName());
 				double q = this.computeQ(sh, ga);
 				if(q > maxQ){
 					maxQ = q;
@@ -424,14 +427,18 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		else{
 			List <GroundedAction> gas = this.getAffordanceGroundedActions(sh.s, affController);
+//			List <GroundedAction> gas = Action.getAllApplicableAffordanceGroundedActionsFromActionList(this.actions, sh.s, affController);
+			
+//			System.out.println(gas.size());
 			for(GroundedAction ga : gas){
+//				System.out.println(ga.actionName());
 				double q = this.computeQ(sh, ga);
 				if(q > maxQ){
 					maxQ = q;
 				}
 			}
 		}
-		
+//		System.out.println("\n");
 		valueFunction.put(sh, maxQ);
 		return maxQ;
 	}
@@ -464,11 +471,20 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	
 	public List<GroundedAction> getAffordanceGroundedActions(State st, AffordancesController affController) {
 		
-		ArrayList<GroundedAction> res = new ArrayList<GroundedAction>();
+		List<GroundedAction> res = new ArrayList<GroundedAction>();
 		
 		// Ground all of the affordance actions and add them
 		for(AbstractGroundedAction aga : affController.getPrunedActionSetForState(st)) {
-			res.add(new GroundedAction(this.domain.getAction(aga.actionName()),aga.params));
+			GroundedAction ga = new GroundedAction(this.domain.getAction(aga.actionName()),aga.params);
+			if (ga.action.applicableInState(st, ga.params)) {
+				res.add(ga);
+			}
+//			res.add(new GroundedAction(this.domain.getAction(aga.actionName()),aga.params));
+		}
+		
+		// If empty, back off to full action set.
+		if(res.size() == 0) {
+			res = Action.getAllApplicableGroundedActionsFromActionList(this.actions, st);
 		}
 		
 		return res;
