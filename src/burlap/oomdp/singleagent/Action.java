@@ -3,6 +3,8 @@ package burlap.oomdp.singleagent;
 import java.util.ArrayList;
 import java.util.List;
 
+import burlap.behavior.affordances.AffordancesController;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
@@ -325,7 +327,7 @@ public abstract class Action {
 			}
 			return res; //no parameters to ground
 		}
-		
+
 		//otherwise need to do parameter binding
 		List <List <String>> bindings = s.getPossibleBindingsGivenParamOrderGroups(this.getParameterClasses(), this.getParameterOrderGroups());
 		

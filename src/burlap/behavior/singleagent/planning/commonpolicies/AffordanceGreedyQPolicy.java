@@ -9,6 +9,7 @@ import java.util.List;
 import burlap.behavior.affordances.AffordancesController;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.logicalexpressions.LogicalExpression;
@@ -38,7 +39,7 @@ public class AffordanceGreedyQPolicy extends GreedyQPolicy {
 	 */
 	@Override
 	public AbstractGroundedAction getAction(State s) {
-		List<QValue> allQValues = this.qplanner.getQs(s);
+		List<QValue> allQValues = ((ValueFunctionPlanner) this.qplanner).getQs(s);
 		
 		List<QValue> filteredQValues = filterQValues(allQValues, s);
 		
@@ -47,7 +48,7 @@ public class AffordanceGreedyQPolicy extends GreedyQPolicy {
 			filteredQValues = allQValues;
 		}
 		
-//		System.out.println("(affgreedyqpolicy)filteredQs Action set: ");
+//		System.out.println("(affgreedyqpolicy)filteredQs Action set: " + filteredQValues.size());
 //		for(QValue q : filteredQValues) {
 //			System.out.println(q.a.actionName());
 //		}

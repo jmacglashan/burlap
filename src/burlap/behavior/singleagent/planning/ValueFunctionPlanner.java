@@ -174,11 +174,9 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			mapToStateIndex.put(indexSH, indexSH);
 		}
 		
-		
 		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
 			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 		}
-		
 		
 		List <QValue> res = new ArrayList<QValue>();
 		for(Action a : actions){
@@ -189,6 +187,37 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		
 		return res;
+		
+	}
+	
+	public List<QValue> getAffordanceQs(State s, AffordancesController affController) {
+		StateHashTuple sh = this.stateHash(s);
+		Map<String,String> matching = null;
+		StateHashTuple indexSH = mapToStateIndex.get(sh);
+		
+		if(indexSH == null){
+			//then this is an unexplored state
+			indexSH = sh;
+			mapToStateIndex.put(indexSH, indexSH);
+		}
+		
+		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
+			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
+		}
+		
+		List <QValue> res = new ArrayList<QValue>();
+		for(Action a : actions){
+			List<GroundedAction> applications = a.getAllApplicableGroundedActions(s);
+			List<AbstractGroundedAction> affActions = affController.getPrunedActionSetForState(s);
+			for(GroundedAction ga : applications){
+				if(affActions.contains(ga)){
+					res.add(this.getQ(sh, ga, matching));
+				}
+			}
+		}
+		
+		return res;
+		
 		
 	}
 	
@@ -271,6 +300,22 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			}
 		}
 		
+		// If affordances pruned away all of our actions, then create them again.
+		if(matchingAt == null) {
+			// Create and cache action transitions
+			allTransitions = this.createActionTransitions(sh);
+			
+			// Find matching transition
+			for(ActionTransitions at : allTransitions){
+				if(at.matchingTransitions(ta)){
+					matchingAt = at;
+					break;
+				}
+			}
+			assert(matchingAt == null);
+		}
+		
+//		System.out.println("(ValueFunctionPlanner) matchingAt: " + matchingAt);
 		double q = 0.;
 		if(!this.tf.isTerminal(sh.s)){
 			q = this.computeQ(sh.s, matchingAt);
@@ -308,7 +353,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			//now add transitions
 			allTransitions = new ArrayList<ActionTransitions>(gas.size());
 			for(GroundedAction ga : gas){
-				ActionTransitions at = new ActionTransitions(sh.s, ga, this.hashingFactory);
+				ActionTransitions at = new ActionTransitions(sh.s, ga, hashingFactory);
 				allTransitions.add(at);
 			}
 			
@@ -316,7 +361,36 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			if(this.useCachedTransitions){
 				transitionDynamics.put(sh, allTransitions);
 			}
-			
+		}
+		
+		return allTransitions;
+	}
+	
+	/**
+	 * Creates and caches the action transitions for the given state.
+	 * @param sh the input state from which to get the transitions
+	 * @return the action transitions for the given state
+	 */
+	protected List <ActionTransitions> createActionTransitions(StateHashTuple sh){
+
+		List<ActionTransitions> allTransitions = new ArrayList<ActionTransitions>();
+		
+		// Indicate how this state is stored
+		mapToStateIndex.put(sh, sh);
+		
+		// First get all grounded actions for this state
+		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
+		
+		// Now add transitions
+		allTransitions = new ArrayList<ActionTransitions>(gas.size());
+		for(GroundedAction ga : gas){
+			ActionTransitions at = new ActionTransitions(sh.s, ga, this.hashingFactory);
+			allTransitions.add(at);
+		}
+		
+		// Set it if we're caching
+		if(this.useCachedTransitions){
+			transitionDynamics.put(sh, allTransitions);
 		}
 		
 		return allTransitions;
@@ -380,7 +454,6 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			
-			
 //			System.out.println(gas.size());
 			for(GroundedAction ga : gas){
 //				System.out.println("(valuefuncplanner)" + ga.actionName());
@@ -403,7 +476,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 * @param sh the hashed state on which to perform the Bellman update.
 	 * @return the new value of the state.
 	 */
-	protected double performAffordanceBellmanUpdateOn(StateHashTuple sh, AffordancesController affController){
+	public double performAffordanceBellmanUpdateOn(StateHashTuple sh, AffordancesController affController){
 		
 		if(this.tf.isTerminal(sh.s)){
 			//terminal states always have a state value of 0

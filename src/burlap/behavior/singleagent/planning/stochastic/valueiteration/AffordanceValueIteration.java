@@ -117,6 +117,16 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 			
 	}
 	
+	public int planFromStateAndCount(State initialState){
+		this.initializeOptionsForExpectationComputations();
+		if(this.performAffordanceReachabilityFrom(initialState)){
+			return this.runAffordanceVI();
+		}
+		
+		return 0;
+			
+	}
+	
 	@Override
 	public void resetPlannerResults(){
 		super.resetPlannerResults();
@@ -129,11 +139,13 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 	 * in the past or a runtime exception will be thrown. The {@link #planFromState(State)} method will automatically call the {@link #performAffordanceReachabilityFrom(State)} 
 	 * method first and then this if it hasn't been run.
 	 */
-	public void runAffordanceVI(){
+	public int runAffordanceVI(){
 		
 		if(!this.foundReachableStates){
 			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use planFromState method at least once or instead.");
 		}
+		
+		int bellmanUpdates = 0;
 		
 		Set <StateHashTuple> states = mapToStateIndex.keySet();
 		
@@ -144,7 +156,8 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 			for(StateHashTuple sh : states){
 				
 				double v = this.value(sh);
-				double maxQ = this.performBellmanUpdateOn(sh);
+				double maxQ = this.performAffordanceBellmanUpdateOn(sh, this.affController);
+				bellmanUpdates++;
 				delta = Math.max(Math.abs(maxQ - v), delta);
 				
 			}
@@ -157,6 +170,7 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 		
 		DPrint.cl(this.debugCode, "Passes: " + i);
 		
+		return bellmanUpdates;
 	}
 	
 	

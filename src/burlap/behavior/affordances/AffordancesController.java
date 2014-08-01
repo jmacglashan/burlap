@@ -64,6 +64,7 @@ public class AffordancesController {
 		for(AffordanceDelegate aff : this.affordances){
 			// If affordance is active
 			if(aff.primeAndCheckIfActiveInState(s, currentGoal)){
+				aff.resampleActionSet();
 				for(AbstractGroundedAction aga : aff.listedActionSet) {
 					// If that action wasn't added yet then add it
 					if(!actions.contains(aga)) {
@@ -73,6 +74,12 @@ public class AffordancesController {
 			}
 			
 		}
+		
+//		System.out.println("(AffordancesController) Affordance Action Set: ");
+//		for(AbstractGroundedAction aga : actions) {
+//			System.out.println("\t(AffordancesController) action: " + aga.actionName());
+//		}
+//		System.out.println("\n");
 		
 //		if (actions.size() == 0) {
 //			 return full action set

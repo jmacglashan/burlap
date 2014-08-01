@@ -22,7 +22,7 @@ public class AffordanceDelegate {
 	 protected Collection<AbstractGroundedAction>		listedActionSet;
 	 protected boolean									active = false;
 	 protected boolean									goalActive = false;
-	 private static int										actCountThreshold = 10;
+	 private static int									actCountThreshold = 5;
 	 
 	 public AffordanceDelegate(Affordance affordance){
 		 this.affordance = affordance;
@@ -119,7 +119,7 @@ public class AffordanceDelegate {
 				String preCondLE= info[0];
 				String goalName = info[1];
 				
-				// -- Create Precondition -- 
+				// -- Create PRECONDITION -- 
 				PropositionalFunction preCondPF = d.getPropFunction(preCondLE);
 				
 				// Get grounded prop free variables
@@ -128,7 +128,7 @@ public class AffordanceDelegate {
 				preCondition = new PFAtom(preCondGroundedProp);
 				
 				// -- Create GOAL --
-				PropositionalFunction goalPF = d.getPropFunction(preCondLE);
+				PropositionalFunction goalPF = d.getPropFunction(goalName);
 				
 				// Get grounded prop free variables
 				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(preCondPF.getParameterClasses());
@@ -222,7 +222,7 @@ public class AffordanceDelegate {
 				
 				// -- Create GOAL --
 				PropositionalFunction goalPF = d.getPropFunction(goalName);
-				System.out.println("(AffordanceDelegate) goalPf: " + goalPF.getName());
+//				System.out.println("(AffordanceDelegate) goalPf: " + goalPF.getName());
 				// Get grounded prop free variables
 				String[] groundedPropGoalFreeVars = makeFreeVarListFromObjectClasses(goalPF.getParameterClasses());
 				GroundedProp goalGroundedProp = new GroundedProp(goalPF, groundedPropGoalFreeVars);
@@ -236,7 +236,7 @@ public class AffordanceDelegate {
 				// Read the action counts
 				String actName = info[0];
 				Integer count = Integer.parseInt(info[1]);
-				if(count > actCountThreshold) {
+				if(count >= actCountThreshold) {
 					// Get action free variables
 					Action act = d.getAction(actName);
 //					System.out.println("(affDelegate)actionName: " + actName);
