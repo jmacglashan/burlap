@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -22,7 +23,7 @@ public class AffordanceDelegate {
 	 protected Collection<AbstractGroundedAction>		listedActionSet;
 	 protected boolean									active = false;
 	 protected boolean									goalActive = false;
-	 private static int									actCountThreshold = 5;
+	 private final static double						actCountPercentThreshold = 0.01;
 	 
 	 public AffordanceDelegate(Affordance affordance){
 		 this.affordance = affordance;
@@ -189,6 +190,7 @@ public class AffordanceDelegate {
 		LogicalExpression goal = null;
 		
 		List<AbstractGroundedAction> actions = new ArrayList<AbstractGroundedAction>();
+		Map<String,Integer> actionCounts = new HashMap<String,Integer>();
 		while (scnr.hasNextLine()) {
 			line = scnr.nextLine();
 			
@@ -200,6 +202,32 @@ public class AffordanceDelegate {
 			if (line.equals("---")) {
 				// Finished reading action counts -- skip reading action set sizes (scanner jumps over rest)
 				readActCounts = false;
+				
+				// Calculate total number of action counts
+				int totalCount = 0;
+				for(Integer count : actionCounts.values()) {
+					totalCount += count;
+				}
+				
+				// Add actions that have more than 15% of the counts
+				for(String actName : actionCounts.keySet()) {
+//					System.out.println("(AffordanceDelegate) percentage, count: " + ((double)actionCounts.get(actName)) / ((double) totalCount) + "," + actionCounts.get(actName));
+					if(((double)actionCounts.get(actName)) / ((double) totalCount) >= actCountPercentThreshold) {
+						// Get action free variables
+						Action act = d.getAction(actName);
+	//					System.out.println("(affDelegate)actionName: " + actName);
+						String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
+						
+						GroundedAction ga = new GroundedAction(act, actionParams);
+						actions.add(ga);
+					}
+				}
+//				System.out.println("(AffordanceDelegate) actionSet: \n");
+//				for(AbstractGroundedAction ga : actions){
+//					System.out.println("\t(AffordanceDelegate) action: " + ga.actionName());
+//				}
+//				System.out.println("\n");
+				
 				continue;
 			}
 			
@@ -235,16 +263,16 @@ public class AffordanceDelegate {
 			if (readActCounts) {
 				// Read the action counts
 				String actName = info[0];
-				Integer count = Integer.parseInt(info[1]);
-				if(count >= actCountThreshold) {
-					// Get action free variables
-					Action act = d.getAction(actName);
-//					System.out.println("(affDelegate)actionName: " + actName);
-					String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
-					
-					GroundedAction ga = new GroundedAction(act, actionParams);
-					actions.add(ga);
-				}
+				actionCounts.put(actName, Integer.parseInt(info[1]));
+//				if(count >= actCountThreshold) {
+//					// Get action free variables
+//					Action act = d.getAction(actName);
+////					System.out.println("(affDelegate)actionName: " + actName);
+//					String[] actionParams = makeFreeVarListFromObjectClasses(act.getParameterClasses());
+//					
+//					GroundedAction ga = new GroundedAction(act, actionParams);
+//					actions.add(ga);
+//				}
 			}
 			
 		}

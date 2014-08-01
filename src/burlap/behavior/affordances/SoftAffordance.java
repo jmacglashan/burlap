@@ -26,7 +26,7 @@ public class SoftAffordance extends Affordance {
 	private int[] actionNumCounts;
 	private Dirichlet actionDistr;
 	private Dirichlet actionNumDistr;
-	private double dirichletHyperParam = 1.0;
+	private double dirichletHyperParam = 0.1;
 	private int totalActionCounts = 0;
 	private double optimalityConfidence = .5; 
 	private boolean newSamplingMethod = false;

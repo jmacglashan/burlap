@@ -499,10 +499,11 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 //			System.out.println("\n");
 		}
 		else{
+			// TODO: check if this is the broken thing.
 			List <GroundedAction> gas = this.getAffordanceGroundedActions(sh.s, affController);
 //			List <GroundedAction> gas = Action.getAllApplicableAffordanceGroundedActionsFromActionList(this.actions, sh.s, affController);
 			
-//			System.out.println(gas.size());
+//			System.out.println("(ValueFunctionPlanner) size of action set: " + gas.size());
 			for(GroundedAction ga : gas){
 //				System.out.println(ga.actionName());
 				double q = this.computeQ(sh, ga);

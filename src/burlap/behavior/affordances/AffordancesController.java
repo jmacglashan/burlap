@@ -18,7 +18,7 @@ public class AffordancesController {
 	public LogicalExpression currentGoal;
 	protected HashMap<State,List<AbstractGroundedAction>> stateActionHash = new HashMap<State,List<AbstractGroundedAction>>();
 	protected boolean cacheActionSets = false; // True when we only sample action sets each time we enter a state, then cache for later use. 
-	
+	private List<AbstractGroundedAction> allActions;
 	
 	public AffordancesController(List<AffordanceDelegate> affs) {
 		this.affordances = affs;
@@ -81,9 +81,10 @@ public class AffordancesController {
 //		}
 //		System.out.println("\n");
 		
-//		if (actions.size() == 0) {
-//			 return full action set
-//		}
+		if (actions.size() == 0) {
+			// return full action set
+//			System.out.println("(AffordancesController) EMPTY ACTION SET");
+		}
 		
 		// If we're caching, add the action set we just computed
 		if(cacheActionSets) {
@@ -123,6 +124,11 @@ public class AffordancesController {
 					break;
 				}
 			}
+		}
+		
+		// If we filtered away everything, back off to full action set.
+		if(filteredList.size() == 0) {
+			return actions;
 		}
 
 		// If we're caching, add the action set we just computed

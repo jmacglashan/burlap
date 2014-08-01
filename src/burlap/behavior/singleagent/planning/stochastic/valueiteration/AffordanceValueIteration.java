@@ -156,6 +156,7 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 			for(StateHashTuple sh : states){
 				
 				double v = this.value(sh);
+//				double maxQ = this.performBellmanUpdateOn(sh.s);
 				double maxQ = this.performAffordanceBellmanUpdateOn(sh, this.affController);
 				bellmanUpdates++;
 				delta = Math.max(Math.abs(maxQ - v), delta);
@@ -248,28 +249,29 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 		List <ActionTransitions> allTransitions = transitionDynamics.get(sh);
 		
 		if(allTransitions == null){
-			//need to create them
+			// Need to create them
 			
-			//indicate how this state is stored
+			// Indicate how this state is stored
 			mapToStateIndex.put(sh, sh);
 			
 			
-			//first get all grounded actions for this state
+			// First get all grounded actions for this state
 			List <AbstractGroundedAction> gas = new ArrayList<AbstractGroundedAction>();
 			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedActionsFor(a));
+				gas.addAll(a.getAllApplicableGroundedActions(sh.s));
 			}
 			
+			// Now filter out bad actions using affordace knowledge base
 			List<AbstractGroundedAction> prunedActions = this.affController.filterIrrelevantActionsInState(gas, sh.s);
 
-			//now add transitions
+			// Now add transitions
 			allTransitions = new ArrayList<ActionTransitions>(gas.size());
 			for(AbstractGroundedAction ga : prunedActions){
 				ActionTransitions at = new ActionTransitions(sh.s, (GroundedAction)ga, hashingFactory);
 				allTransitions.add(at);
 			}
 			
-			//set it if we're caching
+			// Set it if we're caching
 			if(this.useCachedTransitions){
 				transitionDynamics.put(sh, allTransitions);
 			}
