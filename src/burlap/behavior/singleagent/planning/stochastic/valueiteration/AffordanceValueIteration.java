@@ -63,7 +63,7 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 	 * search is pruned at terminal states by setting this value to true. By default, it is false and the full
 	 * reachable state space is found
 	 */
-	protected boolean												stopReachabilityFromTerminalStates = false;
+	protected boolean												stopReachabilityFromTerminalStates = true;
 	
 	protected AffordancesController									affController;
 	
@@ -210,6 +210,7 @@ public class AffordanceValueIteration extends ValueFunctionPlanner{
 			
 			//do not need to expand from terminal states if set to prune
 			if(this.tf.isTerminal(sh.s) && stopReachabilityFromTerminalStates){
+				System.out.println("(AffordanceValueIteration)reached terminal");
 				continue;
 			}
 			

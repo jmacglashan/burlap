@@ -57,7 +57,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	 * search is pruned at terminal states by setting this value to true. By default, it is false and the full
 	 * reachable state space is found
 	 */
-	protected boolean												stopReachabilityFromTerminalStates = false;
+	protected boolean												stopReachabilityFromTerminalStates = true;
 	
 	
 	protected boolean												hasRunVI = false;
@@ -177,8 +177,6 @@ public class ValueIteration extends ValueFunctionPlanner{
 	 */
 	public boolean performReachabilityFrom(State si){
 		
-		
-		
 		StateHashTuple sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
 		if(mapToStateIndex.containsKey(sih) && this.foundReachableStates){
@@ -206,6 +204,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			
 			//do not need to expand from terminal states if set to prune
 			if(this.tf.isTerminal(sh.s) && stopReachabilityFromTerminalStates){
+				System.out.println("(ValueIteration)reached terminal");
 				continue;
 			}
 			

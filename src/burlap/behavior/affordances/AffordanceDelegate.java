@@ -27,7 +27,7 @@ public class AffordanceDelegate {
 	 
 	 public AffordanceDelegate(Affordance affordance){
 		 this.affordance = affordance;
-		 this.resampleActionSet();
+//		 this.resampleActionSet();
 	 }
 	 
 	 public void resampleActionSet(){

@@ -26,10 +26,8 @@ public class SoftAffordance extends Affordance {
 	private int[] actionNumCounts;
 	private Dirichlet actionDistr;
 	private Dirichlet actionNumDistr;
-	private double dirichletHyperParam = 0.1;
-	private int totalActionCounts = 0;
-	private double optimalityConfidence = .5; 
-	private boolean newSamplingMethod = false;
+	private double dirichletHyperParam = 0.01;
+
 	
 	/**
 	 * Constructor SoftAffordances. Maps a <Predicate,GoalDescription> pair to a subset of the action space
@@ -43,7 +41,7 @@ public class SoftAffordance extends Affordance {
 			this.allActions = actions;
 			
 			initCounts();
-			// I don't think we can postProcess and sample right away since the action cunts haven't been set yet.
+			// I don't think we can postProcess and sample right away since the action counts haven't been set yet.
 //			postProcess();
 //			this.sampleNewLiftedActionSet();
 	}
@@ -93,7 +91,6 @@ public class SoftAffordance extends Affordance {
 			this.actionNumCounts[i] = 0;
 		}
 		
-		this.totalActionCounts = 0;
 	}
 
 	
@@ -106,7 +103,6 @@ public class SoftAffordance extends Affordance {
 		List<Integer> actCounts = new ArrayList<Integer>(this.actionCounts.values());
 		for (int i = 0; i < alpha.length; i++) {
 			alpha[i] += (double)(actCounts.get(i));
-			this.totalActionCounts += actCounts.get(i);
 		}
 
 		this.actionDistr = new Dirichlet(alpha);
