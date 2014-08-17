@@ -58,7 +58,7 @@ public class GreedyDeterministicQPolicy extends Policy implements PlannerDerived
 			}
 		}
 		
-		return maxQ.a;
+		return maxQ.a.translateParameters(maxQ.s, s);
 	}
 
 	@Override
