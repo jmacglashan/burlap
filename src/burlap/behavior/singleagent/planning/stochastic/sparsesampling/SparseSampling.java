@@ -260,6 +260,8 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		if(this.forgetPreviousPlanResults){
 			this.nodesByHeight.clear();
 		}
+		
+		this.mapToStateIndex.put(sh, sh);
 
 	}
 
@@ -296,8 +298,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		
 		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
 			StateHashTuple storedSh = this.mapToStateIndex.get(sh);
-			Map<String, String> matching = s.getObjectMatchingTo(storedSh.s, false);
-			a = this.translateAction((GroundedAction)a, matching);
+			a = a.translateParameters(s, storedSh.s);
 		}
 		
 		for(QValue qv : qs){
@@ -467,7 +468,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	 * @author James MacGlashan
 	 *
 	 */
-	public class HashedHeightState{
+	public static class HashedHeightState{
 		
 		/**
 		 * The hashed state
