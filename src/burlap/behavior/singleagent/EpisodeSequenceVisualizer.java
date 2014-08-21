@@ -45,10 +45,10 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	protected Visualizer							painter;
 	protected TextArea								propViewer;
 	
-	protected JList									episodeList;
+	protected JList<String>							episodeList;
 	protected JScrollPane							episodeScroller;
 	
-	protected JList									iterationList;
+	protected JList<String>							iterationList;
 	protected JScrollPane							iterationScroller;
 	
 	protected Container								controlContainer;
@@ -226,7 +226,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		String[] children = dir.list(filter);
 		
 		episodeFiles = new ArrayList<String>(children.length);
-		episodesListModel = new DefaultListModel();
+		episodesListModel = new DefaultListModel<String>();
 		
 		for(int i = 0; i < children.length; i++){
 			episodeFiles.add(directory + "/" + children[i]);
