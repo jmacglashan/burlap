@@ -1,5 +1,6 @@
 package burlap.oomdp.core.values;
 
+import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
@@ -58,7 +59,12 @@ public class IntArrayValue extends Value {
 	public void addRelationalTarget(String t) {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot set relational value.");
 	}
-
+	
+	@Override
+	public void addAllRelationalTargets(Collection<String> targets) {
+		throw new UnsupportedOperationException("Value is of type IntArray, cannot add relational targets");
+	}
+	
 	@Override
 	public void clearRelationTargets() {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot clear values.");

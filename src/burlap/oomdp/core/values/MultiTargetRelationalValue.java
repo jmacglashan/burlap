@@ -1,5 +1,6 @@
 package burlap.oomdp.core.values;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -74,6 +75,12 @@ public class MultiTargetRelationalValue extends Value {
 	public void addRelationalTarget(String t) {
 		this.targetObjects.add(t);
 	}
+	
+	@Override
+	public void addAllRelationalTargets(Collection<String> targets) {
+		this.targetObjects.addAll(targets);
+	}
+	
 	
 	@Override
 	public void clearRelationTargets() {

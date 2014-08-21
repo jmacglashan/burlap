@@ -1,6 +1,9 @@
 package burlap.oomdp.core;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import burlap.oomdp.core.Attribute.AttributeType;
 
@@ -171,7 +174,7 @@ public class ObjectInstance {
 	 * @param targets the names of the object references that are to be added as a targets.
 	 */
 	
-	public void addAllRelationalTargets(String attName, Iterable<String> targets) {
+	public void addAllRelationalTargets(String attName, Collection<String> targets) {
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		for (String target : targets) {
