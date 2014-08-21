@@ -165,6 +165,21 @@ public class ObjectInstance {
 	}
 	
 	/**
+	 * Adds all relational targets to the attribute attName for this object instance. For a single-target
+	 * relational attribute, the value that is ultimately set depends on the iteration order of iterable. 
+	 * @param attName the name of the relational attribute that will have a relational target added/set
+	 * @param targets the names of the object references that are to be added as a targets.
+	 */
+	
+	public void addAllRelationalTargets(String attName, Iterable<String> targets) {
+		int ind = obClass.attributeIndex(attName);
+		Value value = values.get(ind);
+		for (String target : targets) {
+			value.addRelationalTarget(target);
+		}
+	}
+	
+	/**
 	 * Clears all the relational value targets of the attribute named attName for this object instance.
 	 * @param attName
 	 */
