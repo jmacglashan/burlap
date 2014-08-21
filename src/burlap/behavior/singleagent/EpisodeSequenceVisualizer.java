@@ -60,11 +60,11 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	
 	//Backend
 	protected List <String>							episodeFiles;
-	protected DefaultListModel						episodesListModel;
+	protected DefaultListModel<String>				episodesListModel;
 	protected StateParser							sp;
 	
 	protected EpisodeAnalysis						curEA;
-	protected DefaultListModel						iterationListModel;
+	protected DefaultListModel<String>				iterationListModel;
 	
 	protected Domain								domain;
 	
@@ -140,7 +140,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//set episode component
-		episodeList = new JList(episodesListModel);
+		episodeList = new JList<String>(episodesListModel);
 		
 		
 		episodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -160,8 +160,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//set iteration component
-		iterationListModel = new DefaultListModel();
-		iterationList = new JList(iterationListModel);
+		iterationListModel = new DefaultListModel<String>();
+		iterationList = new JList<String>(iterationListModel);
 		
 		iterationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		iterationList.setLayoutOrientation(JList.VERTICAL);
