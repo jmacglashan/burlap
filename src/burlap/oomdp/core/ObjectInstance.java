@@ -173,10 +173,7 @@ public class ObjectInstance {
 	
 	public void addAllRelationalTargets(String attName, Collection<String> targets) {
 		int ind = obClass.attributeIndex(attName);
-		Value value = values.get(ind);
-		for (String target : targets) {
-			value.addRelationalTarget(target);
-		}
+		values.get(ind).addAllRelationalTargets(targets);
 	}
 	
 	/**
