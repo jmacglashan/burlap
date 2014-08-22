@@ -236,6 +236,14 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		return this.numUpdates;
 	}
 	
+	/**
+	 * Returns the total number of state nodes that have been created.
+	 * @return the total number of state nodes that have been created.
+	 */
+	public int getNumberOfStateNodesCreated(){
+		return this.nodesByHeight.size() + this.rootLevelQValues.size();
+	}
+	
 	
 	@Override
 	public void planFromState(State initialState) {
@@ -473,12 +481,12 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		/**
 		 * The hashed state
 		 */
-		StateHashTuple sh;
+		public StateHashTuple sh;
 		
 		/**
 		 * The height of the state
 		 */
-		int height;
+		public int height;
 		
 		
 		/**

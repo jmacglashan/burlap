@@ -3,11 +3,12 @@ package burlap.datastructures;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 
-//all methods are implemented for max heap; however, setting the max heap boolean to false causes the comparisons of all objects in this
+//developer note: all methods are implemented for max heap; however, setting the max heap boolean to false causes the comparisons of all objects in this
 //method to flip integer sign, thereby making it a min heap
 
 
@@ -22,7 +23,7 @@ import java.util.Map;
  *
  * @param <T> any Java object
  */
-public class HashIndexedHeap <T> {
+public class HashIndexedHeap <T> implements Iterable<T>{
 
 	/**
 	 * Heap ordered list of objects
@@ -195,6 +196,11 @@ public class HashIndexedHeap <T> {
 		
 	}
 	
+	@Override
+	public Iterator<T> iterator() {
+		return this.nodesArray.iterator();
+	}
+	
 	
 	/**
 	 * Adjusts the heap position of the given element 
@@ -299,5 +305,8 @@ public class HashIndexedHeap <T> {
 	private int right(int i ){
 		return (2*(i+1));
 	}
+
+
+	
 	
 }
