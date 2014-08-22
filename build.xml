@@ -8,6 +8,8 @@
   <property name="dist"  location="dist"/>
   <property name="lib"  location="lib"/>
   <property name="doc"  location="doc"/>
+  <property name="test" location="test"/>
+  <property environment="environment"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -40,6 +42,9 @@
     <jar jarfile="${dist}/burlap.jar">
     	 <fileset dir="${build}"/>
     	 <fileset dir="${src}"/>
+       <zipgroupfileset dir="lib/">
+            <include name="**/*.jar"/>
+        </zipgroupfileset>
     </jar>
   </target>
   <target name="doc" depends="init" description="generate documentation">
@@ -52,5 +57,45 @@
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+  </target>
+
+  <target name="test" depends="test-compile-6,test-compile-7,test-compile-8" >
+        
+    </target>
+
+  <target name="test-compile-6" description="tests compile in Java 6">
+    <mkdir dir="${test}/${build}/1.6"/>
+    <javac fork="yes" executable="${environment.JAVA_HOME_6}/bin/javac" srcdir="${src}" destdir="${test}/${build}/1.6">
+      <compilerarg value="-Xlint"/>
+      <classpath>
+        <fileset dir="${lib}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="test-compile-7" description="tests compile in Java 7">
+    <mkdir dir="${test}/${build}/1.7"/>
+    <javac fork="yes" executable="${environment.JAVA_HOME_7}/bin/javac" srcdir="${src}" destdir="${test}/${build}/1.7">
+      <compilerarg value="-Xlint"/>
+      <classpath>
+        <fileset dir="${lib}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="test-compile-8" description="tests compile in Java 8">
+    <mkdir dir="${test}/${build}/1.8"/>
+    <javac fork="yes" executable="${environment.JAVA_HOME_8}/bin/javac" srcdir="${src}" destdir="${test}/${build}/1.8">
+      <compilerarg value="-Xlint"/>
+      <classpath>
+        <fileset dir="${lib}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
   </target>
 </project>
