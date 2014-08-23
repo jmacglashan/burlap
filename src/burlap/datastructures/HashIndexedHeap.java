@@ -203,6 +203,40 @@ public class HashIndexedHeap <T> implements Iterable<T>{
 	
 	
 	/**
+	 * This method returns whether the data structure stored is in fact a heap (costs linear time).
+	 * This method should only be used for debug purposes such as when a heap's elements have their priority
+	 * changed from multiple sources and it needs to be made sure that each element is being properly refreshed
+	 * within the heap.
+	 * Note that to be a heap, each node must be greater than or equal to its children.
+	 * @return true if the stored data is a valid heap; false otherwise.
+	 */
+	public boolean satisifiesHeap(){
+		
+		for(int i = 0; i < this.nodesArray.size(); i++){
+			T n = this.nodesArray.get(i);
+			int l = this.left(i);
+			if(l < this.nodesArray.size()){
+				T ln = this.nodesArray.get(l);
+				if(this.compare(n, ln) < 0){
+					return false;
+				}
+			}
+			
+			int r = this.right(i);
+			if(r < this.nodesArray.size()){
+				T rn = this.nodesArray.get(r);
+				if(this.compare(n, rn) < 0){
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	
+	
+	/**
 	 * Adjusts the heap position of the given element 
 	 * @param i the index of the given element
 	 * @param el the element to re-index
@@ -306,7 +340,5 @@ public class HashIndexedHeap <T> implements Iterable<T>{
 		return (2*(i+1));
 	}
 
-
-	
 	
 }
