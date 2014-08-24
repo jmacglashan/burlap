@@ -6,7 +6,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	TestTesting.class,
-	TestGridWorld.class
+	TestGridWorld.class,
+	TestPlanning.class
 })
 public class TestSuite {
 
