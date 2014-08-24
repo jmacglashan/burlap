@@ -5,7 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	TestTesting.class
+	TestTesting.class,
+	TestGridWorld.class
 })
 public class TestSuite {
 
