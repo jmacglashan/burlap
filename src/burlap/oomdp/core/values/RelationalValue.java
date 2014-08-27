@@ -1,5 +1,6 @@
 package burlap.oomdp.core.values;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -70,6 +71,11 @@ public class RelationalValue extends Value {
 	@Override
 	public void addRelationalTarget(String t) {
 		this.target = t;
+	}
+	
+	@Override
+	public void addAllRelationalTargets(Collection<String> targets) {
+		throw new UnsupportedOperationException("Value is relational, cannot add multiple relational targets");
 	}
 	
 	@Override

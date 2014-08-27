@@ -1,5 +1,6 @@
 package burlap.oomdp.core.values;
 
+import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
@@ -68,6 +69,11 @@ public class RealValue extends Value {
 		throw new UnsupportedOperationException(new Error("Value is real, cannot add relational target"));
 	}
 	
+	@Override
+	public void addAllRelationalTargets(Collection<String> targets) {
+		throw new UnsupportedOperationException("Value is real, cannot add relational targets");
+	}
+
 	@Override
 	public int getDiscVal(){
 		throw new UnsupportedOperationException(new Error("Value is real, cannot return discrete value"));
