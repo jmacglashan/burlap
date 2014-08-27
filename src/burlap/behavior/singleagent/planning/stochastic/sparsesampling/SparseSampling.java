@@ -131,14 +131,17 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	
 	
 	/**
-	 * Initializes. Note that you can have h and c set to values that ensure epsilon optimality by using the {@link #setHAndCByMDPError(double, double, int)} method.
+	 * Initializes. Note that you can have h and c set to values that ensure epsilon optimality by using the {@link #setHAndCByMDPError(double, double, int)} method, but in
+	 * general this will result in very large values that will be intractable. If you set c = -1, then the full transition dynamics will be used. You should
+	 * only use the full transition dynanics if the number of possible transitions from each state is small and if the domain Action object's {@link Action#getTransitions(State, String[])}
+	 * method is defined.
 	 * @param domain the planning domain
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes. If the domain is continuous, use a {@link NameDependentStateHashFactory}
 	 * @param h the height of the tree
-	 * @param c the number of transition dynamics samples used.
+	 * @param c the number of transition dynamics samples used. If set to -1, then the full transition dynamics are used.
 	 */
 	public SparseSampling(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int h, int c){
 		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
@@ -146,6 +149,9 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		this.c = c;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, SparseSampling.StateNode>();
 		this.rootLevelQValues = new HashMap<StateHashTuple, List<QValue>>();
+		if(this.c < 0){
+			this.computeExactValueFunction = true;
+		}
 	}
 	
 	
@@ -180,10 +186,16 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	
 	/**
 	 * Sets the number of state transition samples used.
-	 * @param c the number of state transition samples used.
+	 * @param c the number of state transition samples used. If -1, then the full transition dynamics are used.
 	 */
 	public void setC(int c){
 		this.c = c;
+		if(this.c < 0){
+			this.computeExactValueFunction = true;
+		}
+		else{
+			this.computeExactValueFunction = false;
+		}
 	}
 	
 	/**
@@ -367,12 +379,12 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	 */
 	protected int getCAtHeight(int height){
 		if(!this.useVariableC){
-			return c;
+			return this.c;
 		}
 		
 		//convert height from bottom to depth from root
 		int d = this.h = height;
-		int vc = (int) (c * Math.pow(this.gamma, 2*d));
+		int vc = (int) (this.c * Math.pow(this.gamma, 2*d));
 		if(vc == 0){
 			vc = 1;
 		}
@@ -445,9 +457,8 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		public List<QValue> estimateQs(){
 			List<GroundedAction> gas = SparseSampling.this.getAllGroundedActions(this.sh.s);
 			List<QValue> qs = new ArrayList<QValue>(gas.size());
-			int c = SparseSampling.this.getCAtHeight(this.height);
 			for(GroundedAction ga : gas){
-				if(this.height == 0 || c < 1){
+				if(this.height <= 0){
 					qs.add(new QValue(this.sh.s, ga, SparseSampling.this.vinit.value(this.sh.s)));
 				}
 				else{
@@ -476,6 +487,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 			double sum = 0.;
 			
 			//generate C samples
+			int c = SparseSampling.this.getCAtHeight(this.height);
 			for(int i = 0; i < c; i++){
 				
 				//execute
