@@ -28,7 +28,7 @@ import burlap.oomdp.singleagent.RewardFunction;
 /**
  * An implementation of the Sparse Sampling (SS) [1] planning algorithm. SS's computational complexity is indepdent of the state space size, which makes it appealing
  * for exponentially large or infinite state space MDPs and it guarantees epsilon optimal planning under certain conditions (use the {@link #setHAndCByMDPError(double, double, int)}
- * method to ensure this). SS must replan for every new state it sees, so an agent following it in general must replan after every step it takes in the real world. Using a
+ * method to ensure this, however, the required horizon and C will probably be intractably large). SS must replan for every new state it sees, so an agent following it in general must replan after every step it takes in the real world. Using a
  * Q-based {@link Policy} object, will ensure this behavior because this algorithm will call the planner whenever it's quried for the Q-value for a state it has not seen.
  * <p/>
  * The algorithm operates by building a tree frome the source initial state. The tree is built by sampling C outcome states for each possible state-action pair, thereby generating new
@@ -58,7 +58,9 @@ import burlap.oomdp.singleagent.RewardFunction;
  * This class can optimally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is, the
  * {@link Action#getTransitions(State, String[])} method is defined). To set this class to comptue the exact finite horizon value function, use the
- * {@link #setComputeExactValueFunction(boolean)} method.
+ * {@link #setComputeExactValueFunction(boolean)} method. Note that you cannot use {@link Option}s when using the fully Bellman update, because that would
+ * required factored access to the probability of each length of each transition, which is not available from Options (it's aggregated into the transition function
+ * itself). An exception will be thrown if {@link Option}s are used with the full Bellman transitions.
  * <p/>
  * 
  * 
