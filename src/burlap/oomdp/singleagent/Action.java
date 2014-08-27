@@ -233,12 +233,15 @@ public abstract class Action {
 	
 	/**
 	 * Performs this action in the specified state using the specified parameters and returns the resulting state. The input state
-	 * will not be modified. The method will return a copy of the input state if the action is not applicable in state s with parameters params.
+	 * will not be modified with a deep copied state returned instead (unless this method is overriden, which may result in a semi-deep copy).
+	 * If the action is not applicable in state s with parameters params, then a copy of the input state is returned.
+	 * In general Action subclasses should *NOT* override this method and should instead override the abstract {@link #performActionHelper(State, String[])} method.
+	 * Only override this method if you are seeking to perform memory optimization with semi-shallow copies of states and know what you're doing.
 	 * @param s the state in which the action is to be performed.
 	 * @param params a String array specifying the action object parameters
 	 * @return the state that resulted from applying this action
 	 */
-	public final State performAction(State s, String [] params){
+	public State performAction(State s, String [] params){
 		
 		State resultState = s.copy();
 		if(!this.applicableInState(s, params)){
