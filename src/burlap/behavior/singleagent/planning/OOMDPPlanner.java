@@ -119,6 +119,7 @@ public abstract class OOMDPPlanner {
 				Option o = (Option)a;
 				o.keepTrackOfRewardWith(rf, gamma);
 				o.setExernalTermination(tf);
+				o.setExpectationHashingFactory(hashingFactory);
 				if(!(this.rf instanceof OptionEvaluatingRF)){
 					this.rf = new OptionEvaluatingRF(this.rf);
 				}

@@ -1,5 +1,6 @@
 package burlap.oomdp.core.values;
 
+import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
@@ -67,6 +68,11 @@ public class StringValue extends Value {
 		throw new UnsupportedOperationException("Value is String, cannot add relational target");
 	}
 
+	@Override
+	public void addAllRelationalTargets(Collection<String> targets) {
+		throw new UnsupportedOperationException("Value is String, cannot add relational targets");
+	}
+	
 	@Override
 	public void clearRelationTargets() {
 		throw new UnsupportedOperationException("Value is String, cannot clear relational targets");

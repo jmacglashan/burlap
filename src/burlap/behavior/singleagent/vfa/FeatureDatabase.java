@@ -44,4 +44,11 @@ public interface FeatureDatabase {
 	public void freezeDatabaseState(boolean toggle);
 	
 	
+	/**
+	 * Returns the number of features this database tracks.
+	 * @return the number of features this database tracks.
+	 */
+	public int numberOfFeatures();
+	
+	
 }

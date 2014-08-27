@@ -1,5 +1,6 @@
 package burlap.oomdp.core.values;
 
+import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
@@ -59,6 +60,11 @@ public class DoubleArrayValue extends Value{
 		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set relational value.");
 	}
 
+	@Override
+	public void addAllRelationalTargets(Collection<String> targets) {
+		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot add relational targets");
+	}
+	
 	@Override
 	public void clearRelationTargets() {
 		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot remove relational value.");

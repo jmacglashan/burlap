@@ -289,7 +289,10 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		//previously queried states.
 	}
 	
-	
+	@Override
+	public int numberOfFeatures() {
+		return Math.max(this.nextActionFeatureId, this.nextStateFeatureId);
+	}
 	
 	/**
 	 * A class that is used to assign unique feature identifiers for each action for each state tile.
@@ -411,5 +414,8 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		}
 		
 	}
+
+
+	
 
 }

@@ -34,13 +34,23 @@ public class ConstantLR implements LearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
 		return this.learningRate;
 	}
 
 	@Override
 	public void resetDecay() {
 		//no change needed
+	}
+
+	@Override
+	public double peekAtLearningRate(int featureId) {
+		return this.learningRate;
+	}
+
+	@Override
+	public double pollLearningRate(int agentTime, int featureId) {
+		return this.learningRate;
 	}
 
 }

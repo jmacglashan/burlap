@@ -96,6 +96,12 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	
 	
 	/**
+	 * Whether the learning rate polls should be based on the VFA state features or OO-MDP state. If true, then based on feature VFA state features; if false then the OO-MDP state.
+	 * Default is to use feature ids.
+	 */
+	protected boolean												useFeatureWiseLearningRate = true;
+	
+	/**
 	 * The minimum eligibility value of a trace that will cause it to be updated
 	 */
 	protected double												minEligibityForUpdate = 0.01;
@@ -129,7 +135,10 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	protected boolean												shouldAnnotateOptions = true;
 	
 	
-	
+	/**
+	 * The total number of learning steps performed by this agent.
+	 */
+	protected int													totalNumberOfSteps = 0;
 	
 	
 	/**
@@ -235,6 +244,14 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 	 */
 	public void setLearningRate(LearningRate lr){
 		this.learningRate = lr;
+	}
+	
+	/**
+	 * Sets whether learning rate polls should be based on the VFA state feature ids, or the OO-MDP state. Default is to use feature ids. 
+	 * @param useFeatureWiseLearningRate if true then learning rate polls are based on VFA state feature ids; if false then they are based on the OO-MDP state object.
+	 */
+	public void setUseFeatureWiseLearningRate(boolean useFeatureWiseLearningRate){
+		this.useFeatureWiseLearningRate = useFeatureWiseLearningRate;
 	}
 	
 	/**
@@ -410,14 +427,20 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 			}
 			
 			
-			double learningRate = this.learningRate.pollLearningRate(curState, action);
+			double learningRate = 0.;
+			if(!this.useFeatureWiseLearningRate){
+				learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState, action);
+			}
+			
 			
 			//update all traces
 			Set <Integer> deletedSet = new HashSet<Integer>();
 			for(EligibilityTraceVector et : traces.values()){
 				
 				int weightId = et.weight.weightId();
-				
+				if(this.useFeatureWiseLearningRate){
+					learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.weight.weightId());
+				}
 				
 				
 				et.eligibilityValue += gradient.getPartialDerivative(weightId);
@@ -443,6 +466,10 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 				if(!traces.containsKey(fw)){
 					
 					//then it's new and we need to add it
+					if(this.useFeatureWiseLearningRate){
+						learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, weightId);
+					}
+					
 					EligibilityTraceVector et = new EligibilityTraceVector(fw, gradient.getPartialDerivative(weightId));
 					double newWeight = fw.weightValue() + learningRate*delta*et.eligibilityValue;
 					fw.setWeight(newWeight);
@@ -472,6 +499,8 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputable
 			action = nextAction;
 			curApprox = nextApprox;
 			allCurApproxResults = allNextApproxResults;
+			
+			this.totalNumberOfSteps++;
 			
 		}
 		

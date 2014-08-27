@@ -3,11 +3,12 @@ package burlap.datastructures;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 
-//all methods are implemented for max heap; however, setting the max heap boolean to false causes the comparisons of all objects in this
+//developer note: all methods are implemented for max heap; however, setting the max heap boolean to false causes the comparisons of all objects in this
 //method to flip integer sign, thereby making it a min heap
 
 
@@ -22,7 +23,7 @@ import java.util.Map;
  *
  * @param <T> any Java object
  */
-public class HashIndexedHeap <T> {
+public class HashIndexedHeap <T> implements Iterable<T>{
 
 	/**
 	 * Heap ordered list of objects
@@ -195,6 +196,45 @@ public class HashIndexedHeap <T> {
 		
 	}
 	
+	@Override
+	public Iterator<T> iterator() {
+		return this.nodesArray.iterator();
+	}
+	
+	
+	/**
+	 * This method returns whether the data structure stored is in fact a heap (costs linear time).
+	 * This method should only be used for debug purposes such as when a heap's elements have their priority
+	 * changed from multiple sources and it needs to be made sure that each element is being properly refreshed
+	 * within the heap.
+	 * Note that to be a heap, each node must be greater than or equal to its children.
+	 * @return true if the stored data is a valid heap; false otherwise.
+	 */
+	public boolean satisifiesHeap(){
+		
+		for(int i = 0; i < this.nodesArray.size(); i++){
+			T n = this.nodesArray.get(i);
+			int l = this.left(i);
+			if(l < this.nodesArray.size()){
+				T ln = this.nodesArray.get(l);
+				if(this.compare(n, ln) < 0){
+					return false;
+				}
+			}
+			
+			int r = this.right(i);
+			if(r < this.nodesArray.size()){
+				T rn = this.nodesArray.get(r);
+				if(this.compare(n, rn) < 0){
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	
 	
 	/**
 	 * Adjusts the heap position of the given element 
@@ -299,5 +339,6 @@ public class HashIndexedHeap <T> {
 	private int right(int i ){
 		return (2*(i+1));
 	}
+
 	
 }

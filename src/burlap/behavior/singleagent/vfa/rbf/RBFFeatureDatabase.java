@@ -38,8 +38,8 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	protected boolean hasOffset;
 	
 	/**
-	 * A map for return a multiplier to the number of RBF statefeatures for each action. Effecitively
-	 * this ensures a unieque feature ID fo reach RBF for each action.
+	 * A map for returning a multiplier to the number of RBF statefeatures for each action. Effectively
+	 * this ensures a unieque feature ID for each RBF for each action.
 	 */
 	protected Map<String, Integer> actionFeatureMultiplier = new HashMap<String, Integer>();
 	
@@ -149,18 +149,26 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	 */
 	protected int getActionMultiplier(GroundedAction ga){
 		
-		if(ga.isParameterized()){
-			throw new RuntimeException("RBF Feature Database does not support parameterized actions.");
+		if(ga.isParameterized() && ga.action.parametersAreObjects()){
+			throw new RuntimeException("RBF Feature Database does not support actions with OO-MDP object parameterizations.");
 		}
 		
-		Integer stored = this.actionFeatureMultiplier.get(ga.actionName());
+		Integer stored = this.actionFeatureMultiplier.get(ga.toString());
 		if(stored == null){
-			this.actionFeatureMultiplier.put(ga.actionName(), this.nextActionMultiplier);
+			this.actionFeatureMultiplier.put(ga.toString(), this.nextActionMultiplier);
 			stored = this.nextActionMultiplier;
 			this.nextActionMultiplier++;
 		}
 		
 		return stored;
+	}
+
+	@Override
+	public int numberOfFeatures() {
+		if(this.actionFeatureMultiplier.size() == 0){
+			return this.nRbfs;
+		}
+		return this.nRbfs*this.nextActionMultiplier;
 	}
 
 }

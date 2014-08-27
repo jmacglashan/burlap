@@ -43,4 +43,27 @@ public interface ValueFunctionApproximation {
 	 */
 	public void resetWeights();
 	
+	/**
+	 * Sets the weight for a features
+	 * @param featureId the feature id whose weight should be set
+	 * @param w the weight value to use
+	 */
+	public void setWeight(int featureId, double w);
+	
+	/**
+	 * Returns the FunctionWeight for the given function's feature id.
+	 * @param featureId the id of function's feature whose weight is returned.
+	 * @return the FunctionWeight for the given function's feature id.
+	 */
+	public FunctionWeight getFunctionWeight(int featureId);
+	
+	/**
+	 * Returns the number of features used in this approximator. Note: if features are dynamically added
+	 * with experience, this number may change with subsequent calls.
+	 * @return the number of features used in this approximator.
+	 */
+	public int numFeatures();
+	
+	
+	
 }

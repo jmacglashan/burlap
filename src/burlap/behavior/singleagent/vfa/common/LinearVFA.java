@@ -51,7 +51,12 @@ public class LinearVFA implements ValueFunctionApproximation {
 	public LinearVFA(FeatureDatabase featureDatabase) {
 		
 		this.featureDatabase = featureDatabase;
-		this.weights = new HashMap<Integer, FunctionWeight>();
+		if(featureDatabase.numberOfFeatures() > 0){
+			this.weights = new HashMap<Integer, FunctionWeight>(featureDatabase.numberOfFeatures());
+		}
+		else{
+			this.weights = new HashMap<Integer, FunctionWeight>();
+		}
 		
 	}
 	
@@ -65,7 +70,12 @@ public class LinearVFA implements ValueFunctionApproximation {
 		
 		this.featureDatabase = featureDatabase;
 		this.defaultWeight = defaultWeight;
-		this.weights = new HashMap<Integer, FunctionWeight>();
+		if(featureDatabase.numberOfFeatures() > 0){
+			this.weights = new HashMap<Integer, FunctionWeight>(featureDatabase.numberOfFeatures());
+		}
+		else{
+			this.weights = new HashMap<Integer, FunctionWeight>();
+		}
 		
 	}
 
@@ -136,6 +146,31 @@ public class LinearVFA implements ValueFunctionApproximation {
 	@Override
 	public void resetWeights(){
 		this.weights.clear();
+	}
+
+
+	@Override
+	public void setWeight(int featureId, double w) {
+		FunctionWeight fw = this.weights.get(featureId);
+		if(fw == null){
+			fw = new FunctionWeight(featureId, w);
+			this.weights.put(featureId, fw);
+		}
+		else{
+			fw.setWeight(w);
+		}
+	}
+
+
+	@Override
+	public int numFeatures() {
+		return this.featureDatabase.numberOfFeatures();
+	}
+
+
+	@Override
+	public FunctionWeight getFunctionWeight(int featureId) {
+		return this.weights.get(featureId);
 	}
 
 }

@@ -88,7 +88,8 @@ public class EpsilonGreedy extends Policy implements PlannerDerivedPolicy{
 		
 		double roll = rand.nextDouble();
 		if(roll <= epsilon){
-			return qValues.get(rand.nextInt(qValues.size())).a;
+			int selected = rand.nextInt(qValues.size());
+			return qValues.get(selected).a.translateParameters(qValues.get(selected).s, s);
 		}
 		
 		
@@ -106,7 +107,9 @@ public class EpsilonGreedy extends Policy implements PlannerDerivedPolicy{
 				maxQ = q.q;
 			}
 		}
-		return maxActions.get(rand.nextInt(maxActions.size())).a;
+		int selected = rand.nextInt(maxActions.size());
+		//return translated action parameters if the action is parameterized with objects in a object identifier indepdent domain
+		return maxActions.get(selected).a.translateParameters(maxActions.get(selected).s, s);
 	}
 
 	@Override
@@ -125,7 +128,7 @@ public class EpsilonGreedy extends Policy implements PlannerDerivedPolicy{
 			else if(q.q == maxQ){
 				nMax++;
 			}
-			ActionProb ap = new ActionProb(q.a, this.epsilon*(1. / qValues.size()));
+			ActionProb ap = new ActionProb(q.a.translateParameters(q.s, s), this.epsilon*(1. / qValues.size()));
 			dist.add(ap);
 		}
 		for(int i = 0; i < dist.size(); i++){

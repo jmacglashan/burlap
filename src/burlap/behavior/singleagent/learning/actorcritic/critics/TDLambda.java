@@ -77,6 +77,12 @@ public class TDLambda implements Critic {
 	
 	
 	/**
+	 * The total number of learning steps performed by this agent.
+	 */
+	protected int													totalNumberOfSteps = 0;
+	
+	
+	/**
 	 * Initializes the algorithm.
 	 * @param rf the reward function
 	 * @param tf the terminal state function
@@ -193,14 +199,14 @@ public class TDLambda implements Critic {
 				t.eligibility = 1.;
 			}
 			
-			double learningRate = this.learningRate.pollLearningRate(t.sh.s, null);
+			double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, t.sh.s, null);
 			t.v.v = t.v.v + learningRate * delta * t.eligibility;
 			t.eligibility = t.eligibility * lambda * discount;
 		}
 		
 		if(!foundTrace){
 			//then add it
-			double learningRate = this.learningRate.pollLearningRate(sh.s, null);
+			double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s, null);
 			vs.v = vs.v + learningRate * delta;
 			StateEligibilityTrace t = new StateEligibilityTrace(sh, discount*this.lambda, vs);
 			
@@ -209,6 +215,8 @@ public class TDLambda implements Critic {
 		
 		
 		CritiqueResult critique = new CritiqueResult(s, ga, sprime, delta);
+		
+		this.totalNumberOfSteps++;
 		
 		return critique;
 	}

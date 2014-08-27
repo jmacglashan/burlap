@@ -152,6 +152,9 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 * @return the value function evaluation of the given state.
 	 */
 	public double value(StateHashTuple sh){
+		if(this.tf.isTerminal(sh.s)){
+			return 0.;
+		}
 		Double V = valueFunction.get(sh);
 		double v = V == null ? this.getDefaultValue(sh.s) : V;
 		return v;

@@ -113,6 +113,11 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 	protected boolean												shouldAnnotateOptions = true;
 	
 	
+	/**
+	 * The total number of learning steps performed by this agent.
+	 */
+	protected int													totalNumberOfSteps = 0;
+	
 	
 	/**
 	 * Initializes Q-learning with 0.1 epsilon greedy policy, the same Q-value initialization everywhere, and places no limit on the number of steps the 
@@ -496,7 +501,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 			double oldQ = curQ.q;
 			
 			//update Q-value
-			curQ.q = curQ.q + this.learningRate.pollLearningRate(curState.s, action) * (r + (discount * maxQ) - curQ.q);
+			curQ.q = curQ.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState.s, action) * (r + (discount * maxQ) - curQ.q);
 			
 			double deltaQ = Math.abs(oldQ - curQ.q);
 			if(deltaQ > maxQChangeInLastEpisode){
@@ -505,6 +510,7 @@ public class QLearning extends OOMDPPlanner implements QComputablePlanner, Learn
 			
 			//move on
 			curState = nextState;
+			this.totalNumberOfSteps++;
 			
 			
 		}

@@ -155,13 +155,13 @@ public class TimeIndexedTDLambda extends TDLambda {
 		
 		//update all traces
 		for(StateEligibilityTrace t : traces){
-			double learningRate = this.learningRate.pollLearningRate(t.sh.s, null);
+			double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, t.sh.s, null);
 			t.v.v = t.v.v + learningRate * delta * t.eligibility;
 			t.eligibility = t.eligibility * lambda * discount;
 		}
 		
 		//always need to add the current state since it's a different time stamp for each state
-		double learningRate = this.learningRate.pollLearningRate(sh.s, null);
+		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s, null);
 		vs.v = vs.v + learningRate * delta;
 		StateEligibilityTrace t = new StateTimeElibilityTrace(sh, curTime, discount*this.lambda, vs);
 		traces.add(t);
@@ -171,6 +171,8 @@ public class TimeIndexedTDLambda extends TDLambda {
 		
 		
 		CritiqueResult critique = new CritiqueResult(s, ga, sprime, delta);
+		
+		this.totalNumberOfSteps++;
 		
 		return critique;
 	}

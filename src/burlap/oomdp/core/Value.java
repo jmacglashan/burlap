@@ -1,5 +1,6 @@
 package burlap.oomdp.core;
 
+import java.util.Collection;
 import java.util.Set;
 
 
@@ -102,6 +103,8 @@ public abstract class Value {
 	 * @param t the name of the object instance target
 	 */
 	public abstract void addRelationalTarget(String t);
+	
+	public abstract void addAllRelationalTargets(Collection<String> targets);
 	
 	/**
 	 * Removes any relational targets for this attribute

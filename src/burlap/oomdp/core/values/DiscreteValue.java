@@ -1,5 +1,6 @@
 package burlap.oomdp.core.values;
 
+import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
@@ -75,6 +76,11 @@ public class DiscreteValue extends Value{
 	@Override
 	public void addRelationalTarget(String t) {
 		throw new UnsupportedOperationException("Value is discrete, cannot add relational target");
+	}
+	
+	@Override
+	public void addAllRelationalTargets(Collection<String> targets) {
+		throw new UnsupportedOperationException("Value is discrete, cannot add relational targets");
 	}
 	
 	@Override
