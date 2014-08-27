@@ -60,12 +60,12 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
 		List<QValue> qValues = this.qplanner.getQs(s);
-		return this.getActionDistributionForQValues(qValues);
+		return this.getActionDistributionForQValues(s, qValues);
 	}
 
 	
 	
-	private List<ActionProb> getActionDistributionForQValues(List <QValue> qValues){
+	private List<ActionProb> getActionDistributionForQValues(State queryState, List <QValue> qValues){
 		
 		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
 		
@@ -78,7 +78,7 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 		double [] probs = bd.getProbabilities();
 		for(int i = 0; i < qValues.size(); i++){
 			QValue q = qValues.get(i);
-			ActionProb ap = new ActionProb(q.a, probs[i]);
+			ActionProb ap = new ActionProb(q.a.translateParameters(q.s, queryState), probs[i]);
 			res.add(ap);
 		}
 		
