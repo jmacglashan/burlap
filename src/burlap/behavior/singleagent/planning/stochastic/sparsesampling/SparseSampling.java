@@ -55,7 +55,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * <p/>
  * This class requires a {@link StateHashFactory}; if the domain is continuous, just use a {@link NameDependentStateHashFactory} instance.
  * <p/>
- * This class can optimally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
+ * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is, the
  * {@link Action#getTransitions(State, String[])} method is defined). To set this class to comptue the exact finite horizon value function, use the
  * {@link #setComputeExactValueFunction(boolean)} method. Note that you cannot use {@link Option}s when using the fully Bellman update, because that would
