@@ -522,20 +522,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 				
 			}
 			else{
-				//handle option value function update
-				double expectedR = ((Option)ga.action).getExpectedRewards(this.sh.s, ga.params);
-				sum += expectedR;
-				
-				for(TransitionProbability tp : tps){
-					
-					StateNode nsn = SparseSampling.this.getStateNode(tp.s, this.height-1);
-					
-					//note that for options, tp.p will be the *discounted* probability of transition to s',
-					//so there is no need for a discount factor to be included
-					sum += tp.p * nsn.estimateV();
-					
-				}
-				
+				throw new RuntimeException("Sparse Sampling Planner with Full Bellman updates turned on cannot work with options because it needs factored access to the depth for each option transition. Use the standard sampling mode instead.");
 			}
 			
 			
