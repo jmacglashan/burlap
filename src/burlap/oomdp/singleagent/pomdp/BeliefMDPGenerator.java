@@ -136,13 +136,16 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(observations.size());
 			for(State obseration : observations){
 				double p = bs.probObservation(obseration, mdpGA);
-				BeliefState nbs = bs.getUpdatedBeliefState(obseration, mdpGA);
-				State ns = s.copy();
-				ObjectInstance nbObject = new ObjectInstance(this.domain.getObjectClass(CLASSBELIEF), CLASSBELIEF+"0");
-				nbObject.setValue(ATTBELIEF, nbs.getBeliefVector());
-				
-				TransitionProbability tp = new TransitionProbability(ns, p);
-				tps.add(tp);
+				if(p > 0){
+					BeliefState nbs = bs.getUpdatedBeliefState(obseration, mdpGA);
+					State ns = new State();
+					ObjectInstance nbObject = new ObjectInstance(this.domain.getObjectClass(CLASSBELIEF), CLASSBELIEF+"0");
+					nbObject.setValue(ATTBELIEF, nbs.getBeliefVector());
+					ns.addObject(nbObject);
+					
+					TransitionProbability tp = new TransitionProbability(ns, p);
+					tps.add(tp);
+				}
 			}
 			
 			List<TransitionProbability> collapsed = this.collapseTransitionProbabilityDuplicates(tps);
