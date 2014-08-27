@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.pomdp.mdpvfa;
+package burlap.behavior.singleagent.pomdp.wrappedmdpalgs;
 
 import java.util.List;
 
@@ -93,8 +93,7 @@ public class BeliefSarsa extends POMDPPlanner implements QComputablePlanner {
 
 	@Override
 	public void resetPlannerResults() {
-		// TODO Auto-generated method stub
-
+		this.agent.resetPlannerResults();
 	}
 	
 
