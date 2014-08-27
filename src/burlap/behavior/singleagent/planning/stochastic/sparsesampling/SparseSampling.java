@@ -20,6 +20,8 @@ import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -53,6 +55,13 @@ import burlap.oomdp.singleagent.RewardFunction;
  * <p/>
  * This class requires a {@link StateHashFactory}; if the domain is continuous, just use a {@link NameDependentStateHashFactory} instance.
  * <p/>
+ * This class can optimally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
+ * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is, the
+ * {@link Action#getTransitions(State, String[])} method is defined). To set this class to comptue the exact finite horizon value function, use the
+ * {@link #setComputeExactValueFunction(boolean)} method.
+ * <p/>
+ * 
+ * 
  * 1. Kearns, Michael, Yishay Mansour, and Andrew Y. Ng. "A sparse sampling algorithm for near-optimal planning in large Markov decision processes." 
  * Machine Learning 49.2-3 (2002): 193-208.
  * 
@@ -89,6 +98,13 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	
 	
 	/**
+	 * This parameter indicates whether the exact finite horizon value function is computed or whether sparse sampling
+	 * to estimate should be used. The default is false: to use sparse sampling.
+	 */
+	protected boolean computeExactValueFunction = false;
+	
+	
+	/**
 	 * The tree nodes indexed by state and height.
 	 */
 	protected Map<HashedHeightState, StateNode> nodesByHeight;
@@ -103,6 +119,8 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	 * The total number of pseudo-Bellman updates
 	 */
 	protected int numUpdates = 0;
+	
+	
 	
 	/**
 	 * The debug code used for printing planning information.
@@ -188,6 +206,26 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	 */
 	public int getH(){
 		return this.h;
+	}
+	
+	
+	/**
+	 * Sets whether this planner will compute the exact finite horizon value funciton (using the full transition dynamics) or if sampling
+	 * to estimate the value function will be used. The default of this class is to use sampling.
+	 * @param computeExactValueFunction if true, the exact finite horizon value function is computed; if false, then sampling is used.
+	 */
+	public void setComputeExactValueFunction(boolean computeExactValueFunction){
+		this.computeExactValueFunction = computeExactValueFunction;
+	}
+	
+	
+	/**
+	 * Returns whether this planner comptues the exact finite horizon value function (by using the full transition dynamics) or whether
+	 * it estimates the value funciton with sampling.
+	 * @return true if the exact finite horizon value function is estimate; false if sampling is used.
+	 */
+	public boolean computesExactValueFunction(){
+		return this.computeExactValueFunction;
 	}
 	
 	
@@ -411,34 +449,100 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 					qs.add(new QValue(this.sh.s, ga, SparseSampling.this.vinit.value(this.sh.s)));
 				}
 				else{
-					//generate C samples
-					double sum = 0.;
-					for(int i = 0; i < c; i++){
-						
-						//execute
-						State ns = ga.executeIn(this.sh.s);
-						
-						//manage option stepsize modifications
-						int k = 1;
-						if(ga.action instanceof Option){
-							k = ((Option)ga.action).getLastNumSteps();
-						}
-						
-						//get reward; our rf will automatically do cumumative discounted if it's an option
-						double r = SparseSampling.this.rf.reward(this.sh.s, ga, ns);
-						
-						StateNode nsn = SparseSampling.this.getStateNode(ns, this.height-k);
-						
-						sum += r + Math.pow(SparseSampling.this.gamma, k)*nsn.estimateV();
+					double q;
+					if(!SparseSampling.this.computeExactValueFunction){
+						q = this.sampledBellmanQEstimate(ga);
 					}
-					sum /= (double)c;
+					else{
+						q = this.fullBelmmanQValue(ga);
+					}
 					
-					qs.add(new QValue(this.sh.s, ga, sum));
+					qs.add(new QValue(this.sh.s, ga, q));
 				}
 			}
 			
 			return qs;
 		}
+		
+		/**
+		 * Estimates the Q-value using sampling from the transition dynamics. This is the standard Sparse Sampling procedure.
+		 * @param ga the action for which the Q-value estimate is to be returned
+		 * @return the Q-value estimate
+		 */
+		protected double sampledBellmanQEstimate(GroundedAction ga){
+			
+			double sum = 0.;
+			
+			//generate C samples
+			for(int i = 0; i < c; i++){
+				
+				//execute
+				State ns = ga.executeIn(this.sh.s);
+				
+				//manage option stepsize modifications
+				int k = 1;
+				if(ga.action instanceof Option){
+					k = ((Option)ga.action).getLastNumSteps();
+				}
+				
+				//get reward; our rf will automatically do cumumative discounted if it's an option
+				double r = SparseSampling.this.rf.reward(this.sh.s, ga, ns);
+				
+				StateNode nsn = SparseSampling.this.getStateNode(ns, this.height-k);
+				
+				sum += r + Math.pow(SparseSampling.this.gamma, k)*nsn.estimateV();
+			}
+			sum /= (double)c;
+			
+			return sum;
+		}
+		
+		
+		/**
+		 * Computes the exact Q-value using full Bellman update with the actual transition dynamics. This procedure will cause Sparse Sampling
+		 * to compute the exact Q-values and optimal policy for a finite horizon problem. It is reccommened when the number of transitions from
+		 * any given state is small tractable to compute.
+		 * @param ga the action for which the Q-value estimate is to be returned
+		 * @return the exact finite horizon Q-value
+		 */
+		protected double fullBelmmanQValue(GroundedAction ga){
+			
+			double sum = 0.;
+			List<TransitionProbability> tps = ga.action.getTransitions(this.sh.s, ga.params);
+			
+			if(!(ga.action instanceof Option)){
+				
+				for(TransitionProbability tp : tps){
+					
+					double r = SparseSampling.this.rf.reward(this.sh.s, ga, tp.s);
+					StateNode nsn = SparseSampling.this.getStateNode(tp.s, this.height-1);
+					sum += tp.p * (r + SparseSampling.this.gamma * nsn.estimateV());
+					
+				}
+				
+			}
+			else{
+				//handle option value function update
+				double expectedR = ((Option)ga.action).getExpectedRewards(this.sh.s, ga.params);
+				sum += expectedR;
+				
+				for(TransitionProbability tp : tps){
+					
+					StateNode nsn = SparseSampling.this.getStateNode(tp.s, this.height-1);
+					
+					//note that for options, tp.p will be the *discounted* probability of transition to s',
+					//so there is no need for a discount factor to be included
+					sum += tp.p * nsn.estimateV();
+					
+				}
+				
+			}
+			
+			
+			return sum;
+			
+		}
+		
 		
 		
 		/**
