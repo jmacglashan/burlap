@@ -393,6 +393,32 @@ public class BlockDude implements DomainGenerator {
 
 		
 		@Override
+		public State performAction(State s, String [] params){
+			
+			
+			Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			
+			ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+			deepCopiedObjects.add(agent);
+			int ah = agent.getDiscValForAttribute(ATTHOLD);
+			
+			if(ah == 1){
+				int ax = agent.getDiscValForAttribute(ATTX);
+				int ay = agent.getDiscValForAttribute(ATTY);
+				
+				ObjectInstance block = getBlockAt(s, ax, ay+1);
+				if(block != null){
+					deepCopiedObjects.add(block);
+				}
+				
+			}
+			
+			State copid = s.semiDeepCopy(deepCopiedObjects);
+			
+			return performActionHelper(copid, params);
+		}
+		
+		@Override
 		protected State performActionHelper(State st, String[] params) {
 			moveUp(st);
 			return st;
@@ -411,7 +437,31 @@ public class BlockDude implements DomainGenerator {
 		public EastAction(String name, Domain domain, String [] parameterClasses){
 			super(name, domain, parameterClasses);
 		}
-	
+		
+		@Override
+		public State performAction(State s, String [] params){
+
+			Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			
+			ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+			deepCopiedObjects.add(agent);
+			int ah = agent.getDiscValForAttribute(ATTHOLD);
+			
+			if(ah == 1){
+				int ax = agent.getDiscValForAttribute(ATTX);
+				int ay = agent.getDiscValForAttribute(ATTY);
+				
+				ObjectInstance block = getBlockAt(s, ax, ay+1);
+				if(block != null){
+					deepCopiedObjects.add(block);
+				}
+				
+			}
+			
+			State copid = s.semiDeepCopy(deepCopiedObjects);
+			
+			return performActionHelper(copid, params);
+		}
 
 		@Override
 		protected State performActionHelper(State st, String[] params) {
@@ -431,6 +481,31 @@ public class BlockDude implements DomainGenerator {
 		
 		public WestAction(String name, Domain domain, String [] parameterClasses){
 			super(name, domain, parameterClasses);
+		}
+		
+		@Override
+		public State performAction(State s, String [] params){
+			
+			Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			
+			ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+			deepCopiedObjects.add(agent);
+			int ah = agent.getDiscValForAttribute(ATTHOLD);
+			
+			if(ah == 1){
+				int ax = agent.getDiscValForAttribute(ATTX);
+				int ay = agent.getDiscValForAttribute(ATTY);
+				
+				ObjectInstance block = getBlockAt(s, ax, ay+1);
+				if(block != null){
+					deepCopiedObjects.add(block);
+				}
+				
+			}
+			
+			State copid = s.semiDeepCopy(deepCopiedObjects);
+			
+			return performActionHelper(copid, params);
 		}
 
 		@Override
@@ -454,6 +529,36 @@ public class BlockDude implements DomainGenerator {
 		}
 		
 		@Override
+		public State performAction(State s, String [] params){
+			
+			Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			
+			ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+			deepCopiedObjects.add(agent);
+			int ah = agent.getDiscValForAttribute(ATTHOLD);
+			
+			if(ah == 0){
+				int ax = agent.getDiscValForAttribute(ATTX);
+				int ay = agent.getDiscValForAttribute(ATTY);
+				int dir = agent.getDiscValForAttribute(ATTDIR);
+				
+				if(dir == 0){
+					dir = -1;
+				}
+				
+				ObjectInstance block = getBlockAt(s, ax+dir, ay);
+				if(block != null){
+					deepCopiedObjects.add(block);
+				}
+				
+			}
+			
+			State copid = s.semiDeepCopy(deepCopiedObjects);
+			
+			return performActionHelper(copid, params);
+		}
+
+		@Override
 		protected State performActionHelper(State st, String[] params) {
 			pickupBlock(st);
 			return st;
@@ -474,6 +579,33 @@ public class BlockDude implements DomainGenerator {
 			super(name, domain, parameterClasses);
 		}
 		
+		
+		@Override
+		public State performAction(State s, String [] params){
+			
+			Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			
+			ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+			deepCopiedObjects.add(agent);
+			int ah = agent.getDiscValForAttribute(ATTHOLD);
+			
+			if(ah == 1){
+				int ax = agent.getDiscValForAttribute(ATTX);
+				int ay = agent.getDiscValForAttribute(ATTY);
+				
+				ObjectInstance block = getBlockAt(s, ax, ay+1);
+				if(block != null){
+					deepCopiedObjects.add(block);
+				}
+				
+			}
+			
+			State copid = s.semiDeepCopy(deepCopiedObjects);
+			
+			return performActionHelper(copid, params);
+		}
+		
+
 		@Override
 		protected State performActionHelper(State st, String[] params) {
 			putdownBlock(st);
