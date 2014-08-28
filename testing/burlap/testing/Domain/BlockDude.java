@@ -14,9 +14,6 @@ import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.explorer.TerminalExplorer;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-import burlap.oomdp.visualizer.Visualizer;
 
 public class BlockDude implements DomainGenerator {
 
