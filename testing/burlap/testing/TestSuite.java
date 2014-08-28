@@ -7,7 +7,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	TestTesting.class,
 	TestGridWorld.class,
-	TestPlanning.class
+	TestPlanning.class,
+	TestBlockDude.class
 })
 public class TestSuite {
 
