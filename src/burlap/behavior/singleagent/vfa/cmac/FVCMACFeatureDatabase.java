@@ -28,8 +28,8 @@ import burlap.oomdp.singleagent.GroundedAction;
  * over the same dimensions can either be randomly jittered from each other or unifiormly distributed across the sapce, which is specified using the {@link TilingArrangement}
  * enumerator.
  * <p/>
- * To specify the tiling used, use the {@link #addTilingsForAllDimensionsWithWidths(double[], int, TilingArrangement)} or 
- * {@link #addTilingsForDimensionsAndWidths(boolean[], double[], int, TilingArrangement)} method.
+ * To specify the tiling used, use the {@link #addTilingsForAllDimensionsWithWidths(double[], int, CMACFeatureDatabase.TilingArrangement)} or 
+ * {@link #addTilingsForDimensionsAndWidths(boolean[], double[], int, CMACFeatureDatabase.TilingArrangement)} method.
  * 
  * 
  * <p/>

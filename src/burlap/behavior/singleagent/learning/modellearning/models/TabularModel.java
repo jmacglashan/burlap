@@ -169,11 +169,11 @@ public class TabularModel extends Model {
 	}
 	
 	/**
-	 * Returns the {@link StateActionNode} object associated with the given hashed state and action.
-	 * If there is not an associated {@link StateActionNode} object, then null is returned.
+	 * Returns the {@link TabularModel.StateActionNode} object associated with the given hashed state and action.
+	 * If there is not an associated {@link TabularModel.StateActionNode} object, then null is returned.
 	 * @param sh the hashed state
 	 * @param ga the grounded action
-	 * @return the associated {@link StateActionNode} or null if it does not exist.
+	 * @return the associated {@link TabularModel.StateActionNode} or null if it does not exist.
 	 */
 	protected StateActionNode getStateActionNode(StateHashTuple sh, GroundedAction ga){
 
@@ -185,11 +185,11 @@ public class TabularModel extends Model {
 	}
 	
 	/**
-	 * Returns the {@link StateActionNode} object associated with the given hashed state and action.
-	 * If there is not an associated {@link StateActionNode} object, then one will be created.
+	 * Returns the {@link TabularModel.StateActionNode} object associated with the given hashed state and action.
+	 * If there is not an associated {@link TabularModel.StateActionNode} object, then one will be created.
 	 * @param sh the hashed state
 	 * @param ga the grounded action
-	 * @return the associated {@link StateActionNode}
+	 * @return the associated {@link TabularModel.StateActionNode}
 	 */
 	protected StateActionNode getOrCreateActionNode(StateHashTuple sh, GroundedAction ga){
 

@@ -68,7 +68,7 @@ public abstract class JointActionModel {
 	/**
 	 * A helper method for deterministic transition dynamics. This method will return a list containing
 	 * one {@link burlap.oomdp.core.TransitionProbability} object which is assigned probability 1
-	 * and whose state is determined by querying the {@link performJointAction(State, JointAction)}
+	 * and whose state is determined by querying the {@link #performJointAction(State, JointAction)}
 	 * method.
 	 * @param s the state in which the joint action would be executed
 	 * @param ja the joint action to be performed in the state.

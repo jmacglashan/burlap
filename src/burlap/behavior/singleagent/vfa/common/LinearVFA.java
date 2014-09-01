@@ -118,8 +118,8 @@ public class LinearVFA implements ValueFunctionApproximation {
 	
 	/**
 	 * Computes the linear function over the given features and the stored feature weights.
-	 * @param features
-	 * @return
+	 * @param features List of the {@link StateFeature} obejcts defining the state features of this approximator.
+	 * @return the linear function over the given features and the stored feature weights stored in a {@link ApproximationResult}.
 	 */
 	protected ApproximationResult getApproximationResultFrom(List <StateFeature> features){
 		

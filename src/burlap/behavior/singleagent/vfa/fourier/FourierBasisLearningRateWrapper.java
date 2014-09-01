@@ -15,8 +15,8 @@ import burlap.oomdp.core.State;
  * this implementation will return alpha(j) / ||c_j||, where c_j is the coefficient vector associated with Fourier baiss function j.
  * <p/>
  * Since this wrapper operates on state-action features, it will throw a runtime exception if it is queried for OO-MDP {@link State}-wise learning rate peek and poll
- * methods ({@link #peekAtLearningRate(State, AbstractGroundedAction)} and {@link #pollLearningRate(State, AbstractGroundedAction)}, repsectively). Instead, clients
- * should only call the {@link #peekAtLearningRate(int)} and {@link #pollLearningRate(int)} methods.
+ * methods ({@link #peekAtLearningRate(State, AbstractGroundedAction)} and {@link #pollLearningRate(int, State, AbstractGroundedAction)}, repsectively). Instead, clients
+ * should only call the {@link #peekAtLearningRate(int)} and {@link #pollLearningRate(int, int)} methods.
  * 
  * 
  * @author James MacGlashan
