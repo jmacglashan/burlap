@@ -205,7 +205,7 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	/**
 	 * Runs normal RTDP in which bellman updates are performed after each action selection.
-	 * @param initiaState the initial state from which to plan
+	 * @param initialState the initial state from which to plan
 	 */
 	protected void normalRTDP(State initialState){
 		

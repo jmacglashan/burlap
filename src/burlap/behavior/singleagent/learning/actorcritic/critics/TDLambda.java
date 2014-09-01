@@ -230,9 +230,9 @@ public class TDLambda implements Critic {
 
 	
 	/**
-	 * Returns the {@link VValue} object (storing the value) for a given hashed stated.
+	 * Returns the {@link TDLambda.VValue} object (storing the value) for a given hashed stated.
 	 * @param sh the hased state for which the value should be returned.
-	 * @return the {@link VValue} object (storing the value) for the given hashed stated.
+	 * @return the {@link TDLambda.VValue} object (storing the value) for the given hashed stated.
 	 */
 	protected VValue getV(StateHashTuple sh){
 		VValue v = this.vIndex.get(sh);

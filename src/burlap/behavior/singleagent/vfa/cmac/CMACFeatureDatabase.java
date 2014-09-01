@@ -106,7 +106,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	protected List <Tiling>											tilings;
 	
 	/**
-	 * For each tiling, a map from state tiles to {@link StoredFeaturesForTiling} objects, which contain
+	 * For each tiling, a map from state tiles to {@link CMACFeatureDatabase.StoredFeaturesForTiling} objects, which contain
 	 * distinct state features for each action. This is useful when doing approximation for state-action values.
 	 */
 	protected List<Map<StateTile, StoredFeaturesForTiling>>			actionTilings;

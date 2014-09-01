@@ -594,9 +594,9 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	/**
 	 * Attempts to move the agent into the given position, taking into account walls and blocks
-	 * @param the current state
-	 * @param the attempted new X position of the agent
-	 * @param the attempted new Y position of the agent
+	 * @param s the current state
+	 * @param xd the attempted new X position of the agent
+	 * @param yd the attempted new Y position of the agent
 	 */
 	protected void move(State s, int xd, int yd){
 		

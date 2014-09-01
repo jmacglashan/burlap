@@ -70,9 +70,9 @@ public class DomainMappedPolicy extends Policy {
 	
 	
 	/**
-	 * Maps an input GroundedAction to a GroundedAction using an action reference of the action in this object's {@link realWorldDomain} object that has the same name as the action in the input GroundedAction.
+	 * Maps an input GroundedAction to a GroundedAction using an action reference of the action in this object's {@link #realWorldDomain} object that has the same name as the action in the input GroundedAction.
 	 * @param ga the input GroundedAction to map.
-	 * @return a GroundedAction whose action reference belongs to the Action with the same name in this object's {@link realWorldDomain} object 
+	 * @return a GroundedAction whose action reference belongs to the Action with the same name in this object's {@link #realWorldDomain} object 
 	 */
 	protected AbstractGroundedAction mapAction(AbstractGroundedAction ga){
 		return new GroundedAction(realWorldDomain.getAction(ga.actionName()), ga.params);

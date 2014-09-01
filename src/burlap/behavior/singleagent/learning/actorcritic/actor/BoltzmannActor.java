@@ -177,8 +177,8 @@ public class BoltzmannActor extends Actor {
 	
 	/**
 	 * Returns the policy node that stores the action preferences for state.
-	 * @param sh The (hashed) state of the {@link PolicyNode} to return
-	 * @return the {@link PolicyNode} object for the given input state.
+	 * @param sh The (hashed) state of the {@link BoltzmannActor.PolicyNode} to return
+	 * @return the {@link BoltzmannActor.PolicyNode} object for the given input state.
 	 */
 	protected PolicyNode getNode(StateHashTuple sh){
 		
@@ -217,12 +217,12 @@ public class BoltzmannActor extends Actor {
 	
 	
 	/**
-	 * Returns the stored {@link ActionPreference} that is stored in a policy node. If actions are parameterized and the domain is not name dependent,
+	 * Returns the stored {@link BoltzmannActor.ActionPreference} that is stored in a policy node. If actions are parameterized and the domain is not name dependent,
 	 * then a matching between the input state and stored state is first found and used to match the input action parameters to the stored action parameters.
 	 * @param sh the input state on which the input action was applied
-	 * @param ga the input action for which the {@link ActionPreferece} object should be returned.
-	 * @param node the {@link PolicyNode} object that contains the Action preference.
-	 * @return the {@link ActionPreferece} object for the given action stored in the given {@link PolicyNode}; null if it does not exist.
+	 * @param ga the input action for which the {@link BoltzmannActor.ActionPreference} object should be returned.
+	 * @param node the {@link BoltzmannActor.PolicyNode} object that contains the Action preference.
+	 * @return the {@link BoltzmannActor.ActionPreference} object for the given action stored in the given {@link BoltzmannActor.PolicyNode}; null if it does not exist.
 	 */
 	protected ActionPreference getMatchingPreference(StateHashTuple sh, GroundedAction ga, PolicyNode node){
 		
