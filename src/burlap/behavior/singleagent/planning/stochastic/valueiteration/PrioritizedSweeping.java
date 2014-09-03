@@ -205,16 +205,15 @@ public class PrioritizedSweeping extends ValueIteration{
 		public StateHashTuple sh;
 		public List<BPTR> backPointers;
 		public double maxSelfTransitionProb = 0.;
-		public double priority;
+		public double priority = Double.MAX_VALUE;
 		
 		/**
-		 * Creates a back pointer for the given state with no back pointers and a priority of 1.
+		 * Creates a back pointer for the given state with no back pointers and a priority of Double.MAX_VALUE (ensures one sweep of the state space to start)
 		 * @param sh the hased state for which this node will correspond
 		 */
 		public BPTRNode(StateHashTuple sh){
 			this.sh = sh;
 			this.backPointers = new LinkedList<PrioritizedSweeping.BPTR>();
-			this.priority = 1.;
 		}
 		
 		
@@ -315,5 +314,6 @@ public class PrioritizedSweeping extends ValueIteration{
 		}
 		
 	}
+	
 	
 }
