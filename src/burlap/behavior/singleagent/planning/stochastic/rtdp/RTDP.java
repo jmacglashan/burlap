@@ -74,6 +74,11 @@ public class RTDP extends ValueFunctionPlanner {
 	protected boolean					useBatch = false;
 	
 	
+	/**
+	 * Stores the number of Bellman updates made across all planning.
+	 */
+	protected int						numberOfBellmanUpdates = 0;
+	
 	
 	
 	/**
@@ -188,6 +193,14 @@ public class RTDP extends ValueFunctionPlanner {
 		this.useBatch = useBatch;
 	}
 	
+	/**
+	 * Returns the total number of Bellman updates across all planning
+	 * @return the total number of Bellman updates across all planning
+	 */
+	public int getNumberOfBellmanUpdates(){
+		return this.numberOfBellmanUpdates;
+	}
+	
 	@Override
 	public void planFromState(State initialState) {
 		
@@ -227,6 +240,7 @@ public class RTDP extends ValueFunctionPlanner {
 				double curV = this.value(sh);
 				double nV = this.performBellmanUpdateOn(sh);
 				delta = Math.max(Math.abs(nV - curV), delta); 
+				this.numberOfBellmanUpdates++;
 				
 				//take the action
 				curState = ga.executeIn(curState);
@@ -303,6 +317,7 @@ public class RTDP extends ValueFunctionPlanner {
 			
 			double maxQ = this.performBellmanUpdateOn(sh);
 			delta = Math.max(Math.abs(maxQ - v), delta);
+			this.numberOfBellmanUpdates++;
 			
 		}
 		
