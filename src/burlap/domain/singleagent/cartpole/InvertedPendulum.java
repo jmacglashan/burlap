@@ -9,8 +9,11 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -18,10 +21,10 @@ import burlap.oomdp.visualizer.Visualizer;
 
 /**
  * A simplified version of the {@link CartPoleDomain} in which the movement of the pole depends only on gravity and the force applied, and not the velocity of the
- * underlying cart. The track is also always assumed to be infinite. Thefore, the state space for this domain is fully described by two variables:
+ * underlying cart. The track is also always assumed to be infinite. Therefore, the state space for this domain is fully described by two variables:
  * the angle and angular velocity of the pole. However, there is also noise included in the actions
  * of this domain as well a noop action. This version of the inverted pendulum is the version used in the original
- * Least-Sqaures Policy Iteration paper [1].
+ * Least-Squares Policy Iteration paper [1].
  * <p/>
  * 
  * 
@@ -266,6 +269,99 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		
 	}
+	
+	
+	/**
+	 * A default terminal function for this domain. Terminates when the
+	 * angle between pole and vertical axis is greater than PI/2 radians or some other user specified threshold.
+	 * @author James MacGlashan
+	 *
+	 */
+	public static class InvertedPendulumTerminalFunction implements TerminalFunction{
+
+		/**
+		 * The maximum pole angle to cause termination/failure.
+		 */
+		double maxAbsoluteAngle = (Math.PI / 2.);
+		
+		public InvertedPendulumTerminalFunction() {
+
+		}
+		
+		/**
+		 * Initializes with a max pole angle as specified in radians
+		 * @param maxAbsoluteAngleInRadians the maximum pole angle that causes task termination/failure.
+		 */
+		public InvertedPendulumTerminalFunction(double maxAbsoluteAngle){
+			this.maxAbsoluteAngle = maxAbsoluteAngle;
+		}
+		
+		
+		@Override
+		public boolean isTerminal(State s) {
+			
+			ObjectInstance pendulum = s.getFirstObjectOfClass(CLASSPENDULUM);
+			double a = pendulum.getRealValForAttribute(ATTANGLE);
+			
+			if(Math.abs(a) >= maxAbsoluteAngle){
+				return true;
+			}
+			
+			return false;
+
+		}
+		
+		
+		
+	}
+	
+	/**
+	 * A default reward function for this domain. Returns 0 everywhere except at fail conditions, which return -1 and
+	 * are defined by the pole being grater than some threshold (default PI/2 radians.
+	 * @author James MacGlashan
+	 *
+	 */
+	public static class InvertedPendulumRewardFunction implements RewardFunction{
+
+		/**
+		 * The maximum pole angle to cause termination/failure.
+		 */
+		double maxAbsoluteAngle = (Math.PI / 2.);
+		
+		public InvertedPendulumRewardFunction() {
+
+		}
+		
+		/**
+		 * Initializes with a max pole angle as specified in radians
+		 * @param maxAbsoluteAngleInRadians the maximum pole angle that causes task termination/failure.
+		 */
+		public InvertedPendulumRewardFunction(double maxAbsoluteAngle){
+			this.maxAbsoluteAngle = maxAbsoluteAngle;
+		}
+		
+		
+		@Override
+		public double reward(State s, GroundedAction a, State sprime) {
+			
+			double failReward = -1;
+			
+			ObjectInstance pendulum = s.getFirstObjectOfClass(CLASSPENDULUM);
+			double ang = pendulum.getRealValForAttribute(ATTANGLE);
+			
+			if(Math.abs(ang) >= maxAbsoluteAngle){
+				return failReward;
+			}
+			
+			return 0;
+		}
+		
+		
+		
+		
+		
+	}
+	
 	
 
 	/**
