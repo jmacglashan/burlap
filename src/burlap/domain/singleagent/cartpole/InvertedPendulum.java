@@ -30,7 +30,8 @@ import burlap.oomdp.visualizer.Visualizer;
  * 
  * 1. Lagoudakis, Michail G., and Ronald Parr. "Least-squares policy iteration." The Journal of Machine Learning Research 4 (2003): 1107-1149.
  * 
- * 
+ *
+ *
  * @author James MacGlashan
  *
  */
@@ -212,11 +213,11 @@ public class InvertedPendulum implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an initiali state with the pole at the given angle and with the given angular velocity of the pole.
+	 * Returns an initial state with the pole at the given angle and with the given angular velocity of the pole.
 	 * @param domain the domain object to which the state will belong.
 	 * @param angle the angle of the pole from the vertical axis.
 	 * @param angleVelocity the angular velocity of the pole.
-	 * @return
+	 * @return an initial state with the pole at the given angle and with the given angular velocity of the pole.
 	 */
 	public static State getInitialState(Domain domain, double angle, double angleVelocity){
 		State s = new State();
@@ -290,7 +291,7 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		/**
 		 * Initializes with a max pole angle as specified in radians
-		 * @param maxAbsoluteAngleInRadians the maximum pole angle that causes task termination/failure.
+		 * @param maxAbsoluteAngle the maximum pole angle in radians that causes task termination/failure.
 		 */
 		public InvertedPendulumTerminalFunction(double maxAbsoluteAngle){
 			this.maxAbsoluteAngle = maxAbsoluteAngle;
@@ -334,7 +335,7 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		/**
 		 * Initializes with a max pole angle as specified in radians
-		 * @param maxAbsoluteAngleInRadians the maximum pole angle that causes task termination/failure.
+		 * @param maxAbsoluteAngle the maximum pole angle in radians that causes task termination/failure.
 		 */
 		public InvertedPendulumRewardFunction(double maxAbsoluteAngle){
 			this.maxAbsoluteAngle = maxAbsoluteAngle;
@@ -365,7 +366,7 @@ public class InvertedPendulum implements DomainGenerator {
 	
 
 	/**
-	 * @param args
+	 * @param args none expect
 	 */
 	public static void main(String[] args) {
 		
