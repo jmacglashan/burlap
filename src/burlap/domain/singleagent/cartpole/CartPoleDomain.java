@@ -370,7 +370,7 @@ public class CartPoleDomain implements DomainGenerator {
 			xvf = Math.signum(xvf) * this.maxCartSpeed;
 		}
 		
-		if(Math.abs(af) > this.angleRange){
+		if(Math.abs(af) >= this.angleRange){
 			af = Math.signum(af) * this.angleRange;
 			avf = 0.;
 		}
@@ -439,7 +439,7 @@ public class CartPoleDomain implements DomainGenerator {
 			xvf = Math.signum(xvf) * this.maxCartSpeed;
 		}
 		
-		if(Math.abs(af) > this.angleRange){
+		if(Math.abs(af) >= this.angleRange){
 			af = Math.signum(af) * this.angleRange;
 			avf = 0.;
 		}
