@@ -347,7 +347,7 @@ public class InvertedPendulum implements DomainGenerator {
 			
 			double failReward = -1;
 			
-			ObjectInstance pendulum = s.getFirstObjectOfClass(CLASSPENDULUM);
+			ObjectInstance pendulum = sprime.getFirstObjectOfClass(CLASSPENDULUM);
 			double ang = pendulum.getRealValForAttribute(ATTANGLE);
 			
 			if(Math.abs(ang) >= maxAbsoluteAngle){
