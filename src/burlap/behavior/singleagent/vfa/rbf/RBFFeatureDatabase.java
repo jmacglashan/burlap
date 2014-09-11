@@ -38,8 +38,8 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	protected boolean hasOffset;
 	
 	/**
-	 * A map for returning a multiplier to the number of RBF statefeatures for each action. Effectively
-	 * this ensures a unieque feature ID for each RBF for each action.
+	 * A map for returning a multiplier to the number of RBF state features for each action. Effectively
+	 * this ensures a unique feature ID for each RBF for each action.
 	 */
 	protected Map<String, Integer> actionFeatureMultiplier = new HashMap<String, Integer>();
 	
@@ -71,6 +71,15 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	{
 		this.rbfs.add(rbf);
 		nRbfs++;
+	}
+
+	/**
+	 * Adds all of the specified RBF units to this object's list of RBF units.
+	 * @param rbfs the RBF units to add.
+	 */
+	public void addRBFs(List<RBF> rbfs){
+		this.nRbfs += rbfs.size();
+		this.rbfs.addAll(rbfs);
 	}
 
 	@Override
