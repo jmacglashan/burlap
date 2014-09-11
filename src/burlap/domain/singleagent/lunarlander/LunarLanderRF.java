@@ -65,7 +65,7 @@ public class LunarLanderRF implements RewardFunction{
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
-		if(sprime.somePFGroundingIsTrue(onPad)){
+		if(onPad.somePFGroundingIsTrue(sprime)){
 			return goalReward;
 		}
 
