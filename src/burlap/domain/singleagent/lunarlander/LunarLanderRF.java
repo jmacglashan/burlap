@@ -69,7 +69,7 @@ public class LunarLanderRF implements RewardFunction{
 			return goalReward;
 		}
 
-		if(sprime.somePFGroundingIsTrue(onGround) || sprime.somePFGroundingIsTrue(touchingPad) || sprime.somePFGroundingIsTrue(touchingSurface)){
+		if(this.onGround.somePFGroundingIsTrue(sprime) || this.touchingPad.somePFGroundingIsTrue(sprime) || this.touchingSurface.somePFGroundingIsTrue(sprime)){
 			return collisionReward;
 		}
 
