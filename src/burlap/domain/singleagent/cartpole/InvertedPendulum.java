@@ -362,14 +362,13 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		
 	}
-	
-	
+
 
 	/**
-	 * @param args none expect
+	 * @param args none expected
 	 */
 	public static void main(String[] args) {
-		
+
 		InvertedPendulum ivp = new InvertedPendulum();
 		Domain domain = ivp.generateDomain();
 		
