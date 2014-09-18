@@ -274,7 +274,7 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	
 	/**
 	 * Returns the total number of planning steps that have been performed.
-	 * @return
+	 * @return the total number of planning steps that have been performed.
 	 */
 	public int getNumberOfSteps(){
 		return this.numSteps;

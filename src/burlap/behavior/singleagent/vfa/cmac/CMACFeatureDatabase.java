@@ -23,8 +23,8 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 /**
  * A feature database using CMACs [1] AKA Tiling Coding over OO-MDP states. This version of CMAC operates directly on the OO-MDP 
- * respresentaiton providing object identifier invariance. If you do not need object identifier invariance, consider
- * using the {@link FVCMACFeatureDatabase} implementation instead, which is slightly more efficient but object identifer dependent.
+ * representation providing object identifier invariance. If you do not need object identifier invariance, consider
+ * using the {@link FVCMACFeatureDatabase} implementation instead, which is slightly more efficient but object identifier dependent.
  * This CMAC can be set to define
  * multiple tilings, each specified for different sets attributes or different object classes. The multiple tilings
  * can be uniformly offset from each other, or randomly jittered to different alignments. The set of state

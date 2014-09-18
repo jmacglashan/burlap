@@ -91,7 +91,7 @@ public class MCRandomStateGenerator implements StateGenerator {
 	
 	/**
 	 * Sets the maximum x-value that a generated state can have.
-	 * @param xmin the maximum x-value that a generated state can have.
+	 * @param xmax the maximum x-value that a generated state can have.
 	 */
 	public void setXmax(double xmax) {
 		this.xmax = xmax;
@@ -109,7 +109,7 @@ public class MCRandomStateGenerator implements StateGenerator {
 	
 	/**
 	 * Sets the minimum velocity that a generated state can have.
-	 * @param xmin the minimum velocity that a generated state can have.
+	 * @param vmin the minimum velocity that a generated state can have.
 	 */
 	public void setVmin(double vmin) {
 		this.vmin = vmin;
@@ -126,7 +126,7 @@ public class MCRandomStateGenerator implements StateGenerator {
 
 	/**
 	 * Sets the maximum velocity that a generated state can have.
-	 * @param xmin the maximum velocity that a generated state can have.
+	 * @param vmax the maximum velocity that a generated state can have.
 	 */
 	public void setVmax(double vmax) {
 		this.vmax = vmax;
