@@ -9,6 +9,11 @@ import burlap.oomdp.singleagent.pomdp.PODomain;
 public abstract class POMDPPlanner extends OOMDPPlanner {
 
 	
+	/**
+	 * Plans from an initial belief MDP state.
+	 *
+	 * @param  s an input belief MDP state
+	 */
 	@Override
 	public void planFromState(State initialState) {
 		
@@ -17,9 +22,18 @@ public abstract class POMDPPlanner extends OOMDPPlanner {
 
 	}
 	
+	/**
+	 * Plan from a given belief state.
+	 *
+	 * @param  bs input normalized belief state object.
+	 */
 	public abstract void planFromBeliefState(BeliefState bs);
 
-	
+	/**
+	 * Returns a belief state given an input belief MDP state.
+	 *
+	 * @param  s an input belief MDP state
+	 */
 	public BeliefState getBeliefState(State s){
 		BeliefState bs = new BeliefState((PODomain)this.domain);
 		bs.setBeliefVector(s.getFirstObjectOfClass(BeliefMDPGenerator.CLASSBELIEF).getDoubleArrayValue(BeliefMDPGenerator.ATTBELIEF));

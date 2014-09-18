@@ -10,7 +10,15 @@ import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
-
+/**
+ * 
+ * @author jmacglashan & ngopalan
+ * 
+ * A belief state object consists of a mapping between states and their respective
+ * probabilities in a belief. A domain and state enumerator needs to be defined for 
+ * belief state object.
+ *
+ */
 public class BeliefState {
 
 	protected StateEnumerator stateEnumerator;
