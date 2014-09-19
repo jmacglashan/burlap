@@ -121,8 +121,10 @@ public abstract class Domain {
 			attributes.add(att);
 			attributeMap.put(att.name, att);
 			if(att.type == Attribute.AttributeType.REAL || att.type == Attribute.AttributeType.MULTITARGETRELATIONAL){
-				DPrint.cl(this.debugCode, "Relational attribute added to domain; forcing domain flag to object identifier dependent.");
-				this.objectIdentifierDependentDomain = true;
+				if(!this.objectIdentifierDependentDomain) {
+					DPrint.cl(this.debugCode, "Relational attribute added to domain; forcing domain flag to object identifier dependent.");
+					this.objectIdentifierDependentDomain = true;
+				}
 			}
 		}
 	}
