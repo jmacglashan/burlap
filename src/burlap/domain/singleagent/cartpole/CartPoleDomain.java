@@ -1,17 +1,14 @@
 package burlap.domain.singleagent.cartpole;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.*;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
+
+import java.util.List;
 
 
 /**
@@ -585,7 +582,12 @@ public class CartPoleDomain implements DomainGenerator {
 			}
 			return CartPoleDomain.this.moveClassicModel(s, this.dir);
 		}
-		
+
+
+		@Override
+		public List<TransitionProbability> getTransitions(State s, String [] params){
+			return this.deterministicTransition(s, params);
+		}
 		
 		
 	}
