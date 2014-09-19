@@ -3,6 +3,7 @@ package burlap.oomdp.core;
 
 import java.util.*;
 
+import burlap.debugtools.DPrint;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.stochasticgames.SingleAction;
 
@@ -26,6 +27,8 @@ public abstract class Domain {
 	
 	protected boolean									objectIdentifierDependentDomain = false;
 	
+	protected int										debugCode = 111;
+
 
 	/**
 	 * Initializes the data structures for indexing the object classes, attributes, and propositional functions
@@ -117,6 +120,10 @@ public abstract class Domain {
 		if(!attributeMap.containsKey(att.name)){
 			attributes.add(att);
 			attributeMap.put(att.name, att);
+			if(att.type == Attribute.AttributeType.REAL || att.type == Attribute.AttributeType.MULTITARGETRELATIONAL){
+				DPrint.cl(this.debugCode, "Relational attribute added to domain; forcing domain flag to object identifier dependent.");
+				this.objectIdentifierDependentDomain = true;
+			}
 		}
 	}
 	
@@ -303,6 +310,31 @@ public abstract class Domain {
 			}
 		}
 		return propFuncs;
+	}
+
+
+	/**
+	 * Returns the debug code used for printing debug messages.
+	 * @return the debug code used for printing debug messages.
+	 */
+	public int getDebugCode(){
+		return this.debugCode;
+	}
+
+	/**
+	 * Sets the debug code used for printing debug messages.
+	 * @param debugCode the debug code used for printing debug messages
+	 */
+	public void setDebugCode(int debugCode){
+		this.debugCode = debugCode;
+	}
+
+	/**
+	 * Toggles whether debug messages are printed
+	 * @param debugPrintingOn if true debug messages are printed; messages will not be printed if false.
+	 */
+	public void toggleDebugPrinting(boolean debugPrintingOn){
+		DPrint.toggleCode(this.debugCode, debugPrintingOn);
 	}
 
 }
