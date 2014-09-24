@@ -32,7 +32,7 @@ public class MultipleIntentionsMLIRL {
 	/**
 	 * The source problem request defining the problem to be solved.
 	 */
-	protected MultipleIntentionsMLIRLRequest sourceRequest;
+	protected MultipleIntentionsMLIRLRequest request;
 
 	/**
 	 * The invididual {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} objects for each behavior cluster.
@@ -71,20 +71,24 @@ public class MultipleIntentionsMLIRL {
 
 	/**
 	 * Initializes. Reward function parameters for each cluster will be initialized randomly between -1 and 1.
-	 * @param sourceRequest the request that defines the problem.
+	 * @param request the request that defines the problem.
 	 * @param emIterations the number of EM iterations to perform.
 	 * @param mlIRLLearningRate the learning rate of the underlying {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL} instance.
 	 * @param maxMLIRLLikelihoodChange the likelihood change threshold that causes {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL} gradient ascent to stop.
 	 * @param maxMLIRLSteps the maximum number of gradient ascent steps allowd by the underlying {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} gradient ascent.
 	 */
-	public MultipleIntentionsMLIRL(MultipleIntentionsMLIRLRequest sourceRequest,
+	public MultipleIntentionsMLIRL(MultipleIntentionsMLIRLRequest request,
 								   int emIterations, double mlIRLLearningRate, double maxMLIRLLikelihoodChange, int maxMLIRLSteps){
 
-		this.sourceRequest = sourceRequest;
-		this.initializeClusters(this.sourceRequest.getK(), this.sourceRequest.getPlannerFactory());
+		if(!request.isValid()){
+			throw new RuntimeException("Provided MultipleIntentionsMLIRLRequest object is not valid.");
+		}
+
+		this.request = request;
+		this.initializeClusters(this.request.getK(), this.request.getPlannerFactory());
 
 		this.numEMIterations = emIterations;
-		this.mlirlInstance = new MLIRL(sourceRequest, mlIRLLearningRate, maxMLIRLLikelihoodChange, maxMLIRLSteps);
+		this.mlirlInstance = new MLIRL(request, mlIRLLearningRate, maxMLIRLLikelihoodChange, maxMLIRLSteps);
 
 
 	}
@@ -229,7 +233,7 @@ public class MultipleIntentionsMLIRL {
 	protected double [][] computePerClusterMLIRLWeights(){
 
 		int k = this.clusterPriors.length;
-		int n = this.sourceRequest.getExpertEpisodes().size();
+		int n = this.request.getExpertEpisodes().size();
 
 		double [][] newWeights = new double[k][n];
 
@@ -243,7 +247,7 @@ public class MultipleIntentionsMLIRL {
 			//compute the trajectory log-likelihoods and add them in
 			for(int j = 0; j < n; j++){
 				double trajectLogLikelihood = this.mlirlInstance.logLikelihoodOfTrajectory(
-						this.sourceRequest.getExpertEpisodes().get(j), 1.);
+						this.request.getExpertEpisodes().get(j), 1.);
 
 				double val = logPrior + trajectLogLikelihood;
 				newWeights[i][j] = val;
@@ -324,7 +328,7 @@ public class MultipleIntentionsMLIRL {
 
 		List<DifferentiableRF> rfs = new ArrayList<DifferentiableRF>(k);
 		for(int i = 0; i < k; i++){
-			rfs.add(this.sourceRequest.getRf().copy());
+			rfs.add(this.request.getRf().copy());
 		}
 
 		this.initializeClusterRFParameters(rfs);
@@ -334,11 +338,11 @@ public class MultipleIntentionsMLIRL {
 		double uni = 1./(double)k;
 		for(int i = 0; i < k; i++){
 			this.clusterPriors[i] = uni;
-			MLIRLRequest nRequest = new MLIRLRequest(this.sourceRequest.getDomain(),null,
-					this.sourceRequest.getExpertEpisodes(),rfs.get(i));
+			MLIRLRequest nRequest = new MLIRLRequest(this.request.getDomain(),null,
+					this.request.getExpertEpisodes(),rfs.get(i));
 
-			nRequest.setGamma(this.sourceRequest.getGamma());
-			nRequest.setBoltzmannBeta(this.sourceRequest.getBoltzmannBeta());
+			nRequest.setGamma(this.request.getGamma());
+			nRequest.setBoltzmannBeta(this.request.getBoltzmannBeta());
 			nRequest.setPlanner((OOMDPPlanner)plannerFactory.generateDifferentiablePlannerForRequest(nRequest));
 
 			this.clusterRequests.add(nRequest);

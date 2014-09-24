@@ -78,6 +78,10 @@ public class MLIRL {
 		this.maxLikelihoodChange = maxLikelihoodChange;
 		this.maxSteps = maxSteps;
 
+		if(!request.isValid()){
+			throw new RuntimeException("Provided MLIRLRequest object is not valid.");
+		}
+
 	}
 
 
