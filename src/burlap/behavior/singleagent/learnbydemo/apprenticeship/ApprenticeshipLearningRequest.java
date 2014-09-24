@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.learnbydemo.IRLRequest;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;
@@ -17,17 +18,8 @@ import burlap.oomdp.core.Domain;
  * @author Stephen Brawner and Mark Ho
  *
  */
-public class ApprenticeshipLearningRequest {
-	
-	/**
-	 * The domain in which IRL is to be performed
-	 */
-	protected Domain 								domain;
-	
-	/**
-	 * The planning algorithm used to compute the policy for a given reward function
-	 */
-	protected OOMDPPlanner 							planner;
+public class ApprenticeshipLearningRequest extends IRLRequest{
+
 	
 	/**
 	 * The state feature generator that turns a state into a feature vector on which the reward function is assumed to be modeled
@@ -35,19 +27,10 @@ public class ApprenticeshipLearningRequest {
 	protected StateToFeatureVectorGenerator 		featureGenerator;
 	
 	/**
-	 * The input trajectories/episodes that are to be modeled.
-	 */
-	protected List<EpisodeAnalysis> 				expertEpisodes;
-	
-	/**
 	 * The initial state generator that models the initial states from which the expert trajectories were drawn
 	 */
 	protected StateGenerator 						startStateGenerator;
-	
-	/**
-	 * The discount factor of the problem
-	 */
-	protected double 								gamma;
+
 	
 	/**
 	 * The maximum feature score to cause termination of Apprenticeship learning
@@ -75,50 +58,41 @@ public class ApprenticeshipLearningRequest {
 	protected boolean 								useMaxMargin;
 
 
-	public static final double 			DEFAULT_GAMMA = 0.99;
 	public static final double 			DEFAULT_EPSILON = 0.01;
 	public static final int 			DEFAULT_MAXITERATIONS = 100;
 	public static final int 			DEFAULT_POLICYCOUNT = 5;
 	public static final boolean 		DEFAULT_USEMAXMARGIN = false;
 
 	public ApprenticeshipLearningRequest() {
+		super();
 		this.initDefaults();
 	}
 
 	public ApprenticeshipLearningRequest(Domain domain, OOMDPPlanner planner, StateToFeatureVectorGenerator featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
+		super(domain, planner, expertEpisodes);
 		this.initDefaults();
-		this.setDomain(domain);
-		this.setPlanner(planner);
 		this.setFeatureGenerator(featureGenerator);
-		this.setExpertEpisodes(expertEpisodes);
 		this.setStartStateGenerator(startStateGenerator);
 	}
 
-	private void initDefaults() {
-		this.gamma = ApprenticeshipLearningRequest.DEFAULT_GAMMA;
+	protected void initDefaults() {
 		this.epsilon = ApprenticeshipLearningRequest.DEFAULT_EPSILON;
 		this.maxIterations = ApprenticeshipLearningRequest.DEFAULT_MAXITERATIONS;
 		this.policyCount = ApprenticeshipLearningRequest.DEFAULT_POLICYCOUNT;
 		this.useMaxMargin = ApprenticeshipLearningRequest.DEFAULT_USEMAXMARGIN;
 	}
 
+	@Override
 	public boolean isValid() {
-		if (this.domain == null) {
+
+		if(!super.isValid()){
 			return false;
 		}
-		if (this.planner == null) {
-			return false;
-		}
+
 		if (this.featureGenerator == null) {
 			return false;
 		}
-		if (this.expertEpisodes.size() == 0) {
-			return false;
-		}
 		if (this.startStateGenerator == null) {
-			return false;
-		}
-		if (this.gamma > 1 || this.gamma < 0 || Double.isNaN(this.gamma)) {
 			return false;
 		}
 		if (this.epsilon < 0 || Double.isNaN(this.epsilon)) {
