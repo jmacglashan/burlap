@@ -15,37 +15,37 @@ import burlap.oomdp.singleagent.GroundedAction;
  * @author jmacglashan & ngopalan
  * 
  * A belief state object consists of a mapping between states and their respective
- * probabilities in a belief. A domain and state enumerator needs to be defined for 
+ * belief probabilities. A domain and state enumerator needs to be defined for 
  * belief state object.
  *
  */
-public class BeliefState {
+public class BeliefState extends BeliefStatistic{
 
 	protected StateEnumerator stateEnumerator;
 	protected Map<Integer, Double> beliefValues = new HashMap<Integer, Double>();
 	protected PODomain domain;
 	
 	public BeliefState(PODomain domain){
-		this.domain = domain;
-		this.stateEnumerator = domain.getStateEnumerator();
+		super(domain);
 	}
 	
-	public int numStates(){
-		return this.stateEnumerator.numStatesEnumerated();
-	}
+//	public int numStates(){
+//		return this.stateEnumerator.numStatesEnumerated();
+//	}
+//	
+//	public State stateForId(int id){
+//		return this.stateEnumerator.getStateForEnumertionId(id);
+//	}
 	
-	public State stateForId(int id){
-		return this.stateEnumerator.getStateForEnumertionId(id);
-	}
+//	public List<State> getStateSpace(){
+//		LinkedList<State> states = new LinkedList<State>();
+//		for(int i = 0; i < this.numStates(); i++){
+//			states.add(this.stateForId(i));
+//		}
+//		return states;
+//	}
 	
-	public List<State> getStateSpace(){
-		LinkedList<State> states = new LinkedList<State>();
-		for(int i = 0; i < this.numStates(); i++){
-			states.add(this.stateForId(i));
-		}
-		return states;
-	}
-	
+	@Override
 	public List<State> getStatesWithNonZeroProbability(){
 		List<State> states = new LinkedList<State>();
 		for(int i : this.beliefValues.keySet()){

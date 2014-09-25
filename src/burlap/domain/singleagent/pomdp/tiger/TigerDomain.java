@@ -100,6 +100,7 @@ public class TigerDomain implements DomainGenerator {
 		new TigerObservations(domain, this.listenAccuracy);
 		
 		StateEnumerator senum = new StateEnumerator(domain, new DiscreteStateHashFactory());
+		
 		senum.getEnumeratedID(tigerLeftState(domain));
 		senum.getEnumeratedID(tigerRightState(domain));
 		

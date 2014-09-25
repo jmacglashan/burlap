@@ -18,6 +18,8 @@ public abstract class ObservationFunction {
 	}
 	
 	public abstract List<State> getAllPossibleObservations();
+	
+	
 	public abstract double getObservationProbability(State observation, State state, GroundedAction action);
 	
 	public List<ObservationProbability> getObservationProbabilities(State state, GroundedAction action){
