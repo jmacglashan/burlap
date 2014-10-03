@@ -34,10 +34,10 @@ private static final long serialVersionUID = 1L;
 	protected Visualizer							painter;
 	protected TextArea								propViewer;
 	
-	protected JList									episodeList;
+	protected JList<String>							episodeList;
 	protected JScrollPane							episodeScroller;
 	
-	protected JList									iterationList;
+	protected JList<String>							iterationList;
 	protected JScrollPane							iterationScroller;
 	
 	protected Container								controlContainer;
@@ -49,11 +49,11 @@ private static final long serialVersionUID = 1L;
 	
 	//Backend
 	protected List <String>							episodeFiles;
-	protected DefaultListModel						episodesListModel;
+	protected DefaultListModel<String>				episodesListModel;
 	protected StateParser							sp;
 	
 	protected GameAnalysis							curGA;
-	protected DefaultListModel						iterationListModel;
+	protected DefaultListModel<String>				iterationListModel;
 	
 	protected SGDomain								domain;
 	
@@ -144,7 +144,7 @@ private static final long serialVersionUID = 1L;
 		
 		
 		//set episode component
-		episodeList = new JList(episodesListModel);
+		episodeList = new JList<String>(episodesListModel);
 		
 		
 		episodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -164,8 +164,8 @@ private static final long serialVersionUID = 1L;
 		
 		
 		//set iteration component
-		iterationListModel = new DefaultListModel();
-		iterationList = new JList(iterationListModel);
+		iterationListModel = new DefaultListModel<String>();
+		iterationList = new JList<String>(iterationListModel);
 		
 		iterationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		iterationList.setLayoutOrientation(JList.VERTICAL);
@@ -218,7 +218,7 @@ private static final long serialVersionUID = 1L;
 		String[] children = dir.list(filter);
 		
 		episodeFiles = new ArrayList<String>(children.length);
-		episodesListModel = new DefaultListModel();
+		episodesListModel = new DefaultListModel<String>();
 		
 		for(int i = 0; i < children.length; i++){
 			episodeFiles.add(directory + "/" + children[i]);
