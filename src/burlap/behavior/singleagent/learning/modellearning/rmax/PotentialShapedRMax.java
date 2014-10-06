@@ -284,7 +284,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * @author James MacGlashan
 	 *
 	 */
-	public class RMaxPotential implements PotentialFunction{
+	public static class RMaxPotential implements PotentialFunction{
 		
 		/**
 		 * The vmax value
@@ -299,6 +299,14 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		 */
 		public RMaxPotential(double rMax, double gamma){
 			this.vmax = rMax / (1. - gamma);
+		}
+
+		/**
+		 * Initializes using the given maximum value function value
+		 * @param vMax the maximum value function value
+		 */
+		public RMaxPotential(double vMax){
+			this.vmax = vMax;
 		}
 
 		@Override
