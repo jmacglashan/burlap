@@ -217,9 +217,11 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		protected State performActionHelper(State s, String[] params) {
 			return s; //goes back to the same RMax state
 		}
-		
-		
-		
+
+		@Override
+		public List<TransitionProbability> getTransitions(State s, String[] params) {
+			return this.deterministicTransition(s, params);
+		}
 	}
 	
 }
