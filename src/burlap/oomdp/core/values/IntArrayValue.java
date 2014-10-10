@@ -25,7 +25,10 @@ public class IntArrayValue extends Value {
 	
 	public IntArrayValue(Value v){
 		super(v);
-		this.intArray = ((IntArrayValue)v).intArray.clone();
+		IntArrayValue iaValue  = (IntArrayValue)v;
+		if(iaValue.intArray != null){
+			this.intArray = iaValue.intArray.clone();
+		}
 	}
 
 	@Override
