@@ -26,7 +26,7 @@ public class DoubleArrayValue extends Value{
 	public DoubleArrayValue(Value v){
 		super(v);
 		DoubleArrayValue daValue = (DoubleArrayValue)v;
-		if(daValue != null) {
+		if(daValue.doubleArray != null) {
 			this.doubleArray = daValue.doubleArray.clone();
 		}
 	}
