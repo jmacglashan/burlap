@@ -2,8 +2,10 @@ package burlap.oomdp.singleagent.common;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
 
+import java.util.List;
 
 
 /**
@@ -40,4 +42,8 @@ public class NullAction extends Action {
 		return st;
 	}
 
+	@Override
+	public List<TransitionProbability> getTransitions(State s, String[] params) {
+		return this.deterministicTransition(s, params);
+	}
 }
