@@ -46,10 +46,7 @@ public class ObjectInstance {
 		this.obClass = o.obClass;
 		this.name = o.name;
 		
-		this.values = new ArrayList <Value>(obClass.numAttributes());
-		for(Value v : o.values){
-			values.add(v.copy());
-		}
+		this.values = new ArrayList <Value>(o.values);
 			
 	}
 	
@@ -93,7 +90,10 @@ public class ObjectInstance {
 	 */
 	public void setValue(String attName, String v){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).setValue(v);
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.setValue(v);
+		values.set(ind, newValue);
 		
 	}
 	
@@ -105,8 +105,10 @@ public class ObjectInstance {
 	 */
 	public void setValue(String attName, double v){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).setValue(v);
-		
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.setValue(v);
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -116,8 +118,10 @@ public class ObjectInstance {
 	 */
 	public void setValue(String attName, int v){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).setValue(v);
-		
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.setValue(v);
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -127,8 +131,10 @@ public class ObjectInstance {
 	 */
 	public void setValue(String attName, boolean v){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).setValue(v);
-		
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.setValue(v);
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -138,8 +144,10 @@ public class ObjectInstance {
 	 */
 	public void setValue(String attName, int [] v){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).setValue(v);
-		
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.setValue(v);
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -149,8 +157,10 @@ public class ObjectInstance {
 	 */
 	public void setValue(String attName, double [] v){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).setValue(v);
-		
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.setValue(v);
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -161,7 +171,10 @@ public class ObjectInstance {
 	 */
 	public void addRelationalTarget(String attName, String target){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).addRelationalTarget(target);
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.addRelationalTarget(target);
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -173,7 +186,10 @@ public class ObjectInstance {
 	
 	public void addAllRelationalTargets(String attName, Collection<String> targets) {
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).addAllRelationalTargets(targets);
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.addAllRelationalTargets(targets);
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -182,7 +198,10 @@ public class ObjectInstance {
 	 */
 	public void clearRelationalTargets(String attName){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).clearRelationTargets();
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.clearRelationTargets();
+		values.set(ind, newValue);
 	}
 	
 	/**
@@ -192,7 +211,10 @@ public class ObjectInstance {
 	 */
 	public void removeRelationalTarget(String attName, String target){
 		int ind = obClass.attributeIndex(attName);
-		values.get(ind).removeRelationalTarget(target);
+		Value value = values.get(ind);
+		Value newValue = value.copy();
+		newValue.removeRelationalTarget(target);
+		values.set(ind, newValue);
 	}
 	
 	
@@ -230,7 +252,7 @@ public class ObjectInstance {
 	 */
 	public Value getValueForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
-		return values.get(ind);
+		return values.get(ind).copy();
 	}
 	
 	/**
@@ -290,7 +312,7 @@ public class ObjectInstance {
 	 */
 	public Set <String> getAllRelationalTargets(String attName){
 		int ind = obClass.attributeIndex(attName);
-		return values.get(ind).getAllRelationalTargets();
+		return new HashSet<String>(values.get(ind).getAllRelationalTargets());
 	}
 	
 	/**
@@ -310,7 +332,7 @@ public class ObjectInstance {
 	 */
 	public int [] getIntArrayValue(String attName){
 		int ind = obClass.attributeIndex(attName);
-		return values.get(ind).getIntArray();
+		return values.get(ind).getIntArray().clone();
 	}
 	
 	
@@ -321,7 +343,7 @@ public class ObjectInstance {
 	 */
 	public double [] getDoubleArrayValue(String attName){
 		int ind = obClass.attributeIndex(attName);
-		return values.get(ind).getDoubleArray();
+		return values.get(ind).getDoubleArray().clone();
 	}
 	
 	
@@ -330,7 +352,11 @@ public class ObjectInstance {
 	 * @return the list of value object assignments to all of this object instance's attributes.
 	 */
 	public List <Value> getValues(){
-		return this.values;
+		List<Value> newValues = new ArrayList<Value>(this.values.size());
+		for (Value v : this.values){
+			newValues.add(v.copy());
+		}
+		return newValues;
 	}
 	
 	

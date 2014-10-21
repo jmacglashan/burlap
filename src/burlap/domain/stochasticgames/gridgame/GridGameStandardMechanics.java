@@ -167,7 +167,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * Returns the x-y position of an agent stored in a Location2 object.
 	 * @param s the state in which the agent exists
 	 * @param agentName the name of the agent.
-	 * @return a {@link Locaiton2} object containing the agents position in the world.
+	 * @return a {@link GridGameStandardMechanics.Location2} object containing the agents position in the world.
 	 */
 	protected Location2 getLocation(State s, String agentName){
 		
@@ -577,7 +577,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param delta the desired change in direction of the agent
 	 * @param walls the list of walls in the world
 	 * @param vertical whether the list of provided walls are vertical or horizontal walls
-	 * @return
+	 * @return true if the agent is able to move in the desired location; false otherwise
 	 */
 	protected boolean sampleWallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
 		

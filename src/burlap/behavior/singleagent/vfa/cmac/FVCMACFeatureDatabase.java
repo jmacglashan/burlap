@@ -20,16 +20,16 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 /**
  * A feature database using CMACs [1] AKA Tiling Coding for states that are first converted into a feature vector. Because States are converted into a feature vector
- * before tiling them, this feature database causes the states to be object identifier *depdendent*. If your domain would benefit from object identifier invariance,
+ * before tiling them, this feature database causes the states to be object identifier *dependent*. If your domain would benefit from object identifier invariance,
  * use the {@link CMACFeatureDatabase} class instead, otherwise, this implementation is slightly more efficient.
  * 
  * <p/>
  * Different tilings can be created over different dimensions of the converted state feature vector and different tiling widths for each dimension can be specified. Each tiling
- * over the same dimensions can either be randomly jittered from each other or unifiormly distributed across the sapce, which is specified using the {@link TilingArrangement}
+ * over the same dimensions can either be randomly jittered from each other or uniformly distributed across the space, which is specified using the {@link TilingArrangement}
  * enumerator.
  * <p/>
- * To specify the tiling used, use the {@link #addTilingsForAllDimensionsWithWidths(double[], int, TilingArrangement)} or 
- * {@link #addTilingsForDimensionsAndWidths(boolean[], double[], int, TilingArrangement)} method.
+ * To specify the tiling used, use the {@link #addTilingsForAllDimensionsWithWidths(double[], int, CMACFeatureDatabase.TilingArrangement)} or 
+ * {@link #addTilingsForDimensionsAndWidths(boolean[], double[], int, CMACFeatureDatabase.TilingArrangement)} method.
  * 
  * 
  * <p/>
@@ -60,13 +60,13 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	
 	
 	/**
-	 * Maping to state features
+	 * Mapping to state features
 	 */
 	List<Map<FVTiling.FVTile, Integer>>	 								stateFeatures;
 	
 	
 	/**
-	 * Maping to state-action features
+	 * Mapping to state-action features
 	 */
 	List<Map<FVTiling.FVTile, List<ActionFeatureID>>>	 				stateActionFeatures;
 	

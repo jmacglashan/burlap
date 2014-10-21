@@ -69,6 +69,70 @@ public class State {
 		return new State(this);
 	}
 	
+	
+	/**
+	 * Performs a semi-deep copy of the state in which only the objects with the names in deepCopyObjectNames are deep copied and the rest of the
+	 * objects are shallowed copied.
+	 * @param deepCopyObjectNames the names of the objects to be deep copied.
+	 * @return a new state that is a mix of a shallow and deep copy of this state.
+	 */
+	public State semiDeepCopy(String...deepCopyObjectNames){
+		Set<ObjectInstance> deepCopyObjectSet = new HashSet<ObjectInstance>(deepCopyObjectNames.length);
+		for(String n : deepCopyObjectNames){
+			deepCopyObjectSet.add(this.getObject(n));
+		}
+		return this.semiDeepCopy(deepCopyObjectSet);
+	}
+	
+	
+	/**
+	 * Performs a semi-deep copy of the state in which only the objects in deepCopyObjects are deep copied and the rest of the
+	 * objects are shallowed copied.
+	 * @param deepCopyObjects the objects to be deep copied
+	 * @return a new state that is a mix of a shallow and deep copy of this state.
+	 */
+	public State semiDeepCopy(ObjectInstance...deepCopyObjects){
+		
+		Set<ObjectInstance> deepCopyObjectSet = new HashSet<ObjectInstance>(deepCopyObjects.length);
+		for(ObjectInstance d : deepCopyObjects){
+			deepCopyObjectSet.add(d);
+		}
+		
+		return this.semiDeepCopy(deepCopyObjectSet);
+	}
+	
+	
+	/**
+	 * Performs a semi-deep copy of the state in which only the objects in deepCopyObjects are deep copied and the rest of the
+	 * objects are shallowed copied.
+	 * @param deepCopyObjects the objects to be deep copied
+	 * @return a new state that is a mix of a shallow and deep copy of this state.
+	 */
+	public State semiDeepCopy(Set<ObjectInstance> deepCopyObjects){
+		
+		State s = new State();
+		for(ObjectInstance o : this.objectInstances){
+			if(deepCopyObjects.contains(o)){
+				s.addObject(o.copy());
+			}
+			else{
+				s.addObject(o);
+			}
+		}
+		
+		for(ObjectInstance o : this.hiddenObjectInstances){
+			if(deepCopyObjects.contains(o)){
+				s.addObject(o.copy());
+			}
+			else{
+				s.addObject(o);
+			}
+		}
+		
+		return s;
+	}
+	
+	
 	protected void initDataStructures(){
 		
 		objectInstances = new ArrayList <ObjectInstance>();

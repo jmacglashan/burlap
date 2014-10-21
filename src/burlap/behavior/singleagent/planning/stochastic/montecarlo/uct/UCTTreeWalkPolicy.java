@@ -93,7 +93,7 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 	/**
 	 * Returns the {@link UCTActionNode} with the highest average sample return. Note that this does not use the upper confidence since
 	 * planning is completed.
-	 * @param snode the {@link UCTState} for which to get the best {@link UCTActionNode}.
+	 * @param snode the {@link UCTStateNode} for which to get the best {@link UCTActionNode}.
 	 * @return the {@link UCTActionNode} with the highest average sample return.
 	 */
 	protected UCTActionNode getQGreedyNode(UCTStateNode snode){

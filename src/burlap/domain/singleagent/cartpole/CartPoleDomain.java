@@ -1,17 +1,14 @@
 package burlap.domain.singleagent.cartpole;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.*;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
+
+import java.util.List;
 
 
 /**
@@ -20,7 +17,8 @@ import burlap.oomdp.singleagent.explorer.VisualExplorer;
  * in either direction. Attached to the cart is a pole on a hinge and the goal of the agent is to apply force to the cart such that
  * the pole stays vertically balanced. If the angle between the pole and the vertical axis is greater than
  * some threshold (originally 12 degrees or about 0.2 radians), the agent fails. The track on which the cart can move is also finite in size,
- * and running into the end of the track is also considered failure.
+ * and running into the end of the track is also considered failure; however, the track can be set to infinite by setting the {@link #isFiniteTrack}
+ * parameter to false. The infinte track is handled by never changing the position value of the cart.
  * <p/>
  * By default, this implementation will use the simulation described by Florian, which corrects two problems in the classic Barto, Sutton, and Anderson paper.
  * The two problems were (1) gravity was specified as negative in the equations when it should have been positive and (2) friction was not calculated
@@ -161,6 +159,12 @@ public class CartPoleDomain implements DomainGenerator {
 	 * is the default termination range.
 	 */
 	public double							maxAngleSpeed = 10.47; //12 degrees per time step of 0.02 seconds
+	
+	
+	/**
+	 * Whether the track is finite (true) or infinite (false). When the track is infinite, the position of the cart always remains the same.
+	 */
+	public boolean							isFiniteTrack = true;
 	
 	
 	/**
@@ -363,7 +367,7 @@ public class CartPoleDomain implements DomainGenerator {
 			xvf = Math.signum(xvf) * this.maxCartSpeed;
 		}
 		
-		if(Math.abs(af) > this.angleRange){
+		if(Math.abs(af) >= this.angleRange){
 			af = Math.signum(af) * this.angleRange;
 			avf = 0.;
 		}
@@ -374,7 +378,9 @@ public class CartPoleDomain implements DomainGenerator {
 		
 		
 		//set new values
-		cartPole.setValue(ATTX, xf);
+		if(this.isFiniteTrack){
+			cartPole.setValue(ATTX, xf);
+		}
 		cartPole.setValue(ATTV, xvf);
 		cartPole.setValue(ATTANGLE, af);
 		cartPole.setValue(ATTANGLEV, avf);
@@ -430,7 +436,7 @@ public class CartPoleDomain implements DomainGenerator {
 			xvf = Math.signum(xvf) * this.maxCartSpeed;
 		}
 		
-		if(Math.abs(af) > this.angleRange){
+		if(Math.abs(af) >= this.angleRange){
 			af = Math.signum(af) * this.angleRange;
 			avf = 0.;
 		}
@@ -441,7 +447,9 @@ public class CartPoleDomain implements DomainGenerator {
 		
 		
 		//set new values
-		cartPole.setValue(ATTX, xf);
+		if(this.isFiniteTrack){
+			cartPole.setValue(ATTX, xf);
+		}
 		cartPole.setValue(ATTV, xvf);
 		cartPole.setValue(ATTANGLE, af);
 		cartPole.setValue(ATTANGLEV, avf);
@@ -574,7 +582,12 @@ public class CartPoleDomain implements DomainGenerator {
 			}
 			return CartPoleDomain.this.moveClassicModel(s, this.dir);
 		}
-		
+
+
+		@Override
+		public List<TransitionProbability> getTransitions(State s, String [] params){
+			return this.deterministicTransition(s, params);
+		}
 		
 		
 	}
@@ -625,7 +638,7 @@ public class CartPoleDomain implements DomainGenerator {
 			}
 			
 			double a = cartpole.getRealValForAttribute(ATTANGLE);
-			if(Math.abs(a) > maxAbsoluteAngle){
+			if(Math.abs(a) >= maxAbsoluteAngle){
 				return true;
 			}
 			
@@ -670,7 +683,7 @@ public class CartPoleDomain implements DomainGenerator {
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
 			
-			ObjectInstance cartpole = s.getFirstObjectOfClass(CLASSCARTPOLE);
+			ObjectInstance cartpole = sprime.getFirstObjectOfClass(CLASSCARTPOLE);
 			double x = cartpole.getRealValForAttribute(ATTX);
 			Attribute xatt = cartpole.getObjectClass().getAttribute(ATTX);
 			double xmin = xatt.lowerLim;
@@ -683,7 +696,7 @@ public class CartPoleDomain implements DomainGenerator {
 			}
 			
 			double ang = cartpole.getRealValForAttribute(ATTANGLE);
-			if(Math.abs(ang) > maxAbsoluteAngle){
+			if(Math.abs(ang) >= maxAbsoluteAngle){
 				return failReward;
 			}
 			
