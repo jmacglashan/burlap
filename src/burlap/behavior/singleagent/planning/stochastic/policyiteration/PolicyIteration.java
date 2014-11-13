@@ -136,7 +136,8 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	
 	@Override
 	public void planFromState(State initialState) {
-		
+
+		int iterations = 0;
 		this.initializeOptionsForExpectationComputations();
 		if(this.performReachabilityFrom(initialState)){
 			
@@ -145,7 +146,8 @@ public class PolicyIteration extends ValueFunctionPlanner {
 				StaticVFPlanner lastValueFunction = new StaticVFPlanner(this.domain, this.rf, this.gamma, this.hashingFactory, this.actions, this.valueFunction);
 				this.evaluativePolicy.setPlanner(lastValueFunction);
 				delta = this.evaluatePolicy();
-			}while(delta > this.maxPIDelta);
+				iterations++;
+			}while(delta > this.maxPIDelta && iterations < maxPolicyIterations);
 			
 		}
 		
