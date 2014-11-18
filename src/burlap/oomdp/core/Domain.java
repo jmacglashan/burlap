@@ -92,8 +92,8 @@ public abstract class Domain {
 	 */
 	public Domain getNewDomainWithCopiedObjectClasses(){
 		Domain d = this.newInstance();
-		for(Attribute a : this.attributes){
-			a.copy(d);
+		for(ObjectClass oc : this.objectClasses){
+			oc.copy(d);
 		}
 		d.objectIdentifierDependentDomain = this.objectIdentifierDependentDomain;
 		return d;
