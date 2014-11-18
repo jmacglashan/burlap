@@ -23,7 +23,23 @@ public class TFGoalCondition implements StateConditionTest {
 	public TFGoalCondition(TerminalFunction tf){
 		this.tf = tf;
 	}
-	
+
+	/**
+	 * Returns the {@link burlap.oomdp.core.TerminalFunction} used to specify the goal condition.
+	 * @return the {@link burlap.oomdp.core.TerminalFunction} used to specify the goal condition.
+	 */
+	public TerminalFunction getTf() {
+		return tf;
+	}
+
+	/**
+	 * Sets the {@link burlap.oomdp.core.TerminalFunction} used to specify the goal condition.
+	 * @param tf the {@link burlap.oomdp.core.TerminalFunction} used to specify the goal condition.
+	 */
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
+	}
+
 	@Override
 	public boolean satisfies(State s) {
 		return tf.isTerminal(s);
