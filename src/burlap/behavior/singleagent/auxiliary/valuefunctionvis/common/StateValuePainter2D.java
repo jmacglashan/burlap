@@ -104,8 +104,20 @@ public class StateValuePainter2D extends StateValuePainter {
 	 * The precision (numer of decimals) shown in the value string.
 	 */
 	protected int								vsPrecision = 2;
-	
-	
+
+
+	/**
+	 * Initializes using a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.LandmarkColorBlendInterpolation}
+	 * object that mixes from red (lowest value) to blue (highest value).
+	 */
+	public StateValuePainter2D(){
+		LandmarkColorBlendInterpolation rb = new LandmarkColorBlendInterpolation();
+		rb.addNextLandMark(0., Color.RED);
+		rb.addNextLandMark(1., Color.BLUE);
+		this.colorBlend = rb;
+	}
+
+
 	/**
 	 * Initializes the value painter.
 	 * @param colorBlend the object to use for returning the color with which to fill the state cell given its value.

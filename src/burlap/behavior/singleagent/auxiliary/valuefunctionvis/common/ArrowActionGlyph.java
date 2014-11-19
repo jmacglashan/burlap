@@ -25,7 +25,45 @@ public class ArrowActionGlyph implements ActionGlyphPainter {
 	 * The color of the arrow
 	 */
 	protected Color			fillColor = Color.BLACK;
-	
+
+
+	/**
+	 * Creates and returns a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D}
+	 * where the x and y position attributes are name xAtt and yAtt, respectively, belong to the class
+	 * classWithPositionAtts, and the north, south east, west actions have the corresponding names and
+	 * will be rendered using {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph}
+	 * objects.
+	 * @param classWithPositionAtts the class which contains the x-y position information of the state.
+	 * @param xAtt the name of the x attribute
+	 * @param yAtt the name of the y attribute
+	 * @param northActionName the name of the north action
+	 * @param southActionName the name of the south action
+	 * @param eastActionName the name of the east action
+	 * @param westActionName the name of the west action
+	 * @return a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D} instance.
+	 */
+	public static PolicyGlyphPainter2D getNSEWPolicyGlyphPainter(String classWithPositionAtts, String xAtt,  String yAtt,
+																 String northActionName,
+																 String southActionName,
+																 String eastActionName,
+																 String westActionName){
+
+
+		PolicyGlyphPainter2D spp = new PolicyGlyphPainter2D();
+		spp.setXYAttByObjectClass(classWithPositionAtts, xAtt, classWithPositionAtts, yAtt);
+		spp.setActionNameGlyphPainter(northActionName, new ArrowActionGlyph(0));
+		spp.setActionNameGlyphPainter(southActionName, new ArrowActionGlyph(1));
+		spp.setActionNameGlyphPainter(eastActionName, new ArrowActionGlyph(2));
+		spp.setActionNameGlyphPainter(westActionName, new ArrowActionGlyph(3));
+		spp.setRenderStyle(PolicyGlyphPainter2D.PolicyGlyphRenderStyle.DISTSCALED);
+
+
+		return spp;
+	}
+
+
+
+
 	
 	/**
 	 * creates an arrow action glyph painter in the specified direction

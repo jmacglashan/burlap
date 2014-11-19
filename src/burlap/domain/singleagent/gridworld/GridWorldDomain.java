@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
+import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
@@ -601,11 +604,26 @@ public class GridWorldDomain implements DomainGenerator {
 		o.setValue(ATTY, y);
 		o.setValue(ATTLOCTYPE, locType);
 	}
-	
-	
-	
-	
-	
+
+
+	/**
+	 * Creates and returns a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI}
+	 * object for a grid world. The value of states
+	 * will be represented by colored cells from red (lowest value) to blue (highest value). North-south-east-west
+	 * actions will be rendered with arrows using {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph}
+	 * objects. The GUI will not be launched by default; call the
+	 * {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI#initGUI()}
+	 * on the returned object to start it.
+	 * @param states the states whose value should be rendered.
+	 * @param planner the planner that can return the value function.
+	 * @param p the policy to render
+	 * @return
+	 */
+	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, QComputablePlanner planner, Policy p){
+		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, planner, p,
+				CLASSAGENT, ATTX, ATTY,
+				ACTIONNORTH, ACTIONSOUTH, ACTIONEAST, ACTIONWEST);
+	}
 	
 	
 	
