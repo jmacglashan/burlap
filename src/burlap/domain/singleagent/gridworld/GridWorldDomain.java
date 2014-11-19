@@ -617,7 +617,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param states the states whose value should be rendered.
 	 * @param planner the planner that can return the value function.
 	 * @param p the policy to render
-	 * @return
+	 * @return a gridworld-based {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} object.
 	 */
 	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, QComputablePlanner planner, Policy p){
 		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, planner, p,
