@@ -533,10 +533,7 @@ public class VisualExplorer extends JFrame{
 			synchronized(VisualExplorer.this) {
 				VisualExplorer.this.isRecording = false;
 				List<EpisodeAnalysis> episodes = VisualExplorer.this.getRecordedEpisodes();
-				for (int i = 0; i < episodes.size(); i++) {
-					EpisodeAnalysis ea = episodes.get(i);
-					ea.writeToFile(this.directory + "episode" + i, this.sp);
-				}
+				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode", 0, this.sp);
 			}
 
 			return curState;
