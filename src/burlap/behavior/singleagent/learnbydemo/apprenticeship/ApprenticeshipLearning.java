@@ -162,14 +162,7 @@ public class ApprenticeshipLearning {
 	/**
 	 * Method which implements high level algorithm provided section 3 of
 	 * Abbeel, Peter and Ng, Andrew. "Apprenticeship Learning via Inverse Reinforcement Learning"
-	 * @param domain Domain in which we are planning
-	 * @param planner A Deterministic Planner created for the domain
-	 * @param featureMapping A feature mapping which maps states to a feature vector of values
-	 * @param expertEpisodes A list of expert demonstrated episodes generated from what we assume 
-	 * to be following some unknown reward function
-	 * @param gamma Discount factor gamma
-	 * @param epsilon Iteration tolerance
-	 * @param maxIterations Maximum number of iterations to iterate
+	 * @param request contains all of the IRL request informaiton.
 	 * @return the computed {@link Policy}
 	 */
 	private static Policy maxMarginMethod(ApprenticeshipLearningRequest request) {
@@ -269,14 +262,8 @@ public class ApprenticeshipLearning {
 	 * policies that can be evaluated algorithmically or manually.
 	 * 
 	 * Note: I've stored policy histories AND feature expectation histories
-	 * 
-	 * @param domain
-	 * @param planner
-	 * @param featureMapping
-	 * @param expertEpisodes
-	 * @param gamma
-	 * @param epsilon
-	 * @param maxIterations
+	 *
+	 * @param request contains all of the IRL request informaiton.
 	 * @return the policy that mimics the expert
 	 */
 	private static Policy projectionMethod(ApprenticeshipLearningRequest request) {
@@ -498,9 +485,9 @@ public class ApprenticeshipLearning {
 	 * This takes the Expert's feature expectation and a projection, and calculates the weight
 	 * and score. This is step 2b of the projection method.
 	 * 
-	 * @param expertFE
-	 * @param newProjFE
-	 * @return
+	 * @param expertFE expert feature expectation
+	 * @param newProjFE a projection
+	 * @return the feature weights
 	 */
 	private static FeatureWeights getWeightsProjectionMethod(double[] expertFE, double[] newProjFE){
 
