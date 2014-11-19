@@ -12,7 +12,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 
 import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph;
+import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
+import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
 
@@ -76,7 +80,52 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * Visualizer canvas height
 	 */
 	protected int								cHeight = 800;
-	
+
+
+	/**
+	 * A method for creating common gridworld-based value function and policy visualization. The value of states
+	 * will be represented by colored cells from red (lowest value) to blue (highest value). North-south-east-west
+	 * actions will be rendered with arrows using {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph}
+	 * objects. The GUI will not be launched by default; call the {@link #initGUI()} on the returned object to start it.
+	 * @param states the states whose value should be rendered.
+	 * @param planner the planner that can return the value function.
+	 * @param p the policy to render
+	 * @param classWithPositionAtts the class which contains the x-y position information of the state
+	 * @param xAttName the name of the x attribute
+	 * @param yAttName the name of the y attribute
+	 * @param northActionName the name of the north action
+	 * @param southActionName the name of the south action
+	 * @param eastActionName the name of the east action
+	 * @param westActionName the name of the west action
+	 * @return a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI}
+	 */
+	public static ValueFunctionVisualizerGUI createGridWorldBasedValueFunctionVisualizerGUI(List <State> states, QComputablePlanner planner, Policy p,
+																 String classWithPositionAtts, String xAttName, String yAttName,
+																 String northActionName,
+																 String southActionName,
+																 String eastActionName,
+																 String westActionName){
+
+
+		StateValuePainter2D svp = new StateValuePainter2D();
+		svp.setXYAttByObjectClass(classWithPositionAtts, xAttName,
+				classWithPositionAtts, yAttName);
+
+		PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(classWithPositionAtts, xAttName, yAttName,
+				northActionName, southActionName, eastActionName, westActionName);
+
+		ValueFunctionVisualizerGUI gui = new ValueFunctionVisualizerGUI(states, svp, planner);
+		gui.setSpp(spp);
+		gui.setPolicy(p);
+		gui.setBgColor(Color.GRAY);
+
+
+		return gui;
+
+	}
+
+
+
 	
 	/**
 	 * Initializes the visualizer GUI.
@@ -85,8 +134,8 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param planner the planner that can return the value function.
 	 */
 	public ValueFunctionVisualizerGUI(List <State> states, StateValuePainter svp, QComputablePlanner planner){
-		//this.visualizer = new ValueFunctionVisualizer(states, svp, planner);
 		this.statesToVisualize = states;
+		this.svp = svp;
 		this.visualizer = new MultiLayerRenderer();
 		this.vfLayer = new ValueFunctionRenderLayer(statesToVisualize, svp, planner);
 		this.pLayer = new PolicyRenderLayer(states, null, null);
