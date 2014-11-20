@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.oomdp.auxiliary.StateGenerator;
+import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
@@ -241,6 +242,42 @@ public class VisualExplorer extends JFrame{
 		});
 		
 	}
+
+	/**
+	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
+	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
+	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
+	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
+	 * recorded episodes is saved to disk in the directory saveDirectory with states parsed using sp.
+	 * The list of
+	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
+	 * @param recordLastEpisodeKey the key to press to indidcate that the last episode should be recorded/saved.
+	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
+	 * @param rewardFunction the reward function to use to record the reward received for each action taken.
+	 * @param saveDirectory the directory in which all episodes will be saved
+	 * @param sp the {@link burlap.oomdp.auxiliary.StateParser} to use for parsing states to strings.
+	 */
+	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey, RewardFunction rewardFunction,
+									   String saveDirectory, StateParser sp){
+		this.currentEpisode = new EpisodeAnalysis(this.baseState);
+		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
+		this.isRecording = true;
+		this.trackingRewardFunction = rewardFunction;
+
+		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
+
+			@Override
+			public State applySpecialAction(State curState) {
+				synchronized(VisualExplorer.this) {
+					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
+				}
+				return curState;
+			}
+		});
+
+		this.keySpecialMap.put(finishedRecordingKey, new SaveEpisodeAction(saveDirectory, sp));
+
+	}
 	
 	/**
 	 * Returns whether episodes are still be recorded by a user.
@@ -456,9 +493,53 @@ public class VisualExplorer extends JFrame{
 		
 		
 	}
-	
-	
-	
+
+
+	/**
+	 * Class for receiving key presses from a {@link burlap.oomdp.singleagent.explorer.VisualExplorer}
+	 * that handles it as ending episode recoding and saving all recorded episodes to disk.
+	 */
+	protected class SaveEpisodeAction implements SpecialExplorerAction{
+
+		/**
+		 * The directory in which the episodes will be recorded.
+		 */
+		protected String directory;
+
+		/**
+		 * The State parser used to save episodes
+		 */
+		protected StateParser sp;
+
+
+		/**
+		 * Initializes
+		 * @param directory the directory path in which episodes will be recorded
+		 * @param sp the state parser to use.
+		 */
+		public SaveEpisodeAction(String directory, StateParser sp){
+			this.directory = directory;
+			this.sp = sp;
+
+			if(!this.directory.endsWith("/")){
+				this.directory = this.directory + "/";
+			}
+
+		}
+
+		@Override
+		public State applySpecialAction(State curState) {
+
+			synchronized(VisualExplorer.this) {
+				VisualExplorer.this.isRecording = false;
+				List<EpisodeAnalysis> episodes = VisualExplorer.this.getRecordedEpisodes();
+				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode", 0, this.sp);
+			}
+
+			return curState;
+
+		}
+	}
 
 	
 	

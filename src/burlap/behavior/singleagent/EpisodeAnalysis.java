@@ -3,6 +3,7 @@ package burlap.behavior.singleagent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,6 +15,7 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.common.NullAction;
 
+import javax.swing.*;
 
 
 /**
@@ -253,8 +255,42 @@ public class EpisodeAnalysis {
 		
 		return buf.toString();
 	}
-	
-	
+
+
+	/**
+	 * Takes a {@link java.util.List} of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects and writes them to a directory.
+	 * The format of the file names will be "baseFileName{index}.episode" where {index} represents the index of the
+	 * episode in the list. Furthermore, zeroPaddedDigits specifies the minimum number of digits in the {index} string
+	 * (using leading zeros to force the size). For example,
+	 * if baseName = "ep" and zeroPaddedDigits = 3, then the episode at index 2 will have the name: "ep002.episode"
+	 * If you set zeroPaddedDigits = 0, then the number of digits will be forced to fit the maximum number of digits
+	 * necessary to represent the last episode index in the list. For example, if the list has 22 episodes,
+	 * then zeroPaddedDigits = 0 will behave like zeroPaddedDigits = 2.
+	 * @param episodes the list of episodes to write to disk
+	 * @param directoryPath the directory path in which the episodes will be written
+	 * @param baseFileName the base file name to use for the episode files
+	 * @param zeroPaddedDigits the minimum number of digits
+	 * @param sp the state parse used to convert states objects t ostring representations
+	 */
+	public static void writeEpisodesToDisk(List<EpisodeAnalysis> episodes, String directoryPath, String baseFileName, int zeroPaddedDigits, StateParser sp){
+
+		String format = "%0" + zeroPaddedDigits + "d";
+		if(zeroPaddedDigits <= 0){
+			zeroPaddedDigits = String.format("%d", episodes.size()-1).length();
+			format = "%0" + zeroPaddedDigits + "d";
+		}
+
+		if(!directoryPath.endsWith("/")){
+			directoryPath += "/";
+		}
+
+		for(int i = 0; i < episodes.size(); i++){
+			EpisodeAnalysis ea = episodes.get(i);
+			ea.writeToFile(directoryPath + baseFileName + String.format(format, i), sp);
+		}
+
+	}
+
 	/**
 	 * Writes this episode to a file. If the the directory for the specified file path do not exist, then they will be created.
 	 * If the file extension is not ".episode" will automatically be added.
@@ -310,7 +346,46 @@ public class EpisodeAnalysis {
 		return sbuf.toString();
 		
 	}
-	
+
+
+	/**
+	 * Takes a path to a directory containing .episode files and reads them all into a {@link java.util.List}
+	 * of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 * @param directoryPath the path to the directory containing the episode files
+	 * @param d the domain to which the episode states and actions belong
+	 * @param sp a state parser that can parse the state string representation in each file
+	 * @return a {@link java.util.List} of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 */
+	public static List<EpisodeAnalysis> parseFilesIntoEAList(String directoryPath, Domain d, StateParser sp){
+
+		if(!directoryPath.endsWith("/")){
+			directoryPath = directoryPath + "/";
+		}
+
+		File dir = new File(directoryPath);
+		final String ext = ".episode";
+
+		FilenameFilter filter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				if(name.endsWith(ext)){
+					return true;
+				}
+				return false;
+			}
+		};
+		String[] children = dir.list(filter);
+
+		List<EpisodeAnalysis> eas = new ArrayList<EpisodeAnalysis>(children.length);
+
+		for(int i = 0; i < children.length; i++){
+			String episodeFile = directoryPath + children[i];
+			EpisodeAnalysis ea = parseFileIntoEA(episodeFile, d, sp);
+			eas.add(ea);
+		}
+
+		return eas;
+	}
+
 	
 	/**
 	 * Reads an episode that was written to a file and turns into an EpisodeAnalysis object.
