@@ -76,7 +76,7 @@ public abstract class OOMDPPlanner {
 	
 	/**
 	 * This method will cause the planner to begin planning from the specified initial state
-	 * @param initialState
+	 * @param initialState the initial state of the planning problem
 	 */
 	public abstract void planFromState(State initialState);
 	
@@ -214,7 +214,7 @@ public abstract class OOMDPPlanner {
 	 * Returns gamma, the discount factor used by this planner
 	 * @return gamma, the discount factor used by this planner
 	 */
-	public double getGamme(){
+	public double getGamma(){
 		return this.gamma;
 	}
 	
