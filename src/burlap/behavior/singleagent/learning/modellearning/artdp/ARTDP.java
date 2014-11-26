@@ -238,7 +238,7 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
 		
-		QValue q = this.getQ(s, a);
+		QValue q = this.modelPlanner.getQ(s, a);
 		
 		//if Q for unknown action, use value initialization of curent state
 		if(!this.model.transitionIsModeled(s, (GroundedAction)q.a)){

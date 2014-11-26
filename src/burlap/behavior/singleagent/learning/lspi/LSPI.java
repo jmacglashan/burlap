@@ -152,10 +152,10 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 	 * @param rf the reward function
 	 * @param tf the terminal state function
 	 * @param gamma the discount factor
-	 * @param fd the feature database defining state feautres on which LSPI will run.
+	 * @param fd the feature database defining state features on which LSPI will run.
 	 */
 	public LSPI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, FeatureDatabase fd){
-		this.plannerInit(domain, rf, tf, 0.99, null);
+		this.plannerInit(domain, rf, tf, gamma, null);
 		this.featureDatabase = fd;
 		this.vfa = new LinearVFA(this.featureDatabase);
 		this.learningPolicy = new EpsilonGreedy(this, 0.1);
