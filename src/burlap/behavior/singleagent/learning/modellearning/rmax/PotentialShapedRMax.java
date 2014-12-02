@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.DomainMappedPolicy;
 import burlap.behavior.singleagent.learning.modellearning.Model;
@@ -142,11 +143,10 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory to use for VI and the tabular model
 	 * @param potential the admissible potential function
-	 * @param nConfident the number of observations requird for the model to be confident in a transtion
 	 * @param model the model/model-learning algorithm to use
 	 * @param plannerGenerator a generator for a model planner
 	 */
-	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, PotentialFunction potential, int nConfident,
+	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, PotentialFunction potential,
 			Model model, ModelPlannerGenerator plannerGenerator){
 		
 		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
@@ -174,7 +174,8 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		
-		DomainMappedPolicy policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
+		//DomainMappedPolicy policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
+		Policy policy = this.createDomainMappedPolicy();
 		
 		State curState = initialState;
 		int steps = 0;
@@ -190,7 +191,8 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 				this.model.updateModel(curState, ga, nextState, r, this.tf.isTerminal(nextState));
 				if(this.model.transitionIsModeled(curState, ga)){
 					this.modelPlanner.modelChanged(curState);
-					policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
+					//policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
+					policy = this.createDomainMappedPolicy();
 				}
 			}
 			
@@ -207,6 +209,14 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		
 		
 		return ea;
+	}
+
+
+	protected Policy createDomainMappedPolicy(){
+		return new DomainMappedPolicy(domain, new UnmodeledFavoredPolicy(
+				this.modelPlanner.modelPlannedPolicy(),
+				this.model,
+				this.modeledDomain.getActions()));
 	}
 
 	@Override
@@ -267,9 +277,16 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		
 		@Override
 		public boolean isTerminal(State s) {
-			
+
+
 			//RMaxStates are terminal states
 			if(s.getObjectsOfTrueClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
+				return true;
+			}
+
+
+			//states with unmodeled transitions are terminal states; bias will be captured by the potential function
+			if(!PotentialShapedRMax.this.model.stateTransitionsAreModeled(s)){
 				return true;
 			}
 			
@@ -312,9 +329,9 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		@Override
 		public double potentialValue(State s) {
 			if(s.getObjectsOfTrueClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
-				return this.vmax;
+				return 0.;
 			}
-			return 0;
+			return this.vmax;
 		}
 		
 	}
@@ -354,7 +371,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
 			if(ModeledDomainGenerator.isRmaxFictitiousState(sprime)){
-				return 0.; //transitions to fictitious state end potential bonus, but also do not remove potential of previous unknown state
+				return 0.; //transitions to fictitious state have no value; bias handled by potential up to unknown state
 			}
 			
 			return this.sourceRF.reward(s, a, sprime) 

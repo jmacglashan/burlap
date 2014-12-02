@@ -10,10 +10,7 @@ import java.util.Set;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.*;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -123,6 +120,53 @@ public class TabularModel extends Model {
 		}
 		
 		return true;
+	}
+
+	@Override
+	public boolean stateTransitionsAreModeled(State s) {
+
+		StateHashTuple sh = this.hashingFactory.hashState(s);
+		StateNode sn = this.stateNodes.get(sh);
+		if(sn == null){
+			return false;
+		}
+
+		for(StateActionNode san : sn.actionNodes.values()){
+			if(san.nTries < this.nConfident){
+				return false;
+			}
+		}
+
+		return true;
+
+	}
+
+	@Override
+	public List<AbstractGroundedAction> getUnmodeledActionsForState(State s) {
+
+		List<AbstractGroundedAction> unmodeled = new ArrayList<AbstractGroundedAction>();
+
+		StateHashTuple sh = this.hashingFactory.hashState(s);
+		StateNode sn = this.stateNodes.get(sh);
+		if(sn == null){
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(
+					this.sourceDomain.getActions(), s);
+			for(GroundedAction ga : gas){
+				unmodeled.add(ga);
+			}
+		}
+		else{
+
+			for(StateActionNode san : sn.actionNodes.values()){
+				if(san.nTries < this.nConfident){
+					GroundedAction ta = (GroundedAction)san.ga.translateParameters(sn.sh.s, s);
+					unmodeled.add(ta);
+				}
+			}
+
+		}
+
+		return unmodeled;
 	}
 
 	@Override
