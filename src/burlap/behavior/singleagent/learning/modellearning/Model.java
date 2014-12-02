@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import burlap.debugtools.RandomFactory;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
@@ -41,13 +42,28 @@ public abstract class Model {
 	
 	/**
 	 * Indicates whether this model "knows" how the transition dynamics from the given input state and action work.
-	 * @param s the state which is checked
+	 * @param s the state that is checked
 	 * @param ga the action to take in state s
 	 * @return true if the transition dynamics from the input state and action are "known;" false otherwise.
 	 */
 	public abstract boolean transitionIsModeled(State s, GroundedAction ga);
-	
-	
+
+
+	/**
+	 * Indicates whether this model "knows" the transition dynamics from the given input state for all applicable actions.
+	 * @param s the state that is checked.
+	 * @return true if the transition dynamics for all actions are "known;" false otherwise.
+	 */
+	public abstract boolean stateTransitionsAreModeled(State s);
+
+
+	/**
+	 * Returns a list specifying the actions for which the transition dynamics are not yet "known."
+	 * @param s the state for which the unmodeled actions should be returned.
+	 * @return a {@link java.util.List} of {@link burlap.oomdp.core.AbstractGroundedAction} objects
+	 */
+	public abstract List<AbstractGroundedAction> getUnmodeledActionsForState(State s);
+
 	/**
 	 * A method to sample this model's transition dynamics for the given state and action.
 	 * @param s The source state
@@ -94,7 +110,7 @@ public abstract class Model {
 	 * Resets the model data so that learning can begin anew.
 	 */
 	public abstract void resetModel();
-	
+
 	
 	/**
 	 * Will return a sampled outcome state by calling the {@link #getTransitionProbabilities(State, GroundedAction)} method and randomly drawing a state

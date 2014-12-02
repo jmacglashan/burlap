@@ -134,8 +134,8 @@ public class VIModelPlanner implements ModelPlanner {
 	}
 	
 	/**
-	 * Reruns VI on the new updated model. It will force VI to consider all states the agent has ever previously obsereved, even though not all
-	 * may be connected by the current unkown transition model.
+	 * Reruns VI on the new updated model. It will force VI to consider all states the agent has ever previously observed, even though not all
+	 * may be connected by the current unknown transition model.
 	 */
 	protected void rerunVI(){
 		

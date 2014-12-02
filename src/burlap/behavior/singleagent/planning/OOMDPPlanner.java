@@ -164,7 +164,17 @@ public abstract class OOMDPPlanner {
 	public void setActions(List<Action> actions){
 		this.actions = actions;
 	}
-	
+
+
+	/**
+	 * Returns a copy of all actions this planner uses for reasoning; including added actions that are not part of the
+	 * domain specification (e.g., {@link burlap.behavior.singleagent.options.Option}s). Modifying
+	 * the returned list will not modify the action list this planner uses.
+	 * @return a {@link java.util.List} of all actions this planner uses.
+	 */
+	public List<Action> getActions(){
+		return new ArrayList<Action>(this.actions);
+	}
 	
 	/**
 	 * Returns the {@link burlap.oomdp.core.TerminalFunction} this planner uses.
