@@ -358,6 +358,21 @@ public class ObjectInstance {
 		}
 		return newValues;
 	}
+
+
+	/**
+	 * Returns a list of the names of {@link burlap.oomdp.core.Attribute}s that have unset values
+	 * @return a list of the names of attributes that have unset values
+	 */
+	public List<String> unsetAttributes(){
+		LinkedList<String> unsetAtts = new LinkedList<String>();
+		for(Value v : this.values){
+			if(!v.valueHasBeenSet()){
+				unsetAtts.add(v.attName());
+			}
+		}
+		return unsetAtts;
+	}
 	
 	
 	/**
@@ -373,6 +388,25 @@ public class ObjectInstance {
 		
 		return desc;
 	
+	}
+
+
+	/**
+	 * Returns a string description of the object with the unset attribute values listed as null.
+	 * @return a string description of the object with the unset attribute values listed as null.
+	 */
+	public String getObjectDesriptionWithNullForUnsetAttributes(){
+		String desc = name + " (" + this.getTrueClassName() + ")\n";
+		for(Value v : values){
+			if(v.valueHasBeenSet()) {
+				desc = desc + "\t" + v.attName() + ":\t" + v.getStringVal() + "\n";
+			}
+			else{
+				desc = desc + "\t" + v.attName() + ":\tnull\n";
+			}
+		}
+
+		return desc;
 	}
 	
 	

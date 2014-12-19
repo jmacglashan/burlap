@@ -78,8 +78,18 @@ public abstract class Value {
 	 * @return a deep copy of this value object.
 	 */
 	public abstract Value copy();
-	
-	
+
+
+	/**
+	 * Returns whether the value has been set to a meaningful value. Unset values
+	 * typically happen when a new object instance has been created by not had its
+	 * values set. Leaving values unset will result in exceptions being thrown
+	 * to prevent errors in underspecified states.
+	 * @return true if the value has been set; false if not.
+	 */
+	public abstract boolean valueHasBeenSet();
+
+
 	/**
 	 * Sets the internal value representation using an int value
 	 * @param v the int value assignment

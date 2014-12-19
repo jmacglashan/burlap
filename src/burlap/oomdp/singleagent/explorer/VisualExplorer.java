@@ -14,17 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.*;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -65,6 +61,9 @@ public class VisualExplorer extends JFrame{
 	protected int											cHeight;
 	
 	protected int											numSteps;
+
+	protected JFrame										consoleFrame;
+	protected TextArea										stateConsole;
 	
 	//recording data members
 	protected EpisodeAnalysis 								currentEpisode = null;
@@ -72,8 +71,7 @@ public class VisualExplorer extends JFrame{
 	protected RewardFunction								trackingRewardFunction = new NullRewardFunction();
 	
 	protected boolean										isRecording = false;
-	
-	
+
 	
 	/**
 	 * Initializes the visual explorer with the domain to explorer, the visualizer to use, and the base state from which to explore.
@@ -185,6 +183,7 @@ public class VisualExplorer extends JFrame{
 			public State applySpecialAction(State curState) {
 				synchronized(VisualExplorer.this) {
 					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
+					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
 				}
 				return curState;
 			}
@@ -225,6 +224,7 @@ public class VisualExplorer extends JFrame{
 			public State applySpecialAction(State curState) {
 				synchronized(VisualExplorer.this) {
 					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
+					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
 				}
 				return curState;
 			}
@@ -270,6 +270,7 @@ public class VisualExplorer extends JFrame{
 			public State applySpecialAction(State curState) {
 				synchronized(VisualExplorer.this) {
 					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
+					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
 				}
 				return curState;
 			}
@@ -363,11 +364,164 @@ public class VisualExplorer extends JFrame{
 		
 		painter.updateState(baseState);
 		this.updatePropTextArea(baseState);
-		
+
+		JButton showConsoleButton = new JButton("Show Console");
+		showConsoleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				VisualExplorer.this.consoleFrame.setVisible(true);
+			}
+		});
+		bottomContainer.add(showConsoleButton, BorderLayout.SOUTH);
+
+
+		this.consoleFrame = new JFrame();
+		this.consoleFrame.setPreferredSize(new Dimension(600, 500));
+
+		JLabel consoleCommands = new JLabel("<html><h2>Console command syntax:</h2>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>add</b> objectClass object<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>remove</b> object<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>set</b> object attribute [attribute_2 ... attribute_n] value [value_2 ... value_n]<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>addRelation</b> sourceObject relationalAttribute targetObject<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>removeRelation</b> sourceObject relationalAttribute targetObject<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>clearRelations</b> sourceObject relationalAttribute<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>execute</b> action [param_1 ... param_n]<br/>&nbsp;</html>");
+
+		consoleFrame.getContentPane().add(consoleCommands, BorderLayout.NORTH);
+
+		this.stateConsole = new TextArea(this.getConsoleText(this.baseState), 40, 40, TextArea.SCROLLBARS_BOTH);
+		this.consoleFrame.getContentPane().add(this.stateConsole, BorderLayout.CENTER);
+
+		JTextField consoleCommand = new JTextField(40);
+		consoleCommand.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String command = ((JTextField)e.getSource()).getText();
+
+
+				String [] comps = command.split(" ");
+				if(comps.length > 0){
+
+					State ns = VisualExplorer.this.curState.copy();
+
+					boolean madeChange = false;
+					if(comps[0].equals("set")){
+						if(comps.length >= 4) {
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								int rsize = comps.length - 2;
+								if(rsize % 2 == 0){
+									int vind = rsize / 2;
+									for(int i = 0; i < rsize / 2; i++){
+										o.setValue(comps[2+i], comps[2+i+vind]);
+									}
+								}
+								madeChange = true;
+							}
+						}
+
+					}
+					else if(comps[0].equals("addRelation")){
+						if(comps.length == 4){
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								o.addRelationalTarget(comps[2], comps[3]);
+								madeChange = true;
+							}
+						}
+					}
+					else if(comps[0].equals("removeRelation")){
+						if(comps.length == 4){
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								o.removeRelationalTarget(comps[2], comps[3]);
+								madeChange = true;
+							}
+						}
+					}
+					else if(comps[0].equals("clearRelations")){
+						if(comps.length == 3){
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								o.clearRelationalTargets(comps[2]);
+								madeChange = true;
+							}
+						}
+					}
+					else if(comps[0].equals("add")){
+						if(comps.length == 3){
+							ObjectInstance o = new ObjectInstance(VisualExplorer.this.domain.getObjectClass(comps[1]), comps[2]);
+							ns.addObject(o);
+							madeChange = true;
+						}
+					}
+					else if(comps[0].equals("remove")){
+						if(comps.length == 2){
+							ns.removeObject(comps[1]);
+							madeChange = true;
+						}
+					}
+					else if(comps[0].equals("execute")){
+						String [] actionComps = new String[comps.length-1];
+						for(int i = 1; i < comps.length; i++){
+							actionComps[i-1] = comps[i];
+						}
+						VisualExplorer.this.executeAction(actionComps);
+					}
+
+					if(madeChange) {
+						VisualExplorer.this.numSteps = 0;
+						if (VisualExplorer.this.currentEpisode != null) {
+							VisualExplorer.this.currentEpisode = new EpisodeAnalysis(curState);
+						}
+						VisualExplorer.this.updateState(ns);
+					}
+				}
+
+
+			}
+		});
+
+		this.consoleFrame.getContentPane().add(consoleCommand, BorderLayout.SOUTH);
+
+
+
 		pack();
 		setVisible(true);
+
+		this.consoleFrame.pack();
+		this.consoleFrame.setVisible(false);
 	}
-	
+
+
+	public void updateState(State s){
+		this.curState = s;
+		this.stateConsole.setText(this.getConsoleText(s));
+		this.painter.updateState(s);
+		this.updatePropTextArea(s);
+
+	}
+
+
+	protected String getConsoleText(State s){
+		StringBuilder sb = new StringBuilder(256);
+		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+		sb.append("\n------------------------------\n\n");
+
+		if(s.getAllUnsetAttributes().size() == 0){
+			sb.append("Applicable Actions:\n");
+			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.domain.getActions(), s);
+			for(GroundedAction ga : gas){
+				sb.append(ga.toString()).append("\n");
+			}
+		}
+		else{
+			sb.append("State has unset values; set them them to see applicable action list.");
+		}
+
+
+		return sb.toString();
+	}
 	
 	protected void handleExecute(){
 		
@@ -378,36 +532,7 @@ public class VisualExplorer extends JFrame{
 		}
 		
 		String [] comps = actionCommand.split(" ");
-		String actionName = comps[0];
-		
-		//construct parameter list as all that remains
-		String params[];
-		if(comps.length > 1){
-			params = new String[comps.length-1];
-			for(int i = 1; i < comps.length; i++){
-				params[i-1] = comps[i];
-			}
-		}
-		else{
-			params = new String[0];
-		}
-		
-		Action action = domain.getAction(actionName);
-		if(action == null){
-			System.out.println("Unknown action: " + actionName);
-		}
-		else{
-			GroundedAction ga = new GroundedAction(action, params);
-			State nextState = ga.executeIn(curState);
-			if(this.currentEpisode != null){
-				this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
-			}
-			curState = nextState;
-			numSteps++;
-			
-			painter.updateState(curState);
-			this.updatePropTextArea(curState);
-		}
+		this.executeAction(comps);
 	}
 	
 	protected void handleKeyPressed(KeyEvent e){
@@ -421,40 +546,14 @@ public class VisualExplorer extends JFrame{
 			//then we have a action for this key
 			//split the string up into components
 			String [] comps = mappedAction.split(" ");
-			String actionName = comps[0];
-			
-			//construct parameter list as all that remains
-			String params[];
-			if(comps.length > 1){
-				params = new String[comps.length-1];
-				for(int i = 1; i < comps.length; i++){
-					params[i-1] = comps[i];
-				}
-			}
-			else{
-				params = new String[0];
-			}
-			
-			Action action = domain.getAction(actionName);
-			if(action == null){
-				System.out.println("Unknown action: " + actionName);
-			}
-			else{
-				GroundedAction ga = new GroundedAction(action, params);
-				State nextState = ga.executeIn(curState);
-				if(this.currentEpisode != null){
-					this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
-				}
-				curState = nextState;
-				numSteps++;
-			}
+			this.executeAction(comps);
 			
 		}
 		else{
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
 			if(sea != null){
-				curState = sea.applySpecialAction(curState);
+				this.updateState(sea.applySpecialAction(curState));
 			}
 			if(sea instanceof StateResetSpecialAction){
 				System.out.println("Number of steps before reset: " + numSteps);
@@ -464,18 +563,41 @@ public class VisualExplorer extends JFrame{
 				}
 			}
 		}
-				
-		
-		//now paint the screen with the new state
-		painter.updateState(curState);
-		this.updatePropTextArea(curState);
-		//System.out.println(curState_.getStateDescription());
-		//System.out.println("-------------------------------------------");
-		
 		
 	}
+
+	protected void executeAction(String [] comps){
+		String actionName = comps[0];
+
+		//construct parameter list as all that remains
+		String params[];
+		if(comps.length > 1){
+			params = new String[comps.length-1];
+			for(int i = 1; i < comps.length; i++){
+				params[i-1] = comps[i];
+			}
+		}
+		else{
+			params = new String[0];
+		}
+
+		Action action = domain.getAction(actionName);
+		if(action == null){
+			System.out.println("Unknown action: " + actionName);
+		}
+		else{
+			GroundedAction ga = new GroundedAction(action, params);
+			State nextState = ga.executeIn(curState);
+			if(this.currentEpisode != null){
+				this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
+			}
+
+			numSteps++;
+			this.updateState(nextState);
+		}
+	}
 	
-	private void updatePropTextArea(State s){
+	protected void updatePropTextArea(State s){
 		
 		StringBuffer buf = new StringBuffer();
 		
@@ -484,6 +606,16 @@ public class VisualExplorer extends JFrame{
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
+				boolean needsContinue = false;
+				for(String oname : gp.params){
+					if(s.getObject(oname).unsetAttributes().size() > 0){
+						needsContinue = true;
+						break;
+					}
+				}
+				if(needsContinue){
+					continue;
+				}
 				if(gp.isTrue(s)){
 					buf.append(gp.toString()).append("\n");
 				}
@@ -534,6 +666,8 @@ public class VisualExplorer extends JFrame{
 				VisualExplorer.this.isRecording = false;
 				List<EpisodeAnalysis> episodes = VisualExplorer.this.getRecordedEpisodes();
 				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode", 0, this.sp);
+				System.out.println("Recorded " + VisualExplorer.this.recordedEpisodes.size()
+						+ " episodes to directory " + this.directory);
 			}
 
 			return curState;

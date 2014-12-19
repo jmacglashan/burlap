@@ -114,6 +114,14 @@ public class StateRenderLayer implements RenderLayer{
 			List <ObjectInstance> objects = curState.getObjectsOfTrueClass(op.className);
 			for(ObjectInstance o : objects){
 				if(!this.specificObjectPainters.containsKey(o.getName())){
+					List<String> unsetAttributes = o.unsetAttributes();
+					if(unsetAttributes.size() > 0){
+						System.out.println("Warning: not rendering object " + o.getName() + " because it has the following unset attributes: ");
+						for(String a : unsetAttributes){
+							System.out.println("    " + a);
+						}
+						continue;
+					}
 					op.painter.paintObject(g2, curState, o, width, height);
 				}
 			}
@@ -125,6 +133,14 @@ public class StateRenderLayer implements RenderLayer{
 			
 			//is there a specific object painter for this object?
 			if(specificObjectPainters.containsKey(o.getName())){
+				List<String> unsetAttributes = o.unsetAttributes();
+				if(unsetAttributes.size() > 0){
+					System.out.println("Warning: not rendering object " + o.getName() + " because it has the following unset attributes: ");
+					for(String a : unsetAttributes){
+						System.out.println("    " + a);
+					}
+					continue;
+				}
 				specificObjectPainters.get(o.getName()).paintObject(g2, curState, o, width, height);
 			}
 			

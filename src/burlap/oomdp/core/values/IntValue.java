@@ -42,6 +42,11 @@ public class IntValue extends Value {
 	}
 
 	@Override
+	public boolean valueHasBeenSet() {
+		return true;
+	}
+
+	@Override
 	public Value copy() {
 		return new IntValue(this);
 	}

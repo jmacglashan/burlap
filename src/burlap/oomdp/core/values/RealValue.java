@@ -43,7 +43,13 @@ public class RealValue extends Value {
 	public Value copy(){
 		return new RealValue(this);
 	}
-	
+
+
+	@Override
+	public boolean valueHasBeenSet() {
+		return !Double.isNaN(this.realVal);
+	}
+
 	@Override
 	public void setValue(int v){
 		this.realVal = (double)v;
