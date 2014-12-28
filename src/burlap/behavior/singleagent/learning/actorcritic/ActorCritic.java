@@ -46,7 +46,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 	protected int													maxEpisodeSize = Integer.MAX_VALUE;
 	
 	/**
-	 * The number of simulated learning episodes to use when the {@link planFromState(State)} method is called.
+	 * The number of simulated learning episodes to use when the {@link #planFromState(State)} method is called.
 	 */
 	protected int													numEpisodesForPlanning;
 	

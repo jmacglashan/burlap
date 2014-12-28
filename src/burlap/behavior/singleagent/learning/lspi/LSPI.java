@@ -405,7 +405,7 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 			}
 			this.lastWeights = nw;
 			
-			DPrint.cl(0, "Finished iteraiton: " + i + ". Weight change: " + change);
+			DPrint.cl(0, "Finished iteration: " + i + ". Weight change: " + change);
 			
 		}
 		DPrint.cl(0, "Finished Policy Iteration.");

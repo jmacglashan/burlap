@@ -97,7 +97,7 @@ public abstract class Model {
 	
 	
 	/**
-	 * Will return a sampled outcome state by calling the {@link getTransitionProbabilities(State, GroundedAction)} method and randomly drawing a state
+	 * Will return a sampled outcome state by calling the {@link #getTransitionProbabilities(State, GroundedAction)} method and randomly drawing a state
 	 * according to its distribution
 	 * @param s a source state
 	 * @param ga the action taken in the source state

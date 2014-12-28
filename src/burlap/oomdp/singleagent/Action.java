@@ -9,13 +9,15 @@ import burlap.oomdp.core.TransitionProbability;
 
 
 /**
- * Abstract class for defining what happens when an action is executed in a state. The method getTransitions(State s, String [] params)
- * is what defines the transition dynamics of the MDP for this action. If this method is not overridden by subclasses, then the default
- * behavior is to assume deterministic transition dynamics which are produced by sampling the performAction(State s, String [] params)
- * method and setting its returned state as having a transition probability of 1. If the domain being created is only
+ * Abstract class for defining what happens when an action is executed in a state. The method {@link #getTransitions(burlap.oomdp.core.State, String[])}
+ * is what defines the transition dynamics of the MDP for this action. If this method is not overridden by subclasses, then an
+ * UnsupportedOperation exception is thrown . If the domain being created is only
  * going to be used planning/learning algorithms that require a generative model, rather than the fully enumerated transition
- * dynamics, then the getTransitions(State s, String [] params) does not need to be defined, but for full robustness it should be.
- * 
+ * dynamics, then the {@link #getTransitions(burlap.oomdp.core.State, String[])} does not need to be implemented, but for full robustness it should be.
+ * If your domain is deterministic, you can trivially implement it by having it return a call to the {@link #deterministicTransition(burlap.oomdp.core.State, String[])}
+ * method, which will wrap the result of a {@link #performAction(burlap.oomdp.core.State, String[])}} method with a 1.0 outcome probability
+ * {@link burlap.oomdp.core.TransitionProbability} object and insert it in a list containing just that element.
+ * <p/>
  * Action objects may also be defined to require object parameters (which must adhere to a type). Parameters can also have parameter order groups specified if
  * there is effect symmetry when changing the order of the parameters. That is, if you swapped the parameter assignments for parameters in the same order group, the action would have
  * the same effect. However, if you swapped the parameter assignments of two parameters in different order groups, the action would have a different effect. 
@@ -233,12 +235,15 @@ public abstract class Action {
 	
 	/**
 	 * Performs this action in the specified state using the specified parameters and returns the resulting state. The input state
-	 * will not be modified. The method will return a copy of the input state if the action is not applicable in state s with parameters params.
+	 * will not be modified with a deep copied state returned instead (unless this method is overriden, which may result in a semi-deep copy).
+	 * If the action is not applicable in state s with parameters params, then a copy of the input state is returned.
+	 * In general Action subclasses should *NOT* override this method and should instead override the abstract {@link #performActionHelper(State, String[])} method.
+	 * Only override this method if you are seeking to perform memory optimization with semi-shallow copies of states and know what you're doing.
 	 * @param s the state in which the action is to be performed.
 	 * @param params a String array specifying the action object parameters
 	 * @return the state that resulted from applying this action
 	 */
-	public final State performAction(State s, String [] params){
+	public State performAction(State s, String [] params){
 		
 		State resultState = s.copy();
 		if(!this.applicableInState(s, params)){
@@ -286,23 +291,36 @@ public abstract class Action {
 	/**
 	 * Returns the transition probabilities for applying this action in the given state with the given set of parameters.
 	 * Transition probabilities are specified as list of {@link burlap.oomdp.core.TransitionProbability} objects. The list
-	 * is only required to contain transitions with non-zero probability. By default, this method assumes that transition
-	 * dynamics are deterministic and it returns a list with a single TransitionProbability with probability 1 whose
-	 * state is determined by querying the {@link #performAction(State, String [])} method. If the transition dynamics
-	 * are stochastic, then this method needs to be overridden.
+	 * is only required to contain transitions with non-zero probability. Since not all planning algorithms require
+	 * the full transition dynamics (and since it's impossible to enumerate them in some infinite state space domains),
+	 * this method is not requried to be implemented. However, it will throw an UnsupportedOperationException
+	 * if it is not overriden by the Action subclass if it is called by an algorithm that requires it.
 	 * @param s the state from which the transition probabilities when applying this action will be returned.
 	 * @param params a String array specifying the action object parameters
 	 * @return a List of transition probabilities for applying this action in the given state with the given set of parameters
 	 */
 	public List<TransitionProbability> getTransitions(State s, String [] params){
-		
+		throw new UnsupportedOperationException("The full transition dynamics for action " + this.getName() + "  were" +
+				"request, but have not be defined in the implemented Action class. Please override the " +
+				"getTransitions(State String[] params) method for this action.");
+	}
+
+
+	/**
+	 * Returns the transition dynamics by assuming the action to be deterministic and wrapping the result of a
+	 * {@link #performAction(burlap.oomdp.core.State, String[])} method with a 1.0 probable {@link TransitionProbability}
+	 * object and inserting it in the returned list.
+	 * @param s the state from which the transition probabilities when applying this action will be returned.
+	 * @param params a String array specifying the action object parameters
+	 * @return a List of one element of type {@link burlap.oomdp.core.TransitionProbability} whose state is the outcome of the {@link #performAction(burlap.oomdp.core.State, String[])} method.
+	 */
+	protected List<TransitionProbability> deterministicTransition(State s, String [] params){
 		List <TransitionProbability> transition = new ArrayList<TransitionProbability>();
 		State res = this.performAction(s, params);
 		transition.add(new TransitionProbability(res, 1.0));
-		
+
 		return transition;
 	}
-	
 	
 	
 	/**

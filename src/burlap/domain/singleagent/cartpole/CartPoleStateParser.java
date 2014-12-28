@@ -7,7 +7,7 @@ import burlap.oomdp.core.State;
 
 
 /**
- * A custom state parser for the cart pole domain. Format is singele space delimited line of: <br/>
+ * A custom state parser for the cart pole domain. Format is single space delimited line of: <br/>
  * cartPosition cartVelocity angle angleVelocity
  * @author James MacGlashan
  *

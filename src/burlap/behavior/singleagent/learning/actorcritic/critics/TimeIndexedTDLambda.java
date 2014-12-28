@@ -179,10 +179,10 @@ public class TimeIndexedTDLambda extends TDLambda {
 	
 	
 	/**
-	 * Returns the {@link VValue} object (storing the value) for a given hashed stated at the specified time/depth.
+	 * Returns the {@link TDLambda.VValue} object (storing the value) for a given hashed stated at the specified time/depth.
 	 * @param sh the hashed state for which the value should be returned.
 	 * @param t the time/depth at which the state is visited
-	 * @return the {@link VValue} object (storing the value) for a given hashed stated at the specified time/depth
+	 * @return the {@link TDLambda.VValue} object (storing the value) for a given hashed stated at the specified time/depth
 	 */
 	protected VValue getV(StateHashTuple sh, int t){
 		

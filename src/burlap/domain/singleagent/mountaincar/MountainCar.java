@@ -1,16 +1,13 @@
 package burlap.domain.singleagent.mountaincar;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.*;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
+
+import java.util.List;
 
 
 /**
@@ -244,6 +241,11 @@ public class MountainCar implements DomainGenerator {
 		@Override
 		protected State performActionHelper(State s, String[] params) {
 			return MountainCar.this.move(s, dir);
+		}
+
+		@Override
+		public List<TransitionProbability> getTransitions(State s, String [] params){
+			return this.deterministicTransition(s, params);
 		}
 		
 	}
