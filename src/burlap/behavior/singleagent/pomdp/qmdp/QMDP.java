@@ -19,6 +19,7 @@ import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;
 import burlap.oomdp.singleagent.pomdp.BeliefState;
 import burlap.oomdp.singleagent.pomdp.BeliefState.StateBelief;
+import burlap.oomdp.singleagent.pomdp.BeliefStatistic;
 import burlap.oomdp.singleagent.pomdp.PODomain;
 
 public class QMDP extends POMDPPlanner implements QComputablePlanner {
@@ -55,7 +56,7 @@ public class QMDP extends POMDPPlanner implements QComputablePlanner {
 		List<QValue> result = new ArrayList<QValue>(gas.size());
 		
 		BeliefState bs = new BeliefState((PODomain)this.domain);
-		bs.setBeliefVector(s.getFirstObjectOfClass(BeliefMDPGenerator.CLASSBELIEF).getDoubleArrayValue(BeliefMDPGenerator.ATTBELIEF));
+		bs.setBeliefCollection(s.getFirstObjectOfClass(BeliefMDPGenerator.CLASSBELIEF).getDoubleArrayValue(BeliefMDPGenerator.ATTBELIEF));
 		List<StateBelief> beliefs = bs.getStatesAndBeliefsWithNonZeroProbability();
 		
 		for(GroundedAction ga : gas){
@@ -71,7 +72,7 @@ public class QMDP extends POMDPPlanner implements QComputablePlanner {
 	public QValue getQ(State s, AbstractGroundedAction a) {
 		
 		BeliefState bs = new BeliefState((PODomain)this.domain);
-		bs.setBeliefVector(s.getFirstObjectOfClass(BeliefMDPGenerator.CLASSBELIEF).getDoubleArrayValue(BeliefMDPGenerator.ATTBELIEF));
+		bs.setBeliefCollection(s.getFirstObjectOfClass(BeliefMDPGenerator.CLASSBELIEF).getDoubleArrayValue(BeliefMDPGenerator.ATTBELIEF));
 		QValue q = new QValue(s, a, this.qForBelief(bs, (GroundedAction)a));
 		
 		return q;
@@ -104,7 +105,7 @@ public class QMDP extends POMDPPlanner implements QComputablePlanner {
 	}
 
 	@Override
-	public void planFromBeliefState(BeliefState bs) {
+	public void planFromBeliefStatistic(BeliefStatistic bsInput) {
 		this.forceMDPPlanningFromAllStates();
 	}
 

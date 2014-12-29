@@ -18,6 +18,7 @@ import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;
 import burlap.oomdp.singleagent.pomdp.BeliefState;
+import burlap.oomdp.singleagent.pomdp.BeliefStatistic;
 import burlap.oomdp.singleagent.pomdp.PODomain;
 
 public class BeliefSarsa extends POMDPPlanner implements QComputablePlanner {
@@ -86,7 +87,8 @@ public class BeliefSarsa extends POMDPPlanner implements QComputablePlanner {
 	}
 
 	@Override
-	public void planFromBeliefState(BeliefState bs) {
+	public void planFromBeliefStatistic(BeliefStatistic bsInput) {
+		BeliefState bs = new BeliefState(bsInput.getDomain(),bsInput);
 		State s = BeliefMDPGenerator.getBeliefMDPState(this.beliefMDP, bs);
 		this.planFromState(s);
 	}

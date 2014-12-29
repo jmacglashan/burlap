@@ -100,7 +100,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			BeliefState bs = new BeliefState(BeliefMDPGenerator.this.podomain);
 			ObjectInstance bObject = s.getFirstObjectOfClass(CLASSBELIEF);
 			double [] bVector = bObject.getDoubleArrayValue(ATTBELIEF);
-			bs.setBeliefVector(bVector);
+			bs.setBeliefCollection(bVector);
 			
 			GroundedAction mdpGA = new GroundedAction(this.mdpAction, params);
 			
@@ -130,7 +130,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			BeliefState bs = new BeliefState(BeliefMDPGenerator.this.podomain);
 			ObjectInstance bObject = s.getFirstObjectOfClass(CLASSBELIEF);
 			double [] bVector = bObject.getDoubleArrayValue(ATTBELIEF);
-			bs.setBeliefVector(bVector);
+			bs.setBeliefCollection(bVector);
 			
 			List<State> observations = BeliefMDPGenerator.this.podomain.getObservationFunction().getAllPossibleObservations();
 			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(observations.size());

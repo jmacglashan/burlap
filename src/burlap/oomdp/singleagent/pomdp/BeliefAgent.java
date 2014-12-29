@@ -1,6 +1,7 @@
 package burlap.oomdp.singleagent.pomdp;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.pomdp.POMDPEpisodeAnalysis;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -18,15 +19,15 @@ public abstract class BeliefAgent {
 		this.curBelief = beliefState;
 	}
 	
-	public EpisodeAnalysis actUntilTerminal(){
-		EpisodeAnalysis ea = new EpisodeAnalysis();
+	public POMDPEpisodeAnalysis actUntilTerminal(){
+		POMDPEpisodeAnalysis ea = new POMDPEpisodeAnalysis();
 		ea.initializeEpisideWithInitialState(this.environment.getCurMDPState());
 		while(!this.environment.curStateIsTerminal()){
 			GroundedAction ga = this.getAction(this.curBelief);
 			State observation = this.environment.executeAction(ga);
 			State nextMDPState = this.environment.getCurMDPState();
 			double r = this.environment.lastR;
-			ea.recordTransitionTo(ga, nextMDPState, r);
+			ea.recordTransitionTo(ga, nextMDPState, r,observation);
 			
 			//update our belief
 			//first get POMDP action to make sure the getAction returned the true source action
@@ -38,8 +39,8 @@ public abstract class BeliefAgent {
 		return ea;
 	}
 	
-	public EpisodeAnalysis actUntilTerminalOrMaxSteps(int maxSteps){
-		EpisodeAnalysis ea = new EpisodeAnalysis();
+	public POMDPEpisodeAnalysis actUntilTerminalOrMaxSteps(int maxSteps){
+		POMDPEpisodeAnalysis ea = new POMDPEpisodeAnalysis();
 		ea.initializeEpisideWithInitialState(this.environment.getCurMDPState());
 		int c = 0;
 		while(!this.environment.curStateIsTerminal() && c < maxSteps){
@@ -47,7 +48,7 @@ public abstract class BeliefAgent {
 			State observation = this.environment.executeAction(ga);
 			State nextMDPState = this.environment.getCurMDPState();
 			double r = this.environment.lastR;
-			ea.recordTransitionTo(ga, nextMDPState, r);
+			ea.recordTransitionTo(ga, nextMDPState, r,observation);
 			
 			//update our belief
 			//first get POMDP action to make sure the getAction returned the true source action

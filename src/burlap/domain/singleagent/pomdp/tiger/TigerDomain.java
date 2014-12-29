@@ -9,9 +9,14 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.pomdp.BeliefMDPPolicyAgent;
+import burlap.behavior.singleagent.pomdp.POMDPEpisodeAnalysis;
+import burlap.behavior.singleagent.pomdp.pbvi.PBVI;
+import burlap.behavior.singleagent.pomdp.pomcp.POMCP;
+import burlap.behavior.singleagent.pomdp.pomcp.MonteCarloNodeAgent;
 import burlap.behavior.singleagent.pomdp.qmdp.QMDP;
 import burlap.behavior.singleagent.pomdp.wrappedmdpalgs.BeliefSarsa;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.behavior.statehashing.NameDependentStateHashFactory;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.auxiliary.common.NullTermination;
@@ -286,6 +291,11 @@ public class TigerDomain implements DomainGenerator {
 			throw new RuntimeException("Unknown aciton " + action.actionName() + "; cannot return observation probability.");
 		}
 		
+		@Override
+		public boolean isTerminalObservation(State observation) {
+			return false;
+		}
+		
 		protected State observationLeft(){
 			State hearLeft = new State();
 			ObjectInstance obL = new ObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
@@ -317,6 +327,8 @@ public class TigerDomain implements DomainGenerator {
 			nothing.addObject(obNothing);
 			return nothing;
 		}
+
+		
 		
 		
 	}
@@ -374,31 +386,43 @@ public class TigerDomain implements DomainGenerator {
 		
 		RewardFunction rf = new TigerRF();
 		TerminalFunction tf = new NullTermination();
-		BeliefSarsa sarsa = new BeliefSarsa(domain, rf, tf, 0.99, 20, 1, true, 10., 0.1, 0.5, 10000);
-		BeliefState bs = TigerDomain.getInitialBeliefState(domain);
 		
+		
+		BeliefState bs = TigerDomain.getInitialBeliefState(domain);
+		POEnvironment env = new POEnvironment(domain, rf, tf);
+		POMDPEpisodeAnalysis ea;
+		/*
+		 * 
+		 **/
+		BeliefSarsa sarsa = new BeliefSarsa(domain, rf, tf, 0.99, 20, 1, true, 10., 0.1, 0.5, 10000);
 		System.out.println("Begining sarsa planning.");
-		sarsa.planFromBeliefState(bs);
+		sarsa.planFromBeliefStatistic(bs);
 		System.out.println("End sarsa planning.");
 		
 		Policy p = new GreedyQPolicy(sarsa);
 		
-		POEnvironment env = new POEnvironment(domain, rf, tf);
+//		POEnvironment env = new POEnvironment(domain, rf, tf);
 		env.setCurMPDStateTo(bs.sampleStateFromBelief());
 		
 		BeliefMDPPolicyAgent agent = new BeliefMDPPolicyAgent(domain, p);
 		agent.setEnvironment(env);
 		agent.setBeliefState(bs);
-		EpisodeAnalysis ea = agent.actUntilTerminalOrMaxSteps(20);
+		ea = agent.actUntilTerminalOrMaxSteps(20);
 		
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
 			String tval = ea.getState(i).getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
-			System.out.println(tval + ": " + ea.getAction(i).toString());
+//			System.out.println(tval + ": " + ea.getAction(i).toString());
+			State observation = ea.getObservation(i);
+			double tempRW = ea.getReward(i+1);
+			String obsVal = observation.getFirstObjectOfClass(CLASSOBSERVATION).getStringValForAttribute(ATTOBSERVATION);
+			System.out.println(tval + ": " + ea.getAction(i).toString() +" , Observation: " + obsVal + ", reward: " +tempRW);
+		
+			
 		}
 		
 		QMDP qmdp = new QMDP(domain, rf, tf, 0.99, new DiscreteStateHashFactory(), 0.01, 200);
 		System.out.println("Beginning QMDP Planning.");
-		qmdp.planFromBeliefState(bs);
+		qmdp.planFromBeliefStatistic(bs);
 		System.out.println("Ending QMDP Planning.");
 		Policy qp = new GreedyQPolicy(qmdp);
 		
@@ -409,10 +433,62 @@ public class TigerDomain implements DomainGenerator {
 		
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
 			String tval = ea.getState(i).getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
-			System.out.println(tval + ": " + ea.getAction(i).toString());
+//			System.out.println(tval + ": " + ea.getAction(i).toString());
+			State observation = ea.getObservation(i);
+			double tempRW = ea.getReward(i+1);
+			String obsVal = observation.getFirstObjectOfClass(CLASSOBSERVATION).getStringValForAttribute(ATTOBSERVATION);
+			System.out.println(tval + ": " + ea.getAction(i).toString() +" , Observation: " + obsVal + ", reward: " +tempRW);
 		}
 		
 		
+		
+		/*
+		 * working pbvi code uncomment to use
+		 * */
+//		POEnvironment env = new POEnvironment(domain, rf, tf);
+		env.setCurMPDStateTo(bs.sampleStateFromBelief());
+		
+		PBVI pbvi = new PBVI(domain,rf,tf,0.5, new NameDependentStateHashFactory(),10,20,10);
+//		pbvi.testPBVI();
+		System.out.println("Begining pbvi planning.");
+		pbvi.planFromBeliefStatistic(bs);
+		System.out.println("End pbvi planning.");
+		Policy pPBVI = new GreedyQPolicy(pbvi);
+		BeliefMDPPolicyAgent PBVIagent = new BeliefMDPPolicyAgent(domain, pPBVI);
+		PBVIagent.setEnvironment(env);
+		PBVIagent.setBeliefState(bs);
+		ea = PBVIagent.actUntilTerminalOrMaxSteps(20);
+		for(int i = 0; i < ea.numTimeSteps()-1; i++){
+			String tval = ea.getState(i).getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
+			double tempRW = ea.getReward(i+1);
+			State observation = ea.getObservation(i);
+			String obsVal = observation.getFirstObjectOfClass(CLASSOBSERVATION).getStringValForAttribute(ATTOBSERVATION);
+			System.out.println(tval + ": " + ea.getAction(i).toString() +" , Observation: " + obsVal + ", reward: " +tempRW);
+		}
+		
+		
+//		POEnvironment 
+		env = new POEnvironment(domain, rf, tf);
+		env.setCurMPDStateTo(bs.sampleStateFromBelief());
+		
+		System.out.println("POMCP Based planners: POMCP");
+		
+		POMCP pomcpPlanner = new POMCP(domain, rf, tf, 0.50, new NameDependentStateHashFactory(), 10, 110.0, 2048);
+		pomcpPlanner.planFromBeliefStatistic(bs);
+		
+		MonteCarloNodeAgent mcAgent = new MonteCarloNodeAgent(pomcpPlanner);
+		mcAgent.setEnvironment(env);
+		
+//		POMDPEpisodeAnalysis 
+		ea = mcAgent.actUntilTerminalOrMaxSteps(20);
+		
+		for(int i = 0; i < ea.numTimeSteps()-1; i++){
+			String tval = ea.getState(i).getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
+			double tempRW = ea.getReward(i+1);
+			State observation = ea.getObservation(i);
+			String obsVal = observation.getFirstObjectOfClass(CLASSOBSERVATION).getStringValForAttribute(ATTOBSERVATION);
+			System.out.println(tval + ": " + ea.getAction(i).toString() +" , Observation: " + obsVal + ", reward: " +tempRW);
+		}
 	}
 
 }

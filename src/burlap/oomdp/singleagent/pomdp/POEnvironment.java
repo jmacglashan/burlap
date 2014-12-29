@@ -1,12 +1,20 @@
 package burlap.oomdp.singleagent.pomdp;
 
 import burlap.oomdp.core.State;
+
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 
+/**
+ * The POEnvironment class allows a POMDP solver to execute actions in an environment and return observations,
+ * while keeping the true state of the world hidden.
+ * 
+ * @author ngopalan
+ *
+ */
 public class POEnvironment extends Environment {
 
 	protected PODomain				domain;
