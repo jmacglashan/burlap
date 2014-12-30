@@ -529,7 +529,29 @@ public class State {
 		return desc;
 	
 	}
-	
+
+
+	/**
+	 * Returns a mapping from object instance names to the list of attributes names that have unset values.
+	 * @return a mapping from object instance names to the list of attributes names that have unset values.
+	 */
+	public Map<String, List<String>> getAllUnsetAttributes(){
+		Map<String, List<String>> unset = new HashMap<String, List<String>>();
+		for(ObjectInstance o : this.objectInstances){
+			List<String> unsetA = o.unsetAttributes();
+			if(unsetA.size() > 0){
+				unset.put(o.getName(), unsetA);
+			}
+		}
+		for(ObjectInstance o : this.hiddenObjectInstances){
+			List<String> unsetA = o.unsetAttributes();
+			if(unsetA.size() > 0){
+				unset.put(o.getName(), unsetA);
+			}
+		}
+
+		return unset;
+	}
 	
 	/**
 	 * Returns a string representation of this state using observable and hidden object instances.
@@ -548,6 +570,24 @@ public class State {
 		
 		return desc;
 		
+	}
+
+
+	/**
+	 * Returns a string description of the state with unset attribute values listed as null.
+	 * @return a string description of the state with unset attribute values listed as null.
+	 */
+	public String getCompleteStateDescriptionWithUnsetAttributesAsNull(){
+		String desc = "";
+		for(ObjectInstance o : objectInstances){
+			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
+		}
+		for(ObjectInstance o : hiddenObjectInstances){
+			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
+		}
+
+
+		return desc;
 	}
 	
 	

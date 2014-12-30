@@ -51,6 +51,11 @@ public class MultiTargetRelationalValue extends Value {
 	}
 
 	@Override
+	public boolean valueHasBeenSet() {
+		return true;
+	}
+
+	@Override
 	public void setValue(int v) {
 		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to an int value"));
 	}

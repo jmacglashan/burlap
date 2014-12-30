@@ -147,33 +147,28 @@ public class StateJSONParser implements StateParser {
 			String className = (String)oMap.get("class");
 			ObjectInstance ob = new ObjectInstance(this.domain.getObjectClass(className), obName);
 			for(Attribute a : this.domain.getObjectClass(className).attributeList){
-				if(a.type == AttributeType.BOOLEAN){
-					Boolean bval = (Boolean)oMap.get(a.name);
+
+				Object mapVal = oMap.get(a.name);
+				if(mapVal instanceof Boolean){
+					boolean bval = (Boolean)oMap.get(a.name);
 					if(bval){
 						ob.setValue(a.name, 1);
 					}
 					else{
 						ob.setValue(a.name, 0);
 					}
+
 				}
-				else if(a.type == AttributeType.DISC || a.type == AttributeType.INT){
-					ob.setValue(a.name, (Integer)oMap.get(a.name));
+				else if(mapVal instanceof Integer){
+					ob.setValue(a.name, (Integer)mapVal);
 				}
-				else if(a.type == AttributeType.REAL || a.type == AttributeType.REALUNBOUND){
-					ob.setValue(a.name, (Double)oMap.get(a.name));
+				else if(mapVal instanceof Double){
+					ob.setValue(a.name, (Double)mapVal);
 				}
-				else if(a.type == AttributeType.RELATIONAL){
-					ob.setValue(a.name, (String)oMap.get(a.name));
+				else if(mapVal instanceof String){
+					ob.setValue(a.name, (String)mapVal);
 				}
-				else if(a.type == AttributeType.MULTITARGETRELATIONAL){
-					Set<?> rset = (Set<?>)oMap.get(a.name);
-					for(Object rtarget : rset){
-						ob.addRelationalTarget(a.name, (String)rtarget);
-					}
-				}
-				else if(a.type == AttributeType.STRING || a.type == AttributeType.INTARRAY || a.type == AttributeType.DOUBLEARRAY){
-					ob.setValue(a.name, (String)oMap.get(a.name));
-				}
+
 			}
 			s.addObject(ob);
 		}

@@ -37,6 +37,11 @@ public class DoubleArrayValue extends Value{
 	}
 
 	@Override
+	public boolean valueHasBeenSet() {
+		return this.doubleArray != null;
+	}
+
+	@Override
 	public void setValue(int v) {
 		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set value to int.");
 	}

@@ -44,6 +44,11 @@ public class StringValue extends Value {
 	}
 
 	@Override
+	public boolean valueHasBeenSet() {
+		return true;
+	}
+
+	@Override
 	public void setValue(int v) {
 		this.stringVal = Integer.toString(v);
 	}

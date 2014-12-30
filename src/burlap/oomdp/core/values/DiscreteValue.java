@@ -41,7 +41,12 @@ public class DiscreteValue extends Value{
 		DiscreteValue dv = (DiscreteValue)v;
 		this.discVal = dv.discVal;
 	}
-	
+
+	@Override
+	public boolean valueHasBeenSet() {
+		return this.discVal != -1;
+	}
+
 	@Override
 	public Value copy(){
 		return new DiscreteValue(this);

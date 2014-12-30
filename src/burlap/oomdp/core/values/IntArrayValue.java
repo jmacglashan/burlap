@@ -37,6 +37,11 @@ public class IntArrayValue extends Value {
 	}
 
 	@Override
+	public boolean valueHasBeenSet() {
+		return this.intArray != null;
+	}
+
+	@Override
 	public void setValue(int v) {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot set single int value.");
 	}
