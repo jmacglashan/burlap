@@ -494,6 +494,10 @@ public class VisualExplorer extends JFrame{
 	}
 
 
+	/**
+	 * Updates the currently visualized state to the input state.
+	 * @param s the state to visualize.
+	 */
 	public void updateState(State s){
 		this.curState = s;
 		this.stateConsole.setText(this.getConsoleText(s));
@@ -503,6 +507,11 @@ public class VisualExplorer extends JFrame{
 	}
 
 
+	/**
+	 * Returns the text that will be printed to the console for the given input state.
+	 * @param s the state for which the current console text will be generated.
+	 * @return the text that will be printed to the console for the given input state.
+	 */
 	protected String getConsoleText(State s){
 		StringBuilder sb = new StringBuilder(256);
 		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
@@ -522,7 +531,11 @@ public class VisualExplorer extends JFrame{
 
 		return sb.toString();
 	}
-	
+
+
+	/**
+	 * Handles action execute button.
+	 */
 	protected void handleExecute(){
 		
 		String actionCommand = this.actionField.getText();
@@ -534,7 +547,12 @@ public class VisualExplorer extends JFrame{
 		String [] comps = actionCommand.split(" ");
 		this.executeAction(comps);
 	}
-	
+
+
+	/**
+	 * Handles key presses
+	 * @param e the key event
+	 */
 	protected void handleKeyPressed(KeyEvent e){
 		
 		String key = String.valueOf(e.getKeyChar());
@@ -566,6 +584,10 @@ public class VisualExplorer extends JFrame{
 		
 	}
 
+	/**
+	 * Executes the action defined in string array with the first component being the action name and the rest the parameters.
+	 * @param comps the string array defining hte action to be executed.
+	 */
 	protected void executeAction(String [] comps){
 		String actionName = comps[0];
 
@@ -596,7 +618,12 @@ public class VisualExplorer extends JFrame{
 			this.updateState(nextState);
 		}
 	}
-	
+
+
+	/**
+	 * Updates the propositional function evaluation text display for the given state.
+	 * @param s the input state on which propositional functions are to be evaluated.
+	 */
 	protected void updatePropTextArea(State s){
 		
 		StringBuffer buf = new StringBuffer();
