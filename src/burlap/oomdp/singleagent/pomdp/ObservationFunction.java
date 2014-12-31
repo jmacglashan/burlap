@@ -54,6 +54,12 @@ public abstract class ObservationFunction {
 		throw new RuntimeException("Could not sample observaiton because observation probabilities did not sum to 1; they summed to " + sumProb);
 	}
 	
+	/**
+	 * This method should be overridden when real world observations are different from sample observations
+	 */
+	public State sampleRealWorldObservation(State state, GroundedAction action){
+		return sampleObservation(state, action);
+	}
 	
 	public class ObservationProbability{
 		public State observation;

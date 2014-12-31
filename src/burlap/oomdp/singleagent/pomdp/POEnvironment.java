@@ -42,7 +42,7 @@ public class POEnvironment extends Environment {
 		Action a = domain.getAction(aname);
 		State sp = a.performAction(this.mdpState, params);
 		GroundedAction ga = new GroundedAction(a, params);
-		this.curState = this.domain.getObservationFunction().sampleObservation(sp, ga);
+		this.curState = this.domain.getObservationFunction().sampleRealWorldObservation(sp, ga);
 		this.lastR = this.rf.reward(this.mdpState, ga, sp);
 		
 		this.mdpState = sp;
