@@ -13,6 +13,7 @@ import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
@@ -256,7 +257,12 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 		}
 		return result;
 	}
-	
+
+
+	public StaticVFPlanner getCopyOfValueFunction(){
+		return new StaticVFPlanner(this.domain, this.rf, this.gamma, this.hashingFactory, this.actions, this.valueFunction);
+	}
+
 	
 	/**
 	 * Gets a Q-Value for a hashed state, grounded action, and object instance matching from the hashed states an internally stored hashed transition dynamics.
@@ -588,6 +594,48 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 				((Option)a).setExpectationHashingFactory(hashingFactory);
 			}
 		}
+	}
+
+
+	/**
+	 * This class is used to store tabular value function values that can be manipulated with the {@link burlap.behavior.singleagent.planning.ValueFunctionPlanner}
+	 * methods. It has no planning method defined and will throw a runtime exception if you try to call it. When you pass it a seed
+	 * value function (represented as a {@link java.util.Map}), it copies the values into its internal stored value function so that
+	 * changes to the original value function may be made without affecting this objects values.
+	 */
+	public static class StaticVFPlanner extends ValueFunctionPlanner{
+
+
+		/**
+		 * Initializes. The source value function will be *copied* into this objects value function so that changes to the source
+		 * will not affect this object. The action list will also be copied.
+		 * @param domain the planning domain
+		 * @param rf the reward function
+		 * @param gamma the discount factor
+		 * @param hashingFactory the state hashing factory used to index states
+		 * @param allActions the set of actions for computing Q-values
+		 * @param srcValueFunction the source value function to copy.
+		 */
+		public StaticVFPlanner(Domain domain, RewardFunction rf, double gamma, StateHashFactory hashingFactory, List<Action> allActions, Map <StateHashTuple, Double> srcValueFunction){
+			this.VFPInit(domain, rf, new NullTermination(), gamma, hashingFactory);
+			for(Action a : allActions){
+				this.addNonDomainReferencedAction(a);
+			}
+
+			//copy the value function
+			for(Map.Entry<StateHashTuple, Double> e : srcValueFunction.entrySet()){
+				this.valueFunction.put(e.getKey(), e.getValue());
+			}
+
+		}
+
+		@Override
+		public void planFromState(State initialState) {
+			throw new RuntimeException("StaticVFPlaner has no planning method defined. It is used for manually querying and manipulating" +
+					"a value function.");
+		}
+
+
 	}
 	
 	

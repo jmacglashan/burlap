@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
+import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -25,7 +27,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class VIModelPlanner implements ModelPlanner {
+public class VIModelPlanner implements ModelPlanner, QComputablePlanner{
 
 	
 	/**
@@ -132,7 +134,26 @@ public class VIModelPlanner implements ModelPlanner {
 	public void resetPlanner(){
 		this.vi.resetPlannerResults();
 	}
-	
+
+
+	@Override
+	public List<QValue> getQs(State s) {
+		return this.vi.getQs(s);
+	}
+
+	@Override
+	public QValue getQ(State s, AbstractGroundedAction a) {
+		return this.vi.getQ(s, a);
+	}
+
+	/**
+	 * Returns the value iteration object used for planning whenever the model updates.
+	 * @return the value iteration object used for planning whenever the model updates.
+	 */
+	public ValueIteration getValueIterationPlanner(){
+		return this.vi;
+	}
+
 	/**
 	 * Reruns VI on the new updated model. It will force VI to consider all states the agent has ever previously observed, even though not all
 	 * may be connected by the current unknown transition model.
