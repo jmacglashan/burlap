@@ -143,7 +143,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 			
 			double delta;
 			do{
-				StaticVFPlanner lastValueFunction = new StaticVFPlanner(this.domain, this.rf, this.gamma, this.hashingFactory, this.actions, this.valueFunction);
+				StaticVFPlanner lastValueFunction = this.getCopyOfValueFunction();
 				this.evaluativePolicy.setPlanner(lastValueFunction);
 				delta = this.evaluatePolicy();
 				iterations++;
@@ -273,34 +273,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	
 	
 	
-	/**
-	 * This is class is merely a wrapper for the value function computed from the previous policy evaluation that can be referenced by Policy objects to derive a policy.
-	 * @author James MacGlashan
-	 *
-	 */
-	class StaticVFPlanner extends ValueFunctionPlanner{
 
-		
-		public StaticVFPlanner(Domain domain, RewardFunction rf, double gamma, StateHashFactory hashingFactory, List<Action> allActions, Map <StateHashTuple, Double> srcValueFunction){
-			this.VFPInit(domain, rf, new NullTermination(), gamma, hashingFactory);
-			for(Action a : allActions){
-				this.addNonDomainReferencedAction(a);
-			}
-			
-			//copy the value function
-			for(Map.Entry<StateHashTuple, Double> e : srcValueFunction.entrySet()){
-				this.valueFunction.put(e.getKey(), e.getValue());
-			}
-			
-		}
-		
-		@Override
-		public void planFromState(State initialState) {
-			//do nothing
-		}
-		
-		
-	}
 	
 	
 }

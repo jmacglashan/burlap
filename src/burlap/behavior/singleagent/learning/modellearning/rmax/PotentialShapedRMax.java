@@ -25,7 +25,12 @@ import burlap.oomdp.singleagent.RewardFunction;
 
 /**
  * Potential Shaped RMax [1] is a generalization of RMax in which a potential-shaped reward function is used to provide less (but still admissible)
- * optimistic views of unknown state transitions. If no potnetial function is provided to this class, then it defaults to classic RMax optimism.
+ * optimistic views of unknown state transitions. If no potential function is provided to this class, then it defaults to classic RMax optimism.
+ *
+ * The default constructor will use value iteration for planning, but you can provide any planner you'd like. Similarly,
+ * the default constructor will use a tabular transition/reward model, but you can also provide your own model learning.
+ * See the {@link burlap.behavior.singleagent.learning.modellearning.Model} class for more information on defining your
+ * own model.
  * 
  * 1. John Asmuth, Michael L. Littman, and Robert Zinkov. "Potential-based Shaping in Model-based Reinforcement Learning." AAAI. 2008.
  * 
@@ -85,7 +90,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory to use for VI and the tabular model
 	 * @param maxReward the maximum possible reward
-	 * @param nConfident the number of observations requird for the model to be confident in a transtion
+	 * @param nConfident the number of observations required for the model to be confident in a transition
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
@@ -114,7 +119,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory to use for VI and the tabular model
 	 * @param potential the admissible potential function
-	 * @param nConfident the number of observations requird for the model to be confident in a transtion
+	 * @param nConfident the number of observations required for the model to be confident in a transition
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
@@ -141,7 +146,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * @param rf the real world reward function
 	 * @param tf the real world terminal function
 	 * @param gamma the discount factor
-	 * @param hashingFactory the hashing factory to use for VI and the tabular model
+	 * @param hashingFactory a state hashing factory for indexing states
 	 * @param potential the admissible potential function
 	 * @param model the model/model-learning algorithm to use
 	 * @param plannerGenerator a generator for a model planner
@@ -161,7 +166,51 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		this.modelPlanner = plannerGenerator.getModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma);
 		
 	}
-	
+
+	/**
+	 * Returns the model learning algorithm being used.
+	 * @return the model learning algorithm being used.
+	 */
+	public Model getModel() {
+		return model;
+	}
+
+
+	/**
+	 * Returns the model domain for planning. This model domain may differ from the real domain in the actions it uses for planning.
+	 * @return the model domain for planning
+	 */
+	public Domain getModeledDomain() {
+		return modeledDomain;
+	}
+
+
+	/**
+	 * Returns the planning algorithm used on the model that can be iteratively updated as the model changes.
+	 * @return the planning algorithm used on the model
+	 */
+	public ModelPlanner getModelPlanner() {
+		return modelPlanner;
+	}
+
+
+	/**
+	 * Returns the model reward function. This is expected to have larger values for unknown states.
+	 * @return the model reward function
+	 */
+	public RewardFunction getModeledRewardFunction() {
+		return modeledRewardFunction;
+	}
+
+
+	/**
+	 * Returns the model terminal function. This should start as a null termination and add terminal states as it obsreves them.
+	 * @return the model terminal function
+	 */
+	public TerminalFunction getModeledTerminalFunction() {
+		return modeledTerminalFunction;
+	}
+
 	@Override
 	public EpisodeAnalysis runLearningEpisodeFrom(State initialState){
 		return this.runLearningEpisodeFrom(initialState, maxNumSteps);
