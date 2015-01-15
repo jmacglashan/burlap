@@ -59,7 +59,7 @@ public abstract class Model {
 
 	/**
 	 * Returns a list specifying the actions for which the transition dynamics are not yet "known."
-	 * @param s the state for which the unmodeled actions should be returned.
+	 * @param s the state for which the un-modeled actions should be returned.
 	 * @return a {@link java.util.List} of {@link burlap.oomdp.core.AbstractGroundedAction} objects
 	 */
 	public abstract List<AbstractGroundedAction> getUnmodeledActionsForState(State s);
