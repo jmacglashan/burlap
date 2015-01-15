@@ -422,9 +422,14 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 			if(ModeledDomainGenerator.isRmaxFictitiousState(sprime)){
 				return 0.; //transitions to fictitious state have no value; bias handled by potential up to unknown state
 			}
+
+			double nextStatePotential = 0.;
+			if(!PotentialShapedRMax.this.model.getModelTF().isTerminal(sprime)){
+				nextStatePotential = this.potential.potentialValue(sprime);
+			}
 			
 			return this.sourceRF.reward(s, a, sprime) 
-					+ (PotentialShapedRMax.this.gamma * this.potential.potentialValue(sprime)) - this.potential.potentialValue(s);
+					+ (PotentialShapedRMax.this.gamma * nextStatePotential) - this.potential.potentialValue(s);
 			
 		}
 		
