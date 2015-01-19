@@ -51,7 +51,7 @@ public class TabularModel extends Model {
 	protected int								nConfident;
 	
 	/**
-	 * The modeled terminal funciton.
+	 * The modeled terminal function.
 	 */
 	protected TerminalFunction					modeledTF;
 	

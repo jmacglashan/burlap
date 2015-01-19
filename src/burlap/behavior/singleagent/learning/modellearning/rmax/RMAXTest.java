@@ -135,9 +135,7 @@ public class RMAXTest {
 		gui.initGUI();
 	}
 	
-	//TEST
-	//Test2
-	//Test3
+
 	
 
 }
