@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel;
 
 
-public class Hypothesis {
+public class ConditionHypothesis {
 
 		private int [] precondition;
 		private boolean truthVal;
@@ -17,12 +17,12 @@ public class Hypothesis {
 
 
 
-		public Hypothesis(int [] precondition, boolean truthVal){
+		public ConditionHypothesis(int [] precondition, boolean truthVal){
 			this.precondition = precondition;
 			this.truthVal = truthVal;
 		}
 
-		public Boolean matches(Hypothesis otherHyp) {
+		public Boolean matches(ConditionHypothesis otherHyp) {
 			for (int i = 0; i < this.precondition.length; i++) {
 				int currVal = this.precondition[i];
 				int currOtherVal = otherHyp.getPrecondition()[i];
@@ -44,7 +44,7 @@ public class Hypothesis {
 			return true;
 		}
 
-		public Hypothesis xor(Hypothesis otherHyp) {
+		public ConditionHypothesis xor(ConditionHypothesis otherHyp) {
 			int [] toReturn = new int [precondition.length];
 
 			for (int i = 0; i < precondition.length; i++) {
@@ -59,10 +59,10 @@ public class Hypothesis {
 			}			
 
 
-			return new Hypothesis(toReturn, this.truthVal);
+			return new ConditionHypothesis(toReturn, this.truthVal);
 		}
 		
-		public Hypothesis xor(int [] otherHyp) {
+		public ConditionHypothesis xor(int [] otherHyp) {
 			int [] toReturn = new int [precondition.length];
 
 			for (int i = 0; i < precondition.length; i++) {
@@ -77,7 +77,7 @@ public class Hypothesis {
 			}			
 
 
-			return new Hypothesis(toReturn, this.truthVal);
+			return new ConditionHypothesis(toReturn, this.truthVal);
 		}
 		
 		@Override

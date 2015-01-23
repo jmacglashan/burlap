@@ -6,13 +6,13 @@ import java.util.List;
 
 public class ConditionLearner {
 	
-	public HashSet<Hypothesis> HHat;
+	public HashSet<ConditionHypothesis> HHat;
 	
-	private Hypothesis HSubT;
+	private ConditionHypothesis HSubT;
 	private int numPreds;
 	
 	public ConditionLearner(int numPreds){
-		this.HHat = new HashSet<Hypothesis>();
+		this.HHat = new HashSet<ConditionHypothesis>();
 		this.HSubT = null;
 		this.numPreds = numPreds;
 	}
@@ -22,7 +22,7 @@ public class ConditionLearner {
 		List<Boolean> toReturn = new ArrayList<Boolean>();
 		
 		//Check for hyp that predicts false
-		for(Hypothesis h: HHat) {
+		for(ConditionHypothesis h: HHat) {
 			if (h.matches(currStatePreds) && !h.getTruthVal()) {
 				toReturn.add(false);
 				break;
@@ -30,8 +30,11 @@ public class ConditionLearner {
 		}
 		
 		//Check for hyp that predicts true
-		if (this.HSubT == null || (this.HSubT.matches(currStatePreds))) {
-			toReturn.add(true);
+		for(ConditionHypothesis h: HHat) {
+			if (h.matches(currStatePreds) && h.getTruthVal()) {
+				toReturn.add(true);
+				break;
+			}
 		}
 		
 		return toReturn;
@@ -42,19 +45,19 @@ public class ConditionLearner {
 		if (observation) {
 			//Update prediction
 			if (HSubT == null) {
-				HSubT = new Hypothesis(statePreds, true);
+				HSubT = new ConditionHypothesis(statePreds, true);
 			}
 			else {
 				HSubT = HSubT.xor(statePreds);
 			}
 			//Eliminate hyps that predict false
-			List<Hypothesis> toEliminate = new ArrayList<Hypothesis>();
-			for (Hypothesis h: HHat) {
+			List<ConditionHypothesis> toEliminate = new ArrayList<ConditionHypothesis>();
+			for (ConditionHypothesis h: HHat) {
 				if(!h.getTruthVal() && HSubT.matches(h)) {
 					toEliminate.add(h);
 				}
 			}
-			for (Hypothesis h: toEliminate) {
+			for (ConditionHypothesis h: toEliminate) {
 				HHat.remove(h);
 			}
 			
@@ -64,7 +67,7 @@ public class ConditionLearner {
 		//False observation
 		else {	
 			//Eliminate the hyp that predicts true
-			for (Hypothesis h: HHat) {
+			for (ConditionHypothesis h: HHat) {
 				if (h.matches(statePreds) && h.getTruthVal()) {
 					HHat.remove(h);
 					break;
@@ -97,8 +100,8 @@ public class ConditionLearner {
 		
 		//Add all hypotheses
 		for (int [] statePred: statePreds) {
-			HHat.add(new Hypothesis(statePred, true));
-			HHat.add(new Hypothesis(statePred, false));
+			HHat.add(new ConditionHypothesis(statePred, true));
+			HHat.add(new ConditionHypothesis(statePred, false));
 		}
 		
 	}
@@ -114,14 +117,14 @@ public class ConditionLearner {
 		
 		test.updateVersionSpace(true, new int [] {1, 0, 1});
 		
-		test.updateVersionSpace(false, new int [] {1, 1, 0});
+		test.updateVersionSpace(true, new int [] {1, 1, 1});
 		
-		for (Hypothesis h : test.HHat) {
+		for (ConditionHypothesis h : test.HHat) {
 			System.out.println(h.toString());
 		}
-		
+		 
 		System.out.println(test.HSubT);
-		System.out.println(test.computePredictions(new int [] {1, 1, 0}));
+		System.out.println(test.computePredictions(new int [] {1, 1, 1}));
 		
 
 	}
