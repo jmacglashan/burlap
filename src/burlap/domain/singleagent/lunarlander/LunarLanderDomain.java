@@ -584,7 +584,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		vyatt.setLims(-vmax, vmax);
 		
 		Attribute aatt = new Attribute(domain, AATTNAME, Attribute.AttributeType.REAL);
-		aatt.setLims(-anginc, anginc);
+		aatt.setLims(-angmax, angmax);
 		
 		Attribute latt = new Attribute(domain, LATTNAME, Attribute.AttributeType.REAL);
 		latt.setLims(xmin, xmax);
