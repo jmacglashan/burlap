@@ -470,11 +470,11 @@ public class VisualExplorer extends JFrame{
 					}
 
 					if(madeChange) {
+						VisualExplorer.this.updateState(ns);
 						VisualExplorer.this.numSteps = 0;
 						if (VisualExplorer.this.currentEpisode != null) {
 							VisualExplorer.this.currentEpisode = new EpisodeAnalysis(curState);
 						}
-						VisualExplorer.this.updateState(ns);
 					}
 				}
 
