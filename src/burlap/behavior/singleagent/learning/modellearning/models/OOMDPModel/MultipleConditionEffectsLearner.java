@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.Effect;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.State;
@@ -19,7 +20,6 @@ public class MultipleConditionEffectsLearner {
 		List<Action> actions = d.getActions();
 		List<ObjectClass> oClasses = d.getObjectClasses();
 		//Instantiate CELearners for all actions attribute-object class tuples
-		System.out.print("Instantiating CELs... ");
 
 		for (Action a: actions) {
 			List<ConditionEffectLearner> listOfLearnersForAction = new ArrayList<ConditionEffectLearner>();
@@ -31,7 +31,6 @@ public class MultipleConditionEffectsLearner {
 			}
 			this.CELearnersByAction.put(a, listOfLearnersForAction);
 		}	
-		System.out.println("Done");
 	}
 	
 	public void learn(State s, Action a, State sPrime) {
@@ -46,14 +45,21 @@ public class MultipleConditionEffectsLearner {
 	public State predict(State s, Action a) {
 		List<ConditionEffectLearner> relevantLearners = this.CELearnersByAction.get(a);
 		State toReturn = s.copy();
+		
+		List<Effect> hypothesizedEffects = new ArrayList<Effect>();
+		
 		for (ConditionEffectLearner CELearner: relevantLearners) {
-			toReturn = CELearner.predictResultingState(toReturn);
-			//didn't know
-			if (toReturn == null) {
-				return null;
-			}
+			hypothesizedEffects.add(CELearner.predictResultingEffect(s));
 		}
+		//If don't know
+		if (hypothesizedEffects.contains(null)) return null;
+		
 		//TODO: CHECK FOR CONTRADICTIONS
+		
+		//Do know effect and no contradictions
+		for (Effect e : hypothesizedEffects) {
+			toReturn = e.applyEffect(toReturn);
+		}
 
 		return toReturn;
 	}
