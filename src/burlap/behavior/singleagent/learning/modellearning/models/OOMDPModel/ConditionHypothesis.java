@@ -96,7 +96,28 @@ public class ConditionHypothesis {
 			}
 			toReturn.append(", " + this.truthVal);
 			
-			return new String(toReturn);
+			return new String("(" + toReturn + ")");
 			
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof ConditionHypothesis) {
+				if (((ConditionHypothesis) o).truthVal != this.truthVal) return false;
+				
+				
+				if (this.precondition.length != ((ConditionHypothesis) o).precondition.length) return false;
+				
+				int index = 0;
+				for (int curr : this.precondition) {
+					if (curr != ((ConditionHypothesis) o).precondition[index]) return false;
+					
+					index += 1;
+				}
+				
+				return true;
+			}
+			
+			return false;
 		}
 }

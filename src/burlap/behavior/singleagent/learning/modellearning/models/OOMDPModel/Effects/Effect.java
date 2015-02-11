@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effect;
+package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
@@ -25,5 +25,10 @@ public abstract class Effect {
 	}
 		
 	public abstract State applyEffect(State state);
+	
+	@Override
+	public String toString() {
+		return "Effect on " + atEffected.name + " of " + objectClassEffected.name + "s";
+	}
 	
 }

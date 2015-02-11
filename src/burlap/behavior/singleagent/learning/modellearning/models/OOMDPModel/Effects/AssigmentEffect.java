@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effect;
+package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
@@ -24,7 +24,7 @@ public class AssigmentEffect extends Effect {
 		State toReturn = iState.copy();
 		
 		for (ObjectInstance o: toReturn.getObjectsOfTrueClass(this.objectClassEffected.name)) {
-				o.setValue(this.atEffected.toString(), valueToChangeBy);
+				o.setValue(this.atEffected.name, valueToChangeBy);
 		}
 		
 		return toReturn;
@@ -33,12 +33,17 @@ public class AssigmentEffect extends Effect {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AssigmentEffect && 
-				((ArithmeticEffect) o).getObjectClassEffected().equals(this.objectClassEffected) &&
-				((ArithmeticEffect) o).getAtEffected().equals(this.atEffected) &&
-				((ArithmeticEffect) o).getValueToChangeBy() == this.valueToChangeBy) {
+				((AssigmentEffect) o).getObjectClassEffected().equals(this.objectClassEffected) &&
+				((AssigmentEffect) o).getAtEffected().equals(this.atEffected) &&
+				((AssigmentEffect) o).getValueToChangeBy() == this.valueToChangeBy) {
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return "Assigmenteffect of setting value to " + this.valueToChangeBy + " for " + atEffected.name + " of " + objectClassEffected.name + "s";
 	}
 
 }

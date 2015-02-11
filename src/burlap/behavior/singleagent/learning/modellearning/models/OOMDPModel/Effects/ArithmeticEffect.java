@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effect;
+package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
@@ -24,8 +24,8 @@ public class ArithmeticEffect extends Effect {
 		State toReturn = iState.copy();
 		
 		for (ObjectInstance o: toReturn.getObjectsOfTrueClass(this.objectClassEffected.name)) {
-				double oldVal = o.getNumericValForAttribute(this.atEffected.toString());
-				o.setValue(this.atEffected.toString(), oldVal + valueToChangeBy);
+				double oldVal = o.getNumericValForAttribute(this.atEffected.name);
+				o.setValue(this.atEffected.name, oldVal + valueToChangeBy);
 		}
 		
 		return toReturn;
@@ -40,6 +40,11 @@ public class ArithmeticEffect extends Effect {
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return "ArithmeticEffect of adding " + this.valueToChangeBy + " to " + atEffected.name + " of " + objectClassEffected.name + "s";
 	}
 	
 }

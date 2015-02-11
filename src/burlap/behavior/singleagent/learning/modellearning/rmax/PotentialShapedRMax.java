@@ -13,6 +13,7 @@ import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlan
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.OOMDPModel;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -107,7 +108,20 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), new RMaxPotential(maxReward, gamma));
 		
 		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
+	}
+	
+	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxReward,
+		double maxVIDelta, int maxVIPasses){
+		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.model = new OOMDPModel(domain, rf, tf);
 		
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		this.modeledDomain = mdg.generateDomain();
+		
+		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
+		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), new RMaxPotential(maxReward, gamma));
+		
+		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 	}
 	
 	
