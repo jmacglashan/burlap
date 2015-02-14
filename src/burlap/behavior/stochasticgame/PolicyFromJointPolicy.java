@@ -70,8 +70,8 @@ public class PolicyFromJointPolicy extends Policy {
 	 * @param jointPolicy the underlying joint polciy
 	 */
 	public PolicyFromJointPolicy(String actingAgentName, JointPolicy jointPolicy){
-		this.setActingAgentName(actingAgentName);
 		this.jointPolicy = jointPolicy;
+		this.setActingAgentName(actingAgentName);
 	}
 	
 	/**
