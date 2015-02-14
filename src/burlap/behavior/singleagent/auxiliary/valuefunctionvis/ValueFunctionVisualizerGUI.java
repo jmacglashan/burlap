@@ -145,7 +145,15 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 		
 	}
 
-	
+
+	/**
+	 * Returns the {@link burlap.oomdp.visualizer.MultiLayerRenderer} used in this GUI.
+	 * @return the {@link burlap.oomdp.visualizer.MultiLayerRenderer} used in this GUI.
+	 */
+	public MultiLayerRenderer getMultiLayerRenderer(){
+		return this.visualizer;
+	}
+
 	/**
 	 * Returns the State-wise value function painter
 	 * @return the State-wise value function painter
