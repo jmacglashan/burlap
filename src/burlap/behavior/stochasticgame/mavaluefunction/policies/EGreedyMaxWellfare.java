@@ -48,7 +48,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	/**
 	 * Whether ties should be broken randomly or not.
 	 */
-	protected boolean						breakTiesRandomly = false;
+	protected boolean						breakTiesRandomly = true;
 	
 	
 	

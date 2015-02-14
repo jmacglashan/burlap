@@ -125,8 +125,16 @@ public class StateValuePainter2D extends StateValuePainter {
 	public StateValuePainter2D(ColorBlend colorBlend){
 		this.colorBlend = colorBlend;
 	}
-	
-	
+
+
+	/**
+	 * Sets the color blending used for the value function.
+	 * @param colorBlend the color blending used for the value function.
+	 */
+	public void setColorBlend(ColorBlend colorBlend){
+		this.colorBlend = colorBlend;
+	}
+
 	/**
 	 * Will set the x-y attributes to use for cell rendering to the x y attributes of the first object in the state of the designated classes.
 	 * @param xClassName the object class name containing the render x-axis attribute
