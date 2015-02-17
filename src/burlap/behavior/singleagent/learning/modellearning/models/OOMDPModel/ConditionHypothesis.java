@@ -1,5 +1,10 @@
 package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel;
 
+import java.util.List;
+
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+
 
 public class ConditionHypothesis {
 
@@ -15,8 +20,15 @@ public class ConditionHypothesis {
 			return this.truthVal;
 		}
 
+		//If don't care about truth vals
 
 
+		public ConditionHypothesis(State s, List<PropositionalFunction> propFuns){
+			int [] statePreds = StateHelpers.stateToBitStringOfPreds(s, propFuns);
+			this.precondition = statePreds;
+		}
+		
+		//If do care
 		public ConditionHypothesis(int [] precondition, boolean truthVal){
 			this.precondition = precondition;
 			this.truthVal = truthVal;

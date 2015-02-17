@@ -5,19 +5,33 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
+/**
+ * Class to model arithmetic effects under the OOMDP model -- i.e. effects that add some real value to the attributes of some object class 
+ * @author Dhershkowitz
+ *
+ */
 public class ArithmeticEffect extends Effect {
 
 	private double valueToChangeBy;
 
-	public double getValueToChangeBy() {
-		return this.valueToChangeBy;
-	}
-	
+	/**
+	 * 
+	 * @param oClassEffected the ObjectClass that this ArithmeticEffect acts on
+	 * @param atEffected the Attribute that this ArithmeticEffect acts on
+	 * @param valueToChangeBy the real value that this ArithmeticEffect adds to its corresponding object class's attribute
+	 */
 	public ArithmeticEffect(ObjectClass oClassEffected, Attribute atEffected, double valueToChangeBy) {
 		super(oClassEffected, atEffected);
 		this.valueToChangeBy = valueToChangeBy;
 	}
-
+	
+	/**
+	 * 
+	 * @return the real value that this ArithmeticEffect adds to its corresponding object class's attribute
+	 */
+	public double getValueToChangeBy() {
+		return this.valueToChangeBy;
+	}
 	
 	@Override
 	public State applyEffect(State iState) {
@@ -35,7 +49,7 @@ public class ArithmeticEffect extends Effect {
 	public boolean equals(Object o) {
 		if (o instanceof ArithmeticEffect && 
 				((ArithmeticEffect) o).getObjectClassEffected().equals(this.objectClassEffected) &&
-				((ArithmeticEffect) o).getAtEffected().equals(this.atEffected) &&
+				((ArithmeticEffect) o).getAttributeAffected().equals(this.atEffected) &&
 				((ArithmeticEffect) o).getValueToChangeBy() == this.valueToChangeBy) {
 			return true;
 		}

@@ -19,5 +19,9 @@ public class NullEffect extends Effect{
 		return super.toString() + "(null effect)";
 	}
 
+	@Override
+	public boolean isNullEffect() {
+		return true;
+	}
 
 }

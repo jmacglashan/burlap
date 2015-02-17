@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.learning.modellearning.Model;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.Effect;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;

@@ -15,22 +15,28 @@ import burlap.oomdp.singleagent.Action;
 
 public class ConditionEffectLearner {
 
-	private ConditionLearner CL;
+	public ConditionLearner CL;
 
-	private EffectLearner EL;
+	public EffectLearner EL;
 
 	public List<PropositionalFunction> propFuns;
 	private ObjectClass associatedOClass;
 	private Attribute relevantAtt;
 	private Action associatedAction;
 
-	public ConditionEffectLearner(Domain domain, ObjectClass OC, Attribute att, Action act) {
+	public ConditionEffectLearner(Domain domain, ObjectClass OC, Attribute att, Action act, String effectType) {
 		this.propFuns = domain.getPropFunctions();
 		this.associatedOClass = OC;
 		this.relevantAtt = att;
 		this.CL = new ConditionLearner(propFuns.size());
-		this.EL = new EffectLearner(propFuns.size(), OC, att);	
+		this.EL = new EffectLearner(propFuns.size(), OC, att, effectType);	
 		this.associatedAction = act;
+	}
+
+
+	public boolean conditionsOverlap(ConditionEffectLearner otherCEL) {
+		return (this.CL.conditionsOverlap(otherCEL.CL));
+
 	}
 
 	public Effect predictResultingEffect(State s) {
@@ -122,6 +128,11 @@ public class ConditionEffectLearner {
 		}
 
 		return false;
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		return object == this;
 	}
 
 

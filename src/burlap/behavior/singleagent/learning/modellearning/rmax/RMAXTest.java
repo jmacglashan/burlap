@@ -3,53 +3,34 @@ package burlap.behavior.singleagent.learning.modellearning.rmax;
 import java.util.ArrayList;
 import java.util.List;
 
+import minecraft.MinecraftBehavior.MinecraftBehavior;
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
-import burlap.behavior.singleagent.auxiliary.performance.LearningAlgorithmExperimenter;
-import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
-import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
-import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.LearningAgentFactory;
-import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.MultipleConditionEffectsLearner;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.OOMDPModel;
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
-import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
-import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
-import burlap.behavior.statehashing.StateHashFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
 import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
-import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
-import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.ActionObserver;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.UniformCostRF;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-import burlap.oomdp.visualizer.Visualizer;
+
+
+
+
 
 public class RMAXTest {
 
+	
 	public static class WallRF implements RewardFunction{
 
 		int gx;
@@ -89,6 +70,8 @@ public class RMAXTest {
 
 	public static void main(String[] args) {
 
+		
+		//GRID WORLD DOMAIN
 		//Set up domain and initial state
 		GridWorldDomain gwdg = new GridWorldDomain(11, 11);
 		gwdg.setMapToFourRooms();
@@ -110,10 +93,19 @@ public class RMAXTest {
 
 		final RewardFunction rf = new UniformCostRF();
 
-
 		final TerminalFunction tf = new GridWorldTerminalFunction(10, 10);
 
-
+		//MINECRAFT DOMAIN
+//		String mapName = "src/plane1.map";
+//		
+//		MinecraftBehavior mcBeh = new MinecraftBehavior(mapName);
+//		Domain d = mcBeh.getDomain();
+//		double [] results;
+//		RewardFunction rf = mcBeh.getRewardFunction();
+//		TerminalFunction tf = mcBeh.getTerminalFunction();
+//		double maxReward = 0;
+//		State initialState = mcBeh.getInitialState();
+		
 		//BFS
 		//		TFGoalCondition goalCondition = new TFGoalCondition(tf);
 
@@ -134,36 +126,38 @@ public class RMAXTest {
 		final double maxVIDelta = .1;
 		final int maxVIPasses = 20;
 
-		int learningIterations = 5;
-
+		int learningIterations = 1;
 		//RMAX
-		//		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, nConfident, maxVIDelta, maxVIPasses);
+//		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, nConfident, maxVIDelta, maxVIPasses);
 
 		//DOORMAX
-//		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, maxVIDelta, maxVIPasses);
+		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, maxVIDelta, maxVIPasses);
 
 		//RUN ALGORITHM
-//		//run agent for 40 learning episodes
-//		for(int i = 0; i < learningIterations; i++){
-//			EpisodeAnalysis ea = rmax.runLearningEpisodeFrom(initialState, 25);
-//			//average reward is undiscounted cumulative reward divided by number of actions (num time steps -1)
-//			double avgReward = ea.getDiscountedReturn(1.) / (ea.numTimeSteps() -1);
-//			System.out.println(avgReward + " average reward for episode " + (i+1));
-//		}
+		//run agent for 40 learning episodes
+		for(int i = 0; i < learningIterations; i++){
+			EpisodeAnalysis ea = rmax.runLearningEpisodeFrom(initialState, 75);
+			//average reward is undiscounted cumulative reward divided by number of actions (num time steps -1)
+			double avgReward = ea.getDiscountedReturn(1.) / (ea.numTimeSteps() -1);
+			System.out.println(avgReward + " average reward for episode " + (i+1));
+//			System.out.println(ea.actionSequence);
+		}
 //		List<TransitionProbability> test = rmax.model.getTransitionProbabilities(initialState, d.getActions().get(0).getAllApplicableGroundedActions(initialState).get(0));
 
 		//		PRINT STATE DETAILS FOR DOORMAX
-		//		State stateToTest = initialState.copy();		
-		//		GridWorldDomain.setAgent(stateToTest, 4, 1);
+//				State stateToTest = initialState.copy();		
+//				GridWorldDomain.setAgent(stateToTest, 4, 1);
+//
+				MultipleConditionEffectsLearner MCELearner = ((OOMDPModel)rmax.getModel()).MCELearner;
+//			
+//				String actionToTest = "east";
+//				
+//				System.out.println(stateToTest.toString());
+//				System.out.println("Unmodeled actions:"  + rmax.model.getUnmodeledActionsForState(stateToTest));
+//				
+//				System.out.println(MCELearner.stateOfEffectsOnState(stateToTest, d.getAction(actionToTest)));
 
-		//		MultipleConditionEffectsLearner MCELearner = ((OOMDPModel)rmax.getModel()).MCELearner;
-		//	
-		//		String actionToTest = "east";
-		//		
-		//		System.out.println(stateToTest.toString());
-		//		System.out.println("Unmodeled actions:"  + rmax.model.getUnmodeledActionsForState(stateToTest));
-		//		
-		//		System.out.println(MCELearner.stateOfEffectsOnState(stateToTest, d.getAction(actionToTest)));
+		System.out.println(MCELearner.predictionsStillInEffect());
 
 
 		//VISUALIZER
@@ -171,62 +165,62 @@ public class RMAXTest {
 		//		ValueFunctionPlanner planner = ((VIModelPlanner)rmax.getModelPlanner()).getValueIterationPlanner().getCopyOfValueFunction();
 
 		//		VIModelPlanner planner = (VIModelPlanner)rmax.getModelPlanner();
-//		ValueFunctionPlanner planner = ((VIModelPlanner)rmax.getModelPlanner()).getValueIterationPlanner().getCopyOfValueFunction();
-//
-//		List<State> allStates = StateReachability.getReachableStates(initialState, (SADomain)d, new DiscreteStateHashFactory());
-//
-//		List<State> modeledStates = new ArrayList<State>();
-//		for (State state : allStates) {
-//			if ((rmax.getModel()).stateTransitionsAreModeled(state)) {
-//				modeledStates.add(state);
-//			}
-//		}
-//		ValueFunctionVisualizerGUI gui = GridWorldDomain.getGridWorldValueFunctionVisualization(modeledStates, planner, new GreedyQPolicy(planner));
-//		gui.initGUI();
+		ValueFunctionPlanner planner = ((VIModelPlanner)rmax.getModelPlanner()).getValueIterationPlanner().getCopyOfValueFunction();
+
+		List<State> allStates = StateReachability.getReachableStates(initialState, (SADomain)d, new DiscreteStateHashFactory());
+
+		List<State> modeledStates = new ArrayList<State>();
+		for (State state : allStates) {
+			if ((rmax.getModel()).stateTransitionsAreModeled(state)) {
+				modeledStates.add(state);
+			}
+		}
+		ValueFunctionVisualizerGUI gui = GridWorldDomain.getGridWorldValueFunctionVisualization(modeledStates, planner, new GreedyQPolicy(planner));
+		gui.initGUI();
 
 
 		//EXPERIMENTS
-		LearningAgentFactory RMAXLearningFactory = new LearningAgentFactory() {
-			@Override
-			public String getAgentName() {
-				return "RMAX-Learning";
-			}
-
-			@Override
-			public LearningAgent generateAgent() {
-				return new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, nConfident, maxVIDelta, maxVIPasses);
-			}
-		};
-
-
-		LearningAgentFactory DOORMaxLearning = new LearningAgentFactory() {
-
-			@Override
-			public String getAgentName() {
-				return "DOORMAX-Learning";
-			}
-
-			@Override
-			public LearningAgent generateAgent() {
-				return new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, maxVIDelta, maxVIPasses);
-			}
-		};
-
-		StateGenerator sg = new ConstantStateGenerator(initialState);
-
-		//		LearningAgentFactory [] arr = {RMAXLearningFactory, DOORMaxLearning};
-
-
-		int numTrials = 1;
-		int stepsPerEpisode = 20;
-		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter((SADomain)d, rf, sg, numTrials, stepsPerEpisode, RMAXLearningFactory, DOORMaxLearning);
-		exp.setUpPlottingConfiguration(500, 250, 2, 1000, 
-				TrialMode.MOSTRECENTANDAVERAGE, 
-				PerformanceMetric.CUMULATIVESTEPSPEREPISODE);
-
-		exp.startExperiment();
-
-		exp.writeStepAndEpisodeDataToCSV("expData");
+//		LearningAgentFactory RMAXLearningFactory = new LearningAgentFactory() {
+//			@Override
+//			public String getAgentName() {
+//				return "RMAX-Learning";
+//			}
+//
+//			@Override
+//			public LearningAgent generateAgent() {
+//				return new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, nConfident, maxVIDelta, maxVIPasses);
+//			}
+//		};
+//
+//
+//		LearningAgentFactory DOORMaxLearning = new LearningAgentFactory() {
+//
+//			@Override
+//			public String getAgentName() {
+//				return "DOORMAX-Learning";
+//			}
+//
+//			@Override
+//			public LearningAgent generateAgent() {
+//				return new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, maxVIDelta, maxVIPasses);
+//			}
+//		};
+//
+//		StateGenerator sg = new ConstantStateGenerator(initialState);
+//
+//		//		LearningAgentFactory [] arr = {RMAXLearningFactory, DOORMaxLearning};
+//
+//
+//		int numTrials = 1;
+//		int stepsPerEpisode = 20;
+//		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter((SADomain)d, rf, sg, numTrials, stepsPerEpisode, RMAXLearningFactory, DOORMaxLearning);
+//		exp.setUpPlottingConfiguration(500, 250, 2, 1000, 
+//				TrialMode.MOSTRECENTANDAVERAGE, 
+//				PerformanceMetric.CUMULATIVESTEPSPEREPISODE);
+//
+//		exp.startExperiment();
+//
+//		exp.writeStepAndEpisodeDataToCSV("expData");
 
 	}
 

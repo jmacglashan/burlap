@@ -21,6 +21,11 @@ public class ConditionLearner {
 		this.observedStatePreds = new ArrayList<ConditionHypothesis>();
 	}
 
+	public boolean conditionsOverlap(ConditionLearner otherCL) {
+		boolean toReturn = this.HSubT.matches(otherCL.HSubT) || otherCL.HSubT.matches(this.HSubT);
+		return toReturn;
+	}
+
 
 	public List<Boolean> computePredictions(int [] currStatePreds){
 		List<Boolean> toReturn = new ArrayList<Boolean>();
@@ -40,16 +45,16 @@ public class ConditionLearner {
 				break;
 			}
 		}
-		
-		
+
+
 		//predict true if hsubt is null or matches
-//		if(this.HSubT == null || this.HSubT != null && this.HSubT.matches(currStatePreds)) {
-//			toReturn.add(true);
-//		}
-		
+		//		if(this.HSubT == null || this.HSubT != null && this.HSubT.matches(currStatePreds)) {
+		//			toReturn.add(true);
+		//		}
+
 		return toReturn;
 	}
-	
+
 	public boolean knownForState(int [] currStatePreds){
 		List<Boolean> preds = new ArrayList<Boolean>();
 
@@ -76,7 +81,7 @@ public class ConditionLearner {
 		//Add to seen observations
 		ConditionHypothesis obsHyp =new ConditionHypothesis(statePreds, observation);
 		if (!this.observedStatePreds.contains(obsHyp)) this.observedStatePreds.add(obsHyp);
-		
+
 		//True observation
 		if (observation) {
 			//Update HsubT
@@ -157,17 +162,17 @@ public class ConditionLearner {
 
 		return "Known true condition is " + condLearner;
 	}
-	
+
 	public String getObservedStatePreds() {
 		StringBuilder toReturn = new StringBuilder();
-		
-		
-		
+
+
+
 		for (ConditionHypothesis obs : this.observedStatePreds) {
 			toReturn.append(obs.toString());
 		}
-		
-		
+
+
 		return "(" + toReturn.toString() + ")";
 	}
 

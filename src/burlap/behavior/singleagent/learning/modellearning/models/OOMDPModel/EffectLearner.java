@@ -7,6 +7,7 @@ import java.util.List;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.ArithmeticEffect;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.AssigmentEffect;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.Effect;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.EffectHelpers;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.NullEffect;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
@@ -19,23 +20,23 @@ public class EffectLearner {
 
 	private Attribute relevantAtt;
 	private ObjectClass relevantObjectClass;
-
+	private String effectType;
+	
 	boolean allEffectsRuledOut;
 
-	public EffectLearner(int numPreds,  ObjectClass oClass, Attribute att){
+	public EffectLearner(int numPreds,  ObjectClass oClass, Attribute att, String effectType){
 		this.relevantObjectClass = oClass;
 		this.relevantAtt = att;
 		allEffectsRuledOut = false;
+		this.effectType = effectType;
 	}
 
 	public void updateVersionSpace(State s, State sPrime) {
-		List<Effect> possibleEffects = getPossibleEffects(s, sPrime);
+		Effect possibleEffect = EffectHelpers.getPossibleEffect(s, sPrime, this.relevantObjectClass, this.relevantAtt, this.effectType);
 		//Initialize HHat if it's empty
 		if (HHat == null) {
 			this.HHat = new HashSet<Effect>();
-			for (Effect possEffect: possibleEffects) {
-				HHat.add(possEffect);
-			}
+				HHat.add(possibleEffect);
 		}
 		//All effects ruled out -- must be a no op so far as we know
 		else if (HHat.size() == 0) {
@@ -49,12 +50,9 @@ public class EffectLearner {
 			for (Effect hypEffect: HHat) {
 				boolean wasEqualToOne = false;
 
-				for(Effect possEffect: possibleEffects) {
-					if (possEffect.equals(hypEffect)) {
+					if (possibleEffect.equals(hypEffect)) {
 						wasEqualToOne = true;
-					}
 				}
-
 
 				if (!wasEqualToOne) {
 					contradictoryEffects.add(hypEffect);
@@ -66,14 +64,30 @@ public class EffectLearner {
 				HHat.remove(toRemove);
 			}
 		}
-
 	}
 
+	public boolean identicalEffectPredicted(Effect otherEffect) {
+		if (this.HHat != null && this.HHat.size() == 1) {
+			for (Effect hypEffect : HHat) {
+				return hypEffect.equals(otherEffect);
+			} 
+		}
+		
+		
+		return false;
+	}
+	
 	public Effect computePrediction(State state) {
 		List<State> resultingStates = new ArrayList<State>();
 
 		//No positive instances so don't know
 		if (HHat == null) return null;
+		
+		if (HHat.size() == 1) {
+			for (Effect hypEffect : HHat) {
+				return hypEffect;
+			}
+		}
 		
 		//Get hypothesized resulting states
 		for (Effect hypEffect : HHat) {
@@ -81,63 +95,26 @@ public class EffectLearner {
 			resultingStates.add(hypState);
 		}
 
-		//Check if resulting states contradict If they do return don't know
-		if (!resultingStates.isEmpty()) {
-			State firstState = resultingStates.get(0);
-			for (int index = 1; index < resultingStates.size(); index++) {
-				if (!firstState.equals(resultingStates.get(index))) {//JAMES IS THIS OK?
-					return null; //States not equal so contradicting effects so return don't know
-				}
-			}	
-		}
+		//Check if resulting states contradict if they do return don't know
+//		if (!resultingStates.isEmpty()) {
+//			State firstState = resultingStates.get(0);
+//			for (int index = 1; index < resultingStates.size(); index++) {
+//				if (!firstState.equals(resultingStates.get(index))) {//JAMES IS THIS OK?
+//					return null; //States not equal so contradicting effects so return don't know
+//				}
+//			}	
+//		}
 
 		//If they don't return some effect
-		for (Effect hypEffect : HHat) {
-			return hypEffect;
-		}
+//		for (Effect hypEffect : HHat) {
+//			return hypEffect;
+//		}
 
 		//All effects ruled out so best we can possibly guess is a no-op
 		return new NullEffect(this.relevantObjectClass, this.relevantAtt);
 	}
 
 
-	public List<Effect> getPossibleEffects(State s, State sPrime) {
-		List<Effect> toReturn = new ArrayList<Effect>();
-
-
-		for (ObjectInstance o: s.getObjectsOfTrueClass(this.relevantObjectClass.name)) {
-
-			String objectName = o.getName();
-
-			//Find object of Same Name
-			ObjectInstance oInSPrime = sPrime.getObject(objectName);
-
-			//If object was deleted keep on truckin'
-			if (oInSPrime == null) {
-				continue;
-			}
-
-			//Check if attribute value has changed
-			Value attValBefore = o.getValueForAttribute(this.relevantAtt.name);
-			Value attValAfter = oInSPrime.getValueForAttribute(this.relevantAtt.name);
-
-			if (!attValBefore.equals(attValAfter)){
-				double numValBefore = attValBefore.getNumericRepresentation();
-				double numValAfter = attValAfter.getNumericRepresentation();
-
-				//Hypothesize effects
-				ArithmeticEffect arithEffect = new ArithmeticEffect(this.relevantObjectClass,this.relevantAtt,numValAfter - numValBefore);
-
-				AssigmentEffect assEffect = new AssigmentEffect(this.relevantObjectClass, this.relevantAtt, numValAfter);
-
-				toReturn.add(arithEffect);
-				toReturn.add(assEffect);
-				break; // ASSUMING A SINGLE CHANGE RIGHT NOW
-
-			}
-		}
-		return toReturn;
-	}
 
 	
 	@Override

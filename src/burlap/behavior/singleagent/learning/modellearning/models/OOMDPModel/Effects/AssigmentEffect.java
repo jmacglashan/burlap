@@ -5,17 +5,27 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 
+/**
+ * Class to model assigment effects under the OOMDP model -- i.e. those that assign some real value to some attribute of some
+ *  object class
+ * @author Dhershkowitz
+ *
+ */
 public class AssigmentEffect extends Effect {
 
-	private double valueToChangeBy;
+	private double valueToSet;
 
-	public double getValueToChangeBy() {
-		return this.valueToChangeBy;
+	/**
+	 * 
+	 * @return
+	 */
+	public double getValueToSet() {
+		return this.valueToSet;
 	}
 	
 	public AssigmentEffect(ObjectClass oClassEffected, Attribute atEffected, double valueToChangeBy) {
 		super(oClassEffected, atEffected);
-		this.valueToChangeBy = valueToChangeBy;
+		this.valueToSet = valueToChangeBy;
 	}
 
 	
@@ -24,7 +34,7 @@ public class AssigmentEffect extends Effect {
 		State toReturn = iState.copy();
 		
 		for (ObjectInstance o: toReturn.getObjectsOfTrueClass(this.objectClassEffected.name)) {
-				o.setValue(this.atEffected.name, valueToChangeBy);
+				o.setValue(this.atEffected.name, valueToSet);
 		}
 		
 		return toReturn;
@@ -34,8 +44,8 @@ public class AssigmentEffect extends Effect {
 	public boolean equals(Object o) {
 		if (o instanceof AssigmentEffect && 
 				((AssigmentEffect) o).getObjectClassEffected().equals(this.objectClassEffected) &&
-				((AssigmentEffect) o).getAtEffected().equals(this.atEffected) &&
-				((AssigmentEffect) o).getValueToChangeBy() == this.valueToChangeBy) {
+				((AssigmentEffect) o).getAttributeAffected().equals(this.atEffected) &&
+				((AssigmentEffect) o).getValueToSet() == this.valueToSet) {
 			return true;
 		}
 		return false;
@@ -43,7 +53,7 @@ public class AssigmentEffect extends Effect {
 	
 	@Override
 	public String toString() {
-		return "Assigmenteffect of setting value to " + this.valueToChangeBy + " for " + atEffected.name + " of " + objectClassEffected.name + "s";
+		return "Assigmenteffect of setting value to " + this.valueToSet + " for " + atEffected.name + " of " + objectClassEffected.name + "s";
 	}
 
 }
