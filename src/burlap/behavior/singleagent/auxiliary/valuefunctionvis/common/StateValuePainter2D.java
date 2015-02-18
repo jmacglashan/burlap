@@ -32,23 +32,23 @@ public class StateValuePainter2D extends StateValuePainter {
 	
 	
 	/**
-	 * The name of the class that holds the x-attribute used for determining the x-posiition on the canvas
+	 * The name of the class that holds the x-attribute used for determining the x-position on the canvas
 	 */
 	protected String							xClassName;
 	
 	/**
-	 * The name of the class that holds the y-attribute used for determining the y-posiition on the canvas
+	 * The name of the class that holds the y-attribute used for determining the y-position on the canvas
 	 */
 	protected String							yClassName;
 	
 	
 	/**
-	 * The name of the object that holds the x-attribute used for determining the x-posiition on the canvas
+	 * The name of the object that holds the x-attribute used for determining the x-position on the canvas
 	 */
 	protected String							xObjectName;
 	
 	/**
-	 * The name of the object that holds the y-attribute used for determining the y-posiition on the canvas
+	 * The name of the object that holds the y-attribute used for determining the y-position on the canvas
 	 */
 	protected String							yObjectName;
 	
@@ -95,13 +95,13 @@ public class StateValuePainter2D extends StateValuePainter {
 	protected float								vsOffsetFromLeft = 0f;
 	
 	/**
-	 * A value betweeen 0 and 1 indicating how from from the top of a value cell the value string should start be rendered.
-	 * 0 indicates stating at the top of the cell; 1 the botton;
+	 * A value between 0 and 1 indicating how from from the top of a value cell the value string should start be rendered.
+	 * 0 indicates stating at the top of the cell; 1 the bottom;
 	 */
 	protected float								vsOffsetFromTop = 0.75f;
 	
 	/**
-	 * The precision (numer of decimals) shown in the value string.
+	 * The precision (number of decimals) shown in the value string.
 	 */
 	protected int								vsPrecision = 2;
 
@@ -244,10 +244,8 @@ public class StateValuePainter2D extends StateValuePainter {
 		float width = 0f;
 		float height = 0f;
 		
-		if(this.numXCells != -1){
-			domainXScale = this.numXCells;
-		}
-		else if(xAtt.type == Attribute.AttributeType.DISC){
+
+		if(xAtt.type == Attribute.AttributeType.DISC){
 			domainXScale = xAtt.discValues.size();
 		}
 		else if(xAtt.type == AttributeType.INT){
@@ -256,13 +254,19 @@ public class StateValuePainter2D extends StateValuePainter {
 		else {
 			domainXScale = (float)(xAtt.upperLim - xAtt.lowerLim);
 		}
-		width = cWidth / domainXScale;
-		xval = ((float)(xOb.getNumericValForAttribute(xAttName) - xAtt.lowerLim))*width;
-		
-		if(this.numYCells != -1){
-			domainYScale = this.numYCells;
+
+		if(this.numXCells != -1){
+			width = cWidth / this.numXCells;
 		}
-		else if(yAtt.type == AttributeType.DISC){
+		else{
+			width = cWidth / domainXScale;
+		}
+
+		float normX = (float)(xOb.getNumericValForAttribute(xAttName) - xAtt.lowerLim) / domainXScale;
+		xval = normX * cWidth;
+		
+
+		if(yAtt.type == AttributeType.DISC){
 			domainYScale = yAtt.discValues.size();
 		}
 		else if(yAtt.type == AttributeType.INT){
@@ -271,8 +275,16 @@ public class StateValuePainter2D extends StateValuePainter {
 		else{
 			domainYScale = (float)(yAtt.upperLim - yAtt.lowerLim);
 		}
-		height = cHeight / domainYScale;
-		yval = cHeight - height - ((float)(yOb.getNumericValForAttribute(yAttName) - yAtt.lowerLim))*height;
+
+		if(this.numYCells != -1){
+			height = cHeight / this.numYCells;
+		}
+		else{
+			height = cHeight / domainYScale;
+		}
+
+		float normY = (float)(yOb.getNumericValForAttribute(yAttName) - yAtt.lowerLim) / domainYScale;
+		yval = cHeight - height - normY*cHeight;
 		
 		
 		
