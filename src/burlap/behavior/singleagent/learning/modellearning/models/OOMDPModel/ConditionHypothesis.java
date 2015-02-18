@@ -9,7 +9,7 @@ import burlap.oomdp.core.State;
 public class ConditionHypothesis {
 
 		private int [] precondition;
-		private boolean truthVal;
+		private Boolean truthVal;
 
 
 		public int[] getPrecondition() {
@@ -106,7 +106,7 @@ public class ConditionHypothesis {
 				
 				
 			}
-			toReturn.append(", " + this.truthVal);
+			if (this.truthVal != null) toReturn.append(", " + this.truthVal);
 			
 			return new String("(" + toReturn + ")");
 			

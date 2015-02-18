@@ -7,16 +7,21 @@ import minecraft.MinecraftBehavior.MinecraftBehavior;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
+import burlap.behavior.singleagent.learning.modellearning.Model;
+import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlannerGenerator;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.MultipleConditionEffectsLearner;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.OOMDPModel;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
+import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.behavior.statehashing.StateHashFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -70,6 +75,8 @@ public class RMAXTest {
 
 	public static void main(String[] args) {
 
+		
+		
 		
 		//GRID WORLD DOMAIN
 		//Set up domain and initial state
@@ -127,16 +134,22 @@ public class RMAXTest {
 		final int maxVIPasses = 20;
 
 		int learningIterations = 1;
+//		PotentialShapedRMax(d, rf, tf, .9, hf, PotentialFunction potential,
+//				oomdpModel, ModelPlannerGenerator plannerGenerator){
+		
+		
 		//RMAX
 //		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, nConfident, maxVIDelta, maxVIPasses);
 
 		//DOORMAX
-		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, maxVIDelta, maxVIPasses);
-
+		List<PropositionalFunction> propFunsToUse = d.getPropFunctions();
+		Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse);
+		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf,.9, hf,maxReward, nConfident, maxVIDelta, maxVIPasses,  oomdpModel);
+		
 		//RUN ALGORITHM
 		//run agent for 40 learning episodes
 		for(int i = 0; i < learningIterations; i++){
-			EpisodeAnalysis ea = rmax.runLearningEpisodeFrom(initialState, 75);
+			EpisodeAnalysis ea = rmax.runLearningEpisodeFrom(initialState, 100);
 			//average reward is undiscounted cumulative reward divided by number of actions (num time steps -1)
 			double avgReward = ea.getDiscountedReturn(1.) / (ea.numTimeSteps() -1);
 			System.out.println(avgReward + " average reward for episode " + (i+1));

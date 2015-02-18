@@ -7,6 +7,7 @@ import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.Effect;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
@@ -21,12 +22,14 @@ public class OOMDPModel extends Model {
 	private Domain d;
 	private RewardFunction rf;
 	private TerminalFunction tf;
+	List<PropositionalFunction> relevantPropFuns;
 	
-	public OOMDPModel(Domain d, RewardFunction rf, TerminalFunction tf) {
+	public OOMDPModel(Domain d, RewardFunction rf, TerminalFunction tf, List<PropositionalFunction> relevantPropFuns) {
 		this.d = d;
 		this.rf = rf;
 		this.tf = tf;
-		this.MCELearner = new MultipleConditionEffectsLearner(d);
+		this.relevantPropFuns = relevantPropFuns;
+		this.MCELearner = new MultipleConditionEffectsLearner(d, relevantPropFuns);
 	}
 
 	@Override
@@ -96,7 +99,7 @@ public class OOMDPModel extends Model {
 
 	@Override
 	public void resetModel() {
-		this.MCELearner = new MultipleConditionEffectsLearner(this.d);
+		this.MCELearner = new MultipleConditionEffectsLearner(this.d, this.relevantPropFuns);
 
 	}
 

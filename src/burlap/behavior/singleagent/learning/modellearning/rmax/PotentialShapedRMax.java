@@ -110,10 +110,24 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 	}
 	
-	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxReward,
-		double maxVIDelta, int maxVIPasses){
+	/**
+	 * Initializes for a tabular model, VI planner, and standard RMax paradigm
+	 * @param domain the real world domain
+	 * @param rf the real world reward function
+	 * @param tf the real world terminal function
+	 * @param gamma the discount factor
+	 * @param hashingFactory the hashing factory to use for VI and the tabular model
+	 * @param maxReward the maximum possible reward
+	 * @param nConfident the number of observations required for the model to be confident in a transition
+	 * @param maxVIDelta the maximum change in value function for VI to terminate
+	 * @param maxVIPasses the maximum number of VI iterations per replan.
+	 * @param model the model to be used (e.g. OOMDP or tabular)
+	 */
+	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxReward, int nConfident,
+			double maxVIDelta, int maxVIPasses, Model model){
+		
 		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
-		this.model = new OOMDPModel(domain, rf, tf);
+		this.model = model;
 		
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
 		this.modeledDomain = mdg.generateDomain();
@@ -150,9 +164,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
 		
 		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
-		
 	}
-	
 	
 	/**
 	 * Initializes for a given model, model planner, and potential shaped function.

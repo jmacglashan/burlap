@@ -16,17 +16,15 @@ import burlap.oomdp.core.Attribute;
 public class MultipleConditionEffectsLearner {
 
 	private HashMap<Action, List<ConditionHypothesis>> failureConditionsByAction;
-	//	private HashMap<Action, List<ConditionEffectLearner>> CELearnersByAction;
 	private HashMap<Action, HashMap<String, List<ConditionEffectLearner>>> CELearnersByActionThenEffect;
 	private List<String> effectsToUse;
 	private Domain d;
-	private int k = 1;
+	private int k = 5;
 	private List<PropositionalFunction> propFunsToUse;
 	
-	public MultipleConditionEffectsLearner(Domain d) {
+	public MultipleConditionEffectsLearner(Domain d, List<PropositionalFunction> propFunToUse) {
 		this.d = d;
-		this.propFunsToUse = d.getPropFunctions();
-		//		this.CELearnersByAction = new HashMap<Action, List<ConditionEffectLearner>>();
+		this.propFunsToUse = propFunToUse;
 		List<Action> actions = d.getActions();
 		List<ObjectClass> oClasses = d.getObjectClasses();
 		this.effectsToUse = EffectHelpers.effectsToUse();
@@ -108,13 +106,13 @@ public class MultipleConditionEffectsLearner {
 					for (String effectString: effectsToUse) {
 						Effect observedEffect = EffectHelpers.getPossibleEffect(s, sPrime, oClass, at, effectString);
 						if (observedEffect == null) continue;
-						System.out.println("Testing effect: " + observedEffect + " for action " + a.getName());
+//						System.out.println("Testing effect: " + observedEffect + " for action " + a.getName());
 
 						List<ConditionEffectLearner> relevantCELearners = toUpdate.get(effectString);
 
 						//This effect was ruled out so continue
 						if (relevantCELearners == null)  {
-							System.out.println("Effect already ruled out: " + observedEffect);
+//							System.out.println("Effect already ruled out: " + observedEffect);
 							continue;
 						}
 
@@ -122,32 +120,32 @@ public class MultipleConditionEffectsLearner {
 						//If already a prediction for this, update the condition and verify that there are no overlaps
 						ConditionEffectLearner CELearner;
 						if ((CELearner = CELearnerThatPredictsThisEffect(relevantCELearners, observedEffect)) != null) {
-							System.out.println("Effect already predicted: " + observedEffect );
+//							System.out.println("Effect already predicted: " + observedEffect );
 							CELearner.updateLearners(s, sPrime);
 
 							//Verify that there are no overlaps
 							if (this.areOverlapsOfConditions(CELearner, relevantCELearners)) {
-								System.out.println("Eliminating" + observedEffect + " of similar types for " + a.getName());
+//								System.out.println("Eliminating" + observedEffect + " of similar types for " + a.getName());
 								relevantCELearners = null;
 							}
 						}
 
 						//If we observed an effect that we had no prediction for then add this prediction and update the learner for it
 						else {
-							System.out.println("New learner: " + observedEffect +  " for " + a.getName());
+//							System.out.println("New learner: " + observedEffect +  " for " + a.getName());
 							ConditionEffectLearner toAdd = new ConditionEffectLearner(this.d, oClass, at, a, effectString);
 							toAdd.updateLearners(s, sPrime);
 							relevantCELearners.add(toAdd);
 
 							//Make sure no overlap with an existing prediction of this type
 							if (this.areOverlapsOfConditions(toAdd, relevantCELearners)) {
-								System.out.println("Eliminating" + observedEffect + " of similar types for " + a.getName());
+//								System.out.println("Eliminating" + observedEffect + " of similar types for " + a.getName());
 								relevantCELearners = null;
 							}
 
 							//make sure there aren't more than K predictions
 							else if (relevantCELearners.size() > this.k) {
-								System.out.println("K exceeded -- eliminating" + observedEffect + " of similar types for " + a.getName());
+//								System.out.println("K exceeded -- eliminating" + observedEffect + " of similar types for " + a.getName());
 								relevantCELearners = null;
 							}
 						}
@@ -241,33 +239,6 @@ public class MultipleConditionEffectsLearner {
 		}
 		return toReturn;
 
-
-		//		List<ConditionEffectLearner> relevantLearners = this.CELearnersByAction.get(a);
-		//		State toReturn = s.copy();
-		//
-		//		List<Effect> hypothesizedEffects = new ArrayList<Effect>();
-		//
-		//		for (ConditionEffectLearner CELearner: relevantLearners) {
-		//			Effect toAdd = CELearner.predictResultingEffect(s);
-		//			//If don't know
-		//			if (toAdd == null) {
-		//				return null;
-		//			}
-		//
-		//			//Otherwise add non null effects
-		//			if (!toAdd.isNullEffect()) {
-		//				hypothesizedEffects.add(toAdd);
-		//			}
-		//		}
-		//
-		//		//TODO: CHECK FOR CONTRADICTIONS
-		//
-		//		//Do know effect and no contradictions
-		//		for (Effect e : hypothesizedEffects) {
-		//			toReturn = e.applyEffect(toReturn);
-		//		}
-		//
-		//		return toReturn;
 	}
 
 	public String predictionsStillInEffect() {
