@@ -4,6 +4,8 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
+import java.util.Random;
+
 
 /**
  * An abstract class for defining differentiable reward functions.
@@ -64,6 +66,19 @@ public abstract class DifferentiableRF implements RewardFunction{
 		return this.parameters;
 	}
 
+
+	/**
+	 * Randomizes the parameter values using the given random number generator.
+	 * @param lowerVal the lower parameter range value
+	 * @param upperVal the upper parameter range value
+	 * @param rand the random number generator to use
+	 */
+	public void randomizeParameters(double lowerVal,double upperVal, Random rand){
+		double range = upperVal - lowerVal;
+		for(int i = 0; i < this.parameters.length; i++){
+			this.parameters[i] = rand.nextDouble()*range + lowerVal;
+		}
+	}
 
 	/**
 	 * A helper method for making a copy of this reward function. THe parameters and dimensionality
