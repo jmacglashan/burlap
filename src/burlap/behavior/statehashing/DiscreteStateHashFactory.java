@@ -157,7 +157,7 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 					index += o.getStringValForAttribute(att.name).hashCode()*vol;
 				}
 				else if(att.type == AttributeType.INTARRAY){
-					index += this.intArrayCode(o.getIntArrayValue(att.name))*vol;
+					index += this.intArrayCode(o.getIntArrayValForAttribute(att.name))*vol;
 				}
 				else{
 					index += o.getDiscValForAttribute(att.name)*vol;
