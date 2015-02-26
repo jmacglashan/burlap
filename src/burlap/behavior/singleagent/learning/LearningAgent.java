@@ -83,7 +83,7 @@ public interface LearningAgent {
 		 */
 		public LinkedList<EpisodeAnalysis> 				episodeHistory = new LinkedList<EpisodeAnalysis>();
 		public int										numEpisodesToStore = 1;
-		protected int									maxEpisodeSize = Integer.MAX_VALUE;
+		public int										maxEpisodeSize = Integer.MAX_VALUE;
 
 
 		/**
