@@ -3,6 +3,7 @@ package burlap.behavior.singleagent.learning.modellearning.rmax;
 import java.util.ArrayList;
 import java.util.List;
 
+import minecraft.NameSpace;
 import minecraft.MinecraftBehavior.MinecraftBehavior;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
@@ -10,8 +11,9 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisua
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlannerGenerator;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
-import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.MultipleConditionEffectsLearner;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.PredictionsLearner;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.OOMDPModel;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.EffectHelpers;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
@@ -142,8 +144,18 @@ public class RMAXTest {
 //		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf, .9, hf, maxReward, nConfident, maxVIDelta, maxVIPasses);
 
 		//DOORMAX
-		List<PropositionalFunction> propFunsToUse = d.getPropFunctions();
-		Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse);
+		
+		List<PropositionalFunction> propFunsToUse = d.getPropFunctions(); //new ArrayList<PropositionalFunction>();
+//		propFunsToUse.add(d.getPropFunction(NameSpace.PFAGENTCANWALK));
+//		propFunsToUse.add(d.getPropFunction(NameSpace.PFENDOFMAPINFRONT));
+//		propFunsToUse.add(d.getPropFunction(NameSpace.PFTRENCHINFRONTAGENT));
+//		propFunsToUse.add(d.getPropFunction(NameSpace.PFHURDLEINFRONTAGENT));
+
+		List<String> effectsToUse = new ArrayList<String>();
+		effectsToUse.add(EffectHelpers.arithEffect);
+		effectsToUse.add(EffectHelpers.assigEffect);
+		
+		Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse, effectsToUse, initialState, 10);
 		PotentialShapedRMax rmax = new PotentialShapedRMax(d, rf, tf,.9, hf,maxReward, nConfident, maxVIDelta, maxVIPasses,  oomdpModel);
 		
 		//RUN ALGORITHM
@@ -153,7 +165,10 @@ public class RMAXTest {
 			//average reward is undiscounted cumulative reward divided by number of actions (num time steps -1)
 			double avgReward = ea.getDiscountedReturn(1.) / (ea.numTimeSteps() -1);
 			System.out.println(avgReward + " average reward for episode " + (i+1));
-//			System.out.println(ea.actionSequence);
+			System.out.println(ea.actionSequence);
+			
+			PredictionsLearner MCELearner = ((OOMDPModel)rmax.getModel()).getPredictionsLearner();
+			System.out.println(MCELearner.toString());
 		}
 //		List<TransitionProbability> test = rmax.model.getTransitionProbabilities(initialState, d.getActions().get(0).getAllApplicableGroundedActions(initialState).get(0));
 
@@ -161,7 +176,7 @@ public class RMAXTest {
 //				State stateToTest = initialState.copy();		
 //				GridWorldDomain.setAgent(stateToTest, 4, 1);
 //
-				MultipleConditionEffectsLearner MCELearner = ((OOMDPModel)rmax.getModel()).MCELearner;
+//				MultipleConditionEffectsLearner MCELearner = ((OOMDPModel)rmax.getModel()).MCELearner;
 //			
 //				String actionToTest = "east";
 //				
@@ -170,7 +185,7 @@ public class RMAXTest {
 //				
 //				System.out.println(MCELearner.stateOfEffectsOnState(stateToTest, d.getAction(actionToTest)));
 
-		System.out.println(MCELearner.predictionsStillInEffect());
+//		System.out.println(MCELearner);
 
 
 		//VISUALIZER
@@ -242,9 +257,7 @@ public class RMAXTest {
 	/**
 	 * Parametrized actions
 	 * Make efficient
-	 * Comment/clean
 	 * Don't count on state equality -- use hashing factories
-	 * Implement effect contradictions
 	 */
 
 

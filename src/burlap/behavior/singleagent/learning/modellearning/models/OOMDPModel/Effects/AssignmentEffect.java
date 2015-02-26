@@ -4,6 +4,7 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.Value;
 
 /**
  * Class to model assigment effects under the OOMDP model -- i.e. those that assign some real value to some attribute of some
@@ -11,21 +12,28 @@ import burlap.oomdp.core.State;
  * @author Dhershkowitz
  *
  */
-public class AssigmentEffect extends Effect {
+public class AssignmentEffect extends Effect {
 
 	private double valueToSet;
 
 	/**
 	 * 
-	 * @return
+	 * @return the value that this assigmentEffect assigns
 	 */
 	public double getValueToSet() {
 		return this.valueToSet;
 	}
 	
-	public AssigmentEffect(ObjectClass oClassEffected, Attribute atEffected, double valueToChangeBy) {
-		super(oClassEffected, atEffected);
-		this.valueToSet = valueToChangeBy;
+	/**
+	 * @param effectTypeString the string name of the effect type
+	 * @param oClassEffected the ObjectClass that this ArithmeticEffect acts on
+	 * @param atEffected the Attribute that this ArithmeticEffect acts on
+	 * @param valueBefore the value of the class/att in s
+	 * @param valueAfter the value of the class/att in sPrime
+	 */
+	public AssignmentEffect(String effectTypeString, ObjectClass oClassEffected, Attribute atEffected, Value valueAfter) {
+		super(effectTypeString, oClassEffected, atEffected);
+		this.valueToSet = valueAfter.getNumericRepresentation();
 	}
 
 	
@@ -42,10 +50,10 @@ public class AssigmentEffect extends Effect {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof AssigmentEffect && 
-				((AssigmentEffect) o).getObjectClassEffected().equals(this.objectClassEffected) &&
-				((AssigmentEffect) o).getAttributeAffected().equals(this.atEffected) &&
-				((AssigmentEffect) o).getValueToSet() == this.valueToSet) {
+		if (o instanceof AssignmentEffect && 
+				((AssignmentEffect) o).getObjectClassEffected().equals(this.objectClassEffected) &&
+				((AssignmentEffect) o).getAttributeAffected().equals(this.atEffected) &&
+				((AssignmentEffect) o).getValueToSet() == this.valueToSet) {
 			return true;
 		}
 		return false;

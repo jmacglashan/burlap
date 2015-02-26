@@ -4,6 +4,7 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.Value;
 
 /**
  * Class to model arithmetic effects under the OOMDP model -- i.e. effects that add some real value to the attributes of some object class 
@@ -15,14 +16,15 @@ public class ArithmeticEffect extends Effect {
 	private double valueToChangeBy;
 
 	/**
-	 * 
+	 * @param effectTypeString the string name of the effect type
 	 * @param oClassEffected the ObjectClass that this ArithmeticEffect acts on
 	 * @param atEffected the Attribute that this ArithmeticEffect acts on
-	 * @param valueToChangeBy the real value that this ArithmeticEffect adds to its corresponding object class's attribute
+	 * @param valueBefore the value of the class/att in s
+	 * @param valueAfter the value of the class/att in sPrime
 	 */
-	public ArithmeticEffect(ObjectClass oClassEffected, Attribute atEffected, double valueToChangeBy) {
-		super(oClassEffected, atEffected);
-		this.valueToChangeBy = valueToChangeBy;
+	public ArithmeticEffect(String effectTypeString, ObjectClass oClassEffected, Attribute atEffected, Value valueBefore, Value valueAfter) {
+		super(effectTypeString, oClassEffected, atEffected);
+		this.valueToChangeBy = valueAfter.getNumericRepresentation()-valueBefore.getNumericRepresentation();
 	}
 	
 	/**
