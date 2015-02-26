@@ -75,6 +75,9 @@ public interface LearningAgent {
 	 * 1. This method also includes a data member {@link #maxEpisodeSize} which can be optionally used for setting the longest
 	 * time a learning agent will run when the {@link burlap.behavior.singleagent.learning.LearningAgent#runLearningEpisodeFrom(burlap.oomdp.core.State)}
 	 * method is called. By default, it is INT MAX.
+	 *
+	 * The class also has a method for automatically adding an episode to its history, will removing the oldest stored
+	 * episode if the the size of the history is larger than the max history size.
 	 */
 	public static class LearningAgentBookKeeping{
 
