@@ -164,7 +164,7 @@ public class ObjectInstance {
 	}
 	
 	/**
-	 * Sets the relational value of the attribute named attName for this object instance. If the
+	 * Sets/adds the relational value of the attribute named attName for this object instance. If the
 	 * attribute is a multi-target relational attribute, then this value is added to the target list.
 	 * @param attName the name of the relational attribute that will have a relational target added/set
 	 * @param target the name of the object reference that is to be added as a target.
@@ -316,32 +316,59 @@ public class ObjectInstance {
 	}
 	
 	/**
+	 * Deprecated method name; use the {@link #getBooleanValForAttribute(String)} method instead.
+	 */
+	@Deprecated
+	public boolean getBooleanValue(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getBooleanValue();
+	}
+
+	/**
 	 * Returns the boolean value of the attribute (only defined for boolean attributes, int, and disc values).
 	 * @param attName the name of the attribute whose value should be returned
 	 * @return true if the value for the attribute evaluates to true, false otherwise.
 	 */
-	public boolean getBooleanValue(String attName){
+	public boolean getBooleanValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getBooleanValue();
 	}
 	
 	/**
+	 * Deprecated method name; use the {@link #getIntArrayValForAttribute(String)} method instead.
+	 */
+	@Deprecated
+	public int [] getIntArrayValue(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getIntArray().clone();
+	}
+
+	/**
 	 * Returns the int array value of the attribute (only defined for int array attributes).
 	 * @param attName the name of the attribute whose value should be returned.
 	 * @return the int array value.
 	 */
-	public int [] getIntArrayValue(String attName){
+	public int [] getIntArrayValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getIntArray().clone();
 	}
 	
 	
 	/**
+	 * Deprecated method name; use the {@link #getDoubleArrayValForAttribute(String)} instead.
+	 */
+	@Deprecated
+	public double [] getDoubleArrayValue(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getDoubleArray().clone();
+	}
+
+	/**
 	 * Returns the int array value of the attribute (only defined for int array attributes).
 	 * @param attName the name of the attribute whose value should be returned.
 	 * @return the int array value.
 	 */
-	public double [] getDoubleArrayValue(String attName){
+	public double [] getDoubleArrayValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getDoubleArray().clone();
 	}

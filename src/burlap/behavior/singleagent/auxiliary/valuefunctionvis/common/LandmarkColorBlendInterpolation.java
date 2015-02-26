@@ -19,6 +19,11 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 	 * The value position of each landmark
 	 */
 	protected List <Double>			landmarkValues;
+
+	/**
+	 * The original set landmark values set before any rescaling was performed.
+	 */
+	protected List <Double>			originalLandmarkValues;
 	
 	/**
 	 * The landmark colors
@@ -34,6 +39,7 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 	public LandmarkColorBlendInterpolation() {
 		this.landmarkValues = new ArrayList<Double>();
 		this.landmarkColors = new ArrayList<Color>();
+		this.originalLandmarkValues = new ArrayList<Double>();
 	}
 	
 	/**
@@ -43,6 +49,7 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 	public LandmarkColorBlendInterpolation(double polyDegree) {
 		this.landmarkValues = new ArrayList<Double>();
 		this.landmarkColors = new ArrayList<Color>();
+		this.originalLandmarkValues = new ArrayList<Double>();
 		this.polyDegree = polyDegree;
 	}
 	
@@ -71,24 +78,25 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 	public void addNextLandMark(double val, Color c){
 		this.landmarkValues.add(val);
 		this.landmarkColors.add(c);
+		this.originalLandmarkValues.add(val);
 	}
 	
 	
 	@Override
 	public void rescale(double minV, double maxV) {
-		double curMin = this.landmarkValues.get(0);
-		double curMax = this.landmarkValues.get(this.landmarkValues.size()-1);
+		double origMin = this.originalLandmarkValues.get(0);
+		double origMax = this.originalLandmarkValues.get(this.originalLandmarkValues.size()-1);
 		
-		if(curMin == minV && curMax == maxV){
+		if(origMin == minV && origMax == maxV){
 			return ; //already correctly scaled
 		}
 		
-		double curRange = curMax - curMin;
+		double origRange = origMax - origMin;
 		double newRange = maxV - minV;
 		
 		for(int i = 0; i < this.landmarkValues.size(); i++){
-			double v = this.landmarkValues.get(i);
-			double t = (v - curMin) / curRange;
+			double v = this.originalLandmarkValues.get(i);
+			double t = (v - origMin) / origRange;
 			double nv = t*newRange + minV;
 			this.landmarkValues.set(i, nv);
 		}
