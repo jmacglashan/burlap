@@ -121,13 +121,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	 * The total number of pseudo-Bellman updates
 	 */
 	protected int numUpdates = 0;
-	
-	
-	
-	/**
-	 * The debug code used for printing planning information.
-	 */
-	protected int debugCode = 7369430;
+
 	
 	
 	/**
@@ -152,6 +146,8 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		if(this.c < 0){
 			this.computeExactValueFunction = true;
 		}
+
+		this.debugCode = 7369430;
 	}
 	
 	
