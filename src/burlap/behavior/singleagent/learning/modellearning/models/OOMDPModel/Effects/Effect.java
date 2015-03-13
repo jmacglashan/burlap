@@ -68,8 +68,14 @@ public abstract class Effect {
 	 * @return a boolean of whether or not these two effects act on the same attribute of the same object classes (they need not be of the same type)
 	 */
 	public boolean actOnTheSameObjectClassAndAttribute(Effect otherEffect) {
+		if (otherEffect == null) return false;
+		
 		return this.objectClassEffected.equals(otherEffect.getObjectClassEffected()) &&
 				this.atEffected.equals(otherEffect.getAttributeAffected());
+	}
+	
+	public boolean isDontKnow() {
+		return false;
 	}
 	
 }

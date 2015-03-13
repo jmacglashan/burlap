@@ -20,6 +20,7 @@ public class EffectHelpers {
 	//Namespace for effects by string name
 	public static String arithEffect = "arithmeticEffect";
 	public static String assigEffect = "assignmentEffect";
+	public static String nullEffect = "nullEffect";
 
 	/**
 	 * Helper method to turn Values before and after into effects
@@ -40,6 +41,11 @@ public class EffectHelpers {
 		//Assignment effect
 		else if (name.equals(assigEffect)) {
 			return new AssignmentEffect(name, oClass, at, valueAfter);
+		}
+		
+		//Null effect
+		else if (name.equals(nullEffect)) {
+			return new NullEffect(name, oClass, at);
 		}
 
 		throw new EffectNotFoundException(name);

@@ -3,6 +3,7 @@ package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel;
 import java.util.List;
 
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.Effect;
+import burlap.behavior.singleagent.learning.modellearning.rmax.TaxiDomain;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
@@ -46,6 +47,7 @@ public class Prediction {
 
 		int [] currStateAsBitString = StateHelpers.stateToBitStringOfPreds(initialState, this.propFuns);
 		this.CL.updateVersionSpace(currStateAsBitString);
+
 	}
 
 	/**
@@ -66,6 +68,11 @@ public class Prediction {
 		return (this.CL.conditionsOverlap(otherCEL.CL));
 	}
 
+	public boolean predictionOn(ObjectClass oClass, Attribute att, GroundedAction ga, String effectType) {
+		return this.associatedOClass.equals(oClass) && this.relevantAtt.equals(att) && this.associatedAction.equals(ga)
+				&& this.effectToLearnConditionFor.getEffectTypeString().equals(effectType);
+	}
+	
 	/**
 	 * 
 	 * @param s the state to predict on
@@ -92,6 +99,11 @@ public class Prediction {
 	 * the relevant action
 	 */
 	public void updateLearners(State s, State sPrime) {
+//		if (this.associatedOClass.name == "passenger" && (this.relevantAtt.name == TaxiDomain.XATT || this.relevantAtt.name == TaxiDomain.YATT)) {
+//			System.out.println("Prediction for " + this + " being updated");
+//		}
+		
+		
 		int [] currStateAsBitString = StateHelpers.stateToBitStringOfPreds(s, this.propFuns);
 
 		this.CL.updateVersionSpace(currStateAsBitString);
@@ -105,6 +117,16 @@ public class Prediction {
 	 */
 	public boolean learningSameEffect(Prediction CELearner) {
 		return this.effectToLearnConditionFor.equals(CELearner.effectToLearnConditionFor);
+	}
+	
+	/**
+	 * 
+	 * @param pred other prediction to compare against
+	 * @return a boolean of if the two predictions's conditions overlap and they act on the same object types
+	 */
+	public boolean overlapWithPrediction(Prediction pred) {
+		return this.effectToLearnConditionFor.actOnTheSameObjectClassAndAttribute(pred.getEffectLearningFor())
+				&& this.conditionsOverlap(pred);
 	}
 
 	@Override

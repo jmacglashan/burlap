@@ -40,6 +40,7 @@ public class ConditionLearner {
 	 * @return a boolean of if the condition entails the state
 	 */
 	public boolean conditionTrueInState(int [] currStatePreds){
+		if (this.HSubT == null) return false;
 		return this.HSubT.matches(currStatePreds);
 	}
 
@@ -51,7 +52,7 @@ public class ConditionLearner {
 
 		//New HSubT
 		if (HSubT == null) {
-			HSubT = new ConditionHypothesis(statePreds);;
+			HSubT = new ConditionHypothesis(statePreds);
 		}
 		//HSubT already instantiated
 		else {
