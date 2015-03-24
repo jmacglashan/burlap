@@ -471,11 +471,24 @@ public class State {
 	}
 	
 	/**
+	 * Deprecated due to method name change. Instead use {@link #getObjectsOfClass(String)}.
+	 */
+	@Deprecated
+	public List <ObjectInstance> getObjectsOfTrueClass(String oclass){
+		List <ObjectInstance> tmp = objectIndexByTrueClass.get(oclass);
+		if(tmp == null){
+			return new ArrayList <ObjectInstance>();
+		}
+		return new ArrayList <ObjectInstance>(tmp);
+	}
+
+
+	/**
 	 * Returns all objects that belong to the object class named oclass
 	 * @param oclass the name of the object class for which objects should be returned
 	 * @return all objects that belong to the object class named oclass
 	 */
-	public List <ObjectInstance> getObjectsOfTrueClass(String oclass){
+	public List <ObjectInstance> getObjectsOfClass(String oclass){
 		List <ObjectInstance> tmp = objectIndexByTrueClass.get(oclass);
 		if(tmp == null){
 			return new ArrayList <ObjectInstance>();
