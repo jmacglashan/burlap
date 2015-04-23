@@ -840,7 +840,7 @@ public class GridGame implements DomainGenerator {
 			if(this.noopIncursCost){
 				return this.stepCost;
 			}
-			else if(ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
+			else if(ja.action(aname) == null || ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
 				return 0.;
 			}
 			return this.stepCost;

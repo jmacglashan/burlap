@@ -205,6 +205,9 @@ private static final long serialVersionUID = 1L;
 	private void parseGameFiles(String directory){
 		
 		File dir = new File(directory);
+		if (!dir.isDirectory()) {
+			throw new RuntimeException(directory + " is not a directory");
+		}
 		final String ext = ".game";
 		
 		FilenameFilter filter = new FilenameFilter() {

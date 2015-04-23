@@ -51,6 +51,10 @@ public abstract class Agent {
 		return this.internalRewardFunction;
 	}
 	
+	public boolean canBeThreaded() {
+		return false;
+	}
+	
 	
 	/**
 	 * Causes this agent instance to join a world.

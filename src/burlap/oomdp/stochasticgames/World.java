@@ -1,6 +1,8 @@
 package burlap.oomdp.stochasticgames;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,11 @@ import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.stochasticgames.Callables.GameStartingCallable;
+import burlap.oomdp.stochasticgames.Callables.GetActionCallable;
+import burlap.oomdp.stochasticgames.Callables.ObserveOutcomeCallable;
+import burlap.parallel.Parallel;
+import burlap.parallel.Parallel.ForEachCallable;
 
 
 /**
@@ -52,6 +59,7 @@ public class World {
 	protected boolean							isRecordingGame = false;
 	
 	protected int								debugId;
+	protected double							threadTimeout;
 	
 	
 	
@@ -97,6 +105,7 @@ public class World {
 		worldObservers = new ArrayList<WorldObserver>();
 		
 		debugId = 284673923;
+		this.threadTimeout = Parallel.NO_TIME_LIMIT;
 	}
 	
 	
@@ -115,6 +124,17 @@ public class World {
 	 */
 	public void setDebugId(int id){
 		debugId = id;
+	}
+	
+	/**
+	 * Sets the timeout for threads that call an agent's getAction methods. -1.0 is currently no time limit
+	 * @param timeout
+	 */
+	public void setThreadTimeout(double timeout) {
+		if (timeout < 0) {
+			this.threadTimeout = Parallel.NO_TIME_LIMIT;
+		}
+		this.threadTimeout = timeout;
 	}
 	
 	
@@ -199,6 +219,8 @@ public class World {
 	 */
 	public GameAnalysis runGame(){
 		
+		return this.runGame(-1);
+		/*
 		for(Agent a : agents){
 			a.gameStarting();
 		}
@@ -219,8 +241,7 @@ public class World {
 		
 		this.isRecordingGame = false;
 		
-		return this.currentGameRecord;
-		
+		return this.currentGameRecord;*/
 	}
 	
 	/**
@@ -229,23 +250,29 @@ public class World {
 	 */
 	public GameAnalysis runGame(int maxStages){
 		
+		ForEachCallable<Agent, Boolean> gameStarting = new GameStartingCallable();
+		Parallel.ForEach(agents, gameStarting);
+		/*
 		for(Agent a : agents){
 			a.gameStarting();
-		}
+		}*/
 		
 		currentState = initialStateGenerator.generateState(agents);
 		this.currentGameRecord = new GameAnalysis(currentState);
 		this.isRecordingGame = true;
 		int t = 0;
 		
-		while(!tf.isTerminal(currentState) && t < maxStages){
+		while(!tf.isTerminal(currentState) && (maxStages < 0 || t < maxStages)){
 			this.runStage();
 			t++;
 		}
 		
+		// call to agents needs to be threaded, and timed out
 		for(Agent a : agents){
 			a.gameTerminated();
 		}
+		
+		// clean up threading
 		
 		DPrint.cl(debugId, currentState.getCompleteStateDescription());
 		
@@ -310,13 +337,48 @@ public class World {
 			return ; //cannot continue this game
 		}
 		
-		
-		
 		JointAction ja = new JointAction();
 		State abstractedCurrent = abstractionForAgents.abstraction(currentState);
-		for(Agent a : agents){
-			ja.addAction(a.getAction(abstractedCurrent));
+		
+		// Call to agents needs to be threaded, and timed out
+		ForEachCallable<List<Agent>, List<GroundedSingleAction>> getActionCallable = new GetActionCallable(abstractedCurrent);
+		
+		// Agents that can threaded independently of any others should have their own list
+		List<List<Agent>> agentsByThread = new ArrayList<List<Agent>>();
+		
+		// All agents that share a common library, or for some reason can't be run on a different thread as another must go in this list
+		List<Agent> singleThreadedAgents = new ArrayList<Agent>();
+		
+		// Check all agents for their parallizability
+		for (Agent agent : agents) {
+			if (agent.canBeThreaded()) {
+				agentsByThread.add(Arrays.asList(agent));
+			} else {
+				singleThreadedAgents.add(agent);
+			}
 		}
+		// Randomize order so if not all agents can run in the alloted time, it's at least different each run
+		Collections.shuffle(singleThreadedAgents);
+		agentsByThread.add(singleThreadedAgents);
+		
+		// Run agents on separate threads if possible
+		List<List<GroundedSingleAction>> allActions = Parallel.ForEach(agentsByThread, getActionCallable, this.threadTimeout);
+		
+		
+		for (List<GroundedSingleAction> actions : allActions) {
+			if (actions == null) {
+				continue;
+			}
+			for (GroundedSingleAction action : actions) {
+				if (action != null) {
+					ja.addAction(action);
+				}
+			}
+		}
+			
+		/*for(Agent a : agents){
+			ja.addAction(a.getAction(abstractedCurrent));
+		}*/
 		this.lastJointAction = ja;
 		
 		
@@ -336,11 +398,15 @@ public class World {
 			agentCumulativeReward.add(aname, r);
 		}
 		
+		// This needs to be threaded, and timed out
 		//tell all the agents about it
-		for(Agent a : agents){
+		ForEachCallable<Agent, Boolean> callable = new ObserveOutcomeCallable(abstractedCurrent, ja, jointReward, abstractedPrime, tf.isTerminal(sp));
+		Parallel.ForEach(agents, callable);
+		/*for(Agent a : agents){
 			a.observeOutcome(abstractedCurrent, ja, jointReward, abstractedPrime, tf.isTerminal(sp));
-		}
+		}*/
 		
+		// Maybe need to be threaded, and timed out.
 		//tell observers
 		for(WorldObserver o : this.worldObservers){
 			o.observe(currentState, ja, jointReward, sp);
@@ -355,7 +421,6 @@ public class World {
 		}
 		
 	}
-	
 	
 	/**
 	 * Runs a single stage following a joint policy for the current world state
