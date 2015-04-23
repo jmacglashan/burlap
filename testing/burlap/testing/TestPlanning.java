@@ -19,9 +19,9 @@ import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldStateParser;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.SinglePFTF;
 import burlap.oomdp.singleagent.common.UniformCostRF;
@@ -88,8 +88,8 @@ public class TestPlanning {
 				String an = GridWorldDomain.CLASSAGENT;
 				String ln = GridWorldDomain.CLASSLOCATION;
 				
-				ObjectInstance agent = s.getObjectsOfTrueClass(an).get(0); 
-				ObjectInstance location = s.getObjectsOfTrueClass(ln).get(0); 
+				ObjectInstance agent = s.getObjectsOfClass(an).get(0); 
+				ObjectInstance location = s.getObjectsOfClass(ln).get(0); 
 				
 				//get agent position
 				int ax = agent.getDiscValForAttribute(GridWorldDomain.ATTX);

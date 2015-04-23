@@ -1,6 +1,5 @@
 package burlap.testing.Domain;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,9 +8,11 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 
@@ -127,14 +128,14 @@ public class BlockDude implements DomainGenerator {
 	
 	public static State getCleanState(Domain domain, List <Integer> platformX, List <Integer> platformH, int nb){
 		
-		State s = new State();
+		State s = new MutableState();
 		
 		//start by creating the platform objects
 		for(int i = 0; i < platformX.size(); i++){
 			int x = platformX.get(i);
 			int h = platformH.get(i);
 			
-			ObjectInstance plat = new ObjectInstance(domain.getObjectClass(CLASSPLATFORM), CLASSPLATFORM+x);
+			ObjectInstance plat = new MutableObjectInstance(domain.getObjectClass(CLASSPLATFORM), CLASSPLATFORM+x);
 			plat.setValue(ATTX, x);
 			plat.setValue(ATTHEIGHT, h);
 			
@@ -144,14 +145,14 @@ public class BlockDude implements DomainGenerator {
 		
 		//create n blocks
 		for(int i = 0; i < nb; i++){
-			s.addObject(new ObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i));
+			s.addObject(new MutableObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i));
 		}
 		
 		//create exit
-		s.addObject(new ObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0));
+		s.addObject(new MutableObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0));
 		
 		//create agent
-		s.addObject(new ObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		s.addObject(new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		
 		
 		return s;
@@ -160,7 +161,7 @@ public class BlockDude implements DomainGenerator {
 	
 	
 	public static void setAgent(State s, int x, int y, int dir, int holding){
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTY, y);
 		agent.setValue(ATTDIR, dir);
@@ -169,13 +170,13 @@ public class BlockDude implements DomainGenerator {
 	
 	
 	public static void setExit(State s, int x, int y){
-		ObjectInstance exit = s.getObjectsOfTrueClass(CLASSEXIT).get(0);
+		ObjectInstance exit = s.getObjectsOfClass(CLASSEXIT).get(0);
 		exit.setValue(ATTX, x);
 		exit.setValue(ATTY, y);
 	}
 	
 	public static void setBlock(State s, int i, int x, int y){
-		ObjectInstance block = s.getObjectsOfTrueClass(CLASSBLOCK).get(i);
+		ObjectInstance block = s.getObjectsOfClass(CLASSBLOCK).get(i);
 		block.setValue(ATTX, x);
 		block.setValue(ATTY, y);
 	}
@@ -184,7 +185,7 @@ public class BlockDude implements DomainGenerator {
 	
 	public static void moveHorizontally(State s, int dx){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		//always set direction
 		if(dx > 0){
@@ -222,7 +223,7 @@ public class BlockDude implements DomainGenerator {
 	
 	public static void moveUp(State s){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		int ax = agent.getDiscValForAttribute(ATTX);
 		int ay = agent.getDiscValForAttribute(ATTY);
@@ -252,7 +253,7 @@ public class BlockDude implements DomainGenerator {
 	
 	public static void pickupBlock(State s){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		int holding = agent.getDiscValForAttribute(ATTHOLD);
 		if(holding == 1){
@@ -291,7 +292,7 @@ public class BlockDude implements DomainGenerator {
 	
 	public static void putdownBlock(State s){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		int holding = agent.getDiscValForAttribute(ATTHOLD);
 		if(holding == 0){
@@ -335,7 +336,7 @@ public class BlockDude implements DomainGenerator {
 	
 	private static ObjectInstance getBlockAt(State s, int x, int y){
 		
-		List<ObjectInstance> blocks = s.getObjectsOfTrueClass(CLASSBLOCK);
+		List<ObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
 		for(ObjectInstance block : blocks){
 			int bx = block.getDiscValForAttribute(ATTX);
 			int by = block.getDiscValForAttribute(ATTY);
@@ -351,7 +352,7 @@ public class BlockDude implements DomainGenerator {
 	private static int totalHeightAtXPos(State s, int x){
 		
 		//first see if there are any blocks at this x pos and if so, what highest one is
-		List<ObjectInstance> blocks = s.getObjectsOfTrueClass(CLASSBLOCK);
+		List<ObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
 		int maxBlock = -1;
 		for(ObjectInstance block : blocks){
 			int bx = block.getDiscValForAttribute(ATTX);
