@@ -2,6 +2,7 @@ package burlap.domain.singleagent.cartpole;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -293,7 +294,7 @@ public class CartPoleDomain implements DomainGenerator {
 			cartPole.setValue(ATTNORMSGN, 1.);
 		}
 		
-		State s = new State();
+		State s = new MutableState();
 		s.addObject(cartPole);
 		
 		return s;

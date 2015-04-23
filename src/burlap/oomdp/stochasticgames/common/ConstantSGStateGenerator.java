@@ -43,7 +43,7 @@ public class ConstantSGStateGenerator extends SGStateGenerator {
 		for(Agent a : agents){
 			String agentClassName = a.getAgentType().oclass.name;
 			int index = (int) counts.v(agentClassName);
-			List<ObjectInstance> possibleAgentObjects = s.getObjectsOfTrueClass(agentClassName);
+			List<ObjectInstance> possibleAgentObjects = s.getObjectsOfClass(agentClassName);
 			if(possibleAgentObjects.size() <= index){
 				throw new RuntimeException("Error: Constant state used by ConstanteStateSGGenerator does not have enough oo-mdp objects for agents defined by class: " + agentClassName);
 			}

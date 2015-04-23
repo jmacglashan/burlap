@@ -26,12 +26,20 @@ public interface State {
 	/**
 	 * Adds object instance o to this state.
 	 * @param o the object instance to be added to this state.
+	 * @return the modified state
 	 */
 	State addObject(ObjectInstance o);
 	
 	/**
+	 * Adds the collection of objects to the state
+	 * @param objects
+	 * @return the modified state
+	 */
+	State addAllObjects(Collection<ObjectInstance> objects);
+	/**
 	 * Removes the object instance with the name oname from this state.
 	 * @param oname the name of the object instance to remove.
+	 * @return the modified state
 	 */
 	State removeObject(String oname);
 	
@@ -39,14 +47,21 @@ public interface State {
 	/**
 	 * Removes the object instance o from this state.
 	 * @param o the object instance to remove from this state.
+	 * @return the modified state
 	 */
 	State removeObject(ObjectInstance o);
 	
-	
+	/**
+	 * Removes the collection of objects from the state
+	 * @param objects
+	 * @return the modified state
+	 */
+	State removeAllObjects(Collection<ObjectInstance> objects);
 	/**
 	 * Renames the identifier for the object instance currently named originalName with the name newName.
 	 * @param originalName the original name of the object instance to be renamed in this state
 	 * @param newName the new name of the object instance
+	 * @return the modified state
 	 */
 	State renameObject(String originalName, String newName);
 	
@@ -54,6 +69,7 @@ public interface State {
 	 * Renames the identifier for object instance o in this state to newName.
 	 * @param o the object instance to rename in this state
 	 * @param newName the new name of the object instance
+	 * @return the modified state
 	 */
 	State renameObject(ObjectInstance o, String newName);
 	

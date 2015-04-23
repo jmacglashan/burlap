@@ -1,14 +1,20 @@
 package burlap.domain.singleagent.mountaincar;
 
+import java.util.List;
+
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
+import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
-
-import java.util.List;
 
 
 /**
@@ -180,7 +186,7 @@ public class MountainCar implements DomainGenerator {
 	 * @return a new state with the agent in the bottom of the hill valley not moving.
 	 */
 	public State getCleanState(Domain domain){
-		State s = new State();
+		State s = new MutableState();
 		ObjectInstance a = new ObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
 		s.addObject(a);
 		setAgent(s, -(Math.PI/2) / this.cosScale, 0.);

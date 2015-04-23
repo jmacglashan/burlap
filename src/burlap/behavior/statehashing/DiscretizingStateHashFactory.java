@@ -132,7 +132,7 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 			int totalVol = 1;
 			hashCode = 0;
 			for(String oclass : objectClasses){
-				List <ObjectInstance> obs = s.getObjectsOfTrueClass(oclass);
+				List <ObjectInstance> obs = s.getObjectsOfClass(oclass);
 				ObjectClass oc = obs.get(0).getObjectClass();
 				int vol = this.computeVolumeForClass(oc);
 				
@@ -290,8 +290,8 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 			for(String cname : classesToCheck){
 				
 				
-				List <ObjectInstance> theseObjects = this.s.getObjectsOfTrueClass(cname);
-				List <ObjectInstance> thoseObjects = that.s.getObjectsOfTrueClass(cname);
+				List <ObjectInstance> theseObjects = this.s.getObjectsOfClass(cname);
+				List <ObjectInstance> thoseObjects = that.s.getObjectsOfClass(cname);
 				
 				if(theseObjects.size() != thoseObjects.size()){
 					return false;

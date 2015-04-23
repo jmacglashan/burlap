@@ -121,7 +121,7 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 			int totalVol = 1;
 			hashCode = 0;
 			for(String oclass : objectClasses){
-				List <ObjectInstance> obs = s.getObjectsOfTrueClass(oclass);
+				List <ObjectInstance> obs = s.getObjectsOfClass(oclass);
 				ObjectClass oc = obs.get(0).getObjectClass();
 				int vol = this.computeVolumeForClass(oc);
 				

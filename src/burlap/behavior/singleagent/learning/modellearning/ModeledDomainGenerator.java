@@ -10,6 +10,7 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -89,7 +90,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 
 	
 	public static boolean isRmaxFictitiousState(State s){
-		return s.getObjectsOfTrueClass(RMAXFICTIOUSSTATENAME).size() > 0;
+		return s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0;
 	}
 	
 	
@@ -139,7 +140,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 			this.model = model;
 			this.useRMax = useRMax;
 			if(useRMax){
-				RMaxState = new State();
+				RMaxState = new MutableState();
 				ObjectInstance o = new ObjectInstance(ModeledDomainGenerator.this.modelDomain.getObjectClass(RMAXFICTIOUSSTATENAME), "rmax");
 				o.setValue(RMAXFICTIOUSSTATENAME, 1);
 				RMaxState.addObject(o);
@@ -148,7 +149,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		
 		@Override
 		public boolean applicableInState(State s, String [] params){
-			if(s.getObjectsOfTrueClass(RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0){
 				return false; //action cannot be performed in rmax state
 			}
 			return this.sourceAction.applicableInState(s, params);
@@ -207,7 +208,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		
 		@Override
 		public boolean applicableInState(State s, String [] params){
-			if(s.getObjectsOfTrueClass(RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0){
 				return true; //action cannot be performed in rmax state
 			}
 			return false;

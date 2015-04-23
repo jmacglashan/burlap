@@ -15,6 +15,7 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
@@ -497,7 +498,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNoLocationState(Domain d){
 		
-		State s = new State();
+		State s = new MutableState();
 
 		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 				
@@ -514,7 +515,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNoLocationState(Domain d, int ax, int ay){
 
-		State s = new State();
+		State s = new MutableState();
 
 		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		GridWorldDomain.setAgent(s, ax, ay);
@@ -532,7 +533,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentOneLocationState(Domain d){
 		
-		State s = new State();
+		State s = new MutableState();
 		
 		s.addObject(new ObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+0));
 		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
@@ -550,7 +551,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNLocationState(Domain d, int n){
 		
-		State s = new State();
+		State s = new MutableState();
 		
 		for(int i = 0; i < n; i++){
 			s.addObject(new ObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+i));
@@ -568,7 +569,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the agent
 	 */
 	public static void setAgent(State s, int x, int y){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance o = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -582,7 +583,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSLOCATION).get(i);
+		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -598,7 +599,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param locType the location type of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y, int locType){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSLOCATION).get(i);
+		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -636,7 +637,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	protected void move(State s, int xd, int yd){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		int ax = agent.getDiscValForAttribute(ATTX);
 		int ay = agent.getDiscValForAttribute(ATTY);
 		

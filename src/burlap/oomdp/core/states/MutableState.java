@@ -41,6 +41,7 @@ public class MutableState extends OOMDPState implements State{
 	
 	
 	public MutableState(){
+		super();
 		this.initDataStructures();
 	}
 	
@@ -50,7 +51,7 @@ public class MutableState extends OOMDPState implements State{
 	 * @param s the source state from which this state will be initialized.
 	 */
 	public MutableState(MutableState s){
-		
+		super();
 		
 		this.initDataStructures();
 		
@@ -175,6 +176,13 @@ public class MutableState extends OOMDPState implements State{
 		return this;
 	}
 	
+	public State addAllObjects(Collection<ObjectInstance> objects) {
+		for (ObjectInstance object : objects) {
+			this.addObject(object);
+		}
+		return this;
+	}
+	
 	private void addObjectClassIndexing(ObjectInstance o){
 		
 		String otclass = o.getTrueClassName();
@@ -232,7 +240,12 @@ public class MutableState extends OOMDPState implements State{
 		return this;
 	}
 	
-	
+	public State removeAllObjects(Collection<ObjectInstance> objects) {
+		for (ObjectInstance object : objects){ 
+			this.removeObject(object);
+		}
+		return this;
+	}
 	
 	private void removeObjectClassIndexing(ObjectInstance o){
 		
@@ -254,18 +267,7 @@ public class MutableState extends OOMDPState implements State{
 	}
 	
 	
-	/**
-	 * Renames the identifier for the object instance currently named originalName with the name newName.
-	 * @param originalName the original name of the object instance to be renamed in this state
-	 * @param newName the new name of the object instance
-	 */
-	public State renameObject(String originalName, String newName){
-		ObjectInstance o = objectMap.get(originalName);
-		o.setName(newName);
-		objectMap.remove(originalName);
-		objectMap.put(newName, o);
-		return this;
-	}
+	
 	
 	
 	/**
@@ -293,7 +295,7 @@ public class MutableState extends OOMDPState implements State{
 	 * @param enforceStateExactness whether to require that states are identical to return a matching
 	 * @return a matching from this receiving state's objects to objects in so that have identical values. 
 	 */
-	public Map <String, String> getObjectMatchingTo(MutableState so, boolean enforceStateExactness){
+	public Map <String, String> getObjectMatchingTo(State so, boolean enforceStateExactness){
 		
 		Map <String, String> matching = new HashMap<String, String>();
 		
@@ -306,7 +308,7 @@ public class MutableState extends OOMDPState implements State{
 		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
 			
 			String oclass = objects.get(0).getTrueClassName();
-			List <ObjectInstance> oobjects = so.getObjectsOfTrueClass(oclass);
+			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size() && enforceStateExactness){
 				return new HashMap<String, String>(); //states are not equal and therefore cannot be matched
 			}
@@ -358,7 +360,7 @@ public class MutableState extends OOMDPState implements State{
 		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
 			
 			String oclass = objects.get(0).getTrueClassName();
-			List <ObjectInstance> oobjects = so.getObjectsOfTrueClass(oclass);
+			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size()){
 				return false;
 			}
@@ -476,19 +478,6 @@ public class MutableState extends OOMDPState implements State{
 		return objects;
 	}
 	
-	/**
-	 * Deprecated due to method name change. Instead use {@link #getObjectsOfClass(String)}.
-	 */
-	@Deprecated
-	public List <ObjectInstance> getObjectsOfTrueClass(String oclass){
-		List <ObjectInstance> tmp = objectIndexByTrueClass.get(oclass);
-		if(tmp == null){
-			return new ArrayList <ObjectInstance>();
-		}
-		return new ArrayList <ObjectInstance>(tmp);
-	}
-
-
 	/**
 	 * Returns all objects that belong to the object class named oclass
 	 * @param oclass the name of the object class for which objects should be returned
@@ -611,100 +600,8 @@ public class MutableState extends OOMDPState implements State{
 	
 	
 	
-	/**
-	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActions(MutableState)} method instead.
-	 * Returns all GroundedAction objects for the source action a in this state.
-	 * @param a the action from which to generate GroundedAction objects.
-	 * @return all GroundedAction objects for the source action a in this state.
-	 */
-	@Deprecated
-	public List <GroundedAction> getAllGroundedActionsFor(Action a){
-		
-		List <GroundedAction> res = new ArrayList<GroundedAction>();
-		
-		if(a.getParameterClasses().length == 0){
-			if(a.applicableInState(this, "")){
-				res.add(new GroundedAction(a, new String[]{}));
-			}
-			return res; //no parameters so just the single ga without params
-		}
-		
-		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(a.getParameterClasses(), a.getParameterOrderGroups());
-		
-		for(List <String> params : bindings){
-			String [] aprams = params.toArray(new String[params.size()]);
-			if(a.applicableInState(this, aprams)){
-				GroundedAction gp = new GroundedAction(a, aprams);
-				res.add(gp);
-			}
-		}
-		
-		return res;
-	}
 	
 	
-	/**
-	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActionsFromActionList(List, MutableState)} method instead.
-	 * Returns a list of GroundedAction objects for all grounded actions that can be generated from the provided list of actions.
-	 * @param actions the list of actions from which to generate GroudnedAction objects.
-	 * @return a list of GroundedAction objects for all grounded actions that can be generated from the provided list of actions.
-	 */
-	@Deprecated
-	public List <GroundedAction> getAllGroundedActionsFor(List <Action> actions){
-		List <GroundedAction> res = new ArrayList<GroundedAction>(actions.size());
-		for(Action a : actions){
-			res.addAll(this.getAllGroundedActionsFor(a));
-		}
-		return res;
-	}
-	
-	
-	
-	/**
-	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#getAllGroundedPropsForState(MutableState)} method instead.
-	 * Returns all GroundedProp objects for the source propositional function pf in this state.
-	 * @param pf the propositional function from which to generate GroundedProp objects.
-	 * @return all GroundedProp objects for the source propositional function pf in this state.
-	 */
-	@Deprecated
-	public List <GroundedProp> getAllGroundedPropsFor(PropositionalFunction pf){
-		
-		List <GroundedProp> res = new ArrayList<GroundedProp>();
-		
-		if(pf.getParameterClasses().length == 0){
-			res.add(new GroundedProp(pf, new String[]{}));
-			return res; //no parameters so just the single gp without params
-		}
-		
-		List <List <String>> bindings = this.getPossibleBindingsGivenParamOrderGroups(pf.getParameterClasses(), pf.getParameterOrderGroups());
-		
-		for(List <String> params : bindings){
-			String [] aprams = params.toArray(new String[params.size()]);
-			GroundedProp gp = new GroundedProp(pf, aprams);
-			res.add(gp);
-		}
-		
-		return res;
-	}
-	
-	
-	/**
-	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#somePFGroundingIsTrue(MutableState)} method instead.
-	 * Returns whether some GroundedProp of pf is true in this state
-	 * @param pf the propositional function to check
-	 * @return true if some GroundedProp of pf is true in this state; false otherwise
-	 */
-	@Deprecated
-	public boolean somePFGroundingIsTrue(PropositionalFunction pf){
-		List <GroundedProp> gps = this.getAllGroundedPropsFor(pf);
-		for(GroundedProp gp : gps){
-			if(gp.isTrue(this)){
-				return true;
-			}
-		}
-		
-		return false;
-	}
 	
 	
 	/**

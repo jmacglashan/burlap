@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -140,7 +140,7 @@ public class StateJSONParser implements StateParser {
 	 */
 	public State JSONPreparedToState(List<Map<String, Object>> objects){
 		
-		State s = new State();
+		State s = new MutableState();
 		
 		for(Map<String, Object> oMap : objects){
 			String obName = (String)oMap.get("name");

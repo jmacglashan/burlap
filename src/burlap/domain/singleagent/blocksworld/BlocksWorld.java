@@ -5,6 +5,7 @@ import java.util.List;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
@@ -146,7 +147,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @return a new state with nBlocks block objects
 	 */
 	public static State getNewState(Domain d, int nBlocks){
-		State s = new State();
+		State s = new MutableState();
 		ObjectClass oc = d.getObjectClass(CLASSBLOCK);
 		for(int i = 0; i < nBlocks; i++){
 			ObjectInstance o = new ObjectInstance(oc, CLASSBLOCK+i);
@@ -164,7 +165,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @param color the categorical color value (either "red", "green", or "blue")
 	 */
 	public static void setBlockColor(State s, int blockInd, String color){
-		ObjectInstance b = s.getObjectsOfTrueClass(CLASSBLOCK).get(blockInd);
+		ObjectInstance b = s.getObjectsOfClass(CLASSBLOCK).get(blockInd);
 		b.setValue(ATTCOLOR, color);
 	}
 	
@@ -178,7 +179,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @param color the categorical color value (either "red", "green", or "blue")
 	 */
 	public static void setBlock(State s, int blockInd, String onBlock, int onTable, int clear, String color){
-		setBlock(s.getObservableObjectAt(blockInd), onBlock, onTable, clear, color);
+		setBlock(s.getObservableObjects().get(blockInd), onBlock, onTable, clear, color);
 	}
 	
 	

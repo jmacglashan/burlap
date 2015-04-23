@@ -488,11 +488,11 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		if(delta.x != 0 && !reset){
-			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfTrueClass(GridGame.CLASSDIMVWALL), true);
+			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL), true);
 		}
 		
 		if(delta.y != 0 && !reset){
-			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfTrueClass(GridGame.CLASSDIMHWALL), false);
+			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL), false);
 		}
 		
 		
@@ -528,7 +528,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		if(delta.x != 0){
-			int wc = this.wallCollision(p0, delta, s.getObjectsOfTrueClass(GridGame.CLASSDIMVWALL), true);
+			int wc = this.wallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL), true);
 			if(wc == 0){
 				locs.add(new Location2Prob(p1, 1.)); //agent freely moves
 			}
@@ -543,7 +543,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 			}
 		}
 		else if(delta.y != 0){
-			int wc = this.wallCollision(p0, delta, s.getObjectsOfTrueClass(GridGame.CLASSDIMHWALL), false);
+			int wc = this.wallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL), false);
 			if(wc == 0){
 				locs.add(new Location2Prob(p1, 1.)); //agent freely moves
 			}
@@ -842,7 +842,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 */
 	protected boolean agentsEqual(State s1, State s2){
 		
-		List<ObjectInstance> agents1 = s1.getObjectsOfTrueClass(GridGame.CLASSAGENT);
+		List<ObjectInstance> agents1 = s1.getObjectsOfClass(GridGame.CLASSAGENT);
 		
 		for(ObjectInstance a1 : agents1){
 			ObjectInstance a2 = s2.getObject(a1.getName());

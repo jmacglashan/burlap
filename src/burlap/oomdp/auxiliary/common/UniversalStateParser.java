@@ -7,6 +7,7 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 
 
@@ -60,7 +61,7 @@ public class UniversalStateParser implements StateParser {
 	@Override
 	public State stringToState(String str) {
 		
-		State s = new State();
+		State s = new MutableState();
 		
 		String [] obcomps = str.split("##bo\n");
 		for(int i = 1; i < obcomps.length; i++){ //first comp will be empty so skip it

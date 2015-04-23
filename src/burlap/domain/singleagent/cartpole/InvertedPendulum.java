@@ -10,6 +10,7 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -220,7 +221,7 @@ public class InvertedPendulum implements DomainGenerator {
 	 * @return an initial state with the pole at the given angle and with the given angular velocity of the pole.
 	 */
 	public static State getInitialState(Domain domain, double angle, double angleVelocity){
-		State s = new State();
+		State s = new MutableState();
 		ObjectInstance o = new ObjectInstance(domain.getObjectClass(CLASSPENDULUM), CLASSPENDULUM);
 		o.setValue(ATTANGLE, angle);
 		o.setValue(ATTANGLEV, angleVelocity);

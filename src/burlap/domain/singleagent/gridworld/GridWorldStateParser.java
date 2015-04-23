@@ -36,8 +36,8 @@ public class GridWorldStateParser implements StateParser {
 		
 		StringBuffer sbuf = new StringBuffer(256);
 		
-		ObjectInstance a = s.getObjectsOfTrueClass(GridWorldDomain.CLASSAGENT).get(0);
-		List<ObjectInstance> locs = s.getObjectsOfTrueClass(GridWorldDomain.CLASSLOCATION);
+		ObjectInstance a = s.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0);
+		List<ObjectInstance> locs = s.getObjectsOfClass(GridWorldDomain.CLASSLOCATION);
 		
 		String xa = GridWorldDomain.ATTX;
 		String ya = GridWorldDomain.ATTY;

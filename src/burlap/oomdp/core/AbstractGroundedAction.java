@@ -105,7 +105,7 @@ public abstract class AbstractGroundedAction {
 		int i = 0;
 		for(String oname : this.params){
 			ObjectInstance o = sourceState.getObject(oname);
-			List<ObjectInstance> cands = targetState.getObjectsOfTrueClass(o.getObjectClass().name);
+			List<ObjectInstance> cands = targetState.getObjectsOfClass(o.getObjectClass().name);
 			for(ObjectInstance cand : cands){
 				if(matchedObjects.contains(cand.getName())){
 					continue ;

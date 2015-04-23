@@ -8,6 +8,7 @@ import org.rlcommunity.rlglue.codec.types.Observation;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
@@ -95,7 +96,7 @@ public class RLGlueWrappedDomainGenerator implements DomainGenerator {
 	 * @return a OO-MDP state represnting the RLGlue observation
 	 */
 	public State stateFromObservation(Observation obsv){
-		State s = new State();
+		State s = new MutableState();
 		if(this.hasDiscAtts){
 			ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(DISCRETECLASS), "discreteVals");
 			s.addObject(o);
@@ -121,7 +122,7 @@ public class RLGlueWrappedDomainGenerator implements DomainGenerator {
 	 * @return a special terminal state object.
 	 */
 	public State getTerminalState(){
-		State s = new State();
+		State s = new MutableState();
 		ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(TERMCLASS), "terminal");
 		o.setValue(TERMATT, 1);
 		s.addObject(o);

@@ -93,8 +93,8 @@ public class DiscreteMaskHashingFactory extends DiscreteStateHashFactory {
 				
 				List <Attribute> attsToCheck = attMap.get(cname);
 				
-				List <ObjectInstance> theseObjects = this.s.getObjectsOfTrueClass(cname);
-				List <ObjectInstance> thoseObjects = that.s.getObjectsOfTrueClass(cname);
+				List <ObjectInstance> theseObjects = this.s.getObjectsOfClass(cname);
+				List <ObjectInstance> thoseObjects = that.s.getObjectsOfClass(cname);
 				
 				if(theseObjects.size() != thoseObjects.size()){
 					return false;

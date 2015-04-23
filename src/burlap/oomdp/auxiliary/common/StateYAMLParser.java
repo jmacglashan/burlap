@@ -11,9 +11,10 @@ import org.yaml.snakeyaml.Yaml;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 
 
 /**
@@ -93,7 +94,7 @@ public class StateYAMLParser implements StateParser {
 	@Override
 	public State stringToState(String str) {
 		
-		State s = new State();
+		State s = new MutableState();
 		
 		Yaml yaml = new Yaml();
 		List<?> objects = (List<?>)yaml.load(str);

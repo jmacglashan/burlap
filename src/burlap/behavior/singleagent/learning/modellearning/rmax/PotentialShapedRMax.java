@@ -329,7 +329,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 
 
 			//RMaxStates are terminal states
-			if(s.getObjectsOfTrueClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
 				return true;
 			}
 
@@ -377,7 +377,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 
 		@Override
 		public double potentialValue(State s) {
-			if(s.getObjectsOfTrueClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
 				return 0.;
 			}
 			return this.vmax;

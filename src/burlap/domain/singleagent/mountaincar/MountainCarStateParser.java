@@ -3,6 +3,7 @@ package burlap.domain.singleagent.mountaincar;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 
 public class MountainCarStateParser implements StateParser {
@@ -35,7 +36,7 @@ public class MountainCarStateParser implements StateParser {
 		double x = Double.parseDouble(comps[0]);
 		double v = Double.parseDouble(comps[1]);
 		
-		State s = new State();
+		State s = new MutableState();
 		ObjectInstance agent = new ObjectInstance(this.domain.getObjectClass(MountainCar.CLASSAGENT), MountainCar.CLASSAGENT);
 		agent.setValue(MountainCar.ATTX, x);
 		agent.setValue(MountainCar.ATTV, v);

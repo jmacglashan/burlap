@@ -12,6 +12,7 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
@@ -382,7 +383,7 @@ public class GridGame implements DomainGenerator {
 	 */
 	public static State getCleanState(Domain d, int na, int ng, int nhw, int nvw, int width, int height){
 		
-		State s = new State();
+		State s = new MutableState();
 		addNObjects(d, s, CLASSGOAL, ng);
 		addNObjects(d, s, CLASSAGENT, na);
 		addNObjects(d, s, CLASSDIMHWALL, nhw);
@@ -514,7 +515,7 @@ public class GridGame implements DomainGenerator {
 	 * @param pn the player number of the agent
 	 */
 	public static void setAgent(State s, int i, int x, int y, int pn){
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(i);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(i);
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTY, y);
 		agent.setValue(ATTPN, pn);
@@ -530,7 +531,7 @@ public class GridGame implements DomainGenerator {
 	 * @param gt the goal type
 	 */
 	public static void setGoal(State s, int i, int x, int y, int gt){
-		ObjectInstance goal = s.getObjectsOfTrueClass(CLASSGOAL).get(i);
+		ObjectInstance goal = s.getObjectsOfClass(CLASSGOAL).get(i);
 		goal.setValue(ATTX, x);
 		goal.setValue(ATTY, y);
 		goal.setValue(ATTGT, gt);
@@ -546,8 +547,8 @@ public class GridGame implements DomainGenerator {
 	 */
 	public static void setBoundaryWalls(State s, int w, int h){
 		
-		List<ObjectInstance> verticalWalls = s.getObjectsOfTrueClass(CLASSDIMVWALL);
-		List<ObjectInstance> horizontalWalls = s.getObjectsOfTrueClass(CLASSDIMHWALL);
+		List<ObjectInstance> verticalWalls = s.getObjectsOfClass(CLASSDIMVWALL);
+		List<ObjectInstance> horizontalWalls = s.getObjectsOfClass(CLASSDIMHWALL);
 		
 		ObjectInstance leftWall = verticalWalls.get(0);
 		ObjectInstance rightWall = verticalWalls.get(1);
@@ -590,7 +591,7 @@ public class GridGame implements DomainGenerator {
 	 * @param wt the type of the wall
 	 */
 	public static void setVerticalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfTrueClass(CLASSDIMVWALL).get(i), p, e1, e2, wt);
+		setWallInstance(s.getObjectsOfClass(CLASSDIMVWALL).get(i), p, e1, e2, wt);
 	}
 	
 	
@@ -605,7 +606,7 @@ public class GridGame implements DomainGenerator {
 	 * @param wt the type of the wall (0 is solid, 1 is semi)
 	 */
 	public static void setHorizontalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfTrueClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
+		setWallInstance(s.getObjectsOfClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
 	}
 	
 	
@@ -638,7 +639,7 @@ public class GridGame implements DomainGenerator {
 			
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
+			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
 				int gt = goal.getDiscValForAttribute(ATTGT);
@@ -688,7 +689,7 @@ public class GridGame implements DomainGenerator {
 			int apn = agent.getDiscValForAttribute(ATTPN);
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
+			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
 				int gt = goal.getDiscValForAttribute(ATTGT);
@@ -796,7 +797,7 @@ public class GridGame implements DomainGenerator {
 			Map <String, Double> rewards = new HashMap<String, Double>();
 			
 			//get all agents and initialize reward to default
-			List <ObjectInstance> obs = sp.getObjectsOfTrueClass(GridGame.CLASSAGENT);
+			List <ObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
 			for(ObjectInstance o : obs){
 				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
 			}

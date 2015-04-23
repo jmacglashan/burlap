@@ -116,7 +116,7 @@ public class StateGridder {
 		//first thing we want to do is get the list of objects that need to be modified
 		List<ObjectInstance> objectsToGrid = new ArrayList<ObjectInstance>(s.numObservableObjects());
 		for(Map.Entry<String, AttributeSpecification[]> e : objectClassAttriutes.entrySet()){
-			List<ObjectInstance> obs = s.getObjectsOfTrueClass(e.getKey());
+			List<ObjectInstance> obs = s.getObjectsOfClass(e.getKey());
 			objectsToGrid.addAll(obs);
 		}
 
