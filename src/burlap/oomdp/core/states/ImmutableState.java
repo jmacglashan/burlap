@@ -24,7 +24,9 @@ import com.google.common.collect.Lists;
 
 
 /**
- * State objects are a collection of Object Instances.
+ * An immutable state cannot be changed (nor subclassed). It is particularly useful when memory management is crucial, as
+ * copies are only created when actual changes are applied to an ImmutableState (copy on write). Performance will not be 
+ * affected dramatically if they use a StateBuilder object to keep track of desired state changes.
  * @author James MacGlashan
  *
  */
@@ -72,17 +74,36 @@ public final class ImmutableState extends OOMDPState implements State {
 	
 	
 	/**
-	 * Initializes this state as a deep copy of the object instances in the provided source state s
+	 * Constructs an immutable copy from any state object. All underlying lists are also copied so changes
+	 * to the original state are not reflected in this copy.
 	 * @param s the source state from which this state will be initialized.
 	 */
-	public ImmutableState(ImmutableState s){
-		this.objectInstances = s.objectInstances;
-		this.hiddenObjectInstances = s.hiddenObjectInstances;
-		this.objectIndexByTrueClass = s.objectIndexByTrueClass;
-		this.objectMap = s.objectMap;
-		this.objectClassMap = s.objectClassMap;
-		this.numObservableObjects = s.numObservableObjects;
-		this.numHiddenObjects = s.numHiddenObjects;
+	public ImmutableState(State s){
+		int size = 2 * (s.numTotalObjets());
+		HashMap<String, Integer> objectMap = new HashMap<String, Integer>(size);
+		Map<String, Integer> objectClassMap = new HashMap<String, Integer>();
+		
+		List<ObjectInstance> objectInstances = this.createObjectLists(s.getObservableObjects(), objectMap, 0);
+		List<ObjectInstance> hiddenObjectsInstances = this.createObjectLists(s.getHiddenObjects(), objectMap, objectInstances.size());
+		
+		this.objectInstances = Collections.unmodifiableList(objectInstances);
+		this.hiddenObjectInstances = Collections.unmodifiableList(hiddenObjectsInstances);
+		this.numObservableObjects = this.objectInstances.size();
+		this.numHiddenObjects = this.hiddenObjectInstances.size();
+		
+		int numberClasses = objectClassMap.size();
+		List<List<Integer>> objectIndexByTrueClass = new ArrayList<List<Integer>>(numberClasses);
+		size /= 2;
+		for (int i = 0 ; i < numberClasses; i++) {
+			objectIndexByTrueClass.add(new ArrayList<Integer>(size));
+		}
+		
+		this.addObjectListToList(this.objectInstances, this.numObservableObjects, numberClasses, objectIndexByTrueClass, objectClassMap);
+		this.addObjectListToList(this.hiddenObjectInstances, this.numHiddenObjects, numberClasses, objectIndexByTrueClass, objectClassMap);
+		
+		this.objectIndexByTrueClass = Collections.unmodifiableList(objectIndexByTrueClass);
+		this.objectClassMap = Collections.unmodifiableMap(objectClassMap);
+		this.objectMap = Collections.unmodifiableMap(objectMap);
 	}
 	
 	public ImmutableState(List<ObjectInstance> objects) {
@@ -144,11 +165,11 @@ public final class ImmutableState extends OOMDPState implements State {
 	}
 	
 	/**
-	 * Returns a deep copy of this state.
-	 * @return a deep copy of this state.
+	 * Returns a shallow copy of this state.
+	 * @return a shallow copy of this state.
 	 */
 	public ImmutableState copy(){
-		return new ImmutableState(this);
+		return this;
 	}
 	
 	
