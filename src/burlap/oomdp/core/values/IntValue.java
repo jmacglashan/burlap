@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -15,7 +14,7 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class IntValue extends Value {
+public class IntValue extends OOMDPValue implements Value {
 
 	/**
 	 * The int value
@@ -36,7 +35,7 @@ public class IntValue extends Value {
 	 * Initializes from an existing IntUnBound value.
 	 * @param v the value to copy
 	 */
-	public IntValue(Value v) {
+	public IntValue(IntValue v) {
 		super(v);
 		this.intVal = ((IntValue)v).intVal;
 	}
@@ -52,48 +51,52 @@ public class IntValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v) {
+	public Value setValue(int v) {
 		this.intVal = v;
+		return this;
 	}
 
 	@Override
-	public void setValue(double v) {
+	public Value setValue(double v) {
 		this.intVal = (int)v;
+		return this;
 	}
 
 	@Override
-	public void setValue(String v) {
+	public Value setValue(String v) {
 		this.intVal = Integer.parseInt(v);
+		return this;
 	}
 	
 	@Override
-	public void setValue(boolean v) {
+	public Value setValue(boolean v) {
 		if(v){
 			this.intVal = 1;
 		}
 		else{
 			this.intVal = 0;
 		}
+		return this;
 	}
 
 	@Override
-	public void addRelationalTarget(String t) {
+	public Value addRelationalTarget(String t) {
 		throw new UnsupportedOperationException("Value is Int, cannot add relational target");
 	}
 	
 	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
+	public Value addAllRelationalTargets(Collection<String> targets) {
 		throw new UnsupportedOperationException("Value is Int, cannot add relational targets");
 	}
 	
 
 	@Override
-	public void clearRelationTargets() {
+	public Value clearRelationTargets() {
 		throw new UnsupportedOperationException("Value is Int, cannot clear relational targets");
 	}
 
 	@Override
-	public void removeRelationalTarget(String target) {
+	public Value removeRelationalTarget(String target) {
 		throw new UnsupportedOperationException("Value is Int, cannot remove relational target");
 	}
 
@@ -108,9 +111,10 @@ public class IntValue extends Value {
 	}
 
 	@Override
-	public String getStringVal() {
-		return "" + this.intVal;
+	public StringBuilder buildStringVal(StringBuilder builder) {
+		return builder.append(this.intVal);
 	}
+	
 
 	@Override
 	public Set<String> getAllRelationalTargets() {
@@ -146,13 +150,13 @@ public class IntValue extends Value {
 	}
 	
 	@Override
-	public void setValue(int[] intArray) {
+	public Value setValue(int[] intArray) {
 		throw new UnsupportedOperationException("Value is int; cannot be set to an int array.");
 	}
 
 
 	@Override
-	public void setValue(double[] doubleArray) {
+	public Value setValue(double[] doubleArray) {
 		throw new UnsupportedOperationException("Value is int; cannot be set to a double array.");
 	}
 

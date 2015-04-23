@@ -2,7 +2,8 @@ package burlap.oomdp.stochasticgames;
 
 import java.util.List;
 
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 
 
@@ -29,7 +30,7 @@ public abstract class SGStateGenerator {
 	 * @return an object instance for this agent.
 	 */
 	protected ObjectInstance getAgentObjectInstance(Agent a){
-		return new ObjectInstance(a.agentType.oclass, a.worldAgentName);
+		return new MutableObjectInstance(a.agentType.oclass, a.worldAgentName);
 	}
 
 }

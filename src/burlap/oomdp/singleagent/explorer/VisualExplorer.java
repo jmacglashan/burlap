@@ -14,13 +14,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
-import burlap.oomdp.core.*;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -451,7 +458,7 @@ public class VisualExplorer extends JFrame{
 					}
 					else if(comps[0].equals("add")){
 						if(comps.length == 3){
-							ObjectInstance o = new ObjectInstance(VisualExplorer.this.domain.getObjectClass(comps[1]), comps[2]);
+							ObjectInstance o = new MutableObjectInstance(VisualExplorer.this.domain.getObjectClass(comps[1]), comps[2]);
 							ns.addObject(o);
 							madeChange = true;
 						}

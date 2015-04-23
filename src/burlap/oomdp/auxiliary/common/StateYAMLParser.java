@@ -12,7 +12,8 @@ import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 
@@ -103,7 +104,7 @@ public class StateYAMLParser implements StateParser {
 			Map<?,?> oMap = (Map<?, ?>)o;
 			String obName = (String)oMap.get("name");
 			String className = (String)oMap.get("class");
-			ObjectInstance ob = new ObjectInstance(this.domain.getObjectClass(className), obName);
+			ObjectInstance ob = new MutableObjectInstance(this.domain.getObjectClass(className), obName);
 			for(Attribute a : this.domain.getObjectClass(className).attributeList){
 				if(a.type == AttributeType.BOOLEAN){
 					Boolean bval = (Boolean)oMap.get(a.name);

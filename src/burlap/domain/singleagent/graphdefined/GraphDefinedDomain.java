@@ -13,8 +13,9 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -136,7 +137,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	public static State getState(Domain d, int sNode){
 		State s = new MutableState();
 		
-		ObjectInstance o = new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT);
+		ObjectInstance o = new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT);
 		o.setValue(ATTNODE, sNode);
 		
 		s.addObject(o);

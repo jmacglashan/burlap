@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -349,7 +349,8 @@ public final class ImmutableState extends OOMDPState implements State {
 	 */
 	@Override
 	public State renameObject(ObjectInstance o, String newName){
-		
+		ObjectInstance newObject = o.setName(newName);
+		return this.replaceObject(o, newObject);
 	}
 	
 	

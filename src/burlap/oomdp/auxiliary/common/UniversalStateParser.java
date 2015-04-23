@@ -6,7 +6,8 @@ import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 
@@ -70,7 +71,7 @@ public class UniversalStateParser implements StateParser {
 			String ocname = obinst[0];
 			String oname = obinst[1];
 			
-			ObjectInstance o = new ObjectInstance(domain.getObjectClass(ocname), oname);
+			ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(ocname), oname);
 			
 			for(int j = 2; j < obinst.length; j+=2){
 				String attName = obinst[j];

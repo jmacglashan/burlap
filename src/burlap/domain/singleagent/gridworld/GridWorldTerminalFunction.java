@@ -3,8 +3,8 @@ package burlap.domain.singleagent.gridworld;
 import java.util.HashSet;
 import java.util.Set;
 
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 
 /**

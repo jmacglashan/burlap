@@ -8,11 +8,12 @@ import org.rlcommunity.rlglue.codec.types.Observation;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 
@@ -98,14 +99,14 @@ public class RLGlueWrappedDomainGenerator implements DomainGenerator {
 	public State stateFromObservation(Observation obsv){
 		State s = new MutableState();
 		if(this.hasDiscAtts){
-			ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(DISCRETECLASS), "discreteVals");
+			ObjectInstance o = new MutableObjectInstance(this.domain.getObjectClass(DISCRETECLASS), "discreteVals");
 			s.addObject(o);
 			for(int i = 0; i < obsv.intArray.length; i++){
 				o.setValue(DISCATT+i, obsv.intArray[i]);
 			}
 		}
 		if(this.hasRealAtts){
-			ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(REALCLASS), "realVals");
+			ObjectInstance o = new MutableObjectInstance(this.domain.getObjectClass(REALCLASS), "realVals");
 			s.addObject(o);
 			for(int i = 0; i < obsv.doubleArray.length; i++){
 				o.setValue(REALATT+i, obsv.doubleArray[i]);
@@ -123,7 +124,7 @@ public class RLGlueWrappedDomainGenerator implements DomainGenerator {
 	 */
 	public State getTerminalState(){
 		State s = new MutableState();
-		ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(TERMCLASS), "terminal");
+		ObjectInstance o = new MutableObjectInstance(this.domain.getObjectClass(TERMCLASS), "terminal");
 		o.setValue(TERMATT, 1);
 		s.addObject(o);
 		return s;

@@ -7,9 +7,10 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -665,14 +666,14 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		State s = new MutableState();
 		
-		ObjectInstance agent = new ObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
+		ObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
 		s.addObject(agent);
 		
-		ObjectInstance pad = new ObjectInstance(domain.getObjectClass(PADCLASS), PADCLASS + "0");
+		ObjectInstance pad = new MutableObjectInstance(domain.getObjectClass(PADCLASS), PADCLASS + "0");
 		s.addObject(pad);
 		
 		for(int i = 0; i < no; i++){
-			ObjectInstance obst = new ObjectInstance(domain.getObjectClass(OBSTACLECLASS), OBSTACLECLASS + i);
+			ObjectInstance obst = new MutableObjectInstance(domain.getObjectClass(OBSTACLECLASS), OBSTACLECLASS + i);
 			s.addObject(obst);
 		}
 

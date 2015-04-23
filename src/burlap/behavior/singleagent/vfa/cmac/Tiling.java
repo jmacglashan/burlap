@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 
 

@@ -7,7 +7,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;

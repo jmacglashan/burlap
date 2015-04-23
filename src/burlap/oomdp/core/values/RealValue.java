@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -12,7 +11,7 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class RealValue extends Value {
+public class RealValue extends OOMDPValue implements Value {
 	
 	/**
 	 * The real value stored as a double. Default value of NaN indicates that the value is unset
@@ -33,7 +32,7 @@ public class RealValue extends Value {
 	 * Initializes this value as a copy from the source Value object v.
 	 * @param v the source Value to make this object a copy of.
 	 */
-	public RealValue(Value v){
+	public RealValue(RealValue v){
 		super(v);
 		RealValue rv = (RealValue)v;
 		this.realVal = rv.realVal;
@@ -51,32 +50,35 @@ public class RealValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v){
+	public Value setValue(int v){
 		this.realVal = (double)v;
+		return this;
 	}
 	
 	@Override
-	public void setValue(double v){
+	public Value setValue(double v){
 		this.realVal = v;
+		return this;
 	}
 	
 	@Override
-	public void setValue(String v){
+	public Value setValue(String v){
 		this.realVal = Double.parseDouble(v);
+		return this;
 	}
 	
 	@Override
-	public void setValue(boolean v) {
+	public Value setValue(boolean v) {
 		throw new UnsupportedOperationException("Value is real; cannot be set to a boolean value.");
 	}
 	
 	@Override
-	public void addRelationalTarget(String t) {
+	public Value addRelationalTarget(String t) {
 		throw new UnsupportedOperationException(new Error("Value is real, cannot add relational target"));
 	}
 	
 	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
+	public Value addAllRelationalTargets(Collection<String> targets) {
 		throw new UnsupportedOperationException("Value is real, cannot add relational targets");
 	}
 
@@ -94,21 +96,21 @@ public class RealValue extends Value {
 	}
 	
 	@Override
-	public void clearRelationTargets() {
+	public Value clearRelationTargets() {
 		throw new UnsupportedOperationException(new Error("Value is real, cannot clear relational targets"));
 	}
 	
 	@Override
-	public void removeRelationalTarget(String target) {
+	public Value removeRelationalTarget(String target) {
 		throw new UnsupportedOperationException(new Error("Value is real, cannot modify relational targets"));
 	}
 	
 	@Override
-	public String getStringVal(){
+	public StringBuilder buildStringVal(StringBuilder builder) {
 		if(Double.isNaN(this.realVal)){
 			throw new UnsetValueException();
 		}
-		return String.valueOf(this.realVal);
+		return builder.append(this.realVal);
 	}
 	
 	@Override
@@ -148,13 +150,13 @@ public class RealValue extends Value {
 
 
 	@Override
-	public void setValue(int[] intArray) {
+	public Value setValue(int[] intArray) {
 		throw new UnsupportedOperationException("Value is real; cannot be set to an int array.");
 	}
 
 
 	@Override
-	public void setValue(double[] doubleArray) {
+	public Value setValue(double[] doubleArray) {
 		throw new UnsupportedOperationException("Value is real; cannot be set to a double array.");
 	}
 

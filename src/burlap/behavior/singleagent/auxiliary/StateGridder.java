@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.auxiliary;
 
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 
 import java.util.*;

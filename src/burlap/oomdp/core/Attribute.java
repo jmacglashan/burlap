@@ -16,6 +16,7 @@ import burlap.oomdp.core.values.MultiTargetRelationalValue;
 import burlap.oomdp.core.values.RealValue;
 import burlap.oomdp.core.values.RelationalValue;
 import burlap.oomdp.core.values.StringValue;
+import burlap.oomdp.core.values.Value;
 
 /**
  * The attribute class defines attributes that define OO-MDP object classes. There are different types of attributes

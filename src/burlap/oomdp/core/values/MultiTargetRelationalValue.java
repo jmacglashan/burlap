@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -14,7 +13,7 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class MultiTargetRelationalValue extends Value {
+public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 
 	/**
 	 * The set of object targets to which this value points. Object targets are indicated
@@ -37,7 +36,7 @@ public class MultiTargetRelationalValue extends Value {
 	 * Initializes this value as a copy from the source Value object v.
 	 * @param v the source Value to make this object a copy of.
 	 */
-	public MultiTargetRelationalValue(Value v){
+	public MultiTargetRelationalValue(MultiTargetRelationalValue v){
 		super(v);
 		MultiTargetRelationalValue rv = (MultiTargetRelationalValue)v;
 		this.targetObjects = new TreeSet<String>(rv.targetObjects);
@@ -56,45 +55,50 @@ public class MultiTargetRelationalValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v) {
+	public Value setValue(int v) {
 		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to an int value"));
 	}
 
 	@Override
-	public void setValue(double v) {
+	public Value setValue(double v) {
 		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to a double value"));
 	}
 
 	@Override
-	public void setValue(String v) {
+	public Value setValue(String v) {
 		this.targetObjects.clear();
 		this.targetObjects.add(v);
+		return this;
 	}
 	
 	@Override
-	public void setValue(boolean v) {
+	public Value setValue(boolean v) {
 		throw new UnsupportedOperationException("Value is of relational; cannot be set to a boolean value.");
 	}
 	
 	@Override
-	public void addRelationalTarget(String t) {
+	public Value addRelationalTarget(String t) {
 		this.targetObjects.add(t);
+		return this;
 	}
 	
 	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
+	public Value addAllRelationalTargets(Collection<String> targets) {
 		this.targetObjects.addAll(targets);
+		return this;
 	}
 	
 	
 	@Override
-	public void clearRelationTargets() {
+	public Value clearRelationTargets() {
 		this.targetObjects.clear();
+		return this;
 	}
 	
 	@Override
-	public void removeRelationalTarget(String target) {
+	public Value removeRelationalTarget(String target) {
 		this.targetObjects.remove(target);
+		return this;
 	}
 
 	@Override
@@ -114,17 +118,16 @@ public class MultiTargetRelationalValue extends Value {
 	
 
 	@Override
-	public String getStringVal() {
-		StringBuffer buf = new StringBuffer();
+	public StringBuilder buildStringVal(StringBuilder builder) {
 		boolean didFirst = false;
 		for(String t : this.targetObjects){
 			if(didFirst){
-				buf.append(";");
+				builder.append(";");
 			}
-			buf.append(t);
+			builder.append(t);
 			didFirst = true;
 		}
-		return buf.toString();
+		return builder;
 	}
 
 	@Override
@@ -166,13 +169,13 @@ public class MultiTargetRelationalValue extends Value {
 	}
 
 	@Override
-	public void setValue(int[] intArray) {
+	public Value setValue(int[] intArray) {
 		throw new UnsupportedOperationException("Value is relational; cannot be set to an int array.");
 	}
 
 
 	@Override
-	public void setValue(double[] doubleArray) {
+	public Value setValue(double[] doubleArray) {
 		throw new UnsupportedOperationException("Value is relational; cannot be set to a double array.");
 	}
 

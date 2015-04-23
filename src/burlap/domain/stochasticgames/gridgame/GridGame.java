@@ -9,9 +9,10 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
@@ -500,7 +501,7 @@ public class GridGame implements DomainGenerator {
 	 */
 	protected static void addNObjects(Domain d, State s, String className, int n){
 		for(int i = 0; i < n; i++){
-			ObjectInstance o = new ObjectInstance(d.getObjectClass(className), className+i);
+			ObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), className+i);
 			s.addObject(o);
 		}
 	}

@@ -1,7 +1,15 @@
 package burlap.domain.singleagent.cartpole;
 
+import java.util.List;
+
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
+import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -9,8 +17,6 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
-
-import java.util.List;
 
 
 /**
@@ -285,7 +291,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @return the corresponding initial state object
 	 */
 	public static State getInitialState(Domain domain, double x, double xv, double a, double av){
-		ObjectInstance cartPole = new ObjectInstance(domain.getObjectClass(CLASSCARTPOLE), CLASSCARTPOLE);
+		ObjectInstance cartPole = new MutableObjectInstance(domain.getObjectClass(CLASSCARTPOLE), CLASSCARTPOLE);
 		cartPole.setValue(ATTX, x);
 		cartPole.setValue(ATTV, xv);
 		cartPole.setValue(ATTANGLE, a);

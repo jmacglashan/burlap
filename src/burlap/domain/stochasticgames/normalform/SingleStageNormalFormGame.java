@@ -13,8 +13,9 @@ import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.Agent;
@@ -472,7 +473,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		int n = pnAtt.discValues.size(); //determines the number of players
 		
 		for(int i = 0; i < n; i++){
-			ObjectInstance player = new ObjectInstance(pclass, CLASSPLAYER+i);
+			ObjectInstance player = new MutableObjectInstance(pclass, CLASSPLAYER+i);
 			player.setValue(ATTPN, i);
 			s.addObject(player);
 		}

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -13,7 +12,7 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class DiscreteValue extends Value{
+public class DiscreteValue extends OOMDPValue implements Value{
 	
 	/**
 	 * The discrete value stored as an integer. If the attribute
@@ -36,7 +35,7 @@ public class DiscreteValue extends Value{
 	 * Initializes this value as a copy from the source Value object v.
 	 * @param v the source Value to make this object a copy of.
 	 */
-	public DiscreteValue(Value v){
+	public DiscreteValue(DiscreteValue v){
 		super(v);
 		DiscreteValue dv = (DiscreteValue)v;
 		this.discVal = dv.discVal;
@@ -53,48 +52,52 @@ public class DiscreteValue extends Value{
 	}
 	
 	@Override
-	public void setValue(int v){
+	public Value setValue(int v){
 		this.discVal = v;
+		return this;
 	}
 	
 	@Override
-	public void setValue(double v){
+	public Value setValue(double v){
 		this.discVal = (int)v;
+		return this;
 	}
 	
 	@Override
-	public void setValue(boolean v) {
+	public Value setValue(boolean v) {
 		if(v){
 			this.discVal = 1;
 		}
 		else{
 			this.discVal = 0;
 		}
+		return this;
 	}
 	
 	@Override
-	public void setValue(String v){
+	public Value setValue(String v){
 		int intv = attribute.discValuesHash.get(v);
 		discVal = intv;
+		return this;
 	}
 	
 	@Override
-	public void addRelationalTarget(String t) {
+	public Value addRelationalTarget(String t) {
 		throw new UnsupportedOperationException("Value is discrete, cannot add relational target");
 	}
 	
 	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
+	public Value addAllRelationalTargets(Collection<String> targets) {
 		throw new UnsupportedOperationException("Value is discrete, cannot add relational targets");
 	}
 	
 	@Override
-	public void clearRelationTargets() {
+	public Value clearRelationTargets() {
 		throw new UnsupportedOperationException("Value is discrete, cannot clear relational targets");
 	}
 	
 	@Override
-	public void removeRelationalTarget(String target) {
+	public Value removeRelationalTarget(String target) {
 		throw new UnsupportedOperationException("Value is discrete, cannot modify relational target");
 	}
 	
@@ -112,11 +115,11 @@ public class DiscreteValue extends Value{
 	}
 	
 	@Override
-	public String getStringVal(){
+	public StringBuilder buildStringVal(StringBuilder builder) {
 		if(this.discVal == -1){
 			throw new UnsetValueException();
 		}
-		return attribute.discValues.get(discVal);
+		return builder.append(attribute.discValues.get(discVal));
 	}
 	
 	@Override
@@ -157,13 +160,13 @@ public class DiscreteValue extends Value{
 
 	
 	@Override
-	public void setValue(int[] intArray) {
+	public Value setValue(int[] intArray) {
 		throw new UnsupportedOperationException("Value is discrete; cannot be set to an int array.");
 	}
 
 
 	@Override
-	public void setValue(double[] doubleArray) {
+	public Value setValue(double[] doubleArray) {
 		throw new UnsupportedOperationException("Value is discrete; cannot be set to a double array.");
 	}
 

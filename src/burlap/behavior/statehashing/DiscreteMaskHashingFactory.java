@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.Value;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.values.Value;
 
 
 

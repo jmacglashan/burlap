@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -12,7 +11,7 @@ import burlap.oomdp.core.Value;
  * @author Greg Yauney (gyauney)
  *
  */
-public class StringValue extends Value {
+public class StringValue extends OOMDPValue implements Value {
 
 	/**
 	 * The string value
@@ -33,7 +32,7 @@ public class StringValue extends Value {
 	 * Initializes from an existing value.
 	 * @param v the value to copy
 	 */
-	public StringValue(Value v) {
+	public StringValue(StringValue v) {
 		super(v);
 		this.stringVal = ((StringValue)v).stringVal;
 	}
@@ -49,42 +48,45 @@ public class StringValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v) {
+	public Value setValue(int v) {
 		this.stringVal = Integer.toString(v);
+		return this;
 	}
 	
 	@Override
-	public void setValue(double v) {
+	public Value setValue(double v) {
 		this.stringVal = Double.toString(v);
+		return this;
 	}
 	
 	@Override
-	public void setValue(String v) {
+	public Value setValue(String v) {
 		this.stringVal = v;
+		return this;
 	}
 	
 	@Override
-	public void setValue(boolean v) {
+	public Value setValue(boolean v) {
 		throw new UnsupportedOperationException("Value is of type String; cannot be set to a boolean value.");
 	}
 
 	@Override
-	public void addRelationalTarget(String t) {
+	public Value addRelationalTarget(String t) {
 		throw new UnsupportedOperationException("Value is String, cannot add relational target");
 	}
 
 	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
+	public Value addAllRelationalTargets(Collection<String> targets) {
 		throw new UnsupportedOperationException("Value is String, cannot add relational targets");
 	}
 	
 	@Override
-	public void clearRelationTargets() {
+	public Value clearRelationTargets() {
 		throw new UnsupportedOperationException("Value is String, cannot clear relational targets");
 	}
 
 	@Override
-	public void removeRelationalTarget(String target) {
+	public Value removeRelationalTarget(String target) {
 		throw new UnsupportedOperationException("Value is String, cannot remove relational target");
 	}
 
@@ -99,8 +101,8 @@ public class StringValue extends Value {
 	}
 
 	@Override
-	public String getStringVal() {
-		return this.stringVal;
+	public StringBuilder buildStringVal(StringBuilder builder) {
+		return builder.append(this.stringVal);
 	}
 
 	@Override
@@ -137,13 +139,13 @@ public class StringValue extends Value {
 	}
 	
 	@Override
-	public void setValue(int[] intArray) {
+	public Value setValue(int[] intArray) {
 		throw new UnsupportedOperationException("Value is string; cannot be set to an int array.");
 	}
 
 
 	@Override
-	public void setValue(double[] doubleArray) {
+	public Value setValue(double[] doubleArray) {
 		throw new UnsupportedOperationException("Value is string; cannot be set to a double array.");
 	}
 

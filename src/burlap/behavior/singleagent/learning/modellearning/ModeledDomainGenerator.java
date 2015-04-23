@@ -7,9 +7,10 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -141,7 +142,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 			this.useRMax = useRMax;
 			if(useRMax){
 				RMaxState = new MutableState();
-				ObjectInstance o = new ObjectInstance(ModeledDomainGenerator.this.modelDomain.getObjectClass(RMAXFICTIOUSSTATENAME), "rmax");
+				ObjectInstance o = new MutableObjectInstance(ModeledDomainGenerator.this.modelDomain.getObjectClass(RMAXFICTIOUSSTATENAME), "rmax");
 				o.setValue(RMAXFICTIOUSSTATENAME, 1);
 				RMaxState.addObject(o);
 			}

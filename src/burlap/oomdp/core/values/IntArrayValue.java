@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -14,7 +13,7 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class IntArrayValue extends Value {
+public class IntArrayValue extends OOMDPValue implements Value {
 
 	protected int [] intArray = null;
 	
@@ -23,7 +22,7 @@ public class IntArrayValue extends Value {
 		super(attribute);
 	}
 	
-	public IntArrayValue(Value v){
+	public IntArrayValue(IntArrayValue v){
 		super(v);
 		IntArrayValue iaValue  = (IntArrayValue)v;
 		if(iaValue.intArray != null){
@@ -42,17 +41,17 @@ public class IntArrayValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v) {
+	public Value setValue(int v) {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot set single int value.");
 	}
 
 	@Override
-	public void setValue(double v) {
+	public Value setValue(double v) {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot set double value.");
 	}
 
 	@Override
-	public void setValue(String v) {
+	public Value setValue(String v) {
 		if(v.startsWith("\"") && v.endsWith("\"")){
 			v = v.substring(1, v.length());
 		}
@@ -61,25 +60,26 @@ public class IntArrayValue extends Value {
 		for(int i = 0; i < comps.length; i++){
 			this.intArray[i] = Integer.parseInt(comps[i]);
 		}
+		return this;
 	}
 
 	@Override
-	public void addRelationalTarget(String t) {
+	public Value addRelationalTarget(String t) {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot set relational value.");
 	}
 	
 	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
+	public Value addAllRelationalTargets(Collection<String> targets) {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot add relational targets");
 	}
 	
 	@Override
-	public void clearRelationTargets() {
+	public Value clearRelationTargets() {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot clear values.");
 	}
 
 	@Override
-	public void removeRelationalTarget(String target) {
+	public Value removeRelationalTarget(String target) {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot clear values.");
 	}
 
@@ -93,16 +93,16 @@ public class IntArrayValue extends Value {
 		throw new UnsupportedOperationException("Value is of type IntArray, cannot return real values");
 	}
 
+	
 	@Override
-	public String getStringVal() {
-		StringBuffer buf = new StringBuffer();
+	public StringBuilder buildStringVal(StringBuilder builder) {
 		for(int i = 0; i < this.intArray.length; i++){
 			if(i > 0){
-				buf.append(",");
+				builder.append(",");
 			}
-			buf.append(this.intArray[i]);
+			builder.append(this.intArray[i]);
 		}
-		return buf.toString();
+		return builder;
 	}
 
 	@Override
@@ -126,12 +126,13 @@ public class IntArrayValue extends Value {
 	}
 
 	@Override
-	public void setValue(int[] intArray) {
+	public Value setValue(int[] intArray) {
 		this.intArray = intArray;
+		return this;
 	}
 
 	@Override
-	public void setValue(double[] doubleArray) {
+	public Value setValue(double[] doubleArray) {
 		throw new UnsupportedOperationException("Cannot set int array value to double array value.");	
 	}
 
@@ -176,7 +177,7 @@ public class IntArrayValue extends Value {
 	}
 	
 	@Override
-	public void setValue(boolean v) {
+	public Value setValue(boolean v) {
 		throw new UnsupportedOperationException("Value is of type DoubleArray; cannot be set to a boolean value.");
 	}
 

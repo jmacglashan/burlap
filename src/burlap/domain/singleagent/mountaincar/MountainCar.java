@@ -6,9 +6,10 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -187,7 +188,7 @@ public class MountainCar implements DomainGenerator {
 	 */
 	public State getCleanState(Domain domain){
 		State s = new MutableState();
-		ObjectInstance a = new ObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
+		ObjectInstance a = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
 		s.addObject(a);
 		setAgent(s, -(Math.PI/2) / this.cosScale, 0.);
 		return s;

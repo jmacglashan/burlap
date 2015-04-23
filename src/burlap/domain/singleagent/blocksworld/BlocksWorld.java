@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
+import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -150,7 +156,7 @@ public class BlocksWorld implements DomainGenerator {
 		State s = new MutableState();
 		ObjectClass oc = d.getObjectClass(CLASSBLOCK);
 		for(int i = 0; i < nBlocks; i++){
-			ObjectInstance o = new ObjectInstance(oc, CLASSBLOCK+i);
+			ObjectInstance o = new MutableObjectInstance(oc, CLASSBLOCK+i);
 			setBlock(o, "", 1, 1, COLORRED);
 			s.addObject(o);
 		}

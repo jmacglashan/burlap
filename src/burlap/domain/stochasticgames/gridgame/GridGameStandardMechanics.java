@@ -11,8 +11,8 @@ import java.util.Set;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;

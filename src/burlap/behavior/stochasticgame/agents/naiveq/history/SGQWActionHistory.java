@@ -13,7 +13,8 @@ import burlap.behavior.stochasticgame.agents.naiveq.SGNaiveQLAgent;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
@@ -255,7 +256,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 		
 		String aname = gsa.actingAgent;
 		
-		ObjectInstance o = new ObjectInstance(classHistory, aname + "-h" + h);
+		ObjectInstance o = new MutableObjectInstance(classHistory, aname + "-h" + h);
 		o.setValue(ATTHNUM, h);
 		o.setValue(ATTHPN, world.getPlayerNumberForAgent(aname));
 		o.setValue(ATTHAID, actionMap.getActionId(gsa));
@@ -274,7 +275,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	 */
 	protected ObjectInstance getHistoryLessObjectInstanceForAgent(String aname, int h){
 		
-		ObjectInstance o = new ObjectInstance(classHistory, aname + "-h" + h);
+		ObjectInstance o = new MutableObjectInstance(classHistory, aname + "-h" + h);
 		o.setValue(ATTHNUM, h);
 		o.setValue(ATTHPN, world.getPlayerNumberForAgent(aname));
 		o.setValue(ATTHAID, actionMap.maxValue());

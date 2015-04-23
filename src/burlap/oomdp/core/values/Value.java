@@ -1,7 +1,9 @@
-package burlap.oomdp.core;
+package burlap.oomdp.core.values;
 
 import java.util.Collection;
 import java.util.Set;
+
+import burlap.oomdp.core.Attribute;
 
 
 /**
@@ -11,74 +13,20 @@ import java.util.Set;
  * @author James MacGlashan
  *
  */
-public abstract class Value {
+public interface Value {
 
-	protected Attribute			attribute;			//defines the attribute kind of this value
-	protected boolean			isObservable=true;	//relevant to POMDPs for which values are only observable at certain times
 	
-	
-	/**
-	 * Initializes this value to be an assignment for Attribute attribute.
-	 * @param attribute
-	 */
-	public Value(Attribute attribute){
-		this.attribute = attribute;
-	}
-	
-	/**
-	 * Initializes this value as a copy from the source Value object v. Should be overridden by subclasses for full copy support.
-	 * @param v the source Value to make this object a copy of.
-	 */
-	public Value(Value v){
-		this.attribute = v.attribute;
-	}
-	
-	/**
-	 * Returns the Attribute object for which this is a value assignment.
-	 * @return the Attribute object for which this is a value assignment.
-	 */
-	public Attribute getAttribute(){
-		return attribute;
-	}
-	
-	/**
-	 * The name of the Attribute object for which this is a value assignment.
-	 * @return name of the Attribute object for which this is a value assignment.
-	 */
-	public String attName(){
-		return attribute.name;
-	}
-	
-	
-	/**
-	 * Sets whether this value is observable to the agent or not.
-	 * @param isObservable true if this value is observable to the agent; false otherwise.
-	 */
-	public void setObservability(boolean isObservable){
-		this.isObservable = isObservable;
-	}
-	
-	
-	/**
-	 * Returns whether this value is observable to the agent or not.
-	 * @return true if this value is observable to the agent; false otherwise.
-	 */
-	public boolean isObservable(){
-		return this.isObservable;
-	}
-	
-	@Override
-	public String toString(){
-		return this.getStringVal();
-	}
 	
 	
 	/**
 	 * Creates a deep copy of this value object.
 	 * @return a deep copy of this value object.
 	 */
-	public abstract Value copy();
+	Value copy();
 
+	String attName();
+	
+	Attribute getAttribute();
 
 	/**
 	 * Returns whether the value has been set to a meaningful value. Unset values
@@ -87,39 +35,39 @@ public abstract class Value {
 	 * to prevent errors in underspecified states.
 	 * @return true if the value has been set; false if not.
 	 */
-	public abstract boolean valueHasBeenSet();
+	boolean valueHasBeenSet();
 
 
 	/**
 	 * Sets the internal value representation using an int value
 	 * @param v the int value assignment
 	 */
-	public abstract void setValue(int v);
+	Value setValue(int v);
 	
 	/**
 	 * Sets the internal value representation using a double value
 	 * @param v the double value assignment
 	 */
-	public abstract void setValue(double v);
+	Value setValue(double v);
 	
 	/**
 	 * Sets the internal value representation using a string value
 	 * @param v the string value assignment
 	 */
-	public abstract void setValue(String v);
+	Value setValue(String v);
 	
 	/**
 	 * adds a relational target for the object instance named t
 	 * @param t the name of the object instance target
 	 */
-	public abstract void addRelationalTarget(String t);
+	Value addRelationalTarget(String t);
 	
-	public abstract void addAllRelationalTargets(Collection<String> targets);
+	Value addAllRelationalTargets(Collection<String> targets);
 	
 	/**
 	 * Removes any relational targets for this attribute
 	 */
-	public abstract void clearRelationTargets();
+	Value clearRelationTargets();
 	
 	
 	/**
@@ -131,70 +79,71 @@ public abstract class Value {
 	 * 
 	 * @param target the object name identifier to remove
 	 */
-	public abstract void removeRelationalTarget(String target);
+	Value removeRelationalTarget(String target);
 	
 	/**
 	 * Sets the internalvalue representation using a boolean value
 	 * @param v the boolean value
 	 */
-	public abstract void setValue(boolean v);
+	Value setValue(boolean v);
 	
 	/**
 	 * Sets the int array value.
 	 * @param intArray the int array value to set.
 	 */
-	public abstract void setValue(int [] intArray);
+	Value setValue(int [] intArray);
 	
 	/**
 	 * Sets the double array value.
 	 * @param doubleArray the double array value to set.
 	 */
-	public abstract void setValue(double [] doubleArray);
+	Value setValue(double [] doubleArray);
 	
 	/**
 	 * Returns the discrete integer value of this Value object
 	 * @return the discrete integer value of this Value object
 	 */
-	public abstract int getDiscVal();
+	int getDiscVal();
 	
 	/**
 	 * Returns the real-valued double value of this Value object
 	 * @return the real-valued double value of this Value object
 	 */
-	public abstract double getRealVal();
+	double getRealVal();
 	
 	/**
 	 * Returns the string value of this Value object
 	 * @return the string value of this Value object
 	 */
-	public abstract String getStringVal();
+	String getStringVal();
 	
+	StringBuilder buildStringVal(StringBuilder builder);
 	/**
 	 * Returns the ordered set of all relational targets of this object. The set will be empty
 	 * if the value is not set to any relational targets.
 	 * @return the ordered set of all relational targets of this object.
 	 */
-	public abstract Set <String> getAllRelationalTargets();
+	Set <String> getAllRelationalTargets();
 	
 	/**
 	 * Returns the boolean value of this attibute. For int values, this means 0 = false and all other values = true.
 	 * @return the boolean value of this attribute.
 	 */
-	public abstract boolean getBooleanValue();
+	boolean getBooleanValue();
 	
 	
 	/**
 	 * Returns an int array value
 	 * @return an int array value
 	 */
-	public abstract int [] getIntArray();
+	int [] getIntArray();
 	
 	
 	/**
 	 * Returns a double array value
 	 * @return a double array value.
 	 */
-	public abstract double [] getDoubleArray();
+	double [] getDoubleArray();
 	
 	
 	/**
@@ -202,7 +151,7 @@ public abstract class Value {
 	 * will be type cast as a double.
 	 * @return a numeric double representation of this value
 	 */
-	public abstract double getNumericRepresentation();
+	double getNumericRepresentation();
 	
 	
 }

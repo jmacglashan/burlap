@@ -7,8 +7,8 @@ import java.awt.geom.Rectangle2D;
 
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StateValuePainter;
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.Attribute.AttributeType;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 
 
