@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 
 /**
  * This class is used for setting a terminal function for GridWorlds that is based on the location of the agent in the world.

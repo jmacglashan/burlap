@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 
 /**

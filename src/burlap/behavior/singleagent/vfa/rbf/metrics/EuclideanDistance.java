@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.vfa.rbf.metrics;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.rbf.DistanceMetric;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 public class EuclideanDistance implements DistanceMetric {
 

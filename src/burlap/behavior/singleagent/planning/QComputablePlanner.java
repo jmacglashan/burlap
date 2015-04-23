@@ -5,8 +5,8 @@ import java.util.List;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 
 /**
  * An interface for planning classes that can compute Q-values.
@@ -41,7 +41,7 @@ public interface QComputablePlanner {
 		 * Returns the optimal state value function for a state given a {@link burlap.behavior.singleagent.planning.QComputablePlanner}.
 		 * The optimal value is the max Q-value. If no actions are permissible in the input state, then zero is returned.
 		 * @param planner the {@link burlap.behavior.singleagent.planning.QComputablePlanner} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @return the max Q-value for all possible Q-values in the state.
 		 */
 		public static double getOptimalValue(QComputablePlanner planner, State s){
@@ -60,7 +60,7 @@ public interface QComputablePlanner {
 		 * Returns the optimal state value for a state given a {@link burlap.behavior.singleagent.planning.QComputablePlanner}.
 		 * The optimal value is the max Q-value. If no actions are permissible in the input state or the input state is a terminal state, then zero is returned.
 		 * @param planner the {@link burlap.behavior.singleagent.planning.QComputablePlanner} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @param tf a terminal function.
 		 * @return the max Q-value for all possible Q-values in the state or zero if there are not permissible actions or if the state is a terminal state.
 		 */
@@ -78,7 +78,7 @@ public interface QComputablePlanner {
 		 * Returns the state value under a given policy for a state and {@link burlap.behavior.singleagent.planning.QComputablePlanner}.
 		 * The value is the expected Q-value under the input policy action distribution. If no actions are permissible in the input state, then zero is returned.
 		 * @param planner the {@link burlap.behavior.singleagent.planning.QComputablePlanner} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @param p the policy defining the action distribution.
 		 * @return the expected Q-value under the input policy action distribution
 		 */
@@ -101,7 +101,7 @@ public interface QComputablePlanner {
 		 * Returns the state value under a given policy for a state and {@link burlap.behavior.singleagent.planning.QComputablePlanner}.
 		 * The value is the expected Q-value under the input policy action distribution. If no actions are permissible in the input state, then zero is returned.
 		 * @param planner the {@link burlap.behavior.singleagent.planning.QComputablePlanner} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @param p the policy defining the action distribution.
 		 * @param tf a terminal function.
 		 * @return the expected Q-value under the input policy action distribution or zero if there are not permissible actions or if the state is a terminal state.

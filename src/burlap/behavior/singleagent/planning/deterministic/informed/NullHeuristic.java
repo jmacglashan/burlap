@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic.informed;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * A {@link Heuristic} implementation that always returns 0. This is always admissible

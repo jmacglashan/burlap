@@ -3,7 +3,7 @@ package burlap.oomdp.stochasticgames;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 
 /**

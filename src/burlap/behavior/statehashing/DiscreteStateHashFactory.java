@@ -9,9 +9,9 @@ import java.util.Map;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
 
 
 /**

@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.support;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * A tuple (triple) for storing the Q-gradient associated with a state and action. The gradient is stored in a double array.

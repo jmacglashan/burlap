@@ -2,7 +2,7 @@ package burlap.oomdp.stochasticgames;
 
 import java.util.Map;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * This interface defines the method needed to return the reward received by each agent.

@@ -7,7 +7,7 @@ import java.util.Map;
 import burlap.behavior.singleagent.Policy;
 import burlap.datastructures.HashedAggregator;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 

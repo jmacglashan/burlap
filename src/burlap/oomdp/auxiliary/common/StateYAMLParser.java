@@ -11,9 +11,9 @@ import org.yaml.snakeyaml.Yaml;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
 
 
 /**

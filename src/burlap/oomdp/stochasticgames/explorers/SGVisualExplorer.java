@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
 import burlap.oomdp.singleagent.explorer.StateResetSpecialAction;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;

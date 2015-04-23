@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * This is the standard interface for defining an agent that learns how to behave in the world through experience. The primary method
@@ -73,7 +73,7 @@ public interface LearningAgent {
 	 *
 	 * All data members of this class are public. By default the history of learning episodes stored will be just
 	 * 1. This method also includes a data member {@link #maxEpisodeSize} which can be optionally used for setting the longest
-	 * time a learning agent will run when the {@link burlap.behavior.singleagent.learning.LearningAgent#runLearningEpisodeFrom(burlap.oomdp.core.State)}
+	 * time a learning agent will run when the {@link burlap.behavior.singleagent.learning.LearningAgent#runLearningEpisodeFrom(burlap.oomdp.core.states.State)}
 	 * method is called. By default, it is INT MAX.
 	 *
 	 * The class also has a method for automatically adding an episode to its history, will removing the oldest stored

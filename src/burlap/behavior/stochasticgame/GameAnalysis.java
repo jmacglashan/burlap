@@ -12,7 +12,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import burlap.oomdp.auxiliary.StateParser;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;

@@ -3,6 +3,8 @@ package burlap.oomdp.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import burlap.oomdp.core.states.State;
+
 
 /**
  * The propositional function class defines evaluations of object instances in an OO-MDP state and are part of the definition for an OO-MDP domain.

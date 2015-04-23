@@ -3,8 +3,8 @@ package burlap.behavior.stochasticgame.agents.interfacing.singleagent;
 import java.util.Map;
 
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;

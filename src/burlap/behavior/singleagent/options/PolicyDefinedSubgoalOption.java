@@ -5,7 +5,7 @@ import java.util.List;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.Policy.ActionProb;
 import burlap.behavior.singleagent.planning.StateConditionTest;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 

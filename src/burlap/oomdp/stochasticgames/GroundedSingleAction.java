@@ -1,7 +1,7 @@
 package burlap.oomdp.stochasticgames;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 
 /**

@@ -8,7 +8,7 @@ import java.util.Set;
 
 import burlap.behavior.singleagent.Policy;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.JointAction;

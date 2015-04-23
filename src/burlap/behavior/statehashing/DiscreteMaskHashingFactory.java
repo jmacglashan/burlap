@@ -8,8 +8,8 @@ import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.Value;
+import burlap.oomdp.core.states.State;
 
 
 

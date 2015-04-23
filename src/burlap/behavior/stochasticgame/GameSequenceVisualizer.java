@@ -20,7 +20,7 @@ import javax.swing.event.ListSelectionListener;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.visualizer.Visualizer;

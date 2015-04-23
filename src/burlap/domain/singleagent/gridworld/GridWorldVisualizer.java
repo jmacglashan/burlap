@@ -10,7 +10,7 @@ import java.util.List;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.StaticPainter;

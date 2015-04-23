@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 
 

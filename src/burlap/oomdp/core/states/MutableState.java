@@ -1,7 +1,10 @@
-package burlap.oomdp.core;
+package burlap.oomdp.core.states;
 
 import java.util.*;
 
+import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -11,7 +14,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * @author James MacGlashan
  *
  */
-public class State {
+public class MutableState extends OOMDPState implements State{
 
 	
 	/**
@@ -37,7 +40,7 @@ public class State {
 
 	
 	
-	public State(){
+	public MutableState(){
 		this.initDataStructures();
 	}
 	
@@ -46,7 +49,7 @@ public class State {
 	 * Initializes this state as a deep copy of the object instances in the provided source state s
 	 * @param s the source state from which this state will be initialized.
 	 */
-	public State(State s){
+	public MutableState(MutableState s){
 		
 		
 		this.initDataStructures();
@@ -65,8 +68,8 @@ public class State {
 	 * Returns a deep copy of this state.
 	 * @return a deep copy of this state.
 	 */
-	public State copy(){
-		return new State(this);
+	public MutableState copy(){
+		return new MutableState(this);
 	}
 	
 	
@@ -76,7 +79,7 @@ public class State {
 	 * @param deepCopyObjectNames the names of the objects to be deep copied.
 	 * @return a new state that is a mix of a shallow and deep copy of this state.
 	 */
-	public State semiDeepCopy(String...deepCopyObjectNames){
+	public MutableState semiDeepCopy(String...deepCopyObjectNames){
 		Set<ObjectInstance> deepCopyObjectSet = new HashSet<ObjectInstance>(deepCopyObjectNames.length);
 		for(String n : deepCopyObjectNames){
 			deepCopyObjectSet.add(this.getObject(n));
@@ -91,7 +94,7 @@ public class State {
 	 * @param deepCopyObjects the objects to be deep copied
 	 * @return a new state that is a mix of a shallow and deep copy of this state.
 	 */
-	public State semiDeepCopy(ObjectInstance...deepCopyObjects){
+	public MutableState semiDeepCopy(ObjectInstance...deepCopyObjects){
 		
 		Set<ObjectInstance> deepCopyObjectSet = new HashSet<ObjectInstance>(deepCopyObjects.length);
 		for(ObjectInstance d : deepCopyObjects){
@@ -108,9 +111,9 @@ public class State {
 	 * @param deepCopyObjects the objects to be deep copied
 	 * @return a new state that is a mix of a shallow and deep copy of this state.
 	 */
-	public State semiDeepCopy(Set<ObjectInstance> deepCopyObjects){
+	public MutableState semiDeepCopy(Set<ObjectInstance> deepCopyObjects){
 		
-		State s = new State();
+		MutableState s = new MutableState();
 		for(ObjectInstance o : this.objectInstances){
 			if(deepCopyObjects.contains(o)){
 				s.addObject(o.copy());
@@ -147,12 +150,12 @@ public class State {
 	 * Adds object instance o to this state.
 	 * @param o the object instance to be added to this state.
 	 */
-	public void addObject(ObjectInstance o){
+	public State addObject(ObjectInstance o){
 		
 		String oname = o.getName();
 		
 		if(objectMap.containsKey(oname)){
-			return ; //don't add an object that conflicts with another object of the same name
+			return this; //don't add an object that conflicts with another object of the same name
 		}
 		
 		
@@ -169,7 +172,7 @@ public class State {
 		
 		this.addObjectClassIndexing(o);
 		
-		
+		return this;
 	}
 	
 	private void addObjectClassIndexing(ObjectInstance o){
@@ -195,8 +198,9 @@ public class State {
 	 * Removes the object instance with the name oname from this state.
 	 * @param oname the name of the object instance to remove.
 	 */
-	public void removeObject(String oname){
+	public State removeObject(String oname){
 		this.removeObject(objectMap.get(oname));
+		return this;
 	}
 	
 	
@@ -204,15 +208,15 @@ public class State {
 	 * Removes the object instance o from this state.
 	 * @param o the object instance to remove from this state.
 	 */
-	public void removeObject(ObjectInstance o){
+	public State removeObject(ObjectInstance o){
 		if(o == null){
-			return ;
+			return this;
 		}
 		
 		String oname = o.getName();
 		
 		if(!objectMap.containsKey(oname)){
-			return ; //make sure we're removing something that actually exists in this state!
+			return this; //make sure we're removing something that actually exists in this state!
 		}
 		
 		if(o.getObjectClass().hidden){
@@ -225,7 +229,7 @@ public class State {
 		objectMap.remove(oname);
 		
 		this.removeObjectClassIndexing(o);
-		
+		return this;
 	}
 	
 	
@@ -255,11 +259,12 @@ public class State {
 	 * @param originalName the original name of the object instance to be renamed in this state
 	 * @param newName the new name of the object instance
 	 */
-	public void renameObject(String originalName, String newName){
+	public State renameObject(String originalName, String newName){
 		ObjectInstance o = objectMap.get(originalName);
 		o.setName(newName);
 		objectMap.remove(originalName);
 		objectMap.put(newName, o);
+		return this;
 	}
 	
 	
@@ -268,11 +273,12 @@ public class State {
 	 * @param o the object instance to rename in this state
 	 * @param newName the new name of the object instance
 	 */
-	public void renameObject(ObjectInstance o, String newName){
+	public State renameObject(ObjectInstance o, String newName){
 		String originalName = o.getName();
 		o.setName(newName);
 		objectMap.remove(originalName);
 		objectMap.put(newName, o);
+		return this;
 	}
 	
 	
@@ -287,7 +293,7 @@ public class State {
 	 * @param enforceStateExactness whether to require that states are identical to return a matching
 	 * @return a matching from this receiving state's objects to objects in so that have identical values. 
 	 */
-	public Map <String, String> getObjectMatchingTo(State so, boolean enforceStateExactness){
+	public Map <String, String> getObjectMatchingTo(MutableState so, boolean enforceStateExactness){
 		
 		Map <String, String> matching = new HashMap<String, String>();
 		
@@ -338,11 +344,11 @@ public class State {
 			return true;
 		}
 		
-		if(!(other instanceof State)){
+		if(!(other instanceof MutableState)){
 			return false;
 		}
 		
-		State so = (State)other;
+		MutableState so = (MutableState)other;
 		
 		if(this.numTotalObjets() != so.numTotalObjets()){
 			return false;
@@ -606,7 +612,7 @@ public class State {
 	
 	
 	/**
-	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActions(State)} method instead.
+	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActions(MutableState)} method instead.
 	 * Returns all GroundedAction objects for the source action a in this state.
 	 * @param a the action from which to generate GroundedAction objects.
 	 * @return all GroundedAction objects for the source action a in this state.
@@ -638,7 +644,7 @@ public class State {
 	
 	
 	/**
-	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActionsFromActionList(List, State)} method instead.
+	 * Deprecated; use the {@link Action} class' {@link Action#getAllApplicableGroundedActionsFromActionList(List, MutableState)} method instead.
 	 * Returns a list of GroundedAction objects for all grounded actions that can be generated from the provided list of actions.
 	 * @param actions the list of actions from which to generate GroudnedAction objects.
 	 * @return a list of GroundedAction objects for all grounded actions that can be generated from the provided list of actions.
@@ -655,7 +661,7 @@ public class State {
 	
 	
 	/**
-	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#getAllGroundedPropsForState(State)} method instead.
+	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#getAllGroundedPropsForState(MutableState)} method instead.
 	 * Returns all GroundedProp objects for the source propositional function pf in this state.
 	 * @param pf the propositional function from which to generate GroundedProp objects.
 	 * @return all GroundedProp objects for the source propositional function pf in this state.
@@ -683,7 +689,7 @@ public class State {
 	
 	
 	/**
-	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#somePFGroundingIsTrue(State)} method instead.
+	 * Deprecated; use the {@link PropositionalFunction} class' {@link PropositionalFunction#somePFGroundingIsTrue(MutableState)} method instead.
 	 * Returns whether some GroundedProp of pf is true in this state
 	 * @param pf the propositional function to check
 	 * @return true if some GroundedProp of pf is true in this state; false otherwise
@@ -956,6 +962,7 @@ public class State {
 		
 		return 1;
 	}
+
 	
 	
 	

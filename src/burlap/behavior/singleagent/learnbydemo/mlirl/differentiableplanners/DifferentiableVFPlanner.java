@@ -8,8 +8,8 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
@@ -134,9 +134,9 @@ public abstract class DifferentiableVFPlanner extends ValueFunctionPlanner imple
 
 
 	/**
-	 * Returns the value function gradient for the given {@link burlap.oomdp.core.State}
+	 * Returns the value function gradient for the given {@link burlap.oomdp.core.states.State}
 	 * @param s the state for which the gradient is be returned.
-	 * @return the value function gradient for the given {@link burlap.oomdp.core.State}
+	 * @return the value function gradient for the given {@link burlap.oomdp.core.states.State}
 	 */
 	public double [] getValueGradient(State s){
 		//returns deriviate value
@@ -174,7 +174,7 @@ public abstract class DifferentiableVFPlanner extends ValueFunctionPlanner imple
 
 
 	/**
-	 * Computes the Q-value gradient for the given {@link burlap.oomdp.core.State} and {@link burlap.oomdp.singleagent.GroundedAction}.
+	 * Computes the Q-value gradient for the given {@link burlap.oomdp.core.states.State} and {@link burlap.oomdp.singleagent.GroundedAction}.
 	 * @param s the state
 	 * @param ga the grounded action.
 	 * @return the Q-value gradient that was computed.
