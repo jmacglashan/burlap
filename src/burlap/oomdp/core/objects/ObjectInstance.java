@@ -30,7 +30,7 @@ public interface ObjectInstance {
 	/**
 	 * Creates new value object assignments for each of this object instance class's attributes.
 	 */
-	void initializeValueObjects();
+	List<Value> initializeValueObjects();
 	
 	
 	/**

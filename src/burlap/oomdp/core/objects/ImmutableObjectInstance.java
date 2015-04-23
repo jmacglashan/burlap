@@ -3,13 +3,15 @@ package burlap.oomdp.core.objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import burlap.behavior.statehashing.ObjectHashTuple;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.values.Value;
 import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.values.Value;
 
 
 /**
@@ -24,7 +26,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	
 	private final ObjectClass					obClass;			//object class to which this object belongs
 	private final String						name;				//name of the object for disambiguation
-	private final List <Value>					values;				//the values for each attribute
+	private final List <Value>			values;				//the values for each attribute
 	private final ObjectHashTuple				hashTuple;
 	
 	
@@ -34,35 +36,42 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param obClass the object class to which this object belongs
 	 * @param name the name of the object
 	 */
-	public ImmutableObjectInstance(ObjectClass obClass, String name, ObjectHashFactory hashingFactory){
+	public ImmutableObjectInstance(ObjectClass obClass, String name){
 		
 		this.obClass = obClass;
 		this.name = name;
-		this.values = Collections.unmodifiableList(this.initializeValueObjects(hashingFactory.getValueHashFactory()));
-		this.hashTuple = hashingFactory.hashObject(this);
-		
+		this.values = Collections.unmodifiableList(this.initializeValueObjects());
+		this.hashTuple = null;
 	}
 	
 	/**
-	 * Creates a new object instance that is a deep copy of the specified object instance's values.
+	 * Creates a new object instance that is a shallow copy of the specified object instance's values.
 	 * The object class and name is a shallow copy.
 	 * @param o the source object instance from which this will object will copy.
 	 */
-	public ImmutableObjectInstance(ImmutableObjectInstance o){
+	public ImmutableObjectInstance(ObjectInstance o){
 		
-		this.obClass = o.obClass;
-		this.name = o.name;
-		this.values = o.values;
-		this.hashTuple = o.hashTuple;
+		this.obClass = o.getObjectClass();
+		this.name = o.getName();
+		
+		List<Value> values = new ArrayList<Value>(o.getValues());
+		this.values = Collections.unmodifiableList(values);
+		
+		if (o instanceof ImmutableObjectInstance) {
+			ImmutableObjectInstance immutable = (ImmutableObjectInstance)o;
+			this.hashTuple = immutable.hashTuple;
+		} else {
+			this.hashTuple = null;
+		}
 			
 	}
 	
-	public ImmutableObjectInstance(ObjectClass obClass, String name, List<Value> newValues, ObjectHashFactory hashingFactory) {
+	public ImmutableObjectInstance(ObjectClass obClass, String name, List<Value> newValues, ObjectHashTuple hashTuple) {
 		this.obClass = obClass;
 		this.name = name;
 		List<Value> values = new  ArrayList<Value>(newValues);
 		this.values = Collections.unmodifiableList(values);
-		this.hashTuple = hashingFactory.hashObject(this);
+		this.hashTuple = hashTuple;
 	}
 	
 	
@@ -81,17 +90,25 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		return new ImmutableObjectInstance(this);
 	}
 	
+	private static ImmutableObjectInstance constructAndHash(ObjectClass obClass, String name, List<Value> values, ObjectHashTuple previousTuple) {
+		ImmutableObjectInstance unhashed = new ImmutableObjectInstance(obClass, name, values, null);
+		if (previousTuple == null) {
+			return unhashed;
+		} else {
+			return (ImmutableObjectInstance)previousTuple.getHashingFactory().hashObject(unhashed).getObject();
+		}
+	}
 	
 	
 	/**
 	 * Creates new value object assignments for each of this object instance class's attributes.
 	 * @param valueHashFactory 
 	 */
-	public List <Value> initializeValueObjects(ValueHashFactory valueHashFactory){
+	public List <Value> initializeValueObjects(){
 		
 		List <Value> values = new ArrayList <Value>(obClass.numAttributes());
 		for(Attribute att : obClass.attributeList){
-			values.add(att.valueConstructor(valueHashFactory));
+			values.add(att.valueConstructor());
 		}
 		return values;
 	}
@@ -101,11 +118,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param name the name for this object instance.
 	 */
 	public ImmutableObjectInstance setName(String name){
-		return new ImmutableObjectInstance(this.obClass, name, this.values, this.hashTuple.getHashingFactory());
-	}
-	
-	public ImmutableObjectInstance changeValue(String attName, String v){
-		
+		return ImmutableObjectInstance.constructAndHash(this.obClass, name, this.values, this.hashTuple);
 	}
 	
 	/**
@@ -118,7 +131,8 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		
 	}
 	
 	/**
@@ -132,7 +146,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	/**
@@ -145,11 +159,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
-	}
-	
-	public ImmutableObjectInstance changeValue(String attName, boolean v){
-		
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	/**
@@ -162,7 +172,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	/**
@@ -175,11 +185,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
-	}
-	
-	public ImmutableObjectInstance changeValue(String attName, double[] v){
-		
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	/**
@@ -192,7 +198,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	
@@ -207,7 +213,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.addRelationalTarget(target));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	/**
@@ -221,7 +227,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.addAllRelationalTargets(targets));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	/**
@@ -233,7 +239,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.clearRelationTargets());
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	/**
@@ -246,7 +252,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.removeRelationalTarget(target));
-		return new ImmutableObjectInstance(this.obClass, this.name, values, this.hashTuple.getHashingFactory());
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
 	}
 	
 	
@@ -352,7 +358,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param attName the name of the attribute whose value should be returned
 	 * @return true if the value for the attribute evaluates to true, false otherwise.
 	 */
-	public boolean getBooleanValue(String attName){
+	public boolean getBooleanValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getBooleanValue();
 	}
@@ -362,7 +368,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param attName the name of the attribute whose value should be returned.
 	 * @return the int array value.
 	 */
-	public int [] getIntArrayValue(String attName){
+	public int [] getIntArrayValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getIntArray().clone();
 	}
@@ -373,7 +379,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param attName the name of the attribute whose value should be returned.
 	 * @return the int array value.
 	 */
-	public double [] getDoubleArrayValue(String attName){
+	public double [] getDoubleArrayValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getDoubleArray().clone();
 	}
@@ -499,39 +505,34 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		return this.hashTuple;
 	}
 
-	@Override
-	public void initializeValueObjects() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean getBooleanValForAttribute(String attName) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public int[] getIntArrayValForAttribute(String attName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double[] getDoubleArrayValForAttribute(String attName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
+	
 
 	@Override
 	public List<String> unsetAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		LinkedList<String> unsetAtts = new LinkedList<String>();
+		for(Value v : this.values){
+			if(!v.valueHasBeenSet()){
+				unsetAtts.add(v.attName());
+			}
+		}
+		return unsetAtts;
 	}
 
 	@Override
 	public String getObjectDesriptionWithNullForUnsetAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder builder = new StringBuilder();
+		builder = builder.append(name).append(" (").append(this.getTrueClassName()).append(")\n");
+		for(Value v : values){
+			if(v.valueHasBeenSet()) {
+				builder = builder.append("\t").append(v.attName()).append(":\t");
+				builder = v.buildStringVal(builder).append("\n");
+			}
+			else{
+				builder = builder.append("\t").append(v.attName()).append(":\tnull\n");
+			}
+		}
+
+		return builder.toString();
 	}
 }

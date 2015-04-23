@@ -98,7 +98,7 @@ public interface State {
 	 * Returns the number of observable and hidden object instances in this state.
 	 * @return the number of observable and hidden object instances in this state.
 	 */
-	int numTotalObjets();
+	int numTotalObjects();
 	
 	/**
 	 * Returns the number of observable object instances in this state.

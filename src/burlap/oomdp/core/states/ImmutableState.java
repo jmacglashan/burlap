@@ -6,17 +6,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.objects.ImmutableObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -36,12 +32,12 @@ public final class ImmutableState extends OOMDPState implements State {
 	/**
 	 * List of observable object instances that define the state
 	 */
-	private final List <ObjectInstance>							objectInstances;
+	private final List <ImmutableObjectInstance>							objectInstances;
 	
 	/**
 	 * List of hidden object instances that facilitate domain dynamics and infer observable values
 	 */
-	private final List <ObjectInstance>							hiddenObjectInstances;
+	private final List <ImmutableObjectInstance>							hiddenObjectInstances;
 	
 	/**
 	 * Map from object names to their instances
@@ -62,8 +58,8 @@ public final class ImmutableState extends OOMDPState implements State {
 	
 	
 	public ImmutableState(){
-		this.objectInstances = Collections.unmodifiableList(new ArrayList<ObjectInstance>());
-		this.hiddenObjectInstances = Collections.unmodifiableList(new ArrayList<ObjectInstance>());
+		this.objectInstances = Collections.unmodifiableList(new ArrayList<ImmutableObjectInstance>());
+		this.hiddenObjectInstances = Collections.unmodifiableList(new ArrayList<ImmutableObjectInstance>());
 		this.objectIndexByTrueClass = Collections.unmodifiableList(new ArrayList<List<Integer>>());
 		this.objectClassMap = Collections.unmodifiableMap(new HashMap<String, Integer>());
 		this.objectMap = Collections.unmodifiableMap(new HashMap<String, Integer>());
@@ -79,12 +75,14 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @param s the source state from which this state will be initialized.
 	 */
 	public ImmutableState(State s){
-		int size = 2 * (s.numTotalObjets());
+		int size = 2 * (s.numTotalObjects());
 		HashMap<String, Integer> objectMap = new HashMap<String, Integer>(size);
 		Map<String, Integer> objectClassMap = new HashMap<String, Integer>();
 		
-		List<ObjectInstance> objectInstances = this.createObjectLists(s.getObservableObjects(), objectMap, 0);
-		List<ObjectInstance> hiddenObjectsInstances = this.createObjectLists(s.getHiddenObjects(), objectMap, objectInstances.size());
+		List<ImmutableObjectInstance> immutableObjects = this.createImmutableObjects(s.getObservableObjects());
+		List<ImmutableObjectInstance> immutableHidden = this.createImmutableObjects(s.getHiddenObjects());
+		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(immutableObjects, objectMap, 0);
+		List<ImmutableObjectInstance> hiddenObjectsInstances = this.createObjectLists(immutableHidden, objectMap, objectInstances.size());
 		
 		this.objectInstances = Collections.unmodifiableList(objectInstances);
 		this.hiddenObjectInstances = Collections.unmodifiableList(hiddenObjectsInstances);
@@ -109,11 +107,13 @@ public final class ImmutableState extends OOMDPState implements State {
 	public ImmutableState(List<ObjectInstance> objects) {
 		Map<String, Integer> objectMap = new HashMap<String, Integer>(2 * objects.size());
 		Map<String, Integer> objectClassMap = new HashMap<String, Integer>();
-		List<ObjectInstance> objectInstances = this.createObjectLists(objects, objectMap, 0);
+		
+		List<ImmutableObjectInstance> immutableObjects = this.createImmutableObjects(objects);
+		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(immutableObjects, objectMap, 0);
 		
 		this.objectInstances = Collections.unmodifiableList(objectInstances);
 		
-		this.hiddenObjectInstances = Collections.unmodifiableList(new ArrayList<ObjectInstance>());
+		this.hiddenObjectInstances = Collections.unmodifiableList(new ArrayList<ImmutableObjectInstance>());
 		this.numObservableObjects = this.objectInstances.size();
 		this.numHiddenObjects = 0;
 		
@@ -126,13 +126,13 @@ public final class ImmutableState extends OOMDPState implements State {
 		
 	}
 	
-	public ImmutableState(List<ObjectInstance> objects, List<ObjectInstance> hiddenObjects, Map<String, Integer> objectClassMap) {
+	public ImmutableState(List<ImmutableObjectInstance> objects, List<ImmutableObjectInstance> hiddenObjects, Map<String, Integer> objectClassMap) {
 		int size = 2 * (objects.size() + hiddenObjects.size());
 		HashMap<String, Integer> objectMap = new HashMap<String, Integer>(size);
 		objectClassMap = new HashMap<String, Integer>(objectClassMap);
-		List<ObjectInstance> objectInstances = this.createObjectLists(objects, objectMap, 0);
+		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(objects, objectMap, 0);
 		
-		List<ObjectInstance> hiddenObjectsInstances = this.createObjectLists(hiddenObjects, objectMap, objectInstances.size());
+		List<ImmutableObjectInstance> hiddenObjectsInstances = this.createObjectLists(hiddenObjects, objectMap, objectInstances.size());
 		this.objectInstances = Collections.unmodifiableList(objectInstances);
 		
 		this.hiddenObjectInstances = Collections.unmodifiableList(hiddenObjectsInstances);
@@ -154,7 +154,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		
 	}
 	
-	public ImmutableState(List<ObjectInstance> objects, List<ObjectInstance> hiddenObjects, Map<String, Integer> objectClassMap, List<List<Integer>> objectIndexByTrueClass, Map<String, Integer> objectMap) {
+	public ImmutableState(List<ImmutableObjectInstance> objects, List<ImmutableObjectInstance> hiddenObjects, Map<String, Integer> objectClassMap, List<List<Integer>> objectIndexByTrueClass, Map<String, Integer> objectMap) {
 		this.objectInstances = Collections.unmodifiableList(objects);
 		this.hiddenObjectInstances = Collections.unmodifiableList(hiddenObjects);
 		this.numObservableObjects = this.objectInstances.size();
@@ -172,14 +172,24 @@ public final class ImmutableState extends OOMDPState implements State {
 		return this;
 	}
 	
+	private final List<ImmutableObjectInstance> createImmutableObjects(List<ObjectInstance> objects) {
+		List<ImmutableObjectInstance> immutableObjects = new ArrayList<ImmutableObjectInstance>(objects.size());
+		for (ObjectInstance object : objects) {
+			ImmutableObjectInstance immutable = 
+					(object instanceof ImmutableObjectInstance) ? 
+							(ImmutableObjectInstance)object : new ImmutableObjectInstance(object);
+			immutableObjects.add(immutable);
+		}
+		return immutableObjects;
+	}
 	
-	
-	private final List<ObjectInstance> createObjectLists(List<ObjectInstance> objectList, Map<String, Integer> objectMap, int offset) {
-		List<ObjectInstance> objectInstances = new ArrayList<ObjectInstance>(objectList.size());
-		for (ObjectInstance object : objectList) {
+	private final List<ImmutableObjectInstance> createObjectLists(List<ImmutableObjectInstance> objectList, Map<String, Integer> objectMap, int offset) {
+		List<ImmutableObjectInstance> objectInstances = new ArrayList<ImmutableObjectInstance>(objectList.size());
+		for (ImmutableObjectInstance object : objectList) {
 			if (object == null) {
 				continue;
 			}
+			
 			Integer displaced = objectMap.put(object.getName(), objectInstances.size() + offset);
 			if (displaced != null) {
 				objectMap.put(object.getName(), displaced);
@@ -190,7 +200,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		return objectInstances;
 	}
 	
-	private final List<List<Integer>> buildObjectIndexByTrueClass(List<ObjectInstance> objects, List<ObjectInstance> hiddenObjects, Map<String, Integer> objectClassMap) {
+	private final List<List<Integer>> buildObjectIndexByTrueClass(List<ImmutableObjectInstance> objects, List<ImmutableObjectInstance> hiddenObjects, Map<String, Integer> objectClassMap) {
 		int size = Math.max(10, objectClassMap.size());
 		
 		List<List<Integer>> objectIndexByTrueClass = new ArrayList<List<Integer>>(size);
@@ -209,7 +219,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		return this.objectMap;
 	}
 
-	private void addObjectListToList(List<ObjectInstance> objects, int size, int numClasses,
+	private void addObjectListToList(List<ImmutableObjectInstance> objects, int size, int numClasses,
 			List<List<Integer>> objectIndexByTrueClass, Map<String, Integer> objectClassMap) {
 		
 		for (int i = 0; i < size; i++) {
@@ -228,29 +238,47 @@ public final class ImmutableState extends OOMDPState implements State {
 		}
 	}
 	
+	@Override
 	public final ImmutableState addObject(ObjectInstance object) {
 		return this.addAllObjects(Arrays.asList(object));
 	}
 	
+	@Override
 	public final ImmutableState addAllObjects(Collection<ObjectInstance> objectsToAdd) {
-		List<ObjectInstance> objects = new ArrayList<ObjectInstance>(this.objectInstances);
-		objects.addAll(objectsToAdd);
+		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
+		for (ObjectInstance object: objectsToAdd) {
+			objects.add(new ImmutableObjectInstance(object));
+		}
 		return new ImmutableState(objects, this.hiddenObjectInstances, this.objectClassMap);
 	}
 	
 	public final ImmutableState makeObjectsHidden(Collection<ObjectInstance> objectsToHide) {
-		List<ObjectInstance> objects = new ArrayList<ObjectInstance>(this.objectInstances);
+		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
 		objects.removeAll(objectsToHide);
-		List<ObjectInstance> hiddenObjects = new ArrayList<ObjectInstance>(this.hiddenObjectInstances);
-		hiddenObjects.addAll(objectsToHide);
+		List<ImmutableObjectInstance> hiddenObjects = new ArrayList<ImmutableObjectInstance>(this.hiddenObjectInstances);
+		
+		for (ObjectInstance object : objectsToHide) {
+			if (!(object instanceof ImmutableObjectInstance)) {
+				throw new RuntimeException("This object instance should have been immutable");
+			}
+			hiddenObjects.add((ImmutableObjectInstance)object);
+		}
+		
 		return new ImmutableState(objects, hiddenObjects, this.objectClassMap);
 	}
 	
 	public final ImmutableState makeObjectsObservable(Collection<ObjectInstance> objectsToObserve) {
-		List<ObjectInstance> hiddenObjects = new ArrayList<ObjectInstance>(this.hiddenObjectInstances);
+		List<ImmutableObjectInstance> hiddenObjects = new ArrayList<ImmutableObjectInstance>(this.hiddenObjectInstances);
 		hiddenObjects.removeAll(objectsToObserve);
-		List<ObjectInstance> observableObjects = new ArrayList<ObjectInstance>(this.objectInstances);
-		observableObjects.addAll(objectsToObserve);
+		List<ImmutableObjectInstance> observableObjects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
+		
+		for (ObjectInstance object : objectsToObserve) {
+			if (!(object instanceof ImmutableObjectInstance)) {
+				throw new RuntimeException("This object instance should have been immutable");
+			}
+			observableObjects.add((ImmutableObjectInstance)object);
+		}
+		
 		return new ImmutableState(observableObjects, hiddenObjects, this.objectClassMap);
 	}
 	
@@ -260,16 +288,16 @@ public final class ImmutableState extends OOMDPState implements State {
 			return this;
 		}
 		
-		List<ObjectInstance> objects = this.objectInstances;
-		List<ObjectInstance> hiddenObjects = this.hiddenObjectInstances;
+		List<ImmutableObjectInstance> objects = this.objectInstances;
+		List<ImmutableObjectInstance> hiddenObjects = this.hiddenObjectInstances;
 		
 		if (index < this.numObservableObjects) {
-			objects = new ArrayList<ObjectInstance>(objects);
+			objects = new ArrayList<ImmutableObjectInstance>(objects);
 			objects.remove((int)index);
 		}
 		else
 		{
-			hiddenObjects = new ArrayList<ObjectInstance>(hiddenObjects);
+			hiddenObjects = new ArrayList<ImmutableObjectInstance>(hiddenObjects);
 			hiddenObjects.remove((int)index - this.numObservableObjects);
 		}
 
@@ -288,8 +316,8 @@ public final class ImmutableState extends OOMDPState implements State {
 			indices.add(index);
 		}
 		
-		List<ObjectInstance> objects = new ArrayList<ObjectInstance>(this.objectInstances);
-		List<ObjectInstance> hiddenObjects = new ArrayList<ObjectInstance>(this.hiddenObjectInstances);
+		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
+		List<ImmutableObjectInstance> hiddenObjects = new ArrayList<ImmutableObjectInstance>(this.hiddenObjectInstances);
 		
 		Collections.sort(indices, Collections.reverseOrder());
 		for (Integer i : indices) {
@@ -310,19 +338,23 @@ public final class ImmutableState extends OOMDPState implements State {
 		if (!oldObjectName.equals(newObjectName) || !objectToReplace.getTrueClassName().equals(newObject.getTrueClassName())) {
 			throw new RuntimeException("In order to replace, the objects must have the same name and class. Try remove and add instead");
 		}
+		if (!(newObject instanceof ImmutableObjectInstance)) {
+			throw new RuntimeException("Object " + newObject.getName() + " must be of type ImmutableObjectInstance");
+		}
+		
 		Integer index = this.objectMap.get(oldObjectName);
 		if (index == null) {
 			return this;
 		}
-		List<ObjectInstance> objects = this.objectInstances;
-		List<ObjectInstance> hiddenObjects = this.hiddenObjectInstances;
+		List<ImmutableObjectInstance> objects = this.objectInstances;
+		List<ImmutableObjectInstance> hiddenObjects = this.hiddenObjectInstances;
 		
 		if (index < this.numObservableObjects) {
-			objects = new ArrayList<ObjectInstance>(objects);
-			objects.set(index, newObject);
+			objects = new ArrayList<ImmutableObjectInstance>(objects);
+			objects.set(index, (ImmutableObjectInstance)newObject);
 		} else {
-			hiddenObjects = new ArrayList<ObjectInstance>(objects);
-			hiddenObjects.set(index - this.numObservableObjects, newObject);
+			hiddenObjects = new ArrayList<ImmutableObjectInstance>(objects);
+			hiddenObjects.set(index - this.numObservableObjects, (ImmutableObjectInstance)newObject);
 		}
 		
 		
@@ -330,8 +362,8 @@ public final class ImmutableState extends OOMDPState implements State {
 	}
 	
 	public final ImmutableState replaceAllObjects(List<ObjectInstance> objectsToRemove, List<ObjectInstance> objectsToAdd) {
-		List<ObjectInstance> objects = new ArrayList<ObjectInstance>(this.objectInstances);
-		List<ObjectInstance> hiddenObjects = new ArrayList<ObjectInstance>(this.hiddenObjectInstances);
+		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
+		List<ImmutableObjectInstance> hiddenObjects = new ArrayList<ImmutableObjectInstance>(this.hiddenObjectInstances);
 		
 		if (objectsToRemove.size() != objectsToAdd.size()) {
 			throw new RuntimeException("This method requires the two collections to agree in size");
@@ -351,11 +383,14 @@ public final class ImmutableState extends OOMDPState implements State {
 			if (index == null) {
 				throw new RuntimeException("Object " + oldObjectName + " does not exist");
 			}
+			if (!(objectToAdd instanceof ImmutableObjectInstance)) {
+				throw new RuntimeException("Object " + objectToAdd.getName() + " must be of type ImmutableObjectInstance");
+			}
 			if (index < this.numObservableObjects) {
-				objects.set(index, objectToAdd);
+				objects.set(index, (ImmutableObjectInstance)objectToAdd);
 			}
 			else {
-				hiddenObjects.set(index - this.numObservableObjects, objectToAdd);
+				hiddenObjects.set(index - this.numObservableObjects, (ImmutableObjectInstance)objectToAdd);
 			}
 		}
 
@@ -386,7 +421,8 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @param enforceStateExactness whether to require that states are identical to return a matching
 	 * @return a matching from this receiving state's objects to objects in so that have identical values. 
 	 */
-	public Map <String, String> getObjectMatchingTo(ImmutableState so, boolean enforceStateExactness){
+	
+	public Map <String, String> getObjectMatchingTo(State so, boolean enforceStateExactness){
 		Map <String, String> matching = new HashMap<String, String>();
 		
 		if(this.numTotalObjects() != so.numTotalObjects() && enforceStateExactness){
@@ -398,8 +434,8 @@ public final class ImmutableState extends OOMDPState implements State {
 		for(Map.Entry<String, Integer> entry : this.objectClassMap.entrySet()){
 			String oclass = entry.getKey();
 			List <Integer> objectIndices = this.objectIndexByTrueClass.get(entry.getValue());
-			List <ObjectInstance> oobjects = so.getObjectsOfTrueClass(oclass);
-			if(objectIndices.size() != so.numObservableObjects && enforceStateExactness){
+			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
+			if(objectIndices.size() != so.numObservableObjects() && enforceStateExactness){
 				return new HashMap<String, String>(); //states are not equal and therefore cannot be matched
 			}
 			
@@ -590,7 +626,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @return the list of observable object instances in this state.
 	 */
 	public List <ObjectInstance> getObservableObjects(){
-		return this.objectInstances;
+		return new ArrayList<ObjectInstance>(this.objectInstances);
 	}
 	
 	
@@ -599,7 +635,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @return the list of hidden object instances in this state.
 	 */
 	public List <ObjectInstance> getHiddenObjects(){
-		return this.hiddenObjectInstances;
+		return new ArrayList<ObjectInstance>(this.hiddenObjectInstances);
 	}
 	
 	
@@ -619,7 +655,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @param oclass the name of the object class for which objects should be returned
 	 * @return all objects that belong to the object class named oclass
 	 */
-	public List <ObjectInstance> getObjectsOfTrueClass(String oclass){
+	public List <ObjectInstance> getObjectsOfClass(String oclass){
 		
 		Integer position = this.objectClassMap.get(oclass);
 		if(position == null){
@@ -1080,38 +1116,37 @@ public final class ImmutableState extends OOMDPState implements State {
 
 
 	@Override
-	public Map<String, String> getObjectMatchingTo(State so,
-			boolean enforceStateExactness) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public int numTotalObjets() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public List<ObjectInstance> getObjectsOfClass(String oclass) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
 	public Map<String, List<String>> getAllUnsetAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, List<String>> unset = new HashMap<String, List<String>>();
+		for(ObjectInstance o : this.objectInstances){
+			List<String> unsetA = o.unsetAttributes();
+			if(unsetA.size() > 0){
+				unset.put(o.getName(), unsetA);
+			}
+		}
+		for(ObjectInstance o : this.hiddenObjectInstances){
+			List<String> unsetA = o.unsetAttributes();
+			if(unsetA.size() > 0){
+				unset.put(o.getName(), unsetA);
+			}
+		}
+
+		return unset;
 	}
 
 
 	@Override
 	public String getCompleteStateDescriptionWithUnsetAttributesAsNull() {
-		// TODO Auto-generated method stub
-		return null;
+		String desc = "";
+		for(ObjectInstance o : objectInstances){
+			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
+		}
+		for(ObjectInstance o : hiddenObjectInstances){
+			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
+		}
+
+
+		return desc;
 	}
 	
 	

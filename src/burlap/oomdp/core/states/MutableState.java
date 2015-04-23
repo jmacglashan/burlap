@@ -299,7 +299,7 @@ public class MutableState extends OOMDPState implements State{
 		
 		Map <String, String> matching = new HashMap<String, String>();
 		
-		if(this.numTotalObjets() != so.numTotalObjets() && enforceStateExactness){
+		if(this.numTotalObjects() != so.numTotalObjects() && enforceStateExactness){
 			return new HashMap<String, String>(); //states are not equal and therefore cannot be matched
 		}
 		
@@ -352,7 +352,7 @@ public class MutableState extends OOMDPState implements State{
 		
 		MutableState so = (MutableState)other;
 		
-		if(this.numTotalObjets() != so.numTotalObjets()){
+		if(this.numTotalObjects() != so.numTotalObjects()){
 			return false;
 		}
 		
@@ -394,7 +394,7 @@ public class MutableState extends OOMDPState implements State{
 	 * Returns the number of observable and hidden object instances in this state.
 	 * @return the number of observable and hidden object instances in this state.
 	 */
-	public int numTotalObjets(){
+	public int numTotalObjects(){
 		return objectInstances.size() + hiddenObjectInstances.size();
 	}
 	

@@ -35,7 +35,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 		this.obClass = obClass;
 		this.name = name;
 		
-		this.initializeValueObjects();
+		this.values = this.initializeValueObjects();
 		
 	}
 	
@@ -67,13 +67,13 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	/**
 	 * Creates new value object assignments for each of this object instance class's attributes.
 	 */
-	public void initializeValueObjects(){
+	public List<Value> initializeValueObjects(){
 		
-		values = new ArrayList <Value>(obClass.numAttributes());
+		List<Value> values = new ArrayList <Value>(obClass.numAttributes());
 		for(Attribute att : obClass.attributeList){
 			values.add(att.valueConstructor());
 		}
-		
+		return values;
 	}
 	
 	
