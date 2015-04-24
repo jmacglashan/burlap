@@ -1,5 +1,6 @@
 package burlap.testing.Domain;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,7 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -128,8 +130,8 @@ public class BlockDude implements DomainGenerator {
 	
 	public static State getCleanState(Domain domain, List <Integer> platformX, List <Integer> platformH, int nb){
 		
-		State s = new MutableState();
-		
+		State s = new ImmutableState();
+		List<ObjectInstance> objects = new ArrayList<ObjectInstance>();
 		//start by creating the platform objects
 		for(int i = 0; i < platformX.size(); i++){
 			int x = platformX.get(i);
@@ -139,23 +141,23 @@ public class BlockDude implements DomainGenerator {
 			plat.setValue(ATTX, x);
 			plat.setValue(ATTHEIGHT, h);
 			
-			s.addObject(plat);
+			objects.add(plat);
 			
 		}
 		
 		//create n blocks
 		for(int i = 0; i < nb; i++){
-			s.addObject(new MutableObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i));
+			objects.add(new MutableObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i));
 		}
 		
 		//create exit
-		s.addObject(new MutableObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0));
+		objects.add(new MutableObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0));
 		
 		//create agent
-		s.addObject(new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		objects.add(new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		
 		
-		return s;
+		return new ImmutableState(objects);
 		
 	}
 	
