@@ -11,6 +11,7 @@ import java.util.List;
 
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.stochasticgames.World;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -26,6 +27,24 @@ import burlap.oomdp.visualizer.Visualizer;
  */
 public class GGVisualizer {
 
+	public static Visualizer getVisualizer(World world) {
+		State startState = world.startingState();
+		List<ObjectInstance> horizontalWalls = startState.getObjectsOfClass(GridGame.CLASSDIMHWALL);
+		List<ObjectInstance> verticalWalls = startState.getObjectsOfClass(GridGame.CLASSDIMVWALL);
+		if (horizontalWalls.size() < 2 || verticalWalls.size() < 2) {
+			throw new RuntimeException("This world does not have valid walls");
+		}
+		
+		ObjectInstance leftWall = verticalWalls.get(0);
+		ObjectInstance rightWall = verticalWalls.get(1);
+		ObjectInstance bottomWall = horizontalWalls.get(0);
+		ObjectInstance topWall = horizontalWalls.get(1);
+		
+		int width = rightWall.getDiscValForAttribute(GridGame.ATTP) - leftWall.getDiscValForAttribute(GridGame.ATTP);
+		int height = topWall.getDiscValForAttribute(GridGame.ATTP) - bottomWall.getDiscValForAttribute(GridGame.ATTP); 
+		
+		return GGVisualizer.getVisualizer(width, height);
+	}
 	
 	/**
 	 * Generates a visualizer for a grid game

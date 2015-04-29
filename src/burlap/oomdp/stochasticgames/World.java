@@ -13,6 +13,7 @@ import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.stochasticgames.Callables.GameStartingCallable;
@@ -60,6 +61,7 @@ public class World {
 	
 	protected int								debugId;
 	protected double							threadTimeout;
+	protected String							worldDescription;
 	
 	
 	
@@ -106,6 +108,12 @@ public class World {
 		
 		debugId = 284673923;
 		this.threadTimeout = Parallel.NO_TIME_LIMIT;
+	}
+	
+	public World copy() {
+		World copy = new World(this.domain, this.worldModel, this.jointRewardModel, this.tf, this.initialStateGenerator, this.abstractionForAgents);
+		copy.setDescription(this.worldDescription);
+		return copy;
 	}
 	
 	
@@ -166,6 +174,9 @@ public class World {
 		
 	}
 	
+	public SGDomain getDomain() {
+		return this.domain;
+	}
 	
 	/**
 	 * Returns the current world state
@@ -180,6 +191,24 @@ public class World {
 	 */
 	public void generateNewCurrentState(){
 		currentState = initialStateGenerator.generateState(agents);
+	}
+	
+	/**
+	 * Generates an example starting state;
+	 * @return
+	 */
+	public State startingState() {
+		State startingState = this.initialStateGenerator.generateState(this.agents);
+		StringBuilder builder  = new StringBuilder();
+		for (ObjectInstance object : startingState.getAllObjects()) {
+			for (String attribute : object.unsetAttributes()) {
+				builder.append(object.getName()).append(" - ").append(attribute).append("\n");
+			}
+		}
+		if (builder.length() > 0) {
+			throw new RuntimeException("The state generator for world " + this.toString() +  " passes incomplete states. The following attributes are unset: \n" + builder.toString());
+		}
+		return startingState;
 	}
 	
 	/**
@@ -333,6 +362,9 @@ public class World {
 	 * Runs a single stage of this game.
 	 */
 	public void runStage(){
+		if (this.currentState == null) {
+			throw new RuntimeException("The current state has not been set.");
+		}
 		if(tf.isTerminal(currentState)){
 			return ; //cannot continue this game
 		}
@@ -386,6 +418,7 @@ public class World {
 		
 		
 		//now that we have the joint action, perform it
+		// Some null pointer is happening here
 		State sp = worldModel.performJointAction(currentState, ja);
 		State abstractedPrime = this.abstractionForAgents.abstraction(sp);
 		Map<String, Double> jointReward = jointRewardModel.reward(currentState, ja, sp);
@@ -566,5 +599,13 @@ public class World {
 		
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return (this.worldDescription == null) ? "" : this.worldDescription;
+	}
 
+	public void setDescription(String description) {
+		this.worldDescription = description;
+	}
 }
