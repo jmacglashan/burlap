@@ -298,7 +298,7 @@ public class SGVisualExplorer extends JFrame {
 		
 	}
 	
-	protected void printText(String text) {
+	public void printText(String text) {
 		this.propViewer.setText(text);
 	}
 
