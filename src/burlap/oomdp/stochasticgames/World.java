@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import burlap.behavior.stochasticgame.GameAnalysis;
 import burlap.behavior.stochasticgame.JointPolicy;
@@ -62,6 +63,8 @@ public class World {
 	protected int								debugId;
 	protected double							threadTimeout;
 	protected String							worldDescription;
+	private boolean								isOk;
+	private ReentrantLock					isOkLock;
 	
 	
 	
@@ -108,6 +111,8 @@ public class World {
 		
 		debugId = 284673923;
 		this.threadTimeout = Parallel.NO_TIME_LIMIT;
+		this.isOkLock = new ReentrantLock();
+		this.isOk = true;
 	}
 	
 	public World copy() {
@@ -242,6 +247,19 @@ public class World {
 		this.worldObservers.clear();
 	}
 	
+	private void setOk(boolean value) {
+		this.isOkLock.lock();
+		this.isOk = value;
+		this.isOkLock.unlock();
+	}
+	
+	public boolean isOk() {
+		this.isOkLock.lock();
+		boolean value = this.isOk;
+		this.isOkLock.unlock();
+		return value;
+	}
+	
 	
 	/**
 	 * Runs a game until a terminal state is hit.
@@ -278,7 +296,7 @@ public class World {
 	 * @param maxStages the maximum number of stages to play in the game before its forced to end.
 	 */
 	public GameAnalysis runGame(int maxStages){
-		
+		this.setOk(true);
 		ForEachCallable<Agent, Boolean> gameStarting = new GameStartingCallable();
 		Parallel.ForEach(agents, gameStarting);
 		/*
@@ -291,7 +309,7 @@ public class World {
 		this.isRecordingGame = true;
 		int t = 0;
 		
-		while(!tf.isTerminal(currentState) && (maxStages < 0 || t < maxStages)){
+		while(!tf.isTerminal(currentState) && (maxStages < 0 || t < maxStages) && this.isOk){
 			this.runStage();
 			t++;
 		}
@@ -309,6 +327,10 @@ public class World {
 		
 		return this.currentGameRecord;
 		
+	}
+	
+	public void stopGame() {
+		this.setOk(false);
 	}
 	
 	/**
