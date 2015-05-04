@@ -647,7 +647,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			for(GroundedSingleAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
-				int pn = player.getDiscValForAttribute(ATTPN);
+				int pn = player.getIntValForAttribute(ATTPN);
 				profile[pn] = sa.action.actionName;
 			}
 			
@@ -655,7 +655,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			for(GroundedSingleAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
-				int pn = player.getDiscValForAttribute(ATTPN);
+				int pn = player.getIntValForAttribute(ATTPN);
 				rewards.put(name, SingleStageNormalFormGame.this.payouts[pn].getPayout(stprofile));
 			}
 			
@@ -684,7 +684,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		public boolean isApplicableInState(State s, String actingAgent, String[] params) {
 			
 			ObjectInstance a = s.getObject(actingAgent);
-			int pn = a.getDiscValForAttribute(ATTPN);
+			int pn = a.getIntValForAttribute(ATTPN);
 			
 			if(SingleStageNormalFormGame.this.actionNameToIndex[pn].containsKey(this.actionName)){
 				return true;

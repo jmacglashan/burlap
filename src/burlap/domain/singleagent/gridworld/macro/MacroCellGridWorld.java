@@ -269,8 +269,8 @@ public class MacroCellGridWorld extends GridWorldDomain {
 				return false;
 			}
 			ObjectInstance agent = agents.get(0);
-			int agentX = agent.getDiscValForAttribute(MacroCellGridWorld.ATTX);
-			int agentY = agent.getDiscValForAttribute(MacroCellGridWorld.ATTY);
+			int agentX = agent.getIntValForAttribute(MacroCellGridWorld.ATTX);
+			int agentY = agent.getIntValForAttribute(MacroCellGridWorld.ATTY);
 			return this.isTrue(agentX, agentY);
 		}
 

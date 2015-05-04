@@ -248,7 +248,7 @@ public class Tiling {
 				String attName = ats.attribute.name;
 				int tv = 0;
 				if(ats.attribute.type.equals(Attribute.AttributeType.DISC)){
-					tv = o.getDiscValForAttribute(attName);
+					tv = o.getIntValForAttribute(attName);
 				}
 				else if(ats.attribute.type.equals(Attribute.AttributeType.REAL) || ats.attribute.type.equals(Attribute.AttributeType.REALUNBOUND)){
 					double v = o.getRealValForAttribute(attName);
