@@ -633,19 +633,19 @@ public class GridGame implements DomainGenerator {
 		public boolean isTrue(State s, String[] params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
-			int ax = agent.getDiscValForAttribute(ATTX);
-			int ay = agent.getDiscValForAttribute(ATTY);
+			int ax = agent.getIntValForAttribute(ATTX);
+			int ay = agent.getIntValForAttribute(ATTY);
 			
 			
 			//find all universal goals
 			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
-				int gt = goal.getDiscValForAttribute(ATTGT);
+				int gt = goal.getIntValForAttribute(ATTGT);
 				if(gt == 0){
 				
-					int gx = goal.getDiscValForAttribute(ATTX);
-					int gy = goal.getDiscValForAttribute(ATTY);
+					int gx = goal.getIntValForAttribute(ATTX);
+					int gy = goal.getIntValForAttribute(ATTY);
 					if(gx == ax && gy == ay){
 						return true;
 					}
@@ -683,19 +683,19 @@ public class GridGame implements DomainGenerator {
 		public boolean isTrue(State s, String[] params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
-			int ax = agent.getDiscValForAttribute(ATTX);
-			int ay = agent.getDiscValForAttribute(ATTY);
-			int apn = agent.getDiscValForAttribute(ATTPN);
+			int ax = agent.getIntValForAttribute(ATTX);
+			int ay = agent.getIntValForAttribute(ATTY);
+			int apn = agent.getIntValForAttribute(ATTPN);
 			
 			//find all universal goals
 			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
-				int gt = goal.getDiscValForAttribute(ATTGT);
+				int gt = goal.getIntValForAttribute(ATTGT);
 				if(gt == apn+1){
 				
-					int gx = goal.getDiscValForAttribute(ATTX);
-					int gy = goal.getDiscValForAttribute(ATTY);
+					int gx = goal.getIntValForAttribute(ATTX);
+					int gy = goal.getIntValForAttribute(ATTY);
 					if(gx == ax && gy == ay){
 						return true;
 					}
@@ -859,7 +859,7 @@ public class GridGame implements DomainGenerator {
 				return this.pGoalReward;
 			}
 			
-			int pn = s.getObject(agentName).getDiscValForAttribute(GridGame.ATTPN);
+			int pn = s.getObject(agentName).getIntValForAttribute(GridGame.ATTPN);
 			return this.personalGoalRewards.get(pn);
 			
 		}

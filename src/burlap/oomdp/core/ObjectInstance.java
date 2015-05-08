@@ -297,12 +297,19 @@ public class ObjectInstance {
 	 * @param attName the name of the attribute whose value should be returned
 	 * @return the int value assignment for the discrete-valued attribute named attName.
 	 */
+	public int getIntValForAttribute(String attName){
+		int ind = obClass.attributeIndex(attName);
+		return values.get(ind).getDiscVal();
+	}
+
+	/**
+	 * Deprecated method name; use {@link #getIntValForAttribute(String)} instead.
+	 */
+	@Deprecated
 	public int getDiscValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getDiscVal();
 	}
-	
-	
 	
 	/**
 	 * Returns the set of all relational targets to which the relational attribute named attName is set.

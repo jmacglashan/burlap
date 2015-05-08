@@ -110,14 +110,14 @@ public class BlocksWorldVisualizer {
 		}
 		
 		protected String getStackBottom(State s, ObjectInstance ob){
-			if(ob.getDiscValForAttribute(BlocksWorld.ATTONTABLE) == 1){
+			if(ob.getIntValForAttribute(BlocksWorld.ATTONTABLE) == 1){
 				return ob.getName();
 			}
 			return this.getStackBottom(s, s.getObject(ob.getStringValForAttribute(BlocksWorld.ATTONBLOCK)));
 		}
 		
 		protected int getHeight(State s, ObjectInstance ob){
-			if(ob.getDiscValForAttribute(BlocksWorld.ATTONTABLE) == 1){
+			if(ob.getIntValForAttribute(BlocksWorld.ATTONTABLE) == 1){
 				return 0;
 			}
 			return 1 + this.getHeight(s, s.getObject(ob.getStringValForAttribute(BlocksWorld.ATTONBLOCK)));

@@ -301,7 +301,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 				ObjectInstance oi = obs.get(i);
 				for(Attribute att : atts){
 					if(att.type == AttributeType.DISC || att.type == AttributeType.INT || att.type == AttributeType.BOOLEAN){
-						o.setInt(discCounter, oi.getDiscValForAttribute(att.name));
+						o.setInt(discCounter, oi.getIntValForAttribute(att.name));
 						discCounter++;
 					}
 					else if(att.type == AttributeType.REAL || att.type == AttributeType.REALUNBOUND){
