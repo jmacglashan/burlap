@@ -63,10 +63,7 @@
        <fileset dir="${src}"/>
     </jar>
   </target>
-  <target name="doc" depends="init" description="generate documentation">
-    <mkdir dir="${doc}"/>
-    <javadoc sourcepath="${src}" destdir="${doc}"/>
-  </target>
+  
 
   <target name="clean"
         description="clean up" >
