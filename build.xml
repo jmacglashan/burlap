@@ -52,6 +52,22 @@
     <javadoc sourcepath="${src}" destdir="${doc}"/>
   </target>
 
+  <target name="dist_no_dep" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/burlap_no_dep.jar">
+       <fileset dir="${build}"/>
+       <fileset dir="${src}"/>
+    </jar>
+  </target>
+  <target name="doc" depends="init" description="generate documentation">
+    <mkdir dir="${doc}"/>
+    <javadoc sourcepath="${src}" destdir="${doc}"/>
+  </target>
+
   <target name="clean"
         description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
