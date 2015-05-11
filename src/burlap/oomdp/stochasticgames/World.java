@@ -213,7 +213,8 @@ public class World {
 		if (builder.length() > 0) {
 			throw new RuntimeException("The state generator for world " + this.toString() +  " passes incomplete states. The following attributes are unset: \n" + builder.toString());
 		}
-		return startingState;
+		
+		return this.abstractionForAgents.abstraction(startingState);
 	}
 	
 	/**
@@ -297,14 +298,15 @@ public class World {
 	 */
 	public GameAnalysis runGame(int maxStages){
 		this.setOk(true);
-		ForEachCallable<Agent, Boolean> gameStarting = new GameStartingCallable();
+		currentState = initialStateGenerator.generateState(agents);
+		
+		ForEachCallable<Agent, Boolean> gameStarting = new GameStartingCallable(currentState, this.abstractionForAgents);
 		Parallel.ForEach(agents, gameStarting);
 		/*
 		for(Agent a : agents){
 			a.gameStarting();
 		}*/
 		
-		currentState = initialStateGenerator.generateState(agents);
 		this.currentGameRecord = new GameAnalysis(currentState);
 		this.isRecordingGame = true;
 		int t = 0;
@@ -440,9 +442,8 @@ public class World {
 		
 		
 		//now that we have the joint action, perform it
-		// Some null pointer is happening here
 		State sp = worldModel.performJointAction(currentState, ja);
-		State abstractedPrime = this.abstractionForAgents.abstraction(sp);
+		//State abstractedPrime = this.abstractionForAgents.abstraction(sp);
 		Map<String, Double> jointReward = jointRewardModel.reward(currentState, ja, sp);
 		
 		DPrint.cl(debugId, jointReward.toString());
@@ -455,7 +456,7 @@ public class World {
 		
 		// This needs to be threaded, and timed out
 		//tell all the agents about it
-		ForEachCallable<Agent, Boolean> callable = new ObserveOutcomeCallable(abstractedCurrent, ja, jointReward, abstractedPrime, tf.isTerminal(sp));
+		ForEachCallable<Agent, Boolean> callable = new ObserveOutcomeCallable(currentState, ja, jointReward, sp, this.abstractionForAgents, tf.isTerminal(sp));
 		Parallel.ForEach(agents, callable);
 		/*for(Agent a : agents){
 			a.observeOutcome(abstractedCurrent, ja, jointReward, abstractedPrime, tf.isTerminal(sp));

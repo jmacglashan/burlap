@@ -89,6 +89,9 @@ public abstract class Agent {
 	 * This method is called by the world when a new game is starting.
 	 */
 	public abstract void gameStarting();
+	public void gameStarting(State startState) {
+		this.gameStarting();
+	}
 	
 	/**
 	 * This method is called by the world when it needs the agent to choose an action

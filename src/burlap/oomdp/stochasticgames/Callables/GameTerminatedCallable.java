@@ -15,6 +15,6 @@ public class GameTerminatedCallable extends ForEachCallable<Agent, Boolean> {
 
 		@Override
 		public ForEachCallable<Agent, Boolean> copy() {
-			return new GameStartingCallable();
+			return new GameTerminatedCallable();
 		}
 }

@@ -2,6 +2,7 @@ package burlap.oomdp.stochasticgames.Callables;
 
 import java.util.Map;
 
+import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.JointAction;
@@ -9,29 +10,33 @@ import burlap.parallel.Parallel.ForEachCallable;
 
 public class ObserveOutcomeCallable extends ForEachCallable<Agent, Boolean> {
 	
-	private final State abstractedCurrent;
 	private final JointAction ja;
 	private final Map<String, Double> jointReward;
-	private final State abstractedPrime; 
+	private final State currentState;
+	private final State nextState;
 	private final Boolean isTerminal;
+	private final StateAbstraction abstraction;
 	
-	public ObserveOutcomeCallable(State abstractedCurrent, JointAction ja, Map<String, Double> jointReward, 
-			State abstractedPrime, Boolean isTerminal) {
-		this.abstractedCurrent = abstractedCurrent;
+	public ObserveOutcomeCallable(State currentState, JointAction ja, Map<String, Double> jointReward, 
+			State nextState, StateAbstraction abstraction, Boolean isTerminal) {
+		this.currentState = currentState;
+		this.nextState = nextState;
 		this.ja = ja;
 		this.jointReward = jointReward;
-		this.abstractedPrime = abstractedPrime;
 		this.isTerminal = isTerminal;
+		this.abstraction = abstraction;
 	}
 
 	@Override
 	public ObserveOutcomeCallable copy() {
-		return new ObserveOutcomeCallable(abstractedCurrent, ja, jointReward, abstractedPrime, isTerminal);
+		return new ObserveOutcomeCallable(currentState, ja, jointReward, nextState, abstraction, isTerminal);
 	}
 	
 	@Override
 	public Boolean perform(Agent agent) {
-		agent.observeOutcome(abstractedCurrent, ja, jointReward, abstractedPrime, isTerminal);
+		State abstractedCurrent = abstraction.abstraction(currentState, agent);
+		State abstractedNext = abstraction.abstraction(nextState, agent);
+		agent.observeOutcome(abstractedCurrent, ja, jointReward, abstractedNext, isTerminal);
 		return true;
 	}
 }

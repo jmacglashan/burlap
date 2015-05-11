@@ -91,6 +91,7 @@ public class StateRenderLayer implements RenderLayer{
 	 * @param s the state to paint
 	 */
 	public void updateState(State s){
+		System.out.println(s.toString());
 		curState = s;
 	}
 	
@@ -111,7 +112,7 @@ public class StateRenderLayer implements RenderLayer{
 		
 		//draw each object by class order and if there is not a specific painter for
 		for(ObjectPainterAndClassNamePair op : this.objectClassPainterList){
-			List <ObjectInstance> objects = curState.getObjectsOfTrueClass(op.className);
+			List <ObjectInstance> objects = curState.getObjectsOfClass(op.className);
 			for(ObjectInstance o : objects){
 				if(!this.specificObjectPainters.containsKey(o.getName())){
 					List<String> unsetAttributes = o.unsetAttributes();
