@@ -7,6 +7,7 @@ import java.awt.TextArea;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -216,6 +217,7 @@ private static final long serialVersionUID = 1L;
 			}
 		};
 		String[] children = dir.list(filter);
+		Arrays.sort(children);
 		
 		episodeFiles = new ArrayList<String>(children.length);
 		episodesListModel = new DefaultListModel();

@@ -8,6 +8,7 @@ import java.awt.TextArea;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -224,6 +225,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 			}
 		};
 		String[] children = dir.list(filter);
+		Arrays.sort(children);
 		
 		episodeFiles = new ArrayList<String>(children.length);
 		episodesListModel = new DefaultListModel();
@@ -233,6 +235,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 			episodesListModel.addElement(children[i].substring(0, children[i].indexOf(ext)));
 			//System.out.println(files.get(i));
 		}
+
+
 		
 		
 		
