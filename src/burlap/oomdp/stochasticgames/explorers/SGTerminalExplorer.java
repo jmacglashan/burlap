@@ -20,7 +20,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * This class allows you act as all of the agents in a domain by choosing actions for each of them to take in specific states. States are
  * conveyed to the user through a text description in the terminal and the user specifies actions
  * by typing the actions into the terminal, one line at a time for each agent's action. 
- * The command format is "agentName::action parameter1 pameter2" and so on for as many parameters
+ * The command format is "agentName::action parameter1 parameter2" and so on for as many parameters
  * as there may be (or none if an action takes no parameters). 
  * <p/>
  * When all of the agent's actions have
@@ -43,26 +43,55 @@ public class SGTerminalExplorer {
 	
 	
 	/**
-	 * Initializes the explorer with a domain and action model
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGTerminalExplorer(burlap.oomdp.stochasticgames.SGDomain)}.
 	 * @param domain the domain which will be explored
 	 * @param jam the action model definition transition dynamics
 	 */
+	@Deprecated
 	public SGTerminalExplorer(SGDomain domain, JointActionModel jam){
 		this.domain = domain;
 		this.jam = jam;
 		this.setActionShortHand(new HashMap <String, String>());
 		this.rf = null;
 	}
+
+	/**
+	 * Initializes the explorer with a domain and action model
+	 * @param domain the domain which will be explored
+	 */
+	public SGTerminalExplorer(SGDomain domain){
+		this.domain = domain;
+		this.jam = domain.getJointActionModel();
+		this.setActionShortHand(new HashMap <String, String>());
+		this.rf = null;
+	}
 	
 	/**
-	 * Initializes the explorer with a domain and action model and shorthand names for actions
+	 *This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGTerminalExplorer(burlap.oomdp.stochasticgames.SGDomain, java.util.Map)}.
 	 * @param domain the domain which will be explored
 	 * @param jam the action model definition transition dynamics
 	 * @param ash a map from shorthand names to full action names that can be typed instead of the full action names
 	 */
+	@Deprecated
 	public SGTerminalExplorer(SGDomain domain, JointActionModel jam, Map <String, String> ash){
 		this.domain = domain;
 		this.jam = jam;
+		this.setActionShortHand(ash);
+		this.rf = null;
+	}
+
+	/**
+	 * Initializes the explorer with a domain and action model and shorthand names for actions
+	 * @param domain the domain which will be explored
+	 * @param ash a map from shorthand names to full action names that can be typed instead of the full action names
+	 */
+	public SGTerminalExplorer(SGDomain domain, Map <String, String> ash){
+		this.domain = domain;
+		this.jam = domain.getJointActionModel();
 		this.setActionShortHand(ash);
 		this.rf = null;
 	}

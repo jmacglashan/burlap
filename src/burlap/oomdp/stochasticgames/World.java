@@ -56,19 +56,35 @@ public class World {
 	
 	
 	/**
-	 * Initializes the world.
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #World(SGDomain, JointReward, burlap.oomdp.core.TerminalFunction, SGStateGenerator)}
 	 * @param domain the SGDomain the world will use
 	 * @param jam the joint action model that specifies the transition dynamics
 	 * @param jr the joint reward function
 	 * @param tf the terminal function
 	 * @param sg a state generator for generating initial states of a game
 	 */
+	@Deprecated
 	public World(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
 		this.init(domain, jam, jr, tf, sg, new NullAbstraction());
 	}
+
+	/**
+	 * Initializes the world.
+	 * @param domain the SGDomain the world will use
+	 * @param jr the joint reward function
+	 * @param tf the terminal function
+	 * @param sg a state generator for generating initial states of a game
+	 */
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction());
+	}
 	
 	/**
-	 * Initializes the world
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #World(SGDomain, JointReward, burlap.oomdp.core.TerminalFunction, SGStateGenerator, burlap.oomdp.auxiliary.StateAbstraction)}
 	 * @param domain the SGDomain the world will use
 	 * @param jam the joint action model that specifies the transition dynamics
 	 * @param jr the joint reward function
@@ -76,8 +92,21 @@ public class World {
 	 * @param sg a state generator for generating initial states of a game
 	 * @param abstractionForAgents the abstract state representation that agents will be provided
 	 */
+	@Deprecated
 	public World(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
 		this.init(domain, jam, jr, tf, sg, abstractionForAgents);
+	}
+
+	/**
+	 * Initializes the world
+	 * @param domain the SGDomain the world will use
+	 * @param jr the joint reward function
+	 * @param tf the terminal function
+	 * @param sg a state generator for generating initial states of a game
+	 * @param abstractionForAgents the abstract state representation that agents will be provided
+	 */
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents);
 	}
 	
 	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
