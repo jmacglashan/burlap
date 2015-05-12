@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
@@ -375,7 +376,7 @@ public class EpisodeAnalysis {
 			}
 		};
 		String[] children = dir.list(filter);
-		Arrays.sort(children);
+		Arrays.sort(children, new AlphanumericSorting());
 
 		List<EpisodeAnalysis> eas = new ArrayList<EpisodeAnalysis>(children.length);
 

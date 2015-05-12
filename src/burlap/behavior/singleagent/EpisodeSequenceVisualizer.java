@@ -19,6 +19,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
@@ -225,7 +226,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 			}
 		};
 		String[] children = dir.list(filter);
-		Arrays.sort(children);
+		Arrays.sort(children, new AlphanumericSorting());
 		
 		episodeFiles = new ArrayList<String>(children.length);
 		episodesListModel = new DefaultListModel();
