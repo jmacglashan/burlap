@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -374,6 +375,7 @@ public class EpisodeAnalysis {
 			}
 		};
 		String[] children = dir.list(filter);
+		Arrays.sort(children);
 
 		List<EpisodeAnalysis> eas = new ArrayList<EpisodeAnalysis>(children.length);
 
