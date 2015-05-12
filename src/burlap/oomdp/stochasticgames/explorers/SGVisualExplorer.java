@@ -66,20 +66,36 @@ public class SGVisualExplorer extends JFrame {
 	protected TextArea								stateConsole;
 	
 	/**
-	 * Initializes the data members for the visual explorer.
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
 	 * @param jam the joint action model that defines transition probabilities
 	 */
+	@Deprecated
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam){
 		
 		this.init(domain, painter, baseState, jam, 800, 800);
 	}
+
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 */
+	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState){
+
+		this.init(domain, painter, baseState, domain.getJointActionModel(), 800, 800);
+	}
 	
 	
 	/**
-	 * Initializes the data members for the visual explorer.
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State, int, int)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
@@ -87,8 +103,21 @@ public class SGVisualExplorer extends JFrame {
 	 * @param w the width of the state visualizer
 	 * @param h the height of the state visualizer
 	 */
+	@Deprecated
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
 		this.init(domain, painter, baseState, jam, w, h);
+	}
+
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 * @param w the width of the state visualizer
+	 * @param h the height of the state visualizer
+	 */
+	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, int w, int h){
+		this.init(domain, painter, baseState, domain.getJointActionModel(), w, h);
 	}
 	
 	protected void init(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){

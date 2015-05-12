@@ -13,14 +13,28 @@ import burlap.oomdp.singleagent.Action;
 
 /**
  * This class is used to define Stochastic Games Domains. This class extends the parent {@link burlap.oomdp.core.Domain} class
- * by including an index for possible actions each individual agent can take.
+ * by including an index for possible actions each individual agent can take and the joint action model that defines the
+ * "physics" of the domain.
  * @author James MacGlashan
  *
  */
 public class SGDomain extends Domain{
 
-	protected Set <SingleAction>						singleActions;			//actions that each individual agent can take
-	protected Map <String, SingleAction>				singleActionMap;		
+	/**
+	 * The full set of actions that could be taken by any agent.
+	 */
+	protected Set <SingleAction>						singleActions;
+
+	/**
+	 * A map from action names to their corresponding {@link burlap.oomdp.stochasticgames.SingleAction}
+	 */
+	protected Map <String, SingleAction>				singleActionMap;
+
+
+	/**
+	 * The joint action model of the domain
+	 */
+	protected JointActionModel							jam;
 	
 	public SGDomain() {
 		super();
@@ -28,8 +42,24 @@ public class SGDomain extends Domain{
 		singleActions = new HashSet<SingleAction>();
 		singleActionMap = new HashMap<String, SingleAction>();
 	}
-	
-	
+
+
+	/**
+	 * Sets the joint action model associated with this domain.
+	 * @param jam the joint action model to associate with this domain.
+	 */
+	public void setJointActionModel(JointActionModel jam){
+		this.jam = jam;
+	}
+
+	/**
+	 * Returns the joint action model associated with this domain.
+	 * @return the joint action model associated with this domain.
+	 */
+	public JointActionModel getJointActionModel(){
+		return this.jam;
+	}
+
 	@Override
 	public void addSingleAction(SingleAction sa){
 		if(!this.singleActionMap.containsKey(sa.actionName)){
