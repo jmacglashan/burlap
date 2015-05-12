@@ -49,7 +49,13 @@ public abstract class Policy {
 	 * @return true when the policy is stochastic; false when it is deterministic.
 	 */
 	public abstract boolean isStochastic();
-	
+
+
+	/**
+	 * Specifies whether this policy is defined for the input state.
+	 * @param s the input state to test for whether this policy is defined
+	 * @return true if this policy is defined for {@link burlap.oomdp.core.State} s, false otherwise.
+	 */
 	public abstract boolean isDefinedFor(State s);
 	
 	/**
@@ -58,7 +64,7 @@ public abstract class Policy {
 	 * @param ga the action being queried
 	 * @return the probability of this policy taking action ga in state s
 	 */
-	public double getProbOfAction(State s, GroundedAction ga){
+	public double getProbOfAction(State s, AbstractGroundedAction ga){
 		List <ActionProb> probs = this.getActionDistributionForState(s);
 		if(probs == null || probs.size() == 0){
 			throw new PolicyUndefinedException();
@@ -71,8 +77,31 @@ public abstract class Policy {
 		return 0.;
 	}
 	
-	
-	public static double getProbOfActionGivenDistribution(State s, GroundedAction ga, List<ActionProb> distribution){
+
+
+	/**
+	 * Don't use this, the input state is not necessary; instead use {@link #getProbOfActionGivenDistribution(burlap.oomdp.core.AbstractGroundedAction, java.util.List)}.
+	 */
+	@Deprecated
+	public static double getProbOfActionGivenDistribution(State s, AbstractGroundedAction ga, List<ActionProb> distribution){
+		if(distribution == null || distribution.size() == 0){
+			throw new RuntimeException("Distribution is null or empty, cannot return probability for given action.");
+		}
+		for(ActionProb ap : distribution){
+			if(ap.ga.equals(ga)){
+				return ap.pSelection;
+			}
+		}
+		return 0.;
+	}
+
+	/**
+	 * Searches the input distribution for the occurrence of the input action and returns its probability.
+	 * @param ga the {@link burlap.oomdp.core.AbstractGroundedAction} for which its probability in specified distribution should be returned.
+	 * @param distribution the probability distribution over actions.
+	 * @return the probability of selecting action ga according to the probability specified in distribution.
+	 */
+	public static double getProbOfActionGivenDistribution(AbstractGroundedAction ga, List<ActionProb> distribution){
 		if(distribution == null || distribution.size() == 0){
 			throw new RuntimeException("Distribution is null or empty, cannot return probability for given action.");
 		}
