@@ -18,6 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
@@ -217,7 +218,7 @@ private static final long serialVersionUID = 1L;
 			}
 		};
 		String[] children = dir.list(filter);
-		Arrays.sort(children);
+		Arrays.sort(children, new AlphanumericSorting());
 		
 		episodeFiles = new ArrayList<String>(children.length);
 		episodesListModel = new DefaultListModel();
