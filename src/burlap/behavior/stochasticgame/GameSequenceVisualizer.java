@@ -97,7 +97,7 @@ public class GameSequenceVisualizer extends JFrame {
 	 * @param games the games to view
 	 */
 	public GameSequenceVisualizer(Visualizer v, SGDomain d, List <GameAnalysis> games){
-		//this.init(v, d, sp, experimentDirectory, 800, 800);
+		this.initWithDirectGames(v, d, games, 800, 800);
 	}
 	
 	
