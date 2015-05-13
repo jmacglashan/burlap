@@ -100,7 +100,6 @@ public class BestResponseToDistributionAgent extends Agent {
 			otherAgentPolicies = constructOtherAgentPolicies();
 		}
 
-
 	}
 
 
@@ -171,15 +170,15 @@ public class BestResponseToDistributionAgent extends Agent {
 			//plan and create policy
 			
 			ConversionGenerator generator = new ConversionGenerator(domain, world.getActionModel(), 
-					agentType, worldAgentName, otherAgentPolicies);
+					agentType, worldAgentName, otherAgentPolicies, hashFactory);
 
 			singleAgentDomain = (SADomain) generator.generateDomain();
 			
-			List<TransitionProbability> tps = singleAgentDomain.getAction(GridGame.ACTIONWEST).getTransitions(s, "");
+			//List<TransitionProbability> tps = singleAgentDomain.getAction(GridGame.ACTIONNORTH).getTransitions(s, "");
 			
-			System.out.println("Size tps: "+tps.size());
+			//System.out.println("Size tps: "+tps.size());
 			
-			System.exit(0);
+			//System.exit(0);
 
 			RewardFunction rf = new JointRewardFunctionWrapper(world.getRewardModel(), getAgentName(), domain, 
 					otherAgentPolicies, world.getActionModel());
@@ -234,7 +233,7 @@ public class BestResponseToDistributionAgent extends Agent {
 		}
 
 		//TODO: fix here!!!!!!!!!
-		OOMDPPlanner planner = new ValueIteration(saDomain, rf, world.getTF(), 0.99, hashFactory, 0.001, 1000);
+		OOMDPPlanner planner = new ValueIteration(saDomain, rf, world.getTF(), 0.99, hashFactory, 0.001,100000);
 
 		planner.planFromState(world.getCurrentWorldState());
 		

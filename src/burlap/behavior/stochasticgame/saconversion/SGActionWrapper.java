@@ -6,9 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import cern.colt.Arrays;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.Policy.ActionProb;
+import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.StateHashTuple;
+import burlap.datastructures.HashedAggregator;
+import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
@@ -35,14 +41,16 @@ public class SGActionWrapper extends Action {
 	protected JointActionModel jaModel;
 	protected String agentName;
 	protected Map<String,Policy> agentPolicyMap;
+	StateHashFactory hashFactory;
 
 	public SGActionWrapper(SingleAction singleAction, JointActionModel jaModel,
-			String agentName, Map<String,Policy> agentPolicyMap, SADomain saDomain) {
+			String agentName, Map<String,Policy> agentPolicyMap, SADomain saDomain, StateHashFactory hashFactory) {
 		super(singleAction.actionName, saDomain, singleAction.parameterTypes);
 		this.singleAction = singleAction ;
 		this.jaModel = jaModel;
 		this.agentName = agentName;
 		this.agentPolicyMap = agentPolicyMap;
+		this.hashFactory = hashFactory;
 
 	}
 
@@ -117,7 +125,7 @@ public class SGActionWrapper extends Action {
 
 		// this is the data structure we will use to create a new TransitionProbability list
 		// the state is the next state, given that action (and all possible other agent actions)
-		Map<State, Double> transProbsToNextStates = new HashMap<State,Double>();
+		HashedAggregator<StateHashTuple> transProbsToNextStates = new HashedAggregator<StateHashTuple>();
 
 		//this map is from agent names to their policy at the given state
 		Map<String, List<ActionProb>> mapOfActionProbs = new HashMap<String, List<ActionProb>>();
@@ -153,20 +161,28 @@ public class SGActionWrapper extends Action {
 
 		//add the non-normalized probability of all next states for all combinations of other agent actions
 		transProbsToNextStates = addAllCombinations(s, mapOfActionProbs, mapping,params);
+		System.out.println("TransProbsSize: "+transProbsToNextStates.size());
 
 		double total = 0.0;
 		//sum over all next states so me can normalize
-		for(State sp : transProbsToNextStates.keySet()){
-			total+=transProbsToNextStates.get(sp);
+		for(Map.Entry<StateHashTuple, Double> e: transProbsToNextStates.entrySet()){
+
+			double val = e.getValue();
+			printTheState(e.getKey().s);
+			System.out.println("VAL: "+val);
+			total+=val;
 		}
 
+		System.out.println("Total: "+total);
 		//normalize and add to new List<TransitionProbability>
+
 		List<TransitionProbability> newTPs = new ArrayList<TransitionProbability>();
-		for(State sp : transProbsToNextStates.keySet()){
-			//normalize
-			TransitionProbability newTP = new TransitionProbability(sp,transProbsToNextStates.get(sp)/total);
+		
+		for(Map.Entry<StateHashTuple, Double> e: transProbsToNextStates.entrySet()){
+			TransitionProbability newTP = new TransitionProbability(e.getKey().s,e.getValue()/total);
 			newTPs.add(newTP);
 		}
+		
 
 		return newTPs;
 	}
@@ -175,26 +191,34 @@ public class SGActionWrapper extends Action {
 	 * addAllCombinations loops over all sets of other agent actions and calculates the probability 
 	 * of all other agents taking that action and ending up in each next state
 	 */
-	private Map<State,Double> addAllCombinations(State s, Map<String, List<ActionProb>> lists,
+	private HashedAggregator<StateHashTuple> addAllCombinations(State s, Map<String, List<ActionProb>> lists,
 			Map<Integer,String> mapping,String[] params){
 		//this array just tracks where we are in each list of actions for each other agent
+
 		int[] counters = new int[lists.size()];
 
 		//
-		Map<State,Double> probOfNextStates = new HashMap<State,Double>();
+		//Map<State,Double> probOfNextStates = new HashMap<State,Double>();
+		HashedAggregator<StateHashTuple> probOfNextStates = new HashedAggregator<StateHashTuple>(0.0);
+
 		do{
 			//the transition probabilities for this set of other agent actions to all next states
 			List<TransitionProbability> transProbs = getNextStatesTransitionProbabilities(s, counters, mapping, lists,params);
-
+			System.out.println("TransProbs Size: "+transProbs.size());
 			//multiply 
 			for(TransitionProbability tp : transProbs){
-				if(!probOfNextStates.containsKey(tp.s)){
-					probOfNextStates.put(tp.s,tp.p);
-				}else{
-					probOfNextStates.put(tp.s,probOfNextStates.get(tp.s)+tp.p);
-				}
+				//System.out.println("Num states found: "+probOfNextStates.keySet().size());
+
+				probOfNextStates.add(hashFactory.hashState(tp.s),tp.p);
+
+
 			}
+			System.out.println("Incrementing: "+Arrays.toString(counters));
+			System.out.println("probOfNextStates size: "+probOfNextStates.size());
 		}while(increment(counters, mapping,lists));
+		
+		
+		
 
 		return probOfNextStates;
 	}
@@ -242,18 +266,20 @@ public class SGActionWrapper extends Action {
 		for(int i = 0; i<counters.length;i++){
 			String aName = mapping.get(i);
 			int actionNum = counters[i];
+			//System.out.println("ActionNum: "+actionNum);
 			// Add to the joint action the grounded version of the acting agent's corresponding SingleAction and parameters:
 			ja.addAction((GroundedSingleAction)sets.get(aName).get(actionNum).ga);
+			System.out.println("JA: "+ja);
 			//multiply in the prob of this action from the other agents' policies
 			probOfJA=probOfJA*agentPolicyMap.get(aName).getProbOfAction(state, sets.get(aName).get(actionNum).ga);
 		}
 		//these are the probabilities of going to each possible next state
 		List<TransitionProbability> transProbs = jaModel.transitionProbsFor(state, ja);
-
+		//System.out.println("Size before mult: "+transProbs.size());
 		//then multiply by the prob of taking that joint action
 		List<TransitionProbability> newTransProbs = new ArrayList<TransitionProbability>();
 		for(TransitionProbability tp : transProbs){
-			TransitionProbability newTP = new TransitionProbability(state, tp.p*probOfJA);
+			TransitionProbability newTP = new TransitionProbability(tp.s, tp.p*probOfJA);
 			newTransProbs.add(newTP);
 		}
 
@@ -280,6 +306,15 @@ public class SGActionWrapper extends Action {
 		}
 		return transitions.get(i).s;
 
+
+	}
+
+	public void printTheState(State s){
+		List<ObjectInstance> agentLocals = s.getObjectsOfClass(GridGame.CLASSAGENT);
+		for(ObjectInstance oi : agentLocals){
+			System.out.println("Agent: "+oi.getName()+" X: "+oi.getIntValForAttribute(GridGame.ATTX)+
+					" Y: "+oi.getIntValForAttribute(GridGame.ATTY));
+		}
 	}
 
 }

@@ -90,26 +90,22 @@ public class JointRewardFunctionWrapper implements RewardFunction {
 
 		//add the non-normalized probability of taking all next joint actions
 		japs = addAllCombinations(s, mapOfActionProbs, mapping,a.params,sa);
-
-		for(JointActionProbability jap : japs){
-			List<TransitionProbability> transProbs = jam.transitionProbsFor(s, jap.getJointAction());
-			jap.setProbabilityNextState(0.0);
-			for(TransitionProbability tp : transProbs){
-				if(tp.s==sprime){
-					jap.setProbabilityNextState(tp.p);
-				}
-			}
-
-		}
-
 		double expectedReward = 0.0;
 
 		//sum over all next states so me can normalize
 		double reward = 0.0;
 		for(JointActionProbability jap : japs){
-			reward = jointReward.reward(s, jap.getJointAction(), sprime).get(agentName);
-			expectedReward+=reward*jap.getProbability()*jap.getProbabilityNextState();
+			List<TransitionProbability> transProbs = jam.transitionProbsFor(s, jap.getJointAction());
+			for(TransitionProbability tp : transProbs){
+				
+				reward = jointReward.reward(s, jap.getJointAction(), sprime).get(agentName);
+				expectedReward+=reward*jap.getProbability()*tp.p;
+				
+				
+			}
+
 		}
+
 
 		return expectedReward;
 	}

@@ -3,6 +3,7 @@ package burlap.behavior.stochasticgame.saconversion;
 import java.util.Map;
 
 import burlap.behavior.singleagent.Policy;
+import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.SADomain;
@@ -24,16 +25,18 @@ public class ConversionGenerator implements DomainGenerator{
 	protected AgentType agentType;
 	protected String agentName;
 	protected Map<String, Policy> otherAgentPolicies;
+	StateHashFactory hashFactory;
 
 
 	public ConversionGenerator(SGDomain sgDomain, JointActionModel jaModel, AgentType agentType, String agentName, 
-			Map<String, Policy> otherAgentPolicies){
+			Map<String, Policy> otherAgentPolicies, StateHashFactory hashFactory){
 
 		this.sgDomain = sgDomain;
 		this.jaModel = jaModel;
 		this.agentType = agentType;
 		this.agentName = agentName;
 		this.otherAgentPolicies = otherAgentPolicies;
+		this.hashFactory = hashFactory;
 
 	}
 
@@ -44,7 +47,7 @@ public class ConversionGenerator implements DomainGenerator{
 		System.out.println("sgDomain: "+sgDomain);
 		for(SingleAction a : agentType.actions){
 
-			new SGActionWrapper(a, jaModel, agentName, otherAgentPolicies, newDomain);
+			new SGActionWrapper(a, jaModel, agentName, otherAgentPolicies, newDomain, hashFactory);
 
 		}
 
