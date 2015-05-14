@@ -426,6 +426,7 @@ public class GridGame implements DomainGenerator {
 	/**
 	 * Returns a state with with the specified number of objects for each object class and with the specified boundary of
 	 * the playing area. The number of walls *MUST* include the world boundary walls; that is, there must be at least 2 horizontal walls and 2 vertical walls.
+	 * The agent objects added to the state will match at least the names of the agents provided
 	 * @param d the domain object of the grid world
 	 * @param agents, the list of agents participating in the world
 	 * @param na the number of agents/players. If this is greater than the number of agents, default names are generated. If it is less, an exception is thrown
@@ -566,7 +567,8 @@ public class GridGame implements DomainGenerator {
 	}
 	
 	/**
-	 * Adds objects for each agent, with the specific class
+	 * Adds objects for each agent, with the specific class. If the number of agents requested is greater than
+	 * the number of agents provided, then a generic name is assigned to the the remaining agent ObjectInstances
 	 * @param d the domain of the object classes
 	 * @param s the state to which the specified class should be added
 	 * @param className the name of the object class for which to create object instances
