@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.Policy.ActionProb;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -30,15 +32,17 @@ public class JointRewardFunctionWrapper implements RewardFunction {
 	protected SGDomain sgDomain;
 	protected Map<String, Policy> agentPolicyMap;
 	protected JointActionModel jam;
+	protected List<SingleAction> actions;
 
 
 	public JointRewardFunctionWrapper(JointReward jointReward, String agentName, SGDomain sgDomain, Map<String,Policy> agentPolicyMap, 
-			JointActionModel jam) {
+			JointActionModel jam, List<SingleAction> actions) {
 		this.jointReward = jointReward;
 		this.agentName = agentName;
 		this.sgDomain = sgDomain;
 		this.agentPolicyMap = agentPolicyMap;
 		this.jam = jam;
+		this.actions = actions;
 
 
 	}
@@ -153,12 +157,29 @@ public class JointRewardFunctionWrapper implements RewardFunction {
 		//create and calculate the probability of this joint action
 		double probOfJA = 1.0;
 		for(int i = 0; i<counters.length;i++){
-			String aName = mapping.get(i);
+			String otherAgentName = mapping.get(i);
 			int actionNum = counters[i];
 			// Add to the joint action the grounded version of the acting agent's corresponding SingleAction and parameters:
-			ja.addAction((GroundedSingleAction)sets.get(aName).get(actionNum).ga);
+			
+			AbstractGroundedAction aga = sets.get(otherAgentName).get(actionNum).ga; //this is a GroundedAction
+			//temp.actionName();
+			//saDomain.getAction(temp.actionName());
+			
+			
+			
+			Random rand = new Random();
+			List<GroundedSingleAction>  otherAgentsActions = new ArrayList<GroundedSingleAction>();
+			for(SingleAction posSA : actions){
+				if(posSA.actionName==aga.actionName()){
+					otherAgentsActions = posSA.getAllGroundedActionsFor(state, otherAgentName);
+				}
+			}
+			
+			ja.addAction(otherAgentsActions.get(rand.nextInt(otherAgentsActions.size())));
+			
+			
 			//multiply in the prob of this action from the other agents' policies
-			probOfJA=probOfJA*agentPolicyMap.get(aName).getProbOfAction(state, sets.get(aName).get(actionNum).ga);
+			probOfJA=probOfJA*agentPolicyMap.get(otherAgentName).getProbOfAction(state, sets.get(otherAgentName).get(actionNum).ga);
 		}
 
 		JointActionProbability jap = new JointActionProbability(ja, probOfJA);

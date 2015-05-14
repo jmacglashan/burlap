@@ -47,7 +47,7 @@ public class ConversionGenerator implements DomainGenerator{
 		System.out.println("sgDomain: "+sgDomain);
 		for(SingleAction a : agentType.actions){
 
-			new SGActionWrapper(a, jaModel, agentName, otherAgentPolicies, newDomain, hashFactory);
+			new SGActionWrapper(a, jaModel, agentName, otherAgentPolicies, newDomain, hashFactory, agentType.actions);
 
 		}
 

@@ -11,7 +11,7 @@ public class JointActionProbability {
 
 	protected JointAction ja;
 	protected double p;
-	protected double psp;
+	
 	
 	public JointActionProbability(JointAction jointAction, double probability){
 		this.ja = jointAction;
@@ -27,11 +27,5 @@ public class JointActionProbability {
 		return ja;
 	}
 	
-	public void setProbabilityNextState(double probNext){
-		psp = probNext;
-	}
 	
-	public double getProbabilityNextState(){
-		return psp;
-	}
 }

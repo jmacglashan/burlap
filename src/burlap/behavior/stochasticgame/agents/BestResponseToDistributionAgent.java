@@ -8,12 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.Policy.RandomPolicy;
-import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
-import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
@@ -26,19 +22,14 @@ import burlap.behavior.stochasticgame.saconversion.ConversionGenerator;
 import burlap.behavior.stochasticgame.saconversion.ExpectedPolicyWrapper;
 import burlap.behavior.stochasticgame.saconversion.JointRewardFunctionWrapper;
 import burlap.behavior.stochasticgame.saconversion.RandomSingleAgentPolicy;
-import burlap.behavior.stochasticgame.saconversion.SGActionWrapper;
 import burlap.domain.singleagent.gridworld.GridWorldStateParser;
 import burlap.domain.stochasticgames.gridgame.GGVisualizer;
 import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics;
-import burlap.oomdp.auxiliary.common.StateYAMLParser;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.stochasticgames.Agent;
@@ -51,7 +42,6 @@ import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.SGStateGenerator;
 import burlap.oomdp.stochasticgames.SingleAction;
 import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.WorldObserver;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -76,6 +66,8 @@ public class BestResponseToDistributionAgent extends Agent {
 	protected Map<String, Policy> otherAgentPolicies;
 	protected Map<String, Map<Integer,Policy>> allOtherAgentPolicies;
 	protected Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies;
+
+	protected OOMDPPlanner planner = null;
 	/**
 	 * The policy this agent follows
 	 */
@@ -94,6 +86,26 @@ public class BestResponseToDistributionAgent extends Agent {
 		this.distributionOverAllOtherAgentPolicies = distributionOverAllOtherAgentPolicies;
 		this.hashFactory = hashFactory;
 		this.domain = domain;
+		if(CHOOSE){
+			otherAgentPolicies = chooseOtherAgentPolicies();
+		}else{
+			otherAgentPolicies = constructOtherAgentPolicies();
+		}
+
+	}
+
+	public BestResponseToDistributionAgent(SGDomain domain, StateHashFactory hashFactory) {
+		this.hashFactory = hashFactory;
+		this.domain = domain;
+
+	}
+
+	public void setOtherAgentPolicyMap(Map<String, Map<Integer,Policy>> allOtherAgentPolicies, 
+			Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies){
+
+		this.allOtherAgentPolicies = allOtherAgentPolicies;
+		this.distributionOverAllOtherAgentPolicies = distributionOverAllOtherAgentPolicies;
+
 		if(CHOOSE){
 			otherAgentPolicies = chooseOtherAgentPolicies();
 		}else{
@@ -165,23 +177,23 @@ public class BestResponseToDistributionAgent extends Agent {
 	@Override
 	public GroundedSingleAction getAction(State s) {
 
-		
+
 		if(isFirstDay){
 			//plan and create policy
-			
+
 			ConversionGenerator generator = new ConversionGenerator(domain, world.getActionModel(), 
 					agentType, worldAgentName, otherAgentPolicies, hashFactory);
 
 			singleAgentDomain = (SADomain) generator.generateDomain();
-			
+
 			//List<TransitionProbability> tps = singleAgentDomain.getAction(GridGame.ACTIONNORTH).getTransitions(s, "");
-			
+
 			//System.out.println("Size tps: "+tps.size());
-			
+
 			//System.exit(0);
 
 			RewardFunction rf = new JointRewardFunctionWrapper(world.getRewardModel(), getAgentName(), domain, 
-					otherAgentPolicies, world.getActionModel());
+					otherAgentPolicies, world.getActionModel(), domain.getSingleActions());
 
 			policy = valueIteration("/Users/betsy/research/cognitive_hierarchy/testOut.txt", rf, singleAgentDomain);
 			//reset isFirstDay
@@ -189,16 +201,20 @@ public class BestResponseToDistributionAgent extends Agent {
 		}
 		//change single action to multi agent action
 		//return from policy generated at beginning
-		
+
 		//GroundedAction to GroundedSingleAction
 		AbstractGroundedAction ga = policy.getAction(s);
-		
+
 		List<GroundedSingleAction> gsas = domain.getSingleAction(ga.actionName()).getAllGroundedActionsFor(s, worldAgentName);
 		Random rand = new Random();
 		GroundedSingleAction gsa = gsas.get(rand.nextInt(gsas.size()));
 		return gsa;
 
 
+	}
+
+	public Policy getPolicy(){
+		return policy;
 	}
 
 	/* (non-Javadoc)
@@ -232,11 +248,15 @@ public class BestResponseToDistributionAgent extends Agent {
 			outputPath = outputPath + "/";
 		}
 
-		//TODO: fix here!!!!!!!!!
-		OOMDPPlanner planner = new ValueIteration(saDomain, rf, world.getTF(), 0.99, hashFactory, 0.001,100000);
 
+		if(planner ==null){
+			System.out.println("creating planner");
+			planner = new ValueIteration(saDomain, rf, world.getTF(), 0.99, hashFactory, 0.001,100);
+		}
+
+		System.out.println("VI starting");
 		planner.planFromState(world.getCurrentWorldState());
-		
+		System.out.println("VI done planning");
 
 		//create a Q-greedy policy from the planner
 		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
@@ -244,7 +264,10 @@ public class BestResponseToDistributionAgent extends Agent {
 		GridWorldStateParser gwsp = new GridWorldStateParser(saDomain);
 		//record the plan results to a file
 		//System.out.println("Before eval");
-		System.out.println(p.evaluateBehavior(world.getCurrentWorldState(), rf, world.getTF(), 100).getActionSequenceString("\n")); //writeToFile(outputPath + "planResult", gwsp);
+		//System.out.println(p.evaluateBehavior(world.getCurrentWorldState(), rf, world.getTF(), 100).getActionSequenceString("\n")); //writeToFile(outputPath + "planResult", gwsp);
+		
+		System.out.println("P returning");
+		
 		return p;
 	}
 
@@ -252,69 +275,103 @@ public class BestResponseToDistributionAgent extends Agent {
 		GridGame gg = new GridGame();
 
 		Agent oponent = new RandomAgent();
+		Policy previousPolicy =null;
 
-		SGDomain d = (SGDomain)gg.generateDomain();
-		
-		//AgentType at = new AgentType(oponent.getAgentName(), d.getActions());
-
-		//State s = GridGame.getCorrdinationGameInitialState(d);
-		State s = GridGame.getTurkeyInitialState(d);
-
-		//System.out.println(s.getCompleteStateDescription());
-
-		JointActionModel jam = new GridGameStandardMechanics(d);
-		d.setJointActionModel(jam);
-		
-		JointReward jr = new GridGame.GGJointRewardFunction(d, -1, 100.0, 100.0, true);
-		TerminalFunction tf = new GridGame.GGTerminalFunction(d);
-		SGStateGenerator sg = new ConstantSGStateGenerator(s);
-
-		World gameWorld = new World(d, jr, tf, sg);
-
-		//oponent.joinWorld(gameWorld, oponent.getAgentType());
-		oponent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
-
-		String oponentName = oponent.getAgentName();
-
-		Map<String, Map<Integer,Policy>> allOtherAgentPolicies = new HashMap<String, Map<Integer,Policy>>();
-		HashMap<Integer, Policy> levelMap = new HashMap<Integer, Policy>();
-		
-		List<SingleAction> actions = d.getSingleActions();
-		
-		RandomSingleAgentPolicy randPolicy = new RandomSingleAgentPolicy(oponent.getAgentName(), actions);
-		levelMap.put(0, randPolicy);
-		allOtherAgentPolicies.put(oponentName, levelMap);
-
-
-		Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies  = new HashMap<String, Map<Integer,Double>>();
-		HashMap<Integer,Double> distribution = new HashMap<Integer,Double>();
-		distribution.put(0, 1.0);
-		distributionOverAllOtherAgentPolicies.put(oponent.getAgentName(),distribution);
-
-		StateHashFactory hashFactory = new DiscreteStateHashFactory();
-
-		BestResponseToDistributionAgent brAgent = new BestResponseToDistributionAgent(d,allOtherAgentPolicies,
-				distributionOverAllOtherAgentPolicies, hashFactory);
-
-		brAgent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
-
-	
-		
-		//gameWorld.addWorldObserver(ob);
-		System.out.println("running game");
-		GameAnalysis ga = gameWorld.runGame();
 		List<GameAnalysis> gas = new ArrayList<GameAnalysis>();
-		gas.add(ga);
+		SGDomain d = (SGDomain)gg.generateDomain();
+
+		Map<String,Map<Integer, Policy>> brAgentPolicies = new HashMap<String,Map<Integer, Policy>>();
+		boolean OTHERFIRST = false; //true;
 		
-		Visualizer v = GGVisualizer.getVisualizer(5, 6);
+		//for(int anum=0;anum<=1;anum++){
+			
+
+			for(int k = 0;k<=1;k++){
+				System.out.println("LEVEL: "+k);
+
+
+				//AgentType at = new AgentType(oponent.getAgentName(), d.getActions());
+
+				//State s = GridGame.getCorrdinationGameInitialState(d);
+				State s = GridGame.getTurkeyInitialState(d);
+				//State s = GridGame.getPrisonersDilemmaInitialState(d);
+
+				//System.out.println(s.getCompleteStateDescription());
+
+				JointActionModel jam = new GridGameStandardMechanics(d);
+				d.setJointActionModel(jam);
+
+				JointReward jr = new GridGame.GGJointRewardFunction(d, -1, 100.0, 100.0, false);
+				TerminalFunction tf = new GridGame.GGTerminalFunction(d);
+				SGStateGenerator sg = new ConstantSGStateGenerator(s);
+
+				World gameWorld = new World(d, jr, tf, sg);
+
+
+				StateHashFactory hashFactory = new DiscreteStateHashFactory();
+				BestResponseToDistributionAgent brAgent = new BestResponseToDistributionAgent(d, hashFactory);
+
+				if(OTHERFIRST){
+					//oponent.joinWorld(gameWorld, oponent.getAgentType());
+					oponent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
+					brAgent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
+				}else{
+					brAgent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
+
+					//oponent.joinWorld(gameWorld, oponent.getAgentType());
+					oponent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
+				}
+
+				//construct the other agent policies
+
+				Map<String, Map<Integer,Policy>> allOtherAgentPolicies = new HashMap<String, Map<Integer,Policy>>();
+				HashMap<Integer, Policy> levelMap = new HashMap<Integer, Policy>();
+
+				List<SingleAction> actions = d.getSingleActions();
+
+				Policy lowerPolicy;
+				if(k==0){
+					lowerPolicy = new RandomSingleAgentPolicy(oponent.getAgentName(), actions);
+
+				}else{
+					lowerPolicy = previousPolicy;
+				}
+				HashMap<Integer,Policy> agentPolicies = new HashMap<Integer,Policy>();
+				agentPolicies.put(k, lowerPolicy);
+				brAgentPolicies.put(oponent.getAgentName(), agentPolicies);
+
+				levelMap.put(k, lowerPolicy);
+				String oponentName = oponent.getAgentName();
+				allOtherAgentPolicies.put(oponentName, levelMap);
+
+
+				Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies  = new HashMap<String, Map<Integer,Double>>();
+				HashMap<Integer,Double> distribution = new HashMap<Integer,Double>();
+				distribution.put(k, 1.0);
+				distributionOverAllOtherAgentPolicies.put(oponent.getAgentName(),distribution);
+
+				brAgent.setOtherAgentPolicyMap(allOtherAgentPolicies, distributionOverAllOtherAgentPolicies);
+
+				//gameWorld.addWorldObserver(ob);
+				System.out.println("running game");
+				GameAnalysis ga = gameWorld.runGame();
+				gas.add(ga);
+
+				System.out.println("Level: "+k+" BR Agent Name: "+brAgent.getAgentName());
+
+				oponent = brAgent;
+				previousPolicy = brAgent.policy;
+				OTHERFIRST = !OTHERFIRST;
+
+			}
+			//OTHERFIRST=false;
+		//}
+
+		Visualizer v = GGVisualizer.getVisualizer(6, 6);
 		
 		GameSequenceVisualizer gsv = new GameSequenceVisualizer(v,d,gas);
 		
-		System.out.println("BR Agent Name: "+brAgent.getAgentName());
-		
-		//System.out.println(ga.parseIntoString(new StateYAMLParser(d)));
-		//gsv.initGUI();
-		
+
 		//System.out.println("Reward l1: "+gameWorld.getCumulativeRewardForAgent(brAgent.getAgentName()));
 		//System.out.println("Reward l0: "+gameWorld.getCumulativeRewardForAgent(oponent.getAgentName()));
 		//System.out.println("game finished");
