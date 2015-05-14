@@ -139,7 +139,7 @@ public class Parallel {
 		public abstract ForCallable<T> init(int start, int current, int end, int increment);
 	}
 	
-	// An abstract class for parallel for each calls.
+	// An abstract class for parallel for each calls. I is the type of input, R is the type of result
 	public static abstract class ForEachCallable<I, R> implements Callable<R>{
 		private I current;
 		public R call() {
