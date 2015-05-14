@@ -65,7 +65,15 @@ public class StateRenderLayer implements RenderLayer{
 		staticPainters.add(sp);
 	}
 	
-	
+	/**
+	 * Inserts a static painter at the given index. This is useful if you need to insert a painter below a different painter
+	 * @param index Index at which to insert the painter
+	 * @param sp the painter
+	 */
+	public void insertStaticPainter(int index, StaticPainter sp) {
+		staticPainters.add(index, sp);
+		
+	}
 	/**
 	 * Adds a class that will paint objects that belong to a given OO-MDPclass.
 	 * @param className the name of the class that the provided painter can paint
@@ -75,7 +83,12 @@ public class StateRenderLayer implements RenderLayer{
 		objectClassPainterList.add(new ObjectPainterAndClassNamePair(className, op));
 	}
 	
-	public void insertObjectClassPainter(String className, ObjectPainter op, int index) {
+	/**
+	 * Inserts a object painter at the given index. This is useful if you need to insert a painter below a different painter
+	 * @param index Index at which to insert the painter
+	 * @param op the painter
+	 */
+	public void insertObjectClassPainter(int index, String className, ObjectPainter op) {
 		if (index <= this.objectClassPainterList.size()) {
 			this.objectClassPainterList.add(index, new ObjectPainterAndClassNamePair(className, op));
 		}
@@ -164,6 +177,7 @@ public class StateRenderLayer implements RenderLayer{
 			this.painter = painter;
 		}
 	}
+
 	
 	
 	

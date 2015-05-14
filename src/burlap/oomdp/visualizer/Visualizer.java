@@ -64,6 +64,14 @@ public class Visualizer extends MultiLayerRenderer{
 		this.srender.addStaticPainter(sp);
 	}
 	
+	/**
+	 * Inserts a static painter at the given index. This is useful if you need to insert a painter below a different painter
+	 * @param index Index at which to insert the painter
+	 * @param sp the painter
+	 */
+	public void insertStaticPainter(int index, StaticPainter sp) {
+		this.srender.insertStaticPainter(index, sp);
+	}
 	
 	/**
 	 * Adds a class that will paint objects that belong to a given OO-MDPclass.
@@ -74,8 +82,13 @@ public class Visualizer extends MultiLayerRenderer{
 		this.srender.addObjectClassPainter(className, op);
 	}
 	
-	public void insertObjectClassPainter(String className, ObjectPainter op, int index) {
-		this.srender.insertObjectClassPainter(className, op, index);
+	/**
+	 * Inserts an object painter at the given index. This is useful if you need to insert a painter below a different painter
+	 * @param index Index at which to insert the painter
+	 * @param op the painter
+	 */
+	public void insertObjectClassPainter(int index, String className, ObjectPainter op) {
+		this.srender.insertObjectClassPainter(index, className, op);
 	}
 	
 	/**
