@@ -13,25 +13,28 @@ import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.stochasticgames.Agent;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.JointReward;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.stochasticgames.common.UniversalSingleAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
 /**
  * The GridGame domain is much like the GridWorld domain, except for arbitrarily many agents in
- * a stochastic game. Each agent in the world has an OO-MDO object instance of OO-MDP class "agent"
+ * a stochastic game. Each agent in the world has an OO-MDP object instance of OO-MDP class "agent"
  * which is defined by an x position, a y position, and a player number. Agents can either move north, south, east,
- * west, or do nothing. There is also an OO-MDP object class for 1-dimensional walls (both for horizontal
+ * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.oomdp.stochasticgames.AgentType}
+ * to use with this game, use the {@link #getStandardGridGameAgentType(burlap.oomdp.core.Domain)} static method.
+ * <br/><br/>
+ * In this domain, there is also an OO-MDP object class for 1-dimensional walls (both for horizontal
  * walls or vertical walls). Each wall can take on a different type; a solid wall that can never be passed (type 0),
  * and a semi-wall, can be passed with some stochastic probability (type 1). Finally, there is also an OO-MDP
  * class for goal locations, which also have different types. There is a type that can be indicated
  * as a universal goal/reward location for all agents (type 0), and type that is only useful to each individual
  * agent (type i is a personal goal for player i-1).
+ * <br/><br/>
+ * The {@link burlap.oomdp.stochasticgames.JointActionModel} set for the domain is {@link burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics},
+ * with a default semi-wall probability of passing through of 0.5, which is changeable with the
+ *
  * @author James MacGlashan
  *
  */
@@ -161,6 +164,12 @@ public class GridGame implements DomainGenerator {
 	 * The number of wall types
 	 */
 	protected int 							maxWT = 2;
+
+
+	/**
+	 * The probability that an agent will pass through a semi-wall.
+	 */
+	protected double						semiWallProb = 0.5;
 	
 
 	
@@ -200,11 +209,10 @@ public class GridGame implements DomainGenerator {
 		
 		//System.out.println(s.getCompleteStateDescription());
 		
-		
-		JointActionModel jam = new GridGameStandardMechanics(d);
+
 		
 		Visualizer v = GGVisualizer.getVisualizer(9, 9);
-		SGVisualExplorer exp = new SGVisualExplorer(d, v, s, jam);
+		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
 		
 		exp.setJAC("c"); //press c to execute the constructed joint action
 		
@@ -296,6 +304,23 @@ public class GridGame implements DomainGenerator {
 	public void setMaxWT(int maxWT) {
 		this.maxWT = maxWT;
 	}
+
+
+	/**
+	 * Sets the probability that an agent can pass through a semi-wall.
+	 * @param p the probability that an agent will pass through a semi-wall.
+	 */
+	public void setSemiWallPassableProbability(double p){
+		this.semiWallProb = p;
+	}
+
+	/**
+	 * Returns the probability that an agent can pass through a semi-wall.
+	 * @return the probability that an agent can pass through a semi-wall.
+	 */
+	public double getSemiWallProb(){
+		return this.semiWallProb;
+	}
 	
 
 	@Override
@@ -362,7 +387,8 @@ public class GridGame implements DomainGenerator {
 		
 		new AgentInUGoal(PFINUGOAL, domain);
 		new AgentInPGoal(PFINPGOAL, domain);
-		
+
+		domain.setJointActionModel(new GridGameStandardMechanics(domain, this.semiWallProb));
 		
 		return domain;
 	}
@@ -566,7 +592,7 @@ public class GridGame implements DomainGenerator {
 	 * @param pn the player number of the agent
 	 */
 	public static void setAgent(State s, int i, int x, int y, int pn){
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(i);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(i);
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTY, y);
 		agent.setValue(ATTPN, pn);
@@ -582,7 +608,7 @@ public class GridGame implements DomainGenerator {
 	 * @param gt the goal type
 	 */
 	public static void setGoal(State s, int i, int x, int y, int gt){
-		ObjectInstance goal = s.getObjectsOfTrueClass(CLASSGOAL).get(i);
+		ObjectInstance goal = s.getObjectsOfClass(CLASSGOAL).get(i);
 		goal.setValue(ATTX, x);
 		goal.setValue(ATTY, y);
 		goal.setValue(ATTGT, gt);
@@ -598,8 +624,8 @@ public class GridGame implements DomainGenerator {
 	 */
 	public static void setBoundaryWalls(State s, int w, int h){
 		
-		List<ObjectInstance> verticalWalls = s.getObjectsOfTrueClass(CLASSDIMVWALL);
-		List<ObjectInstance> horizontalWalls = s.getObjectsOfTrueClass(CLASSDIMHWALL);
+		List<ObjectInstance> verticalWalls = s.getObjectsOfClass(CLASSDIMVWALL);
+		List<ObjectInstance> horizontalWalls = s.getObjectsOfClass(CLASSDIMHWALL);
 		
 		ObjectInstance leftWall = verticalWalls.get(0);
 		ObjectInstance rightWall = verticalWalls.get(1);
@@ -642,7 +668,7 @@ public class GridGame implements DomainGenerator {
 	 * @param wt the type of the wall
 	 */
 	public static void setVerticalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfTrueClass(CLASSDIMVWALL).get(i), p, e1, e2, wt);
+		setWallInstance(s.getObjectsOfClass(CLASSDIMVWALL).get(i), p, e1, e2, wt);
 	}
 	
 	
@@ -657,10 +683,21 @@ public class GridGame implements DomainGenerator {
 	 * @param wt the type of the wall (0 is solid, 1 is semi)
 	 */
 	public static void setHorizontalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfTrueClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
+		setWallInstance(s.getObjectsOfClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
 	}
-	
-	
+
+
+	/**
+	 * Creates and returns a standard {@link burlap.oomdp.stochasticgames.AgentType} for grid games. This {@link burlap.oomdp.stochasticgames.AgentType}
+	 * is assigned the type name "agent", grid game OO-MDP object class for "agent", and has its action space set to all possible actions in the grid game domain.
+	 * Typically, all agents in a grid game should be assigned to the same type.
+	 *
+	 * @param domain the domain object of the grid game.
+	 * @return An {@link burlap.oomdp.stochasticgames.AgentType} that typically all {@link burlap.oomdp.stochasticgames.Agent}'s of the grid game should play as.
+	 */
+	public static AgentType getStandardGridGameAgentType(Domain domain){
+		return new AgentType(GridGame.CLASSAGENT, domain.getObjectClass(GridGame.CLASSAGENT), domain.getSingleActions());
+	}
 	
 	
 	
@@ -685,19 +722,19 @@ public class GridGame implements DomainGenerator {
 		public boolean isTrue(State s, String[] params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
-			int ax = agent.getDiscValForAttribute(ATTX);
-			int ay = agent.getDiscValForAttribute(ATTY);
+			int ax = agent.getIntValForAttribute(ATTX);
+			int ay = agent.getIntValForAttribute(ATTY);
 			
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
+			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
-				int gt = goal.getDiscValForAttribute(ATTGT);
+				int gt = goal.getIntValForAttribute(ATTGT);
 				if(gt == 0){
 				
-					int gx = goal.getDiscValForAttribute(ATTX);
-					int gy = goal.getDiscValForAttribute(ATTY);
+					int gx = goal.getIntValForAttribute(ATTX);
+					int gy = goal.getIntValForAttribute(ATTY);
 					if(gx == ax && gy == ay){
 						return true;
 					}
@@ -735,19 +772,19 @@ public class GridGame implements DomainGenerator {
 		public boolean isTrue(State s, String[] params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
-			int ax = agent.getDiscValForAttribute(ATTX);
-			int ay = agent.getDiscValForAttribute(ATTY);
-			int apn = agent.getDiscValForAttribute(ATTPN);
+			int ax = agent.getIntValForAttribute(ATTX);
+			int ay = agent.getIntValForAttribute(ATTY);
+			int apn = agent.getIntValForAttribute(ATTPN);
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
+			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
-				int gt = goal.getDiscValForAttribute(ATTGT);
+				int gt = goal.getIntValForAttribute(ATTGT);
 				if(gt == apn+1){
 				
-					int gx = goal.getDiscValForAttribute(ATTX);
-					int gy = goal.getDiscValForAttribute(ATTY);
+					int gx = goal.getIntValForAttribute(ATTX);
+					int gy = goal.getIntValForAttribute(ATTY);
 					if(gx == ax && gy == ay){
 						return true;
 					}
@@ -848,7 +885,7 @@ public class GridGame implements DomainGenerator {
 			Map <String, Double> rewards = new HashMap<String, Double>();
 			
 			//get all agents and initialize reward to default
-			List <ObjectInstance> obs = sp.getObjectsOfTrueClass(GridGame.CLASSAGENT);
+			List <ObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
 			for(ObjectInstance o : obs){
 				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
 			}
@@ -911,7 +948,7 @@ public class GridGame implements DomainGenerator {
 				return this.pGoalReward;
 			}
 			
-			int pn = s.getObject(agentName).getDiscValForAttribute(GridGame.ATTPN);
+			int pn = s.getObject(agentName).getIntValForAttribute(GridGame.ATTPN);
 			return this.personalGoalRewards.get(pn);
 			
 		}

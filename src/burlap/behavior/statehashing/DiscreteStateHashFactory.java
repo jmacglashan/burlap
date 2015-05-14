@@ -160,7 +160,7 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 					index += this.intArrayCode(o.getIntArrayValForAttribute(att.name))*vol;
 				}
 				else{
-					index += o.getDiscValForAttribute(att.name)*vol;
+					index += o.getIntValForAttribute(att.name)*vol;
 				}
 				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
 					vol *= att.discValues.size();

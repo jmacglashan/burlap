@@ -637,8 +637,8 @@ public class GridWorldDomain implements DomainGenerator {
 	protected void move(State s, int xd, int yd){
 		
 		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
-		int ax = agent.getDiscValForAttribute(ATTX);
-		int ay = agent.getDiscValForAttribute(ATTY);
+		int ax = agent.getIntValForAttribute(ATTX);
+		int ay = agent.getIntValForAttribute(ATTY);
 		
 		int nx = ax+xd;
 		int ny = ay+yd;
@@ -804,11 +804,11 @@ public class GridWorldDomain implements DomainGenerator {
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance location = st.getObject(params[1]);
 			
-			int ax = agent.getDiscValForAttribute(ATTX);
-			int ay = agent.getDiscValForAttribute(ATTY);
+			int ax = agent.getIntValForAttribute(ATTX);
+			int ay = agent.getIntValForAttribute(ATTY);
 			
-			int lx = location.getDiscValForAttribute(ATTX);
-			int ly = location.getDiscValForAttribute(ATTY);
+			int lx = location.getIntValForAttribute(ATTX);
+			int ly = location.getIntValForAttribute(ATTY);
 			
 			if(ax == lx && ay == ly){
 				return true;
@@ -860,8 +860,8 @@ public class GridWorldDomain implements DomainGenerator {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			
-			int ax = agent.getDiscValForAttribute(ATTX);
-			int ay = agent.getDiscValForAttribute(ATTY);
+			int ax = agent.getIntValForAttribute(ATTX);
+			int ay = agent.getIntValForAttribute(ATTY);
 			
 			int cx = ax + xdelta;
 			int cy = ay + ydelta;

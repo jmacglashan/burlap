@@ -103,7 +103,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	 * @return the state id
 	 */
 	public int getStateId(State s){
-		return s.getFirstObjectOfClass(CLASSSTATE).getDiscValForAttribute(ATTSTATE);
+		return s.getFirstObjectOfClass(CLASSSTATE).getIntValForAttribute(ATTSTATE);
 	}
 	
 	/**

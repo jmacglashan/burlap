@@ -8,6 +8,7 @@ import java.awt.TextArea;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -18,6 +19,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
@@ -31,7 +33,9 @@ import burlap.oomdp.visualizer.Visualizer;
 
 
 /**
- * This class is used to visualize a set of episodes that have been saves to files in a common directory. In an episode list, the action name is
+ * This class is used to visualize a set of episodes that have been saved to files in a common directory or which are
+ * provided to the object as a list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+ * In the GUI's list of an episodes actions, the action name is
  * selected action in the currently rendered state.
  * @author James MacGlashan
  *
@@ -62,6 +66,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	protected List <String>							episodeFiles;
 	protected DefaultListModel						episodesListModel;
 	protected StateParser							sp;
+
+	protected List <EpisodeAnalysis>				directEpisodes;
 	
 	protected EpisodeAnalysis						curEA;
 	protected DefaultListModel						iterationListModel;
@@ -84,9 +90,48 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		this.init(v, d, sp, experimentDirectory, 800, 800);
 		
 	}
-	
+
 	/**
 	 * Initializes the EpisodeSequenceVisualizer.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the episodes took place
+	 * @param sp a state parser that can be used to parse the states stored in the episode files
+	 * @param experimentDirectory the path to the directory containing the episode files.
+	 * @param w the width of the state visualizer canvas
+	 * @param h the height of the state visualizer canvas
+	 */
+	public EpisodeSequenceVisualizer(Visualizer v, Domain d, StateParser sp, String experimentDirectory, int w, int h){
+
+		this.init(v, d, sp, experimentDirectory, w, h);
+
+	}
+
+	/**
+	 * Initializes the EpisodeSequenceVisualizer with a programmatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * By default the state visualizer will be set to the size 800x800 pixels.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the episodes took place
+	 * @param episodes the episodes to view
+	 */
+	public EpisodeSequenceVisualizer(Visualizer v, Domain d, List<EpisodeAnalysis> episodes){
+		this.initWithDirectEpisodes(v, d, episodes, 800, 800);
+	}
+
+
+	/**
+	 * Initializes the EpisodeSequenceVisualizer with a programmatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the episodes took place
+	 * @param episodes the episodes to view
+	 * @param w the width of the state visualizer canvas
+	 * @param h the height of the state visualizer canvas
+	 */
+	public EpisodeSequenceVisualizer(Visualizer v, Domain d, List<EpisodeAnalysis> episodes, int w, int h){
+		this.initWithDirectEpisodes(v, d, episodes, w, h);
+	}
+	
+	/**
+	 * Initializes the EpisodeSequenceVisualizer with episodes read from disk.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
 	 * @param sp a state parser that can be used to parse the states stored in the episode files
@@ -114,6 +159,37 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		this.initGUI();
 		
 		
+	}
+
+
+	/**
+	 * Initializes the EpisodeSequenceVisualizer with programmatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the episodes took place
+	 * @param episodes the episodes to view
+	 * @param w the width of the state visualizer canvas
+	 * @param h the height of the state visualizer canvas
+	 */
+	public void initWithDirectEpisodes(Visualizer v, Domain d, List <EpisodeAnalysis> episodes, int w, int h){
+
+		painter = v;
+		domain = d;
+
+		this.directEpisodes = episodes;
+		this.episodesListModel = new DefaultListModel();
+		int c = 0;
+		for(EpisodeAnalysis ea : this.directEpisodes){
+			episodesListModel.addElement("episode_" + c);
+			c++;
+		}
+
+		cWidth = w;
+		cHeight = h;
+
+		this.initGUI();
+
+
+
 	}
 	
 	/**
@@ -224,6 +300,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 			}
 		};
 		String[] children = dir.list(filter);
+		Arrays.sort(children, new AlphanumericSorting());
 		
 		episodeFiles = new ArrayList<String>(children.length);
 		episodesListModel = new DefaultListModel();
@@ -233,8 +310,6 @@ public class EpisodeSequenceVisualizer extends JFrame{
 			episodesListModel.addElement(children[i].substring(0, children[i].indexOf(ext)));
 			//System.out.println(files.get(i));
 		}
-		
-		
 		
 	}
 	
@@ -264,7 +339,12 @@ public class EpisodeSequenceVisualizer extends JFrame{
        		if (ind != -1) {
        			
 				//System.out.println("Loading Episode File...");
-       			curEA = EpisodeAnalysis.parseFileIntoEA(episodeFiles.get(ind), domain, sp);
+				if(this.directEpisodes == null) {
+					curEA = EpisodeAnalysis.parseFileIntoEA(episodeFiles.get(ind), domain, sp);
+				}
+				else{
+					curEA = this.directEpisodes.get(ind);
+				}
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
 				

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
@@ -64,11 +63,11 @@ public class StateJSONParser implements StateParser {
 			objectData.put("class", o.getObjectClass().name);
 			for(Attribute a : o.getObjectClass().attributeList){
 				if(a.type == AttributeType.BOOLEAN){
-					Boolean bval = new Boolean(o.getDiscValForAttribute(a.name) == 1);
+					Boolean bval = new Boolean(o.getIntValForAttribute(a.name) == 1);
 					objectData.put(a.name, bval);
 				}
 				else if(a.type == AttributeType.DISC || a.type == AttributeType.INT){
-					objectData.put(a.name, o.getDiscValForAttribute(a.name));
+					objectData.put(a.name, o.getIntValForAttribute(a.name));
 				}
 				else if(a.type == AttributeType.REAL || a.type == AttributeType.REALUNBOUND){
 					objectData.put(a.name, o.getRealValForAttribute(a.name));

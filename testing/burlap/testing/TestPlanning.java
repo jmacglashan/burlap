@@ -92,12 +92,12 @@ public class TestPlanning {
 				ObjectInstance location = s.getObjectsOfTrueClass(ln).get(0); 
 				
 				//get agent position
-				int ax = agent.getDiscValForAttribute(GridWorldDomain.ATTX);
-				int ay = agent.getDiscValForAttribute(GridWorldDomain.ATTY);
+				int ax = agent.getIntValForAttribute(GridWorldDomain.ATTX);
+				int ay = agent.getIntValForAttribute(GridWorldDomain.ATTY);
 				
 				//get location position
-				int lx = location.getDiscValForAttribute(GridWorldDomain.ATTX);
-				int ly = location.getDiscValForAttribute(GridWorldDomain.ATTY);
+				int lx = location.getIntValForAttribute(GridWorldDomain.ATTX);
+				int ly = location.getIntValForAttribute(GridWorldDomain.ATTY);
 				
 				//compute Manhattan distance
 				double mdist = Math.abs(ax-lx) + Math.abs(ay-ly);

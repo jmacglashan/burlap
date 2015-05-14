@@ -172,7 +172,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	protected Location2 getLocation(State s, String agentName){
 		
 		ObjectInstance a = s.getObject(agentName);
-		Location2 loc = new Location2(a.getDiscValForAttribute(GridGame.ATTX), a.getDiscValForAttribute(GridGame.ATTY));
+		Location2 loc = new Location2(a.getIntValForAttribute(GridGame.ATTX), a.getIntValForAttribute(GridGame.ATTY));
 		
 		return loc;
 	}
@@ -584,7 +584,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(int i = 0; i < walls.size(); i++){
 			ObjectInstance w = walls.get(i);
 			if(this.crossesWall(p0, delta, w, vertical)){
-				int wt = w.getDiscValForAttribute(GridGame.ATTWT);
+				int wt = w.getIntValForAttribute(GridGame.ATTWT);
 				if(wt == 0){ //solid wall
 					return true;
 				}
@@ -615,7 +615,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(int i = 0; i < walls.size(); i++){
 			ObjectInstance w = walls.get(i);
 			if(this.crossesWall(p0, delta, w, vertical)){
-				int wt = w.getDiscValForAttribute(GridGame.ATTWT);
+				int wt = w.getIntValForAttribute(GridGame.ATTWT);
 				if(wt == 0){ //solid wall
 					return 1;
 				}
@@ -653,9 +653,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 			d = delta.y;
 		}
 		
-		int wp = w.getDiscValForAttribute(GridGame.ATTP);
-		int we1 = w.getDiscValForAttribute(GridGame.ATTE1);
-		int we2 = w.getDiscValForAttribute(GridGame.ATTE2);
+		int wp = w.getIntValForAttribute(GridGame.ATTP);
+		int we1 = w.getIntValForAttribute(GridGame.ATTE1);
+		int we2 = w.getIntValForAttribute(GridGame.ATTE2);
 
 		if(d < 0){
 			//check crosses "before" agent if decreasing movement
@@ -847,11 +847,11 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(ObjectInstance a1 : agents1){
 			ObjectInstance a2 = s2.getObject(a1.getName());
 			
-			int x1 = a1.getDiscValForAttribute(GridGame.ATTX);
-			int x2 = a2.getDiscValForAttribute(GridGame.ATTX);
+			int x1 = a1.getIntValForAttribute(GridGame.ATTX);
+			int x2 = a2.getIntValForAttribute(GridGame.ATTX);
 			
-			int y1 = a1.getDiscValForAttribute(GridGame.ATTY);
-			int y2 = a2.getDiscValForAttribute(GridGame.ATTY);
+			int y1 = a1.getIntValForAttribute(GridGame.ATTY);
+			int y2 = a2.getIntValForAttribute(GridGame.ATTY);
 			
 			if(x1 != x2 || y1 != y2){
 				return false;

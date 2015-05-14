@@ -150,7 +150,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @return the state node number where the agent of the provided state is
 	 */
 	public static int getNodeId(State s){
-		return s.getFirstObjectOfClass(CLASSAGENT).getDiscValForAttribute(ATTNODE);
+		return s.getFirstObjectOfClass(CLASSAGENT).getIntValForAttribute(ATTNODE);
 	}
 	
 	
@@ -243,7 +243,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		public boolean applicableInState(State st, String [] params){
 			
 			ObjectInstance o = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
-			int n = o.getDiscValForAttribute(ATTNODE);
+			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbibility>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbibility> transitions = actionMap.get(aId);
@@ -259,7 +259,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		protected State performActionHelper(State st, String[] params) {
 			
 			ObjectInstance o = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
-			int n = o.getDiscValForAttribute(ATTNODE);
+			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbibility>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbibility> transitions = actionMap.get(aId);
@@ -287,7 +287,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 			List <TransitionProbability> result = new ArrayList<TransitionProbability>();
 			
 			ObjectInstance o = st.getObjectsOfTrueClass(CLASSAGENT).get(0);
-			int n = o.getDiscValForAttribute(ATTNODE);
+			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbibility>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbibility> transitions = actionMap.get(aId);

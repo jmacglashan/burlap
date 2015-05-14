@@ -89,8 +89,8 @@ public class GridWorldTerminalFunction implements TerminalFunction {
 	@Override
 	public boolean isTerminal(State s) {
 		ObjectInstance agent = s.getFirstObjectOfClass(GridWorldDomain.CLASSAGENT);
-		int x = agent.getDiscValForAttribute(GridWorldDomain.ATTX);
-		int y = agent.getDiscValForAttribute(GridWorldDomain.ATTY);
+		int x = agent.getIntValForAttribute(GridWorldDomain.ATTX);
+		int y = agent.getIntValForAttribute(GridWorldDomain.ATTY);
 		return this.terminalPositions.contains(new IntPair(x, y));
 	}
 	
