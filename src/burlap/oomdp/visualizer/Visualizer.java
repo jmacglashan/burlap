@@ -74,6 +74,9 @@ public class Visualizer extends MultiLayerRenderer{
 		this.srender.addObjectClassPainter(className, op);
 	}
 	
+	public void insertObjectClassPainter(String className, ObjectPainter op, int index) {
+		this.srender.insertObjectClassPainter(className, op, index);
+	}
 	
 	/**
 	 * Adds a painter that will be used to paint a specific object in states

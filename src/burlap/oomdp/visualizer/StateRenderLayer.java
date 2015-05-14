@@ -75,6 +75,11 @@ public class StateRenderLayer implements RenderLayer{
 		objectClassPainterList.add(new ObjectPainterAndClassNamePair(className, op));
 	}
 	
+	public void insertObjectClassPainter(String className, ObjectPainter op, int index) {
+		if (index <= this.objectClassPainterList.size()) {
+			this.objectClassPainterList.add(index, new ObjectPainterAndClassNamePair(className, op));
+		}
+	}
 	
 	/**
 	 * Adds a painter that will be used to paint a specific object in states
