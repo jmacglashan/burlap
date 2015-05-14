@@ -41,7 +41,7 @@ public class Parallel {
 		List<Callable<T>> callables = new ArrayList<Callable<T>>(size);
 		
 		for (int i = start; i < end; i += increment) {
-			ForCallable<T> copied = runnable.init(start, i, end, increment);
+			ForCallable<T> copied = runnable.copy(start, i, end, increment);
 			callables.add(copied);
 		}
 		List<T> result = new ArrayList<T>(size);
@@ -135,8 +135,34 @@ public class Parallel {
 	
 	// An abstract class for parallel for calls.
 	public static abstract class ForCallable<T> implements Callable<T>{
+		private int start;
+		private int current;
+		private int increment;
+		private int end;
+		
+		public ForCallable(int start, int end, int increment) {
+			this.start = start;
+			this.end = end;
+			this.increment = increment;
+		}
+		
+		public abstract T perform(int start, int current, int end, int increment);
+
+		public T call() {
+			return this.perform(start, current, end, increment);
+		}
+		
+		public abstract ForCallable<T> copy();
 		// Init creates a copy of this object, with for parameters (if necessary).
-		public abstract ForCallable<T> init(int start, int current, int end, int increment);
+		
+		public ForCallable<T> copy(int start, int current, int end, int increment) {
+			ForCallable<T> copy = this.copy();
+			copy.start = start;
+			copy.end = end;
+			copy.increment = increment;
+			copy.current = current;
+			return copy;
+		}
 	}
 	
 	// An abstract class for parallel for each calls. I is the type of input, R is the type of result
