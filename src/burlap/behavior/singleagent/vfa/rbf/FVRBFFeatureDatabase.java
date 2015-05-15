@@ -18,7 +18,7 @@ import java.util.Map;
  * to a double array and then provided to {@link burlap.behavior.singleagent.vfa.rbf.FVRBF} objects that operate
  * directly on the feature vector of the state. This can improve performance over the
  * {@link burlap.behavior.singleagent.vfa.rbf.RBFFeatureDatabase} which may require generating a feature vector
- * for states for each RBF unit. Therefore, for RBFs like ones that  use Guassian functions over
+ * for states for each RBF unit. Therefore, for RBFs like ones that  use Gaussian functions over
  * Euclidean distance metrics, this class is recommended. However, the standard {@link burlap.behavior.singleagent.vfa.rbf.RBFFeatureDatabase}
  * may have the advantage of using RBF units that exploit the OO-MDP state representation for distance measures.
  *

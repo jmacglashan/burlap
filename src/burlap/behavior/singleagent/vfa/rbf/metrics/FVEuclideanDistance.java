@@ -3,6 +3,7 @@ package burlap.behavior.singleagent.vfa.rbf.metrics;
 import burlap.behavior.singleagent.vfa.rbf.FVDistanceMetric;
 
 /**
+ * A distance metric; returns sqrt( sum_i (x_i - y_i)^2 )
  * @author James MacGlashan.
  */
 public class FVEuclideanDistance implements FVDistanceMetric{
