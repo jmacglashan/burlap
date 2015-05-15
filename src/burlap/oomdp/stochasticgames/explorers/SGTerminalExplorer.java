@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
@@ -30,6 +31,11 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * <p/>
  * The command ##reset##
  * causes the state to reset to the initial state provided to the explorer.
+ * <br/><br/>
+ * This explorer can also track a reward function and terminal function and print them to the screen, which can be set
+ * with the
+ * {@link #setRewardFunction(burlap.oomdp.stochasticgames.JointReward)} and
+ * {@link #setTerminalFunction(burlap.oomdp.core.TerminalFunction)} methods.
  * @author James MacGlashan
  *
  */
@@ -39,7 +45,8 @@ public class SGTerminalExplorer {
 	protected Map <String, String>		actionShortHand;
 	protected JointActionModel			jam;
 	protected JointAction				curJointAction;
-	protected JointReward				rf;
+	protected JointReward				rewardFunction;
+	protected TerminalFunction			terminalFunction;
 	
 	
 	/**
@@ -54,7 +61,7 @@ public class SGTerminalExplorer {
 		this.domain = domain;
 		this.jam = jam;
 		this.setActionShortHand(new HashMap <String, String>());
-		this.rf = null;
+		this.rewardFunction = null;
 	}
 
 	/**
@@ -65,7 +72,7 @@ public class SGTerminalExplorer {
 		this.domain = domain;
 		this.jam = domain.getJointActionModel();
 		this.setActionShortHand(new HashMap <String, String>());
-		this.rf = null;
+		this.rewardFunction = null;
 	}
 	
 	/**
@@ -81,7 +88,7 @@ public class SGTerminalExplorer {
 		this.domain = domain;
 		this.jam = jam;
 		this.setActionShortHand(ash);
-		this.rf = null;
+		this.rewardFunction = null;
 	}
 
 	/**
@@ -93,7 +100,7 @@ public class SGTerminalExplorer {
 		this.domain = domain;
 		this.jam = domain.getJointActionModel();
 		this.setActionShortHand(ash);
-		this.rf = null;
+		this.rewardFunction = null;
 	}
 	
 	
@@ -101,10 +108,22 @@ public class SGTerminalExplorer {
 	 * Allows the explorer to keep track of the reward received that will be printed to the output.
 	 * @param rf the reward function to use.
 	 */
-	public void setTrackingRF(JointReward rf){
-		this.rf = rf;
+	public void setRewardFunction(JointReward rf){
+		this.rewardFunction = rf;
 	}
-	
+
+	public JointReward getRewardFunction() {
+		return rewardFunction;
+	}
+
+	public TerminalFunction getTerminalFunction() {
+		return terminalFunction;
+	}
+
+	public void setTerminalFunction(TerminalFunction terminalFunction) {
+		this.terminalFunction = terminalFunction;
+	}
+
 	/**
 	 * Sets the action shorthands to use
 	 * @param ash a map from action shorthands to full action names
@@ -140,6 +159,14 @@ public class SGTerminalExplorer {
 		String actionPromptDelimiter = "-----------------------------------";
 		
 		this.printState(s);
+		if(this.terminalFunction != null){
+			if(this.terminalFunction.isTerminal(s)){
+				System.out.println("State IS terminal");
+			}
+			else{
+				System.out.println("State is NOT terminal");
+			}
+		}
 		System.out.println(actionPromptDelimiter);
 		
 		while(true){
@@ -156,24 +183,44 @@ public class SGTerminalExplorer {
 					s = src;
 					curJointAction = new JointAction();
 					this.printState(s);
+
+					if(this.terminalFunction != null){
+						if(this.terminalFunction.isTerminal(s)){
+							System.out.println("State IS terminal");
+						}
+						else{
+							System.out.println("State is NOT terminal");
+						}
+					}
+
 					System.out.println(actionPromptDelimiter);
 				}
 				else if(line.equals("##")){
 					State ns = this.jam.performJointAction(s, curJointAction);
 					
-					if(this.rf != null){
-						Map<String, Double> reward = rf.reward(s, curJointAction, ns);
+
+					this.printState(ns);
+
+					if(this.terminalFunction != null){
+						if(this.terminalFunction.isTerminal(ns)){
+							System.out.println("State IS terminal");
+						}
+						else{
+							System.out.println("State is NOT terminal");
+						}
+					}
+
+					if(this.rewardFunction != null){
+						Map<String, Double> reward = rewardFunction.reward(s, curJointAction, ns);
 						for(String aname : reward.keySet()){
 							System.out.println("" + aname + ": " + reward.get(aname));
 						}
-						System.out.println("++++++++++++++++++++++++++++++++");
 					}
-					
-					s = ns;
-					
-					curJointAction = new JointAction();
-					this.printState(s);
+
 					System.out.println(actionPromptDelimiter);
+
+					curJointAction = new JointAction();
+					s = ns;
 				}
 				else{
 					

@@ -859,7 +859,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 		
 		
-		exp.setTrackingRF(r);
+		exp.setRewardFunction(r);
 		
 		exp.exploreFromState(SingleStageNormalFormGame.getState(domain));
 		
