@@ -37,7 +37,6 @@ public class TerminalExplorer {
 
 
 	protected GroundedAction			lastAction;
-	protected double					lastReward;
 	
 	/**
 	 * Initializes the explorer with the specified domain
