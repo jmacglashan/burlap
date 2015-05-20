@@ -9,8 +9,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -107,10 +107,10 @@ public class GGVisualizer {
 			
 			int colInd = 0;
 			if(ob.getTrueClassName().equals(GridGame.CLASSAGENT)){
-				colInd = ob.getDiscValForAttribute(GridGame.ATTPN);
+				colInd = ob.getIntValForAttribute(GridGame.ATTPN);
 			}
 			else if(ob.getTrueClassName().equals(GridGame.CLASSGOAL)){
-				colInd = ob.getDiscValForAttribute(GridGame.ATTGT);
+				colInd = ob.getIntValForAttribute(GridGame.ATTGT);
 			}
 			
 			g2.setColor(this.cols.get(colInd));
@@ -122,8 +122,8 @@ public class GGVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 			
-			float rx = ob.getDiscValForAttribute(GridGame.ATTX)*width;
-			float ry = cHeight - height - ob.getDiscValForAttribute(GridGame.ATTY)*height;
+			float rx = ob.getIntValForAttribute(GridGame.ATTX)*width;
+			float ry = cHeight - height - ob.getIntValForAttribute(GridGame.ATTY)*height;
 			
 			if(shape == 0){
 				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
@@ -181,9 +181,9 @@ public class GGVisualizer {
 			
 			int p0x, p0y, p1x, p1y;
 			
-			int wp = ob.getDiscValForAttribute(GridGame.ATTP);
-			int e1 = ob.getDiscValForAttribute(GridGame.ATTE1);
-			int e2 = ob.getDiscValForAttribute(GridGame.ATTE2);
+			int wp = ob.getIntValForAttribute(GridGame.ATTP);
+			int e1 = ob.getIntValForAttribute(GridGame.ATTE1);
+			int e2 = ob.getIntValForAttribute(GridGame.ATTE2);
 			
 			if(vertical){
 				p0x = p1x = wp;
@@ -205,7 +205,7 @@ public class GGVisualizer {
 			
 			g2.setColor(Color.black);
 			
-			int wt = ob.getDiscValForAttribute(GridGame.ATTWT);
+			int wt = ob.getIntValForAttribute(GridGame.ATTWT);
 			if(wt == 0){
 				g2.setStroke(new BasicStroke(10));
 			}

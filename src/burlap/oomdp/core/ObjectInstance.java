@@ -1,10 +1,7 @@
-package burlap.oomdp.core.objects;
+package burlap.oomdp.core;
 
 import java.util.*;
 
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.values.Value;
 
 
@@ -175,7 +172,7 @@ public interface ObjectInstance {
 	 * @param attName the name of the attribute whose value should be returned
 	 * @return the int value assignment for the discrete-valued attribute named attName.
 	 */
-	int getDiscValForAttribute(String attName);
+	int getIntValForAttribute(String attName);
 	
 	
 	

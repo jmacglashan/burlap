@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.options;
 import java.util.List;
 
 import burlap.behavior.singleagent.Policy.ActionProb;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 

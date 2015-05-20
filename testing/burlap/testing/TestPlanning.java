@@ -19,9 +19,9 @@ import burlap.behavior.statehashing.DiscreteStateHashFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldStateParser;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.SinglePFTF;
 import burlap.oomdp.singleagent.common.UniformCostRF;
@@ -92,12 +92,12 @@ public class TestPlanning {
 				ObjectInstance location = s.getObjectsOfClass(ln).get(0); 
 				
 				//get agent position
-				int ax = agent.getDiscValForAttribute(GridWorldDomain.ATTX);
-				int ay = agent.getDiscValForAttribute(GridWorldDomain.ATTY);
+				int ax = agent.getIntValForAttribute(GridWorldDomain.ATTX);
+				int ay = agent.getIntValForAttribute(GridWorldDomain.ATTY);
 				
 				//get location position
-				int lx = location.getDiscValForAttribute(GridWorldDomain.ATTX);
-				int ly = location.getDiscValForAttribute(GridWorldDomain.ATTY);
+				int lx = location.getIntValForAttribute(GridWorldDomain.ATTX);
+				int ly = location.getIntValForAttribute(GridWorldDomain.ATTY);
 				
 				//compute Manhattan distance
 				double mdist = Math.abs(ax-lx) + Math.abs(ay-ly);

@@ -2,7 +2,7 @@ package burlap.domain.singleagent.lunarlander;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -31,10 +31,10 @@ public class LunarLanderRF implements RewardFunction{
 	 */
 	public double							defaultReward = -1.0;
 
-	private PropositionalFunction 			onGround;
-	private PropositionalFunction			touchingSurface;
-	private PropositionalFunction			touchingPad;
-	private PropositionalFunction			onPad;
+	protected PropositionalFunction 		onGround;
+	protected PropositionalFunction			touchingSurface;
+	protected PropositionalFunction			touchingPad;
+	protected PropositionalFunction			onPad;
 
 
 	/**
@@ -47,6 +47,7 @@ public class LunarLanderRF implements RewardFunction{
 		this.touchingPad = domain.getPropFunction(LunarLanderDomain.PFTPAD);
 		this.onPad = domain.getPropFunction(LunarLanderDomain.PFONPAD);
 	}
+
 
 
 	/**
@@ -74,5 +75,30 @@ public class LunarLanderRF implements RewardFunction{
 		}
 
 		return defaultReward;
+	}
+
+
+	public double getGoalReward() {
+		return goalReward;
+	}
+
+	public void setGoalReward(double goalReward) {
+		this.goalReward = goalReward;
+	}
+
+	public double getCollisionReward() {
+		return collisionReward;
+	}
+
+	public void setCollisionReward(double collisionReward) {
+		this.collisionReward = collisionReward;
+	}
+
+	public double getDefaultReward() {
+		return defaultReward;
+	}
+
+	public void setDefaultReward(double defaultReward) {
+		this.defaultReward = defaultReward;
 	}
 }

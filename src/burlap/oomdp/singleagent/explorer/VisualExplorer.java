@@ -25,10 +25,11 @@ import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -44,9 +45,14 @@ import burlap.oomdp.visualizer.Visualizer;
  * causes the state to reset to the initial state provided to the explorer or to a state that is sampled from a provided {@link StateGenerator} object. 
  * Other special kinds of actions
  * not described in the domain can be added and executed by pressing corresponding keys for them. The episodes of action taken by a user may also be recorded
- * to a list of recorded episodes and then subsequentlly polled by a client object. To enable episode recording, use the method
+ * to a list of recorded episodes and then subsequently polled by a client object. To enable episode recording, use the method
  * {@link #enableEpisodeRecording(String, String)} or {@link #enableEpisodeRecording(String, String, RewardFunction)}. To check if the user
  * is still recording episodes, use the method {@link #isRecording()}. To retrieve the recorded episodes, use the method {@link #getRecordedEpisodes()}.
+ * <br/><br/>
+ * This class can also be provided a reward function and terminal function through the
+ * {@link #setTrackingRewardFunction(burlap.oomdp.singleagent.RewardFunction)} and
+ * {@link #setTerminalFunction(burlap.oomdp.core.TerminalFunction)} methods. Once set, the console for the visualizer
+ * will report the last reward received and whether the current state is a terminal state.
  * @author James MacGlashan
  *
  */
@@ -77,6 +83,10 @@ public class VisualExplorer extends JFrame{
 	protected EpisodeAnalysis 								currentEpisode = null;
 	protected List<EpisodeAnalysis>							recordedEpisodes = null;
 	protected RewardFunction								trackingRewardFunction = new NullRewardFunction();
+	protected TerminalFunction								terminalFunction;
+
+	protected GroundedAction								lastAction;
+	protected double										lastReward;
 	
 	protected boolean										isRecording = false;
 
@@ -140,7 +150,23 @@ public class VisualExplorer extends JFrame{
 		this.numSteps = 0;
 		
 	}
-	
+
+	public RewardFunction getTrackingRewardFunction() {
+		return trackingRewardFunction;
+	}
+
+	public void setTrackingRewardFunction(RewardFunction trackingRewardFunction) {
+		this.trackingRewardFunction = trackingRewardFunction;
+	}
+
+	public TerminalFunction getTerminalFunction() {
+		return terminalFunction;
+	}
+
+	public void setTerminalFunction(TerminalFunction terminalFunction) {
+		this.terminalFunction = terminalFunction;
+	}
+
 	/**
 	 * Returns a special action that causes the state to reset to the initial state.
 	 * @return a special action that causes the state to reset to the initial state.
@@ -478,6 +504,7 @@ public class VisualExplorer extends JFrame{
 					}
 
 					if(madeChange) {
+						VisualExplorer.this.lastAction = null;
 						VisualExplorer.this.updateState(ns);
 						VisualExplorer.this.numSteps = 0;
 						if (VisualExplorer.this.currentEpisode != null) {
@@ -523,6 +550,17 @@ public class VisualExplorer extends JFrame{
 	protected String getConsoleText(State s){
 		StringBuilder sb = new StringBuilder(256);
 		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+		if(this.terminalFunction != null){
+			if(this.terminalFunction.isTerminal(s)){
+				sb.append("State IS terminal\n");
+			}
+			else{
+				sb.append("State is NOT terminal\n");
+			}
+		}
+		if(this.trackingRewardFunction != null && this.lastAction != null){
+			sb.append("Reward: " + this.lastReward + "\n");
+		}
 		sb.append("\n------------------------------\n\n");
 
 		if(s.getAllUnsetAttributes().size() == 0){
@@ -579,6 +617,7 @@ public class VisualExplorer extends JFrame{
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
 			if(sea != null){
+				this.lastAction = null;
 				this.updateState(sea.applySpecialAction(curState));
 			}
 			if(sea instanceof StateResetSpecialAction){
@@ -620,6 +659,11 @@ public class VisualExplorer extends JFrame{
 			State nextState = ga.executeIn(curState);
 			if(this.currentEpisode != null){
 				this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
+			}
+
+			if(this.trackingRewardFunction != null){
+				this.lastAction = ga;
+				this.lastReward = this.trackingRewardFunction.reward(curState, ga, nextState);
 			}
 
 			numSteps++;

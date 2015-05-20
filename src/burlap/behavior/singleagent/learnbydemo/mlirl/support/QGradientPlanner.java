@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.support;
 
 import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.List;

@@ -7,12 +7,12 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
@@ -238,12 +238,12 @@ public class BlocksWorld implements DomainGenerator {
 			
 			ObjectInstance src = st.getObject(params[0]);
 			
-			if(src.getDiscValForAttribute(ATTCLEAR) == 0){
+			if(src.getIntValForAttribute(ATTCLEAR) == 0){
 				return false;
 			}
 			
 			ObjectInstance target = st.getObject(params[1]);
-			if(target.getDiscValForAttribute(ATTCLEAR) == 0){
+			if(target.getIntValForAttribute(ATTCLEAR) == 0){
 				return false;
 			}
 			
@@ -299,10 +299,10 @@ public class BlocksWorld implements DomainGenerator {
 			
 			ObjectInstance src = st.getObject(params[0]);
 			
-			if(src.getDiscValForAttribute(ATTCLEAR) == 0){
+			if(src.getIntValForAttribute(ATTCLEAR) == 0){
 				return false;
 			}
-			if(src.getDiscValForAttribute(ATTONTABLE) == 1){
+			if(src.getIntValForAttribute(ATTONTABLE) == 1){
 				return false; //cannot unstack a block already on the table
 			}
 			
@@ -374,7 +374,7 @@ public class BlocksWorld implements DomainGenerator {
 		@Override
 		public boolean isTrue(State st, String[] params) {
 			ObjectInstance src = st.getObject(params[0]);
-			if(src.getDiscValForAttribute(ATTONTABLE) == 1){
+			if(src.getIntValForAttribute(ATTONTABLE) == 1){
 				return true;
 			}
 			return false;
@@ -397,7 +397,7 @@ public class BlocksWorld implements DomainGenerator {
 		@Override
 		public boolean isTrue(State st, String[] params) {
 			ObjectInstance src = st.getObject(params[0]);
-			if(src.getDiscValForAttribute(ATTCLEAR) == 1){
+			if(src.getIntValForAttribute(ATTCLEAR) == 1){
 				return true;
 			}
 			return false;

@@ -13,11 +13,11 @@ import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
@@ -380,6 +380,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		for(String aname : this.uniqueActionNames){
 			new NFGSingleAction(domain, aname);
 		}
+
+		domain.setJointActionModel(new StaticRepeatedGameActionModel());
 		
 		return domain;
 	}
@@ -404,9 +406,6 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 */
 	public World createRepeatedGameWorld(SGDomain domain, Agent...agents){
 		
-		//action model for repeating single stage games; just returns to the same state
-		JointActionModel jam = new StaticRepeatedGameActionModel(); 
-		
 		//grab the joint reward function from our bimatrix game in the more general BURLAP joint reward function interface
 		JointReward jr = this.getJointRewardFunction(); 
 		
@@ -424,7 +423,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		
 		
 		//create a world to synchronize the actions of agents in this domain and record results
-		World w = new World(domain, jam, jr, tf, sg);
+		World w = new World(domain, jr, tf, sg);
 		
 		for(Agent a : agents){
 			a.joinWorld(w, at);
@@ -649,7 +648,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			for(GroundedSingleAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
-				int pn = player.getDiscValForAttribute(ATTPN);
+				int pn = player.getIntValForAttribute(ATTPN);
 				profile[pn] = sa.action.actionName;
 			}
 			
@@ -657,7 +656,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			for(GroundedSingleAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
-				int pn = player.getDiscValForAttribute(ATTPN);
+				int pn = player.getIntValForAttribute(ATTPN);
 				rewards.put(name, SingleStageNormalFormGame.this.payouts[pn].getPayout(stprofile));
 			}
 			
@@ -686,7 +685,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		public boolean isApplicableInState(State s, String actingAgent, String[] params) {
 			
 			ObjectInstance a = s.getObject(actingAgent);
-			int pn = a.getDiscValForAttribute(ATTPN);
+			int pn = a.getIntValForAttribute(ATTPN);
 			
 			if(SingleStageNormalFormGame.this.actionNameToIndex[pn].containsKey(this.actionName)){
 				return true;
@@ -853,9 +852,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		SingleStageNormalFormGame game = SingleStageNormalFormGame.getPrisonersDilemma();
 		SGDomain domain = (SGDomain)game.generateDomain();
 		JointReward r = game.getJointRewardFunction();
-		JointActionModel jam = SingleStageNormalFormGame.getRepatedGameActionModel();
 		
-		SGTerminalExplorer exp = new SGTerminalExplorer(domain, jam);
+		SGTerminalExplorer exp = new SGTerminalExplorer(domain);
 		
 		//add short hand as first letter of each action name
 		for(SingleAction sa : domain.getSingleActions()){
@@ -863,7 +861,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 		
 		
-		exp.setTrackingRF(r);
+		exp.setRewardFunction(r);
 		
 		exp.exploreFromState(SingleStageNormalFormGame.getState(domain));
 		

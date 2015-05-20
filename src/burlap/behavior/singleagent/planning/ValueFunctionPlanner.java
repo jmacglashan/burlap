@@ -16,9 +16,9 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -441,7 +441,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			List<ActionTransitions> transitions = this.getActionsTransitions(sh);
 			for(ActionTransitions at : transitions){
 				
-				double policyProb = Policy.getProbOfActionGivenDistribution(sh.s, at.ga, policyDistribution);
+				double policyProb = Policy.getProbOfActionGivenDistribution(at.ga, policyDistribution);
 				if(policyProb == 0.){
 					continue; //doesn't contribute
 				}
@@ -458,7 +458,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			for(GroundedAction ga : gas){
 				
-				double policyProb = Policy.getProbOfActionGivenDistribution(sh.s, ga, policyDistribution);
+				double policyProb = Policy.getProbOfActionGivenDistribution(ga, policyDistribution);
 				if(policyProb == 0.){
 					continue; //doesn't contribute
 				}

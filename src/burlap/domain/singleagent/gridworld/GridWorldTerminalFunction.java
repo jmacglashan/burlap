@@ -3,9 +3,9 @@ package burlap.domain.singleagent.gridworld;
 import java.util.HashSet;
 import java.util.Set;
 
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 
 /**
  * This class is used for setting a terminal function for GridWorlds that is based on the location of the agent in the world.
@@ -89,8 +89,8 @@ public class GridWorldTerminalFunction implements TerminalFunction {
 	@Override
 	public boolean isTerminal(State s) {
 		ObjectInstance agent = s.getFirstObjectOfClass(GridWorldDomain.CLASSAGENT);
-		int x = agent.getDiscValForAttribute(GridWorldDomain.ATTX);
-		int y = agent.getDiscValForAttribute(GridWorldDomain.ATTY);
+		int x = agent.getIntValForAttribute(GridWorldDomain.ATTX);
+		int y = agent.getIntValForAttribute(GridWorldDomain.ATTY);
 		return this.terminalPositions.contains(new IntPair(x, y));
 	}
 	

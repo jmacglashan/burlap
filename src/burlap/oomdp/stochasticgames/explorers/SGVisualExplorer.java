@@ -1,26 +1,21 @@
 package burlap.oomdp.stochasticgames.explorers;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.TextArea;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.*;
+import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
 import burlap.oomdp.singleagent.explorer.StateResetSpecialAction;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SingleAction;
+import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.visualizer.Visualizer;
 
 
@@ -32,6 +27,11 @@ import burlap.oomdp.visualizer.Visualizer;
  * The ` key
  * causes the state to reset to the initial state provided to the explorer. Other special kinds of actions
  * not described in the domain can be added and executed by pressing corresponding keys for them.
+ * <br/><br/>
+ * This explorer can also track a reward function and terminal function and print them to the console, which can be set
+ * with the
+ * {@link #setRewardFunction(burlap.oomdp.stochasticgames.JointReward)} and
+ * {@link #setTerminalFunction(burlap.oomdp.core.TerminalFunction)} methods.
  * @author James MacGlashan
  *
  */
@@ -56,23 +56,47 @@ public class SGVisualExplorer extends JFrame {
 	
 	String											jointActionComplete = "c";
 	JointAction										nextAction;
-	
-	
+
+
+	protected JFrame								consoleFrame;
+	protected TextArea								stateConsole;
+
+	protected TerminalFunction						terminalFunction;
+	protected JointReward 							rewardFunction;
+
+	protected Map<String, Double>					lastRewards;
+
 	/**
-	 * Initializes the data members for the visual explorer.
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
 	 * @param jam the joint action model that defines transition probabilities
 	 */
+	@Deprecated
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam){
 		
 		this.init(domain, painter, baseState, jam, 800, 800);
 	}
+
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 */
+	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState){
+
+		this.init(domain, painter, baseState, domain.getJointActionModel(), 800, 800);
+	}
 	
 	
 	/**
-	 * Initializes the data members for the visual explorer.
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State, int, int)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
@@ -80,8 +104,21 @@ public class SGVisualExplorer extends JFrame {
 	 * @param w the width of the state visualizer
 	 * @param h the height of the state visualizer
 	 */
+	@Deprecated
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
 		this.init(domain, painter, baseState, jam, w, h);
+	}
+
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 * @param w the width of the state visualizer
+	 * @param h the height of the state visualizer
+	 */
+	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, int w, int h){
+		this.init(domain, painter, baseState, domain.getJointActionModel(), w, h);
 	}
 	
 	protected void init(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
@@ -109,7 +146,23 @@ public class SGVisualExplorer extends JFrame {
 		nextAction = new JointAction();
 		
 	}
-	
+
+	public JointReward getRewardFunction() {
+		return rewardFunction;
+	}
+
+	public void setRewardFunction(JointReward rewardFunction) {
+		this.rewardFunction = rewardFunction;
+	}
+
+	public TerminalFunction getTerminalFunction() {
+		return terminalFunction;
+	}
+
+	public void setTerminalFunction(TerminalFunction terminalFunction) {
+		this.terminalFunction = terminalFunction;
+	}
+
 	/**
 	 * Sets the joint action model to use
 	 * @param jac the joint action model to use
@@ -156,8 +209,12 @@ public class SGVisualExplorer extends JFrame {
 		painter.setPreferredSize(new Dimension(cWidth, cHeight));
 		propViewer.setPreferredSize(new Dimension(cWidth, 100));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		getContentPane().add(propViewer, BorderLayout.SOUTH);
+
+		Container bottomContainer = new Container();
+		bottomContainer.setLayout(new BorderLayout());
+		bottomContainer.add(propViewer, BorderLayout.NORTH);
+
+		getContentPane().add(bottomContainer, BorderLayout.SOUTH);
 		getContentPane().add(painter, BorderLayout.CENTER);
 	
 		
@@ -195,16 +252,220 @@ public class SGVisualExplorer extends JFrame {
 
 		});
 		
-		painter.updateState(baseState);
-		
+
+
+
+
+
+		JButton showConsoleButton = new JButton("Show Console");
+		showConsoleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SGVisualExplorer.this.consoleFrame.setVisible(true);
+			}
+		});
+		bottomContainer.add(showConsoleButton, BorderLayout.SOUTH);
+
+
+		this.consoleFrame = new JFrame();
+		this.consoleFrame.setPreferredSize(new Dimension(600, 500));
+
+		JLabel consoleCommands = new JLabel("<html><h2>Console command syntax:</h2>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>add</b> objectClass object<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>remove</b> object<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>set</b> object attribute [attribute_2 ... attribute_n] value [value_2 ... value_n]<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>addRelation</b> sourceObject relationalAttribute targetObject<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>removeRelation</b> sourceObject relationalAttribute targetObject<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>clearRelations</b> sourceObject relationalAttribute<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>setAction</b> agentName:actionName [param_1 ... param_n]<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>commit</b><br/></html>");
+
+		consoleFrame.getContentPane().add(consoleCommands, BorderLayout.NORTH);
+
+		this.stateConsole = new TextArea(this.getConsoleText(this.baseState), 40, 40, TextArea.SCROLLBARS_BOTH);
+		this.consoleFrame.getContentPane().add(this.stateConsole, BorderLayout.CENTER);
+
+		JTextField consoleCommand = new JTextField(40);
+		consoleCommand.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String command = ((JTextField)e.getSource()).getText();
+
+
+				String [] comps = command.split(" ");
+				if(comps.length > 0){
+
+					State ns = SGVisualExplorer.this.curState.copy();
+
+					boolean madeChange = false;
+					if(comps[0].equals("set")){
+						if(comps.length >= 4) {
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								int rsize = comps.length - 2;
+								if(rsize % 2 == 0){
+									int vind = rsize / 2;
+									for(int i = 0; i < rsize / 2; i++){
+										o.setValue(comps[2+i], comps[2+i+vind]);
+									}
+								}
+								madeChange = true;
+							}
+						}
+
+					}
+					else if(comps[0].equals("addRelation")){
+						if(comps.length == 4){
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								o.addRelationalTarget(comps[2], comps[3]);
+								madeChange = true;
+							}
+						}
+					}
+					else if(comps[0].equals("removeRelation")){
+						if(comps.length == 4){
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								o.removeRelationalTarget(comps[2], comps[3]);
+								madeChange = true;
+							}
+						}
+					}
+					else if(comps[0].equals("clearRelations")){
+						if(comps.length == 3){
+							ObjectInstance o = ns.getObject(comps[1]);
+							if(o != null){
+								o.clearRelationalTargets(comps[2]);
+								madeChange = true;
+							}
+						}
+					}
+					else if(comps[0].equals("add")){
+						if(comps.length == 3){
+							ObjectInstance o = new MutableObjectInstance(SGVisualExplorer.this.domain.getObjectClass(comps[1]), comps[2]);
+							ns.addObject(o);
+							madeChange = true;
+						}
+					}
+					else if(comps[0].equals("remove")){
+						if(comps.length == 2){
+							ns.removeObject(comps[1]);
+							madeChange = true;
+						}
+					}
+					else if(comps[0].equals("setAction")){
+						String [] agentAction = comps[1].split(":");
+						SingleAction sa = domain.getSingleAction(agentAction[1]);
+						String [] params = new String[comps.length-2];
+						for(int i = 2; i < comps.length; i++){
+							params[i-2] = comps[i];
+						}
+						GroundedSingleAction gsa = new GroundedSingleAction(agentAction[0], sa, params);
+						SGVisualExplorer.this.nextAction.addAction(gsa);
+						SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
+
+					}
+					else if(comps[0].equals("commit")){
+						SGVisualExplorer.this.executeAction();
+					}
+
+					/*
+					else if(comps[0].equals("execute")){
+						String [] actionComps = new String[comps.length-1];
+						for(int i = 1; i < comps.length; i++){
+							actionComps[i-1] = comps[i];
+						}
+						SGVisualExplorer.this.executeAction(actionComps);
+					}
+					*/
+
+					if(madeChange) {
+						SGVisualExplorer.this.lastRewards = null;
+						SGVisualExplorer.this.updateState(ns);
+						SGVisualExplorer.this.numSteps = 0;
+					}
+				}
+
+
+			}
+		});
+
+		this.consoleFrame.getContentPane().add(consoleCommand, BorderLayout.SOUTH);
+
+
+		this.updateState(this.baseState);
+
+
 		pack();
 		setVisible(true);
-		
-		
+
+		this.consoleFrame.pack();
+		this.consoleFrame.setVisible(false);
 		
 		
 	}
-	
+
+
+	/**
+	 * Updates the currently visualized state to the input state.
+	 * @param s the state to visualize.
+	 */
+	public void updateState(State s){
+		this.curState = s;
+		this.stateConsole.setText(this.getConsoleText(s));
+		this.painter.updateState(s);
+		this.updatePropTextArea(s);
+
+	}
+
+	/**
+	 * Returns the text that will be printed to the console for the given input state.
+	 * @param s the state for which the current console text will be generated.
+	 * @return the text that will be printed to the console for the given input state.
+	 */
+	protected String getConsoleText(State s){
+		StringBuilder sb = new StringBuilder(256);
+		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+		sb.append("\n------------------------------\n\n");
+
+		if(this.terminalFunction != null){
+			if(this.terminalFunction.isTerminal(s)){
+				sb.append("State IS terminal\n");
+			}
+			else{
+				sb.append("State is NOT terminal\n");
+			}
+		}
+
+		if(this.lastRewards != null){
+			for(String aname : lastRewards.keySet()){
+				sb.append("" + aname + ": " + lastRewards.get(aname) + "\n");
+			}
+		}
+
+		sb.append(this.nextAction.toString() + "\n");
+
+
+		//sb.append("\n------------------------------\n\n");
+
+		if(s.getAllUnsetAttributes().size() == 0){
+
+			/*
+			sb.append("Applicable Actions:\n");
+			List<GroundedAction> gas = burlap.oomdp.singleagent.Action.getAllApplicableGroundedActionsFromActionList(this.domain.getActions(), s);
+			for(GroundedAction ga : gas){
+				sb.append(ga.toString()).append("\n");
+			}
+			*/
+		}
+		else{
+			sb.append("State has unset values; set them them to see applicable action list.");
+		}
+
+
+		return sb.toString();
+	}
 	
 	private void handleKeyPressed(KeyEvent e){
 		
@@ -217,32 +478,33 @@ public class SGVisualExplorer extends JFrame {
 			
 			nextAction.addAction(this.parseIntoSingleActions(mappedAction));
 			System.out.println(nextAction.toString());
+			this.stateConsole.setText(this.getConsoleText(this.curState));
+
 			
 		}
 		else{
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
 			if(sea != null){
+				this.lastRewards = null;
 				curState = sea.applySpecialAction(curState);
 				if(sea instanceof StateResetSpecialAction){
 					System.out.println("Number of steps before reset: " + numSteps);
 					numSteps = 0;
 				}
+				this.updateState(curState);
 			}
 			else if(key.equals(jointActionComplete)){
-				curState = actionModel.performJointAction(curState, nextAction);
-				numSteps++;
-				nextAction = new JointAction();
+				this.executeAction();
 			}
 			
 		}
 				
 			
 
-		
+
 		//now paint the screen with the new state
-		painter.updateState(curState);
-		this.updatePropTextArea(curState);
+
 		//System.out.println(curState_.getStateDescription());
 		//System.out.println("-------------------------------------------");
 		
@@ -250,9 +512,27 @@ public class SGVisualExplorer extends JFrame {
 	}
 	
 	
-	
-	//assumed format: "agentName:actionName param1 parm2 ... paramn"
-	private GroundedSingleAction parseIntoSingleActions(String str){
+
+
+	protected void executeAction(){
+		State nextState = actionModel.performJointAction(curState, nextAction);
+		if(this.rewardFunction != null){
+			this.lastRewards = this.rewardFunction.reward(curState, nextAction, nextState);
+		}
+		numSteps++;
+		nextAction = new JointAction();
+		curState = nextState;
+		this.updateState(curState);
+	}
+
+
+	/**
+	 * Parses a string into a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}. Expects format:
+	 * "agentName:actionName param1 parm2 ... paramn"
+	 * @param str string rep of a grounding action in the form  "agentName:actionName param1 parm2 ... paramn"
+	 * @return a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}
+	 */
+	protected GroundedSingleAction parseIntoSingleActions(String str){
 		
 		String [] agentActionComps = str.split(":");
 		String aname = agentActionComps[0];
@@ -270,8 +550,11 @@ public class SGVisualExplorer extends JFrame {
 		
 		return gsa;
 	}
+
+
+
 	
-	private void updatePropTextArea(State s){
+	protected void updatePropTextArea(State s){
 		
 		StringBuffer buf = new StringBuffer();
 		

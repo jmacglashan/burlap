@@ -17,7 +17,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyph
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
 
 

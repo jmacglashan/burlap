@@ -9,9 +9,9 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.Policy.ActionProb;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StatePolicyPainter;
 import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 
 
 /**

@@ -8,7 +8,7 @@ import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 

@@ -1,6 +1,6 @@
 package burlap.oomdp.auxiliary;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
  * This interface is used to converting states to parsable string representations and parsing those string representations back into states.

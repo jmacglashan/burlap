@@ -4,7 +4,7 @@ import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 
 /**

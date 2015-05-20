@@ -2,7 +2,7 @@ package burlap.behavior.stochasticgame.mavaluefunction;
 
 import java.util.Map;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.AgentType;
 
 

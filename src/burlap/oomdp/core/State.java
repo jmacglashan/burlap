@@ -1,10 +1,7 @@
-package burlap.oomdp.core.states;
+package burlap.oomdp.core;
 
 import java.util.*;
 
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -22,6 +19,32 @@ public interface State {
 	 * @return a copy of this state.
 	 */
 	State copy();
+	
+	/**
+	 * Performs a semi-deep copy of the state in which only the objects with the names in deepCopyObjectNames are deep copied and the rest of the
+	 * objects are shallowed copied.
+	 * @param deepCopyObjectNames the names of the objects to be deep copied.
+	 * @return a new state that is a mix of a shallow and deep copy of this state.
+	 */
+	State semiDeepCopy(String...deepCopyObjectNames);
+	
+	
+	/**
+	 * Performs a semi-deep copy of the state in which only the objects in deepCopyObjects are deep copied and the rest of the
+	 * objects are shallowed copied.
+	 * @param deepCopyObjects the objects to be deep copied
+	 * @return a new state that is a mix of a shallow and deep copy of this state.
+	 */
+	State semiDeepCopy(ObjectInstance...deepCopyObjects);
+	
+	
+	/**
+	 * Performs a semi-deep copy of the state in which only the objects in deepCopyObjects are deep copied and the rest of the
+	 * objects are shallowed copied.
+	 * @param deepCopyObjects the objects to be deep copied
+	 * @return a new state that is a mix of a shallow and deep copy of this state.
+	 */
+	State semiDeepCopy(Set<ObjectInstance> deepCopyObjects);
 	
 	/**
 	 * Adds object instance o to this state.

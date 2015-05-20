@@ -6,10 +6,10 @@ import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.State;
 
 
 /**

@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
 
 
 /**
- * Abstract class for defining what happens when an action is executed in a state. The method {@link #getTransitions(burlap.oomdp.core.states.State, String[])}
+ * Abstract class for defining what happens when an action is executed in a state. The method {@link #getTransitions(burlap.oomdp.core.State, String[])}
  * is what defines the transition dynamics of the MDP for this action. If this method is not overridden by subclasses, then an
  * UnsupportedOperation exception is thrown . If the domain being created is only
  * going to be used planning/learning algorithms that require a generative model, rather than the fully enumerated transition
- * dynamics, then the {@link #getTransitions(burlap.oomdp.core.states.State, String[])} does not need to be implemented, but for full robustness it should be.
- * If your domain is deterministic, you can trivially implement it by having it return a call to the {@link #deterministicTransition(burlap.oomdp.core.states.State, String[])}
- * method, which will wrap the result of a {@link #performAction(burlap.oomdp.core.states.State, String[])}} method with a 1.0 outcome probability
+ * dynamics, then the {@link #getTransitions(burlap.oomdp.core.State, String[])} does not need to be implemented, but for full robustness it should be.
+ * If your domain is deterministic, you can trivially implement it by having it return a call to the {@link #deterministicTransition(burlap.oomdp.core.State, String[])}
+ * method, which will wrap the result of a {@link #performAction(burlap.oomdp.core.State, String[])}} method with a 1.0 outcome probability
  * {@link burlap.oomdp.core.TransitionProbability} object and insert it in a list containing just that element.
  * <p/>
  * Action objects may also be defined to require object parameters (which must adhere to a type). Parameters can also have parameter order groups specified if
@@ -308,11 +308,11 @@ public abstract class Action {
 
 	/**
 	 * Returns the transition dynamics by assuming the action to be deterministic and wrapping the result of a
-	 * {@link #performAction(burlap.oomdp.core.states.State, String[])} method with a 1.0 probable {@link TransitionProbability}
+	 * {@link #performAction(burlap.oomdp.core.State, String[])} method with a 1.0 probable {@link TransitionProbability}
 	 * object and inserting it in the returned list.
 	 * @param s the state from which the transition probabilities when applying this action will be returned.
 	 * @param params a String array specifying the action object parameters
-	 * @return a List of one element of type {@link burlap.oomdp.core.TransitionProbability} whose state is the outcome of the {@link #performAction(burlap.oomdp.core.states.State, String[])} method.
+	 * @return a List of one element of type {@link burlap.oomdp.core.TransitionProbability} whose state is the outcome of the {@link #performAction(burlap.oomdp.core.State, String[])} method.
 	 */
 	protected List<TransitionProbability> deterministicTransition(State s, String [] params){
 		List <TransitionProbability> transition = new ArrayList<TransitionProbability>();

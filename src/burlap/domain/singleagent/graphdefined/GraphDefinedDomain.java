@@ -13,11 +13,11 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 
@@ -152,7 +152,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @return the state node number where the agent of the provided state is
 	 */
 	public static int getNodeId(State s){
-		return s.getFirstObjectOfClass(CLASSAGENT).getDiscValForAttribute(ATTNODE);
+		return s.getFirstObjectOfClass(CLASSAGENT).getIntValForAttribute(ATTNODE);
 	}
 	
 	
@@ -245,7 +245,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		public boolean applicableInState(State st, String [] params){
 			
 			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
-			int n = o.getDiscValForAttribute(ATTNODE);
+			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbibility>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbibility> transitions = actionMap.get(aId);
@@ -261,7 +261,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		protected State performActionHelper(State st, String[] params) {
 			
 			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
-			int n = o.getDiscValForAttribute(ATTNODE);
+			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbibility>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbibility> transitions = actionMap.get(aId);
@@ -289,7 +289,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 			List <TransitionProbability> result = new ArrayList<TransitionProbability>();
 			
 			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
-			int n = o.getDiscValForAttribute(ATTNODE);
+			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbibility>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbibility> transitions = actionMap.get(aId);

@@ -1,5 +1,7 @@
 package burlap.oomdp.core.objects;
 
+import burlap.oomdp.core.ObjectInstance;
+
 public abstract class OOMDPObjectInstance implements ObjectInstance{
 
 	public OOMDPObjectInstance() {

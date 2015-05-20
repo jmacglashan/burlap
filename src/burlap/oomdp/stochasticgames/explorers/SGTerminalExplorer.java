@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
@@ -20,7 +21,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * This class allows you act as all of the agents in a domain by choosing actions for each of them to take in specific states. States are
  * conveyed to the user through a text description in the terminal and the user specifies actions
  * by typing the actions into the terminal, one line at a time for each agent's action. 
- * The command format is "agentName::action parameter1 pameter2" and so on for as many parameters
+ * The command format is "agentName::action parameter1 parameter2" and so on for as many parameters
  * as there may be (or none if an action takes no parameters). 
  * <p/>
  * When all of the agent's actions have
@@ -30,6 +31,11 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * <p/>
  * The command ##reset##
  * causes the state to reset to the initial state provided to the explorer.
+ * <br/><br/>
+ * This explorer can also track a reward function and terminal function and print them to the screen, which can be set
+ * with the
+ * {@link #setRewardFunction(burlap.oomdp.stochasticgames.JointReward)} and
+ * {@link #setTerminalFunction(burlap.oomdp.core.TerminalFunction)} methods.
  * @author James MacGlashan
  *
  */
@@ -39,32 +45,62 @@ public class SGTerminalExplorer {
 	protected Map <String, String>		actionShortHand;
 	protected JointActionModel			jam;
 	protected JointAction				curJointAction;
-	protected JointReward				rf;
+	protected JointReward				rewardFunction;
+	protected TerminalFunction			terminalFunction;
 	
 	
 	/**
-	 * Initializes the explorer with a domain and action model
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGTerminalExplorer(burlap.oomdp.stochasticgames.SGDomain)}.
 	 * @param domain the domain which will be explored
 	 * @param jam the action model definition transition dynamics
 	 */
+	@Deprecated
 	public SGTerminalExplorer(SGDomain domain, JointActionModel jam){
 		this.domain = domain;
 		this.jam = jam;
 		this.setActionShortHand(new HashMap <String, String>());
-		this.rf = null;
+		this.rewardFunction = null;
+	}
+
+	/**
+	 * Initializes the explorer with a domain and action model
+	 * @param domain the domain which will be explored
+	 */
+	public SGTerminalExplorer(SGDomain domain){
+		this.domain = domain;
+		this.jam = domain.getJointActionModel();
+		this.setActionShortHand(new HashMap <String, String>());
+		this.rewardFunction = null;
 	}
 	
 	/**
-	 * Initializes the explorer with a domain and action model and shorthand names for actions
+	 *This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGTerminalExplorer(burlap.oomdp.stochasticgames.SGDomain, java.util.Map)}.
 	 * @param domain the domain which will be explored
 	 * @param jam the action model definition transition dynamics
 	 * @param ash a map from shorthand names to full action names that can be typed instead of the full action names
 	 */
+	@Deprecated
 	public SGTerminalExplorer(SGDomain domain, JointActionModel jam, Map <String, String> ash){
 		this.domain = domain;
 		this.jam = jam;
 		this.setActionShortHand(ash);
-		this.rf = null;
+		this.rewardFunction = null;
+	}
+
+	/**
+	 * Initializes the explorer with a domain and action model and shorthand names for actions
+	 * @param domain the domain which will be explored
+	 * @param ash a map from shorthand names to full action names that can be typed instead of the full action names
+	 */
+	public SGTerminalExplorer(SGDomain domain, Map <String, String> ash){
+		this.domain = domain;
+		this.jam = domain.getJointActionModel();
+		this.setActionShortHand(ash);
+		this.rewardFunction = null;
 	}
 	
 	
@@ -72,10 +108,22 @@ public class SGTerminalExplorer {
 	 * Allows the explorer to keep track of the reward received that will be printed to the output.
 	 * @param rf the reward function to use.
 	 */
-	public void setTrackingRF(JointReward rf){
-		this.rf = rf;
+	public void setRewardFunction(JointReward rf){
+		this.rewardFunction = rf;
 	}
-	
+
+	public JointReward getRewardFunction() {
+		return rewardFunction;
+	}
+
+	public TerminalFunction getTerminalFunction() {
+		return terminalFunction;
+	}
+
+	public void setTerminalFunction(TerminalFunction terminalFunction) {
+		this.terminalFunction = terminalFunction;
+	}
+
 	/**
 	 * Sets the action shorthands to use
 	 * @param ash a map from action shorthands to full action names
@@ -111,6 +159,14 @@ public class SGTerminalExplorer {
 		String actionPromptDelimiter = "-----------------------------------";
 		
 		this.printState(s);
+		if(this.terminalFunction != null){
+			if(this.terminalFunction.isTerminal(s)){
+				System.out.println("State IS terminal");
+			}
+			else{
+				System.out.println("State is NOT terminal");
+			}
+		}
 		System.out.println(actionPromptDelimiter);
 		
 		while(true){
@@ -127,24 +183,44 @@ public class SGTerminalExplorer {
 					s = src;
 					curJointAction = new JointAction();
 					this.printState(s);
+
+					if(this.terminalFunction != null){
+						if(this.terminalFunction.isTerminal(s)){
+							System.out.println("State IS terminal");
+						}
+						else{
+							System.out.println("State is NOT terminal");
+						}
+					}
+
 					System.out.println(actionPromptDelimiter);
 				}
 				else if(line.equals("##")){
 					State ns = this.jam.performJointAction(s, curJointAction);
 					
-					if(this.rf != null){
-						Map<String, Double> reward = rf.reward(s, curJointAction, ns);
+
+					this.printState(ns);
+
+					if(this.terminalFunction != null){
+						if(this.terminalFunction.isTerminal(ns)){
+							System.out.println("State IS terminal");
+						}
+						else{
+							System.out.println("State is NOT terminal");
+						}
+					}
+
+					if(this.rewardFunction != null){
+						Map<String, Double> reward = rewardFunction.reward(s, curJointAction, ns);
 						for(String aname : reward.keySet()){
 							System.out.println("" + aname + ": " + reward.get(aname));
 						}
-						System.out.println("++++++++++++++++++++++++++++++++");
 					}
-					
-					s = ns;
-					
-					curJointAction = new JointAction();
-					this.printState(s);
+
 					System.out.println(actionPromptDelimiter);
+
+					curJointAction = new JointAction();
+					s = ns;
 				}
 				else{
 					

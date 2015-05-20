@@ -10,12 +10,12 @@ import org.yaml.snakeyaml.Yaml;
 
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.State;
 
 
 /**
@@ -56,14 +56,14 @@ public class StateYAMLParser implements StateParser {
 			objectData.put("class", o.getObjectClass().name);
 			for(Attribute a : o.getObjectClass().attributeList){
 				if(a.type == AttributeType.BOOLEAN){
-					Boolean bval = new Boolean(o.getDiscValForAttribute(a.name) == 1);
+					Boolean bval = new Boolean(o.getIntValForAttribute(a.name) == 1);
 					objectData.put(a.name, bval);
 				}
 				else if(a.type == AttributeType.DISC){
 					objectData.put(a.name, o.getStringValForAttribute(a.name));
 				}
 				else if(a.type == AttributeType.INT){
-					objectData.put(a.name, o.getDiscValForAttribute(a.name));
+					objectData.put(a.name, o.getIntValForAttribute(a.name));
 				}
 				else if(a.type == AttributeType.REAL || a.type == AttributeType.REALUNBOUND){
 					objectData.put(a.name, o.getRealValForAttribute(a.name));

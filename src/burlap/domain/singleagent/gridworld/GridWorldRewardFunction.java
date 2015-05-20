@@ -2,8 +2,8 @@ package burlap.domain.singleagent.gridworld;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -123,8 +123,8 @@ public class GridWorldRewardFunction implements RewardFunction {
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
 		ObjectInstance agent = sprime.getFirstObjectOfClass(GridWorldDomain.CLASSAGENT);
-		int x = agent.getDiscValForAttribute(GridWorldDomain.ATTX);
-		int y = agent.getDiscValForAttribute(GridWorldDomain.ATTY);
+		int x = agent.getIntValForAttribute(GridWorldDomain.ATTX);
+		int y = agent.getIntValForAttribute(GridWorldDomain.ATTY);
 		
 		if(x >= this.width || x < 0 || y >= this.height || y < 0){
 			throw new RuntimeException("GridWorld reward matrix is only defined for a " + this.width + "x" + 

@@ -7,7 +7,7 @@ import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 public class PFFeatureVectorGenerator implements StateToFeatureVectorGenerator {
 

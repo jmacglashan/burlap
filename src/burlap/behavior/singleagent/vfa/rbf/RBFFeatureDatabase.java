@@ -10,12 +10,17 @@ import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
  * A feature database of RBF units that can be used for linear value function approximation.
+ * This formalization for RBFs is general to any kind of state distance measure and can therefore
+ * potentially exploit the OO-MDP structure of states. However, if you plan on using Gaussian
+ * RBF units with standard Euclidean distance measures, it is recommended that you use the
+ * {@link burlap.behavior.singleagent.vfa.rbf.FVRBFFeatureDatabase} instead, as it will be
+ * more computationally efficient.
  * @author Anubhav Malhotra and Daniel Fernandez and Spandan Dutta; modified by James MacGlashan
  *
  */

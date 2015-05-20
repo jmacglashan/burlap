@@ -9,8 +9,8 @@ import java.util.List;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.RenderLayer;
 
 

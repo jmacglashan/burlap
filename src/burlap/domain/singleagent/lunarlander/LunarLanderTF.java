@@ -2,8 +2,8 @@ package burlap.domain.singleagent.lunarlander;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
 
 /**
  * A {@link burlap.oomdp.core.TerminalFunction} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}.

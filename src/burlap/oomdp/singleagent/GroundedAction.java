@@ -1,7 +1,7 @@
 package burlap.oomdp.singleagent;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
  * A grounded action contains a reference to an action and the names of object instances that

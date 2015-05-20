@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.values.Value;
 import burlap.oomdp.core.ObjectClass;
 
@@ -165,11 +163,11 @@ public class DiscretizingStateHashFactory implements StateHashFactory {
 			for(Attribute att : attributes){
 				
 				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
-					index += o.getDiscValForAttribute(att.name)*vol;
+					index += o.getIntValForAttribute(att.name)*vol;
 					vol *= att.discValues.size();
 				}
 				else if(att.type==AttributeType.INT){
-					index += o.getDiscValForAttribute(att.name)*vol;
+					index += o.getIntValForAttribute(att.name)*vol;
 					vol *= 31;
 				}
 				else if(att.type==AttributeType.STRING){

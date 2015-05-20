@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.ObjectClass;
 
 
@@ -160,7 +160,7 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 					index += this.intArrayCode(o.getIntArrayValForAttribute(att.name))*vol;
 				}
 				else{
-					index += o.getDiscValForAttribute(att.name)*vol;
+					index += o.getIntValForAttribute(att.name)*vol;
 				}
 				if(att.type==AttributeType.DISC || att.type == AttributeType.BOOLEAN){
 					vol *= att.discValues.size();

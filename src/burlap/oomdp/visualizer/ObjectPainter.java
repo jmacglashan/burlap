@@ -2,8 +2,8 @@ package burlap.oomdp.visualizer;
 
 import java.awt.Graphics2D;
 
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 
 
 /**

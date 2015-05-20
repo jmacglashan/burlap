@@ -14,7 +14,7 @@ import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.cmac.CMACFeatureDatabase.TilingArrangement;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 

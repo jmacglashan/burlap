@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learning.actorcritic;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 

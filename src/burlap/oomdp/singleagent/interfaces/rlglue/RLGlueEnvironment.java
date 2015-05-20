@@ -16,9 +16,9 @@ import org.rlcommunity.rlglue.codec.util.EnvironmentLoader;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -301,7 +301,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 				ObjectInstance oi = obs.get(i);
 				for(Attribute att : atts){
 					if(att.type == AttributeType.DISC || att.type == AttributeType.INT || att.type == AttributeType.BOOLEAN){
-						o.setInt(discCounter, oi.getDiscValForAttribute(att.name));
+						o.setInt(discCounter, oi.getIntValForAttribute(att.name));
 						discCounter++;
 					}
 					else if(att.type == AttributeType.REAL || att.type == AttributeType.REALUNBOUND){

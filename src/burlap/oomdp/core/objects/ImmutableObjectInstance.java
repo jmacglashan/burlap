@@ -9,6 +9,7 @@ import java.util.Set;
 
 import burlap.behavior.statehashing.ObjectHashTuple;
 import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.values.Value;
@@ -335,7 +336,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param attName the name of the attribute whose value should be returned
 	 * @return the int value assignment for the discrete-valued attribute named attName.
 	 */
-	public int getDiscValForAttribute(String attName){
+	public int getIntValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getDiscVal();
 	}

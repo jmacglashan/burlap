@@ -11,8 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -165,11 +166,28 @@ public final class ImmutableState extends OOMDPState implements State {
 	}
 	
 	/**
-	 * Returns a shallow copy of this state.
-	 * @return a shallow copy of this state.
+	 * This method doesn't actually copy. This implementation only copies on write.
+	 * @return the same state.
 	 */
 	public ImmutableState copy(){
 		return this;
+	}
+	
+	@Override
+	public State semiDeepCopy(String... deepCopyObjectNames) {
+		return this.copy();
+	}
+
+
+	@Override
+	public State semiDeepCopy(ObjectInstance... deepCopyObjects) {
+		return this.copy();
+	}
+
+
+	@Override
+	public State semiDeepCopy(Set<ObjectInstance> deepCopyObjects) {
+		return this.copy();
 	}
 	
 	private final List<ImmutableObjectInstance> createImmutableObjects(List<ObjectInstance> objects) {
@@ -1148,9 +1166,4 @@ public final class ImmutableState extends OOMDPState implements State {
 
 		return desc;
 	}
-	
-	
-	
-	
-	
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 
 /**

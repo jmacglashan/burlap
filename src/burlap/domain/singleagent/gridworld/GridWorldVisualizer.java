@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.StaticPainter;
@@ -233,8 +233,8 @@ public class GridWorldVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 			
-			float rx = ob.getDiscValForAttribute(GridWorldDomain.ATTX)*width;
-			float ry = cHeight - height - ob.getDiscValForAttribute(GridWorldDomain.ATTY)*height;
+			float rx = ob.getIntValForAttribute(GridWorldDomain.ATTX)*width;
+			float ry = cHeight - height - ob.getIntValForAttribute(GridWorldDomain.ATTY)*height;
 			
 			if(this.shape == 0){
 				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
@@ -284,7 +284,7 @@ public class GridWorldVisualizer {
 		@Override
 		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
 			
-			int type = ob.getDiscValForAttribute(GridWorldDomain.ATTLOCTYPE);
+			int type = ob.getIntValForAttribute(GridWorldDomain.ATTLOCTYPE);
 			int multiplier = type / this.baseColors.size();
 			int colIndex = type % this.baseColors.size();
 			
@@ -303,8 +303,8 @@ public class GridWorldVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 			
-			float rx = ob.getDiscValForAttribute(GridWorldDomain.ATTX)*width;
-			float ry = cHeight - height - ob.getDiscValForAttribute(GridWorldDomain.ATTY)*height;
+			float rx = ob.getIntValForAttribute(GridWorldDomain.ATTX)*width;
+			float ry = cHeight - height - ob.getIntValForAttribute(GridWorldDomain.ATTY)*height;
 			
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 			

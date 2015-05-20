@@ -7,7 +7,7 @@ import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.statehashing.NameDependentStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.SADomain;
 
 

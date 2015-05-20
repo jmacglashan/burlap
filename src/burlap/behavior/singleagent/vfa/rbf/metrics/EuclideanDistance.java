@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.vfa.rbf.metrics;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.rbf.DistanceMetric;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 public class EuclideanDistance implements DistanceMetric {
 
@@ -21,7 +21,7 @@ public class EuclideanDistance implements DistanceMetric {
 		double [] f1 = this.vectorGenerator.generateFeatureVectorFrom(s1);
 		
 		if(f0.length != f1.length){
-			throw new RuntimeException("Cannot compute Eucliden distance; feature vectors for the two input states are not equal in size.");
+			throw new RuntimeException("Cannot compute Euclidean distance; feature vectors for the two input states are not equal in size.");
 		}
 		
 		double sum = 0.;

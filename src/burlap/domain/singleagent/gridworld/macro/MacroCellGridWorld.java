@@ -9,11 +9,11 @@ import java.util.Random;
 import burlap.debugtools.RandomFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -271,8 +271,8 @@ public class MacroCellGridWorld extends GridWorldDomain {
 				return false;
 			}
 			ObjectInstance agent = agents.get(0);
-			int agentX = agent.getDiscValForAttribute(MacroCellGridWorld.ATTX);
-			int agentY = agent.getDiscValForAttribute(MacroCellGridWorld.ATTY);
+			int agentX = agent.getIntValForAttribute(MacroCellGridWorld.ATTX);
+			int agentY = agent.getIntValForAttribute(MacroCellGridWorld.ATTY);
 			return this.isTrue(agentX, agentY);
 		}
 

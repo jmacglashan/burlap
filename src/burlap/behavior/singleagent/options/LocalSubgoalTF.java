@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.options;
 
 import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
 
 
 /**

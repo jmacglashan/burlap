@@ -3,8 +3,9 @@ package burlap.oomdp.core.states;
 import java.util.*;
 
 import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 

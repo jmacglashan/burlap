@@ -10,9 +10,9 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -32,11 +32,11 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * Returns the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @return the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * @return the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
 	public static List <State> getReachableStates(State from, SADomain inDomain, StateHashFactory usingHashFactory){
 		return getReachableStates(from, inDomain, usingHashFactory, new NullTermination());
@@ -44,12 +44,12 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * Returns the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * @return the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
 	public static List <State> getReachableStates(State from, SADomain inDomain, StateHashFactory usingHashFactory, TerminalFunction tf){
 		Set <StateHashTuple> hashedStates = getReachableHashedStates(from, inDomain, usingHashFactory, tf);
@@ -63,11 +63,11 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * Returns the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @return the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
 	public static Set <StateHashTuple> getReachableHashedStates(State from, SADomain inDomain, StateHashFactory usingHashFactory){
 		return getReachableHashedStates(from, inDomain, usingHashFactory, new NullTermination());
@@ -76,12 +76,12 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * Returns the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state. 
+	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
 	public static Set <StateHashTuple> getReachableHashedStates(State from, SADomain inDomain, StateHashFactory usingHashFactory, TerminalFunction tf){
 		

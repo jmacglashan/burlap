@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.planning.QComputablePlanner;
 import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTStateNode.UCTStateConstructor;
@@ -17,14 +19,27 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
  * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.behavior.singleagent.planning.StateConditionTest})
  * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
+ * <br/><br/>
+ * The class also implements the {@link burlap.behavior.singleagent.planning.QComputablePlanner} interface. However, it will only return the Q-value
+ * for a state if that state is the root node of the tree. If it is not the root node of the tree, then it will automatically reset the planning results
+ * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy}
+ * with this planner in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
+ * Replanning fresh after each step in the world is the standard UCT approach. If you instead want a policy that walks
+ * through the tree it generated from some source state,
+ * (so that each step computes a Q-value for a shorter horizon than the step before), you can use the
+ * {@link burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTTreeWalkPolicy}. The TreeWalkPolicy
+ * will be more computationally efficient than replanning at each step, but may have degrading performance after each step since
+ * each step has a shorter horizon from which to plan and may not have as many samples from which it estimated its Q-value.
  * <br/>
  * <br/>
  * 1. Kocsis, Levente, and Csaba Szepesvari. "Bandit based monte-carlo planning." ECML (2006). 282-293.
@@ -32,7 +47,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class UCT extends OOMDPPlanner {
+public class UCT extends OOMDPPlanner implements QComputablePlanner{
 
 	protected List<Map<StateHashTuple, UCTStateNode>> 			stateDepthIndex;
 	protected Map <StateHashTuple, List <UCTStateNode>>			statesToStateNodes;
@@ -156,7 +171,56 @@ public class UCT extends OOMDPPlanner {
 		DPrint.cl(debugCode, "\nRollouts: " + numRollOutsFromRoot + "; Best Action Expected Return: " + this.bestReturnAction(root).averageReturn());
 
 	}
-	
+
+	@Override
+	public List<QValue> getQs(State s) {
+
+		//if we haven't done any planning, then do so now
+		if(this.root == null){
+			this.planFromState(s);
+		}
+
+		//if the root node isn't the query state, then replan
+		StateHashTuple sh = this.hashingFactory.hashState(s);
+		if(!sh.equals(this.root.state)){
+			this.resetPlannerResults();
+			this.planFromState(s);
+		}
+
+		//compute the Q-values
+		List <QValue> qs = new ArrayList<QValue>(this.root.actionNodes.size());
+		for(UCTActionNode act : this.root.actionNodes){
+			qs.add(new QValue(s, act.action, act.averageReturn()));
+		}
+
+		return qs;
+	}
+
+	@Override
+	public QValue getQ(State s, AbstractGroundedAction a) {
+
+		//if we haven't done any planning, then do so now
+		if(this.root == null){
+			this.planFromState(s);
+		}
+
+		//if the root node isn't the query state, then replan
+		StateHashTuple sh = this.hashingFactory.hashState(s);
+		if(!sh.equals(this.root.state)){
+			this.resetPlannerResults();
+			this.planFromState(s);
+		}
+
+		GroundedAction ga = (GroundedAction)a;
+		for(UCTActionNode act : this.root.actionNodes){
+			if(act.action.equals(ga)){
+				return new QValue(s, ga, act.averageReturn());
+			}
+		}
+
+		throw new RuntimeException("UCT does not know about action: " + a.toString() + "; cannot return Q-value for it");
+	}
+
 	@Override
 	public void resetPlannerResults(){
 		this.mapToStateIndex.clear();

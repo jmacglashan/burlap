@@ -3,7 +3,7 @@ package burlap.oomdp.visualizer;
 
 import java.awt.Color;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
  * This class extends the {@link MultiLayerRenderer} class to provide a base instance of a {@link StateRenderLayer} in its render list

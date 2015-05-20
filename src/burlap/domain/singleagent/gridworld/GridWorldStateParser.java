@@ -4,8 +4,8 @@ import java.util.List;
 
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
 
 /**
  * Simplified state parser for grid world states. Format:<br/>
@@ -43,9 +43,9 @@ public class GridWorldStateParser implements StateParser {
 		String ya = GridWorldDomain.ATTY;
 		String lt = GridWorldDomain.ATTLOCTYPE;
 		
-		sbuf.append(a.getDiscValForAttribute(xa)).append(" ").append(a.getDiscValForAttribute(ya));
+		sbuf.append(a.getIntValForAttribute(xa)).append(" ").append(a.getIntValForAttribute(ya));
 		for(ObjectInstance l : locs){
-			sbuf.append(", ").append(l.getDiscValForAttribute(xa)).append(" ").append(l.getDiscValForAttribute(ya)).append(" ").append(l.getDiscValForAttribute(lt));
+			sbuf.append(", ").append(l.getIntValForAttribute(xa)).append(" ").append(l.getIntValForAttribute(ya)).append(" ").append(l.getIntValForAttribute(lt));
 		}
 		
 		

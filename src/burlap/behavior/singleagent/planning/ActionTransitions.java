@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.statehashing.StateHashFactory;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
