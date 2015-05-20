@@ -47,7 +47,7 @@ import burlap.oomdp.visualizer.Visualizer;
  * <br/>
  * Note that if you change the stochastic transition dynamics or the map of the domain generator *after* generating
  * a domain with {@link #generateDomain()}, the previously generated domain will use the settings prior to its
- * geenration. To use the new settings, you will need to generate a new domain object.
+ * generation. To use the new settings, you will need to generate a new domain object.
  * <br/>
  * There are five propositional functions
  * supported: atLocation(agent, location), wallToNorth(agent), wallToSouth(agent),
