@@ -2,9 +2,7 @@ package burlap.testing.Domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
@@ -137,8 +135,8 @@ public class BlockDude implements DomainGenerator {
 			int h = platformH.get(i);
 			
 			ObjectInstance plat = new MutableObjectInstance(domain.getObjectClass(CLASSPLATFORM), CLASSPLATFORM+x);
-			plat.setValue(ATTX, x);
-			plat.setValue(ATTHEIGHT, h);
+			plat = plat.setValue(ATTX, x);
+			plat = plat.setValue(ATTHEIGHT, h);
 			
 			objects.add(plat);
 			
@@ -164,28 +162,33 @@ public class BlockDude implements DomainGenerator {
 	public static State setAgent(State s, int x, int y, int dir, int holding){
 		ImmutableState immState = (ImmutableState)s;
 		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
+		
 		ObjectInstance newAgent = agent.setValue(ATTX, x);
 		newAgent = newAgent.setValue(ATTY, y);
 		newAgent = newAgent.setValue(ATTDIR, dir);
 		newAgent = newAgent.setValue(ATTHOLD, holding);
-		return immState.replaceObject(agent, newAgent);
 		
+		return immState.replaceObject(agent, newAgent);
 	}
 	
 	
 	public static State setExit(State s, int x, int y){
 		ImmutableState immState = (ImmutableState)s;
+		
 		ObjectInstance exit = s.getObjectsOfClass(CLASSEXIT).get(0);
 		ObjectInstance newExit = exit.setValue(ATTX, x);
 		newExit = newExit.setValue(ATTY, y);
+		
 		return immState.replaceObject(exit, newExit);
 	}
 	
 	public static State setBlock(State s, int i, int x, int y){
 		ImmutableState immState = (ImmutableState)s;
+		
 		ObjectInstance block = s.getObjectsOfClass(CLASSBLOCK).get(i);
 		ObjectInstance newBlock = block.setValue(ATTX, x);
 		newBlock = newBlock.setValue(ATTY, y);
+		
 		return immState.replaceObject(block, newBlock);
 	}
 	
@@ -211,9 +214,11 @@ public class BlockDude implements DomainGenerator {
 		
 		int heightAtNX = totalHeightAtXPos(s, nx);
 		
+		ImmutableState immState = (ImmutableState)s;
+		
 		//can only move if new position is below agent height
 		if(heightAtNX >= ay){
-			return s; //do nothing; walled off
+			return immState.replaceObject(agent, newAgent); //do nothing; walled off
 		}
 		
 		int ny = heightAtNX + 1; //stand on top of stack
@@ -221,10 +226,9 @@ public class BlockDude implements DomainGenerator {
 		newAgent = newAgent.setValue(ATTX, nx);
 		newAgent = newAgent.setValue(ATTY, ny);
 		
-		ImmutableState immState = (ImmutableState)s;
 		State newState = immState.replaceObject(agent, newAgent);
 		
-		return moveCarriedBlockToNewAgentPosition(newState, agent, ax, ay, nx, ny);
+		return moveCarriedBlockToNewAgentPosition(newState, newAgent, ax, ay, nx, ny);
 		
 		
 	}
@@ -257,7 +261,7 @@ public class BlockDude implements DomainGenerator {
 		
 		ImmutableState immState = (ImmutableState)s;
 		State nextState = immState.replaceObject(agent, newAgent);
-		return moveCarriedBlockToNewAgentPosition(nextState, agent, ax, ay, nx, ny);
+		return moveCarriedBlockToNewAgentPosition(nextState, newAgent, ax, ay, nx, ny);
 		
 		
 	}
