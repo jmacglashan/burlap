@@ -733,10 +733,7 @@ public class GridWorldDomain implements DomainGenerator {
 		 */
 		public MovementAction(String name, Domain domain, double [] directions, int [][] map){
 			super(name, domain, "");
-			this.directionProbs = new double[directions.length];
-			for(int i = 0; i < directions.length; i++){
-				this.directionProbs[i] = directions[i];
-			}
+			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
 			this.map = map;
 		}
