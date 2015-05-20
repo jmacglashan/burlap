@@ -229,5 +229,7 @@ public interface State {
 	 * @return A list of all possible object instance bindings for the parameters, were a binding is represented by a list of object instance names
 	 */
 	List <List <String>> getPossibleBindingsGivenParamOrderGroups(String [] paramClasses, String [] paramOrderGroups);
+
+	
 		
 }

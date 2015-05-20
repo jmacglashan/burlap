@@ -1,8 +1,5 @@
 package burlap.oomdp.core.values;
 
-import java.util.Collection;
-import java.util.Set;
-
 import burlap.oomdp.core.Attribute;
 
 
