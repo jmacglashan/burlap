@@ -19,7 +19,7 @@ public class IntValue extends OOMDPValue implements Value {
 	/**
 	 * The int value
 	 */
-	protected int			intVal = 0;
+	protected final int			intVal;
 	
 	
 	/**
@@ -28,6 +28,7 @@ public class IntValue extends OOMDPValue implements Value {
 	 */
 	public IntValue(Attribute attribute) {
 		super(attribute);
+		this.intVal = 0;
 	}
 	
 	
@@ -38,6 +39,11 @@ public class IntValue extends OOMDPValue implements Value {
 	public IntValue(IntValue v) {
 		super(v);
 		this.intVal = ((IntValue)v).intVal;
+	}
+	
+	public IntValue(Attribute attribute, int intVal) {
+		super(attribute);
+		this.intVal = intVal;
 	}
 
 	@Override
@@ -52,52 +58,22 @@ public class IntValue extends OOMDPValue implements Value {
 
 	@Override
 	public Value setValue(int v) {
-		this.intVal = v;
-		return this;
+		return new IntValue(this.attribute, v);
 	}
 
 	@Override
 	public Value setValue(double v) {
-		this.intVal = (int)v;
-		return this;
+		return new IntValue(this.attribute, (int)v);
 	}
 
 	@Override
 	public Value setValue(String v) {
-		this.intVal = Integer.parseInt(v);
-		return this;
+		return new IntValue(this.attribute, Integer.parseInt(v));
 	}
 	
 	@Override
 	public Value setValue(boolean v) {
-		if(v){
-			this.intVal = 1;
-		}
-		else{
-			this.intVal = 0;
-		}
-		return this;
-	}
-
-	@Override
-	public Value addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is Int, cannot add relational target");
-	}
-	
-	@Override
-	public Value addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is Int, cannot add relational targets");
-	}
-	
-
-	@Override
-	public Value clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is Int, cannot clear relational targets");
-	}
-
-	@Override
-	public Value removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is Int, cannot remove relational target");
+		return new IntValue(this.attribute, (v) ? 1 : 0);
 	}
 
 	@Override
@@ -106,19 +82,8 @@ public class IntValue extends OOMDPValue implements Value {
 	}
 
 	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is Int, cannot return real value");
-	}
-
-	@Override
 	public StringBuilder buildStringVal(StringBuilder builder) {
 		return builder.append(this.intVal);
-	}
-	
-
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is Int, cannot return relational values");
 	}
 
 	@Override
@@ -148,28 +113,4 @@ public class IntValue extends OOMDPValue implements Value {
 	public boolean getBooleanValue() {
 		return this.intVal != 0;
 	}
-	
-	@Override
-	public Value setValue(int[] intArray) {
-		throw new UnsupportedOperationException("Value is int; cannot be set to an int array.");
-	}
-
-
-	@Override
-	public Value setValue(double[] doubleArray) {
-		throw new UnsupportedOperationException("Value is int; cannot be set to a double array.");
-	}
-
-
-	@Override
-	public int[] getIntArray() {
-		throw new UnsupportedOperationException("Value is int; cannot return an int array.");
-	}
-
-
-	@Override
-	public double[] getDoubleArray() {
-		throw new UnsupportedOperationException("Value is int; cannot return a double array.");
-	}
-
 }

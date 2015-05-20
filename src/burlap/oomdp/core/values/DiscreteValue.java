@@ -13,14 +13,14 @@ import burlap.oomdp.core.Attribute;
  *
  */
 public class DiscreteValue extends OOMDPValue implements Value{
-	
+	public static final int UNSET = -1;
 	/**
 	 * The discrete value stored as an integer. If the attribute
 	 * defines categorical values with strings, this int value represents
 	 * the index in the list of categorical values. The default value
 	 * of -1 indicates an unset attribute value.
 	 */
-	protected int			discVal = -1;
+	protected final int			discVal;
 	
 	
 	/**
@@ -29,6 +29,7 @@ public class DiscreteValue extends OOMDPValue implements Value{
 	 */
 	public DiscreteValue(Attribute attribute){
 		super(attribute);
+		this.discVal = UNSET;
 	}
 	
 	/**
@@ -40,10 +41,15 @@ public class DiscreteValue extends OOMDPValue implements Value{
 		DiscreteValue dv = (DiscreteValue)v;
 		this.discVal = dv.discVal;
 	}
+	
+	public DiscreteValue(Attribute attribute, int discVal) {
+		super(attribute);
+		this.discVal = discVal;
+	}
 
 	@Override
 	public boolean valueHasBeenSet() {
-		return this.discVal != -1;
+		return this.discVal != UNSET;
 	}
 
 	@Override
@@ -53,52 +59,27 @@ public class DiscreteValue extends OOMDPValue implements Value{
 	
 	@Override
 	public Value setValue(int v){
-		this.discVal = v;
-		return this;
+		return new DiscreteValue(this.attribute, v);
 	}
 	
 	@Override
 	public Value setValue(double v){
-		this.discVal = (int)v;
-		return this;
+		return new DiscreteValue(this.attribute, (int)v);
 	}
 	
 	@Override
 	public Value setValue(boolean v) {
-		if(v){
-			this.discVal = 1;
-		}
-		else{
-			this.discVal = 0;
-		}
-		return this;
+		int intV = (v) ? 1 : 0;
+		return new DiscreteValue(this.attribute, intV);
 	}
 	
 	@Override
 	public Value setValue(String v){
-		int intv = attribute.discValuesHash.get(v);
-		discVal = intv;
-		return this;
-	}
-	
-	@Override
-	public Value addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is discrete, cannot add relational target");
-	}
-	
-	@Override
-	public Value addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is discrete, cannot add relational targets");
-	}
-	
-	@Override
-	public Value clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is discrete, cannot clear relational targets");
-	}
-	
-	@Override
-	public Value removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is discrete, cannot modify relational target");
+		Integer intv = attribute.discValuesHash.get(v);
+		if (intv == null) {
+			throw new RuntimeException("String value " + v + " is not applicable for attribute " + this.attribute.name);
+		}
+		return new DiscreteValue(this.attribute, intv);
 	}
 	
 	@Override
@@ -110,24 +91,12 @@ public class DiscreteValue extends OOMDPValue implements Value{
 	}
 	
 	@Override
-	public double getRealVal(){
-		throw new UnsupportedOperationException("Value is discrete, cannot return real value");
-	}
-	
-	@Override
 	public StringBuilder buildStringVal(StringBuilder builder) {
 		if(this.discVal == -1){
 			throw new UnsetValueException();
 		}
 		return builder.append(attribute.discValues.get(discVal));
 	}
-	
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is discrete, cannot return relational values");
-	}
-	
-	
 	
 	@Override
 	public double getNumericRepresentation() {
@@ -156,30 +125,6 @@ public class DiscreteValue extends OOMDPValue implements Value{
 	@Override
 	public boolean getBooleanValue() {
 		return this.discVal != 0;
-	}
-
-	
-	@Override
-	public Value setValue(int[] intArray) {
-		throw new UnsupportedOperationException("Value is discrete; cannot be set to an int array.");
-	}
-
-
-	@Override
-	public Value setValue(double[] doubleArray) {
-		throw new UnsupportedOperationException("Value is discrete; cannot be set to a double array.");
-	}
-
-
-	@Override
-	public int[] getIntArray() {
-		throw new UnsupportedOperationException("Value is discrete; cannot return an int array.");
-	}
-
-
-	@Override
-	public double[] getDoubleArray() {
-		throw new UnsupportedOperationException("Value is discrete; cannot return a double array.");
 	}
 	
 

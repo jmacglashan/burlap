@@ -14,12 +14,13 @@ import burlap.oomdp.core.Attribute;
  * @author James MacGlashan
  *
  */
-public class DoubleArrayValue extends OOMDPValue implements Value{
+public class DoubleArrayValue extends OOMDPValue{
 
-	protected double [] doubleArray;
+	protected final double [] doubleArray;
 	
 	public DoubleArrayValue(Attribute attribute) {
 		super(attribute);
+		this.doubleArray = null;
 	}
 	
 	public DoubleArrayValue(DoubleArrayValue v){
@@ -27,7 +28,14 @@ public class DoubleArrayValue extends OOMDPValue implements Value{
 		DoubleArrayValue daValue = (DoubleArrayValue)v;
 		if(daValue.doubleArray != null) {
 			this.doubleArray = daValue.doubleArray.clone();
+		} else {
+			this.doubleArray = null;
 		}
+	}
+	
+	public DoubleArrayValue(Attribute attribute, double[] doubleArray) {
+		super(attribute);
+		this.doubleArray = doubleArray;
 	}
 
 	@Override
@@ -41,56 +49,16 @@ public class DoubleArrayValue extends OOMDPValue implements Value{
 	}
 
 	@Override
-	public Value setValue(int v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set value to int.");
-	}
-
-	@Override
-	public Value setValue(double v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set value to a single double.");
-	}
-
-	@Override
 	public Value setValue(String v) {
 		if(v.startsWith("\"") && v.endsWith("\"")){
 			v = v.substring(1, v.length());
 		}
 		String [] comps = v.split(",");
-		this.doubleArray = new double[comps.length];
+		double[] doubleArray = new double[comps.length];
 		for(int i = 0; i < comps.length; i++){
-			this.doubleArray[i] = Double.parseDouble(comps[i]);
+			doubleArray[i] = Double.parseDouble(comps[i]);
 		}
-		return this;
-	}
-
-	@Override
-	public Value addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set relational value.");
-	}
-
-	@Override
-	public Value addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot add relational targets");
-	}
-	
-	@Override
-	public Value clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot remove relational value.");
-	}
-
-	@Override
-	public Value removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot remove relational value.");
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return int value.");
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return single real value.");
+		return new DoubleArrayValue(this.attribute, doubleArray);
 	}
 
 	@Override
@@ -105,16 +73,6 @@ public class DoubleArrayValue extends OOMDPValue implements Value{
 	}
 
 	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return relational values.");
-	}
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return boolean value.");
-	}
-
-	@Override
 	public double getNumericRepresentation() {
 		double sum = 0;
 		for(double v : this.doubleArray){
@@ -126,17 +84,17 @@ public class DoubleArrayValue extends OOMDPValue implements Value{
 
 	@Override
 	public Value setValue(int[] intArray) {
-		this.doubleArray = new double[intArray.length];
+		
+		double[] doubleArray = new double[intArray.length];
 		for(int i = 0; i < intArray.length; i++){
-			this.doubleArray[i] = intArray[i];
+			doubleArray[i] = intArray[i];
 		}
-		return this;
+		return new DoubleArrayValue(this.attribute, doubleArray);
 	}
 
 	@Override
 	public Value setValue(double[] doubleArray) {
-		this.doubleArray = doubleArray;
-		return this;
+		return new DoubleArrayValue(this.attribute, doubleArray);
 	}
 
 	@Override
@@ -185,10 +143,4 @@ public class DoubleArrayValue extends OOMDPValue implements Value{
 		return true;
 		
 	}
-
-	@Override
-	public Value setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray; cannot be set to a boolean value.");
-	}
-
 }

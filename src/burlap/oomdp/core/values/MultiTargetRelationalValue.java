@@ -1,6 +1,8 @@
 package burlap.oomdp.core.values;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,7 +21,7 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 	 * The set of object targets to which this value points. Object targets are indicated
 	 * by their object name identifier.
 	 */
-	protected Set <String>		targetObjects;
+	protected final Set <String>		targetObjects;
 	
 	
 	/**
@@ -28,7 +30,7 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 	 */
 	public MultiTargetRelationalValue(Attribute attribute){
 		super(attribute);
-		this.targetObjects = new TreeSet<String>();
+		this.targetObjects = Collections.unmodifiableSet(new TreeSet<String>());
 	}
 	
 	
@@ -39,7 +41,12 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 	public MultiTargetRelationalValue(MultiTargetRelationalValue v){
 		super(v);
 		MultiTargetRelationalValue rv = (MultiTargetRelationalValue)v;
-		this.targetObjects = new TreeSet<String>(rv.targetObjects);
+		this.targetObjects = rv.targetObjects;
+	}
+	
+	public MultiTargetRelationalValue(Attribute attribute, Collection<String> targets) {
+		super(attribute);
+		this.targetObjects = Collections.unmodifiableSet(new TreeSet<String>(targets));
 	}
 	
 	
@@ -55,60 +62,35 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 	}
 
 	@Override
-	public Value setValue(int v) {
-		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to an int value"));
-	}
-
-	@Override
-	public Value setValue(double v) {
-		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to a double value"));
-	}
-
-	@Override
 	public Value setValue(String v) {
-		this.targetObjects.clear();
-		this.targetObjects.add(v);
-		return this;
-	}
-	
-	@Override
-	public Value setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is of relational; cannot be set to a boolean value.");
+		return new MultiTargetRelationalValue(this.attribute, Arrays.asList(v));
 	}
 	
 	@Override
 	public Value addRelationalTarget(String t) {
-		this.targetObjects.add(t);
-		return this;
+		TreeSet<String> targets = new TreeSet<String>(this.targetObjects);
+		targets.add(t);
+		return new MultiTargetRelationalValue(this.attribute, targets);
 	}
 	
 	@Override
 	public Value addAllRelationalTargets(Collection<String> targets) {
-		this.targetObjects.addAll(targets);
-		return this;
+		TreeSet<String> allTargets = new TreeSet<String>(this.targetObjects);
+		allTargets.addAll(targets);
+		return new MultiTargetRelationalValue(this.attribute, allTargets);
 	}
 	
 	
 	@Override
 	public Value clearRelationTargets() {
-		this.targetObjects.clear();
-		return this;
+		return new MultiTargetRelationalValue(this.attribute);
 	}
 	
 	@Override
 	public Value removeRelationalTarget(String target) {
-		this.targetObjects.remove(target);
-		return this;
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException(new Error("Value is relational, cannot return discrete value"));
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException(new Error("Value is relational, cannot return real value"));
+		TreeSet<String> targets = new TreeSet<String>(this.targetObjects);
+		targets.remove(target);
+		return new MultiTargetRelationalValue(this.attribute, targets);
 	}
 	
 	@Override
@@ -161,35 +143,4 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 		return true;
 		
 	}
-
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is MultiTargetRelational, cannot return boolean representation.");
-	}
-
-	@Override
-	public Value setValue(int[] intArray) {
-		throw new UnsupportedOperationException("Value is relational; cannot be set to an int array.");
-	}
-
-
-	@Override
-	public Value setValue(double[] doubleArray) {
-		throw new UnsupportedOperationException("Value is relational; cannot be set to a double array.");
-	}
-
-
-	@Override
-	public int[] getIntArray() {
-		throw new UnsupportedOperationException("Value is relational; cannot return an int array.");
-	}
-
-
-	@Override
-	public double[] getDoubleArray() {
-		throw new UnsupportedOperationException("Value is relational; cannot return a double array.");
-	}
-	
-
 }

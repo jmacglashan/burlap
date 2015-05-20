@@ -12,11 +12,11 @@ import burlap.oomdp.core.Attribute;
  *
  */
 public class StringValue extends OOMDPValue implements Value {
-
+	private static final String UNSET = "";
 	/**
 	 * The string value
 	 */
-	protected String			stringVal = "";
+	protected final String			stringVal;
 	
 	
 	/**
@@ -25,6 +25,7 @@ public class StringValue extends OOMDPValue implements Value {
 	 */
 	public StringValue(Attribute attribute) {
 		super(attribute);
+		this.stringVal = UNSET;
 	}
 	
 	
@@ -35,6 +36,11 @@ public class StringValue extends OOMDPValue implements Value {
 	public StringValue(StringValue v) {
 		super(v);
 		this.stringVal = ((StringValue)v).stringVal;
+	}
+	
+	public StringValue(Attribute attribute, String stringVal) {
+		super(attribute);
+		this.stringVal = stringVal;
 	}
 
 	@Override
@@ -49,72 +55,23 @@ public class StringValue extends OOMDPValue implements Value {
 
 	@Override
 	public Value setValue(int v) {
-		this.stringVal = Integer.toString(v);
-		return this;
+		return new StringValue(this.attribute, Integer.toString(v));
 	}
 	
 	@Override
 	public Value setValue(double v) {
-		this.stringVal = Double.toString(v);
-		return this;
+		return new StringValue(this.attribute, Double.toString(v));
 	}
 	
 	@Override
 	public Value setValue(String v) {
-		this.stringVal = v;
-		return this;
+		return new StringValue(this.attribute, v);
 	}
 	
-	@Override
-	public Value setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is of type String; cannot be set to a boolean value.");
-	}
-
-	@Override
-	public Value addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is String, cannot add relational target");
-	}
-
-	@Override
-	public Value addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is String, cannot add relational targets");
-	}
-	
-	@Override
-	public Value clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is String, cannot clear relational targets");
-	}
-
-	@Override
-	public Value removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is String, cannot remove relational target");
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException("Value is String, cannot return int value");
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is String, cannot return real value");
-	}
-
 	@Override
 	public StringBuilder buildStringVal(StringBuilder builder) {
 		return builder.append(this.stringVal);
 	}
-
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is String, cannot return relational values");
-	}
-
-	@Override
-	public double getNumericRepresentation() {
-		throw new UnsupportedOperationException("Value is String, cannot return numeric representation");
-	}
-	
 	
 	@Override
 	public boolean equals(Object obj){
@@ -131,34 +88,4 @@ public class StringValue extends OOMDPValue implements Value {
 		return this.stringVal.equals(o.stringVal);
 		
 	}
-
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is String, cannot return boolean representation.");
-	}
-	
-	@Override
-	public Value setValue(int[] intArray) {
-		throw new UnsupportedOperationException("Value is string; cannot be set to an int array.");
-	}
-
-
-	@Override
-	public Value setValue(double[] doubleArray) {
-		throw new UnsupportedOperationException("Value is string; cannot be set to a double array.");
-	}
-
-
-	@Override
-	public int[] getIntArray() {
-		throw new UnsupportedOperationException("Value is string; cannot return an int array.");
-	}
-
-
-	@Override
-	public double[] getDoubleArray() {
-		throw new UnsupportedOperationException("Value is string; cannot return a double array.");
-	}
-
 }

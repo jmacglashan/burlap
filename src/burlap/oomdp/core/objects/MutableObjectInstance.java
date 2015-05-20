@@ -96,8 +96,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance setValue(String attName, String v){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.setValue(v);
+		Value newValue = value.setValue(v);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -111,8 +110,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance setValue(String attName, double v){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.setValue(v);
+		Value newValue = value.setValue(v);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -125,8 +123,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance setValue(String attName, int v){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.setValue(v);
+		Value newValue = value.setValue(v);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -139,8 +136,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance setValue(String attName, boolean v){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.setValue(v);
+		Value newValue = value.setValue(v);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -153,8 +149,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance setValue(String attName, int [] v){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.setValue(v);
+		Value newValue = value.setValue(v);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -167,8 +162,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance setValue(String attName, double [] v){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.setValue(v);
+		Value newValue = value.setValue(v);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -182,8 +176,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance addRelationalTarget(String attName, String target){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.addRelationalTarget(target);
+		Value newValue = value.addRelationalTarget(target);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -198,8 +191,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance addAllRelationalTargets(String attName, Collection<String> targets) {
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.addAllRelationalTargets(targets);
+		Value newValue = value.addAllRelationalTargets(targets);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -211,8 +203,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance clearRelationalTargets(String attName){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.clearRelationTargets();
+		Value newValue = value.clearRelationTargets();
 		values.set(ind, newValue);
 		return this;
 	}
@@ -225,8 +216,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public ObjectInstance removeRelationalTarget(String attName, String target){
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
-		Value newValue = value.copy();
-		newValue.removeRelationalTarget(target);
+		Value newValue = value.removeRelationalTarget(target);
 		values.set(ind, newValue);
 		return this;
 	}
@@ -315,15 +305,6 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getDiscVal();
 	}
-
-	/**
-	 * Deprecated method name; use {@link #getIntValForAttribute(String)} instead.
-	 */
-	@Deprecated
-	public int getDiscValForAttribute(String attName){
-		int ind = obClass.attributeIndex(attName);
-		return values.get(ind).getDiscVal();
-	}
 	
 	/**
 	 * Returns the set of all relational targets to which the relational attribute named attName is set.
@@ -347,15 +328,6 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	}
 	
 	/**
-	 * Deprecated method name; use the {@link #getIntArrayValForAttribute(String)} method instead.
-	 */
-	@Deprecated
-	public int [] getIntArrayValue(String attName){
-		int ind = obClass.attributeIndex(attName);
-		return values.get(ind).getIntArray().clone();
-	}
-
-	/**
 	 * Returns the int array value of the attribute (only defined for int array attributes).
 	 * @param attName the name of the attribute whose value should be returned.
 	 * @return the int array value.
@@ -363,16 +335,6 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	public int [] getIntArrayValForAttribute(String attName){
 		int ind = obClass.attributeIndex(attName);
 		return values.get(ind).getIntArray().clone();
-	}
-	
-	
-	/**
-	 * Deprecated method name; use the {@link #getDoubleArrayValForAttribute(String)} instead.
-	 */
-	@Deprecated
-	public double [] getDoubleArrayValue(String attName){
-		int ind = obClass.attributeIndex(attName);
-		return values.get(ind).getDoubleArray().clone();
 	}
 
 	/**

@@ -141,7 +141,6 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param attName the name of the attribute whose value is to be set.
 	 * @param v the double rep value to which the attribute of this object instance should be set.
 	 */
-	@Deprecated
 	public ImmutableObjectInstance setValue(String attName, double v){
 		List<Value> values = new ArrayList<Value>(this.values);
 		int ind = obClass.attributeIndex(attName);

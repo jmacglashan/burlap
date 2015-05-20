@@ -15,11 +15,12 @@ import burlap.oomdp.core.Attribute;
  */
 public class IntArrayValue extends OOMDPValue implements Value {
 
-	protected int [] intArray = null;
+	protected final int [] intArray;
 	
 	
 	public IntArrayValue(Attribute attribute) {
 		super(attribute);
+		this.intArray = null;
 	}
 	
 	public IntArrayValue(IntArrayValue v){
@@ -27,7 +28,14 @@ public class IntArrayValue extends OOMDPValue implements Value {
 		IntArrayValue iaValue  = (IntArrayValue)v;
 		if(iaValue.intArray != null){
 			this.intArray = iaValue.intArray.clone();
+		} else {
+			this.intArray = null;
 		}
+	}
+	
+	public IntArrayValue(Attribute attribute, int[] intArray) {
+		super(attribute);
+		this.intArray = intArray;
 	}
 
 	@Override
@@ -41,58 +49,17 @@ public class IntArrayValue extends OOMDPValue implements Value {
 	}
 
 	@Override
-	public Value setValue(int v) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot set single int value.");
-	}
-
-	@Override
-	public Value setValue(double v) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot set double value.");
-	}
-
-	@Override
 	public Value setValue(String v) {
 		if(v.startsWith("\"") && v.endsWith("\"")){
 			v = v.substring(1, v.length());
 		}
 		String [] comps = v.split(",");
-		this.intArray = new int[comps.length];
+		int[] intArray = new int[comps.length];
 		for(int i = 0; i < comps.length; i++){
-			this.intArray[i] = Integer.parseInt(comps[i]);
+			intArray[i] = Integer.parseInt(comps[i]);
 		}
-		return this;
+		return new IntArrayValue(this.attribute, intArray);
 	}
-
-	@Override
-	public Value addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot set relational value.");
-	}
-	
-	@Override
-	public Value addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot add relational targets");
-	}
-	
-	@Override
-	public Value clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot clear values.");
-	}
-
-	@Override
-	public Value removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot clear values.");
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return disc values");
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return real values");
-	}
-
 	
 	@Override
 	public StringBuilder buildStringVal(StringBuilder builder) {
@@ -103,16 +70,6 @@ public class IntArrayValue extends OOMDPValue implements Value {
 			builder.append(this.intArray[i]);
 		}
 		return builder;
-	}
-
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return relational values");
-	}
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return boolean values");
 	}
 
 	@Override
@@ -127,8 +84,7 @@ public class IntArrayValue extends OOMDPValue implements Value {
 
 	@Override
 	public Value setValue(int[] intArray) {
-		this.intArray = intArray;
-		return this;
+		return new IntArrayValue(this.attribute, intArray);
 	}
 
 	@Override
@@ -174,11 +130,6 @@ public class IntArrayValue extends OOMDPValue implements Value {
 		
 		return true;
 		
-	}
-	
-	@Override
-	public Value setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray; cannot be set to a boolean value.");
 	}
 
 }

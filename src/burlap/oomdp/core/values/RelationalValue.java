@@ -14,12 +14,12 @@ import burlap.oomdp.core.Attribute;
  *
  */
 public class RelationalValue  extends OOMDPValue implements Value {
-
+	private static final String UNSET = "";
 	/**
 	 * A string representing the object target of this value. Targets are specified by the object name identifier.
 	 * If the relational target is unset, then this value will be set to the empty string "", which is the default value.
 	 */
-	protected String		target = "";
+	protected final String		target;
 	
 	
 	/**
@@ -28,7 +28,7 @@ public class RelationalValue  extends OOMDPValue implements Value {
 	 */
 	public RelationalValue(Attribute attribute){
 		super(attribute);
-		this.target = "";
+		this.target = UNSET;
 	}
 	
 	
@@ -42,6 +42,11 @@ public class RelationalValue  extends OOMDPValue implements Value {
 		this.target = rv.target;
 	}
 	
+	public RelationalValue(Attribute attribute, String target) {
+		super(attribute);
+		this.target = target;
+	}
+	
 	@Override
 	public Value copy() {
 		return new RelationalValue(this);
@@ -51,61 +56,26 @@ public class RelationalValue  extends OOMDPValue implements Value {
 	public boolean valueHasBeenSet() {
 		return true;
 	}
-
-	@Override
-	public Value setValue(int v) {
-		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to an int value"));
-	}
-
-	@Override
-	public Value setValue(double v) {
-		throw new UnsupportedOperationException(new Error("Cannot set relation value to a value to a double value"));
-	}
-	
-	@Override
-	public Value setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is relational; cannot be set to a boolean value.");
-	}
-
 	@Override
 	public Value setValue(String v) {
-		this.target = v;
-		return this;
+		return new RelationalValue(this.attribute, v);
 	}
 	
 	@Override
 	public Value addRelationalTarget(String t) {
-		this.target = t;
-		return this;
+		return new RelationalValue(this.attribute, t);
 	}
-	
-	@Override
-	public Value addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is relational, cannot add multiple relational targets");
-	}
-	
 	@Override
 	public Value clearRelationTargets() {
-		this.target = "";
-		return this;
+		return new RelationalValue(this.attribute);
 	}
 	
 	@Override
 	public Value removeRelationalTarget(String target) {
 		if(this.target.equals(target)){
-			this.target = "";
+			return new RelationalValue(this.attribute);
 		}
 		return this;
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException(new Error("Value is relational, cannot return discrete value"));
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException(new Error("Value is relational, cannot return real value"));
 	}
 	
 	@Override
@@ -141,39 +111,5 @@ public class RelationalValue  extends OOMDPValue implements Value {
 		return this.target.equals(op.target);
 		
 	}
-
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is relational, cannot return boolean representation.");
-	}
-
-
-	@Override
-	public Value setValue(int[] intArray) {
-		throw new UnsupportedOperationException("Value is relational; cannot be set to an int array.");
-	}
-
-
-	@Override
-	public Value setValue(double[] doubleArray) {
-		throw new UnsupportedOperationException("Value is relational; cannot be set to a double array.");
-	}
-
-
-	@Override
-	public int[] getIntArray() {
-		throw new UnsupportedOperationException("Value is relational; cannot return an int array.");
-	}
-
-
-	@Override
-	public double[] getDoubleArray() {
-		throw new UnsupportedOperationException("Value is relational; cannot return a double array.");
-	}
-
-
-	
-	
 
 }
