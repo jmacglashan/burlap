@@ -80,15 +80,15 @@ public class TestBlockDude {
 			ph.add(15);
 			
 			State s = BlockDude.getCleanState(d, px, ph, 6);
-			BlockDude.setAgent(s, 9, 3, 1, 0);
-			BlockDude.setExit(s, 1, 0);
+			s = BlockDude.setAgent(s, 9, 3, 1, 0);
+			s = BlockDude.setExit(s, 1, 0);
 			
-			BlockDude.setBlock(s, 0, 5, 1);
-			BlockDude.setBlock(s, 1, 6, 1);
-			BlockDude.setBlock(s, 2, 14, 3);
-			BlockDude.setBlock(s, 3, 16, 4);
-			BlockDude.setBlock(s, 4, 17, 4);
-			BlockDude.setBlock(s, 5, 17, 5);
+			s = BlockDude.setBlock(s, 0, 5, 1);
+			s = BlockDude.setBlock(s, 1, 6, 1);
+			s = BlockDude.setBlock(s, 2, 14, 3);
+			s = BlockDude.setBlock(s, 3, 16, 4);
+			s = BlockDude.setBlock(s, 4, 17, 4);
+			s = BlockDude.setBlock(s, 5, 17, 5);
 			
 			TerminalFunction tf = new SinglePFTF(d.getPropFunction(BlockDude.PFATEXIT));
 			StateConditionTest sc = new SinglePFSCT(d.getPropFunction(BlockDude.PFATEXIT));
