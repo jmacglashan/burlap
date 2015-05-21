@@ -36,6 +36,10 @@ import burlap.oomdp.visualizer.Visualizer;
  *  rotate increment size that results from applying a clockwise/counterclockwise 
  *  rotate action can also be set. There is also a method to set the domain
  *  to a standard set of physics and actions.
+ *  <p/>
+ *  If the domain generator physics parameters are changed after a domain has been generated,
+ *  the previously generated domain will remain unaffected, allowing you to reuse the same
+ *  domain generator to produce different versions of the domain without conflict.
  *  
  * @author James MacGlashan
  *
@@ -151,136 +155,146 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * Constant for the name of the propositional function that indicates whether the agent/lander is on the ground
 	 */
 	public static final String				PFONGROUND = "onGround"; //landed on ground
-	
-	
-	
-	
+
 	/**
 	 * List of the thrust forces for each thrust action
 	 */
 	protected List <Double>					thrustValues;
-	
-	/**
-	 * The force of gravity
-	 */
-	protected double						gravity = -0.2;
-	
-	/**
-	 * The minimum x value of the world
-	 */
-	protected double						xmin = 0.;
-	
-	/**
-	 * The maximum x value of the world
-	 */
-	protected double						xmax = 100.;
-	
-	/**
-	 * The minimum y value of the world
-	 */
-	protected double						ymin = 0.;
-	
-	/**
-	 * The maximum y value of the world
-	 */
-	protected double						ymax = 50.;
-	
-	/**
-	 * The maximum speed in any velocity component that the agent can move
-	 */
-	protected double						vmax = 4.;
-	
-	/**
-	 * The maximum angle the lander can be rotated in either the clockwise or counterclockwise direction
-	 */
-	protected double						angmax = Math.PI/4.;
-	
-	
-	
-	/**
-	 * The change in orientation angle the lander makes when a turn/rotate action is taken
-	 */
-	protected double						anginc = Math.PI/20.;
-	
-	
-	
-	/**
-	 * This method will launch a visual explorer for the lunar lander domain. It will use the default
-	 * physics, start the agent on the left side of the world with a landing pad on the right
-	 * and an obstacle in between. The agent is controlled with the following keys: <br/>
-	 * w: heavy thrust<br/>
-	 * s: weak thrust<br/>
-	 * a: turn/rotate counterclockwise<br/>
-	 * d: turn/rotate clockwise<br/>
-	 * x: idle (drift for one time step)
-	 * <p/>
-	 * If you pass the main method "t" as an argument, a terminal explorer will be used instead of a visual explorer.
-	 * @param args optionally pass "t" asn argument to use a terminal explorer instead of a visual explorer.
-	 */
-	public static void main(String[] args) {
-		
-		LunarLanderDomain lld = new LunarLanderDomain();
-		Domain domain = lld.generateDomain();
-		
-		State clean = getCleanState(domain, 0);
 
-		/*//these commented items just have different task configuration; just choose one
-		lld.setAgent(clean, 0., 5, 0.);
-		lld.setObstacle(clean, 0, 30., 45., 0., 20.);
-		lld.setPad(clean, 75., 95., 0., 10.);
-		*/
-		
-		/*
-		lld.setAgent(clean, 0., 5, 0.);
-		lld.setObstacle(clean, 0, 20., 40., 0., 20.);
-		lld.setPad(clean, 65., 85., 0., 10.);
-		*/
-		
-		
-		setAgent(clean, 0., 5, 0.);
-		//setObstacle(clean, 0, 20., 50., 0., 20.);
-		setPad(clean, 80., 95., 0., 10.);
-		
-		
-		int expMode = 1;
-		
-		if(args.length > 0){
-			if(args[0].equals("v")){
-				expMode = 1;
-			}
-			else if(args[0].equals("t")){
-				expMode = 0;
-			}
-		}
-		
-		if(expMode == 0){
-			
-			TerminalExplorer te = new TerminalExplorer(domain);
-			
-			te.addActionShortHand("a", ACTIONTURNL);
-			te.addActionShortHand("d", ACTIONTURNR);
-			te.addActionShortHand("w", ACTIONTHRUST+0);
-			te.addActionShortHand("s", ACTIONTHRUST+1);
-			te.addActionShortHand("x", ACTIONIDLE);
-			
-			te.exploreFromState(clean);
-			
-		}
-		else if(expMode == 1){
-			
-			Visualizer vis = LLVisualizer.getVisualizer(lld);
-			VisualExplorer exp = new VisualExplorer(domain, vis, clean);
-			
-			exp.addKeyAction("w", ACTIONTHRUST+0);
-			exp.addKeyAction("s", ACTIONTHRUST+1);
-			exp.addKeyAction("a", ACTIONTURNL);
-			exp.addKeyAction("d", ACTIONTURNR);
-			exp.addKeyAction("x", ACTIONIDLE);
-			
-			exp.initGUI();
-			
+
+	/**
+	 * An object for holding the physics parameters of this domain.
+	 */
+	protected LLPhysicsParams				physParams = new LLPhysicsParams();
+
+
+	/**
+	 * A class for holding the physics parameters
+	 */
+	public static class LLPhysicsParams{
+
+		/**
+		 * The force of gravity
+		 */
+		protected double						gravity = -0.2;
+
+		/**
+		 * The minimum x value of the world
+		 */
+		protected double						xmin = 0.;
+
+		/**
+		 * The maximum x value of the world
+		 */
+		protected double						xmax = 100.;
+
+		/**
+		 * The minimum y value of the world
+		 */
+		protected double						ymin = 0.;
+
+		/**
+		 * The maximum y value of the world
+		 */
+		protected double						ymax = 50.;
+
+		/**
+		 * The maximum speed in any velocity component that the agent can move
+		 */
+		protected double						vmax = 4.;
+
+		/**
+		 * The maximum angle the lander can be rotated in either the clockwise or counterclockwise direction
+		 */
+		protected double						angmax = Math.PI/4.;
+
+
+		/**
+		 * The change in orientation angle the lander makes when a turn/rotate action is taken
+		 */
+		protected double						anginc = Math.PI/20.;
+
+
+		public LLPhysicsParams copy(){
+
+			LLPhysicsParams c = new LLPhysicsParams();
+
+			c.gravity = this.gravity;
+			c.xmin = this.xmin;
+			c.xmax = this.xmax;
+			c.ymin = this.ymin;
+			c.ymax = this.ymax;
+			c.vmax = this.vmax;
+			c.angmax = this.angmax;
+			c.anginc = this.anginc;
+
+			return c;
+
 		}
 
+		public double getGravity() {
+			return gravity;
+		}
+
+		public void setGravity(double gravity) {
+			this.gravity = gravity;
+		}
+
+		public double getXmin() {
+			return xmin;
+		}
+
+		public void setXmin(double xmin) {
+			this.xmin = xmin;
+		}
+
+		public double getXmax() {
+			return xmax;
+		}
+
+		public void setXmax(double xmax) {
+			this.xmax = xmax;
+		}
+
+		public double getYmin() {
+			return ymin;
+		}
+
+		public void setYmin(double ymin) {
+			this.ymin = ymin;
+		}
+
+		public double getYmax() {
+			return ymax;
+		}
+
+		public void setYmax(double ymax) {
+			this.ymax = ymax;
+		}
+
+		public double getVmax() {
+			return vmax;
+		}
+
+		public void setVmax(double vmax) {
+			this.vmax = vmax;
+		}
+
+		public double getAngmax() {
+			return angmax;
+		}
+
+		public void setAngmax(double angmax) {
+			this.angmax = angmax;
+		}
+
+		public double getAnginc() {
+			return anginc;
+		}
+
+		public void setAnginc(double anginc) {
+			this.anginc = anginc;
+		}
 	}
 	
 	
@@ -382,14 +396,22 @@ public class LunarLanderDomain implements DomainGenerator {
 	public void addThrustActionWithThrust(double t){
 		this.thrustValues.add(t);
 	}
-	
-	
+
+
+	public LLPhysicsParams getPhysParams() {
+		return physParams;
+	}
+
+	public void setPhysParams(LLPhysicsParams physParams) {
+		this.physParams = physParams;
+	}
+
 	/**
 	 * Sets the gravity of the domain
 	 * @param g the force of gravity
 	 */
 	public void setGravity(double g){
-		this.gravity = g;
+		this.physParams.gravity = g;
 	}
 	
 	
@@ -398,7 +420,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @return the minimum x position of the lander (the agent cannot cross this boundary)
 	 */
 	public double getXmin() {
-		return xmin;
+		return this.physParams.xmin;
 	}
 
 
@@ -407,7 +429,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param xmin the minimum x position of the lander (the agent cannot cross this boundary)
 	 */
 	public void setXmin(double xmin) {
-		this.xmin = xmin;
+		this.physParams.xmin = xmin;
 	}
 
 
@@ -416,7 +438,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @return the maximum x position of the lander (the agent cannot cross this boundary)
 	 */
 	public double getXmax() {
-		return xmax;
+		return this.physParams.xmax;
 	}
 
 
@@ -425,7 +447,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param xmax the maximum x position of the lander (the agent cannot cross this boundary)
 	 */
 	public void setXmax(double xmax) {
-		this.xmax = xmax;
+		this.physParams.xmax = xmax;
 	}
 
 
@@ -434,7 +456,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @return the minimum y position of the lander (the agent cannot cross this boundary)
 	 */
 	public double getYmin() {
-		return ymin;
+		return this.physParams.ymin;
 	}
 
 
@@ -443,7 +465,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param ymin the minimum y position of the lander (the agent cannot cross this boundary)
 	 */
 	public void setYmin(double ymin) {
-		this.ymin = ymin;
+		this.physParams.ymin = ymin;
 	}
 
 
@@ -452,7 +474,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @return the maximum y position of the lander (the agent cannot cross this boundary)
 	 */
 	public double getYmax() {
-		return ymax;
+		return this.physParams.ymax;
 	}
 
 
@@ -461,7 +483,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param ymax the maximum y position of the lander (the agent cannot cross this boundary)
 	 */
 	public void setYmax(double ymax) {
-		this.ymax = ymax;
+		this.physParams.ymax = ymax;
 	}
 
 
@@ -470,7 +492,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @return the maximum velocity of the agent  (the agent cannot move faster than this value).
 	 */
 	public double getVmax() {
-		return vmax;
+		return this.physParams.vmax;
 	}
 
 
@@ -479,7 +501,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param vmax the maximum velocity of the agent (the agent cannot move faster than this value).
 	 */
 	public void setVmax(double vmax) {
-		this.vmax = vmax;
+		this.physParams.vmax = vmax;
 	}
 
 
@@ -489,7 +511,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @return the maximum rotate angle (in radians) that the lander can be rotated
 	 */
 	public double getAngmax() {
-		return angmax;
+		return this.physParams.angmax;
 	}
 
 
@@ -499,7 +521,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param angmax the maximum rotate angle (in radians) that the lander can be rotated
 	 */
 	public void setAngmax(double angmax) {
-		this.angmax = angmax;
+		this.physParams.angmax = angmax;
 	}
 
 
@@ -508,7 +530,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @return how many radians the agent will rotate from its current orientation when a turn/rotate action is applied
 	 */
 	public double getAnginc() {
-		return anginc;
+		return this.physParams.anginc;
 	}
 
 
@@ -517,7 +539,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param anginc how many radians the agent will rotate from its current orientation when a turn/rotate action is applied
 	 */
 	public void setAnginc(double anginc) {
-		this.anginc = anginc;
+		this.physParams.anginc = anginc;
 	}
 	
 	
@@ -537,14 +559,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	public void setToStandardLunarLander(){
 		this.addStandardThrustActions();
-		this.gravity = -0.2;
-		this.xmin = 0.;
-		this.xmax = 100.;
-		this.ymin = 0.;
-		this.ymax = 50.;
-		this.vmax = 4.;
-		this.angmax = Math.PI / 4.;
-		this.anginc = Math.PI / 20.;
+		this.physParams = new LLPhysicsParams();
 	}
 	
 	
@@ -555,7 +570,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	public void addStandardThrustActions(){
 		this.thrustValues.add(0.32);
-		this.thrustValues.add(-gravity);
+		this.thrustValues.add(-physParams.gravity);
 	}
 	
 	@Override
@@ -566,37 +581,37 @@ public class LunarLanderDomain implements DomainGenerator {
 		List <Double> thrustValuesTemp = this.thrustValues;
 		if(thrustValuesTemp.size() == 0){
 			thrustValuesTemp.add(0.32);
-			thrustValuesTemp.add(-gravity);
+			thrustValuesTemp.add(-physParams.gravity);
 		}
 		
 		
 		//create attributes
 		Attribute xatt = new Attribute(domain, XATTNAME, Attribute.AttributeType.REAL);
-		xatt.setLims(xmin, xmax);
+		xatt.setLims(physParams.xmin, physParams.xmax);
 		
 		Attribute yatt = new Attribute(domain, YATTNAME, Attribute.AttributeType.REAL);
-		yatt.setLims(ymin, ymax);
+		yatt.setLims(physParams.ymin, physParams.ymax);
 		
 		Attribute vxatt = new Attribute(domain, VXATTNAME, Attribute.AttributeType.REAL);
-		vxatt.setLims(-vmax, vmax);
+		vxatt.setLims(-physParams.vmax, physParams.vmax);
 		
 		Attribute vyatt = new Attribute(domain, VYATTNAME, Attribute.AttributeType.REAL);
-		vyatt.setLims(-vmax, vmax);
+		vyatt.setLims(-physParams.vmax, physParams.vmax);
 		
 		Attribute aatt = new Attribute(domain, AATTNAME, Attribute.AttributeType.REAL);
-		aatt.setLims(-angmax, angmax);
+		aatt.setLims(-physParams.angmax, physParams.angmax);
 		
 		Attribute latt = new Attribute(domain, LATTNAME, Attribute.AttributeType.REAL);
-		latt.setLims(xmin, xmax);
+		latt.setLims(physParams.xmin, physParams.xmax);
 		
 		Attribute ratt = new Attribute(domain, RATTNAME, Attribute.AttributeType.REAL);
-		ratt.setLims(xmin, xmax);
+		ratt.setLims(physParams.xmin, physParams.xmax);
 		
 		Attribute batt = new Attribute(domain, BATTNAME, Attribute.AttributeType.REAL);
-		batt.setLims(ymin, ymax);
+		batt.setLims(physParams.ymin, physParams.ymax);
 		
 		Attribute tatt = new Attribute(domain, TATTNAME, Attribute.AttributeType.REAL);
-		tatt.setLims(ymin, ymax);
+		tatt.setLims(physParams.ymin, physParams.ymax);
 		
 		
 		
@@ -622,16 +637,18 @@ public class LunarLanderDomain implements DomainGenerator {
 		padclass.addAttribute(ratt);
 		padclass.addAttribute(batt);
 		padclass.addAttribute(tatt);
-		
+
+		//make copy of physics parameters
+		LLPhysicsParams cphys = this.physParams.copy();
 		
 		//add actions
-		new ActionTurn(ACTIONTURNL, domain, -1.);
-		new ActionTurn(ACTIONTURNR, domain, 1.);
-		new ActionIdle(ACTIONIDLE, domain);
+		new ActionTurn(ACTIONTURNL, domain, -1., cphys);
+		new ActionTurn(ACTIONTURNR, domain, 1., cphys);
+		new ActionIdle(ACTIONIDLE, domain, cphys);
 		
 		for(int i = 0; i < thrustValuesTemp.size(); i++){
 			double t = thrustValuesTemp.get(i);
-			new ActionThrust(ACTIONTHRUST+i, domain, t);
+			new ActionThrust(ACTIONTHRUST+i, domain, t, cphys);
 		}
 		
 		
@@ -649,7 +666,9 @@ public class LunarLanderDomain implements DomainGenerator {
 	
 	
 	/**
-	 * Creates a state with one agent/lander, one landing pad, and no number of obstacles.
+	 * Creates a state with one agent/lander, one landing pad, and no number of obstacles. The attribute values
+	 * of these objects will be uninitialized and will need to be set either manually or with this class's methods
+	 * like {@link #setAgent(burlap.oomdp.core.State, double, double, double)}.
 	 * @param domain the domain of the state to generate
 	 * @param no the number of obstacle objects to create
 	 * @return a state object
@@ -679,17 +698,17 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param s the state in which the lander's angle should be changed
 	 * @param dir the direction to turn; +1 is clockwise, -1 is counterclockwise
 	 */
-	protected void incAngle(State s, double dir){
+	protected static void incAngle(State s, double dir, LLPhysicsParams physParams){
 		
 		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
 		double curA = agent.getRealValForAttribute(AATTNAME);
 		
-		double newa = curA + (dir * anginc);
-		if(newa > angmax){
-			newa = angmax;
+		double newa = curA + (dir * physParams.anginc);
+		if(newa > physParams.angmax){
+			newa = physParams.angmax;
 		}
-		else if(newa < -angmax){
-			newa = -angmax;
+		else if(newa < -physParams.angmax){
+			newa = -physParams.angmax;
 		}
 		
 		agent.setValue(AATTNAME, newa);
@@ -702,7 +721,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param s the state in which the agent/lander should be modified
 	 * @param thrust the amount of thrust force exerted by the lander.
 	 */
-	protected void updateMotion(State s, double thrust){
+	protected static void updateMotion(State s, double thrust, LLPhysicsParams physParams){
 		
 		double ti = 1.;
 		double tt = ti*ti;
@@ -720,7 +739,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		double ty = Math.sin(worldAngle)*thrust;
 		
 		double ax = tx;
-		double ay = ty + gravity;
+		double ay = ty + physParams.gravity;
 		
 		double nx = x + vx*ti + (0.5*ax*tt);
 		double ny = y + vy*ti + (0.5*ay*tt);
@@ -731,38 +750,38 @@ public class LunarLanderDomain implements DomainGenerator {
 		double nang = ang;
 		
 		//check for boundaries
-		if(ny > ymax){
-			ny = ymax;
+		if(ny > physParams.ymax){
+			ny = physParams.ymax;
 			nvy = 0.;
 		}
-		else if(ny <= ymin){
-			ny = ymin;
+		else if(ny <= physParams.ymin){
+			ny = physParams.ymin;
 			nvy = 0.;
 			nang = 0.;
 			nvx = 0.;
 		}
 		
-		if(nx > xmax){
-			nx = xmax;
+		if(nx > physParams.xmax){
+			nx = physParams.xmax;
 			nvx = 0.;
 		}
-		else if(nx < xmin){
-			nx = xmin;
+		else if(nx < physParams.xmin){
+			nx = physParams.xmin;
 			nvx = 0.;
 		}
 		
-		if(nvx > vmax){
-			nvx = vmax;
+		if(nvx > physParams.vmax){
+			nvx = physParams.vmax;
 		}
-		else if(nvx < -vmax){
-			nvx = -vmax;
+		else if(nvx < -physParams.vmax){
+			nvx = -physParams.vmax;
 		}
 		
-		if(nvy > vmax){
-			nvy = vmax;
+		if(nvy > physParams.vmax){
+			nvy = physParams.vmax;
 		}
-		else if(nvy < -vmax){
-			nvy = -vmax;
+		else if(nvy < -physParams.vmax){
+			nvy = -physParams.vmax;
 		}
 		
 		
@@ -867,6 +886,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	public class ActionTurn extends Action{
 
+		LLPhysicsParams physParams;
 		double dir;
 		
 		/**
@@ -875,17 +895,18 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param domain the domain in which the action exists
 		 * @param dir the direction this action will turn; +1 for clockwise, -1 for counterclockwise.
 		 */
-		public ActionTurn(String name, Domain domain, double dir) {
+		public ActionTurn(String name, Domain domain, double dir, LLPhysicsParams physParams) {
 			super(name, domain, "");
 			this.dir = dir;
+			this.physParams = physParams;
 		}
 		
 		
 
 		@Override
 		protected State performActionHelper(State st, String[] params) {
-			incAngle(st, dir);
-			updateMotion(st, 0.0);
+			incAngle(st, dir, this.physParams);
+			updateMotion(st, 0.0, this.physParams);
 			return st;
 		}
 
@@ -894,7 +915,13 @@ public class LunarLanderDomain implements DomainGenerator {
 			return this.deterministicTransition(s, params);
 		}
 
-		
+		public LLPhysicsParams getPhysParams() {
+			return physParams;
+		}
+
+		public void setPhysParams(LLPhysicsParams physParams) {
+			this.physParams = physParams;
+		}
 	}
 	
 	
@@ -906,20 +933,22 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	public class ActionIdle extends Action{
 
+		LLPhysicsParams physParams;
 		
 		/**
 		 * Initializes the idle action.
 		 * @param name the name of the action
 		 * @param domain the domain of the action.
 		 */
-		public ActionIdle(String name, Domain domain) {
+		public ActionIdle(String name, Domain domain, LLPhysicsParams physParams) {
 			super(name, domain, "");
+			this.physParams = physParams;
 		}
 		
 
 		@Override
 		protected State performActionHelper(State st, String[] params) {
-			updateMotion(st, 0.0);
+			updateMotion(st, 0.0, this.physParams);
 			return st;
 		}
 
@@ -927,9 +956,14 @@ public class LunarLanderDomain implements DomainGenerator {
 		public List<TransitionProbability> getTransitions(State s, String [] params){
 			return this.deterministicTransition(s, params);
 		}
-		
-		
-		
+
+		public LLPhysicsParams getPhysParams() {
+			return physParams;
+		}
+
+		public void setPhysParams(LLPhysicsParams physParams) {
+			this.physParams = physParams;
+		}
 	}
 	
 	
@@ -942,6 +976,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	public class ActionThrust extends Action{
 
 		protected double thrustValue;
+		LLPhysicsParams physParams;
 		
 		
 		/**
@@ -950,15 +985,16 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param domain the domain of the action
 		 * @param thrustValue the force of thrust for this thrust action
 		 */
-		public ActionThrust(String name, Domain domain, double thrustValue){
+		public ActionThrust(String name, Domain domain, double thrustValue, LLPhysicsParams physParams){
 			super(name, domain, "");
 			this.thrustValue = thrustValue;
+			this.physParams = physParams;
 		}
 		
 		
 		@Override
 		protected State performActionHelper(State st, String[] params) {
-			updateMotion(st, thrustValue);
+			updateMotion(st, thrustValue, this.physParams);
 			return st;
 		}
 
@@ -966,9 +1002,22 @@ public class LunarLanderDomain implements DomainGenerator {
 		public List<TransitionProbability> getTransitions(State s, String [] params){
 			return this.deterministicTransition(s, params);
 		}
-		
-		
-		
+
+		public double getThrustValue() {
+			return thrustValue;
+		}
+
+		public void setThrustValue(double thrustValue) {
+			this.thrustValue = thrustValue;
+		}
+
+		public LLPhysicsParams getPhysParams() {
+			return physParams;
+		}
+
+		public void setPhysParams(LLPhysicsParams physParams) {
+			this.physParams = physParams;
+		}
 	}
 	
 	
@@ -1142,6 +1191,7 @@ public class LunarLanderDomain implements DomainGenerator {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			double y = agent.getRealValForAttribute(YATTNAME);
+			double ymin = agent.getObjectClass().domain.getAttribute(YATTNAME).lowerLim;
 			
 			if(y == ymin){
 				return true;
@@ -1152,6 +1202,87 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		
+	}
+
+
+	/**
+	 * This method will launch a visual explorer for the lunar lander domain. It will use the default
+	 * physics, start the agent on the left side of the world with a landing pad on the right
+	 * and an obstacle in between. The agent is controlled with the following keys: <br/>
+	 * w: heavy thrust<br/>
+	 * s: weak thrust<br/>
+	 * a: turn/rotate counterclockwise<br/>
+	 * d: turn/rotate clockwise<br/>
+	 * x: idle (drift for one time step)
+	 * <p/>
+	 * If you pass the main method "t" as an argument, a terminal explorer will be used instead of a visual explorer.
+	 * @param args optionally pass "t" asn argument to use a terminal explorer instead of a visual explorer.
+	 */
+	public static void main(String[] args) {
+
+		LunarLanderDomain lld = new LunarLanderDomain();
+		Domain domain = lld.generateDomain();
+
+
+		State clean = getCleanState(domain, 0);
+
+		/*//these commented items just have different task configuration; just choose one
+		lld.setAgent(clean, 0., 5, 0.);
+		lld.setObstacle(clean, 0, 30., 45., 0., 20.);
+		lld.setPad(clean, 75., 95., 0., 10.);
+		*/
+
+		/*
+		lld.setAgent(clean, 0., 5, 0.);
+		lld.setObstacle(clean, 0, 20., 40., 0., 20.);
+		lld.setPad(clean, 65., 85., 0., 10.);
+		*/
+
+
+		setAgent(clean, 0., 5, 0.);
+		//setObstacle(clean, 0, 20., 50., 0., 20.);
+		setPad(clean, 80., 95., 0., 10.);
+
+
+		int expMode = 1;
+
+		if(args.length > 0){
+			if(args[0].equals("v")){
+				expMode = 1;
+			}
+			else if(args[0].equals("t")){
+				expMode = 0;
+			}
+		}
+
+		if(expMode == 0){
+
+			TerminalExplorer te = new TerminalExplorer(domain);
+
+			te.addActionShortHand("a", ACTIONTURNL);
+			te.addActionShortHand("d", ACTIONTURNR);
+			te.addActionShortHand("w", ACTIONTHRUST+0);
+			te.addActionShortHand("s", ACTIONTHRUST+1);
+			te.addActionShortHand("x", ACTIONIDLE);
+
+			te.exploreFromState(clean);
+
+		}
+		else if(expMode == 1){
+
+			Visualizer vis = LLVisualizer.getVisualizer(lld);
+			VisualExplorer exp = new VisualExplorer(domain, vis, clean);
+
+			exp.addKeyAction("w", ACTIONTHRUST+0);
+			exp.addKeyAction("s", ACTIONTHRUST+1);
+			exp.addKeyAction("a", ACTIONTURNL);
+			exp.addKeyAction("d", ACTIONTURNR);
+			exp.addKeyAction("x", ACTIONIDLE);
+
+			exp.initGUI();
+
+		}
+
 	}
 	
 	
