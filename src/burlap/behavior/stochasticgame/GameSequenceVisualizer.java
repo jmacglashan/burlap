@@ -7,6 +7,7 @@ import java.awt.TextArea;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -17,6 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
@@ -25,9 +27,20 @@ import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.visualizer.Visualizer;
 
+
+
+/**
+ * This class is used to visualize a set of games that have been
+ * saved to files in a common directory or which are
+ * provided to the object as a list of {@link burlap.behavior.stochasticgame.GameAnalysis} objects.
+ * In the GUI's list of a game's actions, the action name is
+ * selected joint action in the currently rendered state.
+ * @author James MacGlashan
+ *
+ */
 public class GameSequenceVisualizer extends JFrame {
 
-private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
 	
 	//Frontend GUI
@@ -51,6 +64,8 @@ private static final long serialVersionUID = 1L;
 	protected List <String>							episodeFiles;
 	protected DefaultListModel						episodesListModel;
 	protected StateParser							sp;
+
+	protected List <GameAnalysis>					directGames;
 	
 	protected GameAnalysis							curGA;
 	protected DefaultListModel						iterationListModel;
@@ -72,6 +87,18 @@ private static final long serialVersionUID = 1L;
 	public GameSequenceVisualizer(Visualizer v, SGDomain d, StateParser sp, String experimentDirectory){
 		this.init(v, d, sp, experimentDirectory, 800, 800);
 	}
+
+
+	/**
+	 * Initializes the GameSequenceVisualizer with programmatially supplied list of {@link burlap.behavior.stochasticgame.GameAnalysis} objects to view.
+	 * By default the state visualizer will be 800x800 pixels.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the games took place
+	 * @param games the games to view
+	 */
+	public GameSequenceVisualizer(Visualizer v, SGDomain d, List <GameAnalysis> games){
+		this.initWithDirectGames(v, d, games, 800, 800);
+	}
 	
 	
 	/**
@@ -85,6 +112,19 @@ private static final long serialVersionUID = 1L;
 	 */
 	public GameSequenceVisualizer(Visualizer v, SGDomain d, StateParser sp, String experimentDirectory, int width, int height){
 		this.init(v, d, sp, experimentDirectory, width, height);
+	}
+
+
+	/**
+	 * Initializes the GameSequenceVisualizer with programmatially supplied list of {@link burlap.behavior.stochasticgame.GameAnalysis} objects to view.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the games took place
+	 * @param games the games to view
+	 * @param w the width of the state visualizer canvas
+	 * @param h the height of the state visualizer canvas
+	 */
+	public GameSequenceVisualizer(Visualizer v, SGDomain d, List<GameAnalysis> games, int w, int h){
+		this.initWithDirectGames(v, d, games, w, h);
 	}
 	
 	
@@ -117,6 +157,38 @@ private static final long serialVersionUID = 1L;
 		this.initGUI();
 		
 		
+	}
+
+
+
+	/**
+	 * Initializes the GameSequenceVisualizer.
+	 * @param v the visualizer used to render states
+	 * @param d the domain in which the games took place
+	 * @param games the games to view
+	 * @param w the width of the state visualizer canvas
+	 * @param h the height of the state visualizer canvas
+	 */
+	public void initWithDirectGames(Visualizer v, SGDomain d, List<GameAnalysis> games, int w, int h){
+
+		painter = v;
+		domain = d;
+
+		this.directGames = games;
+		this.episodesListModel = new DefaultListModel();
+		int c = 0;
+		for(GameAnalysis ga : this.directGames){
+			episodesListModel.addElement("game_" + c);
+			c++;
+		}
+
+		cWidth = w;
+		cHeight = h;
+
+
+		this.initGUI();
+
+
 	}
 	
 	
@@ -216,6 +288,7 @@ private static final long serialVersionUID = 1L;
 			}
 		};
 		String[] children = dir.list(filter);
+		Arrays.sort(children, new AlphanumericSorting());
 		
 		episodeFiles = new ArrayList<String>(children.length);
 		episodesListModel = new DefaultListModel();
@@ -256,7 +329,12 @@ private static final long serialVersionUID = 1L;
        		if (ind != -1) {
        			
 				//System.out.println("Loading Episode File...");
-       			curGA = GameAnalysis.parseFileIntoGA(episodeFiles.get(ind), domain, sp);
+				if(this.directGames == null) {
+					curGA = GameAnalysis.parseFileIntoGA(episodeFiles.get(ind), domain, sp);
+				}
+				else{
+					curGA = this.directGames.get(ind);
+				}
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
 				

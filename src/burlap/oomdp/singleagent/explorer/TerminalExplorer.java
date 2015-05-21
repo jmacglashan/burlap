@@ -6,8 +6,10 @@ import java.util.*;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
-
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
 
 
 /**
@@ -17,14 +19,24 @@ import burlap.oomdp.singleagent.Action;
  * parameters are specified by space delineated input. For instance: "stack block0 block1" will cause
  * the stack action to called with action parameters block0 and block1. The command ##reset##
  * causes the state to reset to the initial state provided to the explorer.
+ * <br/><br/>
+ * This class can also be provided a reward function and terminal function through the
+ * {@link #setRewardFunction(burlap.oomdp.singleagent.RewardFunction)} and
+ * {@link #setTerminalFunctionf(burlap.oomdp.core.TerminalFunction)} methods, which will
+ * cause the terminal to print out the reward for transitions and whether the current state
+ * is a terminal state.
  * @author James MacGlashan
  *
  */
 public class TerminalExplorer {
 	
-	private Domain					domain;
-	private Map <String, String>	actionShortHand;
-	
+	protected Domain					domain;
+	protected Map <String, String>		actionShortHand;
+	protected RewardFunction			rewardFunction;
+	protected TerminalFunction			terminalFunction;
+
+
+	protected GroundedAction			lastAction;
 	
 	/**
 	 * Initializes the explorer with the specified domain
@@ -44,7 +56,24 @@ public class TerminalExplorer {
 		this.domain = domain;
 		this.setActionShortHand(ash);
 	}
-	
+
+
+	public RewardFunction getRewardFunction() {
+		return rewardFunction;
+	}
+
+	public void setRewardFunction(RewardFunction rewardFunction) {
+		this.rewardFunction = rewardFunction;
+	}
+
+	public TerminalFunction getTerminalFunction() {
+		return terminalFunction;
+	}
+
+	public void setTerminalFunctionf(TerminalFunction terminalFunction) {
+		this.terminalFunction = terminalFunction;
+	}
+
 	/**
 	 * Sets teh short hand names to use for actions.
 	 * @param ash a map from short hand names to full action names. For instance, "s->stack"
@@ -75,11 +104,24 @@ public class TerminalExplorer {
 	public void exploreFromState(State s){
 		
 		State src = s.copy();
+		State oldState = src;
 		String actionPromptDelimiter = "-----------------------------------";
 		
 		while(true){
 			
 			this.printState(s);
+			if(this.terminalFunction != null){
+				if(this.terminalFunction.isTerminal(s)){
+					System.out.println("State IS terminal");
+				}
+				else{
+					System.out.println("State is NOT terminal");
+				}
+			}
+			if(this.rewardFunction != null && this.lastAction != null){
+				double r = this.rewardFunction.reward(oldState, lastAction, s);
+				System.out.println("Reward: " + r);
+			}
 			
 			System.out.println(actionPromptDelimiter);
 			
@@ -92,6 +134,7 @@ public class TerminalExplorer {
 				
 				if(line.equals("##reset##")){
 					s = src;
+					this.lastAction = null;
 				}
 				else{
 					
@@ -120,7 +163,9 @@ public class TerminalExplorer {
 						System.out.println("Unknown action: " + actionName);
 					}
 					else{
+						oldState = s;
 						s = action.performAction(s, params);
+						this.lastAction = new GroundedAction(action, params);
 					}
 					
 				}

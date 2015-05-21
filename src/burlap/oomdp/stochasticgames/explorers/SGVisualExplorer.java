@@ -11,20 +11,10 @@ import java.util.Map;
 
 import javax.swing.*;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.*;
+import burlap.oomdp.core.*;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
 import burlap.oomdp.singleagent.explorer.StateResetSpecialAction;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SingleAction;
+import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.visualizer.Visualizer;
 
 
@@ -36,6 +26,11 @@ import burlap.oomdp.visualizer.Visualizer;
  * The ` key
  * causes the state to reset to the initial state provided to the explorer. Other special kinds of actions
  * not described in the domain can be added and executed by pressing corresponding keys for them.
+ * <br/><br/>
+ * This explorer can also track a reward function and terminal function and print them to the console, which can be set
+ * with the
+ * {@link #setRewardFunction(burlap.oomdp.stochasticgames.JointReward)} and
+ * {@link #setTerminalFunction(burlap.oomdp.core.TerminalFunction)} methods.
  * @author James MacGlashan
  *
  */
@@ -64,22 +59,43 @@ public class SGVisualExplorer extends JFrame {
 
 	protected JFrame								consoleFrame;
 	protected TextArea								stateConsole;
-	
+
+	protected TerminalFunction						terminalFunction;
+	protected JointReward 							rewardFunction;
+
+	protected Map<String, Double>					lastRewards;
+
 	/**
-	 * Initializes the data members for the visual explorer.
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
 	 * @param jam the joint action model that defines transition probabilities
 	 */
+	@Deprecated
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam){
 		
 		this.init(domain, painter, baseState, jam, 800, 800);
 	}
+
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 */
+	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState){
+
+		this.init(domain, painter, baseState, domain.getJointActionModel(), 800, 800);
+	}
 	
 	
 	/**
-	 * Initializes the data members for the visual explorer.
+	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
+	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State, int, int)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
@@ -87,8 +103,21 @@ public class SGVisualExplorer extends JFrame {
 	 * @param w the width of the state visualizer
 	 * @param h the height of the state visualizer
 	 */
+	@Deprecated
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
 		this.init(domain, painter, baseState, jam, w, h);
+	}
+
+	/**
+	 * Initializes the data members for the visual explorer.
+	 * @param domain the stochastic game domain to be explored
+	 * @param painter the 2D visualizer for states
+	 * @param baseState the initial state from which to explore
+	 * @param w the width of the state visualizer
+	 * @param h the height of the state visualizer
+	 */
+	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, int w, int h){
+		this.init(domain, painter, baseState, domain.getJointActionModel(), w, h);
 	}
 	
 	protected void init(SGDomain domain, Visualizer painter, State baseState, JointActionModel jam, int w, int h){
@@ -116,7 +145,23 @@ public class SGVisualExplorer extends JFrame {
 		nextAction = new JointAction();
 		
 	}
-	
+
+	public JointReward getRewardFunction() {
+		return rewardFunction;
+	}
+
+	public void setRewardFunction(JointReward rewardFunction) {
+		this.rewardFunction = rewardFunction;
+	}
+
+	public TerminalFunction getTerminalFunction() {
+		return terminalFunction;
+	}
+
+	public void setTerminalFunction(TerminalFunction terminalFunction) {
+		this.terminalFunction = terminalFunction;
+	}
+
 	/**
 	 * Sets the joint action model to use
 	 * @param jac the joint action model to use
@@ -335,6 +380,7 @@ public class SGVisualExplorer extends JFrame {
 					*/
 
 					if(madeChange) {
+						SGVisualExplorer.this.lastRewards = null;
 						SGVisualExplorer.this.updateState(ns);
 						SGVisualExplorer.this.numSteps = 0;
 					}
@@ -381,7 +427,25 @@ public class SGVisualExplorer extends JFrame {
 		StringBuilder sb = new StringBuilder(256);
 		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
 		sb.append("\n------------------------------\n\n");
-		sb.append(this.nextAction.toString());
+
+		if(this.terminalFunction != null){
+			if(this.terminalFunction.isTerminal(s)){
+				sb.append("State IS terminal\n");
+			}
+			else{
+				sb.append("State is NOT terminal\n");
+			}
+		}
+
+		if(this.lastRewards != null){
+			for(String aname : lastRewards.keySet()){
+				sb.append("" + aname + ": " + lastRewards.get(aname) + "\n");
+			}
+		}
+
+		sb.append(this.nextAction.toString() + "\n");
+
+
 		//sb.append("\n------------------------------\n\n");
 
 		if(s.getAllUnsetAttributes().size() == 0){
@@ -421,11 +485,13 @@ public class SGVisualExplorer extends JFrame {
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
 			if(sea != null){
+				this.lastRewards = null;
 				curState = sea.applySpecialAction(curState);
 				if(sea instanceof StateResetSpecialAction){
 					System.out.println("Number of steps before reset: " + numSteps);
 					numSteps = 0;
 				}
+				this.updateState(curState);
 			}
 			else if(key.equals(jointActionComplete)){
 				this.executeAction();
@@ -448,9 +514,13 @@ public class SGVisualExplorer extends JFrame {
 
 
 	protected void executeAction(){
-		curState = actionModel.performJointAction(curState, nextAction);
+		State nextState = actionModel.performJointAction(curState, nextAction);
+		if(this.rewardFunction != null){
+			this.lastRewards = this.rewardFunction.reward(curState, nextAction, nextState);
+		}
 		numSteps++;
 		nextAction = new JointAction();
+		curState = nextState;
 		this.updateState(curState);
 	}
 
