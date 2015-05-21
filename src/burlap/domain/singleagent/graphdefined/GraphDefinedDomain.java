@@ -18,12 +18,21 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 
 
 /**
  * A domain generator for generating domains that are represented as graphs. The graph transitions may be stochastic.
- * Input to the generator requires the number of graph nodes to be specified and the transition dynamics must be specified for
- * each node in the graph.
+ * Edges are added/modified for state-action pairs with the {@link #setTransition(int, int, int, double)} method and
+ * transitions can be cleared/removed with the methods {@link #clearStateTransitionsFrom(int)},
+ * {@link #clearStateActionTransitions(int, int)}, and {@link #removeEdge(int, int, int)}.
+ * <p/>
+ * A constructed graph's transition dynamics can be validated as proper (all edges from a state-action pair sum to 1)
+ * using the method {@link #isValidMDPGraph()} and if they are false, a string reporting which state-actions do not
+ * sum to 1 (and their various edges) can be returned with the {@link #invalidMDPReport()} method.
+ * <p/>
+ * Modifying the transition dynamics of a graph will not affect the transition dynamics of previously generated
+ * {@link burlap.oomdp.core.Domain}, allowing you to reuse the same generator without affected previous domains.
  * @author James MacGlashan
  *
  */
@@ -60,7 +69,19 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * The state-action stochastic transition dynamics from each state node.
 	 */
 	protected Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>>	transitionDynamics;
-	
+
+
+	/**
+	 * Initializes the generator. States and transition dynamics will be constructed lazily with calls
+	 * to the {@link #setTransition(int, int, int, double)} method.
+	 */
+	public GraphDefinedDomain() {
+		this.numNodes = 0;
+		this.maxActions = 0;
+		this.transitionDynamics = new HashMap<Integer, Map<Integer,Set<NodeTransitionProbibility>>>();
+
+	}
+
 
 	/**
 	 * Initializes the generator to create a domain with the given number of state nodes in it.
@@ -69,19 +90,28 @@ public class GraphDefinedDomain implements DomainGenerator {
 	public GraphDefinedDomain(int numNodes) {
 		this.numNodes = numNodes;
 		this.maxActions = 0;
-		this.transitionDynamics = new HashMap<Integer, Map<Integer,Set<NodeTransitionProbibility>>>();
+		this.transitionDynamics = new HashMap<Integer, Map<Integer,Set<NodeTransitionProbibility>>>(numNodes);
 		
 		for(int i = 0; i < this.numNodes; i++){
 			this.transitionDynamics.put(i, new HashMap<Integer,Set<NodeTransitionProbibility>>());
 		}
 		
 	}
-	
-	
+
+	/**
+	 * Returns the number of state nodes specified in this domain
+	 * @return the number of state nodes specified in this domain
+	 */
+	public int getNumNodes() {
+		return numNodes;
+	}
+
 	/**
 	 * Sets the probability <code>p</code> for transitioning to state node <code>tNode</code> after taking action number <code>action</code> in state node <code>srcNode</code>.
 	 * Note that this method also defines from which nodes an action can be executed. If this method is never called for source node i and action j, then
-	 * it will be assumed that action j cannot be executed in state node i.
+	 * it will be assumed that action j cannot be executed in state node i. The the specified source node or target node
+	 * is greater than this domain generator's previously specified number of nodes, then space will be added for them
+	 * in the transition dynamics.
 	 * @param srcNode the source node number from which an action will be taken
 	 * @param action the action to be taken
 	 * @param tNode the resulting state from taking the action in the given source node
@@ -92,15 +122,226 @@ public class GraphDefinedDomain implements DomainGenerator {
 		if(action >= this.maxActions){
 			this.maxActions = action+1;
 		}
-		
-		NodeTransitionProbibility ntp = new NodeTransitionProbibility(tNode, p);
+
+		if(srcNode >= this.numNodes){
+			for(int i = this.numNodes; i <= srcNode; i++){
+				this.transitionDynamics.put(i, new HashMap<Integer,Set<NodeTransitionProbibility>>());
+			}
+			this.numNodes = srcNode+1;
+		}
+
+		if(tNode >= this.numNodes){
+			for(int i = this.numNodes; i <= tNode; i++){
+				this.transitionDynamics.put(i, new HashMap<Integer,Set<NodeTransitionProbibility>>());
+			}
+			this.numNodes = tNode+1;
+		}
+
 		Map<Integer,Set<NodeTransitionProbibility>> actionMap = this.transitionDynamics.get(srcNode);
 		Set <NodeTransitionProbibility> nts = actionMap.get(action);
 		if(nts == null){
 			nts = new HashSet<GraphDefinedDomain.NodeTransitionProbibility>();
 			actionMap.put(action, nts);
 		}
-		nts.add(ntp);
+		NodeTransitionProbibility ntp = this.getNodeTransitionTo(nts, tNode);
+		if(ntp == null){
+			ntp = new NodeTransitionProbibility(tNode, p);
+			nts.add(ntp);
+		}
+		else{
+			ntp.probabiltiy = p;
+		}
+	}
+
+
+	/**
+	 * Checks whether the the probability of all state-action outcomes sum to 1 in this graph. Returns true
+	 * if they do, false otherwise. If this method returns false, you can use the
+	 *  method to get a string reporting where errors are.
+	 * @return true if all probability distributions sum to 1; false otherwise
+	 */
+	public boolean isValidMDPGraph(){
+		return isValidMDPGraph(this.transitionDynamics);
+	}
+
+	/**
+	 * Checks whether the the probability of all state-action outcomes sum to 1 in he provided transition dynamics. Returns true
+	 * if they do, false otherwise. If this method returns false, you can use the
+	 *  method to get a string reporting where errors are.
+	 * @param transitionDynamics the graph transition dynamics to check
+	 * @return true if all probability distributions sum to 1; false otherwise
+	 */
+	public static boolean isValidMDPGraph(Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> transitionDynamics){
+		for(Map.Entry<Integer, Map<Integer, Set<NodeTransitionProbibility>>> e : transitionDynamics.entrySet()){
+			Map<Integer, Set<NodeTransitionProbibility>> at = e.getValue();
+			for(Map.Entry<Integer, Set<NodeTransitionProbibility>> e2 : at.entrySet()){
+				if(e2.getValue().size() > 0) {
+					double sum = 0.;
+					for(NodeTransitionProbibility ntp : e2.getValue()) {
+						sum += ntp.probabiltiy;
+					}
+					if(Math.abs(1. - sum) > 1e-15){
+						return false;
+					}
+				}
+
+			}
+		}
+
+
+		return true;
+	}
+
+
+	/**
+	 * Returns a string that lists the state-action paris that have improper transition dynamics (transitions that don't sum to 1).
+	 * If there are no improper dynamics, then the returned string is empty. The output form is:
+	 * <br/>
+	 * (s, a): sumProbability<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_1' p_1<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_2' p_2<br/>
+	 * ...
+	 * <br/>
+	 * @return a string that lists the state-action paris that have improper transition dynamics or an empty string if all transitions are proper.
+	 */
+	public String invalidMDPReport(){
+		return invalidMDPReport(this.transitionDynamics);
+	}
+
+
+	/**
+	 * Returns a string that lists the state-action paris that have improper transition dynamics (transitions that don't sum to 1).
+	 * If there are no improper dynamics, then the returned string is empty. The output form is:
+	 * <br/>
+	 * (s, a): sumProbability<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_1' p_1<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_2' p_2<br/>
+	 * ...
+	 * <br/>
+	 * @param transitionDynamics the transition dynamics of the MDP/Graph
+	 * @return a string that lists the state-action paris that have improper transition dynamics or an empty string if all transitions are proper.
+	 */
+	public static String invalidMDPReport(Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> transitionDynamics){
+
+		StringBuilder sb = new StringBuilder();
+
+		for(Map.Entry<Integer, Map<Integer, Set<NodeTransitionProbibility>>> e : transitionDynamics.entrySet()){
+			Map<Integer, Set<NodeTransitionProbibility>> at = e.getValue();
+			for(Map.Entry<Integer, Set<NodeTransitionProbibility>> e2 : at.entrySet()){
+				if(e2.getValue().size() > 0) {
+
+					double sum = 0.;
+					StringBuilder sb2 = new StringBuilder();
+					for(NodeTransitionProbibility ntp : e2.getValue()) {
+						sb2.append("    (").append(e.getKey()).append(", ").append(e2.getKey()).append(")->").append(ntp.transitionTo).append(" ").append(ntp.probabiltiy).append("\n");
+						sum += ntp.probabiltiy;
+					}
+
+					if(Math.abs(1. - sum) > 1e-15){
+						sb.append("    (").append(e.getKey()).append(", ").append(e2.getKey()).append("): ").append(sum).append("\n").append(sb2.toString()).append("\n");
+					}
+				}
+
+			}
+		}
+
+
+		return sb.toString().trim();
+	}
+
+	/**
+	 * Clears all transitions from a given state node
+	 * @param srcNode the state node from which transitions will be cleared
+	 */
+	public void clearStateTransitionsFrom(int srcNode){
+		Map<Integer,Set<NodeTransitionProbibility>> actionMap = this.transitionDynamics.get(srcNode);
+		if(actionMap != null){
+			actionMap.clear();
+		}
+	}
+
+
+	/**
+	 * Clears all (stochastic) edges for a given state-action pair.
+	 * @param srcNode The state node of the pair to clear
+	 * @param action the action of the pair to clear
+	 */
+	public void clearStateActionTransitions(int srcNode, int action){
+		Map<Integer,Set<NodeTransitionProbibility>> actionMap = this.transitionDynamics.get(srcNode);
+		if(actionMap == null){
+			return;
+		}
+
+		Set<NodeTransitionProbibility> nts = actionMap.get(action);
+		if(nts != null){
+			nts.clear();
+		}
+	}
+
+	/**
+	 * Removes a given edge from the transition dynamics.
+	 * @param srcNode the source state node of the edge
+	 * @param action the action in the state node of the edge
+	 * @param tNode the target state node of the dge
+	 */
+	public void removeEdge(int srcNode, int action, int tNode){
+		Map<Integer,Set<NodeTransitionProbibility>> actionMap = this.transitionDynamics.get(srcNode);
+		if(actionMap == null){
+			return;
+		}
+		Set<NodeTransitionProbibility> nts = actionMap.get(action);
+		if(nts == null){
+			return;
+		}
+
+		NodeTransitionProbibility curEdge = this.getNodeTransitionTo(nts, tNode);
+		if(curEdge != null){
+			nts.remove(curEdge);
+		}
+
+	}
+
+	/**
+	 * Returns the {@link burlap.domain.singleagent.graphdefined.GraphDefinedDomain.NodeTransitionProbibility} object
+	 * in the provided set that corresponds to a transition to state tNode or null if it doesn't exist.
+	 * @param nts the set of possible node transitions
+	 * @param tNode the query transition node id
+	 * @return a {@link burlap.domain.singleagent.graphdefined.GraphDefinedDomain.NodeTransitionProbibility} or null if the transition to the state does not already exist.
+	 */
+	protected NodeTransitionProbibility getNodeTransitionTo(Set <NodeTransitionProbibility> nts, int tNode){
+		for(NodeTransitionProbibility ntp : nts){
+			if(ntp.transitionTo == tNode){
+				return ntp;
+			}
+		}
+		return null;
+	}
+
+
+	/**
+	 * Returns a deep copy of the transition dynamics
+	 * @return a deep copy of the transition dynamics
+	 */
+	protected Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> copyTransitionDynamics(){
+
+		Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> ct = new HashMap<Integer, Map<Integer, Set<NodeTransitionProbibility>>>(this.transitionDynamics.size());
+
+		for(Map.Entry<Integer, Map<Integer, Set<NodeTransitionProbibility>>> e : this.transitionDynamics.entrySet()){
+
+			Map<Integer, Set<NodeTransitionProbibility>> at = e.getValue();
+			Map<Integer, Set<NodeTransitionProbibility>> cat = new HashMap<Integer, Set<NodeTransitionProbibility>>(at.size());
+			for(Map.Entry<Integer, Set<NodeTransitionProbibility>> eat : at.entrySet()){
+				Set<NodeTransitionProbibility> cntp = new HashSet<NodeTransitionProbibility>(eat.getValue().size());
+				for(NodeTransitionProbibility ntpe : eat.getValue()){
+					cntp.add(ntpe.copy());
+				}
+				cat.put(eat.getKey(), cntp);
+			}
+			ct.put(e.getKey(), cat);
+
+		}
+
+		return ct;
 
 	}
 	
@@ -115,9 +356,11 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		ObjectClass aclass = new ObjectClass(domain, CLASSAGENT);
 		aclass.addAttribute(na);
-		
+
+		Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> ctd = this.copyTransitionDynamics();
+
 		for(int i = 0; i < this.maxActions; i++){
-			new GraphAction(domain, i);
+			new GraphAction(domain, i, ctd);
 		}
 		
 		
@@ -171,6 +414,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 * The probability of transitioning to the resulting state
 		 */
 		public double 	probabiltiy;
+
 		
 		
 		/**
@@ -181,6 +425,10 @@ public class GraphDefinedDomain implements DomainGenerator {
 		public NodeTransitionProbibility(int transitionTo, double probability){
 			this.transitionTo = transitionTo;
 			this.probabiltiy = probability;
+		}
+
+		public NodeTransitionProbibility copy(){
+			return new NodeTransitionProbibility(this.transitionTo, this.probabiltiy);
 		}
 		
 		@Override
@@ -213,7 +461,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	class GraphAction extends Action{
+	public static class GraphAction extends Action{
 
 		/**
 		 * Random object for sampling the stochastic graph transitions
@@ -224,7 +472,12 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 * The action number of this action
 		 */
 		protected int aId;
-		
+
+
+		/**
+		 * The transition dynamics to use
+		 */
+		protected Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> transitionDynamics;
 		
 		/**
 		 * Initializes a graph action object for the given domain and for the action of the given number.
@@ -232,10 +485,11 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 * @param domain the domain of the action
 		 * @param aId the action identifier number
 		 */
-		public GraphAction(Domain domain, int aId){
+		public GraphAction(Domain domain, int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> transitionDynamics){
 			super(BASEACTIONNAME+aId, domain, "");
 			this.aId = aId;
 			rand = RandomFactory.getMapped(0);
+			this.transitionDynamics = transitionDynamics;
 		}
 		
 		
@@ -248,6 +502,9 @@ public class GraphDefinedDomain implements DomainGenerator {
 			Map<Integer, Set<NodeTransitionProbibility>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbibility> transitions = actionMap.get(aId);
 			if(transitions == null){
+				return false;
+			}
+			if(transitions.size() == 0){
 				return false;
 			}
 			
@@ -307,10 +564,36 @@ public class GraphDefinedDomain implements DomainGenerator {
 			return result;
 			
 		}
-		
-		
-		
-		
+
+		public Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> getTransitionDynamics() {
+			return transitionDynamics;
+		}
+
+		public void setTransitionDynamics(Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> transitionDynamics) {
+			this.transitionDynamics = transitionDynamics;
+		}
+	}
+
+
+	public static void main(String[] args) {
+
+		GraphDefinedDomain gdd = new GraphDefinedDomain(3);
+		gdd.setTransition(0, 0, 1, 1.);
+		gdd.setTransition(0, 1, 2, 1.);
+
+		gdd.setTransition(1, 0, 1, 1.);
+		gdd.setTransition(1, 1, 0, 1.);
+
+		gdd.setTransition(2, 0, 2, 1.);
+		gdd.setTransition(2, 1, 0, 1.);
+
+		Domain domain = gdd.generateDomain();
+
+
+
+		State s = GraphDefinedDomain.getState(domain, 0);
+		TerminalExplorer exp = new TerminalExplorer(domain);
+		exp.exploreFromState(s);
 	}
 	
 	
