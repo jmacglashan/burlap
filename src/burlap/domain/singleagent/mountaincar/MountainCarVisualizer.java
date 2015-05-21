@@ -11,25 +11,58 @@ import java.util.List;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
+import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.StaticPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
+
+/**
+ * A class for creating a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}.
+ * The agent will be drawn as a red square and the shape of the hill in a black line.
+ */
 public class MountainCarVisualizer {
 
 	
 	/**
-	 * Returns a visualizer for the mountain car domain.
+	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 * using the hill design/physics defined in the {@link burlap.oomdp.auxiliary.DomainGenerator} for visualization
 	 * @param mcGen the generator for a given mountain car domain that is to be visualized.
-	 * @return a visualizer for the mountain car domain.
+	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for the mountain car domain.
 	 */
 	public static Visualizer getVisualizer(MountainCar mcGen){
 		
-		Visualizer v = new Visualizer();
-		v.addStaticPainter(new HillPainter(mcGen));
-		v.addObjectClassPainter(MountainCar.CLASSAGENT, new AgentPainter(mcGen));
-		
+		Visualizer v = new Visualizer(getStateRenderLayer(mcGen.physParms));
 		return v;
 		
+	}
+
+
+	/**
+	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 * using the hill design/physics defined in the {@link burlap.domain.singleagent.mountaincar.MountainCar.MCPhysicsParams} for visualization
+	 * @param physParams the physics/hill design to be visualized
+	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 */
+	public static Visualizer getVisualizer(MountainCar.MCPhysicsParams physParams){
+		Visualizer v = new Visualizer(getStateRenderLayer(physParams));
+		return v;
+	}
+
+
+	/**
+	 * Returns a {@link burlap.oomdp.visualizer.StateRenderLayer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 * using the hill design/physics defined in the {@link burlap.domain.singleagent.mountaincar.MountainCar.MCPhysicsParams} for visualization
+	 * @param physParams the physics/hill design to be visualized
+	 * @return a {@link burlap.oomdp.visualizer.StateRenderLayer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 */
+	public static StateRenderLayer getStateRenderLayer(MountainCar.MCPhysicsParams physParams){
+
+		StateRenderLayer slr = new StateRenderLayer();
+		slr.addStaticPainter(new HillPainter(physParams));
+		slr.addObjectClassPainter(MountainCar.CLASSAGENT, new AgentPainter(physParams));
+
+		return slr;
+
 	}
 	
 	
@@ -41,15 +74,15 @@ public class MountainCarVisualizer {
 	 */
 	public static class AgentPainter implements ObjectPainter{
 
-		MountainCar mcGen;
+		MountainCar.MCPhysicsParams physParams;
 		
 		
 		/**
-		 * Initializes with the mountain car domain generator used
-		 * @param mcGen the mountain car domain generator used
+		 * Initializes with the mountain car physics used
+		 * @param physParams the mountain car physics used
 		 */
-		public AgentPainter(MountainCar mcGen){
-			this.mcGen = mcGen;
+		public AgentPainter(MountainCar.MCPhysicsParams physParams){
+			this.physParams = physParams;
 		}
 		
 		
@@ -57,14 +90,14 @@ public class MountainCarVisualizer {
 		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
 				float cWidth, float cHeight) {
 			
-			double worldWidth = mcGen.xmax - mcGen.xmin;
+			double worldWidth = physParams.xmax - physParams.xmin;
 			
 			double renderAgentWidth = 0.04*cWidth;
 			
 			double ox = ob.getRealValForAttribute(MountainCar.ATTX);
-			double oy = Math.sin(this.mcGen.cosScale*ox);
+			double oy = Math.sin(this.physParams.cosScale*ox);
 			
-			double nx = (ox - this.mcGen.xmin) / worldWidth;
+			double nx = (ox - this.physParams.xmin) / worldWidth;
 			double ny = (oy + 1) / 2;
 			
 			double sx = (nx * cWidth) - (renderAgentWidth / 2);
@@ -89,15 +122,15 @@ public class MountainCarVisualizer {
 	 */
 	public static class HillPainter implements StaticPainter{
 
-		MountainCar mcGen;
+		MountainCar.MCPhysicsParams physParams;
 		
 		
 		/**
-		 * Initializes with the mountain car domain generator used
-		 * @param mcGen the mountain car domain generator used
+		 * Initializes with the mountain car physics used
+		 * @param physParams the mountain car physics used
 		 */
-		public HillPainter(MountainCar mcGen){
-			this.mcGen = mcGen;
+		public HillPainter(MountainCar.MCPhysicsParams physParams){
+			this.physParams = physParams;
 		}
 		
 		@Override
@@ -108,12 +141,12 @@ public class MountainCarVisualizer {
 			
 			//create collection of sin points in world space
 			int n = 1000;
-			double range = this.mcGen.xmax-this.mcGen.xmin;
+			double range = this.physParams.xmax-this.physParams.xmin;
 			double inc = (range)/n;
 			List <MyPoint> worldPoints = new ArrayList<MyPoint>(n);
 			for(int i = 0; i < n; i++){
-				double x = this.mcGen.xmin + (i * inc);
-				double y = Math.sin(this.mcGen.cosScale*x);
+				double x = this.physParams.xmin + (i * inc);
+				double y = Math.sin(this.physParams.cosScale*x);
 				worldPoints.add(new MyPoint(x, y));
 				
 			}
@@ -123,10 +156,10 @@ public class MountainCarVisualizer {
 				MyPoint p1 = worldPoints.get(i+1);
 				
 				//draw it
-				double nx0 = (p0.x - this.mcGen.xmin) / (range);
+				double nx0 = (p0.x - this.physParams.xmin) / (range);
 				double ny0 = (p0.y + 1) / 2;
 				
-				double nx1 = (p1.x - this.mcGen.xmin) / (range);
+				double nx1 = (p1.x - this.physParams.xmin) / (range);
 				double ny1 = (p1.y + 1) / 2;
 				
 				double sx0 = (nx0 * cWidth);
