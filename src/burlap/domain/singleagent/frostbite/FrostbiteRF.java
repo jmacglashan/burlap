@@ -40,7 +40,7 @@ public class FrostbiteRF implements RewardFunction{
 	}
 
 	private int numberPlatformsActive(State s) {
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(FrostbiteDomain.PLATFORMCLASS);
+		List<ObjectInstance> platforms = s.getObjectsOfClass(FrostbiteDomain.PLATFORMCLASS);
 		int nb = 0;
 		for (ObjectInstance platform : platforms)
 			if (platform.getBooleanValue(FrostbiteDomain.ACTIVATEDATTNAME))

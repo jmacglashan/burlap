@@ -1,15 +1,18 @@
 package burlap.oomdp.singleagent.explorer;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.*;
-
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -17,8 +20,10 @@ import burlap.oomdp.singleagent.RewardFunction;
  * conveyed to the user through a text description in the terminal and the user specifies actions
  * by typing the actions into the terminal. Shorthand names for actions names may be provided. Action
  * parameters are specified by space delineated input. For instance: "stack block0 block1" will cause
- * the stack action to called with action parameters block0 and block1. The command ##reset##
- * causes the state to reset to the initial state provided to the explorer.
+ * the stack action to called with action parameters block0 and block1. The command #reset
+ * causes the state to reset to the initial state provided to the explorer. Other special commands
+ * to modify the state can also be given by starting the line with a # symbol. The full syntax structure for modifying
+ * states will be printed to the terminal when the explorer is launched.
  * <br/><br/>
  * This class can also be provided a reward function and terminal function through the
  * {@link #setRewardFunction(burlap.oomdp.singleagent.RewardFunction)} and
@@ -102,7 +107,18 @@ public class TerminalExplorer {
 	 * @param s the state from which to explore.
 	 */
 	public void exploreFromState(State s){
-		
+
+
+		System.out.println("Special Command Syntax:\n"+
+				"    #add objectClass object\n" +
+				"    #remove object\n" +
+				"    #set object attribute [attribute_2 ... attribute_n] value [value_2 ... value_n]\n" +
+				"    #addRelation sourceObject relationalAttribute targetObject\n" +
+				"    #removeRelation sourceObject relationalAttribute targetObject\n" +
+				"    #clearRelations sourceObject relationalAttribute\n" +
+				"    #reset\n\n");
+
+
 		State src = s.copy();
 		State oldState = src;
 		String actionPromptDelimiter = "-----------------------------------";
@@ -132,9 +148,18 @@ public class TerminalExplorer {
 				in = new BufferedReader(new InputStreamReader(System.in));
 				line = in.readLine();
 				
-				if(line.equals("##reset##")){
+				if(line.equals("#reset")){
 					s = src;
 					this.lastAction = null;
+				}
+				else if(line.startsWith("#")){
+					//then do console command parsing
+					String command = line.substring(1).trim();
+					State ns = this.parseCommand(s, command);
+					if(ns != null) {
+						this.lastAction = null;
+						s = ns;
+					}
 				}
 				else{
 					
@@ -160,12 +185,18 @@ public class TerminalExplorer {
 					
 					Action action = domain.getAction(actionName);
 					if(action == null){
-						System.out.println("Unknown action: " + actionName);
+						System.out.println("Unknown action: " + actionName + "; nothing changed");
 					}
 					else{
-						oldState = s;
-						s = action.performAction(s, params);
-						this.lastAction = new GroundedAction(action, params);
+						GroundedAction ga = new GroundedAction(action, params);
+						if(action.applicableInState(s, params)) {
+							oldState = s;
+							s = action.performAction(s, params);
+							this.lastAction = ga;
+						}
+						else{
+							System.out.println(ga.toString() + " is not applicable in the current state; nothing changed");
+						}
 					}
 					
 				}
@@ -182,6 +213,69 @@ public class TerminalExplorer {
 		
 		
 	}
+
+	/**
+	 * Parses a command and returns the resulted modified state
+	 * @param curState the current state to modify
+	 * @param command the special command to parse
+	 * @return the modified state
+	 */
+	protected State parseCommand(State curState, String command){
+		String [] comps = command.split(" ");
+		State ns = curState.copy();
+		if(comps.length > 0) {
+
+
+			if(comps[0].equals("set")) {
+				if(comps.length >= 4) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						int rsize = comps.length - 2;
+						if(rsize % 2 == 0) {
+							int vind = rsize / 2;
+							for(int i = 0; i < rsize / 2; i++) {
+								o.setValue(comps[2 + i], comps[2 + i + vind]);
+							}
+						}
+					}
+				}
+
+			} else if(comps[0].equals("addRelation")) {
+				if(comps.length == 4) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						o.addRelationalTarget(comps[2], comps[3]);
+					}
+				}
+			} else if(comps[0].equals("removeRelation")) {
+				if(comps.length == 4) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						o.removeRelationalTarget(comps[2], comps[3]);
+					}
+				}
+			} else if(comps[0].equals("clearRelations")) {
+				if(comps.length == 3) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						o.clearRelationalTargets(comps[2]);
+					}
+				}
+			} else if(comps[0].equals("add")) {
+				if(comps.length == 3) {
+					ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(comps[1]), comps[2]);
+					ns.addObject(o);
+				}
+			} else if(comps[0].equals("remove")) {
+				if(comps.length == 2) {
+					ns.removeObject(comps[1]);
+				}
+			}
+		}
+
+		return ns;
+
+	}
 	
 	
 	/**
@@ -190,9 +284,11 @@ public class TerminalExplorer {
 	 */
 	public void printState(State s){
 		
-		System.out.println(s.getStateDescription());
+		System.out.println(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
 		
 	}
+
+
 	
 
 }

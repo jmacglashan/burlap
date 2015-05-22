@@ -300,7 +300,7 @@ public class State {
 		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
 			
 			String oclass = objects.get(0).getTrueClassName();
-			List <ObjectInstance> oobjects = so.getObjectsOfTrueClass(oclass);
+			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size() && enforceStateExactness){
 				return new HashMap<String, String>(); //states are not equal and therefore cannot be matched
 			}
@@ -352,7 +352,7 @@ public class State {
 		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
 			
 			String oclass = objects.get(0).getTrueClassName();
-			List <ObjectInstance> oobjects = so.getObjectsOfTrueClass(oclass);
+			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size()){
 				return false;
 			}

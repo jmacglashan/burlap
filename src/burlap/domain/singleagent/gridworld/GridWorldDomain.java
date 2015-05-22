@@ -580,7 +580,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the agent
 	 */
 	public static void setAgent(State s, int x, int y){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance o = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -594,7 +594,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSLOCATION).get(i);
+		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -610,7 +610,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param locType the location type of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y, int locType){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSLOCATION).get(i);
+		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -648,7 +648,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	protected void move(State s, int xd, int yd, int [][] map){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		int ax = agent.getIntValForAttribute(ATTX);
 		int ay = agent.getIntValForAttribute(ATTY);
 		

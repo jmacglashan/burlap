@@ -39,9 +39,9 @@ public class LLStateParser implements StateParser {
 
 		StringBuffer buf = new StringBuffer(256);
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(LunarLanderDomain.AGENTCLASS).get(0);
-		ObjectInstance pad = s.getObjectsOfTrueClass(LunarLanderDomain.PADCLASS).get(0);
-		List <ObjectInstance> obsts = s.getObjectsOfTrueClass(LunarLanderDomain.OBSTACLECLASS);
+		ObjectInstance agent = s.getObjectsOfClass(LunarLanderDomain.AGENTCLASS).get(0);
+		ObjectInstance pad = s.getObjectsOfClass(LunarLanderDomain.PADCLASS).get(0);
+		List <ObjectInstance> obsts = s.getObjectsOfClass(LunarLanderDomain.OBSTACLECLASS);
 		
 		//write agent
 		buf.append(agent.getRealValForAttribute(LunarLanderDomain.AATTNAME)).append(" ");

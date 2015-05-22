@@ -78,7 +78,8 @@ public class VisualExplorer extends JFrame{
 
 	protected GroundedAction								lastAction;
 	protected double										lastReward;
-	
+	protected String										warningMessage = "";
+
 	protected boolean										isRecording = false;
 
 	
@@ -552,6 +553,10 @@ public class VisualExplorer extends JFrame{
 		if(this.trackingRewardFunction != null && this.lastAction != null){
 			sb.append("Reward: " + this.lastReward + "\n");
 		}
+		if(this.warningMessage.length() > 0) {
+			sb.append("WARNING: " + this.warningMessage + "\n");
+			this.warningMessage = "";
+		}
 		sb.append("\n------------------------------\n\n");
 
 		if(s.getAllUnsetAttributes().size() == 0){
@@ -643,22 +648,32 @@ public class VisualExplorer extends JFrame{
 
 		Action action = domain.getAction(actionName);
 		if(action == null){
-			System.out.println("Unknown action: " + actionName);
+			this.warningMessage = "Unknown action: " + actionName + "; nothing changed";
+			System.out.println(warningMessage);
+			this.updateState(curState);
 		}
 		else{
 			GroundedAction ga = new GroundedAction(action, params);
-			State nextState = ga.executeIn(curState);
-			if(this.currentEpisode != null){
-				this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
+			if(ga.action.applicableInState(curState, params)){
+				State nextState = ga.executeIn(curState);
+				if(this.currentEpisode != null){
+					this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
+				}
+
+				if(this.trackingRewardFunction != null){
+					this.lastAction = ga;
+					this.lastReward = this.trackingRewardFunction.reward(curState, ga, nextState);
+				}
+
+				numSteps++;
+				this.updateState(nextState);
+			}
+			else{
+				this.warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
+				System.out.println(warningMessage);
+				this.updateState(curState);
 			}
 
-			if(this.trackingRewardFunction != null){
-				this.lastAction = ga;
-				this.lastReward = this.trackingRewardFunction.reward(curState, ga, nextState);
-			}
-
-			numSteps++;
-			this.updateState(nextState);
 		}
 	}
 

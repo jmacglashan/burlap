@@ -13,7 +13,9 @@ import java.util.List;
 /**
  * A domain generator for the classic mountain car domain with default dynamics follow those implemented by Singh and Sutton [1].
  * In this domain you can change the parameters for min/max position and velocity, the scale of the cosine curve on which the car travels,
- * the force of gravity, acceleration, and the amount of time that elapses between simulation/decision steps.
+ * the force of gravity, acceleration, and the amount of time that elapses between simulation/decision steps. If you
+ * previously generated a {@link burlap.oomdp.core.Domain}, changing the physics parameters of this {@link burlap.oomdp.auxiliary.DomainGenerator} will
+ * not affect how the previously generated domain behaves, only future generated ones.
  * 
  * <p/>
  * 1. Singh, Satinder P., and Richard S. Sutton. "Reinforcement learning with replacing eligibility traces." Machine learning 22.1-3 (1996): 123-158.
@@ -56,49 +58,77 @@ public class MountainCar implements DomainGenerator {
 	 * A constant for the name of the coast action
 	 */
 	public static final String				ACTIONCOAST = "coast";
-	
-	
-	
+
+
 	/**
-	 * The minimum x position to which the agent can travel
+	 * The physics parameters for mountain car.
 	 */
-	public double							xmin = -1.2;
-	
-	/**
-	 * The maximum x position to which the agent can travel
-	 */
-	public double							xmax = 0.5;
-	
-	
-	/**
-	 * Constant factor multiplied by the agent position inside the cosine that defines the shape of the curve.
-	 */
-	public double							cosScale = 3.0;
-	
-	/**
-	 * The minimum velocity of the agent
-	 */
-	public double							vmin = -0.07;
-	
-	/**
-	 * The maximum velocity of the agent
-	 */
-	public double							vmax = 0.07;
-	
-	/**
-	 * The amount of acceleration of the car engine can use
-	 */
-	public double							acceleration = 0.001;
-	
-	/**
-	 * The force of gravity
-	 */
-	public double							gravity = 0.0025;
-	
-	/**
-	 * The time difference to pass in each update
-	 */
-	public double							timeDelta = 1.;
+	public MCPhysicsParams physParams = new MCPhysicsParams();
+
+
+	public static class MCPhysicsParams {
+
+		/**
+		 * The minimum x position to which the agent can travel
+		 */
+		public double							xmin = -1.2;
+
+		/**
+		 * The maximum x position to which the agent can travel
+		 */
+		public double							xmax = 0.5;
+
+
+		/**
+		 * Constant factor multiplied by the agent position inside the cosine that defines the shape of the curve.
+		 */
+		public double							cosScale = 3.0;
+
+		/**
+		 * The minimum velocity of the agent
+		 */
+		public double							vmin = -0.07;
+
+		/**
+		 * The maximum velocity of the agent
+		 */
+		public double							vmax = 0.07;
+
+		/**
+		 * The amount of acceleration of the car engine can use
+		 */
+		public double							acceleration = 0.001;
+
+		/**
+		 * The force of gravity
+		 */
+		public double							gravity = 0.0025;
+
+		/**
+		 * The time difference to pass in each update
+		 */
+		public double							timeDelta = 1.;
+
+
+		public MCPhysicsParams copy(){
+
+			MCPhysicsParams c = new MCPhysicsParams();
+			c.xmin = this.xmin;
+			c.xmax = this.xmax;
+			c.cosScale = this.cosScale;
+			c.vmin = this.vmin;
+			c.vmax = this.vmax;
+			c.acceleration = this.acceleration;
+			c.gravity = this.gravity;
+			c.timeDelta = this.timeDelta;
+
+			return c;
+		}
+
+	}
+
+
+
 	
 	
 	@Override
@@ -108,20 +138,21 @@ public class MountainCar implements DomainGenerator {
 		
 		//add attributes
 		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.REAL);
-		xatt.setLims(xmin, xmax);
+		xatt.setLims(physParams.xmin, physParams.xmax);
 		
 		Attribute vatt = new Attribute(domain, ATTV, Attribute.AttributeType.REAL);
-		vatt.setLims(vmin, vmax);
+		vatt.setLims(physParams.vmin, physParams.vmax);
 		
 		//add classes
 		ObjectClass agentClass = new ObjectClass(domain, CLASSAGENT);
 		agentClass.addAttribute(xatt);
 		agentClass.addAttribute(vatt);
 		
-		
-		new MovementAction(ACTIONFORWARD, domain, 1);
-		new MovementAction(ACTIONBACKWARDS, domain, -1);
-		new MovementAction(ACTIONCOAST, domain, 0);
+		MCPhysicsParams cphys = this.physParams.copy();
+
+		new MovementAction(ACTIONFORWARD, domain, 1, cphys);
+		new MovementAction(ACTIONBACKWARDS, domain, -1, cphys);
+		new MovementAction(ACTIONCOAST, domain, 0, cphys);
 		
 		
 		return domain;
@@ -135,7 +166,7 @@ public class MountainCar implements DomainGenerator {
 	 * @param dir the direction of acceleration
 	 * @return the modified state s
 	 */
-	public State move(State s, int dir){
+	public static State move(State s, int dir, MCPhysicsParams physParms){
 		
 		
 		ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -143,25 +174,25 @@ public class MountainCar implements DomainGenerator {
 		double p0 = agent.getRealValForAttribute(ATTX);
 		double v0 = agent.getRealValForAttribute(ATTV);
 		
-		double netAccel = (acceleration * dir) - (gravity * Math.cos(this.cosScale*p0));
+		double netAccel = (physParms.acceleration * dir) - (physParms.gravity * Math.cos(physParms.cosScale*p0));
 		
-		double v1 = v0 + this.timeDelta * netAccel;
-		if(v1 < vmin){
-			v1 = vmin;
+		double v1 = v0 + physParms.timeDelta * netAccel;
+		if(v1 < physParms.vmin){
+			v1 = physParms.vmin;
 		}
-		else if(v1 > vmax){
-			v1 = vmax;
+		else if(v1 > physParms.vmax){
+			v1 = physParms.vmax;
 		}
 		
-		double p1 = p0 + this.timeDelta*v1; //original mechanics in paper defined this way
+		double p1 = p0 + physParms.timeDelta*v1; //original mechanics in paper defined this way
 		//double p1 = p0 + this.timeDelta*v0 + .5*netAccel*this.timeDelta*this.timeDelta; //more accurate estimate
 		
-		if(p1 < xmin){
-			p1 = xmin;
+		if(p1 < physParms.xmin){
+			p1 = physParms.xmin;
 			v1 = 0.;
 		}
-		else if(p1 > xmax){
-			p1 = xmax;
+		else if(p1 > physParms.xmax){
+			p1 = physParms.xmax;
 			v1 = 0.;
 		}
 		
@@ -179,10 +210,21 @@ public class MountainCar implements DomainGenerator {
 	 * @return a new state with the agent in the bottom of the hill valley not moving.
 	 */
 	public State getCleanState(Domain domain){
+		return getCleanState(domain, this.physParams);
+	}
+
+	/**
+	 * Returns a new state with the agent in the bottom of the hill valley not moving according to the hill design
+	 * specified in the provided {@link burlap.domain.singleagent.mountaincar.MountainCar.MCPhysicsParams}
+	 * @param domain the domain object in which the state is associated
+	 * @param physParms object specifying the physics and hill design, which indicates where the valley is.
+	 * @return a new state with the agent in the bottom of the hill valley not moving.
+	 */
+	public static State getCleanState(Domain domain, MCPhysicsParams physParms){
 		State s = new State();
 		ObjectInstance a = new ObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
 		s.addObject(a);
-		setAgent(s, -(Math.PI/2) / this.cosScale, 0.);
+		setAgent(s, -(Math.PI/2) / physParms.cosScale, 0.);
 		return s;
 	}
 	
@@ -225,7 +267,7 @@ public class MountainCar implements DomainGenerator {
 	class MovementAction extends Action{
 
 		int dir;
-		
+		MCPhysicsParams physParms;
 		
 		/**
 		 * Initializes with the given name, domain, and direction of acceleration.
@@ -233,21 +275,37 @@ public class MountainCar implements DomainGenerator {
 		 * @param domain the domain of this action
 		 * @param dir the direction of acceleration; +1 for forward acceleration, -1 for backwards acceleration, 0 for no acceleration (coast).
 		 */
-		public MovementAction(String name, Domain domain, int dir){
+		public MovementAction(String name, Domain domain, int dir, MCPhysicsParams physParms){
 			super(name, domain, "");
 			this.dir = dir;
+			this.physParms = physParms;
 		}
 		
 		@Override
 		protected State performActionHelper(State s, String[] params) {
-			return MountainCar.this.move(s, dir);
+			return MountainCar.move(s, dir, this.physParms);
 		}
 
 		@Override
 		public List<TransitionProbability> getTransitions(State s, String [] params){
 			return this.deterministicTransition(s, params);
 		}
-		
+
+		public MCPhysicsParams getPhysParms() {
+			return physParms;
+		}
+
+		public void setPhysParms(MCPhysicsParams physParms) {
+			this.physParms = physParms;
+		}
+
+		public int getDir() {
+			return dir;
+		}
+
+		public void setDir(int dir) {
+			this.dir = dir;
+		}
 	}
 	
 	
@@ -258,18 +316,18 @@ public class MountainCar implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ClassicMCTF implements TerminalFunction{
+	public static class ClassicMCTF implements TerminalFunction{
 
 		public double threshold;
+		protected boolean useThreshold = false;
 		
 		
 		/**
 		 * Sets terminal states to be those that are >= the maximum position in the world.
 		 */
 		public ClassicMCTF(){
-			this.threshold = xmax;
+
 		}
-		
 		
 		/**
 		 * Sets terminal states to be those >= the given threshold.
@@ -277,12 +335,22 @@ public class MountainCar implements DomainGenerator {
 		 */
 		public ClassicMCTF(double threshold){
 			this.threshold = threshold;
+			this.useThreshold = true;
 		}
 		
 		@Override
 		public boolean isTerminal(State s) {
-			double x = s.getFirstObjectOfClass(CLASSAGENT).getRealValForAttribute(ATTX);
-			if(x >= this.threshold){
+
+			ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+			double x = agent.getRealValForAttribute(ATTX);
+
+			double threshold = this.threshold;
+			if(!this.useThreshold){
+				threshold = agent.getObjectClass().domain.getAttribute(ATTX).upperLim;
+			}
+
+
+			if(x >= threshold){
 				return true;
 			}
 			return false;
