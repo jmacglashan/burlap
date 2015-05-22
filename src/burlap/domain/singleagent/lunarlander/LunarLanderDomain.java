@@ -320,7 +320,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param vy the y velocity component of the lander
 	 */
 	public static void setAgent(State s, double a, double x, double y, double vx, double vy){
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		
 		agent.setValue(AATTNAME, a);
 		agent.setValue(XATTNAME, x);
@@ -340,7 +340,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param t the top boundary
 	 */
 	public static void setObstacle(State s, int i, double l, double r, double b, double t){
-		ObjectInstance obst = s.getObjectsOfTrueClass(OBSTACLECLASS).get(i);
+		ObjectInstance obst = s.getObjectsOfClass(OBSTACLECLASS).get(i);
 		
 		obst.setValue(LATTNAME, l);
 		obst.setValue(RATTNAME, r);
@@ -372,7 +372,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param t the top boundary
 	 */
 	public static void setPad(State s, int i, double l, double r, double b, double t){
-		ObjectInstance pad = s.getObjectsOfTrueClass(PADCLASS).get(i);
+		ObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(i);
 		
 		pad.setValue(LATTNAME, l);
 		pad.setValue(RATTNAME, r);
@@ -700,7 +700,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	protected static void incAngle(State s, double dir, LLPhysicsParams physParams){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		double curA = agent.getRealValForAttribute(AATTNAME);
 		
 		double newa = curA + (dir * physParams.anginc);
@@ -726,7 +726,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		double ti = 1.;
 		double tt = ti*ti;
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		double ang = agent.getRealValForAttribute(AATTNAME);
 		double x = agent.getRealValForAttribute(XATTNAME);
 		double y = agent.getRealValForAttribute(YATTNAME);
@@ -787,7 +787,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		//check for collisions
-		List <ObjectInstance> obstacles = s.getObjectsOfTrueClass(OBSTACLECLASS);
+		List <ObjectInstance> obstacles = s.getObjectsOfClass(OBSTACLECLASS);
 		for(ObjectInstance o : obstacles){
 			double l = o.getRealValForAttribute(LATTNAME);
 			double r = o.getRealValForAttribute(RATTNAME);
@@ -830,7 +830,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		//check the pad collision
-		ObjectInstance pad = s.getObjectsOfTrueClass(PADCLASS).get(0);
+		ObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(0);
 		double l = pad.getRealValForAttribute(LATTNAME);
 		double r = pad.getRealValForAttribute(RATTNAME);
 		double b = pad.getRealValForAttribute(BATTNAME);

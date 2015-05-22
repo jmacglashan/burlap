@@ -182,7 +182,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param y the y position of the agent
 	 */
 	public static void setAgent(State s, int x, int y) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 
 		agent.setValue(XATTNAME, x);
 		agent.setValue(YATTNAME, y);
@@ -198,7 +198,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param h the height of the agent (0 is ground)
 	 */
 	public static void setAgent(State s, int x, int y, int h) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 
 		agent.setValue(XATTNAME, x);
 		agent.setValue(YATTNAME, y);
@@ -212,7 +212,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param building igloo building status
 	 */
 	public static void setIgloo(State s, int building) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(IGLOOCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(IGLOOCLASS).get(0);
 
 		agent.setValue(BUILDINGATTNAME, building);
 	}
@@ -228,7 +228,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param activatedStatus the platform status
 	 */
 	public static void setPlatform(State s, int i, int x, int y, int ss, boolean activatedStatus) {
-		ObjectInstance platform = s.getObjectsOfTrueClass(PLATFORMCLASS).get(i);
+		ObjectInstance platform = s.getObjectsOfClass(PLATFORMCLASS).get(i);
 
 		platform.setValue(XATTNAME, x);
 		platform.setValue(YATTNAME, y);
@@ -409,7 +409,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	protected void move(State s, int xd, int yd) {
 
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		int ax = agent.getIntValForAttribute(XATTNAME);
 		int ay = agent.getIntValForAttribute(YATTNAME);
 		int leftToJump = agent.getIntValForAttribute(HEIGHTATTNAME);
@@ -470,7 +470,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	private void update(State s, int leftToJump, boolean justLanded, int platformSpeedOnAgent) {
 		// Move the platforms
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
+		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			int directionL = ((i / numberPlatformCol) % 2 == 0) ? 1 : -1;
 			int x = platforms.get(i).getIntValForAttribute(XATTNAME) + directionL * platformSpeed;
@@ -488,9 +488,9 @@ public class FrostbiteDomain implements DomainGenerator{
 
 			// Termination conditions (only used to test the domain)
 			if (visualizingDomain) {
-				ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+				ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 				int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-				ObjectInstance igloo = s.getObjectsOfTrueClass(IGLOOCLASS).get(0);
+				ObjectInstance igloo = s.getObjectsOfClass(IGLOOCLASS).get(0);
 				int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
 				if (platformSpeedOnAgent == 0 && ay > gameIceHeight) {
 					System.out.println("Game over.");
@@ -515,10 +515,10 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param s State on which to activate the platforms
 	 */
 	private void activatePlatforms(State s) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
 		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
+		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
 			if (!platform.getBooleanValue(ACTIVATEDATTNAME))
@@ -538,10 +538,10 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @return 0 if the player is not on a platform. Otherwise returns the platform speed of the platform the player is on.
 	 */
 	private int getLandedPlatformSpeed(State s) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
 		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
+		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
 			if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME)))

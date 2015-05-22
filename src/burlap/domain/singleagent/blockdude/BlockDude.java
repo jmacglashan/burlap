@@ -462,7 +462,7 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public static void moveUp(State s, int maxx){
 
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
@@ -507,7 +507,7 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public static void pickupBlock(State s, int maxx){
 
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
@@ -558,7 +558,7 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public static void putdownBlock(State s, int maxx){
 
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
@@ -622,7 +622,7 @@ public class BlockDude implements DomainGenerator{
 	 */
 	protected static ObjectInstance getBlockAt(State s, int x, int y){
 
-		List<ObjectInstance> blocks = s.getObjectsOfTrueClass(CLASSBLOCK);
+		List<ObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
 		for(ObjectInstance block : blocks){
 			int bx = block.getIntValForAttribute(ATTX);
 			int by = block.getIntValForAttribute(ATTY);

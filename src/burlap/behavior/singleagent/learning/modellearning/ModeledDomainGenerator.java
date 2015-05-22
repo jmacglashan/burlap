@@ -89,7 +89,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 
 	
 	public static boolean isRmaxFictitiousState(State s){
-		return s.getObjectsOfTrueClass(RMAXFICTIOUSSTATENAME).size() > 0;
+		return s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0;
 	}
 	
 	
@@ -148,7 +148,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		
 		@Override
 		public boolean applicableInState(State s, String [] params){
-			if(s.getObjectsOfTrueClass(RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0){
 				return false; //action cannot be performed in rmax state
 			}
 			return this.sourceAction.applicableInState(s, params);
@@ -207,7 +207,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		
 		@Override
 		public boolean applicableInState(State s, String [] params){
-			if(s.getObjectsOfTrueClass(RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0){
 				return true; //action cannot be performed in rmax state
 			}
 			return false;
