@@ -80,8 +80,8 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = ob.getDiscValForAttribute(BlockDude.ATTX)*width;
-			float ry = cHeight - height - ob.getDiscValForAttribute(BlockDude.ATTY)*height;
+			float rx = ob.getIntValForAttribute(BlockDude.ATTX)*width;
+			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.ATTY)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -142,7 +142,7 @@ public class BlockDudeVisualizer {
 			float height = (1.0f / domainYScale) * cHeight;
 
 			float rx = ob.getIntValForAttribute(BlockDude.ATTX)*width;
-			float ry = cHeight - height - ob.getDiscValForAttribute(BlockDude.ATTY)*height;
+			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.ATTY)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -189,7 +189,7 @@ public class BlockDudeVisualizer {
 			float height = (1.0f / domainYScale) * cHeight;
 
 			float rx = ob.getIntValForAttribute(BlockDude.ATTX)*width;
-			float ry = cHeight - height - ob.getDiscValForAttribute(BlockDude.ATTY)*height;
+			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.ATTY)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 

@@ -473,7 +473,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			int directionL = ((i / numberPlatformCol) % 2 == 0) ? 1 : -1;
-			int x = platforms.get(i).getDiscValForAttribute(XATTNAME) + directionL * platformSpeed;
+			int x = platforms.get(i).getIntValForAttribute(XATTNAME) + directionL * platformSpeed;
 			if (x < 0)
 				x += gameWidth;
 			platforms.get(i).setValue(XATTNAME, x % gameWidth);
@@ -489,9 +489,9 @@ public class FrostbiteDomain implements DomainGenerator{
 			// Termination conditions (only used to test the domain)
 			if (visualizingDomain) {
 				ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
-				int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+				int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 				ObjectInstance igloo = s.getObjectsOfTrueClass(IGLOOCLASS).get(0);
-				int building = igloo.getDiscValForAttribute(BUILDINGATTNAME);
+				int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
 				if (platformSpeedOnAgent == 0 && ay > gameIceHeight) {
 					System.out.println("Game over.");
 					System.exit(0);
@@ -516,17 +516,17 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	private void activatePlatforms(State s) {
 		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
-		int ax = agent.getDiscValForAttribute(XATTNAME) + agentSize / 2;
-		int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
+		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
 			if (!platform.getBooleanValue(ACTIVATEDATTNAME))
-				if (pointInPlatform(ax, ay, platform.getDiscValForAttribute(XATTNAME), platform.getDiscValForAttribute(YATTNAME), platform.getDiscValForAttribute(SIZEATTNAME))) {
+				if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME))) {
 					for (int j = numberPlatformCol * (i / numberPlatformCol); j < numberPlatformCol * (1 + i / numberPlatformCol); j++)
 						platforms.get(j).setValue(ACTIVATEDATTNAME, true);
 					ObjectInstance igloo = s.getFirstObjectOfClass(IGLOOCLASS);
-					igloo.setValue(BUILDINGATTNAME, igloo.getDiscValForAttribute(BUILDINGATTNAME) + 1);
+					igloo.setValue(BUILDINGATTNAME, igloo.getIntValForAttribute(BUILDINGATTNAME) + 1);
 					break;
 				}
 		}
@@ -539,12 +539,12 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	private int getLandedPlatformSpeed(State s) {
 		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
-		int ax = agent.getDiscValForAttribute(XATTNAME) + agentSize / 2;
-		int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
+		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
-			if (pointInPlatform(ax, ay, platform.getDiscValForAttribute(XATTNAME), platform.getDiscValForAttribute(YATTNAME), platform.getDiscValForAttribute(SIZEATTNAME)))
+			if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME)))
 				return ((i / numberPlatformCol) % 2 == 0) ? platformSpeed : -platformSpeed;
 		}
 		return 0;
@@ -769,7 +769,7 @@ public class FrostbiteDomain implements DomainGenerator{
 			if (getLandedPlatformSpeed(st) != 0)
 				return false;
 
-			int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 			return ay >= gameIceHeight;
 		}
 	}
@@ -790,7 +790,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		public boolean isTrue(State st, String[] params) {
 			ObjectInstance agent = st.getObject(params[0]);
 
-			int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 			return ay < gameIceHeight;
 		}
 	}
@@ -810,7 +810,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		public boolean isTrue(State st, String[] params) {
 			ObjectInstance igloo = st.getObject(params[0]);
 
-			int building = igloo.getDiscValForAttribute(BUILDINGATTNAME);
+			int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
 			return building >= buildingStepsToWin;
 		}
 	}
