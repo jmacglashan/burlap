@@ -63,7 +63,7 @@ public class MountainCar implements DomainGenerator {
 	/**
 	 * The physics parameters for mountain car.
 	 */
-	public MCPhysicsParams physParms = new MCPhysicsParams();
+	public MCPhysicsParams physParams = new MCPhysicsParams();
 
 
 	public static class MCPhysicsParams {
@@ -138,17 +138,17 @@ public class MountainCar implements DomainGenerator {
 		
 		//add attributes
 		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.REAL);
-		xatt.setLims(physParms.xmin, physParms.xmax);
+		xatt.setLims(physParams.xmin, physParams.xmax);
 		
 		Attribute vatt = new Attribute(domain, ATTV, Attribute.AttributeType.REAL);
-		vatt.setLims(physParms.vmin, physParms.vmax);
+		vatt.setLims(physParams.vmin, physParams.vmax);
 		
 		//add classes
 		ObjectClass agentClass = new ObjectClass(domain, CLASSAGENT);
 		agentClass.addAttribute(xatt);
 		agentClass.addAttribute(vatt);
 		
-		MCPhysicsParams cphys = this.physParms.copy();
+		MCPhysicsParams cphys = this.physParams.copy();
 
 		new MovementAction(ACTIONFORWARD, domain, 1, cphys);
 		new MovementAction(ACTIONBACKWARDS, domain, -1, cphys);
@@ -210,7 +210,7 @@ public class MountainCar implements DomainGenerator {
 	 * @return a new state with the agent in the bottom of the hill valley not moving.
 	 */
 	public State getCleanState(Domain domain){
-		return getCleanState(domain, this.physParms);
+		return getCleanState(domain, this.physParams);
 	}
 
 	/**

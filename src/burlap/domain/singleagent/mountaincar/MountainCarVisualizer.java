@@ -31,7 +31,7 @@ public class MountainCarVisualizer {
 	 */
 	public static Visualizer getVisualizer(MountainCar mcGen){
 		
-		Visualizer v = new Visualizer(getStateRenderLayer(mcGen.physParms));
+		Visualizer v = new Visualizer(getStateRenderLayer(mcGen.physParams));
 		return v;
 		
 	}
