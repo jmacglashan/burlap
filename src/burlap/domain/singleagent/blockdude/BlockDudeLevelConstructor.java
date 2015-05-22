@@ -4,7 +4,7 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 
 /**
- * A class for generating the initial states for {@link domain.singleagent.blockdude2.BlockDude} from levels
+ * A class for generating the initial states for {@link burlap.domain.singleagent.blockdude.BlockDude} from levels
  * in the classic Block Dude game. Currently this class will
  * provide the initial states for the first three levels of Block Dude.
  * @author James MacGlashan.
