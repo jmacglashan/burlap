@@ -160,12 +160,18 @@ public class TerminalExplorer {
 					
 					Action action = domain.getAction(actionName);
 					if(action == null){
-						System.out.println("Unknown action: " + actionName);
+						System.out.println("Unknown action: " + actionName + "; nothing changed");
 					}
 					else{
-						oldState = s;
-						s = action.performAction(s, params);
-						this.lastAction = new GroundedAction(action, params);
+						GroundedAction ga = new GroundedAction(action, params);
+						if(action.applicableInState(s, params)) {
+							oldState = s;
+							s = action.performAction(s, params);
+							this.lastAction = ga;
+						}
+						else{
+							System.out.println(ga.toString() + " is not applicable in the current state; nothing changed");
+						}
 					}
 					
 				}

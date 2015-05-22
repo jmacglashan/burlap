@@ -21,7 +21,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * This class allows you act as all of the agents in a domain by choosing actions for each of them to take in specific states. States are
  * conveyed to the user through a text description in the terminal and the user specifies actions
  * by typing the actions into the terminal, one line at a time for each agent's action. 
- * The command format is "agentName::action parameter1 parameter2" and so on for as many parameters
+ * The command format is "agentName:action parameter1 parameter2" and so on for as many parameters
  * as there may be (or none if an action takes no parameters). 
  * <p/>
  * When all of the agent's actions have
@@ -225,7 +225,7 @@ public class SGTerminalExplorer {
 				else{
 					
 					//split the string up into components
-					String [] agacComps = line.split("::"); 
+					String [] agacComps = line.split(":");
 					String agentName = agacComps[0];
 					
 					String [] comps = agacComps[1].split(" ");
@@ -258,7 +258,7 @@ public class SGTerminalExplorer {
 							curJointAction.addAction(gsa);
 						}
 						else{
-							System.out.println("Cannot apply this action in this state: " + agentName + "::" + actionName);
+							System.out.println(gsa.toString() + " is not applicable in the current state; nothing changed");
 						}
 					}
 					
