@@ -21,7 +21,7 @@ public class BlockDudeVisualizer {
 	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}.
 	 * @param maxx the max x dimensionality of the world
 	 * @param maxy the max y dimensionality of the world
-	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude
+	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}
 	 */
 	public static Visualizer getVisualizer(int maxx, int maxy){
 		Visualizer v = new Visualizer(getStateRenderLayer(maxx, maxy));
