@@ -1,19 +1,15 @@
 package burlap.oomdp.stochasticgames.explorers;
 
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.stochasticgames.*;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.JointReward;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SingleAction;
 
 
 
@@ -21,7 +17,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * This class allows you act as all of the agents in a domain by choosing actions for each of them to take in specific states. States are
  * conveyed to the user through a text description in the terminal and the user specifies actions
  * by typing the actions into the terminal, one line at a time for each agent's action. 
- * The command format is "agentName::action parameter1 parameter2" and so on for as many parameters
+ * The command format is "agentName:action parameter1 parameter2" and so on for as many parameters
  * as there may be (or none if an action takes no parameters). 
  * <p/>
  * When all of the agent's actions have
@@ -29,8 +25,9 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * <p/>
  * Shorthand names for actions names may be provided. 
  * <p/>
- * The command ##reset##
- * causes the state to reset to the initial state provided to the explorer.
+ * The command #reset
+ * causes the state to reset to the initial state provided to the explorer. Other special commands to modify
+ * the state may also be specified. The full syntax is printed to the terminal when the explorer begins.
  * <br/><br/>
  * This explorer can also track a reward function and terminal function and print them to the screen, which can be set
  * with the
@@ -152,7 +149,19 @@ public class SGTerminalExplorer {
 	 * @param s the state from which to start exploring.
 	 */
 	public void exploreFromState(State s){
-		
+
+		System.out.println("Special Command Syntax:\n"+
+				"    #add objectClass object\n" +
+				"    #remove object\n" +
+				"    #set object attribute [attribute_2 ... attribute_n] value [value_2 ... value_n]\n" +
+				"    #addRelation sourceObject relationalAttribute targetObject\n" +
+				"    #removeRelation sourceObject relationalAttribute targetObject\n" +
+				"    #clearRelations sourceObject relationalAttribute\n" +
+				"    #reset\n\n");
+		System.out.println("Set agent actions with the notation \"agentName:action actionParam1 actionParam2 ...\"");
+		System.out.println("Type \"##\" to commit and execute the current joint action.\n\n");
+
+
 		curJointAction = new JointAction();
 		
 		State src = s.copy();
@@ -179,7 +188,7 @@ public class SGTerminalExplorer {
 				in = new BufferedReader(new InputStreamReader(System.in));
 				line = in.readLine();
 				
-				if(line.equals("##reset##")){
+				if(line.equals("#reset")){
 					s = src;
 					curJointAction = new JointAction();
 					this.printState(s);
@@ -222,10 +231,33 @@ public class SGTerminalExplorer {
 					curJointAction = new JointAction();
 					s = ns;
 				}
+				else if(line.startsWith("#")){
+
+					//then do console command parsing
+					String command = line.substring(1).trim();
+					State ns = this.parseCommand(s, command);
+					if(ns != null) {
+						this.curJointAction = new JointAction();
+						s = ns;
+
+						this.printState(ns);
+
+						if(this.terminalFunction != null){
+							if(this.terminalFunction.isTerminal(ns)){
+								System.out.println("State IS terminal");
+							}
+							else{
+								System.out.println("State is NOT terminal");
+							}
+						}
+
+						System.out.println(actionPromptDelimiter);
+					}
+				}
 				else{
 					
 					//split the string up into components
-					String [] agacComps = line.split("::"); 
+					String [] agacComps = line.split(":");
 					String agentName = agacComps[0];
 					
 					String [] comps = agacComps[1].split(" ");
@@ -258,7 +290,7 @@ public class SGTerminalExplorer {
 							curJointAction.addAction(gsa);
 						}
 						else{
-							System.out.println("Cannot apply this action in this state: " + agentName + "::" + actionName);
+							System.out.println(gsa.toString() + " is not applicable in the current state; nothing changed");
 						}
 					}
 					
@@ -277,6 +309,70 @@ public class SGTerminalExplorer {
 		
 		
 	}
+
+
+	/**
+	 * Parses a command and returns the resulted modified state
+	 * @param curState the current state to modify
+	 * @param command the special command to parse
+	 * @return the modified state
+	 */
+	protected State parseCommand(State curState, String command){
+		String [] comps = command.split(" ");
+		State ns = curState.copy();
+		if(comps.length > 0) {
+
+
+			if(comps[0].equals("set")) {
+				if(comps.length >= 4) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						int rsize = comps.length - 2;
+						if(rsize % 2 == 0) {
+							int vind = rsize / 2;
+							for(int i = 0; i < rsize / 2; i++) {
+								o.setValue(comps[2 + i], comps[2 + i + vind]);
+							}
+						}
+					}
+				}
+
+			} else if(comps[0].equals("addRelation")) {
+				if(comps.length == 4) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						o.addRelationalTarget(comps[2], comps[3]);
+					}
+				}
+			} else if(comps[0].equals("removeRelation")) {
+				if(comps.length == 4) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						o.removeRelationalTarget(comps[2], comps[3]);
+					}
+				}
+			} else if(comps[0].equals("clearRelations")) {
+				if(comps.length == 3) {
+					ObjectInstance o = ns.getObject(comps[1]);
+					if(o != null) {
+						o.clearRelationalTargets(comps[2]);
+					}
+				}
+			} else if(comps[0].equals("add")) {
+				if(comps.length == 3) {
+					ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(comps[1]), comps[2]);
+					ns.addObject(o);
+				}
+			} else if(comps[0].equals("remove")) {
+				if(comps.length == 2) {
+					ns.removeObject(comps[1]);
+				}
+			}
+		}
+
+		return ns;
+
+	}
 	
 	
 	/**
@@ -285,8 +381,10 @@ public class SGTerminalExplorer {
 	 */
 	public void printState(State s){
 		
-		System.out.println(s.getStateDescription());
+		System.out.println(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
 		
 	}
+
+
 
 }

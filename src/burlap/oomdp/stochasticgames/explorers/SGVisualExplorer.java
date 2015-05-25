@@ -62,6 +62,7 @@ public class SGVisualExplorer extends JFrame {
 
 	protected TerminalFunction						terminalFunction;
 	protected JointReward 							rewardFunction;
+	protected String								warningMessage = "";
 
 	protected Map<String, Double>					lastRewards;
 
@@ -356,13 +357,29 @@ public class SGVisualExplorer extends JFrame {
 					else if(comps[0].equals("setAction")){
 						String [] agentAction = comps[1].split(":");
 						SingleAction sa = domain.getSingleAction(agentAction[1]);
-						String [] params = new String[comps.length-2];
-						for(int i = 2; i < comps.length; i++){
-							params[i-2] = comps[i];
+						if(sa == null){
+							warningMessage = "Unknown action: " + agentAction[1] + "; nothing changed";
+							SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
 						}
-						GroundedSingleAction gsa = new GroundedSingleAction(agentAction[0], sa, params);
-						SGVisualExplorer.this.nextAction.addAction(gsa);
-						SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
+						else {
+
+							String[] params = new String[comps.length - 2];
+							for(int i = 2; i < comps.length; i++) {
+								params[i - 2] = comps[i];
+							}
+							GroundedSingleAction gsa = new GroundedSingleAction(agentAction[0], sa, params);
+							if(sa.isApplicableInState(curState, agentAction[0], params)){
+								SGVisualExplorer.this.nextAction.addAction(gsa);
+								SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
+							}
+							else{
+								warningMessage = gsa.toString() + " is not applicable in the current state; nothing changed";
+								SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
+							}
+
+
+
+						}
 
 					}
 					else if(comps[0].equals("commit")){
@@ -443,6 +460,10 @@ public class SGVisualExplorer extends JFrame {
 			}
 		}
 
+		if(this.warningMessage.length() > 0){
+			sb.append(warningMessage + "\n");
+			warningMessage = "";
+		}
 		sb.append(this.nextAction.toString() + "\n");
 
 
@@ -474,9 +495,12 @@ public class SGVisualExplorer extends JFrame {
 		//otherwise this could be an action, see if there is an action mapping
 		String mappedAction = keyActionMap.get(key);
 		if(mappedAction != null){
-			
-			nextAction.addAction(this.parseIntoSingleActions(mappedAction));
-			System.out.println(nextAction.toString());
+
+			GroundedSingleAction toAdd = this.parseIntoSingleActions(mappedAction);
+			if(toAdd != null) {
+				nextAction.addAction(toAdd);
+				System.out.println(nextAction.toString());
+			}
 			this.stateConsole.setText(this.getConsoleText(this.curState));
 
 			
@@ -527,7 +551,8 @@ public class SGVisualExplorer extends JFrame {
 
 	/**
 	 * Parses a string into a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}. Expects format:
-	 * "agentName:actionName param1 parm2 ... paramn"
+	 * "agentName:actionName param1 parm2 ... paramn" If there is no SingleAction by that name or
+	 * the action and parameters are not applicable in the current state, null is returned.
 	 * @param str string rep of a grounding action in the form  "agentName:actionName param1 parm2 ... paramn"
 	 * @return a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}
 	 */
@@ -545,7 +570,15 @@ public class SGVisualExplorer extends JFrame {
 		}
 		
 		SingleAction sa = domain.getSingleAction(singleActionName);
+		if(sa == null){
+			warningMessage = "Unknown action: " + singleActionName + "; nothing changed";
+			return null;
+		}
 		GroundedSingleAction gsa = new GroundedSingleAction(aname, sa, params);
+		if(!sa.isApplicableInState(curState, aname, params)){
+			warningMessage = gsa.toString() + " is not applicable in the current state; nothing changed";
+			return null;
+		}
 		
 		return gsa;
 	}
