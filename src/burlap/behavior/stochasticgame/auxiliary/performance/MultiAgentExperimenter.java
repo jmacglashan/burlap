@@ -244,7 +244,7 @@ public class MultiAgentExperimenter {
 		}
 		
 		this.plotter.endAllTrials();
-		
+		this.completedExperiment = true;
 		
 	}
 	
