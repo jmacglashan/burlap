@@ -232,11 +232,11 @@ public class BasicBehaviour {
         //example.DFSExample(outputPath);
         //example.AStarExample(outputPath);
         //example.ValueIterationExample(outputPath);
-        //example.QLearningExample(outputPath);
+        example.QLearningExample(outputPath);
         //example.SarsaLearningExample(outputPath);
         //Path does NOT have to exist
-        //example.visualise(outputPath);
-        example.experimenterAndPlotter();
+        example.visualise(outputPath);
+        //example.experimenterAndPlotter();
 
     }
 
