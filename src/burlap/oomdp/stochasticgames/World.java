@@ -42,6 +42,7 @@ public class World {
 	protected Map<AgentType, List<Agent>>		agentsByType;
 	protected HashedAggregator<String>			agentCumulativeReward;
 	protected Map<String, AgentType>			agentDefinitions;
+	protected int								maxAgentsCanJoin;
 	
 	protected JointActionModel 					worldModel;
 	protected JointReward						jointRewardModel;
@@ -80,7 +81,7 @@ public class World {
 	 */
 	@Deprecated
 	public World(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
-		this.init(domain, jam, jr, tf, sg, new NullAbstraction());
+		this.init(domain, jam, jr, tf, sg, new NullAbstraction(), -1);
 	}
 
 	/**
@@ -91,7 +92,18 @@ public class World {
 	 * @param sg a state generator for generating initial states of a game
 	 */
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
-		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction());
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction(), -1);
+	}
+	
+	/**
+	 * Initializes the world.
+	 * @param domain the SGDomain the world will use
+	 * @param jr the joint reward function
+	 * @param tf the terminal function
+	 * @param sg a state generator for generating initial states of a game
+	 */
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, int maxAgentsCanJoin){
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction(), maxAgentsCanJoin);
 	}
 	
 	/**
@@ -107,7 +119,7 @@ public class World {
 	 */
 	@Deprecated
 	public World(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
-		this.init(domain, jam, jr, tf, sg, abstractionForAgents);
+		this.init(domain, jam, jr, tf, sg, abstractionForAgents, -1);
 	}
 
 	/**
@@ -119,12 +131,26 @@ public class World {
 	 * @param abstractionForAgents the abstract state representation that agents will be provided
 	 */
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
-		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents);
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents, -1);
 	}
 	
-	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
+	/**
+	 * Initializes the world
+	 * @param domain the SGDomain the world will use
+	 * @param jr the joint reward function
+	 * @param tf the terminal function
+	 * @param sg a state generator for generating initial states of a game
+	 * @param abstractionForAgents the abstract state representation that agents will be provided
+	 */
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents, int maxAgentsCanJoin){
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents, maxAgentsCanJoin);
+	}
+	
+	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents, int maxAgentsCanJoin){
 		this.domain = domain;
 		this.worldModel = jam;
+		this.maxAgentsCanJoin = maxAgentsCanJoin;
+		
 		this.jointRewardModel = jr;
 		this.tf = tf;
 		this.initialStateGenerator = sg;
@@ -145,7 +171,7 @@ public class World {
 	}
 	
 	public World copy() {
-		World copy = new World(this.domain, this.worldModel, this.jointRewardModel, this.tf, this.initialStateGenerator, this.abstractionForAgents);
+		World copy = new World(this.domain, this.jointRewardModel, this.tf, this.initialStateGenerator, this.abstractionForAgents, this.maxAgentsCanJoin);
 		copy.setDescription(this.worldDescription);
 		return copy;
 	}
@@ -166,6 +192,10 @@ public class World {
 	 */
 	public void setDebugId(int id){
 		debugId = id;
+	}
+	
+	public int getMaximumAgentsCanJoin() {
+		return this.maxAgentsCanJoin;
 	}
 	
 	/**
