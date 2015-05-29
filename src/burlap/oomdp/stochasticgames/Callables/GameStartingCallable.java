@@ -5,6 +5,11 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.parallel.Parallel.ForEachCallable;
 
+/**
+ * Calls game starting for an agent. Useful for concurrent pieces of burlap.
+ * @author brawner
+ *
+ */
 public class GameStartingCallable extends ForEachCallable<Agent, Boolean> {
 	// call to agents need to be threaded, and timed out
 	private final State state;
