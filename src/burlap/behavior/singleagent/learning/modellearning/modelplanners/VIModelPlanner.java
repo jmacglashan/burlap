@@ -230,4 +230,22 @@ public class VIModelPlanner implements ModelPlanner, QComputablePlanner{
 		
 	}
 
+	public static class VIModelPlannerGenerator implements ModelPlannerGenerator{
+
+		StateHashFactory hashingFactory;
+		double maxDelta;
+		int maxIterations;
+
+		public VIModelPlannerGenerator(StateHashFactory hashingFactory, double maxDelta, int maxIterations){
+			this.hashingFactory = hashingFactory;
+			this.maxDelta = maxDelta;
+			this.maxIterations = maxIterations;
+		}
+
+		@Override
+		public ModelPlanner getModelPlanner(Domain modelDomain, RewardFunction modeledRewardFunction, TerminalFunction modeledTerminalFunction, double discount) {
+			return new VIModelPlanner(modelDomain, modeledRewardFunction, modeledTerminalFunction, discount, hashingFactory, maxDelta, maxIterations);
+		}
+	}
+
 }
