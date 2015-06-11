@@ -286,7 +286,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	}
 	
 	
-	private void parseEpisodeFiles(String directory){
+	protected void parseEpisodeFiles(String directory){
 		
 		File dir = new File(directory);
 		final String ext = ".episode";
@@ -312,9 +312,9 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		}
 		
 	}
-	
-	
-	private void setIterationListData(){
+
+
+	protected void setIterationListData(){
 		
 		//clear the old contents
 		iterationListModel.clear();
@@ -329,8 +329,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		iterationListModel.addElement("final state");
 		
 	}
-	
-	private void handleEpisodeSelection(ListSelectionEvent e){
+
+	protected void handleEpisodeSelection(ListSelectionEvent e){
 		
 		if (e.getValueIsAdjusting() == false) {
 
@@ -360,8 +360,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 	
 	}
-	
-	private void handleIterationSelection(ListSelectionEvent e){
+
+	protected void handleIterationSelection(ListSelectionEvent e){
 		
 		if (e.getValueIsAdjusting() == false) {
 
@@ -387,9 +387,9 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		}
 	
 	}
-	
-	
-	private void updatePropTextArea(State s){
+
+
+	protected void updatePropTextArea(State s){
 		
 		StringBuffer buf = new StringBuffer();
 		
