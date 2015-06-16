@@ -11,6 +11,7 @@ import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.OptionEvaluatingRF;
+import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.State;
@@ -27,7 +28,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class TDLambda implements Critic {
+public class TDLambda implements Critic, ValueFunction {
 
 	/**
 	 * The reward function used for learning.
@@ -220,7 +221,13 @@ public class TDLambda implements Critic {
 		
 		return critique;
 	}
-	
+
+
+	@Override
+	public double value(State s) {
+		return this.getV(this.hashingFactory.hashState(s)).v;
+	}
+
 	@Override
 	public void resetData(){
 		this.vIndex.clear();
