@@ -180,7 +180,7 @@ public class DeterminisitcTerminationOption extends Option {
 	@Override
 	public double probabilityOfTermination(State s, String[] params) {
 		State ms = this.map(s);
-		if(terminationStates.satisfies(ms) || policy.isDefinedFor(ms)){
+		if(terminationStates.satisfies(ms) || !policy.isDefinedFor(ms)){
 			return 1.;
 		}
 		return 0.;
