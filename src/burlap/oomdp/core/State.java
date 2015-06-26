@@ -204,7 +204,7 @@ public interface State {
 	 * Returns a string representation of this state using observable and hidden object instances.
 	 * @return a string representation of this state using observable and hidden object instances.
 	 */
-	public String getCompleteStateDescription();
+	String getCompleteStateDescription();
 
 
 	/**
