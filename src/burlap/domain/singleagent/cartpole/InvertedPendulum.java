@@ -74,63 +74,87 @@ public class InvertedPendulum implements DomainGenerator {
 	public static final String				ACTIONNOFORCE = "noForce";
 	
 	
+	public IPPhysicsParams					physParams = new IPPhysicsParams();
 	
 	
+	public static class IPPhysicsParams{
+
+		/**
+		 * The maximum radius the pole can fall. Note, physics get weird and non-realistic at pi/2;
+		 * task should terminate before then.
+		 */
+		public double							angleRange = Math.PI/2;
+
+
+		/**
+		 * the force of gravity; should be *positive* for the correct mechanics.
+		 */
+		public double							gravity = 9.8;
+
+		/**
+		 * The mass of the cart.
+		 */
+		public double							cartMass = 8.;
+
+		/**
+		 * The mass of the pole.
+		 */
+		public double							poleMass = 2.;
+
+		/**
+		 * The length of the pole
+		 */
+		public double							poleLength = 0.5;
+
+
+
+		/**
+		 * The force (magnitude) applied by a left or right action.
+		 */
+		public double							actionForce = 50.;
+
+
+		/**
+		 * The force (magnitude) noise in any action, including the no force action.
+		 */
+		public double							actionNoise = 10.;
+
+
+
+		/**
+		 * The maximum speed (manitude) of the change in angle. The default sets it to 1
+		 */
+		public double							maxAngleSpeed = 1.;
+
+
+		/**
+		 * The time between each action selection
+		 */
+		public double							timeDelta = 0.1;
+
+		public IPPhysicsParams(){
+			//do nothing
+		}
+
+		public IPPhysicsParams(double angleRange, double gravity, double cartMass, double poleMass, double poleLength,
+							   double actionForce, double actionNoise, double maxAngleSpeed, double timeDelta) {
+			this.angleRange = angleRange;
+			this.gravity = gravity;
+			this.cartMass = cartMass;
+			this.poleMass = poleMass;
+			this.poleLength = poleLength;
+			this.actionForce = actionForce;
+			this.actionNoise = actionNoise;
+			this.maxAngleSpeed = maxAngleSpeed;
+			this.timeDelta = timeDelta;
+		}
+
+		public IPPhysicsParams copy(){
+			return new IPPhysicsParams(angleRange,gravity,cartMass,poleMass,poleLength,actionForce,actionNoise,maxAngleSpeed,timeDelta);
+		}
+	}
 	
-	
-	
-	/**
-	 * The maximimum radius the pole can fall. Note, physics get weird and non-realisitc at pi/2;
-	 * task should terminate before then.
-	 */
-	public double							angleRange = Math.PI/2;
-	
-	
-	/**
-	 * the force of gravity; should be *positive* for the correct mechanics.
-	 */
-	public double							gravity = 9.8;
-	
-	/**
-	 * The mass of the cart.
-	 */
-	public double							cartMass = 8.;
-	
-	/**
-	 * The mass of the pole.
-	 */
-	public double							poleMass = 2.;
-	
-	/**
-	 * The length of the pole
-	 */
-	public double							poleLength = 0.5;
-	
-	
-	
-	/**
-	 * The force (magnitude) applied by a left or right action.
-	 */
-	public double							actionForce = 50.;
-	
-	
-	/**
-	 * The force (magnitude) noise in any action, including the no force action.
-	 */
-	public double							actionNoise = 10.;
-	
-	
-	
-	/**
-	 * The maximum speed (manitude) of the change in angle. The default sets it to 1
-	 */
-	public double							maxAngleSpeed = 1.;
-	
-	
-	/**
-	 * The time between each action selection
-	 */
-	public double							timeDelta = 0.1;
+
 	
 	
 	
@@ -140,19 +164,21 @@ public class InvertedPendulum implements DomainGenerator {
 		SADomain domain = new SADomain();
 		
 		Attribute angleatt = new Attribute(domain, ATTANGLE, Attribute.AttributeType.REAL);
-		angleatt.setLims(-this.angleRange, this.angleRange);
+		angleatt.setLims(-this.physParams.angleRange, this.physParams.angleRange);
 		
 		Attribute anglevatt = new Attribute(domain, ATTANGLEV, Attribute.AttributeType.REAL);
-		anglevatt.setLims(-this.maxAngleSpeed, this.maxAngleSpeed);
+		anglevatt.setLims(-this.physParams.maxAngleSpeed, this.physParams.maxAngleSpeed);
 		
 		
 		ObjectClass pendulum = new ObjectClass(domain, CLASSPENDULUM);
 		pendulum.addAttribute(angleatt);
 		pendulum.addAttribute(anglevatt);
-		
-		new ForceAction(ACTIONLEFT, domain, -this.actionForce);
-		new ForceAction(ACTIONRIGHT, domain, this.actionForce);
-		new ForceAction(ACTIONNOFORCE, domain, 0.);
+
+		IPPhysicsParams cphys = this.physParams.copy();
+
+		new ForceAction(ACTIONLEFT, domain, -this.physParams.actionForce, cphys);
+		new ForceAction(ACTIONRIGHT, domain, this.physParams.actionForce, cphys);
+		new ForceAction(ACTIONNOFORCE, domain, 0., cphys);
 		
 		return domain;
 	}
@@ -163,38 +189,39 @@ public class InvertedPendulum implements DomainGenerator {
 	 * Updates the given state object given the control force.
 	 * @param s the input state
 	 * @param controlForce the control force acted upon the cart.
+	 * @param physParams the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.IPPhysicsParams} object specifying the physics to use for movement
 	 */
-	public void updateState(State s, double controlForce){
+	public static void updateState(State s, double controlForce, IPPhysicsParams physParams){
 		
 		ObjectInstance pend = s.getFirstObjectOfClass(CLASSPENDULUM);
 		double a0 = pend.getRealValForAttribute(ATTANGLE);
 		double av0 = pend.getRealValForAttribute(ATTANGLEV);
 		
-		double alpha = 1./ (this.cartMass + this.poleMass);
+		double alpha = 1./ (physParams.cartMass + physParams.poleMass);
 		
 		double sinA = Math.sin(a0);
 		double cosA = Math.cos(a0);
 		
-		double num = (this.gravity*sinA) - 
-				(alpha * this.poleMass*this.poleLength*av0*av0*Math.sin(2.*a0)*0.5) -
+		double num = (physParams.gravity*sinA) -
+				(alpha * physParams.poleMass*physParams.poleLength*av0*av0*Math.sin(2.*a0)*0.5) -
 				(alpha * cosA * controlForce);
 		
-		double denom = ((4./3.)*this.poleLength) - alpha*this.poleMass*this.poleLength*cosA*cosA;
+		double denom = ((4./3.)*physParams.poleLength) - alpha*physParams.poleMass*physParams.poleLength*cosA*cosA;
 		
 		double accel = num / denom;
 		
 		//now perform Euler's
-		double af = a0 + this.timeDelta*av0;
-		double avf = av0 + this.timeDelta*accel;
+		double af = a0 + physParams.timeDelta*av0;
+		double avf = av0 + physParams.timeDelta*accel;
 		
 		//clamp it
-		if(Math.abs(af) >= this.angleRange){
-			af = Math.signum(af) * this.angleRange;
+		if(Math.abs(af) >= physParams.angleRange){
+			af = Math.signum(af) * physParams.angleRange;
 			avf = 0.;
 		}
 		
-		if(Math.abs(avf) > this.maxAngleSpeed){
-			avf = Math.signum(avf) * this.maxAngleSpeed;
+		if(Math.abs(avf) > physParams.maxAngleSpeed){
+			avf = Math.signum(avf) * physParams.maxAngleSpeed;
 		}
 		
 		//set it
@@ -232,7 +259,7 @@ public class InvertedPendulum implements DomainGenerator {
 	
 	
 	/**
-	 * An action that applies a given force to the cart + uniform random noise in the range defined in the {@link InvertedPendulum#actionNoise} data member. 
+	 * An action that applies a given force to the cart + uniform random noise in the range defined in the {@link InvertedPendulum#physParams} data member.
 	 * @author James MacGlashan
 	 *
 	 */
@@ -242,30 +269,40 @@ public class InvertedPendulum implements DomainGenerator {
 		 * The base noise to which noise will be added.
 		 */
 		protected double baseForce;
+
+		/**
+		 * The physics parameters to use
+		 */
+		protected IPPhysicsParams physParams;
 		
 		/**
 		 * Initializes the force action
 		 * @param name the name of the action
 		 * @param domain the domain object to which the action will belong.
-		 * @param force the base force this action applies; noise will be added to this force according to the {@link InvertedPendulum#actionNoise} data member.
+		 * @param force the base force this action applies; noise will be added to this force according to the {@link InvertedPendulum#physParams} data member.
+		 * @param physParams the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.IPPhysicsParams} object specifying the physics to use for movement
 		 */
-		public ForceAction(String name, Domain domain, double force){
+		public ForceAction(String name, Domain domain, double force, IPPhysicsParams physParams){
 			super(name, domain, "");
 			this.baseForce = force;
+			this.physParams = physParams;
 		}
 		
 		@Override
 		protected State performActionHelper(State s, String[] params) {
 			
-			double roll = RandomFactory.getMapped(0).nextDouble()*(2*InvertedPendulum.this.actionNoise) - InvertedPendulum.this.actionNoise;
+			double roll = RandomFactory.getMapped(0).nextDouble() * (2 * physParams.actionNoise) - physParams.actionNoise;
 			double force = this.baseForce + roll;
-			InvertedPendulum.this.updateState(s, force);
+			InvertedPendulum.updateState(s, force, this.physParams);
 			return s;
 		}
 		
 		@Override
 		public List<TransitionProbability> getTransitions(State s, String [] params){
-			throw new RuntimeException("Transition Probabilities cannot be enumerated.");
+			if(this.physParams.actionNoise != 0.) {
+				throw new RuntimeException("Transition Probabilities for the Inverted Pendulum with continuous action noise cannot be enumerated.");
+			}
+			return this.deterministicTransition(s, params);
 		}
 		
 		

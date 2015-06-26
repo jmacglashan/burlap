@@ -520,7 +520,10 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	 * @return true if the sample returns for any actions are different; false otherwise or if there is only one action to take.
 	 */
 	protected boolean containsActionPreference(UCTStateNode snode){
-		
+
+		if(snode == null){
+			return false;
+		}
 		
 		UCTActionNode lastNode = null;
 		boolean multipleChoices = false;

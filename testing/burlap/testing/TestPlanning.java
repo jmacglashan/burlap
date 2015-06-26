@@ -87,9 +87,10 @@ public class TestPlanning {
 				
 				String an = GridWorldDomain.CLASSAGENT;
 				String ln = GridWorldDomain.CLASSLOCATION;
-				
+
 				ObjectInstance agent = s.getObjectsOfClass(an).get(0); 
 				ObjectInstance location = s.getObjectsOfClass(ln).get(0); 
+
 				
 				//get agent position
 				int ax = agent.getIntValForAttribute(GridWorldDomain.ATTX);

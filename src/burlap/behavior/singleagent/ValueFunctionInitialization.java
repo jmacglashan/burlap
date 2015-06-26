@@ -1,25 +1,22 @@
 package burlap.behavior.singleagent;
 
+import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 
 
 /**
  * This interface may be used by planning and learning algorithms that require an initialization value for the Q-value function or the value function.
- * A common implementation for initializing all values to the same constant is provided.
+ * A common implementation for initializing all values to the same constant is provided. This class extends the
+ * {@link burlap.behavior.singleagent.planning.ValueFunction} class, so the initialization for the value function.
+ * may be retrieved with the standard {@link burlap.behavior.singleagent.planning.ValueFunction#value(burlap.oomdp.core.State)} method.
+ * It also adds a {@link #qValue(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} method for initializing
+ * Q-values.
  * @author James MacGlashan
  *
  */
-public interface ValueFunctionInitialization {
+public interface ValueFunctionInitialization extends ValueFunction {
 
-	
-	/**
-	 * Returns the initialization value of the value function for a given state.
-	 * @param s the state for which to get the initial value of the value function.
-	 * @return the initialization value of the value function for a given state.
-	 */
-	public double value(State s);
-	
 
 	/**
 	 * Returns the initialization value of the Q-value function for a given state and action pair.

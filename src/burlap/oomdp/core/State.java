@@ -109,6 +109,7 @@ public interface State {
 	 * @return a matching from this receiving state's objects to objects in so that have identical values. 
 	 */
 	Map <String, String> getObjectMatchingTo(State so, boolean enforceStateExactness);
+
 	
 	/**
 	 * Define what equals means for two states

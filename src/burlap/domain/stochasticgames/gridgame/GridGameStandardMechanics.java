@@ -843,7 +843,6 @@ public class GridGameStandardMechanics extends JointActionModel {
 	protected boolean agentsEqual(State s1, State s2){
 		
 		List<ObjectInstance> agents1 = s1.getObjectsOfClass(GridGame.CLASSAGENT);
-		
 		for(ObjectInstance a1 : agents1){
 			ObjectInstance a2 = s2.getObject(a1.getName());
 			

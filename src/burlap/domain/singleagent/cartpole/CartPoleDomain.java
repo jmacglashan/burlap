@@ -25,8 +25,10 @@ import burlap.oomdp.singleagent.explorer.VisualExplorer;
  * in either direction. Attached to the cart is a pole on a hinge and the goal of the agent is to apply force to the cart such that
  * the pole stays vertically balanced. If the angle between the pole and the vertical axis is greater than
  * some threshold (originally 12 degrees or about 0.2 radians), the agent fails. The track on which the cart can move is also finite in size,
- * and running into the end of the track is also considered failure; however, the track can be set to infinite by setting the {@link #isFiniteTrack}
- * parameter to false. The infinte track is handled by never changing the position value of the cart.
+ * and running into the end of the track is also considered failure; however, the track can be set to infinite by setting the {@link #physParams} isFiniteTrack
+ * parameter to false. The infinite track is handled by never changing the position value of the cart. All model/physics parameters are stored in the
+ * {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object {@link #physParams}. Modifying this generator's model parameters
+ * will not affected previously generated domains, so the same generator can be used to generate different domains without affecting others.
  * <p/>
  * By default, this implementation will use the simulation described by Florian, which corrects two problems in the classic Barto, Sutton, and Anderson paper.
  * The two problems were (1) gravity was specified as negative in the equations when it should have been positive and (2) friction was not calculated
@@ -39,8 +41,8 @@ import burlap.oomdp.singleagent.explorer.VisualExplorer;
  * when the corrected physics are used that maintains the sign of the normal force in the last step. If the classic mechanics are used instead,
  * then this hidden attribute is not included.
  * The physics are simulated using a non-linear differential equation
- * that is estimated using Euler's Method. All system parmeters are defaulted to those used in the
- * original paper, but they may modified as deisred.
+ * that is estimated using Euler's Method. All system parameters are defaulted to those used in the
+ * original paper, but they may modified as desired.
  * <p/>
  * Also included with this class are default classes for reward function and terminal function for this domain.
  * <p/>
@@ -98,87 +100,127 @@ public class CartPoleDomain implements DomainGenerator {
 	 * A constant for the name of the right action
 	 */
 	public static final String				ACTIONRIGHT = "right";
-	
-	
-	
-	/*
-	 * The half length size of the track on which the cart moves.
-	 */
-	public double							halfTrackLength = 2.4;
-	
+
 	/**
-	 * The maximimum radius the pole can fall. Note, physics get weird and non-realisitc at pi/2;
-	 * task should terminate before then.
+	 * An object specifying the physics parameters for the cart pole domain.
 	 */
-	public double							angleRange = Math.PI/2;
-	
-	
-	/**
-	 * the force of gravity; should be *positive* for the correct mechanics.
-	 */
-	public double							gravity = 9.8;
-	
-	/**
-	 * The mass of the cart.
-	 */
-	public double							cartMass = 1.;
-	
-	/**
-	 * The mass of the pole.
-	 */
-	public double							poleMass = .1;
-	
-	/**
-	 * The half length of the pole.
-	 */
-	public double							halfPoleLength = 0.5;
-	
-	/**
-	 * The friction between the cart and ground
-	 */
-	public double							cartFriction = 0.0005;
-	
-	/**
-	 * The friction between the pole and the joint on the cart.
-	 */
-	public double							poleFriction = 0.000002;
-	
-	/**
-	 * The force magnatude that can be exterted in either direction on the cart
-	 */
-	public double							movementForceMag = 10.;
-	
-	
-	/**
-	 * The time between each action selection
-	 */
-	public double							timeDelta = 0.02;
-	
-	/**
-	 * The maximum speed of the cart. A good place to set it to is somewhere around 
-	 * the max expected if the cart was pushed from one side of the track to the other.
-	 * The default is 6.81 (which is an upperbound of that with default parameters)
-	 */
-	public double							maxCartSpeed = 6.81;
-	
-	/**
-	 * The maximum speed of the change in angle. The default sets it to the speed that would result
-	 * in 12 degress for a sinlge time step of 0.02 (which is about 10.47 radians/second), since 12 degrees
-	 * is the default termination range.
-	 */
-	public double							maxAngleSpeed = 10.47; //12 degrees per time step of 0.02 seconds
-	
-	
-	/**
-	 * Whether the track is finite (true) or infinite (false). When the track is infinite, the position of the cart always remains the same.
-	 */
-	public boolean							isFiniteTrack = true;
-	
-	
-	/**
-	 * Specifies whether the correct Cart Pole physical model should be used or the classic, but incorrect, Barto Sutton and Anderson model [1].
-	 */
-	protected boolean 						useCorrectModel = true;
+	public CPPhysicsParams					physParams = new CPPhysicsParams();
+
+	public static class CPPhysicsParams{
+
+		/*
+	 	* The half length size of the track on which the cart moves.
+	 	*/
+		public double							halfTrackLength = 2.4;
+
+		/**
+		 * The maximum radius the pole can fall. Note, physics get weird and non-realisitc at pi/2;
+		 * task should terminate before then.
+		 */
+		public double							angleRange = Math.PI/2;
+
+
+		/**
+		 * the force of gravity; should be *positive* for the correct mechanics.
+		 */
+		public double							gravity = 9.8;
+
+		/**
+		 * The mass of the cart.
+		 */
+		public double							cartMass = 1.;
+
+		/**
+		 * The mass of the pole.
+		 */
+		public double							poleMass = .1;
+
+		/**
+		 * The half length of the pole.
+		 */
+		public double							halfPoleLength = 0.5;
+
+		/**
+		 * The friction between the cart and ground
+		 */
+		public double							cartFriction = 0.0005;
+
+		/**
+		 * The friction between the pole and the joint on the cart.
+		 */
+		public double							poleFriction = 0.000002;
+
+		/**
+		 * The force magnatude that can be exterted in either direction on the cart
+		 */
+		public double							movementForceMag = 10.;
+
+
+		/**
+		 * The time between each action selection
+		 */
+		public double							timeDelta = 0.02;
+
+		/**
+		 * The maximum speed of the cart. A good place to set it to is somewhere around
+		 * the max expected if the cart was pushed from one side of the track to the other.
+		 * The default is 6.81 (which is an upperbound of that with default parameters)
+		 */
+		public double							maxCartSpeed = 6.81;
+
+		/**
+		 * The maximum speed of the change in angle. The default sets it to the speed that would result
+		 * in 12 degress for a sinlge time step of 0.02 (which is about 10.47 radians/second), since 12 degrees
+		 * is the default termination range.
+		 */
+		public double							maxAngleSpeed = 10.47; //12 degrees per time step of 0.02 seconds
+
+
+		/**
+		 * Whether the track is finite (true) or infinite (false). When the track is infinite, the position of the cart always remains the same.
+		 */
+		public boolean							isFiniteTrack = true;
+
+
+		/**
+		 * Specifies whether the correct Cart Pole physical model should be used or the classic, but incorrect, Barto Sutton and Anderson model [1].
+		 */
+		public boolean 						useCorrectModel = true;
+
+
+		public CPPhysicsParams(){
+			//do nothing
+		}
+
+		public CPPhysicsParams(double halfTrackLength, double angleRange, double gravity, double cartMass,
+							   double poleMass, double halfPoleLength, double cartFriction,
+							   double poleFriction, double movementForceMag, double timeDelta,
+							   double maxCartSpeed, double maxAngleSpeed, boolean isFiniteTrack,
+							   boolean useCorrectModel) {
+			this.halfTrackLength = halfTrackLength;
+			this.angleRange = angleRange;
+			this.gravity = gravity;
+			this.cartMass = cartMass;
+			this.poleMass = poleMass;
+			this.halfPoleLength = halfPoleLength;
+			this.cartFriction = cartFriction;
+			this.poleFriction = poleFriction;
+			this.movementForceMag = movementForceMag;
+			this.timeDelta = timeDelta;
+			this.maxCartSpeed = maxCartSpeed;
+			this.maxAngleSpeed = maxAngleSpeed;
+			this.isFiniteTrack = isFiniteTrack;
+			this.useCorrectModel = useCorrectModel;
+		}
+
+		public CPPhysicsParams copy(){
+			return new CPPhysicsParams(halfTrackLength,angleRange,gravity,cartMass,poleMass,halfPoleLength,
+					cartFriction, poleFriction, movementForceMag,timeDelta,maxCartSpeed,maxAngleSpeed,isFiniteTrack,
+					useCorrectModel);
+		}
+	}
+
+
 	
 	
 	
@@ -188,19 +230,19 @@ public class CartPoleDomain implements DomainGenerator {
 		SADomain domain = new SADomain();
 		
 		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.REAL);
-		xatt.setLims(-halfTrackLength, halfTrackLength);
+		xatt.setLims(-physParams.halfTrackLength, physParams.halfTrackLength);
 		
 		Attribute xvatt = new Attribute(domain, ATTV, Attribute.AttributeType.REAL);
-		xvatt.setLims(-this.maxCartSpeed, this.maxCartSpeed);
+		xvatt.setLims(-this.physParams.maxCartSpeed, this.physParams.maxCartSpeed);
 		
 		Attribute angleatt = new Attribute(domain, ATTANGLE, Attribute.AttributeType.REAL);
-		angleatt.setLims(-this.angleRange, this.angleRange);
+		angleatt.setLims(-this.physParams.angleRange, this.physParams.angleRange);
 		
 		Attribute anglevatt = new Attribute(domain, ATTANGLEV, Attribute.AttributeType.REAL);
-		anglevatt.setLims(-this.maxAngleSpeed, this.maxAngleSpeed);
+		anglevatt.setLims(-this.physParams.maxAngleSpeed, this.physParams.maxAngleSpeed);
 		
 		Attribute normAtt = null;
-		if(this.useCorrectModel){
+		if(this.physParams.useCorrectModel){
 			normAtt = new Attribute(domain, ATTNORMSGN, Attribute.AttributeType.REAL);
 			normAtt.setLims(-1., 1.);
 			normAtt.hidden = true;
@@ -212,12 +254,14 @@ public class CartPoleDomain implements DomainGenerator {
 		cartPoleClass.addAttribute(xvatt);
 		cartPoleClass.addAttribute(angleatt);
 		cartPoleClass.addAttribute(anglevatt);
-		if(this.useCorrectModel){
+		if(this.physParams.useCorrectModel){
 			cartPoleClass.addAttribute(normAtt);
 		}
-		
-		new MovementAction(ACTIONLEFT, domain, -1.);
-		new MovementAction(ACTIONRIGHT, domain, 1.);
+
+		CPPhysicsParams cphys = this.physParams.copy();
+
+		new MovementAction(ACTIONLEFT, domain, -1., cphys);
+		new MovementAction(ACTIONRIGHT, domain, 1., cphys);
 		
 		
 		return domain;
@@ -228,8 +272,8 @@ public class CartPoleDomain implements DomainGenerator {
 	 * correct gravity.
 	 */
 	public void setToIncorrectClassicModelWithCorrectGravity(){
-		this.gravity = Math.abs(this.gravity);
-		this.useCorrectModel = false;
+		this.physParams.gravity = Math.abs(this.physParams.gravity);
+		this.physParams.useCorrectModel = false;
 	}
 	
 	/**
@@ -237,8 +281,8 @@ public class CartPoleDomain implements DomainGenerator {
 	 * in the wrong direction
 	 */
 	public void setToIncorrectClassicModel(){
-		this.gravity = Math.abs(this.gravity)*-1;
-		this.useCorrectModel = false;
+		this.physParams.gravity = Math.abs(this.physParams.gravity)*-1;
+		this.physParams.useCorrectModel = false;
 	}
 	
 	
@@ -246,8 +290,8 @@ public class CartPoleDomain implements DomainGenerator {
 	 * Sets to use the correct physics model by Florian.
 	 */
 	public void setToCorrectModel(){
-		this.gravity = Math.abs(this.gravity);
-		this.useCorrectModel = true;
+		this.physParams.gravity = Math.abs(this.physParams.gravity);
+		this.physParams.useCorrectModel = true;
 	}
 	
 	/**
@@ -259,10 +303,10 @@ public class CartPoleDomain implements DomainGenerator {
 	public double setMaxCartSpeedToMaxWithMovementFromOneSideToOther(){
 		
 		//using simplified mechanics
-		double cartAcceleration = this.movementForceMag / (this.cartMass + this.poleMass);
+		double cartAcceleration = this.physParams.movementForceMag / (this.physParams.cartMass + this.physParams.poleMass);
 		
 		//time to go from one end to the other
-		double t = Math.sqrt(2 * (2*this.halfTrackLength) / cartAcceleration);
+		double t = Math.sqrt(2 * (2*this.physParams.halfTrackLength) / cartAcceleration);
 		
 		//final time
 		double vf = cartAcceleration * t;
@@ -314,9 +358,10 @@ public class CartPoleDomain implements DomainGenerator {
 	 * correct model can be used instead.
 	 * @param s the current state from which one time step of physics will be simulated.
 	 * @param dir the direction of force applied; should be -1, or 1 and is multiplied to this objects movementForceMag parameter. 0 would cause no force.
+	 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 	 * @return the input state, which has been modified to the next state after one time step of simulation.
 	 */
-	public State moveClassicModel(State s, double dir){
+	public static State moveClassicModel(State s, double dir, CPPhysicsParams physParams){
 		
 		ObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
 		double x0 = cartPole.getRealValForAttribute(ATTX);
@@ -324,69 +369,69 @@ public class CartPoleDomain implements DomainGenerator {
 		double a0 = cartPole.getRealValForAttribute(ATTANGLE);
 		double av0 = cartPole.getRealValForAttribute(ATTANGLEV);
 		
-		double f = dir * this.movementForceMag;
+		double f = dir * physParams.movementForceMag;
 		
-		double sMass = this.cartMass + this.poleMass;
+		double sMass = physParams.cartMass + physParams.poleMass;
 		
 		
 		
 		//compute second derivatives (x_2 and a_2) at current point
 		double anumCosFactor = (-f 
-									- (this.poleMass*this.halfPoleLength*av0*av0*Math.sin(a0)) 
-									+ (this.cartFriction * Math.signum(xv0))
+									- (physParams.poleMass*physParams.halfPoleLength*av0*av0*Math.sin(a0))
+									+ (physParams.cartFriction * Math.signum(xv0))
 								) / sMass;
-		double anumPFricTerm = (this.poleFriction*av0) / (this.poleMass*this.halfPoleLength);
+		double anumPFricTerm = (physParams.poleFriction*av0) / (physParams.poleMass*physParams.halfPoleLength);
 		
-		double anum = (this.gravity * Math.sin(a0)) 
+		double anum = (physParams.gravity * Math.sin(a0))
 						+ (Math.cos(a0) * anumCosFactor) 
 						- anumPFricTerm;
 		
-		double adenom = this.halfPoleLength 
+		double adenom = physParams.halfPoleLength
 								* ( (4./3.) 
-										- ((this.poleMass*Math.pow(Math.cos(a0), 2.)) / sMass) 
+										- ((physParams.poleMass*Math.pow(Math.cos(a0), 2.)) / sMass)
 								  );
 		
 		double a_2 = anum / adenom;
 		
 		double xnum = f 
-						+ this.poleMass*this.halfPoleLength*(av0*av0*Math.sin(a0) 
+						+ physParams.poleMass*physParams.halfPoleLength*(av0*av0*Math.sin(a0)
 																- a_2 * Math.cos(a0)) 
-						- (this.cartFriction*Math.signum(xv0));
+						- (physParams.cartFriction*Math.signum(xv0));
 		
 		double x_2 = xnum / sMass;
 		
 		
 		//perform Euler's method
-		double xf = x0 + this.timeDelta * xv0;
-		double xvf = xv0 + this.timeDelta*x_2;
+		double xf = x0 + physParams.timeDelta * xv0;
+		double xvf = xv0 + physParams.timeDelta*x_2;
 		
-		double af = a0 + this.timeDelta*av0;
-		double avf = av0 + this.timeDelta*a_2;
+		double af = a0 + physParams.timeDelta*av0;
+		double avf = av0 + physParams.timeDelta*a_2;
 		
 		
 		
 		//clamp values
-		if(Math.abs(xf) > this.halfTrackLength){
-			xf = Math.signum(xf)*this.halfTrackLength;
+		if(Math.abs(xf) > physParams.halfTrackLength){
+			xf = Math.signum(xf)*physParams.halfTrackLength;
 			xvf = 0.;
 		}
 		
-		if(Math.abs(xvf) > this.maxCartSpeed){
-			xvf = Math.signum(xvf) * this.maxCartSpeed;
+		if(Math.abs(xvf) > physParams.maxCartSpeed){
+			xvf = Math.signum(xvf) * physParams.maxCartSpeed;
 		}
 		
-		if(Math.abs(af) >= this.angleRange){
-			af = Math.signum(af) * this.angleRange;
+		if(Math.abs(af) >= physParams.angleRange){
+			af = Math.signum(af) * physParams.angleRange;
 			avf = 0.;
 		}
 		
-		if(Math.abs(avf) > this.maxAngleSpeed){
-			avf = Math.signum(avf) * this.maxAngleSpeed;
+		if(Math.abs(avf) > physParams.maxAngleSpeed){
+			avf = Math.signum(avf) * physParams.maxAngleSpeed;
 		}
 		
 		
 		//set new values
-		if(this.isFiniteTrack){
+		if(physParams.isFiniteTrack){
 			cartPole.setValue(ATTX, xf);
 		}
 		cartPole.setValue(ATTV, xvf);
@@ -404,9 +449,10 @@ public class CartPoleDomain implements DomainGenerator {
 	 * modified to be the next state. Physics simulated using one step of Euler's method on the corrected non-linear differential equations [1].
 	 * @param s the current state from which one time step of physics will be simulated.
 	 * @param dir the direction of force applied; should be -1, or 1 and is multiplied to this objects movementForceMag parameter. 0 would cause no force.
+	 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 	 * @return the input state, which has been modified to the next state after one time step of simulation.
 	 */
-	public State moveCorrectModel(State s, double dir){
+	public static State moveCorrectModel(State s, double dir, CPPhysicsParams physParams){
 		
 		ObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
 		double x0 = cartPole.getRealValForAttribute(ATTX);
@@ -415,47 +461,47 @@ public class CartPoleDomain implements DomainGenerator {
 		double av0 = cartPole.getRealValForAttribute(ATTANGLEV);
 		double nsgn0 = cartPole.getRealValForAttribute(ATTNORMSGN);
 		
-		double f = dir * this.movementForceMag;
+		double f = dir * physParams.movementForceMag;
 		
-		double a_2 = this.getAngle2ndDeriv(xv0, a0, av0, nsgn0, f);
-		double n = this.getNormForce(a0, av0, a_2);
+		double a_2 = getAngle2ndDeriv(xv0, a0, av0, nsgn0, f, physParams);
+		double n = getNormForce(a0, av0, a_2, physParams);
 		double nsgnf = Math.signum(n);
 		if(nsgnf != nsgn0){
-			a_2 = this.getAngle2ndDeriv(xv0, a0, av0, nsgnf, f);
+			a_2 = getAngle2ndDeriv(xv0, a0, av0, nsgnf, f, physParams);
 		}
-		double x_2 = this.getX2ndDeriv(xv0, a0, av0, n, f, a_2);
+		double x_2 = getX2ndDeriv(xv0, a0, av0, n, f, a_2, physParams);
 		
 		//perform Euler's method
-		double xf = x0 + this.timeDelta * xv0;
-		double xvf = xv0 + this.timeDelta*x_2;
+		double xf = x0 + physParams.timeDelta * xv0;
+		double xvf = xv0 + physParams.timeDelta*x_2;
 		
-		double af = a0 + this.timeDelta*av0;
-		double avf = av0 + this.timeDelta*a_2;
+		double af = a0 + physParams.timeDelta*av0;
+		double avf = av0 + physParams.timeDelta*a_2;
 		
 		
 		
 		//clamp values
-		if(Math.abs(xf) > this.halfTrackLength){
-			xf = Math.signum(xf)*this.halfTrackLength;
+		if(Math.abs(xf) > physParams.halfTrackLength){
+			xf = Math.signum(xf)*physParams.halfTrackLength;
 			xvf = 0.;
 		}
 		
-		if(Math.abs(xvf) > this.maxCartSpeed){
-			xvf = Math.signum(xvf) * this.maxCartSpeed;
+		if(Math.abs(xvf) > physParams.maxCartSpeed){
+			xvf = Math.signum(xvf) * physParams.maxCartSpeed;
 		}
 		
-		if(Math.abs(af) >= this.angleRange){
-			af = Math.signum(af) * this.angleRange;
+		if(Math.abs(af) >= physParams.angleRange){
+			af = Math.signum(af) * physParams.angleRange;
 			avf = 0.;
 		}
 		
-		if(Math.abs(avf) > this.maxAngleSpeed){
-			avf = Math.signum(avf) * this.maxAngleSpeed;
+		if(Math.abs(avf) > physParams.maxAngleSpeed){
+			avf = Math.signum(avf) * physParams.maxAngleSpeed;
 		}
 		
 		
 		//set new values
-		if(this.isFiniteTrack){
+		if(physParams.isFiniteTrack){
 			cartPole.setValue(ATTX, xf);
 		}
 		cartPole.setValue(ATTV, xvf);
@@ -475,35 +521,36 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @param av0 the pole angle velocity
 	 * @param nsign the normal force sign
 	 * @param f the force applied to the cart
+	 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 	 * @return the 2nd order derivative of the angle
 	 */
-	protected double getAngle2ndDeriv(double xv0, double a0, double av0, double nsign, double f){
+	protected static double getAngle2ndDeriv(double xv0, double a0, double av0, double nsign, double f, CPPhysicsParams physParams){
 		
-		double sMass = this.cartMass + this.poleMass;
+		double sMass = physParams.cartMass + physParams.poleMass;
 		
 		double sint = Math.sin(a0);
 		double cost = Math.cos(a0);
 		
 		double anumCosFactor = (-f 
-				- (this.poleMass*this.halfPoleLength*av0*av0
+				- (physParams.poleMass*physParams.halfPoleLength*av0*av0
 						* (
-								sint + this.cartFriction*Math.signum(nsign*xv0)*cost
+								sint + physParams.cartFriction*Math.signum(nsign*xv0)*cost
 						  )
 				  )
 				
 			) / sMass;
 		
-		double anumPFricTerm = this.cartFriction*this.gravity*Math.signum(nsign*xv0);
+		double anumPFricTerm = physParams.cartFriction*physParams.gravity*Math.signum(nsign*xv0);
 		
-		double anum = (this.gravity * Math.sin(a0)) 
+		double anum = (physParams.gravity * Math.sin(a0))
 				+ (Math.cos(a0) * anumCosFactor) 
 				+ anumPFricTerm;
 		
-		double adenom = this.halfPoleLength 
+		double adenom = physParams.halfPoleLength
 				* ( (4./3.) 
 						- (
-							(this.poleMass*cost / sMass)
-							* (cost - this.cartMass * Math.signum(nsign*xv0))
+							(physParams.poleMass*cost / sMass)
+							* (cost - physParams.cartMass * Math.signum(nsign*xv0))
 						  )
 				  );
 		
@@ -517,11 +564,12 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @param a0 the pole angle
 	 * @param av0 the pole angle velocity
 	 * @param a_2 the 2nd order derivative of the pole angle
+	 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 	 * @return the normal force
 	 */
-	protected double getNormForce(double a0, double av0, double a_2){
-		double norm = ((this.cartMass + this.poleMass) * this.gravity)
-						- (this.poleMass * this.halfPoleLength
+	protected static double getNormForce(double a0, double av0, double a_2, CPPhysicsParams physParams){
+		double norm = ((physParams.cartMass + physParams.poleMass) * physParams.gravity)
+						- (physParams.poleMass * physParams.halfPoleLength
 								* (a_2 * Math.sin(a0) + (av0*av0*Math.cos(a0)))
 						  );
 		return norm;
@@ -535,20 +583,21 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @param n the normal force
 	 * @param f the force applied to the cart
 	 * @param a2 the second order angle derivative
+	 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 	 * @return the second order x position derivative
 	 */
-	protected double getX2ndDeriv(double xv0, double a0, double av0, double n, double f, double a2){
+	protected static double getX2ndDeriv(double xv0, double a0, double av0, double n, double f, double a2, CPPhysicsParams physParams){
 		
-		double sMass = this.cartMass + this.poleMass;
+		double sMass = physParams.cartMass + physParams.poleMass;
 		
 		double sint = Math.sin(a0);
 		double cost = Math.cos(a0);
 		
 		double xnum = f 
-						+ (this.poleMass * this.halfPoleLength 
+						+ (physParams.poleMass * physParams.halfPoleLength
 								* ((av0*av0*sint) - (a2*cost))
 						  )
-						- (this.cartFriction * n * Math.signum(n*xv0));
+						- (physParams.cartFriction * n * Math.signum(n*xv0));
 		
 		double x_2 = xnum/sMass;
 		
@@ -564,8 +613,9 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected class MovementAction extends Action{
-		
+	protected static class MovementAction extends Action{
+
+		CPPhysicsParams physParams;
 		
 		/**
 		 * The direction of force that this action applies
@@ -577,18 +627,20 @@ public class CartPoleDomain implements DomainGenerator {
 		 * @param name the name of the action.
 		 * @param domain the domain object to which this action will be associated.
 		 * @param dir the direction of force applied to the cart.
+		 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 		 */
-		public MovementAction(String name, Domain domain, double dir){
+		public MovementAction(String name, Domain domain, double dir, CPPhysicsParams physParams){
 			super(name, domain, "");
 			this.dir = dir;
+			this.physParams = physParams;
 		}
 
 		@Override
 		protected State performActionHelper(State s, String[] params) {
-			if(CartPoleDomain.this.useCorrectModel){
-				return CartPoleDomain.this.moveCorrectModel(s, this.dir);
+			if(physParams.useCorrectModel){
+				return CartPoleDomain.moveCorrectModel(s, this.dir, this.physParams);
 			}
-			return CartPoleDomain.this.moveClassicModel(s, this.dir);
+			return CartPoleDomain.moveClassicModel(s, this.dir, this.physParams);
 		}
 
 
@@ -724,6 +776,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 */
 	public static void main(String [] args){
 		CartPoleDomain dgen = new CartPoleDomain();
+
 		Domain domain = dgen.generateDomain();
 		
 		State s = CartPoleDomain.getInitialState(domain);

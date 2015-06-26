@@ -49,10 +49,13 @@ import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
  * This class also provides static methods for returning generators for a number of classic bimatrix games: prisoner's dilemma, chicken, hawk dove,
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
  * <p/>
- * Finally, this class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
+ * This class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
  * in the constructed game. For this use either the {@link #createRepeatedGameWorld(Agent...)} or {@link #createRepeatedGameWorld(SGDomain, Agent...)}
  * method. The former method will create an new domain instance using the {@link #generateDomain()} method; the latter will
  * use an already generated version of the domain that you provide to it.
+ * <p/>
+ * Finally, this class's payout function definition (and other properties) can be modified without affecting previously
+ * generated domains or payout functions, allowing it to be reused multiple times.
  * @author James MacGlashan
  *
  */
@@ -376,9 +379,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		
 		ObjectClass player = new ObjectClass(domain, CLASSPLAYER);
 		player.addAttribute(att);
-		
+
+		ActionNameMap [] cnames = ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex);
 		for(String aname : this.uniqueActionNames){
-			new NFGSingleAction(domain, aname);
+			new NFGSingleAction(domain, aname, cnames);
 		}
 
 		domain.setJointActionModel(new StaticRepeatedGameActionModel());
@@ -439,7 +443,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @return a {@link burlap.oomdp.stochasticgames.JointReward} function for this game.
 	 */
 	public JointReward getJointRewardFunction(){
-		return new SingleStageNormalFormJointReward();
+		return new SingleStageNormalFormJointReward(this.nPlayers, ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex), AgentPayoutFunction.getDeepCopyOfPayoutArray(this.payouts));
 	}
 	
 	
@@ -448,10 +452,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @param actions the strategy profile specified as an array of action names, ordered by the player number of the player that took the action.
 	 * @return a hashable strategy profile.
 	 */
-	protected StrategyProfile getStrategyProfile(String...actions){
+	protected static StrategyProfile getStrategyProfile(ActionNameMap[] actionNameToIndex, String...actions){
 		int [] iprofile = new int[actions.length];
 		for(int i = 0; i < actions.length; i++){
-			iprofile[i] = this.actionNameToIndex[i].get(actions[i]);
+			iprofile[i] = actionNameToIndex[i].get(actions[i]);
 		}
 		return new StrategyProfile(iprofile);
 	}
@@ -637,14 +641,24 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected class SingleStageNormalFormJointReward implements JointReward{
+	protected static class SingleStageNormalFormJointReward implements JointReward{
+
+		int nPlayers;
+		ActionNameMap [] actionNameToIndex;
+		AgentPayoutFunction [] payouts;
+
+		public SingleStageNormalFormJointReward(int nPlayers, ActionNameMap[] actionNameToIndex, AgentPayoutFunction[] payouts) {
+			this.nPlayers = nPlayers;
+			this.actionNameToIndex = actionNameToIndex;
+			this.payouts = payouts;
+		}
 
 		@Override
 		public Map<String, Double> reward(State s, JointAction ja, State sp) {
 			
 			Map<String, Double> rewards = new HashMap<String, Double>();
 			
-			String [] profile = new String[SingleStageNormalFormGame.this.nPlayers];
+			String [] profile = new String[this.nPlayers];
 			for(GroundedSingleAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
@@ -652,12 +666,12 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 				profile[pn] = sa.action.actionName;
 			}
 			
-			StrategyProfile stprofile = SingleStageNormalFormGame.this.getStrategyProfile(profile);
+			StrategyProfile stprofile = SingleStageNormalFormGame.getStrategyProfile(this.actionNameToIndex, profile);
 			for(GroundedSingleAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
 				int pn = player.getIntValForAttribute(ATTPN);
-				rewards.put(name, SingleStageNormalFormGame.this.payouts[pn].getPayout(stprofile));
+				rewards.put(name, this.payouts[pn].getPayout(stprofile));
 			}
 			
 			return rewards;
@@ -675,10 +689,13 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected class NFGSingleAction extends SingleAction{
+	protected static class NFGSingleAction extends SingleAction{
 
-		public NFGSingleAction(SGDomain d, String name) {
+		ActionNameMap [] actionNameToIndex;
+
+		public NFGSingleAction(SGDomain d, String name, ActionNameMap[] actionNameToIndex) {
 			super(d, name);
+			this.actionNameToIndex = actionNameToIndex;
 		}
 
 		@Override
@@ -687,7 +704,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			ObjectInstance a = s.getObject(actingAgent);
 			int pn = a.getIntValForAttribute(ATTPN);
 			
-			if(SingleStageNormalFormGame.this.actionNameToIndex[pn].containsKey(this.actionName)){
+			if(this.actionNameToIndex[pn].containsKey(this.actionName)){
 				return true;
 			}
 			
@@ -736,6 +753,22 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			}
 			
 			return P;
+		}
+
+		public AgentPayoutFunction copy(){
+			AgentPayoutFunction c = new AgentPayoutFunction();
+			for(Map.Entry<StrategyProfile,Double> e : this.payout.entrySet()){
+				c.set(e.getKey().copy(), e.getValue());
+			}
+			return c;
+		}
+
+		public static AgentPayoutFunction[] getDeepCopyOfPayoutArray(AgentPayoutFunction[] input){
+			AgentPayoutFunction[] c = new AgentPayoutFunction[input.length];
+			for(int i = 0; i < input.length; i++){
+				c[i] = input[i].copy();
+			}
+			return c;
 		}
 		
 	}
@@ -802,6 +835,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			
 			return buf.toString();
 		}
+
+		public StrategyProfile copy(){
+			return new StrategyProfile(this.profile);
+		}
 		
 	}
 	
@@ -836,6 +873,23 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		
 		public int size(){
 			return this.namesToInd.size();
+		}
+
+		public ActionNameMap copy(){
+			ActionNameMap c = new ActionNameMap();
+			for(Map.Entry<String, Integer> e : this.namesToInd.entrySet()){
+				c.put(e.getKey(), e.getValue());
+			}
+
+			return c;
+		}
+
+		public static ActionNameMap[] deepCopyActionNameMapArray(ActionNameMap [] input){
+			ActionNameMap [] c = new ActionNameMap[input.length];
+			for(int i = 0; i < input.length; i++){
+				c[i] = input[i].copy();
+			}
+			return c;
 		}
 	}
 	

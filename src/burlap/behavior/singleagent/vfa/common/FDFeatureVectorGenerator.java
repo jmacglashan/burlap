@@ -37,8 +37,8 @@ public class FDFeatureVectorGenerator implements StateToFeatureVectorGenerator{
 	@Override
 	public double[] generateFeatureVectorFrom(State s) {
 
-		double [] fv = new double[this.fd.numberOfFeatures()];
 		List<StateFeature> sfs = this.fd.getStateFeatures(s);
+		double [] fv = new double[this.fd.numberOfFeatures()];
 		for(StateFeature sf : sfs){
 			fv[sf.id] = sf.value;
 		}

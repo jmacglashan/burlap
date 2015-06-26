@@ -59,7 +59,10 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 	 */
 	public void computePolicyFromTree(){
 		policy = new HashMap<StateHashTuple, GroundedAction>();
-		
+
+		if(this.planner.getRoot() == null){
+			return ;
+		}
 		
 		//define policy for all states that are expanded along the greedy path of the UCT tree
 		LinkedList<UCTStateNode> queue = new LinkedList<UCTStateNode>();
@@ -69,7 +72,7 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 			UCTStateNode snode = queue.poll();
 			
 			if(!planner.containsActionPreference(snode)){
-				System.out.println("Policy ill defined without preference");
+				System.out.println("UCT tree does not contain action preferences of the state queried by the UCTTreeWalkPolicy. Consider replanning with planFromState");
 				break; //policy ill defined
 			}
 			
