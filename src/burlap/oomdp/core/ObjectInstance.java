@@ -152,7 +152,7 @@ public interface ObjectInstance {
 	 * the {@link #getRealValForAttribute(String)} method because it will cast the int
 	 * values for non real attributes to double values and will not throw an exception.
 	 * Note that if this method is called on relational attributes, it will return 0.,
-	 * where as attributes like {@link AttributeType#INT} and {@link AttributeType#DISC}
+	 * where as attributes like {@link burlap.oomdp.core.Attribute.AttributeType#INT} and {@link burlap.oomdp.core.Attribute.AttributeType#DISC}
 	 * will cast their int values to doubles.
 	 * @param attName the name of the attribute whose value should be returned
 	 * @return a double value assignment for the attribute; casting occurs if the attribute is not real-valued.
@@ -243,7 +243,7 @@ public interface ObjectInstance {
 	 * in data structures like kd-trees.
 	 * @return a double vector of all the observable values in this object instance.
 	 */
-	double[] getObservableFeatureVec();
+	double[] getFeatureVec();
 	
 	
 	/**
@@ -252,7 +252,7 @@ public interface ObjectInstance {
 	 * if the object instance includes attributes that are *not* type REAL or INT.
 	 * @return a normalized double vector of all the observable values in this object instance.
 	 */
-	double [] getNormalizedObservableFeatureVec();
+	double [] getNormalizedFeatureVec();
 	
 	
 	

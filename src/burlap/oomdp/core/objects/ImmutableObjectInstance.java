@@ -103,7 +103,6 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	
 	/**
 	 * Creates new value object assignments for each of this object instance class's attributes.
-	 * @param valueHashFactory 
 	 */
 	public List <Value> initializeValueObjects(){
 		
@@ -407,6 +406,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	public String toString() {
 		return this.getObjectDescription();
 	}
+
 	/**
 	 * Returns a double vector of all the observable values in this object instance. Discrete values have
 	 * their int stored valued converted to a double for this array. This method will throw a runtime exception
@@ -414,12 +414,12 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * in data structures like kd-trees.
 	 * @return a double vector of all the observable values in this object instance.
 	 */
-	public double[] getObservableFeatureVec(){
+	@Override
+	public double[] getFeatureVec(){
 		
-		double [] obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
+		double [] obsFeatureVec = new double[obClass.numAttributes()];
 		for(int i = 0; i < obsFeatureVec.length; i++){
-			int ind = obClass.observableAttributeIndices.get(i);
-			obsFeatureVec[i] = values.get(ind).getNumericRepresentation();
+			obsFeatureVec[i] = values.get(i).getNumericRepresentation();
 		}
 		
 		return obsFeatureVec;
@@ -432,17 +432,17 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * if the object instance includes attributes that are *not* type REAL or INT.
 	 * @return a normalized double vector of all the observable values in this object instance.
 	 */
-	public double [] getNormalizedObservableFeatureVec(){
+	@Override
+	public double [] getNormalizedFeatureVec(){
 		
-		double [] obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
+		double [] obsFeatureVec = new double[obClass.numAttributes()];
 		for(int i = 0; i < obsFeatureVec.length; i++){
-			int ind = obClass.observableAttributeIndices.get(i);
-			Value v = values.get(ind);
+			Value v = values.get(i);
 			Attribute a = v.getAttribute();
 			if(a.type != AttributeType.REAL && a.type != AttributeType.INT){
 				throw new RuntimeException("Cannot get a normalized numeric value for attribute " + a.name + " because it is not a REAL or INT type.");
 			}
-			double dv = values.get(ind).getNumericRepresentation();
+			double dv = values.get(i).getNumericRepresentation();
 			double n = (dv - a.lowerLim) / (a.upperLim - a.lowerLim);
 			obsFeatureVec[i] = n;
 		}

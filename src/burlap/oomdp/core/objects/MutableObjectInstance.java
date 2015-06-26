@@ -407,18 +407,18 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	
 	
 	/**
-	 * Returns a double vector of all the observable values in this object instance. Discrete values have
+	 * Returns a double vector of all the values in this object instance. Discrete values have
 	 * their int stored valued converted to a double for this array. This method will throw a runtime exception
 	 * if the object instance includes relational values. This method may be useful if objects need to be indexed
 	 * in data structures like kd-trees.
 	 * @return a double vector of all the observable values in this object instance.
 	 */
-	public double[] getObservableFeatureVec(){
+	@Override
+	public double[] getFeatureVec(){
 		
-		double [] obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
+		double [] obsFeatureVec = new double[obClass.numAttributes()];
 		for(int i = 0; i < obsFeatureVec.length; i++){
-			int ind = obClass.observableAttributeIndices.get(i);
-			obsFeatureVec[i] = values.get(ind).getNumericRepresentation();
+			obsFeatureVec[i] = values.get(i).getNumericRepresentation();
 		}
 		
 		return obsFeatureVec;
@@ -426,22 +426,22 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	
 	
 	/**
-	 * Returns a normalized double vector of all the observable values in this object instance. This method relies on the lowerlims and upperlims 
+	 * Returns a normalized double vector of all the values in this object instance. This method relies on the lowerlims and upperlims
 	 * being set for the corresponding attribute. Furthermore, this method will throw a runtime exception
 	 * if the object instance includes attributes that are *not* type REAL or INT.
 	 * @return a normalized double vector of all the observable values in this object instance.
 	 */
-	public double [] getNormalizedObservableFeatureVec(){
+	@Override
+	public double [] getNormalizedFeatureVec(){
 		
-		double [] obsFeatureVec = new double[obClass.observableAttributeIndices.size()];
+		double [] obsFeatureVec = new double[obClass.numAttributes()];
 		for(int i = 0; i < obsFeatureVec.length; i++){
-			int ind = obClass.observableAttributeIndices.get(i);
-			Value v = values.get(ind);
+			Value v = values.get(i);
 			Attribute a = v.getAttribute();
 			if(a.type != AttributeType.REAL && a.type != AttributeType.INT){
 				throw new RuntimeException("Cannot get a normalized numeric value for attribute " + a.name + " because it is not a REAL or INT type.");
 			}
-			double dv = values.get(ind).getNumericRepresentation();
+			double dv = values.get(i).getNumericRepresentation();
 			double n = (dv - a.lowerLim) / (a.upperLim - a.lowerLim);
 			obsFeatureVec[i] = n;
 		}
@@ -451,7 +451,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	}
 	
 	
-	
+	@Override
 	public boolean equals(Object obj){
 		MutableObjectInstance op = (MutableObjectInstance)obj;
 		if(op.name.equals(name))

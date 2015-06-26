@@ -19,14 +19,10 @@ public class MutableState extends OOMDPState implements State{
 
 	
 	/**
-	 * List of observable object instances that define the state
+	 * List of object instances that define the state
 	 */
 	protected List <ObjectInstance>							objectInstances;
-	
-	/**
-	 * List of hidden object instances that facilitate domain dynamics and infer observable values
-	 */
-	protected List <ObjectInstance>							hiddenObjectInstances;
+
 	
 	/**
 	 * Map from object names to their instances
@@ -59,10 +55,7 @@ public class MutableState extends OOMDPState implements State{
 		for(ObjectInstance o : s.objectInstances){
 			this.addObject(o.copy());
 		}
-		
-		for(ObjectInstance o : s.hiddenObjectInstances){
-			this.addObject(o.copy());
-		}
+
 		
 	}
 	
@@ -70,6 +63,7 @@ public class MutableState extends OOMDPState implements State{
 	 * Returns a deep copy of this state.
 	 * @return a deep copy of this state.
 	 */
+	@Override
 	public MutableState copy(){
 		return new MutableState(this);
 	}
@@ -125,15 +119,6 @@ public class MutableState extends OOMDPState implements State{
 			}
 		}
 		
-		for(ObjectInstance o : this.hiddenObjectInstances){
-			if(deepCopyObjects.contains(o)){
-				s.addObject(o.copy());
-			}
-			else{
-				s.addObject(o);
-			}
-		}
-		
 		return s;
 	}
 	
@@ -141,9 +126,7 @@ public class MutableState extends OOMDPState implements State{
 	protected void initDataStructures(){
 		
 		objectInstances = new ArrayList <ObjectInstance>();
-		hiddenObjectInstances = new ArrayList <ObjectInstance>();
 		objectMap = new HashMap <String, ObjectInstance>();
-		
 		objectIndexByTrueClass = new HashMap <String, List <ObjectInstance>>();
 	}
 	
@@ -162,14 +145,8 @@ public class MutableState extends OOMDPState implements State{
 		
 		
 		objectMap.put(oname, o);
-		
-		
-		if(o.getObjectClass().hidden){
-			hiddenObjectInstances.add(o);
-		}
-		else{
-			objectInstances.add(o);
-		}
+		objectInstances.add(o);
+
 		
 		
 		this.addObjectClassIndexing(o);
@@ -228,12 +205,9 @@ public class MutableState extends OOMDPState implements State{
 			return this; //make sure we're removing something that actually exists in this state!
 		}
 		
-		if(o.getObjectClass().hidden){
-			hiddenObjectInstances.remove(o);
-		}
-		else{
-			objectInstances.remove(o);
-		}
+
+		objectInstances.remove(o);
+
 		
 		objectMap.remove(oname);
 		
@@ -392,28 +366,13 @@ public class MutableState extends OOMDPState implements State{
 	
 	
 	/**
-	 * Returns the number of observable and hidden object instances in this state.
-	 * @return the number of observable and hidden object instances in this state.
+	 * Returns the number of object instances in this state.
+	 * @return the number of object instances in this state.
 	 */
 	public int numTotalObjects(){
-		return objectInstances.size() + hiddenObjectInstances.size();
-	}
-	
-	/**
-	 * Returns the number of observable object instances in this state.
-	 * @return the number of observable object instances in this state.
-	 */
-	public int numObservableObjects(){
 		return objectInstances.size();
 	}
-	
-	/**
-	 * Returns the number of hidden object instances in this state.
-	 * @return the number of hideen object instances in this state.
-	 */
-	public int numHiddenObjects(){
-		return hiddenObjectInstances.size();
-	}
+
 	
 	
 	/**
@@ -424,49 +383,7 @@ public class MutableState extends OOMDPState implements State{
 	public ObjectInstance getObject(String oname){
 		return objectMap.get(oname);
 	}
-	
-	/**
-	 * Returns the observable object instance indexed at position i
-	 * @param i the index of the observable object instance to return
-	 * @return the observable object instance indexed at position i, or null if i > this.numObservableObjects()
-	 */
-	public ObjectInstance getObservableObjectAt(int i){
-		if(i > objectInstances.size()){
-			return null;
-		}
-		return objectInstances.get(i);
-	}
-	
-	
-	/**
-	 * Returns the hidden object instance indexed at position i
-	 * @param i the index of the hidden object instance to return
-	 * @return the hidden object instance indexed at position i, or null if i > this.numHiddenObjects()
-	 */
-	public ObjectInstance getHiddenObjectAt(int i){
-		if(i > hiddenObjectInstances.size()){
-			return null;
-		}
-		return hiddenObjectInstances.get(i);
-	}
-	
-	
-	/**
-	 * Returns the list of observable object instances in this state.
-	 * @return the list of observable object instances in this state.
-	 */
-	public List <ObjectInstance> getObservableObjects(){
-		return new ArrayList <ObjectInstance>(objectInstances);
-	}
-	
-	
-	/**
-	 * Returns the list of hidden object instances in this state.
-	 * @return the list of hidden object instances in this state.
-	 */
-	public List <ObjectInstance> getHiddenObjects(){
-		return new ArrayList <ObjectInstance>(hiddenObjectInstances);
-	}
+
 	
 	
 	/**
@@ -475,7 +392,6 @@ public class MutableState extends OOMDPState implements State{
 	 */
 	public List <ObjectInstance> getAllObjects(){
 		List <ObjectInstance> objects = new ArrayList <ObjectInstance>(objectInstances);
-		objects.addAll(hiddenObjectInstances);
 		return objects;
 	}
 	
@@ -552,12 +468,6 @@ public class MutableState extends OOMDPState implements State{
 				unset.put(o.getName(), unsetA);
 			}
 		}
-		for(ObjectInstance o : this.hiddenObjectInstances){
-			List<String> unsetA = o.unsetAttributes();
-			if(unsetA.size() > 0){
-				unset.put(o.getName(), unsetA);
-			}
-		}
 
 		return unset;
 	}
@@ -570,9 +480,6 @@ public class MutableState extends OOMDPState implements State{
 		
 		String desc = "";
 		for(ObjectInstance o : objectInstances){
-			desc = desc + o.getObjectDescription() + "\n";
-		}
-		for(ObjectInstance o : hiddenObjectInstances){
 			desc = desc + o.getObjectDescription() + "\n";
 		}
 		
@@ -589,9 +496,6 @@ public class MutableState extends OOMDPState implements State{
 	public String getCompleteStateDescriptionWithUnsetAttributesAsNull(){
 		String desc = "";
 		for(ObjectInstance o : objectInstances){
-			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
-		}
-		for(ObjectInstance o : hiddenObjectInstances){
 			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
 		}
 

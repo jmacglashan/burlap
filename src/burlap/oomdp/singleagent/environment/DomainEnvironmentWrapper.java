@@ -69,7 +69,6 @@ public class DomainEnvironmentWrapper implements DomainGenerator {
 		Attribute a = new Attribute(d, src.name, src.type);
 		a.discValues = new ArrayList<String>(src.discValues);
 		a.discValuesHash = new HashMap<String, Integer>(src.discValuesHash);
-		a.hidden = src.hidden;
 		a.lowerLim = src.lowerLim;
 		a.upperLim = src.upperLim;
 		

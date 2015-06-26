@@ -245,7 +245,6 @@ public class CartPoleDomain implements DomainGenerator {
 		if(this.physParams.useCorrectModel){
 			normAtt = new Attribute(domain, ATTNORMSGN, Attribute.AttributeType.REAL);
 			normAtt.setLims(-1., 1.);
-			normAtt.hidden = true;
 			
 		}
 		

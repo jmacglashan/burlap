@@ -185,7 +185,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @param color the categorical color value (either "red", "green", or "blue")
 	 */
 	public static void setBlock(State s, int blockInd, String onBlock, int onTable, int clear, String color){
-		setBlock(s.getObservableObjects().get(blockInd), onBlock, onTable, clear, color);
+		setBlock(s.getAllObjects().get(blockInd), onBlock, onTable, clear, color);
 	}
 	
 	

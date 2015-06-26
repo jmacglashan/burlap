@@ -71,7 +71,7 @@ public class BlocksWorldVisualizer {
 		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
 				float cWidth, float cHeight) {
 			
-			List <ObjectInstance> objects = s.getObservableObjects();
+			List <ObjectInstance> objects = s.getAllObjects();
 			List <String> obNames = new ArrayList<String>(objects.size());
 			for(ObjectInstance o : objects){
 				obNames.add(o.getName());

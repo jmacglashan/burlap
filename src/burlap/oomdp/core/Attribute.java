@@ -146,11 +146,7 @@ public class Attribute {
 	 * The possible categorical values for a discrete or boolean attribute.
 	 */
 	public List <String>				discValues;
-	
-	/**
-	 * whether this value is part of the state representation or is hidden from the agent
-	 */
-	public boolean						hidden;
+
 	
 	/**
 	 * Constructs an attribute with an unspecified type that will need to be specified later.
@@ -168,8 +164,6 @@ public class Attribute {
 		
 		this.lowerLim = 0.0;
 		this.upperLim = 0.0;
-		
-		this.hidden = false;
 		
 		
 		this.domain.addAttribute(this);
@@ -195,8 +189,7 @@ public class Attribute {
 		
 		this.lowerLim = 0.0;
 		this.upperLim = 0.0;
-		
-		this.hidden = false;
+
 		
 		if(this.type == AttributeType.BOOLEAN){
 			this.discValues.add("false");
@@ -239,7 +232,6 @@ public class Attribute {
 		nd.upperLim = this.upperLim;
 		nd.discValues = new ArrayList<String>(discValues);
 		nd.discValuesHash = new HashMap<String, Integer>(discValuesHash);
-		nd.hidden = this.hidden;
 		
 		
 		return nd;

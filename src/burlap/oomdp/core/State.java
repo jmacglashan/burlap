@@ -89,22 +89,11 @@ public interface State {
 
 	
 	/**
-	 * Returns the number of observable and hidden object instances in this state.
-	 * @return the number of observable and hidden object instances in this state.
+	 * Returns the number of object instances in this state.
+	 * @return the number of object instances in this state.
 	 */
 	int numTotalObjects();
-	
-	/**
-	 * Returns the number of observable object instances in this state.
-	 * @return the number of observable object instances in this state.
-	 */
-	int numObservableObjects();
-	
-	/**
-	 * Returns the number of hidden object instances in this state.
-	 * @return the number of hideen object instances in this state.
-	 */
-	int numHiddenObjects();
+
 	
 	
 	/**
@@ -113,19 +102,6 @@ public interface State {
 	 * @return the object instance with the name oname or null if there is no object in this state named oname
 	 */
 	ObjectInstance getObject(String oname);
-	
-	/**
-	 * Returns the list of observable object instances in this state.
-	 * @return the list of observable object instances in this state.
-	 */
-	List <ObjectInstance> getObservableObjects();
-	
-	
-	/**
-	 * Returns the list of hidden object instances in this state.
-	 * @return the list of hidden object instances in this state.
-	 */
-	List <ObjectInstance> getHiddenObjects();
 	
 	
 	/**

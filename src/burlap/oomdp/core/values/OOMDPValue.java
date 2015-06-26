@@ -8,7 +8,6 @@ import burlap.oomdp.core.Attribute;
 public abstract class OOMDPValue implements Value{
 
 	protected Attribute			attribute;			//defines the attribute kind of this value
-	protected boolean			isObservable=true;	//relevant to POMDPs for which values are only observable at certain times
 	
 	
 	/**
@@ -43,24 +42,7 @@ public abstract class OOMDPValue implements Value{
 		return attribute.name;
 	}
 	
-	
-	/**
-	 * Sets whether this value is observable to the agent or not.
-	 * @param isObservable true if this value is observable to the agent; false otherwise.
-	 */
-	public OOMDPValue setObservability(boolean isObservable){
-		this.isObservable = isObservable;
-		return this;
-	}
-	
-	
-	/**
-	 * Returns whether this value is observable to the agent or not.
-	 * @return true if this value is observable to the agent; false otherwise.
-	 */
-	public boolean isObservable(){
-		return this.isObservable;
-	}
+
 	
 	@Override
 	public String toString(){

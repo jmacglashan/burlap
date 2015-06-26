@@ -5,7 +5,6 @@ import burlap.oomdp.core.ObjectInstance;
 public abstract class OOMDPObjectInstance implements ObjectInstance{
 
 	public OOMDPObjectInstance() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	/**

@@ -36,7 +36,7 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 	@Override
 	public StateHashTuple hashState(State s) {
 		
-		if(objectNameOrder.size() != s.getObservableObjects().size()){
+		if(objectNameOrder.size() != s.numTotalObjects()){
 			this.addNewObjectNames(s);
 		}
 		
@@ -45,7 +45,7 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 	}
 	
 	protected void addNewObjectNames(State s){
-		List <ObjectInstance> obs = s.getObservableObjects();
+		List <ObjectInstance> obs = s.getAllObjects();
 		for(ObjectInstance ob : obs){
 			String name = ob.getName();
 			if(!objectNames.contains(name)){
@@ -105,7 +105,7 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 			}
 			StateHashTuple o = (StateHashTuple)other;
 			
-			List <ObjectInstance> obs = this.s.getObservableObjects();
+			List <ObjectInstance> obs = this.s.getAllObjects();
 			for(ObjectInstance ob : obs){
 				String name = ob.getName();
 				ObjectInstance oob = o.s.getObject(name);

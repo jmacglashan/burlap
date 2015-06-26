@@ -80,8 +80,17 @@ public final class ImmutableState extends OOMDPState implements State {
 		HashMap<String, Integer> objectMap = new HashMap<String, Integer>(size);
 		Map<String, Integer> objectClassMap = new HashMap<String, Integer>();
 		
-		List<ImmutableObjectInstance> immutableObjects = this.createImmutableObjects(s.getObservableObjects());
-		List<ImmutableObjectInstance> immutableHidden = this.createImmutableObjects(s.getHiddenObjects());
+		List<ImmutableObjectInstance> immutableObjects = null;
+		if(s instanceof ImmutableState){
+			immutableObjects = this.createImmutableObjects(((ImmutableState)s).getObservableObjects());
+		}
+		else{
+			immutableObjects = this.createImmutableObjects(s.getAllObjects());
+		}
+		List<ImmutableObjectInstance> immutableHidden = new ArrayList<ImmutableObjectInstance>();
+		if(s instanceof ImmutableState) {
+			immutableObjects = this.createImmutableObjects(((ImmutableState)s).getHiddenObjects());
+		}
 		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(immutableObjects, objectMap, 0);
 		List<ImmutableObjectInstance> hiddenObjectsInstances = this.createObjectLists(immutableHidden, objectMap, objectInstances.size());
 		
@@ -437,7 +446,7 @@ public final class ImmutableState extends OOMDPState implements State {
 			String oclass = entry.getKey();
 			List <Integer> objectIndices = this.objectIndexByTrueClass.get(entry.getValue());
 			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
-			if(objectIndices.size() != so.numObservableObjects() && enforceStateExactness){
+			if(objectIndices.size() != so.numTotalObjects() && enforceStateExactness){
 				return new HashMap<String, String>(); //states are not equal and therefore cannot be matched
 			}
 			
