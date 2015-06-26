@@ -519,7 +519,7 @@ public class MutableState extends OOMDPState implements State{
 	 * Returns a list of list of object instances, grouped by object class
 	 * @return a list of list of object instances, grouped by object class
 	 */
-	public List <List <ObjectInstance>> getAllObjectsByTrueClass(){
+	public List <List <ObjectInstance>> getAllObjectsByClass(){
 		return new ArrayList<List<ObjectInstance>>(objectIndexByTrueClass.values());
 	}
 	

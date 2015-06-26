@@ -160,7 +160,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 			}
 		}
 		
-		List<List<ObjectInstance>> obsByClass = exampleState.getAllObjectsByTrueClass();
+		List<List<ObjectInstance>> obsByClass = exampleState.getAllObjectsByClass();
 		for(List<ObjectInstance> obs : obsByClass){
 			String className = obs.get(0).getTrueClassName();
 			this.numObjectsOfEachClass.put(className, obs.size());

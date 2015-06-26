@@ -32,7 +32,7 @@ import java.util.Set;
  * to launch an interactive visualizer for the first level with keys: w, a, d, s, x for
  * the actions up, west, east, pickup, putdown, respectively.
  * <br/><br/>
- * By default this domain's actions will use a {@link State#semiDeepCopy(java.util.Set)} instead of a
+ * By default this domain's actions will use a {@link burlap.oomdp.core.states.MutableState#semiDeepCopy(java.util.Set)} instead of a
  * {@link burlap.oomdp.core.State#copy()}. The semi-deep copy only copies {@link burlap.oomdp.core.ObjectInstance}
  * in the previous state that will have its values modified by the action execution:
  * typically, the agent and a moved block are deep copied, with the un moved block objects and brick objects
@@ -704,7 +704,7 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, String [] params){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -722,7 +722,7 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, params);
 			}
@@ -761,7 +761,7 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, String [] params){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -779,7 +779,7 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, params);
 			}
@@ -818,7 +818,7 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, String [] params){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -841,7 +841,7 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, params);
 			}
@@ -881,7 +881,7 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, String [] params){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -899,7 +899,7 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, params);
 			}

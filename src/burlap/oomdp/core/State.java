@@ -19,32 +19,7 @@ public interface State {
 	 * @return a copy of this state.
 	 */
 	State copy();
-	
-	/**
-	 * Performs a semi-deep copy of the state in which only the objects with the names in deepCopyObjectNames are deep copied and the rest of the
-	 * objects are shallowed copied.
-	 * @param deepCopyObjectNames the names of the objects to be deep copied.
-	 * @return a new state that is a mix of a shallow and deep copy of this state.
-	 */
-	State semiDeepCopy(String...deepCopyObjectNames);
-	
-	
-	/**
-	 * Performs a semi-deep copy of the state in which only the objects in deepCopyObjects are deep copied and the rest of the
-	 * objects are shallowed copied.
-	 * @param deepCopyObjects the objects to be deep copied
-	 * @return a new state that is a mix of a shallow and deep copy of this state.
-	 */
-	State semiDeepCopy(ObjectInstance...deepCopyObjects);
-	
-	
-	/**
-	 * Performs a semi-deep copy of the state in which only the objects in deepCopyObjects are deep copied and the rest of the
-	 * objects are shallowed copied.
-	 * @param deepCopyObjects the objects to be deep copied
-	 * @return a new state that is a mix of a shallow and deep copy of this state.
-	 */
-	State semiDeepCopy(Set<ObjectInstance> deepCopyObjects);
+
 	
 	/**
 	 * Adds object instance o to this state.
@@ -80,6 +55,7 @@ public interface State {
 	 * @return the modified state
 	 */
 	State removeAllObjects(Collection<ObjectInstance> objects);
+
 	/**
 	 * Renames the identifier for the object instance currently named originalName with the name newName.
 	 * @param originalName the original name of the object instance to be renamed in this state
@@ -110,13 +86,7 @@ public interface State {
 	 */
 	Map <String, String> getObjectMatchingTo(State so, boolean enforceStateExactness);
 
-	
-	/**
-	 * Define what equals means for two states
-	 * @param other
-	 * @return Whether the states are 'equal'
-	 */
-	boolean equals(Object other);
+
 	
 	/**
 	 * Returns the number of observable and hidden object instances in this state.
@@ -191,7 +161,7 @@ public interface State {
 	 * Returns a list of list of object instances, grouped by object class
 	 * @return a list of list of object instances, grouped by object class
 	 */
-	List <List <ObjectInstance>> getAllObjectsByTrueClass();
+	List <List <ObjectInstance>> getAllObjectsByClass();
 	
 	
 	/**
@@ -215,7 +185,8 @@ public interface State {
 	
 
 	/**
-	 * Returns a string description of the state with unset attribute values listed as null.
+	 * Returns a string description of the state with unset attribute values listed as null. This avoids
+	 * runtime exceptions when attributes are unset and informs you which they are.
 	 * @return a string description of the state with unset attribute values listed as null.
 	 */
 	String getCompleteStateDescriptionWithUnsetAttributesAsNull();

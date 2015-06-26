@@ -172,23 +172,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	public ImmutableState copy(){
 		return this;
 	}
-	
-	@Override
-	public State semiDeepCopy(String... deepCopyObjectNames) {
-		return this.copy();
-	}
 
-
-	@Override
-	public State semiDeepCopy(ObjectInstance... deepCopyObjects) {
-		return this.copy();
-	}
-
-
-	@Override
-	public State semiDeepCopy(Set<ObjectInstance> deepCopyObjects) {
-		return this.copy();
-	}
 	
 	private final List<ImmutableObjectInstance> createImmutableObjects(List<ObjectInstance> objects) {
 		List<ImmutableObjectInstance> immutableObjects = new ArrayList<ImmutableObjectInstance>(objects.size());
@@ -716,7 +700,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * Returns a list of list of object instances, grouped by object class
 	 * @return a list of list of object instances, grouped by object class
 	 */
-	public List <List <ObjectInstance>> getAllObjectsByTrueClass(){
+	public List <List <ObjectInstance>> getAllObjectsByClass(){
 		List<List<ObjectInstance>> allObjects = new ArrayList<List<ObjectInstance>>(this.objectIndexByTrueClass.size());
 		for (List<Integer> indices : this.objectIndexByTrueClass) {
 			List<ObjectInstance> objects = new ArrayList<ObjectInstance>(indices.size());
