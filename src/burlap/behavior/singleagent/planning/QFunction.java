@@ -32,20 +32,20 @@ public interface QFunction {
 
 
 	/**
-	 * A class of helper static methods that may be commonly used code that uses a QComputable planner. In particular,
-	 * methods for computing the value function of a state, given the Q-values
+	 * A class of helper static methods that may be commonly used by code that uses a QFunction instance. In particular,
+	 * methods for computing the value function of a state, given the Q-values (the max Q-value or policy weighted value).
 	 */
 	public static class QFunctionHelper {
 
 		/**
 		 * Returns the optimal state value function for a state given a {@link QFunction}.
 		 * The optimal value is the max Q-value. If no actions are permissible in the input state, then zero is returned.
-		 * @param planner the {@link QFunction} capable of producing Q-values.
+		 * @param qSource the {@link QFunction} capable of producing Q-values.
 		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
 		 * @return the max Q-value for all possible Q-values in the state.
 		 */
-		public static double getOptimalValue(QFunction planner, State s){
-			List <QValue> qs = planner.getQs(s);
+		public static double getOptimalValue(QFunction qSource, State s){
+			List <QValue> qs = qSource.getQs(s);
 			if(qs.size() == 0){
 				return 0.;
 			}
@@ -59,30 +59,30 @@ public interface QFunction {
 		/**
 		 * Returns the optimal state value for a state given a {@link QFunction}.
 		 * The optimal value is the max Q-value. If no actions are permissible in the input state or the input state is a terminal state, then zero is returned.
-		 * @param planner the {@link QFunction} capable of producing Q-values.
+		 * @param qSource the {@link QFunction} capable of producing Q-values.
 		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
 		 * @param tf a terminal function.
 		 * @return the max Q-value for all possible Q-values in the state or zero if there are not permissible actions or if the state is a terminal state.
 		 */
-		public static double getOptimalValue(QFunction planner, State s, TerminalFunction tf){
+		public static double getOptimalValue(QFunction qSource, State s, TerminalFunction tf){
 
 			if(tf.isTerminal(s)){
 				return 0.;
 			}
 
-			return getOptimalValue(planner, s);
+			return getOptimalValue(qSource, s);
 		}
 
 
 		/**
 		 * Returns the state value under a given policy for a state and {@link QFunction}.
 		 * The value is the expected Q-value under the input policy action distribution. If no actions are permissible in the input state, then zero is returned.
-		 * @param planner the {@link QFunction} capable of producing Q-values.
+		 * @param qSource the {@link QFunction} capable of producing Q-values.
 		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
 		 * @param p the policy defining the action distribution.
 		 * @return the expected Q-value under the input policy action distribution
 		 */
-		public static double getPolicyValue(QFunction planner, State s, Policy p){
+		public static double getPolicyValue(QFunction qSource, State s, Policy p){
 
 			double expectedValue = 0.;
 			List <Policy.ActionProb> aps = p.getActionDistributionForState(s);
@@ -90,7 +90,7 @@ public interface QFunction {
 				return 0.;
 			}
 			for(Policy.ActionProb ap : aps){
-				double q = planner.getQ(s, ap.ga).q;
+				double q = qSource.getQ(s, ap.ga).q;
 				expectedValue += q * ap.pSelection;
 			}
 			return expectedValue;
@@ -100,19 +100,19 @@ public interface QFunction {
 		/**
 		 * Returns the state value under a given policy for a state and {@link QFunction}.
 		 * The value is the expected Q-value under the input policy action distribution. If no actions are permissible in the input state, then zero is returned.
-		 * @param planner the {@link QFunction} capable of producing Q-values.
+		 * @param qSource the {@link QFunction} capable of producing Q-values.
 		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
 		 * @param p the policy defining the action distribution.
 		 * @param tf a terminal function.
 		 * @return the expected Q-value under the input policy action distribution or zero if there are not permissible actions or if the state is a terminal state.
 		 */
-		public static double getPolicyValue(QFunction planner, State s, Policy p, TerminalFunction tf){
+		public static double getPolicyValue(QFunction qSource, State s, Policy p, TerminalFunction tf){
 
 			if(tf.isTerminal(s)){
 				return 0.;
 			}
 
-			return getPolicyValue(planner, s, p);
+			return getPolicyValue(qSource, s, p);
 		}
 
 	}
