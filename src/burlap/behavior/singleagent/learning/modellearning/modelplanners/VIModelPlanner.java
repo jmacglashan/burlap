@@ -7,7 +7,7 @@ import java.util.Set;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -27,7 +27,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class VIModelPlanner implements ModelPlanner, QComputablePlanner{
+public class VIModelPlanner implements ModelPlanner, QFunction {
 
 	
 	/**

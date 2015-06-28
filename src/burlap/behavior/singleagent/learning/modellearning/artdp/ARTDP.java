@@ -13,7 +13,7 @@ import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.BoltzmannQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -38,7 +38,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAgent {
+public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 
 	/**
 	 * The model of the world that is being learned.
@@ -148,7 +148,7 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 	}
 	
 	/**
-	 * Sets the policy to the provided one. Should be a policy that operates on a {@link QComputablePlanner}. Will automatically set its
+	 * Sets the policy to the provided one. Should be a policy that operates on a {@link burlap.behavior.singleagent.planning.QFunction}. Will automatically set its
 	 * Q-source to this object.
 	 * @param policy the policy to use.
 	 */

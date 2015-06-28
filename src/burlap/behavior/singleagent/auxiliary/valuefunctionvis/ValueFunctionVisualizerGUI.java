@@ -15,8 +15,7 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
 
@@ -99,7 +98,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param westActionName the name of the west action
 	 * @return a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI}
 	 */
-	public static ValueFunctionVisualizerGUI createGridWorldBasedValueFunctionVisualizerGUI(List <State> states, QComputablePlanner planner, Policy p,
+	public static ValueFunctionVisualizerGUI createGridWorldBasedValueFunctionVisualizerGUI(List <State> states, QFunction planner, Policy p,
 																 String classWithPositionAtts, String xAttName, String yAttName,
 																 String northActionName,
 																 String southActionName,
@@ -133,7 +132,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param svp the value function state visualizer to use.
 	 * @param planner the planner that can return the value function.
 	 */
-	public ValueFunctionVisualizerGUI(List <State> states, StateValuePainter svp, QComputablePlanner planner){
+	public ValueFunctionVisualizerGUI(List <State> states, StateValuePainter svp, QFunction planner){
 		this.statesToVisualize = states;
 		this.svp = svp;
 		this.visualizer = new MultiLayerRenderer();

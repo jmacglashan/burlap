@@ -16,7 +16,7 @@ import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
 import burlap.behavior.singleagent.vfa.ActionApproximationResult;
 import burlap.behavior.singleagent.vfa.FunctionWeight;
@@ -45,7 +45,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * 2. 2. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
  *
  */
-public class GradientDescentSarsaLam extends OOMDPPlanner implements QComputablePlanner, LearningAgent {
+public class GradientDescentSarsaLam extends OOMDPPlanner implements QFunction, LearningAgent {
 	
 	
 	/**

@@ -10,7 +10,7 @@ import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -33,7 +33,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * @author James MacGlashan
  *
  */
-public class SGNaiveQLAgent extends Agent implements QComputablePlanner{
+public class SGNaiveQLAgent extends Agent implements QFunction {
 
 	/**
 	 * The tabular map from (hashed) states to the list of Q-values for each action in those states

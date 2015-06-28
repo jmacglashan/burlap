@@ -6,7 +6,7 @@ import java.util.Random;
 
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
@@ -633,7 +633,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param p the policy to render
 	 * @return a gridworld-based {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} object.
 	 */
-	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, QComputablePlanner planner, Policy p){
+	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, QFunction planner, Policy p){
 		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, planner, p,
 				CLASSAGENT, ATTX, ATTY,
 				ACTIONNORTH, ACTIONSOUTH, ACTIONEAST, ACTIONWEST);

@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.support;
 
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * An interface for a planner that can produce Q-value gradients.
  * @author James MacGlashan.
  */
-public interface QGradientPlanner extends QComputablePlanner{
+public interface QGradientPlanner extends QFunction {
 
 
 	/**

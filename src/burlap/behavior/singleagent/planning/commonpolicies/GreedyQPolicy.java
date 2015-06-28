@@ -10,7 +10,7 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
@@ -24,7 +24,7 @@ import burlap.oomdp.core.State;
  */
 public class GreedyQPolicy extends Policy implements PlannerDerivedPolicy{
 
-	protected QComputablePlanner		qplanner;
+	protected QFunction qplanner;
 	protected Random 					rand;
 	
 	
@@ -38,7 +38,7 @@ public class GreedyQPolicy extends Policy implements PlannerDerivedPolicy{
 	 * Initializes with a QComputablePlanner
 	 * @param planner the QComputablePlanner to use
 	 */
-	public GreedyQPolicy(QComputablePlanner planner){
+	public GreedyQPolicy(QFunction planner){
 		qplanner = planner;
 		rand = RandomFactory.getMapped(0);
 	}
@@ -46,11 +46,11 @@ public class GreedyQPolicy extends Policy implements PlannerDerivedPolicy{
 	@Override
 	public void setPlanner(OOMDPPlanner planner){
 		
-		if(!(planner instanceof QComputablePlanner)){
+		if(!(planner instanceof QFunction)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QComputablePlanner)planner;
+		this.qplanner = (QFunction)planner;
 	}
 	
 	@Override

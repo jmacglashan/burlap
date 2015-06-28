@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.BoltzmannQPolicy;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.State;
@@ -209,7 +209,7 @@ public class MLIRL {
 	 */
 	public double logLikelihoodOfTrajectory(EpisodeAnalysis ea, double weight){
 		double logLike = 0.;
-		Policy p = new BoltzmannQPolicy((QComputablePlanner)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
+		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
 			this.request.getPlanner().planFromState(ea.getState(i));
 			double actProb = p.getProbOfAction(ea.getState(i), ea.getAction(i));
@@ -256,7 +256,7 @@ public class MLIRL {
 	 */
 	public double [] logPolicyGrad(State s, GroundedAction ga){
 
-		Policy p = new BoltzmannQPolicy((QComputablePlanner)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
+		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		double invActProb = 1./p.getProbOfAction(s, ga);
 		double [] gradient = BoltzmannPolicyGradient.computeBoltzmannPolicyGradient(s, ga, (QGradientPlanner)this.request.getPlanner(), this.request.getBoltzmannBeta());
 		for(int f = 0; f < gradient.length; f++){

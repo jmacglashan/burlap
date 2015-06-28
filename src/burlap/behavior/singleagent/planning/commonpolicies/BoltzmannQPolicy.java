@@ -9,7 +9,7 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
@@ -24,7 +24,7 @@ import burlap.oomdp.core.State;
  */
 public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 
-	protected QComputablePlanner		qplanner;
+	protected QFunction qplanner;
 	double								temperature;
 	
 	
@@ -47,7 +47,7 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 	 * @param planner the q-computable planner to use.
 	 * @param temperature the positive temperature value to use
 	 */
-	public BoltzmannQPolicy(QComputablePlanner planner, double temperature){
+	public BoltzmannQPolicy(QFunction planner, double temperature){
 		this.qplanner = planner;
 		this.temperature = temperature;
 	}
@@ -92,11 +92,11 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 
 	@Override
 	public void setPlanner(OOMDPPlanner planner) {
-		if(!(planner instanceof QComputablePlanner)){
+		if(!(planner instanceof QFunction)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QComputablePlanner)planner;
+		this.qplanner = (QFunction)planner;
 		
 	}
 

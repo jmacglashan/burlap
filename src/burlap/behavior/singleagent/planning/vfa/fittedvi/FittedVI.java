@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.planning.vfa.fittedvi;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.statehashing.NameDependentStateHashFactory;
@@ -47,7 +47,7 @@ import java.util.List;
  * 1. Gordon, Geoffrey J. "Stable function approximation in dynamic programming." Proceedings of the twelfth international conference on machine learning. 1995.
  * @author James MacGlashan.
  */
-public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputablePlanner{
+public class FittedVI extends OOMDPPlanner implements ValueFunction, QFunction {
 
 
 	/**
@@ -276,7 +276,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 		List <Double> oldVs = new ArrayList<Double>(this.samples.size());
 		for(State s : this.samples){
 			oldVs.add(this.valueFunction.value(s));
-			instances.add(new SupervisedVFA.SupervisedVFAInstance(s, QComputablePlanner.QComputablePlannerHelper.getOptimalValue(ss, s)));
+			instances.add(new SupervisedVFA.SupervisedVFAInstance(s, QFunctionHelper.getOptimalValue(ss, s)));
 		}
 
 		this.valueFunction = this.valueFunctionTrainer.train(instances);

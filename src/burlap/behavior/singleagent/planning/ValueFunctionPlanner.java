@@ -36,7 +36,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public abstract class ValueFunctionPlanner extends OOMDPPlanner implements ValueFunction, QComputablePlanner{
+public abstract class ValueFunctionPlanner extends OOMDPPlanner implements ValueFunction, QFunction {
 
 	
 	

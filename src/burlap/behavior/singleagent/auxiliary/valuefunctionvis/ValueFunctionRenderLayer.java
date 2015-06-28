@@ -8,7 +8,7 @@ import java.util.List;
 
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.visualizer.RenderLayer;
@@ -38,7 +38,7 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 	/**
 	 * The QComputable planner to use for finding the value function
 	 */
-	protected QComputablePlanner				planner;
+	protected QFunction planner;
 	
 	
 	
@@ -48,7 +48,7 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 	 * @param svp the value function state visualizer to use.
 	 * @param planner the planner that can return the value function.
 	 */
-	public ValueFunctionRenderLayer(Collection <State> states, StateValuePainter svp, QComputablePlanner planner){
+	public ValueFunctionRenderLayer(Collection <State> states, StateValuePainter svp, QFunction planner){
 		this.statesToVisualize = states;
 		this.svp = svp;
 		this.planner = planner;

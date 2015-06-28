@@ -10,7 +10,7 @@ import java.util.Random;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
@@ -230,8 +230,8 @@ public class ApprenticeshipLearning {
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
 			}
-			else if (planner instanceof QComputablePlanner) {
-				policy = new GreedyQPolicy((QComputablePlanner)planner);
+			else if (planner instanceof QFunction) {
+				policy = new GreedyQPolicy((QFunction)planner);
 			}
 
 			// (5) Compute u^(i) = u(pi^(i))
@@ -346,8 +346,8 @@ public class ApprenticeshipLearning {
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
 			}
-			else if (planner instanceof QComputablePlanner) {
-				policy = new GreedyQPolicy((QComputablePlanner)planner);
+			else if (planner instanceof QFunction) {
+				policy = new GreedyQPolicy((QFunction)planner);
 			}
 			policyHistory.add(policy);
 

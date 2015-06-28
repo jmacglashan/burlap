@@ -11,7 +11,7 @@ import java.util.Set;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.singleagent.planning.QFunction;
 import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTStateNode.UCTStateConstructor;
@@ -30,7 +30,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.behavior.singleagent.planning.StateConditionTest})
  * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
  * <br/><br/>
- * The class also implements the {@link burlap.behavior.singleagent.planning.QComputablePlanner} interface. However, it will only return the Q-value
+ * The class also implements the {@link burlap.behavior.singleagent.planning.QFunction} interface. However, it will only return the Q-value
  * for a state if that state is the root node of the tree. If it is not the root node of the tree, then it will automatically reset the planning results
  * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy}
  * with this planner in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
@@ -47,7 +47,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class UCT extends OOMDPPlanner implements QComputablePlanner{
+public class UCT extends OOMDPPlanner implements QFunction {
 
 	protected List<Map<StateHashTuple, UCTStateNode>> 			stateDepthIndex;
 	protected Map <StateHashTuple, List <UCTStateNode>>			statesToStateNodes;
