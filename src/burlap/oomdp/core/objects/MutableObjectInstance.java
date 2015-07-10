@@ -10,18 +10,29 @@ import burlap.oomdp.core.values.Value;
 
 
 /**
- * Object Instances are the primary element for defining states. An object instance as a name
- * identifier that is unique from any other object instances in the same state. Object Instances
+ * Object Instances are the primary element for defining states. An object instance has a name
+ * identifier that is unique from any other object instances in the same state. Object instances
  * belong to a specific object class, and have a set of value assignments for each of its object
  * class' attributes.
  * @author James MacGlashan
  *
  */
 public class MutableObjectInstance extends OOMDPObjectInstance implements ObjectInstance {
-	
-	protected ObjectClass					obClass;			//object class to which this object belongs
-	protected String						name;				//name of the object for disambiguation
-	protected List <Value>					values;				//the values for each attribute
+
+	/**
+	 * The OO-MDP {@link burlap.oomdp.core.ObjectClass} of which this object is an instance.
+	 */
+	protected ObjectClass					obClass;
+
+	/**
+	 * The unique name identifier of this object.
+	 */
+	protected String						name;
+
+	/**
+	 * The value assignment for this {@link burlap.oomdp.core.ObjectInstance}
+	 */
+	protected List <Value>					values;
 	
 	
 	
@@ -244,7 +255,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	 * Returns the name of this object instance's object class
 	 * @return the name of this object instance's object class
 	 */
-	public String getTrueClassName(){
+	public String getClassName(){
 		return obClass.name;
 	}
 	
@@ -377,7 +388,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	
 	
 	public StringBuilder buildObjectDescription(StringBuilder builder) {
-		builder = builder.append(name).append(" (").append(this.getTrueClassName()).append(")");
+		builder = builder.append(name).append(" (").append(this.getClassName()).append(")");
 		for(Value v : values){
 			builder = builder.append("\n\t").append(v.attName()).append(":\t");
 			builder = v.buildStringVal(builder);
@@ -391,8 +402,8 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	 * Returns a string description of the object with the unset attribute values listed as null.
 	 * @return a string description of the object with the unset attribute values listed as null.
 	 */
-	public String getObjectDesriptionWithNullForUnsetAttributes(){
-		String desc = name + " (" + this.getTrueClassName() + ")\n";
+	public String getObjectDescriptionWithNullForUnsetAttributes(){
+		String desc = name + " (" + this.getClassName() + ")\n";
 		for(Value v : values){
 			if(v.valueHasBeenSet()) {
 				desc = desc + "\t" + v.attName() + ":\t" + v.getStringVal() + "\n";

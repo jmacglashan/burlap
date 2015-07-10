@@ -21,13 +21,7 @@ public interface ObjectInstance {
 	 * @return a new object instance that is a copy of this object instance
 	 */
 	ObjectInstance copy();
-	
-	
-	
-	/**
-	 * Creates new value object assignments for each of this object instance class's attributes.
-	 */
-	List<Value> initializeValueObjects();
+
 	
 	
 	/**
@@ -129,7 +123,7 @@ public interface ObjectInstance {
 	 * Returns the name of this object instance's object class
 	 * @return the name of this object instance's object class
 	 */
-	String getTrueClassName();
+	String getClassName();
 	
 	
 	/**
@@ -233,7 +227,7 @@ public interface ObjectInstance {
 	 * Returns a string description of the object with the unset attribute values listed as null.
 	 * @return a string description of the object with the unset attribute values listed as null.
 	 */
-	String getObjectDesriptionWithNullForUnsetAttributes();
+	String getObjectDescriptionWithNullForUnsetAttributes();
 	
 	
 	/**
@@ -254,13 +248,12 @@ public interface ObjectInstance {
 	 */
 	double [] getNormalizedFeatureVec();
 	
-	
-	
-	boolean equals(Object obj);
+
 	
 	
 	/**
 	 * Returns true if the value assignments in this object instance are the same as they are in the target object instance.
+	 * This may differ from a normal equals because it does not require the object instance name identifiers to be the same.
 	 * @param obj the object instance against which this object instance should be compared.
 	 * @return true if this object instance and obj have identical value assignments; false otherwise.
 	 */

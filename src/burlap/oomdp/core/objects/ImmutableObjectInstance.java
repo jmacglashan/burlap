@@ -277,7 +277,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * Returns the name of this object instance's object class
 	 * @return the name of this object instance's object class
 	 */
-	public String getTrueClassName(){
+	public String getClassName(){
 		return obClass.name;
 	}
 	
@@ -393,7 +393,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	}
 	
 	public StringBuilder buildObjectDescription(StringBuilder builder) {
-		builder = builder.append(name).append(" (").append(this.getTrueClassName()).append(")");
+		builder = builder.append(name).append(" (").append(this.getClassName()).append(")");
 		for(Value v : values){
 			builder = builder.append("\n\t").append(v.attName()).append(":\t");
 			builder = v.buildStringVal(builder);
@@ -520,9 +520,9 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	}
 
 	@Override
-	public String getObjectDesriptionWithNullForUnsetAttributes() {
+	public String getObjectDescriptionWithNullForUnsetAttributes() {
 		StringBuilder builder = new StringBuilder();
-		builder = builder.append(name).append(" (").append(this.getTrueClassName()).append(")\n");
+		builder = builder.append(name).append(" (").append(this.getClassName()).append(")\n");
 		for(Value v : values){
 			if(v.valueHasBeenSet()) {
 				builder = builder.append("\t").append(v.attName()).append(":\t");

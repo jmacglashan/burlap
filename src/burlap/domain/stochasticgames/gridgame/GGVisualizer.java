@@ -106,10 +106,10 @@ public class GGVisualizer {
 		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			int colInd = 0;
-			if(ob.getTrueClassName().equals(GridGame.CLASSAGENT)){
+			if(ob.getClassName().equals(GridGame.CLASSAGENT)){
 				colInd = ob.getIntValForAttribute(GridGame.ATTPN);
 			}
-			else if(ob.getTrueClassName().equals(GridGame.CLASSGOAL)){
+			else if(ob.getClassName().equals(GridGame.CLASSGOAL)){
 				colInd = ob.getIntValForAttribute(GridGame.ATTGT);
 			}
 			

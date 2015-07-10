@@ -242,7 +242,7 @@ public class Tiling {
 			hashCode = 1;
 			
 			
-			className = o.getTrueClassName();
+			className = o.getClassName();
 			List<AttributeTileSpecification> classSpecs = specification.get(className);
 			for(AttributeTileSpecification ats : classSpecs){
 				String attName = ats.attribute.name;

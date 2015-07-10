@@ -235,7 +235,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		
 		for (int i = 0; i < size; i++) {
 			ObjectInstance object = objects.get(i);
-			String objectClassName = object.getTrueClassName();
+			String objectClassName = object.getClassName();
 			Integer position = objectClassMap.get(objectClassName);
 			
 			if (position == null) {
@@ -346,7 +346,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	public final ImmutableState replaceObject(ObjectInstance objectToReplace, ObjectInstance newObject) {
 		String oldObjectName = objectToReplace.getName();
 		String newObjectName = newObject.getName();
-		if (!oldObjectName.equals(newObjectName) || !objectToReplace.getTrueClassName().equals(newObject.getTrueClassName())) {
+		if (!oldObjectName.equals(newObjectName) || !objectToReplace.getClassName().equals(newObject.getClassName())) {
 			throw new RuntimeException("In order to replace, the objects must have the same name and class. Try remove and add instead");
 		}
 		if (!(newObject instanceof ImmutableObjectInstance)) {
@@ -386,7 +386,7 @@ public final class ImmutableState extends OOMDPState implements State {
 			
 			String oldObjectName = objectToRemove.getName();
 			String newObjectName = objectToAdd.getName();
-			if (!oldObjectName.equals(newObjectName) || !objectToRemove.getTrueClassName().equals(objectToAdd.getTrueClassName())) {
+			if (!oldObjectName.equals(newObjectName) || !objectToRemove.getClassName().equals(objectToAdd.getClassName())) {
 				throw new RuntimeException("The objects must have matching names and classes");
 			}
 			
@@ -1150,10 +1150,10 @@ public final class ImmutableState extends OOMDPState implements State {
 	public String getCompleteStateDescriptionWithUnsetAttributesAsNull() {
 		String desc = "";
 		for(ObjectInstance o : objectInstances){
-			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
+			desc = desc + o.getObjectDescriptionWithNullForUnsetAttributes() + "\n";
 		}
 		for(ObjectInstance o : hiddenObjectInstances){
-			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
+			desc = desc + o.getObjectDescriptionWithNullForUnsetAttributes() + "\n";
 		}
 
 

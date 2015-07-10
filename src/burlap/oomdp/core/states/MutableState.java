@@ -2,12 +2,8 @@ package burlap.oomdp.core.states;
 
 import java.util.*;
 
-import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -163,7 +159,7 @@ public class MutableState extends OOMDPState implements State{
 	
 	private void addObjectClassIndexing(ObjectInstance o){
 		
-		String otclass = o.getTrueClassName();
+		String otclass = o.getClassName();
 		
 		//manage true indexing
 		if(objectIndexByTrueClass.containsKey(otclass)){
@@ -225,7 +221,7 @@ public class MutableState extends OOMDPState implements State{
 	private void removeObjectClassIndexing(ObjectInstance o){
 		
 		
-		String otclass = o.getTrueClassName();
+		String otclass = o.getClassName();
 		List <ObjectInstance> classTList = objectIndexByTrueClass.get(otclass);
 		
 		//if this index has more than one entry, then we can just remove from it and be done
@@ -282,7 +278,7 @@ public class MutableState extends OOMDPState implements State{
 		
 		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
 			
-			String oclass = objects.get(0).getTrueClassName();
+			String oclass = objects.get(0).getClassName();
 			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size() && enforceStateExactness){
 				return new HashMap<String, String>(); //states are not equal and therefore cannot be matched
@@ -334,7 +330,7 @@ public class MutableState extends OOMDPState implements State{
 		Set<String> matchedObjects = new HashSet<String>();
 		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
 			
-			String oclass = objects.get(0).getTrueClassName();
+			String oclass = objects.get(0).getClassName();
 			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size()){
 				return false;
@@ -496,7 +492,7 @@ public class MutableState extends OOMDPState implements State{
 	public String getCompleteStateDescriptionWithUnsetAttributesAsNull(){
 		String desc = "";
 		for(ObjectInstance o : objectInstances){
-			desc = desc + o.getObjectDesriptionWithNullForUnsetAttributes() + "\n";
+			desc = desc + o.getObjectDescriptionWithNullForUnsetAttributes() + "\n";
 		}
 
 
@@ -652,7 +648,7 @@ public class MutableState extends OOMDPState implements State{
 		
 		for(ObjectInstance o : sourceObs){
 			
-			if(o.getTrueClassName().equals(cname)){
+			if(o.getClassName().equals(cname)){
 				res.add(o);
 			}
 			
