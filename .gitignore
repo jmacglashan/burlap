@@ -1,7 +1,7 @@
-# Created by .ignore support plugin (hsz.mobi)
 expDataSteps.csv
 expDataEpisodes.csv
 burlap.iml
 output
-.idea/workspace.xml
+target
+.idea
 out
