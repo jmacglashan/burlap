@@ -36,7 +36,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComputablePlanner{
+public abstract class ValueFunctionPlanner extends OOMDPPlanner implements ValueFunction, QComputablePlanner{
 
 	
 	
@@ -141,6 +141,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements QComp
 	 * @param s the state to evaluate.
 	 * @return the value function evaluation of the given state.
 	 */
+	@Override
 	public double value(State s){
 		StateHashTuple sh = this.hashingFactory.hashState(s);
 		return this.value(sh);

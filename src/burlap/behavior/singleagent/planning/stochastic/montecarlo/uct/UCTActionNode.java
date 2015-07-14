@@ -53,6 +53,9 @@ public class UCTActionNode {
 	 * @return the average return
 	 */
 	public double averageReturn(){
+		if(this.n == 0){
+			return Double.NEGATIVE_INFINITY;
+		}
 		return sumReturn / n;
 	}
 	
