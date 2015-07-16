@@ -408,10 +408,45 @@ public class GridGame implements DomainGenerator {
 	 * @return A state with the specified number of objects
 	 */
 	public static State getCleanState(Domain d, int na, int ng, int nhw, int nvw, int width, int height){
-		
+		if (nhw < 2 || nvw < 2) {
+			throw new RuntimeException("There must be at least two horizontal walls and two vertical walls");
+		}
 		State s = new State();
 		addNObjects(d, s, CLASSGOAL, ng);
 		addNObjects(d, s, CLASSAGENT, na);
+		addNObjects(d, s, CLASSDIMHWALL, nhw);
+		addNObjects(d, s, CLASSDIMVWALL, nvw);
+		
+		setBoundaryWalls(s, width, height);
+		
+		
+		return s;
+	}
+	
+	/**
+	 * Returns a state with with the specified number of objects for each object class and with the specified boundary of
+	 * the playing area. The number of walls *MUST* include the world boundary walls; that is, there must be at least 2 horizontal walls and 2 vertical walls.
+	 * The agent objects added to the state will match at least the names of the agents provided
+	 * @param d the domain object of the grid world
+	 * @param agents, the list of agents participating in the world
+	 * @param na the number of agents/players. If this is greater than the number of agents, default names are generated. If it is less, an exception is thrown
+	 * @param ng the number of goal objects
+	 * @param nhw the number of horizontal walls
+	 * @param nvw the number of vertical walls
+	 * @param width the width of the playing area
+	 * @param height the height of the playing area
+	 * @return A state with the specified number of objects
+	 */
+	public static State getCleanState(Domain d, List<Agent> agents, int na, int ng, int nhw, int nvw, int width, int height) {
+		if (nhw < 2 || nvw < 2) {
+			throw new RuntimeException("There must be at least two horizontal walls and two vertical walls");
+		}
+		if (na < agents.size()) {
+			throw new RuntimeException("The number of agents must be at least the size of the agents collection");
+		}
+		State s = new State();
+		addNObjects(d, s, CLASSGOAL, ng);
+		addAgents(d, s, CLASSAGENT, agents, na);
 		addNObjects(d, s, CLASSDIMHWALL, nhw);
 		addNObjects(d, s, CLASSDIMVWALL, nvw);
 		
@@ -531,6 +566,24 @@ public class GridGame implements DomainGenerator {
 		}
 	}
 	
+	/**
+	 * Adds objects for each agent, with the specific class. If the number of agents requested is greater than
+	 * the number of agents provided, then a generic name is assigned to the the remaining agent ObjectInstances
+	 * @param d the domain of the object classes
+	 * @param s the state to which the specified class should be added
+	 * @param className the name of the object class for which to create object instances
+	 * @param agents the list of agents which are to be added
+	 */
+	protected static void addAgents(Domain d, State s, String className, List<Agent> agents, int numAgents){
+		for (Agent agent : agents) {
+			ObjectInstance o = new ObjectInstance(d.getObjectClass(className), agent.getAgentName());
+			s.addObject(o);
+		}
+		for (int i = agents.size(); i < numAgents; i++) {
+			ObjectInstance o = new ObjectInstance(d.getObjectClass(className), className + i);
+			s.addObject(o);
+		}
+	}
 	
 	/**
 	 * Sets an agent's attribute values
@@ -541,7 +594,7 @@ public class GridGame implements DomainGenerator {
 	 * @param pn the player number of the agent
 	 */
 	public static void setAgent(State s, int i, int x, int y, int pn){
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(i);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(i);
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTY, y);
 		agent.setValue(ATTPN, pn);
@@ -557,7 +610,7 @@ public class GridGame implements DomainGenerator {
 	 * @param gt the goal type
 	 */
 	public static void setGoal(State s, int i, int x, int y, int gt){
-		ObjectInstance goal = s.getObjectsOfTrueClass(CLASSGOAL).get(i);
+		ObjectInstance goal = s.getObjectsOfClass(CLASSGOAL).get(i);
 		goal.setValue(ATTX, x);
 		goal.setValue(ATTY, y);
 		goal.setValue(ATTGT, gt);
@@ -573,8 +626,8 @@ public class GridGame implements DomainGenerator {
 	 */
 	public static void setBoundaryWalls(State s, int w, int h){
 		
-		List<ObjectInstance> verticalWalls = s.getObjectsOfTrueClass(CLASSDIMVWALL);
-		List<ObjectInstance> horizontalWalls = s.getObjectsOfTrueClass(CLASSDIMHWALL);
+		List<ObjectInstance> verticalWalls = s.getObjectsOfClass(CLASSDIMVWALL);
+		List<ObjectInstance> horizontalWalls = s.getObjectsOfClass(CLASSDIMHWALL);
 		
 		ObjectInstance leftWall = verticalWalls.get(0);
 		ObjectInstance rightWall = verticalWalls.get(1);
@@ -612,12 +665,12 @@ public class GridGame implements DomainGenerator {
 	 * @param s the state in which the wall exits
 	 * @param i indicates the ith vertical wall instance whose values should be set
 	 * @param p the x position of the vertical wall
-	 * @param e1 the bottom end point of the wall
-	 * @param e2 the top end point of the wall
+	 * @param e1 the grid square whose bottom end points begin the wall
+	 * @param e2 the grid square whose top end points end the wall
 	 * @param wt the type of the wall
 	 */
 	public static void setVerticalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfTrueClass(CLASSDIMVWALL).get(i), p, e1, e2, wt);
+		setWallInstance(s.getObjectsOfClass(CLASSDIMVWALL).get(i), p, e1, e2, wt);
 	}
 	
 	
@@ -627,12 +680,12 @@ public class GridGame implements DomainGenerator {
 	 * @param s the state in which the wall exits
 	 * @param i indicates the ith horizontal wall instance whose values should be set
 	 * @param p the y position of the vertical wall
-	 * @param e1 the left end point of the wall
-	 * @param e2 the right end point of the wall
+	 * @param e1 the grid square whose left end point begins the wall
+	 * @param e2 the grid square whose right end point ends the wall
 	 * @param wt the type of the wall (0 is solid, 1 is semi)
 	 */
 	public static void setHorizontalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfTrueClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
+		setWallInstance(s.getObjectsOfClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
 	}
 
 
@@ -676,7 +729,7 @@ public class GridGame implements DomainGenerator {
 			
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
+			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
 				int gt = goal.getIntValForAttribute(ATTGT);
@@ -726,7 +779,7 @@ public class GridGame implements DomainGenerator {
 			int apn = agent.getIntValForAttribute(ATTPN);
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfTrueClass(CLASSGOAL);
+			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
 			for(ObjectInstance goal : goals){
 				
 				int gt = goal.getIntValForAttribute(ATTGT);
@@ -834,7 +887,7 @@ public class GridGame implements DomainGenerator {
 			Map <String, Double> rewards = new HashMap<String, Double>();
 			
 			//get all agents and initialize reward to default
-			List <ObjectInstance> obs = sp.getObjectsOfTrueClass(GridGame.CLASSAGENT);
+			List <ObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
 			for(ObjectInstance o : obs){
 				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
 			}
@@ -878,7 +931,7 @@ public class GridGame implements DomainGenerator {
 			if(this.noopIncursCost){
 				return this.stepCost;
 			}
-			else if(ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
+			else if(ja.action(aname) == null || ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
 				return 0.;
 			}
 			return this.stepCost;

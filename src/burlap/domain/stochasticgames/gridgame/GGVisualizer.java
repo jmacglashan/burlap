@@ -7,10 +7,12 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.stochasticgames.World;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -25,7 +27,15 @@ import burlap.oomdp.visualizer.Visualizer;
  *
  */
 public class GGVisualizer {
-
+	public static final List<Color> agentColors = Arrays.asList(Color.green, Color.blue, Color.magenta, Color.orange);
+	public static final List<String> agentColorNames = Arrays.asList("green", "blue", "magenta", "orange");
+	public static final List<Color> goalColors = 
+			Arrays.asList(Color.gray, 
+					Color.green.darker().darker(), 
+					Color.blue.darker().darker(), 
+					Color.magenta.darker().darker(), 
+					Color.orange.darker().darker());
+	
 	
 	/**
 	 * Generates a visualizer for a grid game
@@ -38,17 +48,6 @@ public class GGVisualizer {
 		Visualizer v = new Visualizer();
 		
 		
-		List <Color> agentColors = new ArrayList<Color>();
-		agentColors.add(Color.green);
-		agentColors.add(Color.blue);
-		agentColors.add(Color.magenta);
-		agentColors.add(Color.orange);
-		
-		List <Color> goalColors = new ArrayList<Color>();
-		goalColors.add(Color.gray);
-		for(Color c : agentColors){
-			goalColors.add(c.darker().darker());
-		}
 		
 		v.addObjectClassPainter(GridGame.CLASSGOAL, new CellPainter(maxX, maxY, goalColors, 0));
 		v.addObjectClassPainter(GridGame.CLASSAGENT, new CellPainter(maxX, maxY, agentColors, 1));
@@ -65,7 +64,7 @@ public class GGVisualizer {
 	 * @author James MacGlashan
 	 *
 	 */
-	static class CellPainter implements ObjectPainter{
+	public static class CellPainter implements ObjectPainter{
 
 		/**
 		 * The width of the playing field

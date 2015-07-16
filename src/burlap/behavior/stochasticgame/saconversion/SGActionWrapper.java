@@ -97,9 +97,9 @@ public class SGActionWrapper extends Action {
 
 		/*
 		 * In the getTransitions method you want to marginalize over all possible joint actions. 
-		 * The acting agent’s action is simply defined by this Action’s input SingleAction and the
+		 * The acting agent's action is simply defined by this Action's input SingleAction and the
 		 *  parameters passed to getTransitions. 
-		 *  The rest of the agent’s actions get derived from
+		 *  The rest of the agent's actions get derived from
 		 *  their corresponding policy object. However, policies may be stochastic so you need to 
 		 *  consider the action selection probabilities and you need to consider all combinatorial 
 		 *  selections by other agents. 
@@ -119,7 +119,7 @@ public class SGActionWrapper extends Action {
 		 * 
 		 * ja.addAction(new GroundedSingleAction(agentName, singleAction, params));
 		 * 
-		 * For each GroundedSingleAction for a single combination of the other agents’ actions, add those in similar ways.
+		 * For each GroundedSingleAction for a single combination of the other agents' actions, add those in similar ways.
 		 * Once you have a JointAction object, you can use the JointActionModel to determine the outcome states with its method:
 		 * 
 		 * transitionProbsFor(State s, JointAction ja)

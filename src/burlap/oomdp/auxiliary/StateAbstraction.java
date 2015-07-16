@@ -1,6 +1,7 @@
 package burlap.oomdp.auxiliary;
 
 import burlap.oomdp.core.State;
+import burlap.oomdp.stochasticgames.Agent;
 
 
 /**
@@ -15,4 +16,5 @@ public interface StateAbstraction {
 	 * @return an abstracted version of state s
 	 */
 	public State abstraction(State s);
+	public State abstraction(State s, Agent a);
 }
