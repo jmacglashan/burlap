@@ -332,15 +332,11 @@ public class BestResponseToDistributionAgent extends Agent {
 			JointActionModel jam = new GridGameStandardMechanics(d);
 			d.setJointActionModel(jam);
 
-<<<<<<< HEAD
-				JointReward jr = new GridGame.GGJointRewardFunction(d, -1, 60.0, 60.0, false);
-				TerminalFunction tf = new GridGame.GGTerminalFunction(d);
-				SGStateGenerator sg = new ConstantSGStateGenerator(s);
-=======
+
 			JointReward jr = new GridGame.GGJointRewardFunction(d, -1, 100.0, 100.0, false);
 			TerminalFunction tf = new GridGame.GGTerminalFunction(d);
 			SGStateGenerator sg = new ConstantSGStateGenerator(s);
->>>>>>> multi_agent_games
+
 
 			World gameWorld = new World(d, jr, tf, sg);
 
