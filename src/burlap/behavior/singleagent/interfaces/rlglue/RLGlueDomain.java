@@ -12,18 +12,43 @@ import org.rlcommunity.rlglue.codec.taskspec.ranges.IntRange;
 import org.rlcommunity.rlglue.codec.types.Observation;
 
 /**
+ * A class for generating a BURLAP {@link burlap.oomdp.core.Domain} for an RLGlue {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec}.
+ * The representation consists of up to two objects. One object contains all RLGlue discrete attributes and the other all
+ * Real (double) attributes. The domain can only support RLGlue problems that have discrete actions. The created BURLAP
+ * {@link burlap.oomdp.singleagent.Action} objects that correspond to the RLGlue actions cannot be applied to states since
+ * RLGlue does not provide action transition dynamics; as a consequence a runtime exception will be thrown is the action
+ * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.State, String[])} method is called. Instead,
+ * only the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])}
+ * method may be used to use an action.
  * @author James MacGlashan.
  */
 public class RLGlueDomain implements DomainGenerator {
 
+
+	/**
+	 * The object class name for the object that holds the RLGlue discrete attributes
+	 */
 	public static final String				DISCRETECLASS = "discrete";
+
+	/**
+	 * The object class name for the object that holds the RLGlue real-valued (double) attributes
+	 */
 	public static final String				REALCLASS = "real";
 
+	/**
+	 * The base name of a discrete attribute. The ith discrete attribute will be named DISCATTi
+	 */
 	public static final String				DISCATT = "disc";
+
+	/**
+	 * The base name of a real (double) attribute. The ith real attribute will be named REALATTi
+	 */
 	public static final String				REALATT = "real";
 
 
-
+	/**
+	 * The {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec} used to generate the BURLAP {@link burlap.oomdp.core.Domain}
+	 */
 	protected TaskSpec theTaskSpec;
 
 	public RLGlueDomain(TaskSpec theTaskSpec){
@@ -72,6 +97,13 @@ public class RLGlueDomain implements DomainGenerator {
 		return domain;
 	}
 
+
+	/**
+	 * Creates a BURLAP {@link State} from a RLGlue {@link org.rlcommunity.rlglue.codec.types.Observation}.
+	 * @param domain the domain to which the state {@link burlap.oomdp.core.ObjectClass} instances belong.
+	 * @param obsv the RLGlue {@link org.rlcommunity.rlglue.codec.types.Observation}
+	 * @return the corresponding BURLAP {@link burlap.oomdp.core.State}.
+	 */
 	public static State stateFromObservation(Domain domain, Observation obsv){
 
 		State s = new MutableState();
@@ -96,9 +128,9 @@ public class RLGlueDomain implements DomainGenerator {
 	}
 
 
-
-
-
+	/**
+	 * A BURLAP {@link burlap.oomdp.singleagent.Action} that corresponds to an RLGlue action that is defined by a single int value.
+	 */
 	public static class RLGlueActionSpecification extends Action{
 
 		/**
@@ -106,14 +138,25 @@ public class RLGlueDomain implements DomainGenerator {
 		 */
 		protected int ind;
 
+		/**
+		 * Initiaizes.
+		 * @param domain the BURLAP domain to which the action will belong.
+		 * @param ind the RLGlue int identifier of the action
+		 */
 		public RLGlueActionSpecification(Domain domain, int ind) {
 			super(""+ind, domain, "");
 			this.ind = ind;
 		}
 
+		/**
+		 * Returns the RLGlue int identifier of this action
+		 * @return the RLGlue int identifier of this action
+		 */
 		public int getInd() {
 			return ind;
 		}
+
+
 
 		@Override
 		protected State performActionHelper(State s, String[] params) {
