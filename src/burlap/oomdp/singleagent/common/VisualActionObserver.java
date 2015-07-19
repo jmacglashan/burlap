@@ -15,6 +15,7 @@ import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.ActionObserver;
 import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentObserver;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.visualizer.Visualizer;
@@ -26,6 +27,9 @@ import burlap.oomdp.visualizer.Visualizer;
  * {@link burlap.oomdp.singleagent.ActionObserver} and {@link burlap.oomdp.singleagent.environment.EnvironmentObserver} interfaces.
  * It updates the visualizer to show the resulting state of an action call. After rendering, the client thread is blocked
  * for a specified interval of time to allow the state to be observed (by default the value is set to 17ms, which is about 60FPS).
+ * This class will also render the new state of an {@link burlap.oomdp.singleagent.environment.Environment} after
+ * a {@link burlap.oomdp.singleagent.environment.Environment#resetEnvironment()} message is observed and block for the
+ * same interval of time.
  * This class is especially useful for watching learning algorithms or Monte Carlo-like planning algorithms in action.
  * @author James MacGlashan
  *
@@ -150,7 +154,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 	}
 
 	@Override
-	public void observeEnvironment(EnvironmentOutcome eo) {
+	public void observeEnvironmentInteraction(EnvironmentOutcome eo) {
 		this.painter.updateState(eo.sp);
 		this.updatePropTextArea(eo.sp);
 		Thread waitThread = new Thread(new Runnable() {
@@ -174,8 +178,33 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 		}
 	}
 
+	@Override
+	public void observeEnvironmentReset(Environment resetEnvironment) {
+		this.painter.updateState(resetEnvironment.getCurState());
+		this.updatePropTextArea(resetEnvironment.getCurState());
+		Thread waitThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(actionRenderDelay);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		waitThread.start();
+
+		try {
+			waitThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
-	 * Casues the visualizer to replay through the provided {@link EpisodeAnalysis} object. The initial state
+	 * Causes the visualizer to replay through the provided {@link EpisodeAnalysis} object. The initial state
 	 * of the provided episode is first rendered for the given refresh delay of this object, and then each
 	 * action and resulting state in the episode is feed through the {@link #actionEvent(State, GroundedAction, State)}
 	 * method of this object.

@@ -9,7 +9,8 @@ import java.util.List;
 /**
  * A server that delegates all {@link burlap.oomdp.singleagent.environment.Environment} interactions and request
  * to a provided {@link burlap.oomdp.singleagent.environment.Environment} delegate. This class will also
- * intercept all interactions through the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)} method
+ * intercept all interactions through the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)} and
+ * {@link #resetEnvironment()} methods
  * and tell all {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} instances registered with this server
  * about the event.
  * @author James MacGlashan.
@@ -95,7 +96,7 @@ public class EnvironmentServer implements Environment {
 	public EnvironmentOutcome executeAction(GroundedAction ga) {
 		EnvironmentOutcome eo = this.delegate.executeAction(ga);
 		for(EnvironmentObserver observer : this.observers){
-			observer.observeEnvironment(eo);
+			observer.observeEnvironmentInteraction(eo);
 		}
 		return eo;
 	}
@@ -113,5 +114,8 @@ public class EnvironmentServer implements Environment {
 	@Override
 	public void resetEnvironment() {
 		this.delegate.resetEnvironment();
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentReset(this.delegate);
+		}
 	}
 }
