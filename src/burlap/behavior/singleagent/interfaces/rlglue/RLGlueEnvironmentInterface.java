@@ -75,7 +75,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 	/**
 	 * The RLGlue specified discount factor
 	 */
-	protected double discount;
+	protected double discount = 0.;
 
 
 	/**
@@ -107,6 +107,32 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 		DPrint.toggleCode(this.debugCode, this.printDebug);
 	}
 
+
+	public int getDebugCode() {
+		return debugCode;
+	}
+
+	/**
+	 * Returns the domain for this environment. Note that this will be null until the {@link #agent_init(String)} method has
+	 * been called by the RLGlue server, which also requires the {@link #loadAgent()}} or {@link #loadAgent(String, String)}
+	 * method to be called by the client first. You may want to call this method after calling the {@link #blockUntilStateReceived()}
+	 * method to ensure that everything has been initialized.
+	 * @return the BURLAP {@link burlap.oomdp.core.Domain} specification for this RLGlue environment.
+	 */
+	public Domain getDomain() {
+		return domain;
+	}
+
+	/**
+	 * Returns the discount factor for this environment. Note that this will be 0 until the {@link #agent_init(String)} method has
+	 * been called by the RLGlue server, which also requires the {@link #loadAgent()}} or {@link #loadAgent(String, String)}
+	 * method to be called by the client first. You may want to call this method after calling the {@link #blockUntilStateReceived()}
+	 * method to ensure that everything has been initialized.
+	 * @return the discount factor to use for this RLGlue problem.
+	 */
+	public double getDiscountFactor() {
+		return discount;
+	}
 
 	/**
 	 * Blocks the calling thread until a state is provided by the RLGlue server.
