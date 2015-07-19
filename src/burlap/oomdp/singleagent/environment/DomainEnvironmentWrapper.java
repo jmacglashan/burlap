@@ -10,6 +10,7 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 
 
@@ -17,7 +18,7 @@ import burlap.oomdp.singleagent.SADomain;
 /**
  * If a problem is best described by an Environment class, this domain wrapper takes a domain object
  * that specifies the state representation and action set, and creates a new domain object in which
- * actions of the same name and parameterization will make calls to the provided Environment class
+ * actions of the same name and parametrization will make calls to the provided Environment class
  * and wait for it to return the resulting state before returning themselves.
  * @author James MacGlashan
  *
@@ -130,7 +131,7 @@ public class DomainEnvironmentWrapper implements DomainGenerator {
 		@Override
 		protected State performActionHelper(State st, String[] params) {
 			
-			State s = env.executeAction(name, params);
+			State s = env.executeAction(new GroundedAction(this, params)).s;
 			
 			return s;
 		}

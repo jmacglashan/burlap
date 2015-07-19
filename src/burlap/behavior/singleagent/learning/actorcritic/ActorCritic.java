@@ -13,6 +13,9 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 
 
 /**
@@ -112,47 +115,52 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		
 	}
 
-	
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
-		return this.runLearningEpisodeFrom(initialState, maxEpisodeSize);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
-	
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+
+		State initialState = env.getCurState();
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
-		
 		State curState = initialState;
-		
+
 		this.critic.initializeEpisode(curState);
-		
+
 		int timeSteps = 0;
-		while(!tf.isTerminal(curState) && timeSteps < maxSteps){
-			
+		while(!env.curStateIsTerminal() && (timeSteps < maxSteps || maxSteps == -1)){
+
 			GroundedAction ga = (GroundedAction)this.actor.getAction(curState);
-			State nextState = ga.executeIn(curState);
-			double r = this.rf.reward(curState, ga, nextState);
-			
+			EnvironmentOutcome eo = ga.executeIn(env);
+			State nextState = eo.sp;
+			double r = eo.r;
+
 			ea.recordTransitionTo(ga, nextState, r);
-			
+
 			CritiqueResult critqiue = this.critic.critiqueAndUpdate(curState, ga, nextState);
 			this.actor.updateFromCritqique(critqiue);
-			
-			curState = nextState;
+
+			curState = env.getCurState();
 			timeSteps++;
-			
+
 		}
-		
+
 		this.critic.endEpisode();
-		
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 		}
 		episodeHistory.offer(ea);
-		
+
 		return ea;
+
 	}
+
+
+
 
 	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
@@ -171,8 +179,11 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 
 	@Override
 	public void planFromState(State initialState) {
+
+		SimulatedEnvironment env = new SimulatedEnvironment(this.domain, this.rf, this.tf, initialState);
+
 		for(int i = 0; i < numEpisodesForPlanning; i++){
-			this.runLearningEpisodeFrom(initialState);
+			this.runLearningEpisode(env, this.maxEpisodeSize);
 		}
 	}
 	

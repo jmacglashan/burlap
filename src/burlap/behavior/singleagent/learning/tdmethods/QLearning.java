@@ -14,6 +14,7 @@ import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QFunction;
@@ -27,6 +28,9 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 
 
 /**
@@ -43,7 +47,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  */
 public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 
-	
+
 	/**
 	 * The tabular mapping from states to Q-values
 	 */
@@ -63,8 +67,8 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	 * The learning policy to use. Typically these will be policies that link back to this object so that they change as the Q-value estimate change.
 	 */
 	protected Policy												learningPolicy;
-	
-	
+
+
 	/**
 	 * The maximum number of steps that will be taken in an episode before the agent terminates a learning episode
 	 */
@@ -136,8 +140,8 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 			double qInit, double learningRate) {
 		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE);
 	}
-	
-	
+
+
 	/**
 	 * Initializes Q-learning with 0.1 epsilon greedy policy, the same Q-value initialization everywhere. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
@@ -151,7 +155,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	 * @param learningRate the learning rate
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	public QLearning(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory,
 			double qInit, double learningRate, int maxEpisodeSize) {
 		this.QLInit(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize);
 	}
@@ -260,7 +264,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	public void setLearningPolicy(Policy p){
 		this.learningPolicy = p;
 	}
-	
+
 	/**
 	 * Sets the maximum number of episodes that will be performed when the {@link #planFromState(State)} method is called.
 	 * @param n the maximum number of episodes that will be performed when the {@link #planFromState(State)} method is called.
@@ -273,7 +277,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 			this.numEpisodesForPlanning = 1;
 		}
 	}
-	
+
 	/**
 	 * Sets a max change in the Q-function threshold that will cause the {@link #planFromState(State)} to stop planning
 	 * when it is achieved.
@@ -335,10 +339,10 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	
 	
 	
-	
-	
-	
-	
+
+
+
+
 	
 	
 
@@ -434,94 +438,91 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 
 	@Override
 	public void planFromState(State initialState) {
-		
+
+		SimulatedEnvironment env = new SimulatedEnvironment(this.domain, this.rf, this.tf, initialState);
+
 		int eCount = 0;
 		do{
-			this.runLearningEpisodeFrom(initialState);
+			this.runLearningEpisode(env, this.maxEpisodeSize);
 			eCount++;
 		}while(eCount < numEpisodesForPlanning && maxQChangeInLastEpisode > maxQChangeForPlanningTermination);
-		
+
 
 	}
 
-	
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState){
-		return this.runLearningEpisodeFrom(initialState, maxEpisodeSize);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
 		this.toggleShouldAnnotateOptionDecomposition(shouldAnnotateOptions);
-		
+
+		State initialState = env.getCurState();
+
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
-		
 		StateHashTuple curState = this.stateHash(initialState);
 		eStepCounter = 0;
-		
+
 		maxQChangeInLastEpisode = 0.;
-		
-		while(!tf.isTerminal(curState.s) && eStepCounter < maxSteps){
-			
+		while(!env.curStateIsTerminal() && (eStepCounter < maxSteps || maxSteps == -1)){
+
 			GroundedAction action = (GroundedAction)learningPolicy.getAction(curState.s);
 			QValue curQ = this.getQ(curState, action);
-			
-			StateHashTuple nextState = this.stateHash(action.executeIn(curState.s));
+
+			EnvironmentOutcome eo = action.executeIn(env);
+
+
+			StateHashTuple nextState = this.stateHash(eo.sp);
 			double maxQ = 0.;
-			
-			if(!tf.isTerminal(nextState.s)){
+
+			if(!eo.terminated){
 				maxQ = this.getMaxQ(nextState);
 			}
-			
+
 			//manage option specifics
-			double r = 0.;
-			double discount = this.gamma;
-			if(action.action.isPrimitive()){
-				r = rf.reward(curState.s, action, nextState.s);
-				eStepCounter++;
+			double r = eo.r;
+			double discount = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).discount : this.gamma;
+			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps : 1;
+			eStepCounter += stepInc;
+
+			if(action.action.isPrimitive() || !this.shouldAnnotateOptions){
 				ea.recordTransitionTo(action, nextState.s, r);
 			}
 			else{
-				Option o = (Option)action.action;
-				r = o.getLastCumulativeReward();
-				int n = o.getLastNumSteps();
-				discount = Math.pow(this.gamma, n);
-				eStepCounter += n;
-				if(this.shouldDecomposeOptions){
-					ea.appendAndMergeEpisodeAnalysis(o.getLastExecutionResults());
-				}
-				else{
-					ea.recordTransitionTo(action, nextState.s, r);
-				}
+				ea.appendAndMergeEpisodeAnalysis(((Option)action.action).getLastExecutionResults());
 			}
-			
-			
-			
+
+
+
 			double oldQ = curQ.q;
-			
+
 			//update Q-value
 			curQ.q = curQ.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState.s, action) * (r + (discount * maxQ) - curQ.q);
-			
+
 			double deltaQ = Math.abs(oldQ - curQ.q);
 			if(deltaQ > maxQChangeInLastEpisode){
 				maxQChangeInLastEpisode = deltaQ;
 			}
-			
-			//move on
-			curState = nextState;
+
+			//move on polling environment for its current state in case it changed during processing
+			curState = this.stateHash(env.getCurState());
 			this.totalNumberOfSteps++;
-			
-			
+
+
 		}
-		
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 		}
 		episodeHistory.offer(ea);
-		
+
 		return ea;
+
 	}
+
 
 
 	@Override

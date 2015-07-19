@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import burlap.oomdp.singleagent.environment.Environment;
 import org.ejml.simple.SimpleMatrix;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
@@ -539,20 +540,18 @@ public class LSPI extends OOMDPPlanner implements QFunction, LearningAgent {
 	}
 
 
-
-
-
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
-		return this.runLearningEpisodeFrom(initialState, this.maxLearningSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
-		EpisodeAnalysis ea = this.learningPolicy.evaluateBehavior(initialState, this.rf, this.tf, maxSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+		EpisodeAnalysis ea = maxSteps != -1 ? this.learningPolicy.evaluateBehavior(env, maxSteps) : this.learningPolicy.evaluateBehavior(env);
+
 		this.updateDatasetWithLearningEpisode(ea);
-	
+
 		if(this.shouldRereunPolicyIteration(ea)){
 			this.runPolicyIteration(this.maxNumPlanningIterations, this.maxChange);
 			this.numStepsSinceLastLearningPI = 0;
@@ -560,14 +559,15 @@ public class LSPI extends OOMDPPlanner implements QFunction, LearningAgent {
 		else{
 			this.numStepsSinceLastLearningPI += ea.numTimeSteps()-1;
 		}
-		
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 		}
 		episodeHistory.offer(ea);
-		
+
 		return ea;
 	}
+
 	
 	
 	

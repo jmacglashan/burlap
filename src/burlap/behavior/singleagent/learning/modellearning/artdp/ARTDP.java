@@ -24,6 +24,8 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
@@ -157,38 +159,42 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 		policy.setPlanner(this);
 		
 	}
-	
-	
+
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
-		return this.runLearningEpisodeFrom(initialState, this.maxNumSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+		State initialState = env.getCurState();
+
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
-		
+
 		State curState = initialState;
 		int steps = 0;
-		while(!this.tf.isTerminal(curState) && steps < maxSteps){
+		while(!env.curStateIsTerminal() && (steps < maxSteps || maxSteps == -1)){
 			GroundedAction ga = (GroundedAction)policy.getAction(curState);
-			State nextState = ga.executeIn(curState);
-			double r = this.rf.reward(curState, ga, nextState);
-			
-			ea.recordTransitionTo(ga, nextState, r);
-			
-			this.model.updateModel(curState, ga, nextState, r, this.tf.isTerminal(nextState));
-			
-			this.modelPlanner.performBellmanUpdateOn(curState);
-			
-			curState = nextState;
+			EnvironmentOutcome eo = ga.executeIn(env);
+
+
+			ea.recordTransitionTo(ga, eo.sp, eo.r);
+
+			this.model.updateModel(eo);
+
+			this.modelPlanner.performBellmanUpdateOn(eo.s);
+
+			curState = env.getCurState();
 			steps++;
-			
+
 		}
-		
+
 		return ea;
 	}
+
+
 
 	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
@@ -212,7 +218,7 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 
 	@Override
 	public void planFromState(State initialState) {
-		throw new RuntimeException("Model learning algorithms should not be used as planning algorithms.");
+		throw new RuntimeException("ARTDP is a model-based RL algorithm and model-based RL should not be used as planning algorithms.");
 	}
 	
 	@Override

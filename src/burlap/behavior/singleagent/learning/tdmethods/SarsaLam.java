@@ -6,6 +6,7 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -14,6 +15,8 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
@@ -137,67 +140,62 @@ public class SarsaLam extends QLearning {
 	protected void sarsalamInit(double lambda){
 		this.lambda = lambda;
 	}
-	
-		
-	
+
+
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState,int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps){
+
+		State initialState = env.getCurState();
+
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxQChangeInLastEpisode = 0.;
-		
+
 		StateHashTuple curState = this.stateHash(initialState);
 		eStepCounter = 0;
 		LinkedList<EligibilityTrace> traces = new LinkedList<SarsaLam.EligibilityTrace>();
-		
+
 		GroundedAction action = (GroundedAction)learningPolicy.getAction(curState.s);
 		QValue curQ = this.getQ(curState, action);
-		
-		
-		
-		while(!tf.isTerminal(curState.s) && eStepCounter < maxSteps){
-			
-			StateHashTuple nextState = this.stateHash(action.executeIn(curState.s));
+
+
+
+		while(!env.curStateIsTerminal() && (eStepCounter < maxSteps || maxSteps == -1)){
+
+			EnvironmentOutcome eo = action.executeIn(env);
+
+			StateHashTuple nextState = this.stateHash(eo.sp);
 			GroundedAction nextAction = (GroundedAction)learningPolicy.getAction(nextState.s);
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
-			
+
 			if(tf.isTerminal(nextState.s)){
 				nextQV = 0.;
 			}
-			
-			
+
+
 			//manage option specifics
-			double r = 0.;
-			double discount = this.gamma;
-			if(action.action.isPrimitive()){
-				r = rf.reward(curState.s, action, nextState.s);
-				eStepCounter++;
+			double r = eo.r;
+			double discount = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).discount : this.gamma;
+			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps : 1;
+			eStepCounter += stepInc;
+
+			if(action.action.isPrimitive() || !this.shouldAnnotateOptions){
 				ea.recordTransitionTo(action, nextState.s, r);
 			}
 			else{
-				Option o = (Option)action.action;
-				r = o.getLastCumulativeReward();
-				int n = o.getLastNumSteps();
-				discount = Math.pow(this.gamma, n);
-				eStepCounter += n;
-				if(this.shouldDecomposeOptions){
-					ea.appendAndMergeEpisodeAnalysis(o.getLastExecutionResults());
-				}
-				else{
-					ea.recordTransitionTo(action, nextState.s, r);
-				}
+				ea.appendAndMergeEpisodeAnalysis(((Option)action.action).getLastExecutionResults());
 			}
-			
-			
-			
+
+
+
 			//delta
 			double delta = r + (discount * nextQV) - curQ.q;
-			
+
 			//update all
 			boolean foundCurrentQTrace = false;
 			for(EligibilityTrace et : traces){
-				
+
 				if(et.sh.equals(curState)){
 					if(et.q.a.equals(action)){
 						foundCurrentQTrace = true;
@@ -207,53 +205,55 @@ public class SarsaLam extends QLearning {
 						et.eligibility = 0.; //replacing traces
 					}
 				}
-				
+
 				double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.sh.s, et.q.a);
-				
+
 				et.q.q = et.q.q + (learningRate * et.eligibility * delta);
 				et.eligibility = et.eligibility * lambda * discount;
-				
+
 				double deltaQ = Math.abs(et.initialQ - et.q.q);
 				if(deltaQ > maxQChangeInLastEpisode){
 					maxQChangeInLastEpisode = deltaQ;
 				}
-				
+
 			}
-			
+
 			if(!foundCurrentQTrace){
 				//then update and add it
 				double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, curQ.s, curQ.a);
 				curQ.q = curQ.q + (learningRate * delta);
 				EligibilityTrace et = new EligibilityTrace(curState, curQ, lambda*discount);
-				
+
 				traces.add(et);
 
 				double deltaQ = Math.abs(et.initialQ - et.q.q);
 				if(deltaQ > maxQChangeInLastEpisode){
 					maxQChangeInLastEpisode = deltaQ;
 				}
-				
+
 			}
-			
-			
+
+
 			//move on
 			curState = nextState;
 			action = nextAction;
 			curQ = nextQ;
-			
+
 			this.totalNumberOfSteps++;
-			
+
 		}
-		
-		
-		
+
+
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 		}
 		episodeHistory.offer(ea);
-		
+
 		return ea;
 	}
+
+
 	
 	
 	

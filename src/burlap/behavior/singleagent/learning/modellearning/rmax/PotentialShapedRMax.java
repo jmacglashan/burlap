@@ -6,7 +6,6 @@ import java.util.List;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.modellearning.DomainMappedPolicy;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlannerGenerator;
@@ -21,6 +20,8 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
@@ -211,64 +212,64 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		return modeledTerminalFunction;
 	}
 
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState){
-		return this.runLearningEpisodeFrom(initialState, maxNumSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
-	
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+		State initialState = env.getCurState();
+
 		this.modelPlanner.initializePlannerIn(initialState);
-		
+
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
-		
-		//DomainMappedPolicy policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
-		Policy policy = this.createDomainMappedPolicy();
-		
+
+		Policy policy = this.createUnmodeledFavoredPolicy();
+
 		State curState = initialState;
 		int steps = 0;
-		while(!this.tf.isTerminal(curState) && steps < maxSteps){
-			
+		while(!env.curStateIsTerminal() && (steps < maxSteps || maxSteps == -1)){
+
 			GroundedAction ga = (GroundedAction)policy.getAction(curState);
-			State nextState = ga.executeIn(curState);
-			double r = this.rf.reward(curState, ga, nextState);
-			boolean isTerminal = this.tf.isTerminal(nextState);
+			EnvironmentOutcome eo = ga.executeIn(env);
+			ea.recordTransitionTo(ga, eo.sp, eo.r);
 
-			ea.recordTransitionTo(ga, nextState, r);
+			boolean modeledTerminal = this.model.getModelTF().isTerminal(eo.sp);
 
-			boolean modeledTerminal = this.model.getModelTF().isTerminal(nextState);
-
-			if(!this.model.transitionIsModeled(curState, ga) || !this.model.stateTransitionsAreModeled(nextState)){
-				this.model.updateModel(curState, ga, nextState, r, isTerminal);
-				if(this.model.transitionIsModeled(curState, ga) || (isTerminal != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(nextState))){
+			if(!this.model.transitionIsModeled(curState, ga) || !this.model.stateTransitionsAreModeled(eo.sp)){
+				this.model.updateModel(eo);
+				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(eo.sp))){
 					this.modelPlanner.modelChanged(curState);
-					//policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
-					policy = this.createDomainMappedPolicy();
+					policy = this.createUnmodeledFavoredPolicy();
 				}
 			}
-			
-			
-			curState = nextState;
-			
+
+
+			curState = env.getCurState();
+
 			steps++;
 		}
-		
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 		}
 		episodeHistory.offer(ea);
-		
-		
+
+
 		return ea;
+
 	}
 
 
-	protected Policy createDomainMappedPolicy(){
-		return new DomainMappedPolicy(domain, new UnmodeledFavoredPolicy(
+
+	protected Policy createUnmodeledFavoredPolicy(){
+		return new UnmodeledFavoredPolicy(
 				this.modelPlanner.modelPlannedPolicy(),
 				this.model,
-				this.modeledDomain.getActions()));
+				this.modeledDomain.getActions());
 	}
 
 	@Override
@@ -293,7 +294,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 
 	@Override
 	public void planFromState(State initialState) {
-		throw new RuntimeException("Model learning algorithms should not be used as planning algorithms.");
+		throw new RuntimeException("PotentialShapedRMax is a model-based RL algorithm and model-based RL should not be used as planning algorithms.");
 	}
 
 	

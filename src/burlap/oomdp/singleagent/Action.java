@@ -6,6 +6,8 @@ import java.util.List;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
@@ -231,7 +233,18 @@ public abstract class Action {
 		return performAction(s, params.split(","));
 		
 	}
-	
+
+
+	/**
+	 * Executes this action with the specified parameters in the provided environment and returns the {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} result.
+	 * @param env the environment in which the action should be performed.
+	 * @param params String array specifying the action parameters
+	 * @return an {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} specifying the result of the action execution in the environment
+	 */
+	public EnvironmentOutcome performInEnvironment(Environment env, String [] params){
+		GroundedAction ga = new GroundedAction(this, params);
+		return env.executeAction(ga);
+	}
 	
 	/**
 	 * Performs this action in the specified state using the specified parameters and returns the resulting state. The input state
@@ -240,7 +253,7 @@ public abstract class Action {
 	 * In general Action subclasses should *NOT* override this method and should instead override the abstract {@link #performActionHelper(State, String[])} method.
 	 * Only override this method if you are seeking to perform memory optimization with semi-shallow copies of states and know what you're doing.
 	 * @param s the state in which the action is to be performed.
-	 * @param params a String array specifying the action object parameters
+	 * @param params a String array specifying the action parameters
 	 * @return the state that resulted from applying this action
 	 */
 	public State performAction(State s, String [] params){
@@ -279,7 +292,7 @@ public abstract class Action {
 	 * state is determined by querying the {@link #performAction(State, String [])} method. If the transition dynamics
 	 * are stochastic, then the analogous method {@link #getTransitions(State, String [])} needs to be overridden.
 	 * @param s the state from which the transition probabilities when applying this action will be returned.
-	 * @param params a comma delineated String specifying the action object parameters
+	 * @param params a comma delineated String specifying the action parameters
 	 * @return a List of transition probabilities for applying this action in the given state with the given set of parameters
 	 */
 	public final List<TransitionProbability> getTransitions(State s, String params){

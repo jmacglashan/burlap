@@ -16,81 +16,46 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public abstract class Environment {
+public interface Environment {
 
-	protected State curState;
-	
-	
-	/**
-	 * Sets the current state of the environment
-	 * @param s which state to set the environment to
-	 */
-	public void setCurStateTo(State s){
-		this.curState = s;
-	}
-	
+
 	
 	/**
 	 * Returns the current state of the environment
 	 * @return the current state of the environment
 	 */
-	public State getCurState(){
-		return curState;
-	}
+	public State getCurState();
+
 	
 	
 	/**
-	 * Returns a reward function whose reward value is always whatever the last reward value of the environment is,
-	 * regardless of which state, action, state parameters are passed to it.
-	 * @return A reward function that returns the last reward of this environment.
-	 */
-	public RewardFunction getEnvironmentRewardRFWrapper(){
-		return new LastRewardRF();
-	}
-	
-	/**
-	 * Returns a terminal function that returns true when the current state of the environment is terminal, regardless
-	 * of the state parameter passed to the method.
-	 * @return a terminal function that returns true when the current state of the environment is terminal
-	 */
-	public TerminalFunction getEnvironmentTerminalStateTFWrapper(){
-		return new CurStateTerminalTF();
-	}
-	
-	
-	/**
-	 * This method is used to pass a {@link GroundedAction} to be executed in this environment. This method
-	 * simply unpacks the action name and paraemters from the {@link GroundedAction} and sends it to the {@link #executeAction(String, String[])}
-	 * method. Unpacking is performed to ensure that there is no mix up between the action objects that refer to this
-	 * Environment and underlying Actions that this environment executes.
+	 * Executes the specified action in this environment
 	 * @param ga the GroundedAction that is to be performed in this environment.
 	 * @return the resulting state from applying the given GroundedAction in this environment.
 	 */
-	public final State executeAction(GroundedAction ga){
-		return this.executeAction(ga.actionName(), ga.params);
-	}
+	EnvironmentOutcome executeAction(GroundedAction ga);
 	
-	/**
-	 * Tells the environment to execute the action with the given name and with the given parameters.
-	 * @param aname the name of the action to execute
-	 * @param params the parameters of the action
-	 * @return the next state of the envionrment
-	 */
-	public abstract State executeAction(String aname, String [] params);
+
 	
 	/**
 	 * Returns the last reward returned by the environment
 	 * @return  the last reward returned by the environment
 	 */
-	public abstract double getLastReward();
+	double getLastReward();
 	
 	/**
 	 * Returns whether the current environment state is a terminal state.
 	 * @return true if the current environment state is a terminal state; false otherwise.
 	 */
-	public abstract boolean curStateIsTerminal();
-	
-	
+	boolean curStateIsTerminal();
+
+
+	/**
+	 * Resets this environment to some initial state, if the functionality exists.
+	 */
+	void resetEnvironment();
+
+
 	
 	/**
 	 * A reward function that returns the last reward returned by the environment, regardless
@@ -98,11 +63,18 @@ public abstract class Environment {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class LastRewardRF implements RewardFunction{
+	public static class LastRewardRF implements RewardFunction{
+
+		protected Environment env;
+
+		public LastRewardRF(Environment env){
+			this.env = env;
+		}
+
 
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
-			return Environment.this.getLastReward();
+			return this.env.getLastReward();
 		}
 		
 	}
@@ -114,11 +86,17 @@ public abstract class Environment {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class CurStateTerminalTF implements TerminalFunction{
+	public static class CurStateTerminalTF implements TerminalFunction{
+
+		protected Environment env;
+
+		public CurStateTerminalTF(Environment env){
+			this.env = env;
+		}
 
 		@Override
 		public boolean isTerminal(State s) {
-			return Environment.this.curStateIsTerminal();
+			return this.env.curStateIsTerminal();
 		}
 		
 		

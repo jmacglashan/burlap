@@ -14,6 +14,7 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QFunction;
@@ -29,7 +30,9 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
-
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 
 
 /**
@@ -343,70 +346,64 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QFunction, 
 			}
 		}
 	}
-	
-	
-	
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
-		return this.runLearningEpisodeFrom(initialState, maxEpisodeSize);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
-	
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+		State initialState = env.getCurState();
+
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxWeightChangeInLastEpisode = 0.;
-		
+
 		State curState = initialState;
 		eStepCounter = 0;
 		Map <Integer, EligibilityTraceVector> traces = new HashMap<Integer, GradientDescentSarsaLam.EligibilityTraceVector>();
-		
+
 		GroundedAction action = (GroundedAction)this.learningPolicy.getAction(curState);
 		List<ActionApproximationResult> allCurApproxResults = this.getAllActionApproximations(curState);
 		ActionApproximationResult curApprox = ActionApproximationResult.extractApproximationForAction(allCurApproxResults, action);
-		
-		
-		while(!tf.isTerminal(curState) && eStepCounter < maxSteps){
-			
-			
+
+
+		while(!env.curStateIsTerminal() && (eStepCounter < maxSteps || maxSteps == -1)){
+
+
 			WeightGradient gradient = this.vfa.getWeightGradient(curApprox.approximationResult);
-			
-			State nextState = action.executeIn(curState);
+
+			EnvironmentOutcome eo = action.executeIn(env);
+
+			State nextState = eo.sp;
 			GroundedAction nextAction = (GroundedAction)this.learningPolicy.getAction(nextState);
 			List<ActionApproximationResult> allNextApproxResults = this.getAllActionApproximations(nextState);
 			ActionApproximationResult nextApprox = ActionApproximationResult.extractApproximationForAction(allNextApproxResults, nextAction);
 			double nextQV = nextApprox.approximationResult.predictedValue;
-			if(tf.isTerminal(nextState)){
+			if(eo.terminated){
 				nextQV = 0.;
 			}
-			
-			
+
+
 			//manage option specifics
-			double r = 0.;
-			double discount = this.gamma;
-			if(action.action.isPrimitive()){
-				r = rf.reward(curState, action, nextState);
-				eStepCounter++;
+			double r = eo.r;
+			double discount = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).discount : this.gamma;
+			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps : 1;
+			eStepCounter += stepInc;
+
+			if(action.action.isPrimitive() || !this.shouldAnnotateOptions){
 				ea.recordTransitionTo(action, nextState, r);
 			}
 			else{
-				Option o = (Option)action.action;
-				r = o.getLastCumulativeReward();
-				int n = o.getLastNumSteps();
-				discount = Math.pow(this.gamma, n);
-				eStepCounter += n;
-				if(this.shouldDecomposeOptions){
-					ea.appendAndMergeEpisodeAnalysis(o.getLastExecutionResults());
-				}
-				else{
-					ea.recordTransitionTo(action, nextState, r);
-				}
+				ea.appendAndMergeEpisodeAnalysis(((Option)action.action).getLastExecutionResults());
 			}
-			
+
+
 			//delta
 			double delta = r + (discount * nextQV) - curApprox.approximationResult.predictedValue;
-			
-			
+
+
 			if(useReplacingTraces){
 				//then first clear traces of unselected action and reset the trace for the selected one
 				for(ActionApproximationResult aar : allCurApproxResults){
@@ -425,92 +422,93 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QFunction, 
 					}
 				}
 			}
-			
-			
+
+
 			double learningRate = 0.;
 			if(!this.useFeatureWiseLearningRate){
 				learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState, action);
 			}
-			
-			
+
+
 			//update all traces
 			Set <Integer> deletedSet = new HashSet<Integer>();
 			for(EligibilityTraceVector et : traces.values()){
-				
+
 				int weightId = et.weight.weightId();
 				if(this.useFeatureWiseLearningRate){
 					learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.weight.weightId());
 				}
-				
-				
+
+
 				et.eligibilityValue += gradient.getPartialDerivative(weightId);
 				double newWeight = et.weight.weightValue() + learningRate*delta*et.eligibilityValue;
 				et.weight.setWeight(newWeight);
-				
+
 				double deltaW = Math.abs(et.initialWeightValue - newWeight);
 				if(deltaW > maxWeightChangeInLastEpisode){
 					maxWeightChangeInLastEpisode = deltaW;
 				}
-				
+
 				et.eligibilityValue *= this.lambda*discount;
 				if(et.eligibilityValue < this.minEligibityForUpdate){
 					deletedSet.add(weightId);
 				}
-				
+
 			}
-			
+
 			//add new traces if need be
 			for(FunctionWeight fw : curApprox.approximationResult.functionWeights){
-				
+
 				int weightId = fw.weightId();
 				if(!traces.containsKey(fw)){
-					
+
 					//then it's new and we need to add it
 					if(this.useFeatureWiseLearningRate){
 						learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, weightId);
 					}
-					
+
 					EligibilityTraceVector et = new EligibilityTraceVector(fw, gradient.getPartialDerivative(weightId));
 					double newWeight = fw.weightValue() + learningRate*delta*et.eligibilityValue;
 					fw.setWeight(newWeight);
-					
+
 					double deltaW = Math.abs(et.initialWeightValue - newWeight);
 					if(deltaW > maxWeightChangeInLastEpisode){
 						maxWeightChangeInLastEpisode = deltaW;
 					}
-					
+
 					et.eligibilityValue *= this.lambda*discount;
 					if(et.eligibilityValue >= this.minEligibityForUpdate){
 						traces.put(weightId, et);
 					}
-					
+
 				}
-				
+
 			}
-			
-			//delete any traces
+
+			//delete traces marked for deletion
 			for(Integer t : deletedSet){
 				traces.remove(t);
 			}
-			
-			
+
+
 			//move on
 			curState = nextState;
 			action = nextAction;
 			curApprox = nextApprox;
 			allCurApproxResults = allNextApproxResults;
-			
+
 			this.totalNumberOfSteps++;
-			
+
 		}
-		
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 			episodeHistory.offer(ea);
 		}
-		
+
 		return ea;
 	}
+
 
 	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
@@ -602,10 +600,12 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QFunction, 
 
 	@Override
 	public void planFromState(State initialState) {
-		
+
+		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, initialState);
+
 		int eCount = 0;
 		do{
-			this.runLearningEpisodeFrom(initialState);
+			this.runLearningEpisode(env);
 			eCount++;
 		}while(eCount < numEpisodesForPlanning && maxWeightChangeInLastEpisode > maxWeightChangeForPlanningTermination);
 

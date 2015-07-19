@@ -8,6 +8,7 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
@@ -22,7 +23,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * whereas in stochastic games, the world requests actions from the agent and then subsequently tells the agent about the results. This stochastic
  * games agent class provides an interface so that any BURALP single agent learning algorithm can be used in a stochastic games world. Specifically,
  * this class works by running the single agent learning algorithm in a separate thread and synchronizing action selection and state outcomes
- * between the two paradigms. The only information that neeeds to be provided to this class is the stochastic games domain in which
+ * between the two paradigms. The only information that needs to be provided to this class is the stochastic games domain in which
  * this agent will play and a special single agent learning algorithm factory to produce the single agent learning algorithm that will be used.
  * @author James MacGlashan
  *
@@ -111,13 +112,14 @@ public class SingleAgentInterface extends Agent {
 	public GroundedSingleAction getAction(State s) {
 	
 		if(this.needsToStartEpisode == true){
-			
-			final State fs = s;
+
+			final SimulatedEnvironment env = new SimulatedEnvironment(this.saDomain, new SARFWrapper(), new SATFWrapper(), s);
+
 			this.saThread = new Thread(new Runnable() {
 				
 				@Override
 				public void run() {
-					SingleAgentInterface.this.saAgent.runLearningEpisodeFrom(fs);
+					SingleAgentInterface.this.saAgent.runLearningEpisode(env);
 				}
 			});
 			saThread.start();

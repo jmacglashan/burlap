@@ -10,6 +10,7 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 /**
  * This abstract class is used by model learning algorithms to learn the transition dynamics, reward function, and terminal function, of the world through experience.
@@ -92,8 +93,16 @@ public abstract class Model {
 	 * @return the list of the possible transition probabilities; should sum to 1 and states will probability zero do *not* have to be included.
 	 */
 	public abstract List<TransitionProbability> getTransitionProbabilities(State s, GroundedAction ga);
-	
-	
+
+
+	/**
+	 * Updates this model with respect to the observed {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome}.
+	 * @param eo The {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} specifying the observed interaction with an {@link burlap.oomdp.singleagent.environment.Environment}.
+	 */
+	public void updateModel(EnvironmentOutcome eo){
+		this.updateModel(eo.s, eo.a, eo.sp, eo.r, eo.terminated);
+	}
+
 	
 	/**
 	 * Causes this model to be updated with a new interaction with the world.

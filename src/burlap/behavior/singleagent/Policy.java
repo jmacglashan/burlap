@@ -14,6 +14,9 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullAction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import com.sun.tools.javac.comp.Env;
 
 
 /**
@@ -258,9 +261,124 @@ public abstract class Policy {
 		
 		return res;
 	}
-	
-	
-	private State followAndRecordPolicy(EpisodeAnalysis ea, State cur, RewardFunction rf){
+
+
+	/**
+	 * Evaluates this policy in the provided {@link burlap.oomdp.singleagent.environment.Environment}. The policy will stop being evaluated once a terminal state
+	 * in the environment is reached.
+	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this policy is to be evaluated.
+	 * @return An {@link burlap.behavior.singleagent.EpisodeAnalysis} object specifying the interaction with the environment.
+	 */
+	public EpisodeAnalysis evaluateBehavior(Environment env){
+
+		EpisodeAnalysis ea = new EpisodeAnalysis(env.getCurState());
+
+		do{
+			this.followAndRecordPolicy(env, ea);
+		}while(!env.curStateIsTerminal());
+
+		return ea;
+	}
+
+	/**
+	 * Evaluates this policy in the provided {@link burlap.oomdp.singleagent.environment.Environment}. The policy will stop being evaluated once a terminal state
+	 * in the environment is reached or when the provided number of steps has been taken.
+	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this policy is to be evaluated.
+	 * @param numSteps the maximum number of steps to take in the environment.
+	 * @return An {@link burlap.behavior.singleagent.EpisodeAnalysis} object specifying the interaction with the environment.
+	 */
+	public EpisodeAnalysis evaluateBehavior(Environment env, int numSteps){
+
+		EpisodeAnalysis ea = new EpisodeAnalysis(env.getCurState());
+
+		int nSteps = 0;
+		do{
+			this.followAndRecordPolicy(env, ea);
+			nSteps = ea.numTimeSteps();
+		}while(!env.curStateIsTerminal() && nSteps < numSteps);
+
+		return ea;
+	}
+
+
+	/**
+	 * Follows this policy for one time step in the provided {@link burlap.oomdp.singleagent.environment.Environment} and
+	 * records the interaction in the provided {@link burlap.behavior.singleagent.EpisodeAnalysis} object. If the policy
+	 * selects an {@link burlap.behavior.singleagent.options.Option}, then how the option's interaction in the environment
+	 * is recorded depends on this object's {@link #evaluateDecomposesOptions} and {@link #annotateOptionDecomposition} flags.
+	 * If {@link #evaluateDecomposesOptions} is false, then the option is recorded as a single action. If it is true, then
+	 * the individual primitive actions selected by the environment are recorded. If {@link #annotateOptionDecomposition} is
+	 * also true, then each primitive action selected but the option is also given a unique name specifying the option
+	 * which controlled it and its step in the option's execution.
+	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this policy should be followed.
+	 * @param ea The {@link burlap.behavior.singleagent.EpisodeAnalysis} object to which the action selection will be recorded.
+	 */
+	protected void followAndRecordPolicy(Environment env, EpisodeAnalysis ea){
+
+
+		//follow policy
+		AbstractGroundedAction aga = this.getAction(env.getCurState());
+		if(aga == null){
+			throw new PolicyUndefinedException();
+		}
+		if(!(aga instanceof GroundedAction)){
+			throw new RuntimeException("cannot folow policy for non-single agent actions");
+		}
+		GroundedAction ga = (GroundedAction)aga;
+
+		if(ga.action.isPrimitive()|| !this.evaluateDecomposesOptions){
+			EnvironmentOutcome eo = ga.executeIn(env);
+			ea.recordTransitionTo(ga, eo.sp, eo.r);
+		}
+		else{
+			//then we need to decompose the option
+			State cur = env.getCurState();
+			Option o = (Option)ga.action;
+			o.initiateInState(cur, ga.params);
+			int ns = 0;
+			do{
+				//do step of option
+				GroundedAction cga = o.oneStepActionSelection(cur, ga.params);
+				EnvironmentOutcome eo = cga.executeIn(env);
+				State next = eo.sp;
+				double r = eo.r;
+
+				if(annotateOptionDecomposition){
+					//setup a null action to record the option and primitive action taken
+					NullAction annotatedPrimitive = new NullAction(o.getName() + "(" + ns + ")-" + cga.action.getName());
+					GroundedAction annotatedPrimitiveGA = new GroundedAction(annotatedPrimitive, cga.params);
+
+					//record it
+					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
+				}
+				else{
+					//otherwise just record the primitive that was taken
+					ea.recordTransitionTo(cga, next, r);
+				}
+
+				cur = env.getCurState();
+				ns++;
+			}while(o.continueFromState(cur, ga.params));
+		}
+
+	}
+
+
+	/**
+	 * Follows this policy for one time step from the provided {@link burlap.oomdp.core.State} and
+	 * records the interaction in the provided {@link burlap.behavior.singleagent.EpisodeAnalysis} object. If the policy
+	 * selects an {@link burlap.behavior.singleagent.options.Option}, then how the option's interaction in the environment
+	 * is recorded depends on this object's {@link #evaluateDecomposesOptions} and {@link #annotateOptionDecomposition} flags.
+	 * If {@link #evaluateDecomposesOptions} is false, then the option is recorded as a single action. If it is true, then
+	 * the individual primitive actions selected by the environment are recorded. If {@link #annotateOptionDecomposition} is
+	 * also true, then each primitive action selected but the option is also given a unique name specifying the option
+	 * which controlled it and its step in the option's execution.
+	 * @param ea The {@link burlap.behavior.singleagent.EpisodeAnalysis} object to which the action selection will be recorded.
+	 * @param cur The {@link burlap.oomdp.core.State} from which the policy will be followed
+	 * @param rf The {@link burlap.oomdp.singleagent.RewardFunction} to keep track of reward
+	 * @return the next {@link State} that is a consequence of following this policy for one action selection.
+	 */
+	protected State followAndRecordPolicy(EpisodeAnalysis ea, State cur, RewardFunction rf){
 		
 		State next = null;
 		

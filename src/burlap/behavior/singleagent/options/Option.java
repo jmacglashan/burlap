@@ -21,12 +21,8 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullAction;
-
-
-
-
-
-
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
@@ -218,7 +214,7 @@ public abstract class Option extends Action {
 	public abstract double probabilityOfTermination(State s, String [] params);
 	
 	/**
-	 * This method is always called when an option is initated and begins execution. Specifically, it is called from the {@link #performActionHelper(State, String [])}
+	 * This method is always called when an option is initated and begins execution. Specifically, it is called from the {@link #performActionHelper(burlap.oomdp.core.State, String[])}
 	 * For Markov options, this method probably does not need to do anything, but for non-Markov options, like Macro actions, it may need
 	 * to initialize some structures for determining termination and action selection.
 	 * @param s the state in which the option was initiated
@@ -228,8 +224,8 @@ public abstract class Option extends Action {
 	
 	
 	/**
-	 * This method causes the option to take a single step in the given state, when the option was initiated with the provided parameters.
-	 * This method will be called by the {@link #performActionHelper(State, String [])} method until it is determined that the option terminates.
+	 * This method causes the option to select a single step in the given state, when the option was initiated with the provided parameters.
+	 * This method will be called by the {@link #performActionHelper(burlap.oomdp.core.State, String[])}  method until it is determined that the option terminates.
 	 * @param s the state in which an action should be selected.
 	 * @param params the parameters that were passed to the option when it was initiated
 	 * @return the action the option has selected to take in State <code>s</code>
@@ -509,10 +505,30 @@ public abstract class Option extends Action {
 		
 		return curState;
 	}
-	
-	
+
+
+	@Override
+	public EnvironmentOutcome performInEnvironment(Environment env, String[] params) {
+
+		State initialState = env.getCurState();
+		this.initiateInState(initialState, params);
+		do{
+			this.oneStep(env, params);
+		}while(this.continueFromState(env.getCurState(), params) && !env.curStateIsTerminal());
+
+		EnvironmentOptionOutcome eoo = new EnvironmentOptionOutcome(initialState,
+																	new GroundedAction(this, params),
+																	env.getCurState(),
+																	this.lastCumulativeReward,
+																	env.curStateIsTerminal(),
+																	this.discountFactor,
+																	this.lastNumSteps);
+
+		return eoo;
+	}
+
 	/**
-	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(State, String [])}
+	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(burlap.oomdp.core.State, String[])}
 	 * method was called previously for the state in which this option was initiated.
 	 * @param s the state in which a single step of the option is to be taken.
 	 * @param params the parameters that were passed to the option at initiation
@@ -541,6 +557,44 @@ public abstract class Option extends Action {
 		
 		
 		return sprime;
+	}
+
+
+	/**
+	 * Performs one step of execution of the option in the provided {@link burlap.oomdp.singleagent.environment.Environment}.
+	 * This method assuems that the {@link #initiateInState(burlap.oomdp.core.State, String[])} method
+	 * was called previously for the state in which this option was initiated.
+	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this option is to be applied
+	 * @param params the parameters that were passed to the option at initiation
+	 * @return the {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} of the one step of interaction.
+	 */
+	public EnvironmentOutcome oneStep(Environment env, String [] params){
+
+		GroundedAction ga = this.oneStepActionSelection(env.getCurState(), params);
+		EnvironmentOutcome eo = ga.executeIn(env);
+		if(eo instanceof EnvironmentOptionOutcome){
+			EnvironmentOptionOutcome eoo = (EnvironmentOptionOutcome)eo;
+			lastNumSteps += eoo.numSteps;
+			lastCumulativeReward += cumulativeDiscount*eoo.r;
+			cumulativeDiscount *= eoo.discount;
+		}
+		else{
+			lastNumSteps++;
+			lastCumulativeReward += cumulativeDiscount*eo.r;
+			cumulativeDiscount *= discountFactor;
+		}
+
+		if(shouldRecordResults){
+			GroundedAction recordAction = ga;
+			if(shouldAnnotateExecution){
+				NullAction annotatedPrimitive = new NullAction(this.name + "(" + (lastNumSteps-1) + ")-" + ga.action.getName());
+				recordAction = new GroundedAction(annotatedPrimitive, ga.params);
+			}
+			lastOptionExecutionResults.recordTransitionTo(recordAction, eo.sp, eo.r);
+		}
+
+		return eo;
+
 	}
 	
 	

@@ -2,6 +2,8 @@ package burlap.oomdp.singleagent;
 
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 /**
  * A grounded action contains a reference to an action and the names of object instances that
@@ -49,7 +51,17 @@ public class GroundedAction extends AbstractGroundedAction{
 		action = a;
 		params = p;
 	}
-	
+
+
+	/**
+	 * Executes this grounded action in the specified {@link burlap.oomdp.singleagent.environment.Environment}.
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} in which the action is to be executed.
+	 * @return an {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} specifying the outcome of this action.
+	 */
+	public EnvironmentOutcome executeIn(Environment env){
+		return this.action.performInEnvironment(env, this.params);
+	}
+
 	/**
 	 * Executes the grounded action on a given state
 	 * @param s the state on which to execute the action
