@@ -59,9 +59,9 @@ public class FrostbiteVisualizer {
 								float cWidth, float cHeight) {
 
 
-			int x = ob.getDiscValForAttribute(FrostbiteDomain.XATTNAME);
-			int y = ob.getDiscValForAttribute(FrostbiteDomain.YATTNAME);
-			int size = ob.getDiscValForAttribute(FrostbiteDomain.SIZEATTNAME);
+			int x = ob.getIntValForAttribute(FrostbiteDomain.XATTNAME);
+			int y = ob.getIntValForAttribute(FrostbiteDomain.YATTNAME);
+			int size = ob.getIntValForAttribute(FrostbiteDomain.SIZEATTNAME);
 			boolean activated = ob.getBooleanValue(FrostbiteDomain.ACTIVATEDATTNAME);
 			if (activated)
 				g2.setColor(activatedPlatformColor);
@@ -91,8 +91,8 @@ public class FrostbiteVisualizer {
 
 			g2.setColor(Color.black);
 
-			int x = ob.getDiscValForAttribute(FrostbiteDomain.XATTNAME);
-			int y = ob.getDiscValForAttribute(FrostbiteDomain.YATTNAME);
+			int x = ob.getIntValForAttribute(FrostbiteDomain.XATTNAME);
+			int y = ob.getIntValForAttribute(FrostbiteDomain.YATTNAME);
 			int size = fd.getAgentSize();
 
 			g2.fill(new Rectangle2D.Double(x, y, size, size));
@@ -113,7 +113,7 @@ public class FrostbiteVisualizer {
 
 			g2.setColor(iglooColor);
 
-			int building = ob.getDiscValForAttribute(FrostbiteDomain.BUILDINGATTNAME);
+			int building = ob.getIntValForAttribute(FrostbiteDomain.BUILDINGATTNAME);
 
 			int layer = -1; // just because ;)
 			int maxLayer = fd.buildingStepsToWin;

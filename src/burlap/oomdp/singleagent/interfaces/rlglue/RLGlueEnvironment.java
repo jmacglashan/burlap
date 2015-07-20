@@ -295,7 +295,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		int discCounter = 0;
 		int contCounter = 0;
 		for(Map.Entry<String, Integer> e : this.numObjectsOfEachClass.entrySet()){
-			List<ObjectInstance> obs = s.getObjectsOfTrueClass(e.getKey());
+			List<ObjectInstance> obs = s.getObjectsOfClass(e.getKey());
 			List<Attribute> atts = this.domain.getObjectClass(e.getKey()).attributeList;
 			for(int i = 0; i < obs.size(); i++){
 				ObjectInstance oi = obs.get(i);

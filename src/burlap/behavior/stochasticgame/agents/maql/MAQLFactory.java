@@ -16,7 +16,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
 
 
 /**
- * This class provides a factory for {@link MultiAgentQLearning} agents. Subclasses for specifc kinds of multi-agent Q-learning are also included.
+ * This class provides a factory for {@link MultiAgentQLearning} agents. Subclasses for specific kinds of multi-agent Q-learning are also included.
  * The policy given to this factory is always copied when generating a new agent to ensure that multiple agents generated from the same factory
  * have unique policies tailored to their perspective.
  * @author James MacGlashan
@@ -44,7 +44,7 @@ public class MAQLFactory implements AgentFactory {
 	
 	
 	/**
-	 * Initializes. The policy will be defaulted to a epsilon-greey max wellfare policy.
+	 * Initializes. The policy will be defaulted to a epsilon-greedy max welfare policy.
 	 * @param d the domain in which to perform learing
 	 * @param discount the discount factor
 	 * @param learningRate the constant learning rate

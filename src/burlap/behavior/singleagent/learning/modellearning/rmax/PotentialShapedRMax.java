@@ -233,12 +233,15 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 			GroundedAction ga = (GroundedAction)policy.getAction(curState);
 			State nextState = ga.executeIn(curState);
 			double r = this.rf.reward(curState, ga, nextState);
-			
+			boolean isTerminal = this.tf.isTerminal(nextState);
+
 			ea.recordTransitionTo(ga, nextState, r);
-			
-			if(!this.model.transitionIsModeled(curState, ga)){
-				this.model.updateModel(curState, ga, nextState, r, this.tf.isTerminal(nextState));
-				if(this.model.transitionIsModeled(curState, ga)){
+
+			boolean modeledTerminal = this.model.getModelTF().isTerminal(nextState);
+
+			if(!this.model.transitionIsModeled(curState, ga) || !this.model.stateTransitionsAreModeled(nextState)){
+				this.model.updateModel(curState, ga, nextState, r, isTerminal);
+				if(this.model.transitionIsModeled(curState, ga) || (isTerminal != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(nextState))){
 					this.modelPlanner.modelChanged(curState);
 					//policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
 					policy = this.createDomainMappedPolicy();
@@ -329,7 +332,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 
 
 			//RMaxStates are terminal states
-			if(s.getObjectsOfTrueClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
 				return true;
 			}
 
@@ -377,7 +380,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 
 		@Override
 		public double potentialValue(State s) {
-			if(s.getObjectsOfTrueClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
+			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
 				return 0.;
 			}
 			return this.vmax;

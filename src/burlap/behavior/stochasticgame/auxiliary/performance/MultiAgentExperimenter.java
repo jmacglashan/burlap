@@ -226,6 +226,7 @@ public class MultiAgentExperimenter {
 			DPrint.cl(this.debugCode, "Beginning trial " + (i+1) + "/" + this.nTrials);
 			
 			World w = worldGenerator.generateWorld();
+
 			DPrint.toggleCode(w.getDebugId(), false);
 			w.addWorldObserver(this.plotter);
 			for(AgentFactoryAndType aft : this.agentFactoriesAndTypes){
@@ -243,7 +244,7 @@ public class MultiAgentExperimenter {
 		}
 		
 		this.plotter.endAllTrials();
-		
+		this.completedExperiment = true;
 		
 	}
 	

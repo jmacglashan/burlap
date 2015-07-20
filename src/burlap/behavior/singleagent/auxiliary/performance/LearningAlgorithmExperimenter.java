@@ -10,13 +10,15 @@ import burlap.oomdp.singleagent.SADomain;
 
 
 /**
- * This class is used to simplify the comparison of different learning algorithms. It takes as input a reward function to measure peformance, an initial state
- * generator, a number of trials, the length of the trials, and an array of learning agent factories used to generated agent instances and compare their performance.
- * The length of the trials by default is assumed to be in episodes, but it may also be changed to indicate length in total number of steps using the 
- * {@link #toggleTrialLengthInterpretation(boolean)} method.
+ * This class is used to simplify the comparison of different learning algorithms. It takes as input a reward function
+ * to measure performance, an initial state generator, a number of trials, the length of the trials, and an array of
+ * learning agent factories used to generated agent instances and compare their performance. The length of the trials
+ * by default is assumed to be in episodes, but it may also be changed to indicate length in total number of steps using
+ * the {@link #toggleTrialLengthInterpretation(boolean)} method.
  * <p/>
- * Performacne results are displayed in plots using the {@link PerformancePlotter} class, but visualization may also be disabled with the {@link #toggleVisualPlots(boolean)}
- * method. Results may be saved to csv files after the experiment is complete.
+ * Performance results are displayed in plots using the {@link PerformancePlotter} class, but visualization may also be
+ * disabled with the {@link #toggleVisualPlots(boolean)} method. Results may be saved to csv files after the experiment
+ * is complete.
  * <p/>
  * The folow the experimenter is to test an agent for a specified number of trials. At the beginning of each trial, a new agent is generated using the designated
  * LearningAgentFactory and is used for the specified trial length. After all trials are complete for an agent, the next agent is tested. Note that immediately before

@@ -28,9 +28,9 @@ public class FrostbiteStateParser implements StateParser{
 	public String stateToString(State s) {
 		StringBuffer buf = new StringBuffer(256);
 
-		ObjectInstance agent = s.getObjectsOfTrueClass(FrostbiteDomain.AGENTCLASS).get(0);
-		ObjectInstance igloo = s.getObjectsOfTrueClass(FrostbiteDomain.IGLOOCLASS).get(0);
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(FrostbiteDomain.PLATFORMCLASS);
+		ObjectInstance agent = s.getObjectsOfClass(FrostbiteDomain.AGENTCLASS).get(0);
+		ObjectInstance igloo = s.getObjectsOfClass(FrostbiteDomain.IGLOOCLASS).get(0);
+		List<ObjectInstance> platforms = s.getObjectsOfClass(FrostbiteDomain.PLATFORMCLASS);
 
 		//write agent
 		buf.append(agent.getRealValForAttribute(FrostbiteDomain.XATTNAME)).append(" ");
