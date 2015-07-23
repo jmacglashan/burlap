@@ -324,17 +324,17 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected class MutableInt{
+	protected static class MutableInt{
 		protected Integer val = null;
 	}
 
 
 	/**
-	 * A mutable OO-MDP state wrapper
+	 * A wrapper that maintains a reference to a {@link burlap.oomdp.core.State} or null.
 	 * @author James MacGlashan
 	 *
 	 */
-	protected class StateReference{
+	protected static class StateReference{
 		protected State val = null;
 	}
 }
