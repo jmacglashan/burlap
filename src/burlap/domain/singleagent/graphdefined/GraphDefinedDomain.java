@@ -594,8 +594,8 @@ public class GraphDefinedDomain implements DomainGenerator {
 
 
 		State s = GraphDefinedDomain.getState(domain, 0);
-		TerminalExplorer exp = new TerminalExplorer(domain);
-		exp.exploreFromState(s);
+		TerminalExplorer exp = new TerminalExplorer(domain, s);
+		exp.explore();
 	}
 	
 	

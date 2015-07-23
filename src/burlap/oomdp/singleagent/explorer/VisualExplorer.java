@@ -20,9 +20,16 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.EpisodeSequenceVisualizer;
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
+import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
+import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
+import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.auxiliary.common.StateYAMLParser;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.ObjectInstance;
@@ -34,10 +41,15 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullRewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
+import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
 import burlap.oomdp.visualizer.Visualizer;
 
 /**
- * This class allows you act as the agent by choosing actions to take in specific states. States are
+ * This class allows you act as the agent by choosing actions in an {@link burlap.oomdp.singleagent.environment.Environment}.
+ * States are
  * conveyed to the user through a 2D visualization and the user specifies actions
  * by either pressing keys that are mapped to actions or by typing the actions into the action command field. 
  * Action parameters in the action field are specified by space delineated input. For instance: "stack block0 block1" will cause
@@ -46,13 +58,8 @@ import burlap.oomdp.visualizer.Visualizer;
  * Other special kinds of actions
  * not described in the domain can be added and executed by pressing corresponding keys for them. The episodes of action taken by a user may also be recorded
  * to a list of recorded episodes and then subsequently polled by a client object. To enable episode recording, use the method
- * {@link #enableEpisodeRecording(String, String)} or {@link #enableEpisodeRecording(String, String, RewardFunction)}. To check if the user
+ * {@link #enableEpisodeRecording(String, String)}. To check if the user
  * is still recording episodes, use the method {@link #isRecording()}. To retrieve the recorded episodes, use the method {@link #getRecordedEpisodes()}.
- * <br/><br/>
- * This class can also be provided a reward function and terminal function through the
- * {@link #setTrackingRewardFunction(burlap.oomdp.singleagent.RewardFunction)} and
- * {@link #setTerminalFunction(burlap.oomdp.core.TerminalFunction)} methods. Once set, the console for the visualizer
- * will report the last reward received and whether the current state is a terminal state.
  * @author James MacGlashan
  *
  */
@@ -60,12 +67,11 @@ public class VisualExplorer extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	
-	
+
+	protected Environment									env;
 	protected Domain										domain;
 	protected Map <String, String>							keyActionMap;
 	protected Map <String, SpecialExplorerAction>			keySpecialMap;
-	protected State											baseState;
-	protected State											curState;
 	
 	protected Visualizer 									painter;
 	protected TextArea										propViewer;
@@ -82,64 +88,61 @@ public class VisualExplorer extends JFrame{
 	//recording data members
 	protected EpisodeAnalysis 								currentEpisode = null;
 	protected List<EpisodeAnalysis>							recordedEpisodes = null;
-	protected RewardFunction								trackingRewardFunction = new NullRewardFunction();
-	protected TerminalFunction								terminalFunction;
 
-	protected GroundedAction								lastAction;
 	protected double										lastReward;
 	protected String										warningMessage = "";
 
 	protected boolean										isRecording = false;
 
+	protected boolean										runLivePolling = false;
+
 	
 	/**
-	 * Initializes the visual explorer with the domain to explorer, the visualizer to use, and the base state from which to explore.
+	 * Initializes with a domain and initial state, automatically creating a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
+	 * as the environment with which to interact. The created {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment} will
+	 * have a {@link burlap.oomdp.singleagent.common.NullRewardFunction} and {@link burlap.oomdp.auxiliary.common.NullTermination} functions set.
 	 * @param domain the domain to explore
 	 * @param painter the 2D state visualizer
 	 * @param baseState the initial state from which to explore
 	 */
 	public VisualExplorer(Domain domain, Visualizer painter, State baseState){
-		
-		this.init(domain, painter, new ConstantStateGenerator(baseState), 800, 800);
+		Environment env = new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), baseState);
+		this.init(domain, env, painter, 800, 800);
 	}
-	
+
+
+	/**
+	 * Initializes with a visualization canvas size set to 800x800.
+	 * @param domain the domain to explore
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} with which to interact.
+	 * @param painter the 2D state visualizer
+	 */
+	public VisualExplorer(Domain domain, Environment env, Visualizer painter){
+		this.init(domain, env, painter, 800, 800);
+	}
+
 	
 	/**
-	 * Initializes the visual explorer with the domain to explorer, the visualizer to use, the base state from which to explore,
-	 * and the dimensions of the visualizer.
+	 * Initializes.
 	 * @param domain the domain to explore
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} with which to interact.
 	 * @param painter the 2D state visualizer
-	 * @param baseState the initial state from which to explore
 	 * @param w the width of the visualizer canvas
 	 * @param h the height of the visualizer canvas
 	 */
-	public VisualExplorer(Domain domain, Visualizer painter, State baseState, int w, int h){
-		this.init(domain, painter, new ConstantStateGenerator(baseState), w, h);
+	public VisualExplorer(Domain domain, Environment env, Visualizer painter, int w, int h){
+		this.init(domain, env, painter, w, h);
 	}
 	
-	/**
-	 * Initializes the visual explorer with the domain to explorer, the visualizer to use, and an initial state generator from which to explore,
-	 * and the dimensions of the visualizer.
-	 * @param domain the domain to explore
-	 * @param painter the 2D state visualizer
-	 * @param initialStateGenerator a generator for initial states that is polled everytime the special reset action is called
-	 * @param w the width of the visualizer canvas
-	 * @param h the height of the visualizer canvas
-	 */
-	public VisualExplorer(Domain domain, Visualizer painter, StateGenerator initialStateGenerator, int w, int h){
-		this.init(domain, painter, initialStateGenerator, w, h);
-	}
-	
-	protected void init(Domain domain, Visualizer painter, StateGenerator stateGeneratorForReset, int w, int h){
+	protected void init(Domain domain, Environment env, Visualizer painter, int w, int h){
 		
 		this.domain = domain;
-		this.baseState = stateGeneratorForReset.generateState();
-		this.curState = baseState.copy();
+		this.env = env;
 		this.painter = painter;
 		this.keyActionMap = new HashMap <String, String>();
 		this.keySpecialMap = new HashMap <String, SpecialExplorerAction>();
 		
-		StateResetSpecialAction reset = new StateResetSpecialAction(stateGeneratorForReset);
+		StateResetSpecialAction reset = new StateResetSpecialAction(this.env);
 		this.addSpecialAction("`", reset);
 		
 		this.cWidth = w;
@@ -152,21 +155,6 @@ public class VisualExplorer extends JFrame{
 		
 	}
 
-	public RewardFunction getTrackingRewardFunction() {
-		return trackingRewardFunction;
-	}
-
-	public void setTrackingRewardFunction(RewardFunction trackingRewardFunction) {
-		this.trackingRewardFunction = trackingRewardFunction;
-	}
-
-	public TerminalFunction getTerminalFunction() {
-		return terminalFunction;
-	}
-
-	public void setTerminalFunction(TerminalFunction terminalFunction) {
-		this.terminalFunction = terminalFunction;
-	}
 
 	/**
 	 * Returns a special action that causes the state to reset to the initial state.
@@ -202,56 +190,14 @@ public class VisualExplorer extends JFrame{
 	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
 	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
 	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
-	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}. Rewards stored in the recorded episode will
-	 * all be zero.
-	 * @param recordLastEpisodeKey the key to press to indidcate that the last episode should be recorded/saved.
+	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
+	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
 	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
 	 */
 	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey){
-		this.currentEpisode = new EpisodeAnalysis(this.baseState);
+		this.currentEpisode = new EpisodeAnalysis(this.env.getCurState());
 		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
 		this.isRecording = true;
-		
-		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
-			
-			@Override
-			public State applySpecialAction(State curState) {
-				synchronized(VisualExplorer.this) {
-					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
-					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
-				}
-				return curState;
-			}
-		});
-		
-		this.keySpecialMap.put(finishedRecordingKey, new SpecialExplorerAction() {
-			
-			@Override
-			public State applySpecialAction(State curState) {
-				synchronized(VisualExplorer.this) {
-					VisualExplorer.this.isRecording = false;
-				}
-				return curState;
-			}
-		});
-		
-	}
-	
-	/**
-	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
-	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
-	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
-	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
-	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
-	 * @param recordLastEpisodeKey the key to press to indidcate that the last episode should be recorded/saved.
-	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
-	 * @param rewardFunction the reward function to use to record the reward received for each action taken.
-	 */
-	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey, RewardFunction rewardFunction){
-		this.currentEpisode = new EpisodeAnalysis(this.baseState);
-		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
-		this.isRecording = true;
-		this.trackingRewardFunction = rewardFunction;
 		
 		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
 			
@@ -278,6 +224,7 @@ public class VisualExplorer extends JFrame{
 		
 	}
 
+
 	/**
 	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
 	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
@@ -286,18 +233,16 @@ public class VisualExplorer extends JFrame{
 	 * recorded episodes is saved to disk in the directory saveDirectory with states parsed using sp.
 	 * The list of
 	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
-	 * @param recordLastEpisodeKey the key to press to indidcate that the last episode should be recorded/saved.
+	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
 	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
-	 * @param rewardFunction the reward function to use to record the reward received for each action taken.
 	 * @param saveDirectory the directory in which all episodes will be saved
 	 * @param sp the {@link burlap.oomdp.auxiliary.StateParser} to use for parsing states to strings.
 	 */
-	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey, RewardFunction rewardFunction,
+	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey,
 									   String saveDirectory, StateParser sp){
-		this.currentEpisode = new EpisodeAnalysis(this.baseState);
+		this.currentEpisode = new EpisodeAnalysis(this.env.getCurState());
 		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
 		this.isRecording = true;
-		this.trackingRewardFunction = rewardFunction;
 
 		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
 
@@ -331,6 +276,44 @@ public class VisualExplorer extends JFrame{
 	public List<EpisodeAnalysis> getRecordedEpisodes(){
 		return this.recordedEpisodes;
 	}
+
+
+	/**
+	 * Starts a thread that polls this explorer's {@link burlap.oomdp.singleagent.environment.Environment} every
+	 * msPollDelay milliseconds for its current state and updates the visualizer to that state.
+	 * Polling can be stopped with the {@link #stopLivePolling()}.
+	 * @param msPollDelay the number of milliseconds between environment polls and state updates.
+	 */
+	public void startLiveStatePolling(final long msPollDelay){
+		this.runLivePolling = true;
+		Thread pollingThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(runLivePolling) {
+					State s = env.getCurState();
+					if(s != null) {
+						updateState(s);
+					}
+					try {
+						Thread.sleep(msPollDelay);
+					} catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+
+		pollingThread.start();
+	}
+
+
+	/**
+	 * Stops this class from live polling this explorer's {@link burlap.oomdp.singleagent.environment.Environment}.
+	 */
+	public void stopLivePolling(){
+		this.runLivePolling = false;
+	}
+
 	
 	/**
 	 * Initializes the visual explorer GUI and presents it to the user.
@@ -397,8 +380,8 @@ public class VisualExplorer extends JFrame{
 		});
 		bottomContainer.add(actionButton, BorderLayout.EAST);
 		
-		painter.updateState(baseState);
-		this.updatePropTextArea(baseState);
+		painter.updateState(this.env.getCurState());
+		this.updatePropTextArea(this.env.getCurState());
 
 		JButton showConsoleButton = new JButton("Show Console");
 		showConsoleButton.addActionListener(new ActionListener() {
@@ -420,11 +403,12 @@ public class VisualExplorer extends JFrame{
 				"&nbsp;&nbsp;&nbsp;&nbsp;<b>addRelation</b> sourceObject relationalAttribute targetObject<br/>" +
 				"&nbsp;&nbsp;&nbsp;&nbsp;<b>removeRelation</b> sourceObject relationalAttribute targetObject<br/>" +
 				"&nbsp;&nbsp;&nbsp;&nbsp;<b>clearRelations</b> sourceObject relationalAttribute<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>execute</b> action [param_1 ... param_n]<br/>&nbsp;</html>");
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>execute</b> action [param_1 ... param_n]<br/>" +
+				"&nbsp;&nbsp;&nbsp;&nbsp;<b>pollState</b><br/>&nbsp;</html>");
 
 		consoleFrame.getContentPane().add(consoleCommands, BorderLayout.NORTH);
 
-		this.stateConsole = new TextArea(this.getConsoleText(this.baseState), 40, 40, TextArea.SCROLLBARS_BOTH);
+		this.stateConsole = new TextArea(this.getConsoleText(this.env.getCurState()), 40, 40, TextArea.SCROLLBARS_BOTH);
 		this.consoleFrame.getContentPane().add(this.stateConsole, BorderLayout.CENTER);
 
 		JTextField consoleCommand = new JTextField(40);
@@ -437,7 +421,7 @@ public class VisualExplorer extends JFrame{
 				String [] comps = command.split(" ");
 				if(comps.length > 0){
 
-					State ns = VisualExplorer.this.curState.copy();
+					State ns = VisualExplorer.this.env.getCurState().copy();
 
 					boolean madeChange = false;
 					if(comps[0].equals("set")){
@@ -503,13 +487,22 @@ public class VisualExplorer extends JFrame{
 						}
 						VisualExplorer.this.executeAction(actionComps);
 					}
+					else if(comps[0].equals("pollState")){
+						updateState(env.getCurState());
+					}
 
 					if(madeChange) {
-						VisualExplorer.this.lastAction = null;
-						VisualExplorer.this.updateState(ns);
-						VisualExplorer.this.numSteps = 0;
-						if (VisualExplorer.this.currentEpisode != null) {
-							VisualExplorer.this.currentEpisode = new EpisodeAnalysis(curState);
+						if(env instanceof StateSettableEnvironment) {
+							((StateSettableEnvironment)env).setCurStateTo(ns);
+							VisualExplorer.this.updateState(env.getCurState());
+							VisualExplorer.this.numSteps = 0;
+							if(VisualExplorer.this.currentEpisode != null) {
+								VisualExplorer.this.currentEpisode = new EpisodeAnalysis(env.getCurState());
+							}
+						}
+						else{
+							warningMessage = "Cannot edit state because the Environment does not implement StateSettableEnvironment";
+							VisualExplorer.this.updateState(env.getCurState());
 						}
 					}
 				}
@@ -534,8 +527,7 @@ public class VisualExplorer extends JFrame{
 	 * Updates the currently visualized state to the input state.
 	 * @param s the state to visualize.
 	 */
-	public void updateState(State s){
-		this.curState = s;
+	synchronized public void updateState(State s){
 		this.stateConsole.setText(this.getConsoleText(s));
 		this.painter.updateState(s);
 		this.updatePropTextArea(s);
@@ -551,17 +543,15 @@ public class VisualExplorer extends JFrame{
 	protected String getConsoleText(State s){
 		StringBuilder sb = new StringBuilder(256);
 		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
-		if(this.terminalFunction != null){
-			if(this.terminalFunction.isTerminal(s)){
-				sb.append("State IS terminal\n");
-			}
-			else{
-				sb.append("State is NOT terminal\n");
-			}
+		if(this.env.curStateIsTerminal()){
+			sb.append("State IS terminal\n");
 		}
-		if(this.trackingRewardFunction != null && this.lastAction != null){
-			sb.append("Reward: " + this.lastReward + "\n");
+		else{
+			sb.append("State is NOT terminal\n");
 		}
+
+		sb.append("Reward: " + this.lastReward + "\n");
+
 		if(this.warningMessage.length() > 0) {
 			sb.append("WARNING: " + this.warningMessage + "\n");
 			this.warningMessage = "";
@@ -622,16 +612,17 @@ public class VisualExplorer extends JFrame{
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
 			if(sea != null){
-				this.lastAction = null;
-				this.updateState(sea.applySpecialAction(curState));
+				sea.applySpecialAction(this.env.getCurState());
 			}
 			if(sea instanceof StateResetSpecialAction){
 				System.out.println("Number of steps before reset: " + numSteps);
 				numSteps = 0;
+				this.lastReward = 0.;
 				if(this.currentEpisode != null){
-					this.currentEpisode = new EpisodeAnalysis(curState);
+					this.currentEpisode = new EpisodeAnalysis(this.env.getCurState());
 				}
 			}
+			this.updateState(this.env.getCurState());
 		}
 		
 	}
@@ -659,28 +650,27 @@ public class VisualExplorer extends JFrame{
 		if(action == null){
 			this.warningMessage = "Unknown action: " + actionName + "; nothing changed";
 			System.out.println(warningMessage);
-			this.updateState(curState);
+			this.updateState(env.getCurState());
 		}
 		else{
 			GroundedAction ga = new GroundedAction(action, params);
-			if(ga.action.applicableInState(curState, params)){
-				State nextState = ga.executeIn(curState);
+			if(ga.action.applicableInState(env.getCurState(), params)){
+
+				EnvironmentOutcome eo = ga.executeIn(env);
 				if(this.currentEpisode != null){
-					this.currentEpisode.recordTransitionTo(ga, nextState, this.trackingRewardFunction.reward(curState, ga, nextState));
+					this.currentEpisode.recordTransitionTo(ga, eo.sp, eo.r);
 				}
 
-				if(this.trackingRewardFunction != null){
-					this.lastAction = ga;
-					this.lastReward = this.trackingRewardFunction.reward(curState, ga, nextState);
-				}
+				this.lastReward = eo.r;
+
 
 				numSteps++;
-				this.updateState(nextState);
+				this.updateState(this.env.getCurState());
 			}
 			else{
 				this.warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
 				System.out.println(warningMessage);
-				this.updateState(curState);
+				this.updateState(this.env.getCurState());
 			}
 
 		}
@@ -769,6 +759,5 @@ public class VisualExplorer extends JFrame{
 		}
 	}
 
-	
-	
+
 }

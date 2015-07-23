@@ -455,11 +455,11 @@ public class BlocksWorld implements DomainGenerator {
 		
 		if(expMode == 0){
 			
-			TerminalExplorer exp = new TerminalExplorer(domain);
+			TerminalExplorer exp = new TerminalExplorer(domain, s);
 			exp.addActionShortHand("s", ACTIONSTACK);
 			exp.addActionShortHand("u", ACTIONUNSTACK);
 			
-			exp.exploreFromState(s);
+			exp.explore();
 			
 		}
 		else if(expMode == 1){

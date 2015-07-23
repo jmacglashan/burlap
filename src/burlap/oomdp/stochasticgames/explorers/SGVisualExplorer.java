@@ -14,7 +14,6 @@ import javax.swing.*;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
-import burlap.oomdp.singleagent.explorer.StateResetSpecialAction;
 import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -130,8 +129,8 @@ public class SGVisualExplorer extends JFrame {
 		this.painter = painter;
 		this.keyActionMap = new HashMap <String, String>();
 		this.keySpecialMap = new HashMap <String, SpecialExplorerAction>();
-		
-		StateResetSpecialAction reset = new StateResetSpecialAction(this.baseState);
+
+		HardStateResetSpecialAction reset = new HardStateResetSpecialAction(this.baseState);
 		this.addSpecialAction("`", reset);
 		
 		this.cWidth = w;
@@ -176,8 +175,8 @@ public class SGVisualExplorer extends JFrame {
 	 * Returns the reset action being used when the reset key ` is pressed
 	 * @return the reset action being used when the reset key ` is pressed
 	 */
-	public StateResetSpecialAction getResetSpecialAction(){
-		return (StateResetSpecialAction)keySpecialMap.get("`");
+	public HardStateResetSpecialAction getResetSpecialAction(){
+		return (HardStateResetSpecialAction)keySpecialMap.get("`");
 	}
 	
 	/**
@@ -512,7 +511,7 @@ public class SGVisualExplorer extends JFrame {
 			if(sea != null){
 				this.lastRewards = null;
 				curState = sea.applySpecialAction(curState);
-				if(sea instanceof StateResetSpecialAction){
+				if(sea instanceof HardStateResetSpecialAction){
 					System.out.println("Number of steps before reset: " + numSteps);
 					numSteps = 0;
 				}

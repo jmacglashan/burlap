@@ -1265,7 +1265,7 @@ public class LunarLanderDomain implements DomainGenerator {
 
 		if(expMode == 0){
 
-			TerminalExplorer te = new TerminalExplorer(domain);
+			TerminalExplorer te = new TerminalExplorer(domain, clean);
 
 			te.addActionShortHand("a", ACTIONTURNL);
 			te.addActionShortHand("d", ACTIONTURNR);
@@ -1273,7 +1273,7 @@ public class LunarLanderDomain implements DomainGenerator {
 			te.addActionShortHand("s", ACTIONTHRUST+1);
 			te.addActionShortHand("x", ACTIONIDLE);
 
-			te.exploreFromState(clean);
+			te.explore();
 
 		}
 		else if(expMode == 1){

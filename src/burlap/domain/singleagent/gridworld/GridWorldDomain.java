@@ -933,13 +933,13 @@ public class GridWorldDomain implements DomainGenerator {
 		
 		if(expMode == 0){
 			
-			TerminalExplorer exp = new TerminalExplorer(d);
+			TerminalExplorer exp = new TerminalExplorer(d, s);
 			exp.addActionShortHand("n", ACTIONNORTH);
 			exp.addActionShortHand("e", ACTIONEAST);
 			exp.addActionShortHand("w", ACTIONWEST);
 			exp.addActionShortHand("s", ACTIONSOUTH);
 			
-			exp.exploreFromState(s);
+			exp.explore();
 			
 		}
 		else if(expMode == 1){

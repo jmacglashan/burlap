@@ -3,52 +3,31 @@ package burlap.oomdp.singleagent.explorer;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.State;
+import burlap.oomdp.singleagent.environment.Environment;
 
 
 /**
- * A special non-domain action that causes a visual explorer to rest the state to a specified base state or to a state drawn from a state generator.
+ * A special non-domain action that causes a {@link burlap.oomdp.singleagent.explorer.VisualExplorer}'s environment to be reset with the {@link burlap.oomdp.singleagent.environment.Environment#resetEnvironment()}
  * @author James MacGlashan
  *
  */
 public class StateResetSpecialAction implements SpecialExplorerAction {
 
-	StateGenerator stateGenerator;
+	Environment env;
 	
 	/**
-	 * Initializes which base state to reset to
-	 * @param s the state to reset to when this action is executed
+	 * Initializes.
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} which will be reset by the {@link #applySpecialAction(burlap.oomdp.core.State)} method.
 	 */
-	public StateResetSpecialAction(State s){
-		this.stateGenerator = new ConstantStateGenerator(s);
+	public StateResetSpecialAction(Environment env){
+		this.env = env;
 	}
-	
-	/**
-	 * Initializes with a state generator to draw from on reset
-	 * @param stateGenerator the state generate to draw from.
-	 */
-	public StateResetSpecialAction(StateGenerator stateGenerator){
-		this.stateGenerator = stateGenerator;
-	}
-	
-	/**
-	 * Sets the base state to reset to
-	 * @param s the state to reset to when this action is executed
-	 */
-	public void setBase(State s){
-		this.stateGenerator = new ConstantStateGenerator(s);
-	}
-	
-	/**
-	 * Sets the state generator to draw from on reset
-	 * @param stateGenerator the state generator to draw from on reset
-	 */
-	public void setBaseStateGenerator(StateGenerator stateGenerator){
-		this.stateGenerator = stateGenerator;
-	}
+
 	
 	@Override
 	public State applySpecialAction(State curState) {
-		return this.stateGenerator.generateState();
+		this.env.resetEnvironment();
+		return this.env.getCurState();
 	}
 
 }

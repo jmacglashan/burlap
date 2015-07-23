@@ -43,6 +43,15 @@ public class SimulatedEnvironment implements Environment, StateSettableEnvironme
 	 */
 	protected double lastReward = 0.;
 
+	/**
+	 * A flag indicating whether the environment will respond to actions from a terminal state. If false,
+	 * then once a the environment transitions to a terminal state, any action attempted by the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)}
+	 * method will result in no change in state and to enable action again, the Environment state will have to be
+	 * manually changed with the {@link #resetEnvironment()} method or the {@link #setCurStateTo(burlap.oomdp.core.State)} method.
+	 * If this value is true, then actions will be carried out according to the domain's transition dynamics.
+	 */
+	protected boolean allowActionFromTerminalStates = false;
+
 	public SimulatedEnvironment(Domain domain, RewardFunction rf, TerminalFunction tf){
 		this.domain = domain;
 		this.rf = rf;
@@ -97,6 +106,18 @@ public class SimulatedEnvironment implements Environment, StateSettableEnvironme
 		this.stateGenerator = stateGenerator;
 	}
 
+	/**
+	 * Sets whether the environment will respond to actions from a terminal state. If false,
+	 * then once a the environment transitions to a terminal state, any action attempted by the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)}
+	 * method will result in no change in state and to enable action again, the Environment state will have to be
+	 * manually changed with the {@link #resetEnvironment()} method or the {@link #setCurStateTo(burlap.oomdp.core.State)} method.
+	 * If this value is true, then actions will be carried out according to the domain's transition dynamics.
+	 * @param allowActionFromTerminalStates if false, then actions are not allowed from terminal states; if true, then they are allowed.
+	 */
+	public void setAllowActionFromTerminalStates(boolean allowActionFromTerminalStates){
+		this.allowActionFromTerminalStates = true;
+	}
+
 	@Override
 	public void setCurStateTo(State s) {
 		if(this.stateGenerator == null){
@@ -118,8 +139,15 @@ public class SimulatedEnvironment implements Environment, StateSettableEnvironme
 		if(simGA.action == null){
 			throw new RuntimeException("Cannot execute action " + ga.toString() + " in this SimulatedEnvironment because the action is to known in this Environment's domain");
 		}
-		State nextState = simGA.executeIn(this.curState);
-		this.lastReward = this.rf.reward(this.curState, simGA, nextState);
+		State nextState;
+		if(this.allowActionFromTerminalStates || !this.curStateIsTerminal()) {
+			nextState = simGA.executeIn(this.curState);
+			this.lastReward = this.rf.reward(this.curState, simGA, nextState);
+		}
+		else{
+			nextState = this.curState;
+			this.lastReward = 0.;
+		}
 
 		EnvironmentOutcome eo = new EnvironmentOutcome(this.curState.copy(), ga, nextState.copy(), this.lastReward, this.tf.isTerminal(nextState));
 
