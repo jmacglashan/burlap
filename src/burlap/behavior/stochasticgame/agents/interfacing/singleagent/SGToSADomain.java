@@ -40,34 +40,27 @@ public class SGToSADomain implements DomainGenerator {
 	 * The single agent domain object that will be returned
 	 */
 	protected SADomain					domainWrapper;
-	
-	/**
-	 * The agent interface which single agent action objects will call
-	 */
-	protected SingleAgentInterface 		saInterface;
+
 	
 	
 	/**
 	 * Initializes.
 	 * @param srcDomain the source stochastic games domain
 	 * @param asAgentType the {@link burlap.oomdp.stochasticgames.AgentType} object specifying the actions that should be created in the single agent domain.
-	 * @param saInterface the interface to single agent learning algorithms that the single agent actions created in this domain generator will call.
 	 */
-	public SGToSADomain(SGDomain srcDomain, AgentType asAgentType, SingleAgentInterface saInterface){
-		this(srcDomain, asAgentType.actions, saInterface);	
+	public SGToSADomain(SGDomain srcDomain, AgentType asAgentType){
+		this(srcDomain, asAgentType.actions);
 	}
 	
 	
 	/**
 	 * Initializes.
 	 * @param srcDomain the source stochastic games domain
-	 * @param useableActions the stochastic game actions for whichsingle agent actions should be created created in the single agent domain.
-	 * @param saInterface the interface to single agent learning algorithms that the single agent actions created in this domain generator will call.
+	 * @param useableActions the stochastic game actions for which single agent actions should be created created in the single agent domain.
 	 */
-	public SGToSADomain(SGDomain srcDomain, List<SingleAction> useableActions, SingleAgentInterface saInterface){
+	public SGToSADomain(SGDomain srcDomain, List<SingleAction> useableActions){
 		
 		this.domainWrapper = new SADomain();
-		this.saInterface = saInterface;
 		
 		for(Attribute a : srcDomain.getAttributes()){
 			this.domainWrapper.addAttribute(a);

@@ -102,6 +102,7 @@ public class LearningAgentToSGAgentInterface extends Agent implements Environmen
 					learningAgent.runLearningEpisode(LearningAgentToSGAgentInterface.this);
 				}
 			});
+			this.saThread.start();
 		}
 
 		GroundedSingleAction toRet = null;
