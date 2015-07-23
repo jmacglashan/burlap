@@ -1,5 +1,6 @@
 package burlap.oomdp.singleagent.environment;
 
+import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -84,7 +85,6 @@ public class EnvironmentServer implements Environment {
 	public List<EnvironmentObserver> getObservers(){
 		return this.observers;
 	}
-
 
 
 	@Override
