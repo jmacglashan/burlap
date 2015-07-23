@@ -11,20 +11,82 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
- * Abstract class for defining what happens when an action is executed in a state. The method {@link #getTransitions(burlap.oomdp.core.State, String[])}
- * is what defines the transition dynamics of the MDP for this action. If this method is not overridden by subclasses, then an
- * UnsupportedOperation exception is thrown . If the domain being created is only
- * going to be used planning/learning algorithms that require a generative model, rather than the fully enumerated transition
- * dynamics, then the {@link #getTransitions(burlap.oomdp.core.State, String[])} does not need to be implemented, but for full robustness it should be.
- * If your domain is deterministic, you can trivially implement it by having it return a call to the {@link #deterministicTransition(burlap.oomdp.core.State, String[])}
- * method, which will wrap the result of a {@link #performAction(burlap.oomdp.core.State, String[])}} method with a 1.0 outcome probability
- * {@link burlap.oomdp.core.TransitionProbability} object and insert it in a list containing just that element.
- * <p/>
- * Action objects may also be defined to require object parameters (which must adhere to a type). Parameters can also have parameter order groups specified if
- * there is effect symmetry when changing the order of the parameters. That is, if you swapped the parameter assignments for parameters in the same order group, the action would have
- * the same effect. However, if you swapped the parameter assignments of two parameters in different order groups, the action would have a different effect. 
- * For more information on parameter order groups, see its discussion
- * in the {@link burlap.oomdp.core.PropositionalFunction} class description.
+ * Abstract class for defining MDP action definitions. An {@link Action} definition includes a name for the action,
+ * what kind of parameters it operates on (if any),
+ * the preconditions for the action to be executable, and potentially the transition dynamics. Typically,
+ * the name of th action and the parameter types on which it operates are defined in a constructor, along with
+ * the {@link burlap.oomdp.core.Domain} with which this {@link burlap.oomdp.singleagent.Action} is to be associated;
+ * for example, {@link #Action(String, burlap.oomdp.core.Domain, String[])}. If the {@link Action} you are defining
+ * is not parametrized, then the params argument of the constructor can be set to an empty array. More information
+ * on parameters can be found below.
+ * {@link burlap.oomdp.core.ObjectClass}
+ * <br/><br/>
+ * <b>Important Methods</b><br/>
+ * The most important methods to take note of are
+ * {@link #performActionHelper(burlap.oomdp.core.State, String[])},
+ * {@link #getTransitions(burlap.oomdp.core.State, String[])},
+ * {@link #applicableInState(burlap.oomdp.core.State, String[])}, and
+ * {@link #performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])}. <br/>
+ * Of these methods, only {@link #performActionHelper(burlap.oomdp.core.State, String[])} is required to be overridden and implemented.
+ * This method should have the affect of sampling an transition from applying this {@link Action} in the input {@link State}
+ * and returning the sampled outcome. This method is always called indirectly by the {@link #performAction(burlap.oomdp.core.State, String[])}
+ * method, which first makes a copy of the input state before passing it {@link #performActionHelper(burlap.oomdp.core.State, String[])}.
+ * Therefore, you can directly modify the input state and return it if that is easiest. This method will be used by planning
+ * algorithms that use sampled transitions instead of enumerating the full transition dynamics or by deterministic planning
+ * algorithms where there is not expected to ever be more than on possible outcome of an action. In general this method should always
+ * be implemented. However, in some rare cases, such as robotics, it will not even be possible to define a model that can sample transitions
+ * from arbitrary input states.
+ * In such cases, it is okay to have this method throw a runtime exception instead of implementing it, but that means you
+ * will only ever be able to use this action indirectly by asking an {@link burlap.oomdp.singleagent.environment.Environment}
+ * to apply it, which should know how to execute it (for example, by telling a robot to execute the action in the real world).
+ * <br/>
+ * The {@link #getTransitions(burlap.oomdp.core.State, String[])} method provides the full transition dynamics of
+ * an {@link burlap.oomdp.singleagent.Action}. Although this method does not have to overridden, if it is not
+ * it will throw a runtime exception. This method is not required to be overridden because in many domains, the transition
+ * dynamics are infinite or too large to enumerate, in which case only sampling (via the {@link #performAction(burlap.oomdp.core.State, String[])}
+ * method) can be used. However, many planning algorithms, such as Dynamic programming methods, require the full transition dynamics,
+ * so if you wish to use such an algorithm and it is possible to fully enumerate the transition dynamics, you should override and
+ * implement this method. This method should return a list of all transitions from the input {@link burlap.oomdp.core.State}
+ * that have non-zero probability of occurring. These transitions are specified with a {@link burlap.oomdp.core.TransitionProbability}
+ * object that is a pair consisting of the next {@link burlap.oomdp.core.State} and a double specifying the probability
+ * of transitioning to that state.
+ * <br/>
+ * Overriding the {@link #applicableInState(burlap.oomdp.core.State, String[])} method is how preconditions can be specified.
+ * If you do not override this method, then the default behavior is that no actions have any preconditions and can be applied
+ * in any state. This method takes as input a {@link burlap.oomdp.core.State} and the parameters for this action (if any),
+ * and returns true if the action can be applied in that state and false otherwise.
+ * <br/>
+ * The {@link #performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])} method does not
+ * need to be overridden for the vast majority of case (the exception is hierarchical actions like {@link burlap.behavior.singleagent.options.Option})
+ * This method allows an action to be executed in an {@link burlap.oomdp.singleagent.environment.Environment} in which the
+ * outcomes may be different than this {@link burlap.oomdp.singleagent.Action}'s model of the world (as defined
+ * by the {@link #performAction(burlap.oomdp.core.State, String[])} and {@link #getTransitions(burlap.oomdp.core.State, String[])} methods).
+ * Typically, {@link burlap.behavior.singleagent.learning.LearningAgent}'s will execute actions in the {@link burlap.oomdp.singleagent.environment.Environment}
+ * from which they're learning using this method.
+ *
+ * <br/<br/>
+ * <b>Parameters</b><br/>
+ * The default assumption for parameters (which can be relaxed, see more below)
+ * is that any parameters of an {@link Action} are references to {@link burlap.oomdp.core.ObjectInstance}s in a {@link burlap.oomdp.core.State}.
+ * The string array in the constructor specifies the valid type of {@link burlap.oomdp.core.ObjectClass}
+ * to which the parameters must belong. For example, in blocks world, we might define a "stack" action that takes two parameters
+ * that each must be instances of the BLOCK class. In such a case, the String array passed to the constructor would be new String[]{"BLOCK", "BLOCK"}.
+ * It may also be the case that the order of parameters is unimportant. For example, a cooking domain might have a "combine"
+ * action that combines two INGREDIENT objects. In such a case, the effect of combine(ing1, ing2) would be the same as combine(ing2, ing1).
+ * Our action definition can include this parameter symmetry information by assigning parameters to the same <i>parameter order group</i>. By default
+ * the parameter order group of parameters are all assume to be different, which means the order of the parameters is important. However,
+ * by using the {@link #Action(String, burlap.oomdp.core.Domain, String[], String[])} method, each parameter can also be set
+ * to a parameter order group. For example, the parameterClasses of the combine action would be new String[]{INGREDIENT, INGREDIENT}, and
+ * the parameterOrderGroups would be new String[]{g1, g1}, thereby placing them in the same group to indicate that their order
+ * is unimportant.
+ * <br/>
+ * Parameters of an action do not have to be object references either. If you would like to specify your own kind
+ * of parameters, you can override the {@link #getAllApplicableGroundedActions(burlap.oomdp.core.State)} method,
+ * which should return the list of actions and their parameters (stored in a {@link burlap.oomdp.singleagent.GroundedAction}
+ * instance) that can be applied in the input state. Additionally, you should then override the method {@link #parametersAreObjects()}
+ * and have it return false.
+ *
+ *
  * @author James MacGlashan
  *
  */
@@ -342,7 +404,7 @@ public abstract class Action {
 	 * The default behavior of this method is to treat the parameters as possible object bindings, finding all bindings
 	 * that satisfy the object class typing specified and then checking them against the {@link #applicableInState(State, String[])}
 	 * method. However, this class can also be overridden to provide custom
-	 * grounding behavior or non-object based parameterizations.
+	 * grounding behavior or non-object based parametrization.
 	 * @param s the {@link State} in which all applicable grounded actions of this {@link Action} object should be returned.
 	 * @return a list of all applicable {@link GroundedAction}s of this {@link Action} object in in the given {@link State}
 	 */
