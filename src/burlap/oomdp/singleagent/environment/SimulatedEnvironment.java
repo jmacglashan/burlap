@@ -9,6 +9,20 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
+ * An {@link burlap.oomdp.singleagent.environment.Environment} that simulates interactions using the {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.State, String[])}
+ * method of the the {@link burlap.oomdp.core.Domain} provided to this Environment. The rewards and terminal states are similarly tracked using a
+ * provided {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}. Initial states of the environment
+ * are defined using a {@link burlap.oomdp.auxiliary.StateGenerator}. If no {@link burlap.oomdp.auxiliary.StateGenerator} is specified,
+ * but an initial {@link burlap.oomdp.core.State} is provided in a constructor, then the {@link burlap.oomdp.auxiliary.StateGenerator} is
+ * set to a {@link burlap.oomdp.auxiliary.common.ConstantStateGenerator} so that upon {@link #resetEnvironment()} method calls,
+ * the initial state is the same as the original input state.
+ * <br/>
+ * By default, this {@link burlap.oomdp.singleagent.environment.Environment} will not allow states to change when the current
+ * environment state is a terminal state (as specified by the input {@link burlap.oomdp.core.TerminalFunction}); instead, the
+ * same current state will be returned with a reward of zero if someone attempts to interact with the environment through {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)}.
+ * In this case, the environment state will have to be manually changed with {@link #resetEnvironment()} or {@link #setCurStateTo(burlap.oomdp.core.State)}
+ * to a non-terminal state before actions will affect the state again. Alternatively, you can allow actions to affect the state from
+ * terminal states with the {@link #setAllowActionFromTerminalStates(boolean)} method.
  * @author James MacGlashan.
  */
 public class SimulatedEnvironment implements Environment, StateSettableEnvironment{
