@@ -20,8 +20,14 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * This domain generator is used to produce single agent domain version of a stochastic games domain for an agent of a given type
  * (specified by an {@link burlap.oomdp.stochasticgames.AgentType} object or for a given list of stochastic games single actions ({@link burlap.oomdp.stochasticgames.SingleAction}).
  * Each of the stochastic game single actions is converted into a single agent {@link burlap.oomdp.singleagent.Action} object with the same 
- * action name and parameterizatiosn. Execution of the resulting {@link burlap.oomdp.singleagent.Action} object tells a {@link SingleAgentInterface} object
- * which action was selected so that it may be passed to a corresponding stochastic games world. 
+ * action name and parametrization. The created {@link burlap.oomdp.singleagent.SADomain}'s {@link burlap.oomdp.singleagent.Action} objects maintain the action specification of
+ * the input {@link burlap.oomdp.stochasticgames.SGDomain}'s {@link burlap.oomdp.stochasticgames.SingleAction} (that is, their name and parameter types), but
+ * the {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.State, String[])} and {@link burlap.oomdp.singleagent.Action#getTransitions(burlap.oomdp.core.State, String[])}
+ * methods are undefined since the transition dynamics would depend on the action selection of other agents, which is unknown. Instead, actions can only
+ * be executed through the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])} method only
+ * in which the specified {@link burlap.oomdp.singleagent.environment.Environment} handles the decisions of the other agents. For example, this domain
+ * can typically be paired with the {@link burlap.behavior.stochasticgame.agents.interfacing.singleagent.LearningAgentToSGAgentInterface}, which will handle these calls
+ * indirectly by simultaneously acting as a stochastic game {@link burlap.oomdp.stochasticgames.Agent}.
  * <p/>
  * Note: subsequent calls to the {@link #generateDomain()} method
  * will not produce new single agent domain objects and will always return the same reference.
@@ -31,7 +37,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
 public class SGToSADomain implements DomainGenerator {
 
 	/**
-	 * The singel agent domain object that will be returned
+	 * The single agent domain object that will be returned
 	 */
 	protected SADomain					domainWrapper;
 	
@@ -89,7 +95,7 @@ public class SGToSADomain implements DomainGenerator {
 	
 	/**
 	 * A single agent action wrapper for a stochastic game action. Calling this action will cause it to call the corresponding single interface to inform it
-	 * of the action selection. The consructed action will have the same name and object parameterization specification as the source stochastic game
+	 * of the action selection. The constructed action will have the same name and object parametrization specification as the source stochastic game
 	 * {@link burlap.oomdp.stochasticgames.SingleAction} object.
 	 * @author James MacGlashan
 	 *
@@ -106,7 +112,7 @@ public class SGToSADomain implements DomainGenerator {
 		
 		@Override
 		protected State performActionHelper(State s, String[] params) {
-			return SGToSADomain.this.saInterface.receiveSAAction(new GroundedAction(this, params));
+			throw new RuntimeException("The SGToSADomain Action instances cannot execute the performAction method, because the transition dynamics depend on the other agent decisions which are unknown. Instead, use the performInEnvironment method or use these action indirectly with a LearningAgentToSGAgentInterface instance.");
 		}
 		
 	}
