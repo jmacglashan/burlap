@@ -7,7 +7,7 @@ import burlap.oomdp.core.State;
  * the environment to have its set set to a client specified state.
  * @author James MacGlashan.
  */
-public interface StateSettableEnvironment {
+public interface StateSettableEnvironment extends Environment{
 
 	/**
 	 * Sets the current state of the environment to the specified state.
