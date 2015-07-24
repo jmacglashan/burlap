@@ -14,7 +14,7 @@ import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.core.AbstractGroundedAction;

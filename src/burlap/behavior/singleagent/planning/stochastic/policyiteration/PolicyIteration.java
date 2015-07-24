@@ -9,7 +9,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.policy.SolverDerivedPolicy;
-import burlap.behavior.valuefunction.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.policy.GreedyDeterministicQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;

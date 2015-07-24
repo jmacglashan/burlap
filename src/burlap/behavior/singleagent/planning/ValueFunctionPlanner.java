@@ -1,4 +1,4 @@
-package burlap.behavior.valuefunction;
+package burlap.behavior.singleagent.planning;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,13 +8,14 @@ import java.util.Set;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
-import burlap.behavior.singleagent.planning.ActionTransitions;
-import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunction;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -66,7 +67,7 @@ public abstract class ValueFunctionPlanner extends MDPSolver implements Planner,
 	/**
 	 * The value function initialization to use; defaulted to an initialization of 0 everywhere.
 	 */
-	protected ValueFunctionInitialization							valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization();
+	protected ValueFunctionInitialization valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization();
 	
 	
 	
