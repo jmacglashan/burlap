@@ -82,7 +82,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * able to be executed using the action's defined transition dynamics. For single agent domains in which the actions
  * are {@link burlap.oomdp.singleagent.GroundedAction} instances, this will work as long as the corresponding
  * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, String[])} method is implemented. If this
- * policy defines the policy for an agent in a stochastic game, returning {@link burlap.oomdp.stochasticgames.GroundedSingleAction} instances
+ * policy defines the policy for an agent in a stochastic game, returning {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction} instances
  * for the action, then the policy cannot be rolled out since the outcome state would depend on the action selection of
  * other agents.
  * <br/><br/>

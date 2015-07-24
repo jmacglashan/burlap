@@ -30,7 +30,7 @@ public abstract class JointActionModel {
 	public State performJointAction(State s, JointAction ja){
 		
 		//first make sure that every action satisfies the necessary preconditions
-		for(GroundedSingleAction gsa : ja){
+		for(GroundedSGAgentAction gsa : ja){
 			if(!gsa.action.isApplicableInState(s, gsa.actingAgent, gsa.params)){
 				throw new RuntimeException("The action " + gsa.toString() + " is not applicable in this state.");
 			}

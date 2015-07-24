@@ -15,11 +15,11 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.stochasticgames.AgentType;
+import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.common.UniversalSingleAction;
+import burlap.oomdp.stochasticgames.common.UniversalSGAgentAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -27,7 +27,7 @@ import burlap.oomdp.visualizer.Visualizer;
  * The GridGame domain is much like the GridWorld domain, except for arbitrarily many agents in
  * a stochastic game. Each agent in the world has an OO-MDP object instance of OO-MDP class "agent"
  * which is defined by an x position, a y position, and a player number. Agents can either move north, south, east,
- * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.oomdp.stochasticgames.AgentType}
+ * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.oomdp.stochasticgames.SGAgentType}
  * to use with this game, use the {@link #getStandardGridGameAgentType(burlap.oomdp.core.Domain)} static method.
  * <br/><br/>
  * In this domain, there is also an OO-MDP object class for 1-dimensional walls (both for horizontal
@@ -383,11 +383,11 @@ public class GridGame implements DomainGenerator {
 		vertWall.addAttribute(wtatt);
 		
 		
-		new UniversalSingleAction(domain, ACTIONNORTH);
-		new UniversalSingleAction(domain, ACTIONSOUTH);
-		new UniversalSingleAction(domain, ACTIONEAST);
-		new UniversalSingleAction(domain, ACTIONWEST);
-		new UniversalSingleAction(domain, ACTIONNOOP);
+		new UniversalSGAgentAction(domain, ACTIONNORTH);
+		new UniversalSGAgentAction(domain, ACTIONSOUTH);
+		new UniversalSGAgentAction(domain, ACTIONEAST);
+		new UniversalSGAgentAction(domain, ACTIONWEST);
+		new UniversalSGAgentAction(domain, ACTIONNOOP);
 		
 		
 		new AgentInUGoal(PFINUGOAL, domain);
@@ -642,15 +642,15 @@ public class GridGame implements DomainGenerator {
 
 
 	/**
-	 * Creates and returns a standard {@link burlap.oomdp.stochasticgames.AgentType} for grid games. This {@link burlap.oomdp.stochasticgames.AgentType}
+	 * Creates and returns a standard {@link burlap.oomdp.stochasticgames.SGAgentType} for grid games. This {@link burlap.oomdp.stochasticgames.SGAgentType}
 	 * is assigned the type name "agent", grid game OO-MDP object class for "agent", and has its action space set to all possible actions in the grid game domain.
 	 * Typically, all agents in a grid game should be assigned to the same type.
 	 *
 	 * @param domain the domain object of the grid game.
-	 * @return An {@link burlap.oomdp.stochasticgames.AgentType} that typically all {@link burlap.oomdp.stochasticgames.Agent}'s of the grid game should play as.
+	 * @return An {@link burlap.oomdp.stochasticgames.SGAgentType} that typically all {@link burlap.oomdp.stochasticgames.SGAgent}'s of the grid game should play as.
 	 */
-	public static AgentType getStandardGridGameAgentType(Domain domain){
-		return new AgentType(GridGame.CLASSAGENT, domain.getObjectClass(GridGame.CLASSAGENT), domain.getSingleActions());
+	public static SGAgentType getStandardGridGameAgentType(Domain domain){
+		return new SGAgentType(GridGame.CLASSAGENT, domain.getObjectClass(GridGame.CLASSAGENT), domain.getAgentActions());
 	}
 	
 	

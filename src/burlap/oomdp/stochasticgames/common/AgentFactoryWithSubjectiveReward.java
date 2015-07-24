@@ -1,6 +1,6 @@
 package burlap.oomdp.stochasticgames.common;
 
-import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;
 import burlap.oomdp.stochasticgames.JointReward;
 
@@ -30,8 +30,8 @@ public class AgentFactoryWithSubjectiveReward implements AgentFactory {
 	}
 
 	@Override
-	public Agent generateAgent() {
-		Agent a = baseFactory.generateAgent();
+	public SGAgent generateAgent() {
+		SGAgent a = baseFactory.generateAgent();
 		a.setInternalRewardFunction(internalReward);
 		return a;
 	}

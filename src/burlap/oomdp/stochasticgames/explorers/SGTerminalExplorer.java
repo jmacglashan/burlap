@@ -128,8 +128,8 @@ public class SGTerminalExplorer {
 	 */
 	public void setActionShortHand(Map <String, String> ash){
 		this.actionShortHand = ash;
-		List <SingleAction> actionList = domain.getSingleActions();
-		for(SingleAction a : actionList){
+		List <SGAgentAction> actionList = domain.getAgentActions();
+		for(SGAgentAction a : actionList){
 			this.addActionShortHand(a.actionName, a.actionName);
 		}
 	}
@@ -280,12 +280,12 @@ public class SGTerminalExplorer {
 						params = new String[0];
 					}
 					
-					SingleAction sa = this.domain.getSingleAction(actionName);
+					SGAgentAction sa = this.domain.getSingleAction(actionName);
 					if(sa == null){
 						System.out.println("Unknown action: " + actionName);
 					}
 					else{
-						GroundedSingleAction gsa = new GroundedSingleAction(agentName, sa, params);
+						GroundedSGAgentAction gsa = new GroundedSGAgentAction(agentName, sa, params);
 						if(sa.isApplicableInState(s, agentName, params)){
 							System.out.println("Setting action: " + agentName + "::" + actionName);
 							curJointAction.addAction(gsa);

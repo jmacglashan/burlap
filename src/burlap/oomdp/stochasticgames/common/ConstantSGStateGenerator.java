@@ -5,7 +5,7 @@ import java.util.List;
 import burlap.datastructures.HashedAggregator;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGStateGenerator;
 
 
@@ -35,12 +35,12 @@ public class ConstantSGStateGenerator extends SGStateGenerator {
 	}
 	
 	@Override
-	public State generateState(List<Agent> agents) {
+	public State generateState(List<SGAgent> agents) {
 		
 		State s = this.srcState.copy();
 		HashedAggregator<String> counts = new HashedAggregator<String>();
 		
-		for(Agent a : agents){
+		for(SGAgent a : agents){
 			String agentClassName = a.getAgentType().oclass.name;
 			int index = (int) counts.v(agentClassName);
 			List<ObjectInstance> possibleAgentObjects = s.getObjectsOfClass(agentClassName);

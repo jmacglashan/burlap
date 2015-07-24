@@ -14,7 +14,7 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 
@@ -62,13 +62,13 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 		List <TransitionProbability> tps = new ArrayList<TransitionProbability>();
 		
-		List <GroundedSingleAction> gsas = ja.getActionList();
+		List <GroundedSGAgentAction> gsas = ja.getActionList();
 		
 		//need to force no movement when trying to enter space of a noop agent
 		List <Location2> previousLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		
-		for(GroundedSingleAction gsa : gsas){
+		for(GroundedSGAgentAction gsa : gsas){
 			Location2 loc = this.getLocation(s, gsa.actingAgent);
 			previousLocations.add(loc);
 			if(gsa.action.actionName.equals(GridGame.ACTIONNOOP)){
@@ -79,7 +79,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		List <List<Location2Prob>> possibleOutcomes = new ArrayList<List<Location2Prob>>();
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
-			GroundedSingleAction gsa = gsas.get(i);
+			GroundedSGAgentAction gsa = gsas.get(i);
 			possibleOutcomes.add(this.getPossibleLocationsFromWallCollisions(s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
 		}
 		
@@ -98,7 +98,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 				
 				State ns = s.copy();
 				for(int i = 0; i < csp.locs.size(); i++){
-					GroundedSingleAction gsa = gsas.get(i);
+					GroundedSGAgentAction gsa = gsas.get(i);
 					Location2 loc = csp.locs.get(i);
 					
 					ObjectInstance agent = ns.getObject(gsa.actingAgent);
@@ -123,13 +123,13 @@ public class GridGameStandardMechanics extends JointActionModel {
 	protected State actionHelper(State s, JointAction ja) {
 		
 		
-		List <GroundedSingleAction> gsas = ja.getActionList();
+		List <GroundedSGAgentAction> gsas = ja.getActionList();
 		
 		//need to force no movement when trying to enter space of a noop agent
 		List <Location2> previousLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		
-		for(GroundedSingleAction gsa : gsas){
+		for(GroundedSGAgentAction gsa : gsas){
 			Location2 loc = this.getLocation(s, gsa.actingAgent);
 			previousLocations.add(loc);
 			if(gsa.action.actionName.equals(GridGame.ACTIONNOOP)){
@@ -140,7 +140,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		List <Location2> basicMoveResults = new ArrayList<GridGameStandardMechanics.Location2>();
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
-			GroundedSingleAction gsa = gsas.get(i);
+			GroundedSGAgentAction gsa = gsas.get(i);
 			basicMoveResults.add(this.sampleBasicMovement(s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
 		}
 		
@@ -149,7 +149,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		
 		List <Location2> finalPositions = this.resolveCollisions(previousLocations, basicMoveResults);
 		for(int i = 0; i < finalPositions.size(); i++){
-			GroundedSingleAction gsa = gsas.get(i);
+			GroundedSGAgentAction gsa = gsas.get(i);
 			Location2 loc = finalPositions.get(i);
 			
 			ObjectInstance agent = s.getObject(gsa.actingAgent);

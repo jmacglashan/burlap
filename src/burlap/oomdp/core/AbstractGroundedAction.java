@@ -8,14 +8,12 @@ import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SingleAction;
 
 /**
  * This is an abstract superclass for grounded actions. A grounded action is a refernce to an action along with the specific parameters with which the action
  * is to be applied. Subclasses for this class include the single agent action grounding ({@link GroundedAction}), an action grounding for a specific agent
- * in a stochastic game {@link GroundedSingleAction}, and a joint action in a stochastic game ({@link JointAction}).
+ * in a stochastic game {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction}, and a joint action in a stochastic game ({@link JointAction}).
  * @author James MacGlashan
  *
  */
@@ -77,7 +75,7 @@ public abstract class AbstractGroundedAction {
 	/**
 	 * Returns true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
 	 * This method will query the refenced action object to evaluate. (e.g., {@link GroundedAction} will query
-	 * its referenced {@link Action} object; {@link GroundedSingleAction} will query its referenced {@link SingleAction}.
+	 * its referenced {@link Action} object; {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction} will query its referenced {@link burlap.oomdp.stochasticgames.SGAgentAction}.
 	 * @return true if all parameters (if any) for this action represent OO-MDP objects in a state; false otherwise.
 	 */
 	public abstract boolean parametersAreObjects();

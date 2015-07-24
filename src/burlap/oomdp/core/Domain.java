@@ -5,7 +5,7 @@ import java.util.*;
 
 import burlap.debugtools.DPrint;
 import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.stochasticgames.SingleAction;
+import burlap.oomdp.stochasticgames.SGAgentAction;
 
 
 /**
@@ -151,13 +151,13 @@ public abstract class Domain {
 	public abstract void addAction(Action act);
 	
 	/**
-	 * Add a stochastic game action that defines this domain that can be executed by an agent in the game.
-	 * The set of single agent actions defines the set of joint actions in the stochastic domain (as the cross product).
+	 * Add a {@link burlap.oomdp.stochasticgames.SGAgentAction} that can be executed by an agent in the game.
+	 * The set of {@link burlap.oomdp.stochasticgames.SGAgentAction}s defines the set of joint actions in the stochastic domain (as the cross product).
 	 * This method will throw a runtime exception if this domain is not an instance of the stochastic
-	 * game domain (SGDomain). The action will not be added if this domain already has a instance with the same name.
-	 * @param sa the stochastic game action that can be executed by an agent in the game.
+	 * game domain ({@link burlap.oomdp.stochasticgames.SGDomain}). The action will not be added if this domain already has a instance with the same name.
+	 * @param sa the {@link burlap.oomdp.stochasticgames.SGAgentAction} that can be executed by an agent in the game.
 	 */
-	public abstract void addSingleAction(SingleAction sa);
+	public abstract void addSGAgentAction(SGAgentAction sa);
 	
 	
 	/**
@@ -243,7 +243,7 @@ public abstract class Domain {
 	 * if it is not an instance of the stochastic game domain (SGDomain).
 	 * @return a list of the stochastic game actions that that can be taken by individual agents in this domain
 	 */
-	public abstract List <SingleAction> getSingleActions();
+	public abstract List <SGAgentAction> getAgentActions();
 	
 	
 	
@@ -261,7 +261,7 @@ public abstract class Domain {
 	 * @param name the name of the action to return
 	 * @return the action with the given name or null if it does not exist.
 	 */
-	public abstract SingleAction getSingleAction(String name);
+	public abstract SGAgentAction getSingleAction(String name);
 	
 	
 	

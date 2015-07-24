@@ -8,7 +8,7 @@ import java.util.Map;
 
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;
 import burlap.oomdp.stochasticgames.World;
 import burlap.oomdp.stochasticgames.WorldGenerator;
@@ -19,7 +19,7 @@ import burlap.oomdp.stochasticgames.WorldGenerator;
  * whose performance is going to be compared in games in which only a subset of the agents can participate at a time, for instance
  * running a tournament of many agents in 2-player games like iterated prisoner's dilemma. The Tournament class requires
  * a list of agents, a world generator and a match selector. The MatchSelector determines which agents will be matched up
- * in a game, which {@link burlap.oomdp.stochasticgames.AgentType} role they will play as and how many matches there will be.
+ * in a game, which {@link burlap.oomdp.stochasticgames.SGAgentType} role they will play as and how many matches there will be.
  * @author James MacGlashan
  *
  */
@@ -191,7 +191,7 @@ public class Tournament {
 			
 			//have the matched agents join the world
 			for(MatchEntry me : match){
-				Agent a = agents.get(me.agentId).generateAgent();
+				SGAgent a = agents.get(me.agentId).generateAgent();
 				a.joinWorld(w, me.agentType);
 				agentNameToId.put(a.getAgentName(), me.agentId);
 				DPrint.c(debugId, me.agentId + " ");

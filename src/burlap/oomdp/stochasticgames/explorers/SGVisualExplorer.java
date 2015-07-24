@@ -358,7 +358,7 @@ public class SGVisualExplorer extends JFrame {
 					}
 					else if(comps[0].equals("setAction")){
 						String [] agentAction = comps[1].split(":");
-						SingleAction sa = domain.getSingleAction(agentAction[1]);
+						SGAgentAction sa = domain.getSingleAction(agentAction[1]);
 						if(sa == null){
 							warningMessage = "Unknown action: " + agentAction[1] + "; nothing changed";
 							SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
@@ -369,7 +369,7 @@ public class SGVisualExplorer extends JFrame {
 							for(int i = 2; i < comps.length; i++) {
 								params[i - 2] = comps[i];
 							}
-							GroundedSingleAction gsa = new GroundedSingleAction(agentAction[0], sa, params);
+							GroundedSGAgentAction gsa = new GroundedSGAgentAction(agentAction[0], sa, params);
 							if(sa.isApplicableInState(curState, agentAction[0], params)){
 								SGVisualExplorer.this.nextAction.addAction(gsa);
 								SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
@@ -498,7 +498,7 @@ public class SGVisualExplorer extends JFrame {
 		String mappedAction = keyActionMap.get(key);
 		if(mappedAction != null){
 
-			GroundedSingleAction toAdd = this.parseIntoSingleActions(mappedAction);
+			GroundedSGAgentAction toAdd = this.parseIntoSingleActions(mappedAction);
 			if(toAdd != null) {
 				nextAction.addAction(toAdd);
 				System.out.println(nextAction.toString());
@@ -552,13 +552,13 @@ public class SGVisualExplorer extends JFrame {
 
 
 	/**
-	 * Parses a string into a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}. Expects format:
+	 * Parses a string into a {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction}. Expects format:
 	 * "agentName:actionName param1 parm2 ... paramn" If there is no SingleAction by that name or
 	 * the action and parameters are not applicable in the current state, null is returned.
 	 * @param str string rep of a grounding action in the form  "agentName:actionName param1 parm2 ... paramn"
-	 * @return a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}
+	 * @return a {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction}
 	 */
-	protected GroundedSingleAction parseIntoSingleActions(String str){
+	protected GroundedSGAgentAction parseIntoSingleActions(String str){
 		
 		String [] agentActionComps = str.split(":");
 		String aname = agentActionComps[0];
@@ -571,12 +571,12 @@ public class SGVisualExplorer extends JFrame {
 			params[i-1] = actionAndParams[i];
 		}
 		
-		SingleAction sa = domain.getSingleAction(singleActionName);
+		SGAgentAction sa = domain.getSingleAction(singleActionName);
 		if(sa == null){
 			warningMessage = "Unknown action: " + singleActionName + "; nothing changed";
 			return null;
 		}
-		GroundedSingleAction gsa = new GroundedSingleAction(aname, sa, params);
+		GroundedSGAgentAction gsa = new GroundedSGAgentAction(aname, sa, params);
 		if(!sa.isApplicableInState(curState, aname, params)){
 			warningMessage = gsa.toString() + " is not applicable in the current state; nothing changed";
 			return null;

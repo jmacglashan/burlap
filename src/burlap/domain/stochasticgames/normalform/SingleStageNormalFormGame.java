@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import burlap.behavior.stochasticgame.solvers.GeneralBimatrixSolverTools;
+import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Attribute;
@@ -18,15 +18,15 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.stochasticgames.Agent;
-import burlap.oomdp.stochasticgames.AgentType;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.stochasticgames.SGAgent;
+import burlap.oomdp.stochasticgames.SGAgentType;
+import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.SGStateGenerator;
-import burlap.oomdp.stochasticgames.SingleAction;
+import burlap.oomdp.stochasticgames.SGAgentAction;
 import burlap.oomdp.stochasticgames.World;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.oomdp.stochasticgames.common.StaticRepeatedGameActionModel;
@@ -39,9 +39,9 @@ import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
  * one attribute, its player number. A state consists simply of an object instance for each player. Different players maybe have different numbers of available
  * actions and the actions available to each player may have different names. The SingleAction's are created such that a player can only execute a single
  * action if that action is available to that player. Therefore, when agents joint a world for one of these games, their 
- * {@link burlap.oomdp.stochasticgames.AgentType} can be specified to have
+ * {@link burlap.oomdp.stochasticgames.SGAgentType} can be specified to have
  * all of the possible actions, because they will only be able to execute the relevant ones. The method {@link #getAgentTypeForAllPlayers(SGDomain)} will return
- * such an {@link burlap.oomdp.stochasticgames.AgentType} class that can be used for all agents.
+ * such an {@link burlap.oomdp.stochasticgames.SGAgentType} class that can be used for all agents.
  * <p/>
  * In addition to this generator being able to return the domain object, it may also be used to return the corresponding joint reward function. The method
  * {@link #getRepatedGameActionModel()} will return a joint action mode that always returns to the same state, which can be used for repeated game playing.
@@ -50,7 +50,7 @@ import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
  * <p/>
  * This class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
- * in the constructed game. For this use either the {@link #createRepeatedGameWorld(Agent...)} or {@link #createRepeatedGameWorld(SGDomain, Agent...)}
+ * in the constructed game. For this use either the {@link #createRepeatedGameWorld(burlap.oomdp.stochasticgames.SGAgent...)} or {@link #createRepeatedGameWorld(SGDomain, burlap.oomdp.stochasticgames.SGAgent...)}
  * method. The former method will create an new domain instance using the {@link #generateDomain()} method; the latter will
  * use an already generated version of the domain that you provide to it.
  * <p/>
@@ -382,7 +382,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 
 		ActionNameMap [] cnames = ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex);
 		for(String aname : this.uniqueActionNames){
-			new NFGSingleAction(domain, aname, cnames);
+			new NFGAgentAction(domain, aname, cnames);
 		}
 
 		domain.setJointActionModel(new StaticRepeatedGameActionModel());
@@ -395,7 +395,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @param agents the agents to join the created world.
 	 * @return a world instance with the provided agents having already joined.
 	 */
-	public World createRepeatedGameWorld(Agent...agents){
+	public World createRepeatedGameWorld(SGAgent...agents){
 		
 		SGDomain domain = (SGDomain)this.generateDomain();
 		return this.createRepeatedGameWorld(domain, agents);
@@ -408,7 +408,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @param agents the agents to join the created world.
 	 * @return a world instance with the provided agents having already joined.
 	 */
-	public World createRepeatedGameWorld(SGDomain domain, Agent...agents){
+	public World createRepeatedGameWorld(SGDomain domain, SGAgent...agents){
 		
 		//grab the joint reward function from our bimatrix game in the more general BURLAP joint reward function interface
 		JointReward jr = this.getJointRewardFunction(); 
@@ -423,13 +423,13 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		//in this case that's just their player number. We can use the same action type for all players, regardless of wether
 		//each agent can play a different number of actions, because the actions have preconditions that prevent a player from taking actions
 		//that don't belong to them.
-		AgentType at = SingleStageNormalFormGame.getAgentTypeForAllPlayers(domain);
+		SGAgentType at = SingleStageNormalFormGame.getAgentTypeForAllPlayers(domain);
 		
 		
 		//create a world to synchronize the actions of agents in this domain and record results
 		World w = new World(domain, jr, tf, sg);
 		
-		for(Agent a : agents){
+		for(SGAgent a : agents){
 			a.joinWorld(w, at);
 		}
 		
@@ -486,14 +486,14 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an {@link burlap.oomdp.stochasticgames.AgentType} object that can be used by agents being associated with any player number.
+	 * Returns an {@link burlap.oomdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
 	 * This AgentType permits agents to use any action in the domain, but the action preconditions will prevent the agent from taking actions
 	 * that its player number cannot take.
 	 * @param domain the domain in which the the agents will be playing.
-	 * @return an {@link burlap.oomdp.stochasticgames.AgentType} object that can be used by agents being associated with any player number.
+	 * @return an {@link burlap.oomdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
 	 */
-	public static AgentType getAgentTypeForAllPlayers(SGDomain domain){
-		AgentType at = new AgentType("player", domain.getObjectClass(CLASSPLAYER), domain.getSingleActions());
+	public static SGAgentType getAgentTypeForAllPlayers(SGDomain domain){
+		SGAgentType at = new SGAgentType("player", domain.getObjectClass(CLASSPLAYER), domain.getAgentActions());
 		return at;
 	}
 	
@@ -659,7 +659,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			Map<String, Double> rewards = new HashMap<String, Double>();
 			
 			String [] profile = new String[this.nPlayers];
-			for(GroundedSingleAction sa : ja){
+			for(GroundedSGAgentAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
 				int pn = player.getIntValForAttribute(ATTPN);
@@ -667,7 +667,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			}
 			
 			StrategyProfile stprofile = SingleStageNormalFormGame.getStrategyProfile(this.actionNameToIndex, profile);
-			for(GroundedSingleAction sa : ja){
+			for(GroundedSGAgentAction sa : ja){
 				String name = sa.actingAgent;
 				ObjectInstance player = s.getObject(name);
 				int pn = player.getIntValForAttribute(ATTPN);
@@ -689,11 +689,11 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class NFGSingleAction extends SingleAction{
+	protected static class NFGAgentAction extends SGAgentAction {
 
 		ActionNameMap [] actionNameToIndex;
 
-		public NFGSingleAction(SGDomain d, String name, ActionNameMap[] actionNameToIndex) {
+		public NFGAgentAction(SGDomain d, String name, ActionNameMap[] actionNameToIndex) {
 			super(d, name);
 			this.actionNameToIndex = actionNameToIndex;
 		}
@@ -910,7 +910,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		SGTerminalExplorer exp = new SGTerminalExplorer(domain);
 		
 		//add short hand as first letter of each action name
-		for(SingleAction sa : domain.getSingleActions()){
+		for(SGAgentAction sa : domain.getAgentActions()){
 			exp.addActionShortHand(sa.actionName.substring(0, 1), sa.actionName);
 		}
 		

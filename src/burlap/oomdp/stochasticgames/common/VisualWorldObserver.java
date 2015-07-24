@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
-import burlap.behavior.stochasticgame.GameAnalysis;
+import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.states.State;
