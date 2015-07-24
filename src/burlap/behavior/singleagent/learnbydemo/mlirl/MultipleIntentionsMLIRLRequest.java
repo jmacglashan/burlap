@@ -4,6 +4,7 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory;
 import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.core.Domain;
 
@@ -41,7 +42,7 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 		this.plannerFactory = plannerFactory;
 		this.k = k;
 		if(this.plannerFactory != null) {
-			this.setPlanner((MDPSolver) plannerFactory.generateDifferentiablePlannerForRequest(this));
+			this.setPlanner((Planner) plannerFactory.generateDifferentiablePlannerForRequest(this));
 		}
 	}
 
@@ -58,7 +59,7 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 		super(domain, null, expertEpisodes, rf);
 		this.plannerFactory = new QGradientPlannerFactory.DifferentiableVIFactory(stateHashFactory);
 		this.k = k;
-		this.setPlanner((MDPSolver) plannerFactory.generateDifferentiablePlannerForRequest(this));
+		this.setPlanner((Planner) plannerFactory.generateDifferentiablePlannerForRequest(this));
 	}
 
 
@@ -110,7 +111,7 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 	public void setPlannerFactory(QGradientPlannerFactory plannerFactory) {
 		this.plannerFactory = plannerFactory;
 		if(this.planner == null){
-			this.setPlanner((MDPSolver) plannerFactory.generateDifferentiablePlannerForRequest(this));
+			this.setPlanner((Planner) plannerFactory.generateDifferentiablePlannerForRequest(this));
 		}
 	}
 }

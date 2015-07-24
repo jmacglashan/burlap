@@ -289,11 +289,6 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		return episodeHistory;
 	}
 
-	@Override
-	public void planFromState(State initialState) {
-		throw new RuntimeException("PotentialShapedRMax is a model-based RL algorithm and model-based RL should not be used as planning algorithms.");
-	}
-
 	
 	@Override
 	public void resetSolver(){

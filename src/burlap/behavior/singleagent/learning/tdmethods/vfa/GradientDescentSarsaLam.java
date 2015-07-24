@@ -12,6 +12,7 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
@@ -59,7 +60,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * 2. 2. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
  *
  */
-public class GradientDescentSarsaLam extends MDPSolver implements QFunction, LearningAgent {
+public class GradientDescentSarsaLam extends MDPSolver implements QFunction, LearningAgent, Planner {
 	
 	
 	/**

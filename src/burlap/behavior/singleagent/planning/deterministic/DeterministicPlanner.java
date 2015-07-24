@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -28,7 +29,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public abstract class DeterministicPlanner extends MDPSolver {
+public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 
 	/**
 	 * This State condition test should return true for goal states and false for non-goal states.

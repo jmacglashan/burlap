@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -20,7 +20,7 @@ import burlap.oomdp.core.State;
  * @author James MacGlashan
  *
  */
-public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
+public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
 
 	protected QFunction qplanner;
 	double								temperature;
@@ -89,12 +89,12 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 
 	@Override
-	public void setPlanner(MDPSolver planner) {
-		if(!(planner instanceof QFunction)){
+	public void setSolver(MDPSolverInterface solver) {
+		if(!(solver instanceof QFunction)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction)planner;
+		this.qplanner = (QFunction) solver;
 		
 	}
 

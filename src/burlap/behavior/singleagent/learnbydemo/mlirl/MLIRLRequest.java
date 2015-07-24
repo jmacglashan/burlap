@@ -1,11 +1,13 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.learnbydemo.IRLRequest;
 import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
@@ -55,7 +57,7 @@ public class MLIRLRequest extends IRLRequest{
 	 * @param expertEpisodes the expert episodes/trajectories to use for training.
 	 * @param rf the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} model to use.
 	 */
-	public MLIRLRequest(Domain domain, MDPSolver planner, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf){
+	public MLIRLRequest(Domain domain, Planner planner, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf){
 		super(domain, planner, expertEpisodes);
 		if(planner != null && !(planner instanceof QGradientPlanner)){
 			throw new RuntimeException("Error: MLIRLRequest requires the planner to be an instance of QGradientPlanner");
@@ -113,7 +115,7 @@ public class MLIRLRequest extends IRLRequest{
 
 
 	@Override
-	public void setPlanner(MDPSolver p) {
+	public void setPlanner(Planner p) {
 		if(planner != null && !(p instanceof QGradientPlanner)){
 			throw new RuntimeException("Error: MLIRLRequest requires the planner to be an instance of QGradientPlanner");
 		}

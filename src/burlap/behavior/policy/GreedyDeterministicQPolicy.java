@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
@@ -16,7 +16,7 @@ import burlap.oomdp.core.State;
  * @author James MacGlashan
  *
  */
-public class GreedyDeterministicQPolicy extends Policy implements PlannerDerivedPolicy{
+public class GreedyDeterministicQPolicy extends Policy implements SolverDerivedPolicy {
 
 	protected QFunction qplanner;
 	
@@ -33,13 +33,13 @@ public class GreedyDeterministicQPolicy extends Policy implements PlannerDerived
 	}
 	
 	@Override
-	public void setPlanner(MDPSolver planner){
+	public void setSolver(MDPSolverInterface solver){
 		
-		if(!(planner instanceof QFunction)){
+		if(!(solver instanceof QFunction)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction)planner;
+		this.qplanner = (QFunction) solver;
 	}
 	
 

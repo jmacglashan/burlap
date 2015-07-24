@@ -6,8 +6,8 @@ import java.util.Random;
 
 import javax.management.RuntimeErrorException;
 
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -22,7 +22,7 @@ import burlap.oomdp.core.State;
  * @author James MacGlashan
  *
  */
-public class EpsilonGreedy extends Policy implements PlannerDerivedPolicy{
+public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 
 	protected QFunction qplanner;
 	protected double					epsilon;
@@ -68,13 +68,13 @@ public class EpsilonGreedy extends Policy implements PlannerDerivedPolicy{
 	}
 
 	@Override
-	public void setPlanner(MDPSolver planner){
+	public void setSolver(MDPSolverInterface solver){
 		
-		if(!(planner instanceof QFunction)){
+		if(!(solver instanceof QFunction)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction)planner;
+		this.qplanner = (QFunction) solver;
 	}
 	
 	@Override

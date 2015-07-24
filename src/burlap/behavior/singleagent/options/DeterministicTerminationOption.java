@@ -6,12 +6,14 @@ import javax.management.RuntimeErrorException;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.policy.PlannerDerivedPolicy;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
+
+
 
 
 /**
@@ -24,7 +26,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * @author James MacGlashan
  *
  */
-public class DeterminisitcTerminationOption extends Option {
+public class DeterministicTerminationOption extends Option {
 
 	/**
 	 * The policy of the options
@@ -50,7 +52,7 @@ public class DeterminisitcTerminationOption extends Option {
 	 * @param init the initiation states of the option
 	 * @param terminationStates the deterministic termination states of the option.
 	 */
-	public DeterminisitcTerminationOption(String name, Policy p, StateConditionTest init, StateConditionTest terminationStates){
+	public DeterministicTerminationOption(String name, Policy p, StateConditionTest init, StateConditionTest terminationStates){
 		this.name = name;
 		this.policy = p;
 		this.initiationTest = init;
@@ -72,7 +74,7 @@ public class DeterminisitcTerminationOption extends Option {
 	 * @param planner the planner to be used to create the policy for this option
 	 * @param p the planner derived policy to use after planning from each initial state is performed.
 	 */
-	public DeterminisitcTerminationOption(String name, StateConditionTestIterable init, StateConditionTest terminaitonStates, MDPSolver planner, PlannerDerivedPolicy p){
+	public DeterministicTerminationOption(String name, StateConditionTestIterable init, StateConditionTest terminaitonStates, Planner planner, SolverDerivedPolicy p){
 		
 		if(!(p instanceof Policy)){
 			throw new RuntimeErrorException(new Error("PlannerDerivedPolicy p is not an instnace of Policy"));
@@ -92,7 +94,7 @@ public class DeterminisitcTerminationOption extends Option {
 			planner.planFromState(si);
 		}
 		
-		p.setPlanner(planner);
+		p.setSolver(planner);
 		this.policy = (Policy)p;
 		
 	}
@@ -108,8 +110,8 @@ public class DeterminisitcTerminationOption extends Option {
 	 * @param planner the planner that is used to create the policy for this option
 	 * @param p the planner derived policy to use after planning from each initial state is performed.
 	 */
-	public DeterminisitcTerminationOption(String name, StateConditionTest init, StateConditionTest terminationStates, List <State> seedStatesForPlanning, 
-			MDPSolver planner, PlannerDerivedPolicy p){
+	public DeterministicTerminationOption(String name, StateConditionTest init, StateConditionTest terminationStates, List<State> seedStatesForPlanning,
+										  Planner planner, SolverDerivedPolicy p){
 		
 		if(!(p instanceof Policy)){
 			throw new RuntimeErrorException(new Error("PlannerDerivedPolicy p is not an instnace of Policy"));
@@ -129,7 +131,7 @@ public class DeterminisitcTerminationOption extends Option {
 			planner.planFromState(si);
 		}
 		
-		p.setPlanner(planner);
+		p.setSolver(planner);
 		this.policy = (Policy)p;
 		
 	}

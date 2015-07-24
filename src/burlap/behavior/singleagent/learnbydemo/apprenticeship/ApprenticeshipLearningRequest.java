@@ -6,13 +6,14 @@ import java.util.List;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnbydemo.IRLRequest;
 import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
 
 
 /**
- * A datastructure for setting all the parameters of Max Margin Apprenticeship learning.
+ * A data structure for setting all the parameters of Max Margin Apprenticeship learning.
  * 
  * 
  * @author Stephen Brawner and Mark Ho
@@ -68,7 +69,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		this.initDefaults();
 	}
 
-	public ApprenticeshipLearningRequest(Domain domain, MDPSolver planner, StateToFeatureVectorGenerator featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
+	public ApprenticeshipLearningRequest(Domain domain, Planner planner, StateToFeatureVectorGenerator featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
 		super(domain, planner, expertEpisodes);
 		this.initDefaults();
 		this.setFeatureGenerator(featureGenerator);
@@ -112,7 +113,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 	}
 
 
-	public void setPlanner(MDPSolver p) {
+	public void setPlanner(Planner p) {
 		this.planner = p;
 	}
 
@@ -140,7 +141,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 
 	public Domain getDomain() {return this.domain;}
 
-	public MDPSolver getPlanner() {return this.planner;}
+	public Planner getPlanner() {return this.planner;}
 
 	public StateToFeatureVectorGenerator getFeatureGenerator() {return this.featureGenerator;}	
 

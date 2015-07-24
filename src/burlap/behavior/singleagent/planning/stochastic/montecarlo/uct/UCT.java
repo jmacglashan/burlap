@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
@@ -47,7 +48,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class UCT extends MDPSolver implements QFunction {
+public class UCT extends MDPSolver implements Planner, QFunction {
 
 	protected List<Map<StateHashTuple, UCTStateNode>> 			stateDepthIndex;
 	protected Map <StateHashTuple, List <UCTStateNode>>			statesToStateNodes;

@@ -12,6 +12,7 @@ import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.auxiliary.common.NullTermination;
@@ -37,7 +38,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public abstract class ValueFunctionPlanner extends MDPSolver implements ValueFunction, QFunction {
+public abstract class ValueFunctionPlanner extends MDPSolver implements Planner, ValueFunction, QFunction {
 
 	
 	

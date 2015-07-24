@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
 
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit;
@@ -36,7 +37,7 @@ import java.util.Map;
  * 2. Babes, M., Marivate, V., Subramanian, K., and Littman, "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
  * @author James MacGlashan.
  */
-public class DifferentiableSparseSampling extends MDPSolver implements QGradientPlanner {
+public class DifferentiableSparseSampling extends MDPSolver implements QGradientPlanner, Planner {
 
 	/**
 	 * The height of the tree

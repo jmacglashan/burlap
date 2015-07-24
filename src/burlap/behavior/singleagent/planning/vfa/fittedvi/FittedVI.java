@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.MDPSolver;
@@ -47,7 +48,7 @@ import java.util.List;
  * 1. Gordon, Geoffrey J. "Stable function approximation in dynamic programming." Proceedings of the twelfth international conference on machine learning. 1995.
  * @author James MacGlashan.
  */
-public class FittedVI extends MDPSolver implements ValueFunction, QFunction {
+public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Planner {
 
 
 	/**

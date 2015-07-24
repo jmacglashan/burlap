@@ -8,7 +8,7 @@ import java.util.Set;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
-import burlap.behavior.policy.PlannerDerivedPolicy;
+import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.valuefunction.ValueFunctionPlanner;
 import burlap.behavior.policy.GreedyDeterministicQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -46,7 +46,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	/**
 	 * The current policy to be evaluated
 	 */
-	protected PlannerDerivedPolicy									evaluativePolicy;
+	protected SolverDerivedPolicy evaluativePolicy;
 	
 	
 	/**
@@ -107,7 +107,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	 * Sets which kind of policy to use whenever the policy is updated. The default is a deterministic greedy policy ({@link burlap.behavior.policy.GreedyDeterministicQPolicy}.
 	 * @param p the policy to use when updating to the new evaluated value function.
 	 */
-	public void setPolicyClassToEvaluate(PlannerDerivedPolicy p){
+	public void setPolicyClassToEvaluate(SolverDerivedPolicy p){
 		this.evaluativePolicy = p;
 	}
 	
@@ -141,7 +141,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 			double delta;
 			do{
 				StaticVFPlanner lastValueFunction = this.getCopyOfValueFunction();
-				this.evaluativePolicy.setPlanner(lastValueFunction);
+				this.evaluativePolicy.setSolver(lastValueFunction);
 				delta = this.evaluatePolicy();
 				iterations++;
 			}while(delta > this.maxPIDelta && iterations < maxPolicyIterations);

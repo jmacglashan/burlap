@@ -6,8 +6,8 @@ import java.util.List;
 import javax.management.RuntimeErrorException;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.policy.PlannerDerivedPolicy;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -23,7 +23,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  */
 
 
-public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
+public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 
 	protected DeterministicPlanner dp;
 	
@@ -39,13 +39,13 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	
 	@Override
-	public void setPlanner(MDPSolver planner) {
+	public void setSolver(MDPSolverInterface solver) {
 		
-		if(!(planner instanceof DeterministicPlanner)){
+		if(!(solver instanceof DeterministicPlanner)){
 			throw new RuntimeErrorException(new Error("Planner is not a Deterministic Planner"));
 		}
 		
-		this.dp = (DeterministicPlanner)planner;
+		this.dp = (DeterministicPlanner) solver;
 		
 	}
 	

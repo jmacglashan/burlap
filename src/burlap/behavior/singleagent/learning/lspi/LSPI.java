@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.singleagent.environment.Environment;
 import org.ejml.simple.SimpleMatrix;
 
@@ -70,7 +71,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class LSPI extends MDPSolver implements QFunction, LearningAgent {
+public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner {
 
 	/**
 	 * The object that performs value function approximation given the weights that are estimated

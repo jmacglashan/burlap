@@ -11,6 +11,7 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
@@ -56,7 +57,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * @author James MacGlashan
  *
  */
-public class QLearning extends MDPSolver implements QFunction, LearningAgent{
+public class QLearning extends MDPSolver implements QFunction, LearningAgent, Planner{
 
 
 	/**

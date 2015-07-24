@@ -10,6 +10,7 @@ import java.util.Random;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
@@ -175,7 +176,7 @@ public class ApprenticeshipLearning {
 					Math.max(maximumExpertEpisodeLength, expertEpisode.numTimeSteps());
 		}
 
-		MDPSolver planner = request.getPlanner();
+		Planner planner = request.getPlanner();
 		TerminalFunction terminalFunction = planner.getTF();
 		StateHashFactory stateHashingFactory = planner.getHashingFactory();
 
@@ -276,7 +277,7 @@ public class ApprenticeshipLearning {
 		}
 
 		//Planning objects
-		MDPSolver planner = request.getPlanner();
+		Planner planner = request.getPlanner();
 		TerminalFunction terminalFunction = planner.getTF();
 		StateHashFactory stateHashingFactory = planner.getHashingFactory();
 

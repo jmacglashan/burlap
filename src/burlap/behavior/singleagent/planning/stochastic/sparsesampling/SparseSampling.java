@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
@@ -70,7 +71,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class SparseSampling extends MDPSolver implements QFunction {
+public class SparseSampling extends MDPSolver implements QFunction, Planner {
 
 	/**
 	 * The height of the tree

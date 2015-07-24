@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.policy.PlannerDerivedPolicy;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
@@ -29,7 +29,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * @author James MacGlashan
  *
  */
-public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
+public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 
 	UCT 									planner;
 	
@@ -45,11 +45,11 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 	
 	@Override
-	public void setPlanner(MDPSolver planner) {
-		if(!(planner instanceof UCT)){
+	public void setSolver(MDPSolverInterface solver) {
+		if(!(solver instanceof UCT)){
 			throw new RuntimeException("Planner must be an instance of UCT");
 		}
-		this.planner = (UCT)planner;
+		this.planner = (UCT) solver;
 		
 	}
 	

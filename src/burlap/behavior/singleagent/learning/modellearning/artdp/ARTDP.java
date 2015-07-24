@@ -12,7 +12,7 @@ import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.policy.PlannerDerivedPolicy;
+import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunctionPlanner;
 import burlap.behavior.policy.BoltzmannQPolicy;
@@ -31,7 +31,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 /**
  * This class provides an implementation of Adaptive Realtime Dynamic Programming [1]. By default, a tabular model will be used and a boltzmann distribution with
  * a temperature of 0.1 will be used. A different model can be provided in the constructor as well as the value function initialization used. The policy
- * followed may be set with a setter ({@link #setPolicy(PlannerDerivedPolicy)}). The Q-value assigned to state-action pairs for entirely untried
+ * followed may be set with a setter ({@link #setPolicy(burlap.behavior.policy.SolverDerivedPolicy)}). The Q-value assigned to state-action pairs for entirely untried
  * transitions is reported as that returned by the value function initializer provided. In general, value function initialization should always be optimistic.
  * 
  * 
@@ -154,9 +154,9 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent {
 	 * Q-source to this object.
 	 * @param policy the policy to use.
 	 */
-	public void setPolicy(PlannerDerivedPolicy policy){
+	public void setPolicy(SolverDerivedPolicy policy){
 		this.policy = (Policy)policy;
-		policy.setPlanner(this);
+		policy.setSolver(this);
 		
 	}
 
@@ -213,10 +213,6 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent {
 		return episodeHistory;
 	}
 
-	@Override
-	public void planFromState(State initialState) {
-		throw new RuntimeException("ARTDP is a model-based RL algorithm and model-based RL should not be used as planning algorithms.");
-	}
 	
 	@Override
 	public List<QValue> getQs(State s) {
