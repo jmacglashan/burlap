@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.singleagent.planning.ActionTransitions;
-import burlap.behavior.singleagent.planning.HashedTransitionProbability;
+import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
+import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;

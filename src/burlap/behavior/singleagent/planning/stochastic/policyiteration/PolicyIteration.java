@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.ActionTransitions;
-import burlap.behavior.singleagent.planning.HashedTransitionProbability;
+import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
+import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.GreedyDeterministicQPolicy;

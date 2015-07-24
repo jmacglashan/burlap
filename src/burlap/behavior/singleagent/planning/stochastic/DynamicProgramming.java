@@ -10,8 +10,6 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.ActionTransitions;
-import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.valuefunction.QFunction;

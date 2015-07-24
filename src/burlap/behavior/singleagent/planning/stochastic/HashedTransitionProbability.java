@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.planning;
+package burlap.behavior.singleagent.planning.stochastic;
 
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;

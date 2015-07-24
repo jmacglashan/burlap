@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.planning;
+package burlap.behavior.singleagent.planning.stochastic;
 
 import java.util.ArrayList;
 import java.util.List;
