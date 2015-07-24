@@ -35,8 +35,17 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 
 /**
  * Tabular Q-learning algorithm [1]. This implementation will work correctly with Options [2]. The implementation can either be used for learning or planning,
- * the latter of which is performed by running many learning episodes in succession. The number of episodes used for planning can be determined
+ * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
+ * The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
+ * <br/><br/>
+ * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
+ * anything with the {@link #setLearningPolicy(burlap.behavior.singleagent.Policy)} policy.
+ * <br/><br/>
+ * If you
+ * want to use a custom learning rate decay schedule rather than a constant learning rate, use the
+ * {@link #setLearningRateFunction(burlap.behavior.learningrate.LearningRate)}.
+ * <br/><br/>
  * 
  * <p/>
  * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>

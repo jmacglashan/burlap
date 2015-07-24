@@ -38,9 +38,18 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 /**
  * Gradient Descent SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. This implementation will work
  * with both linear and non-linear value function approximations by using the gradient value provided to it through the 
- * {@link burlap.behavior.singleagent.vfa.ValueFunctionApproximation} interface provided. <p/>The implementation can either be used for learning or planning,
+ * {@link burlap.behavior.singleagent.vfa.ValueFunctionApproximation} interface provided. <p/>
+ * The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the VFA weight threshold.
+ * <br/><br/>
+ * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
+ * anything with the {@link #setLearningPolicy(burlap.behavior.singleagent.Policy)} policy.
+ * <br/><br/>
+ * If you
+ * want to use a custom learning rate decay schedule rather than a constant learning rate, use the
+ * {@link #setLearningRate(burlap.behavior.learningrate.LearningRate)}.
+ * <br/><br/>
  * @author James MacGlashan
  * 
  * <p/>

@@ -35,25 +35,29 @@ import burlap.oomdp.singleagent.RewardFunction;
 
 /**
  * This class implements the optimized version of last squares policy iteration [1] (runs in quadratic time of the number of state features). Unlike other planning and learning algorithms,
- * it is reccomended that you use this class differently than the conventional ways. That is, rather than using the {@link #planFromState(State)} or {@link #runLearningEpisodeFrom(State)}
+ * it is recommended that you use this class differently than the conventional ways. That is, rather than using the {@link #planFromState(State)} or {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)}
  * methods, you should instead use a {@link SARSCollector} object to gather a bunch of example state-action-reward-state tuples that are then used for policy iteration. You can
  * set the dataset to use using the {@link #setDataset(SARSData)} method and then you can run LSPI on it using the {@link #runPolicyIteration(int, double)} method. LSPI requires
- * initializing a matrix to an identity matrix multiplied by some large positive constant (see the reference for more information). 
+ * initialize a matrix to an identity matrix multiplied by some large positive constant (see the reference for more information).
  * By default this constant is 100, but you can change it with the {@link #setIdentityScalar(double)}
  * method.
  * <p/>
  * If you do use the {@link #planFromState(State)} method, it will work by creating a {@link UniformRandomSARSCollector} and collecting SARS data from the input state and then calling
  * the {@link #runPolicyIteration(int, double)} method. You can change the {@link SARSCollector} this method uses, the number of samples it acquires, the maximum weight change for PI termination,
  * and the maximum number of policy iterations by using the {@link #setPlanningCollector(SARSCollector)}, {@link #setNumSamplesForPlanning(int)}, {@link #setMaxChange(double)}, and
- * {@link #setMaxNumPlanningIterations(int)} methods repsectively.
+ * {@link #setMaxNumPlanningIterations(int)} methods respectively.
  * <p/>
- * If you do use the {@link #runLearningEpisodeFrom(State)} method (or the {@link #runLearningEpisodeFrom(State, int)} method), it will work by following a learning policy for the episode and adding its observations to its dataset for its
- * policy iteration. After enough new data has been acquired, policy iteration will be rereun. You can adjust the learning policy, the maximum number of allowed learning steps in an
+ * If you do use the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method (or the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)}  method),
+ * it will work by following a learning policy for the episode and adding its observations to its dataset for its
+ * policy iteration. After enough new data has been acquired, policy iteration will be rereun.
+ * You can adjust the learning policy, the maximum number of allowed learning steps in an
  * episode, and the minimum number of new observations until LSPI is rerun using the {@link #setLearningPolicy(Policy)}, {@link #setMaxLearningSteps(int)}, {@link #setMinNewStepsForLearningPI(int)}
  * methods respectively. The LSPI  termination parameters are set using the same methods that you use for adjusting the results from the {@link #planFromState(State)} method discussed above.
  * <p/>
- * This data gathering and replanning behavior from learning episodes is not expected to be an especailly good choice. Therefore, if you want a better online data acquisition, you should consider subclassing this class
- * and overriding the methods {@link #updateDatasetWithLearningEpisode(EpisodeAnalysis)} and {@link #shouldRereunPolicyIteration(EpisodeAnalysis)}, or the {@link #runLearningEpisodeFrom(State, int)} method
+ * This data gathering and replanning behavior from learning episodes is not expected to be an especially good choice.
+ * Therefore, if you want a better online data acquisition, you should consider subclassing this class
+ * and overriding the methods {@link #updateDatasetWithLearningEpisode(EpisodeAnalysis)} and {@link #shouldRereunPolicyIteration(EpisodeAnalysis)}, or
+ * the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} method
  * itself.
  * 
  * <p/>

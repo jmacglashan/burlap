@@ -23,6 +23,14 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * Tabular SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
+ * <br/><br/>
+ * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
+ * anything with the {@link #setLearningPolicy(burlap.behavior.singleagent.Policy)} policy.
+ * <br/><br/>
+ * If you
+ * want to use a custom learning rate decay schedule rather than a constant learning rate, use the
+ * {@link #setLearningRateFunction(burlap.behavior.learningrate.LearningRate)}.
+ * <br/><br/>
  * @author James MacGlashan
  * 
  * <p/>

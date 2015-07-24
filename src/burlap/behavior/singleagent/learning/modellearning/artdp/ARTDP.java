@@ -29,13 +29,13 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
- * This class provides an implementation of Adapative Realtime Dynamic Programming [1]. By default, a tabular model will be used and a boltzmann distribution with
+ * This class provides an implementation of Adaptive Realtime Dynamic Programming [1]. By default, a tabular model will be used and a boltzmann distribution with
  * a temperature of 0.1 will be used. A different model can be provided in the constructor as well as the value function initialization used. The policy
- * followed may be set with a mutator ({@link #setPolicy(PlannerDerivedPolicy)}). The Q-value assigned to state-action pairs for entirely untried
- * transitions is reproted as that returned by the value function initializer provided. In general, value function initialization should always be optimistic.
+ * followed may be set with a setter ({@link #setPolicy(PlannerDerivedPolicy)}). The Q-value assigned to state-action pairs for entirely untried
+ * transitions is reported as that returned by the value function initializer provided. In general, value function initialization should always be optimistic.
  * 
  * 
- * 1.Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
+ * 1. Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
  * 
  * @author James MacGlashan
  *
