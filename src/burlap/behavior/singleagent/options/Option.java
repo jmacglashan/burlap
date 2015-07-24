@@ -41,8 +41,8 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * options need to keep track of the cumulative reward and number of steps they've taken
  * since they began execution. This abstract class has data structures and code in place to automatically
  * handle that information so that any subclass of this Option class should "just work." When
- * an option is added to an {@link burlap.behavior.singleagent.planning.OOMDPPlanner} object
- * through the {@link burlap.behavior.singleagent.planning.OOMDPPlanner#addNonDomainReferencedAction(Action)}
+ * an option is added to an {@link burlap.behavior.singleagent.MDPSolver} object
+ * through the {@link burlap.behavior.singleagent.MDPSolver#addNonDomainReferencedAction(Action)}
  * method, it will automatically tell the Option which reward function and discount factor it should be using
  * to keep track of the cumulative reward.
  * <p/>

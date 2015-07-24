@@ -113,8 +113,8 @@ public class ValueIteration extends ValueFunctionPlanner{
 	}
 	
 	@Override
-	public void resetPlannerResults(){
-		super.resetPlannerResults();
+	public void resetSolver(){
+		super.resetSolver();
 		this.foundReachableStates = false;
 		this.hasRunVI = false;
 	}

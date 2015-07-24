@@ -13,7 +13,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData.SARS;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
@@ -66,7 +66,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class LSPI extends OOMDPPlanner implements QFunction, LearningAgent {
+public class LSPI extends MDPSolver implements QFunction, LearningAgent {
 
 	/**
 	 * The object that performs value function approximation given the weights that are estimated
@@ -160,7 +160,7 @@ public class LSPI extends OOMDPPlanner implements QFunction, LearningAgent {
 	 * @param fd the feature database defining state features on which LSPI will run.
 	 */
 	public LSPI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, FeatureDatabase fd){
-		this.plannerInit(domain, rf, tf, gamma, null);
+		this.solverInit(domain, rf, tf, gamma, null);
 		this.featureDatabase = fd;
 		this.vfa = new LinearVFA(this.featureDatabase);
 		this.learningPolicy = new EpsilonGreedy(this, 0.1);
@@ -505,7 +505,7 @@ public class LSPI extends OOMDPPlanner implements QFunction, LearningAgent {
 	}
 
 	@Override
-	public void resetPlannerResults() {
+	public void resetSolver() {
 		this.dataset.clear();
 		this.vfa.resetWeights();
 	}

@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.support;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -27,7 +27,7 @@ public class BoltzmannPolicyGradient {
 	 */
 	public static double [] computeBoltzmannPolicyGradient(State s, GroundedAction a, QGradientPlanner planner, double beta){
 
-		DifferentiableRF rf = (DifferentiableRF)((OOMDPPlanner)planner).getRF();
+		DifferentiableRF rf = (DifferentiableRF)((MDPSolver)planner).getRF();
 		int d = rf.getParameterDimension();
 
 		double gv [] = new double[d];

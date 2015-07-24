@@ -16,7 +16,7 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -54,7 +54,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * @author James MacGlashan
  *
  */
-public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
+public class QLearning extends MDPSolver implements QFunction, LearningAgent{
 
 
 	/**
@@ -232,7 +232,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	protected void QLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			ValueFunctionInitialization qInitFunction, double learningRate, Policy learningPolicy, int maxEpisodeSize){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.qIndex = new HashMap<StateHashTuple, QLearningStateNode>();
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
@@ -555,7 +555,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	
 	
 	@Override
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.mapToStateIndex.clear();
 		this.qIndex.clear();
 		this.episodeHistory.clear();

@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -28,7 +28,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public abstract class DeterministicPlanner extends OOMDPPlanner{
+public abstract class DeterministicPlanner extends MDPSolver {
 
 	/**
 	 * This State condition test should return true for goal states and false for non-goal states.
@@ -53,7 +53,7 @@ public abstract class DeterministicPlanner extends OOMDPPlanner{
 	 */
 	public void deterministicPlannerInit(Domain domain, RewardFunction rf, TerminalFunction tf, StateConditionTest gc, StateHashFactory hashingFactory){
 		
-		this.plannerInit(domain, rf, tf, 1., hashingFactory); //goal condition doubles as termination function for deterministic planners 
+		this.solverInit(domain, rf, tf, 1., hashingFactory); //goal condition doubles as termination function for deterministic planners
 		this.gc = gc;
 		this.internalPolicy = new HashMap<StateHashTuple, GroundedAction>();
 	
@@ -61,7 +61,7 @@ public abstract class DeterministicPlanner extends OOMDPPlanner{
 	}
 	
 	@Override
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.mapToStateIndex.clear();
 		this.internalPolicy.clear();
 	}

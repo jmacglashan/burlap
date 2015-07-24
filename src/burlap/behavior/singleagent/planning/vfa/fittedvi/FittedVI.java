@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
@@ -47,7 +47,7 @@ import java.util.List;
  * 1. Gordon, Geoffrey J. "Stable function approximation in dynamic programming." Proceedings of the twelfth international conference on machine learning. 1995.
  * @author James MacGlashan.
  */
-public class FittedVI extends OOMDPPlanner implements ValueFunction, QFunction {
+public class FittedVI extends MDPSolver implements ValueFunction, QFunction {
 
 
 	/**
@@ -124,7 +124,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QFunction {
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
 	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, int transitionSamples, double maxDelta, int maxIterations){
-		this.plannerInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
+		this.solverInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.transitionSamples = transitionSamples;
 		this.maxDelta = maxDelta;
@@ -150,7 +150,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QFunction {
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
 	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, List<State> samples, int transitionSamples, double maxDelta, int maxIterations){
-		this.plannerInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
+		this.solverInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.samples = samples;
 		this.transitionSamples = transitionSamples;
@@ -299,7 +299,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QFunction {
 	}
 
 	@Override
-	public void resetPlannerResults() {
+	public void resetSolver() {
 		this.valueFunction = this.vinit;
 	}
 

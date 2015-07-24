@@ -6,7 +6,7 @@ import java.util.List;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -29,7 +29,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * @author James MacGlashan
  *
  */
-public class ActorCritic extends OOMDPPlanner implements LearningAgent {
+public class ActorCritic extends MDPSolver implements LearningAgent {
 
 	
 	/**
@@ -81,7 +81,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
 		numEpisodesToStore = 1;
-		this.plannerInit(domain, rf, tf, gamma, null);
+		this.solverInit(domain, rf, tf, gamma, null);
 	}
 	
 	
@@ -102,7 +102,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
 		numEpisodesToStore = 1;
-		this.plannerInit(domain, rf, tf, gamma, null);
+		this.solverInit(domain, rf, tf, gamma, null);
 	}
 	
 	
@@ -185,7 +185,7 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 	
 	
 	@Override
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.episodeHistory.clear();
 		this.mapToStateIndex.clear();
 		this.actor.resetData();

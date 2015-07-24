@@ -6,7 +6,7 @@ import javax.management.RuntimeErrorException;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.policy.PlannerDerivedPolicy;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
@@ -72,7 +72,7 @@ public class DeterminisitcTerminationOption extends Option {
 	 * @param planner the planner to be used to create the policy for this option
 	 * @param p the planner derived policy to use after planning from each initial state is performed.
 	 */
-	public DeterminisitcTerminationOption(String name, StateConditionTestIterable init, StateConditionTest terminaitonStates, OOMDPPlanner planner, PlannerDerivedPolicy p){
+	public DeterminisitcTerminationOption(String name, StateConditionTestIterable init, StateConditionTest terminaitonStates, MDPSolver planner, PlannerDerivedPolicy p){
 		
 		if(!(p instanceof Policy)){
 			throw new RuntimeErrorException(new Error("PlannerDerivedPolicy p is not an instnace of Policy"));
@@ -109,7 +109,7 @@ public class DeterminisitcTerminationOption extends Option {
 	 * @param p the planner derived policy to use after planning from each initial state is performed.
 	 */
 	public DeterminisitcTerminationOption(String name, StateConditionTest init, StateConditionTest terminationStates, List <State> seedStatesForPlanning, 
-			OOMDPPlanner planner, PlannerDerivedPolicy p){
+			MDPSolver planner, PlannerDerivedPolicy p){
 		
 		if(!(p instanceof Policy)){
 			throw new RuntimeErrorException(new Error("PlannerDerivedPolicy p is not an instnace of Policy"));

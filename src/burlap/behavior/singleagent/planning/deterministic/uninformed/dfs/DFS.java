@@ -180,8 +180,8 @@ public class DFS extends DeterministicPlanner {
 	
 	
 	@Override
-	public void resetPlannerResults(){
-		super.resetPlannerResults();
+	public void resetSolver(){
+		super.resetSolver();
 		this.numVisted = 0;
 	}
 	

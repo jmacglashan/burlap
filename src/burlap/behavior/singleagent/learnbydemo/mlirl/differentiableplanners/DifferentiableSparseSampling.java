@@ -8,7 +8,7 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGrad
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -36,7 +36,7 @@ import java.util.Map;
  * 2. Babes, M., Marivate, V., Subramanian, K., and Littman, "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
  * @author James MacGlashan.
  */
-public class DifferentiableSparseSampling extends OOMDPPlanner implements QGradientPlanner {
+public class DifferentiableSparseSampling extends MDPSolver implements QGradientPlanner {
 
 	/**
 	 * The height of the tree
@@ -106,7 +106,7 @@ public class DifferentiableSparseSampling extends OOMDPPlanner implements QGradi
 	 * @param boltzBeta the Boltzmann beta parameter for the differentiable Boltzmann (softmax) backup equation. The larger the value the more deterministic, the closer to 1 the softer.
 	 */
 	public DifferentiableSparseSampling(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int h, int c, double boltzBeta){
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.h = h;
 		this.c = c;
 		this.boltzBeta = boltzBeta;
@@ -208,8 +208,8 @@ public class DifferentiableSparseSampling extends OOMDPPlanner implements QGradi
 	}
 
 	/**
-	 * Returns the total number of state value estimates performed since the {@link #resetPlannerResults()} call.
-	 * @return the total number of state value estimates performed since the {@link #resetPlannerResults()} call.
+	 * Returns the total number of state value estimates performed since the {@link #resetSolver()} call.
+	 * @return the total number of state value estimates performed since the {@link #resetSolver()} call.
 	 */
 	public int getNumberOfValueEsitmates(){
 		return this.numUpdates;
@@ -321,7 +321,7 @@ public class DifferentiableSparseSampling extends OOMDPPlanner implements QGradi
 	}
 
 	@Override
-	public void resetPlannerResults() {
+	public void resetSolver() {
 		this.nodesByHeight.clear();
 		this.rootLevelQValues.clear();
 		this.numUpdates = 0;

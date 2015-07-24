@@ -9,7 +9,7 @@ import java.util.Random;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
@@ -175,7 +175,7 @@ public class ApprenticeshipLearning {
 					Math.max(maximumExpertEpisodeLength, expertEpisode.numTimeSteps());
 		}
 
-		OOMDPPlanner planner = request.getPlanner();
+		MDPSolver planner = request.getPlanner();
 		TerminalFunction terminalFunction = planner.getTF();
 		StateHashFactory stateHashingFactory = planner.getHashingFactory();
 
@@ -223,8 +223,8 @@ public class ApprenticeshipLearning {
 					ApprenticeshipLearning.generateRewardFunction(featureFunctions, featureWeights);
 
 			// (4b) Compute optimal policy for pi^(i) give R
-			planner.resetPlannerResults();
-			planner.plannerInit(domain, rewardFunction, terminalFunction, request.getGamma(), stateHashingFactory);
+			planner.resetSolver();
+			planner.solverInit(domain, rewardFunction, terminalFunction, request.getGamma(), stateHashingFactory);
 			planner.planFromState(request.getStartStateGenerator().generateState());
 
 			if (planner instanceof DeterministicPlanner) {
@@ -276,7 +276,7 @@ public class ApprenticeshipLearning {
 		}
 
 		//Planning objects
-		OOMDPPlanner planner = request.getPlanner();
+		MDPSolver planner = request.getPlanner();
 		TerminalFunction terminalFunction = planner.getTF();
 		StateHashFactory stateHashingFactory = planner.getHashingFactory();
 
@@ -340,8 +340,8 @@ public class ApprenticeshipLearning {
 					ApprenticeshipLearning.generateRewardFunction(featureFunctions, featureWeights);
 
 			// (4b) Compute optimal policy for pi^(i) give R
-			planner.resetPlannerResults();
-			planner.plannerInit(domain, rewardFunction, terminalFunction, request.getGamma(), stateHashingFactory);
+			planner.resetSolver();
+			planner.solverInit(domain, rewardFunction, terminalFunction, request.getGamma(), stateHashingFactory);
 			planner.planFromState(request.getStartStateGenerator().generateState());
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
@@ -562,7 +562,7 @@ public class ApprenticeshipLearning {
 		}
 
 		public static Policy generateRandomPolicy(Domain domain) {
-			return new RandomPolicy(domain);
+			return new burlap.behavior.policy.RandomPolicy(domain);
 		}
 
 		/**

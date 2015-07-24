@@ -10,7 +10,7 @@ import java.util.Set;
 
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
@@ -47,7 +47,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class UCT extends OOMDPPlanner implements QFunction {
+public class UCT extends MDPSolver implements QFunction {
 
 	protected List<Map<StateHashTuple, UCTStateNode>> 			stateDepthIndex;
 	protected Map <StateHashTuple, List <UCTStateNode>>			statesToStateNodes;
@@ -97,7 +97,7 @@ public class UCT extends OOMDPPlanner implements QFunction {
 	
 	protected void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.maxHorizon = horizon;
 		this.maxRollOutsFromRoot = nRollouts;
 		this.explorationBias = explorationBias;
@@ -183,7 +183,7 @@ public class UCT extends OOMDPPlanner implements QFunction {
 		//if the root node isn't the query state, then replan
 		StateHashTuple sh = this.hashingFactory.hashState(s);
 		if(!sh.equals(this.root.state)){
-			this.resetPlannerResults();
+			this.resetSolver();
 			this.planFromState(s);
 		}
 
@@ -207,7 +207,7 @@ public class UCT extends OOMDPPlanner implements QFunction {
 		//if the root node isn't the query state, then replan
 		StateHashTuple sh = this.hashingFactory.hashState(s);
 		if(!sh.equals(this.root.state)){
-			this.resetPlannerResults();
+			this.resetSolver();
 			this.planFromState(s);
 		}
 
@@ -222,7 +222,7 @@ public class UCT extends OOMDPPlanner implements QFunction {
 	}
 
 	@Override
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.mapToStateIndex.clear();
 		this.stateDepthIndex.clear();
 		this.statesToStateNodes.clear();

@@ -16,7 +16,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.singleagent.vfa.ActionApproximationResult;
@@ -57,7 +57,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * 2. 2. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
  *
  */
-public class GradientDescentSarsaLam extends OOMDPPlanner implements QFunction, LearningAgent {
+public class GradientDescentSarsaLam extends MDPSolver implements QFunction, LearningAgent {
 	
 	
 	/**
@@ -233,7 +233,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QFunction, 
 	protected void GDSLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda){
 		
-		this.plannerInit(domain, rf, tf, gamma, null);
+		this.solverInit(domain, rf, tf, gamma, null);
 		this.vfa = vfa;
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
@@ -618,7 +618,7 @@ public class GradientDescentSarsaLam extends OOMDPPlanner implements QFunction, 
 	}
 	
 	@Override
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.vfa.resetWeights();
 		this.eStepCounter = 0;
 		this.maxWeightChangeInLastEpisode = Double.POSITIVE_INFINITY;

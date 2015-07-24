@@ -11,7 +11,7 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.policy.PlannerDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunctionPlanner;
@@ -40,7 +40,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * @author James MacGlashan
  *
  */
-public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
+public class ARTDP extends MDPSolver implements QFunction,LearningAgent {
 
 	/**
 	 * The model of the world that is being learned.
@@ -88,7 +88,7 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 	 */
 	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -112,7 +112,7 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 	 */
 	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -137,7 +137,7 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 	 */
 	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.model = model;
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -256,9 +256,9 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 	}
 	
 	
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.model.resetModel();
-		this.modelPlanner.resetPlannerResults();
+		this.modelPlanner.resetSolver();
 		this.episodeHistory.clear();
 	}
 	

@@ -6,7 +6,7 @@ import java.util.List;
 import javax.management.RuntimeErrorException;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.policy.PlannerDerivedPolicy;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
@@ -39,7 +39,7 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	
 	@Override
-	public void setPlanner(OOMDPPlanner planner) {
+	public void setPlanner(MDPSolver planner) {
 		
 		if(!(planner instanceof DeterministicPlanner)){
 			throw new RuntimeErrorException(new Error("Planner is not a Deterministic Planner"));

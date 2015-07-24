@@ -12,7 +12,7 @@ import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlan
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.core.Domain;
@@ -38,7 +38,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * @author James MacGlashan
  *
  */
-public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
+public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 
 	/**
 	 * The model of the world that is being learned.
@@ -98,7 +98,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxReward, int nConfident,
 			double maxVIDelta, int maxVIPasses){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.model = new TabularModel(domain, hashingFactory, nConfident);
 		
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -127,7 +127,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, PotentialFunction potential, int nConfident,
 			double maxVIDelta, int maxVIPasses){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.model = new TabularModel(domain, hashingFactory, nConfident);
 		
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -155,7 +155,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, PotentialFunction potential,
 			Model model, ModelPlannerGenerator plannerGenerator){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.model = model;
 		
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -296,7 +296,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 
 	
 	@Override
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.model.resetModel();
 		this.modelPlanner.resetPlanner();
 		this.episodeHistory.clear();

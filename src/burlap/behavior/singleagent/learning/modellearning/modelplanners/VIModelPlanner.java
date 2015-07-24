@@ -132,7 +132,7 @@ public class VIModelPlanner implements ModelPlanner, QFunction {
 	
 	@Override
 	public void resetPlanner(){
-		this.vi.resetPlannerResults();
+		this.vi.resetSolver();
 	}
 
 

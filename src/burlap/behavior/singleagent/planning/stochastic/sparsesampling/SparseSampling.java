@@ -9,7 +9,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.statehashing.NameDependentStateHashFactory;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -70,7 +70,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class SparseSampling extends OOMDPPlanner implements QFunction {
+public class SparseSampling extends MDPSolver implements QFunction {
 
 	/**
 	 * The height of the tree
@@ -137,7 +137,7 @@ public class SparseSampling extends OOMDPPlanner implements QFunction {
 	 * @param c the number of transition dynamics samples used. If set to -1, then the full transition dynamics are used.
 	 */
 	public SparseSampling(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int h, int c){
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.h = h;
 		this.c = c;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, SparseSampling.StateNode>();
@@ -276,8 +276,8 @@ public class SparseSampling extends OOMDPPlanner implements QFunction {
 	}
 	
 	/**
-	 * Returns the total number of state value estimates performed since the {@link #resetPlannerResults()} call.
-	 * @return the total number of state value estimates performed since the {@link #resetPlannerResults()} call.
+	 * Returns the total number of state value estimates performed since the {@link #resetSolver()} call.
+	 * @return the total number of state value estimates performed since the {@link #resetSolver()} call.
 	 */
 	public int getNumberOfValueEsitmates(){
 		return this.numUpdates;
@@ -321,7 +321,7 @@ public class SparseSampling extends OOMDPPlanner implements QFunction {
 	}
 
 	@Override
-	public void resetPlannerResults() {
+	public void resetSolver() {
 		this.nodesByHeight.clear();
 		this.rootLevelQValues.clear();
 		this.numUpdates = 0;

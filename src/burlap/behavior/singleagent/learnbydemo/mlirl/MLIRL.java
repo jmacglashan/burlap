@@ -129,7 +129,7 @@ public class MLIRL {
 	public void performIRL(){
 
 		//reset planner
-		this.request.getPlanner().resetPlannerResults();
+		this.request.getPlanner().resetSolver();
 		double lastLikelihood = this.logLikelihood();
 		DPrint.cl(this.debugCode, "RF: " + this.request.getRf().toString());
 		DPrint.cl(this.debugCode, "Log likelihood: " + lastLikelihood);
@@ -155,7 +155,7 @@ public class MLIRL {
 			}
 
 			//reset planner
-			this.request.getPlanner().resetPlannerResults();
+			this.request.getPlanner().resetSolver();
 
 			double newLikelihood = this.logLikelihood();
 			double likelihoodChange = newLikelihood-lastLikelihood;

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -129,8 +129,8 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 		 * the input state is a terminal state, then reutrn 0 since the value of all terminal states is 0.
 		 */
 		TerminalFunction tf = null;
-		if(this.planner instanceof OOMDPPlanner){
-			tf = ((OOMDPPlanner)this.planner).getTF();
+		if(this.planner instanceof MDPSolver){
+			tf = ((MDPSolver)this.planner).getTF();
 		}
 		
 		if(tf != null){

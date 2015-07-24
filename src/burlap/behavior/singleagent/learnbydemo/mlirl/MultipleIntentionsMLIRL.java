@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learnbydemo.mlirl;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 
@@ -343,7 +343,7 @@ public class MultipleIntentionsMLIRL {
 
 			nRequest.setGamma(this.request.getGamma());
 			nRequest.setBoltzmannBeta(this.request.getBoltzmannBeta());
-			nRequest.setPlanner((OOMDPPlanner)plannerFactory.generateDifferentiablePlannerForRequest(nRequest));
+			nRequest.setPlanner((MDPSolver)plannerFactory.generateDifferentiablePlannerForRequest(nRequest));
 
 			this.clusterRequests.add(nRequest);
 

@@ -41,8 +41,8 @@ public abstract class DifferentiableVFPlanner extends ValueFunctionPlanner imple
 
 
 	@Override
-	public void resetPlannerResults(){
-		super.resetPlannerResults();
+	public void resetSolver(){
+		super.resetSolver();
 		this.valueGradient.clear();
 	}
 

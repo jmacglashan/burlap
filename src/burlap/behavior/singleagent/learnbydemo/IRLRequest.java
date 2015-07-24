@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.oomdp.core.Domain;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class IRLRequest {
 	/**
 	 * The planning algorithm used to compute the policy for a given reward function
 	 */
-	protected OOMDPPlanner planner;
+	protected MDPSolver planner;
 
 
 	/**
@@ -50,7 +50,7 @@ public class IRLRequest {
 	 * @param planner the planning algorithm the IRL algorithm will invoke.
 	 * @param expertEpisodes the example expert trajectories/episodes.
 	 */
-	public IRLRequest(Domain domain, OOMDPPlanner planner, List<EpisodeAnalysis> expertEpisodes){
+	public IRLRequest(Domain domain, MDPSolver planner, List<EpisodeAnalysis> expertEpisodes){
 		this.setDomain(domain);
 		this.setPlanner(planner);
 		this.setExpertEpisodes(expertEpisodes);
@@ -87,7 +87,7 @@ public class IRLRequest {
 		this.domain = d;
 	}
 
-	public void setPlanner(OOMDPPlanner p) {
+	public void setPlanner(MDPSolver p) {
 		this.planner = p;
 	}
 
@@ -101,7 +101,7 @@ public class IRLRequest {
 
 	public Domain getDomain() {return this.domain;}
 
-	public OOMDPPlanner getPlanner() {return this.planner;}
+	public MDPSolver getPlanner() {return this.planner;}
 
 	public double getGamma() {
 		return gamma;

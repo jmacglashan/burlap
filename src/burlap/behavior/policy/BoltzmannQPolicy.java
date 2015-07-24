@@ -6,7 +6,7 @@ import java.util.List;
 import javax.management.RuntimeErrorException;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -89,7 +89,7 @@ public class BoltzmannQPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 
 	@Override
-	public void setPlanner(OOMDPPlanner planner) {
+	public void setPlanner(MDPSolver planner) {
 		if(!(planner instanceof QFunction)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}

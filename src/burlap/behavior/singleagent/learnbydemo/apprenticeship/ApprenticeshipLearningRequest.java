@@ -5,7 +5,7 @@ import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnbydemo.IRLRequest;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
@@ -68,7 +68,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		this.initDefaults();
 	}
 
-	public ApprenticeshipLearningRequest(Domain domain, OOMDPPlanner planner, StateToFeatureVectorGenerator featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
+	public ApprenticeshipLearningRequest(Domain domain, MDPSolver planner, StateToFeatureVectorGenerator featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
 		super(domain, planner, expertEpisodes);
 		this.initDefaults();
 		this.setFeatureGenerator(featureGenerator);
@@ -112,7 +112,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 	}
 
 
-	public void setPlanner(OOMDPPlanner p) {
+	public void setPlanner(MDPSolver p) {
 		this.planner = p;
 	}
 
@@ -140,7 +140,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 
 	public Domain getDomain() {return this.domain;}
 
-	public OOMDPPlanner getPlanner() {return this.planner;}
+	public MDPSolver getPlanner() {return this.planner;}
 
 	public StateToFeatureVectorGenerator getFeatureGenerator() {return this.featureGenerator;}	
 
