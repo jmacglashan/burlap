@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -18,7 +18,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * if the source deterministic planner has not already computed
  * and cached the plan for a query state, then this policy
  * is undefined for that state and will cause the policy to throw
- * a corresponding {@link burlap.behavior.singleagent.Policy.PolicyUndefinedException} exception object.
+ * a corresponding {@link burlap.behavior.policy.Policy.PolicyUndefinedException} exception object.
  * @author James MacGlashan
  */
 

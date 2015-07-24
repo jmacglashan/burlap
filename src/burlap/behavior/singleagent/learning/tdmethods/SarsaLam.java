@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learning.tdmethods;
 import java.util.LinkedList;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
@@ -25,7 +25,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
  * <br/><br/>
  * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
- * anything with the {@link #setLearningPolicy(burlap.behavior.singleagent.Policy)} policy.
+ * anything with the {@link #setLearningPolicy(burlap.behavior.policy.Policy)} policy.
  * <br/><br/>
  * If you
  * want to use a custom learning rate decay schedule rather than a constant learning rate, use the

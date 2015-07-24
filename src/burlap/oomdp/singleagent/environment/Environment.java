@@ -1,10 +1,7 @@
 package burlap.oomdp.singleagent.environment;
 
-import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
 
 
 /**
@@ -13,7 +10,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * instances are what learning algorithms implementing {@link burlap.behavior.singleagent.learning.LearningAgent} interact with
  * the environment around them. Maintaining an Environment ensures that transitions are protected from an agent manipulating the state
  * and are also useful when a BURLAP agent is interacting with external or real time systems such as robotics. Environments
- * also make it easy to use a planning algorithm to compute a {@link burlap.behavior.singleagent.Policy} using some model of the world
+ * also make it easy to use a planning algorithm to compute a {@link burlap.behavior.policy.Policy} using some model of the world
  * and then have that policy executed in an {@link burlap.oomdp.singleagent.environment.Environment} that may behave differently
  * than the model (e.g., robotics operating in the real world). {@link burlap.oomdp.singleagent.environment.Environment} implementations
  * also make it easy to train a {@link burlap.behavior.singleagent.learning.LearningAgent} in one {@link burlap.oomdp.singleagent.environment.Environment}

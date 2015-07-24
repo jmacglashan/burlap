@@ -10,7 +10,7 @@ import javax.management.RuntimeErrorException;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
@@ -18,7 +18,7 @@ import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QFunction;
-import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -40,7 +40,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
  * <br/><br/>
  * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
- * anything with the {@link #setLearningPolicy(burlap.behavior.singleagent.Policy)} policy.
+ * anything with the {@link #setLearningPolicy(burlap.behavior.policy.Policy)} policy.
  * <br/><br/>
  * If you
  * want to use a custom learning rate decay schedule rather than a constant learning rate, use the

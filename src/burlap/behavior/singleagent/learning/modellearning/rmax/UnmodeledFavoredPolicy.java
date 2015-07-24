@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learning.modellearning.rmax;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;

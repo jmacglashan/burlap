@@ -3,23 +3,20 @@ package burlap.behavior.singleagent.planning.stochastic.policyiteration;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
-import burlap.behavior.singleagent.planning.commonpolicies.GreedyDeterministicQPolicy;
+import burlap.behavior.policy.GreedyDeterministicQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.RewardFunction;
 
 public class PolicyIteration extends ValueFunctionPlanner {
@@ -107,7 +104,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 	
 	
 	/**
-	 * Sets which kind of policy to use whenever the policy is updated. The default is a deterministic greedy policy ({@link burlap.behavior.singleagent.planning.commonpolicies.GreedyDeterministicQPolicy}.
+	 * Sets which kind of policy to use whenever the policy is updated. The default is a deterministic greedy policy ({@link burlap.behavior.policy.GreedyDeterministicQPolicy}.
 	 * @param p the policy to use when updating to the new evaluated value function.
 	 */
 	public void setPolicyClassToEvaluate(PlannerDerivedPolicy p){

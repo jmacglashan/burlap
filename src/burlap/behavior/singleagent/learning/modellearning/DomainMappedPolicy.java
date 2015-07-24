@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learning.modellearning;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;

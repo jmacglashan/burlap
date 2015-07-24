@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.auxiliary.valuefunctionvis;
 
 import java.awt.Graphics2D;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.oomdp.core.State;
 
 /**

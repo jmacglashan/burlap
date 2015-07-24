@@ -1,9 +1,10 @@
-package burlap.behavior.singleagent;
+package burlap.behavior.policy;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -16,7 +17,6 @@ import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
-import com.sun.tools.javac.comp.Env;
 
 
 /**
@@ -31,21 +31,21 @@ import com.sun.tools.javac.comp.Env;
  * The {@link #getAction(burlap.oomdp.core.State)} should return the action (specified by an
  * {@link burlap.oomdp.core.AbstractGroundedAction}; e.g., a {@link burlap.oomdp.singleagent.GroundedAction} for
  * single agent domains) this policy defines for the
- * input {@link burlap.oomdp.core.State}. If this {@link burlap.behavior.singleagent.Policy} is a stochastic policy,
+ * input {@link burlap.oomdp.core.State}. If this {@link Policy} is a stochastic policy,
  * then the {@link #getAction(burlap.oomdp.core.State)} method should sample an action from its probability distribution
  * and return it.
  * <br/><br/>
- * The {@link #getActionDistributionForState(burlap.oomdp.core.State)} should return this {@link burlap.behavior.singleagent.Policy}'s
+ * The {@link #getActionDistributionForState(burlap.oomdp.core.State)} should return this {@link Policy}'s
  * action selection probability distribution for the input {@link burlap.oomdp.core.State}. The probability distribution is
- * specified by returning a {@link java.util.List} of {@link burlap.behavior.singleagent.Policy.ActionProb} instances.
- * An {@link burlap.behavior.singleagent.Policy.ActionProb} is a pair consisting of an {@link burlap.oomdp.core.AbstractGroundedAction}
- * specifying the action and a double specifying the probability that this {@link burlap.behavior.singleagent.Policy} would
+ * specified by returning a {@link java.util.List} of {@link Policy.ActionProb} instances.
+ * An {@link Policy.ActionProb} is a pair consisting of an {@link burlap.oomdp.core.AbstractGroundedAction}
+ * specifying the action and a double specifying the probability that this {@link Policy} would
  * select that action.
  * <br/><br/>
- * The {@link #isStochastic()} method should return true if this {@link burlap.behavior.singleagent.Policy} is
+ * The {@link #isStochastic()} method should return true if this {@link Policy} is
  * stochastic and false if it is deterministic.
  * <br/><br/>
- * The {@link #isDefinedFor(burlap.oomdp.core.State)} method should return true if this {@link burlap.behavior.singleagent.Policy}
+ * The {@link #isDefinedFor(burlap.oomdp.core.State)} method should return true if this {@link Policy}
  * is defined for the input {@link burlap.oomdp.core.State} and false if it is not.
  * <br/><br/>
  * This abstract class also has some pre-implemented methods that can be used to help define these required methods. For example,
@@ -57,7 +57,7 @@ import com.sun.tools.javac.comp.Env;
  * the {@link #getAction(burlap.oomdp.core.State)} is implemented, then the
  * {@link #getActionDistributionForState(burlap.oomdp.core.State)} method can be trivially implemented by having it
  * return the result of {@link #getDeterministicPolicy(burlap.oomdp.core.State)}, which will call {@link #getAction(burlap.oomdp.core.State)}
- * and wrap the result in an {@link burlap.behavior.singleagent.Policy.ActionProb} object with assigned probability of 1.0.
+ * and wrap the result in an {@link Policy.ActionProb} object with assigned probability of 1.0.
  * <br/><br/><br/><br/>
  * <b>Superclass method</b><br/>
  * This class also has many superclass methods for interacting with policy. These include
@@ -68,7 +68,7 @@ import com.sun.tools.javac.comp.Env;
  * <br/><br/>
  * The {@link #getProbOfAction(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} method
  * takes as input a {@link burlap.oomdp.core.State} and {@link burlap.oomdp.core.AbstractGroundedAction} and returns
- * the probability of this {@link burlap.behavior.singleagent.Policy} selecting that action. It uses the result of the
+ * the probability of this {@link Policy} selecting that action. It uses the result of the
  * {@link #getActionDistributionForState(burlap.oomdp.core.State)} method to determine the full distribution, finds
  * the matching {@link burlap.oomdp.core.AbstractGroundedAction} in the returned list, and then returns its assigned probability.
  * It may be possible to return this value in a more efficient way than enumerating the full probability distribution,

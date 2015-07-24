@@ -2,8 +2,8 @@ package burlap.behavior.singleagent.options;
 
 import java.util.List;
 
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.Policy.ActionProb;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;

@@ -32,7 +32,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * <br/><br/>
  * The class also implements the {@link burlap.behavior.singleagent.planning.QFunction} interface. However, it will only return the Q-value
  * for a state if that state is the root node of the tree. If it is not the root node of the tree, then it will automatically reset the planning results
- * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy}
+ * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.policy.GreedyQPolicy}
  * with this planner in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
  * Replanning fresh after each step in the world is the standard UCT approach. If you instead want a policy that walks
  * through the tree it generated from some source state,

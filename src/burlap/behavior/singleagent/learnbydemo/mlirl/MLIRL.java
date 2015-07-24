@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.planning.QFunction;
-import burlap.behavior.singleagent.planning.commonpolicies.BoltzmannQPolicy;
+import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;

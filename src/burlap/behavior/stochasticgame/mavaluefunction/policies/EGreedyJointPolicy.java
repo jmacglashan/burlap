@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.stochasticgame.JointPolicy;
 import burlap.behavior.stochasticgame.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgame.agents.mavf.MultiAgentVFPlanningAgent;

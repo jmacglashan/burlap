@@ -1,10 +1,10 @@
-package burlap.behavior.singleagent.planning.commonpolicies;
+package burlap.behavior.policy;
 
 import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;

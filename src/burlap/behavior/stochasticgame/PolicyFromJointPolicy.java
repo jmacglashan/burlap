@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.datastructures.HashedAggregator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;

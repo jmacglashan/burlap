@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.planning;
 
 import java.util.List;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.QValue;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;

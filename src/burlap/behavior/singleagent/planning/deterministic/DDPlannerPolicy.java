@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner.PlanningFailedException;

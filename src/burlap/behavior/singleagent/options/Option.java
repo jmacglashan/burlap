@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Random;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.Policy.ActionProb;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.planning.StateMapping;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
