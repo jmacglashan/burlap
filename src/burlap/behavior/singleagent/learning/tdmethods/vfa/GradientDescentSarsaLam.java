@@ -26,7 +26,7 @@ import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.WeightGradient;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -43,7 +43,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
  * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
- * method before calling {@link #planFromState(burlap.oomdp.core.State)}. The number of episodes used for planning can be determined
+ * method before calling {@link #planFromState(burlap.oomdp.core.states.State)}. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the VFA weight threshold.
  * <br/><br/>
  * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
@@ -247,9 +247,9 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	/**
 	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
 	 * and the number of simulated episodes to use for planning when
-	 * the {@link #planFromState(burlap.oomdp.core.State)} method is called. If the
+	 * the {@link #planFromState(burlap.oomdp.core.states.State)} method is called. If the
 	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
-	 * are not set, the {@link #planFromState(burlap.oomdp.core.State)} method will throw a runtime exception.
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.states.State)} method will throw a runtime exception.
 	 * @param rf the reward function to use for planning
 	 * @param tf the terminal function to use for planning
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.

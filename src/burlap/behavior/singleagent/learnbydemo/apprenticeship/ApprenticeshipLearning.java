@@ -9,7 +9,6 @@ import java.util.Random;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.GreedyQPolicy;
@@ -22,7 +21,7 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;

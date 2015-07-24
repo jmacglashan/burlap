@@ -12,7 +12,7 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.behavior.stochasticgame.mavaluefunction.MAValueFunctionPlanner;
 import burlap.behavior.stochasticgame.mavaluefunction.SGBackupOperator;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.stochasticgames.AgentType;

@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.vfa.rbf;
 
 import burlap.behavior.singleagent.vfa.*;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;

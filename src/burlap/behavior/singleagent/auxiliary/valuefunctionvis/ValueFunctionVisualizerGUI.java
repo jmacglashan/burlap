@@ -16,7 +16,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowAction
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
 
 

@@ -10,7 +10,7 @@ import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 

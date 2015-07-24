@@ -11,6 +11,7 @@ import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

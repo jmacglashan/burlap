@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StaticPainter;
 import burlap.oomdp.visualizer.Visualizer;

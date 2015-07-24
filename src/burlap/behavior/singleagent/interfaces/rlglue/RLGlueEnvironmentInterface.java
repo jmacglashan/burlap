@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.interfaces.rlglue;
 
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
@@ -330,7 +330,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 
 
 	/**
-	 * A wrapper that maintains a reference to a {@link burlap.oomdp.core.State} or null.
+	 * A wrapper that maintains a reference to a {@link burlap.oomdp.core.states.State} or null.
 	 * @author James MacGlashan
 	 *
 	 */

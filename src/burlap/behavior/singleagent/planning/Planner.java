@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.planning;
 
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * @author James MacGlashan.

@@ -2,8 +2,8 @@ package burlap.domain.singleagent.frostbite;
 
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 
 import java.util.List;
 

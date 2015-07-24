@@ -7,7 +7,7 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.List;

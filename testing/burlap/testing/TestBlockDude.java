@@ -12,7 +12,7 @@ import burlap.domain.singleagent.blockdude.BlockDude;
 import burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor;
 import burlap.domain.singleagent.blockdude.BlockDudeTF;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.UniformCostRF;

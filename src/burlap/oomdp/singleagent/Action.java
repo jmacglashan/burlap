@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
@@ -23,14 +23,14 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * <br/><br/>
  * <b>Important Methods</b><br/>
  * The most important methods to take note of are
- * {@link #performActionHelper(burlap.oomdp.core.State, String[])},
- * {@link #getTransitions(burlap.oomdp.core.State, String[])},
- * {@link #applicableInState(burlap.oomdp.core.State, String[])}, and
+ * {@link #performActionHelper(burlap.oomdp.core.states.State, String[])},
+ * {@link #getTransitions(burlap.oomdp.core.states.State, String[])},
+ * {@link #applicableInState(burlap.oomdp.core.states.State, String[])}, and
  * {@link #performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])}. <br/>
- * Of these methods, only {@link #performActionHelper(burlap.oomdp.core.State, String[])} is required to be overridden and implemented.
+ * Of these methods, only {@link #performActionHelper(burlap.oomdp.core.states.State, String[])} is required to be overridden and implemented.
  * This method should have the affect of sampling an transition from applying this {@link Action} in the input {@link State}
- * and returning the sampled outcome. This method is always called indirectly by the {@link #performAction(burlap.oomdp.core.State, String[])}
- * method, which first makes a copy of the input state before passing it {@link #performActionHelper(burlap.oomdp.core.State, String[])}.
+ * and returning the sampled outcome. This method is always called indirectly by the {@link #performAction(burlap.oomdp.core.states.State, String[])}
+ * method, which first makes a copy of the input state before passing it {@link #performActionHelper(burlap.oomdp.core.states.State, String[])}.
  * Therefore, you can directly modify the input state and return it if that is easiest. This method will be used by planning
  * algorithms that use sampled transitions instead of enumerating the full transition dynamics or by deterministic planning
  * algorithms where there is not expected to ever be more than on possible outcome of an action. In general this method should always
@@ -40,34 +40,34 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * will only ever be able to use this action indirectly by asking an {@link burlap.oomdp.singleagent.environment.Environment}
  * to apply it, which should know how to execute it (for example, by telling a robot to execute the action in the real world).
  * <br/>
- * The {@link #getTransitions(burlap.oomdp.core.State, String[])} method provides the full transition dynamics of
+ * The {@link #getTransitions(burlap.oomdp.core.states.State, String[])} method provides the full transition dynamics of
  * an {@link burlap.oomdp.singleagent.Action}. Although this method does not have to overridden, if it is not
  * it will throw a runtime exception. This method is not required to be overridden because in many domains, the transition
- * dynamics are infinite or too large to enumerate, in which case only sampling (via the {@link #performAction(burlap.oomdp.core.State, String[])}
+ * dynamics are infinite or too large to enumerate, in which case only sampling (via the {@link #performAction(burlap.oomdp.core.states.State, String[])}
  * method) can be used. However, many planning algorithms, such as Dynamic programming methods, require the full transition dynamics,
  * so if you wish to use such an algorithm and it is possible to fully enumerate the transition dynamics, you should override and
- * implement this method. This method should return a list of all transitions from the input {@link burlap.oomdp.core.State}
+ * implement this method. This method should return a list of all transitions from the input {@link burlap.oomdp.core.states.State}
  * that have non-zero probability of occurring. These transitions are specified with a {@link burlap.oomdp.core.TransitionProbability}
- * object that is a pair consisting of the next {@link burlap.oomdp.core.State} and a double specifying the probability
+ * object that is a pair consisting of the next {@link burlap.oomdp.core.states.State} and a double specifying the probability
  * of transitioning to that state.
  * <br/>
- * Overriding the {@link #applicableInState(burlap.oomdp.core.State, String[])} method is how preconditions can be specified.
+ * Overriding the {@link #applicableInState(burlap.oomdp.core.states.State, String[])} method is how preconditions can be specified.
  * If you do not override this method, then the default behavior is that no actions have any preconditions and can be applied
- * in any state. This method takes as input a {@link burlap.oomdp.core.State} and the parameters for this action (if any),
+ * in any state. This method takes as input a {@link burlap.oomdp.core.states.State} and the parameters for this action (if any),
  * and returns true if the action can be applied in that state and false otherwise.
  * <br/>
  * The {@link #performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])} method does not
  * need to be overridden for the vast majority of case (the exception is hierarchical actions like {@link burlap.behavior.singleagent.options.Option})
  * This method allows an action to be executed in an {@link burlap.oomdp.singleagent.environment.Environment} in which the
  * outcomes may be different than this {@link burlap.oomdp.singleagent.Action}'s model of the world (as defined
- * by the {@link #performAction(burlap.oomdp.core.State, String[])} and {@link #getTransitions(burlap.oomdp.core.State, String[])} methods).
+ * by the {@link #performAction(burlap.oomdp.core.states.State, String[])} and {@link #getTransitions(burlap.oomdp.core.states.State, String[])} methods).
  * Typically, {@link burlap.behavior.singleagent.learning.LearningAgent}'s will execute actions in the {@link burlap.oomdp.singleagent.environment.Environment}
  * from which they're learning using this method.
  *
  * <br/<br/>
  * <b>Parameters</b><br/>
  * The default assumption for parameters (which can be relaxed, see more below)
- * is that any parameters of an {@link Action} are references to {@link burlap.oomdp.core.ObjectInstance}s in a {@link burlap.oomdp.core.State}.
+ * is that any parameters of an {@link Action} are references to {@link burlap.oomdp.core.objects.ObjectInstance}s in a {@link burlap.oomdp.core.states.State}.
  * The string array in the constructor specifies the valid type of {@link burlap.oomdp.core.ObjectClass}
  * to which the parameters must belong. For example, in blocks world, we might define a "stack" action that takes two parameters
  * that each must be instances of the BLOCK class. In such a case, the String array passed to the constructor would be new String[]{"BLOCK", "BLOCK"}.
@@ -81,7 +81,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * is unimportant.
  * <br/>
  * Parameters of an action do not have to be object references either. If you would like to specify your own kind
- * of parameters, you can override the {@link #getAllApplicableGroundedActions(burlap.oomdp.core.State)} method,
+ * of parameters, you can override the {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)} method,
  * which should return the list of actions and their parameters (stored in a {@link burlap.oomdp.singleagent.GroundedAction}
  * instance) that can be applied in the input state. Additionally, you should then override the method {@link #parametersAreObjects()}
  * and have it return false.
@@ -383,11 +383,11 @@ public abstract class Action {
 
 	/**
 	 * Returns the transition dynamics by assuming the action to be deterministic and wrapping the result of a
-	 * {@link #performAction(burlap.oomdp.core.State, String[])} method with a 1.0 probable {@link TransitionProbability}
+	 * {@link #performAction(burlap.oomdp.core.states.State, String[])} method with a 1.0 probable {@link TransitionProbability}
 	 * object and inserting it in the returned list.
 	 * @param s the state from which the transition probabilities when applying this action will be returned.
 	 * @param params a String array specifying the action object parameters
-	 * @return a List of one element of type {@link burlap.oomdp.core.TransitionProbability} whose state is the outcome of the {@link #performAction(burlap.oomdp.core.State, String[])} method.
+	 * @return a List of one element of type {@link burlap.oomdp.core.TransitionProbability} whose state is the outcome of the {@link #performAction(burlap.oomdp.core.states.State, String[])} method.
 	 */
 	protected List<TransitionProbability> deterministicTransition(State s, String [] params){
 		List <TransitionProbability> transition = new ArrayList<TransitionProbability>();

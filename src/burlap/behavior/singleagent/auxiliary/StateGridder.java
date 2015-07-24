@@ -1,6 +1,8 @@
 package burlap.behavior.singleagent.auxiliary;
 
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 
 import java.util.*;
 
@@ -18,7 +20,7 @@ import java.util.*;
  * {@link #gridEntireDomainSpace(burlap.oomdp.core.Domain, int)} methods.
  * <p/>
  * After the desired grid specifications have been set, a list of states spanning a grid according to the specification
- * can be generated using the {@link #gridInputState(burlap.oomdp.core.State)} method. This method takes a source input
+ * can be generated using the {@link #gridInputState(burlap.oomdp.core.states.State)} method. This method takes a source input
  * state and creates a grid from it. Objects classes and attributes that did not have grid specifications
  * defined for them will remain as constant objects/values in each of the returned states. The input state values
  * will remain unaffected by the gridding.
@@ -102,10 +104,10 @@ public class StateGridder {
 	/**
 	 * Creates a grid using the input state a source reference. If the state contains objects that belong to {@link burlap.oomdp.core.ObjectClass}
 	 * that are not defined in this object's grid specification, that each of those objects will be constant objects in the gridded list
-	 * of {@link burlap.oomdp.core.State} objects returned. Similarly, if objects have attribute that do not have a specification set for them,
+	 * of {@link burlap.oomdp.core.states.State} objects returned. Similarly, if objects have attribute that do not have a specification set for them,
 	 * then they will remain as constant values.
 	 * @param s the input state to use a reference for creating the grid. This state specifies the number of objects that needed to be gridded and any constant ungridded objects/attributes
-	 * @return a {@link java.util.List} of {@link burlap.oomdp.core.State} objects that define the grid.
+	 * @return a {@link java.util.List} of {@link burlap.oomdp.core.states.State} objects that define the grid.
 	 */
 	public List<State> gridInputState(State s){
 

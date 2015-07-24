@@ -2,8 +2,8 @@ package burlap.domain.singleagent.cartpole;
 
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 
 /**
  * A custom {@link burlap.oomdp.auxiliary.StateParser} for the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.InvertedPendulumTerminalFunction}

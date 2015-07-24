@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit;
 
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 

@@ -1,7 +1,7 @@
 package burlap.oomdp.stochasticgames.explorers;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.stochasticgames.*;

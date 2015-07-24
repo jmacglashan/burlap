@@ -28,7 +28,7 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -187,9 +187,9 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
 	 * and the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples to use for planning when
-	 * the {@link #planFromState(burlap.oomdp.core.State)} method is called. If the
+	 * the {@link #planFromState(burlap.oomdp.core.states.State)} method is called. If the
 	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
-	 * are not set, the {@link #planFromState(burlap.oomdp.core.State)} method will throw a runtime exception.
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.states.State)} method will throw a runtime exception.
 	 * @param rf the reward function to use for planning
 	 * @param tf the terminal function to use for planning
 	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
@@ -204,9 +204,9 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
 	 * the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples, and the {@link burlap.behavior.singleagent.learning.lspi.SARSCollector} to use
 	 * to collect samples for planning when
-	 * the {@link #planFromState(burlap.oomdp.core.State)} method is called. If the
+	 * the {@link #planFromState(burlap.oomdp.core.states.State)} method is called. If the
 	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
-	 * are not set, the {@link #planFromState(burlap.oomdp.core.State)} method will throw a runtime exception.
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.states.State)} method will throw a runtime exception.
 	 * @param rf the reward function to use for planning
 	 * @param tf the terminal function to use for planning
 	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.

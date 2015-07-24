@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
 
 import com.google.common.base.Predicate;

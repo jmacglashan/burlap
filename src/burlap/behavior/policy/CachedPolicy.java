@@ -1,10 +1,9 @@
 package burlap.behavior.policy;
 
-import burlap.behavior.policy.Policy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 import java.util.HashMap;
 import java.util.List;

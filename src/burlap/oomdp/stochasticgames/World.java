@@ -11,7 +11,7 @@ import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 
 

@@ -13,6 +13,8 @@ import javax.swing.*;
 
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
 import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.visualizer.Visualizer;
@@ -69,7 +71,7 @@ public class SGVisualExplorer extends JFrame {
 	/**
 	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
 	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
-	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State)}
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.states.State)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
@@ -96,7 +98,7 @@ public class SGVisualExplorer extends JFrame {
 	/**
 	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
 	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
-	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State, int, int)}
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.states.State, int, int)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore

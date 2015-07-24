@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.blockdude;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * A class for generating the initial states for {@link burlap.domain.singleagent.blockdude.BlockDude} from levels
@@ -13,9 +13,9 @@ public class BlockDudeLevelConstructor {
 
 
 	/**
-	 * Returns the initial {@link burlap.oomdp.core.State} of the first level.
+	 * Returns the initial {@link burlap.oomdp.core.states.State} of the first level.
 	 * @param domain the domain to which the state will belong.
-	 * @return the initial {@link burlap.oomdp.core.State} of the first level.
+	 * @return the initial {@link burlap.oomdp.core.states.State} of the first level.
 	 */
 	public static State getLevel1(Domain domain){
 
@@ -43,9 +43,9 @@ public class BlockDudeLevelConstructor {
 
 
 	/**
-	 * Returns the initial {@link burlap.oomdp.core.State} of the second level.
+	 * Returns the initial {@link burlap.oomdp.core.states.State} of the second level.
 	 * @param domain the domain to which the state will belong.
-	 * @return the initial {@link burlap.oomdp.core.State} of the second level.
+	 * @return the initial {@link burlap.oomdp.core.states.State} of the second level.
 	 */
 	public static State getLevel2(Domain domain){
 
@@ -76,9 +76,9 @@ public class BlockDudeLevelConstructor {
 
 
 	/**
-	 * Returns the initial {@link burlap.oomdp.core.State} of the third level.
+	 * Returns the initial {@link burlap.oomdp.core.states.State} of the third level.
 	 * @param domain the domain to which the state will belong.
-	 * @return the initial {@link burlap.oomdp.core.State} of the third level.
+	 * @return the initial {@link burlap.oomdp.core.states.State} of the third level.
 	 */
 	public static State getLevel3(Domain domain){
 

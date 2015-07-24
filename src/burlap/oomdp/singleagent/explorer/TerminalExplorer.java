@@ -1,20 +1,14 @@
 package burlap.oomdp.singleagent.explorer;
 
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
-import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullRewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
 
@@ -50,7 +44,7 @@ public class TerminalExplorer {
 	 * Initializes the explorer with the specified domain using a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment} with
 	 * a {@link burlap.oomdp.singleagent.common.NullRewardFunction} and {@link burlap.oomdp.auxiliary.common.NullTermination}
 	 * @param domain the domain to explore
-	 * @param baseState the initial {@link burlap.oomdp.core.State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
+	 * @param baseState the initial {@link burlap.oomdp.core.states.State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
 	 */
 	public TerminalExplorer(Domain domain, State baseState){
 		this.env = new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), baseState);
@@ -64,7 +58,7 @@ public class TerminalExplorer {
 	 * and short hand names for actions
 	 * @param domain the domain to explore
 	 * @param ash a map from short hand names to full action names. For instance, "s->stack"
-	 * @param baseState the initial {@link burlap.oomdp.core.State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
+	 * @param baseState the initial {@link burlap.oomdp.core.states.State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
 	 */
 	public TerminalExplorer(Domain domain, Map <String, String> ash, State baseState){
 		this.env = new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), baseState);

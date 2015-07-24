@@ -3,7 +3,9 @@ package burlap.domain.singleagent.blockdude;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
@@ -33,13 +35,13 @@ import java.util.Set;
  * the actions up, west, east, pickup, putdown, respectively.
  * <br/><br/>
  * By default this domain's actions will use a {@link burlap.oomdp.core.states.MutableState#semiDeepCopy(java.util.Set)} instead of a
- * {@link burlap.oomdp.core.State#copy()}. The semi-deep copy only copies {@link burlap.oomdp.core.ObjectInstance}
+ * {@link burlap.oomdp.core.states.State#copy()}. The semi-deep copy only copies {@link burlap.oomdp.core.objects.ObjectInstance}
  * in the previous state that will have its values modified by the action execution:
  * typically, the agent and a moved block are deep copied, with the un moved block objects and brick objects
  * shallow copied to the new state. This is much more memory efficient, but you should avoid directly modifying
  * any single state outside of state construction to avoid changes to other states that may be in memory that use the
  * same shallow copy. Instead, if you wish to directly modify states, always make a
- * {@link burlap.oomdp.core.State#copy()} first. Alternatively, you can set Actions to always make deep copies
+ * {@link burlap.oomdp.core.states.State#copy()} first. Alternatively, you can set Actions to always make deep copies
  * by setting this class's {@link #useSemiDeep} parameter to false with with the {@link #setUseSemiDeep(boolean)} method.
  *
  * @author James MacGlashan.
@@ -143,7 +145,7 @@ public class BlockDude implements DomainGenerator{
 
 	/**
 	 * Domain parameter specifying whether actions create semi-deep copies of states or fully deep copies of states.
-	 * The default is true. If true, then actions only deep copy {@link burlap.oomdp.core.ObjectInstance} between
+	 * The default is true. If true, then actions only deep copy {@link burlap.oomdp.core.objects.ObjectInstance} between
 	 * states that have their values change from the action execution
 	 * (typically the agent or a specifically moved block). If false,
 	 * then the states are completely deep copied by action execution.
@@ -264,14 +266,14 @@ public class BlockDude implements DomainGenerator{
 	 * Returns an uninitialized state that contains the specified number of block objects. Specifically,
 	 * the state will have one agent object, one exit object, one bricks object (specifying the entire landscape in
 	 * an int array attribute), and nb block objects. Their values will need to be set before being used
-	 * either manually or with methods like {@link #setAgent(burlap.oomdp.core.State, int, int, int, boolean)},
-	 * {@link #setExit(burlap.oomdp.core.State, int, int)}, {@link #setBlock(burlap.oomdp.core.State, int, int, int)},
-	 * and {@link #setBrickMap(burlap.oomdp.core.State, int[][])} or
-	 * {@link #setBrickValue(burlap.oomdp.core.State, int, int, int)}. If you want pre-generated states,
+	 * either manually or with methods like {@link #setAgent(burlap.oomdp.core.states.State, int, int, int, boolean)},
+	 * {@link #setExit(burlap.oomdp.core.states.State, int, int)}, {@link #setBlock(burlap.oomdp.core.states.State, int, int, int)},
+	 * and {@link #setBrickMap(burlap.oomdp.core.states.State, int[][])} or
+	 * {@link #setBrickValue(burlap.oomdp.core.states.State, int, int, int)}. If you want pre-generated states,
 	 * see the {@link burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor}
 	 * @param domain the generated Block Dude domain to which the state will belong
 	 * @param nb the number of blocks to include in the state
-	 * @return a {@link burlap.oomdp.core.State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
+	 * @return a {@link burlap.oomdp.core.states.State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
 	 */
 	public static State getUninitializedState(Domain domain, int nb){
 		State s = new MutableState();
@@ -597,7 +599,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * Moves a carried block to a new position of the agent
 	 * @param s the state to modify
-	 * @param agent the agent {@link burlap.oomdp.core.ObjectInstance}
+	 * @param agent the agent {@link burlap.oomdp.core.objects.ObjectInstance}
 	 * @param ax the previous x position of the agent
 	 * @param ay the previous y position of the agent
 	 * @param nx the new x position of the *agent*
@@ -616,11 +618,11 @@ public class BlockDude implements DomainGenerator{
 
 	/**
 	 * Finds a block object in the {@link State} located at the provided position and returns its
-	 * {@link burlap.oomdp.core.ObjectInstance}. If not block at the location exists, then null is returned.
+	 * {@link burlap.oomdp.core.objects.ObjectInstance}. If not block at the location exists, then null is returned.
 	 * @param s the state to check
 	 * @param x the x position
 	 * @param y the y position
-	 * @return the {@link burlap.oomdp.core.ObjectInstance} for the corresponding block object in the state at the given position or null if one does not exist.
+	 * @return the {@link burlap.oomdp.core.objects.ObjectInstance} for the corresponding block object in the state at the given position or null if one does not exist.
 	 */
 	protected static ObjectInstance getBlockAt(State s, int x, int y){
 

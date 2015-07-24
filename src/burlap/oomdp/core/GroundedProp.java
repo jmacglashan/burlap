@@ -1,6 +1,7 @@
 package burlap.oomdp.core;
 
 
+import burlap.oomdp.core.states.State;
 
 /**
  * Propositional functions are defined to be evaluated on object parameters and this class provides a

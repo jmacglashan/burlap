@@ -1,5 +1,7 @@
 package burlap.oomdp.core;
 
+import burlap.oomdp.core.states.State;
+
 import java.util.ArrayList;
 import java.util.List;
 

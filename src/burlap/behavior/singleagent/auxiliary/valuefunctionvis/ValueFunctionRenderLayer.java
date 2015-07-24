@@ -9,7 +9,7 @@ import java.util.List;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.visualizer.RenderLayer;
 

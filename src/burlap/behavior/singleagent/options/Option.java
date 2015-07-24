@@ -16,7 +16,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
@@ -216,7 +216,7 @@ public abstract class Option extends Action {
 	public abstract double probabilityOfTermination(State s, String [] params);
 	
 	/**
-	 * This method is always called when an option is initated and begins execution. Specifically, it is called from the {@link #performActionHelper(burlap.oomdp.core.State, String[])}
+	 * This method is always called when an option is initated and begins execution. Specifically, it is called from the {@link #performActionHelper(burlap.oomdp.core.states.State, String[])}
 	 * For Markov options, this method probably does not need to do anything, but for non-Markov options, like Macro actions, it may need
 	 * to initialize some structures for determining termination and action selection.
 	 * @param s the state in which the option was initiated
@@ -227,7 +227,7 @@ public abstract class Option extends Action {
 	
 	/**
 	 * This method causes the option to select a single step in the given state, when the option was initiated with the provided parameters.
-	 * This method will be called by the {@link #performActionHelper(burlap.oomdp.core.State, String[])}  method until it is determined that the option terminates.
+	 * This method will be called by the {@link #performActionHelper(burlap.oomdp.core.states.State, String[])}  method until it is determined that the option terminates.
 	 * @param s the state in which an action should be selected.
 	 * @param params the parameters that were passed to the option when it was initiated
 	 * @return the action the option has selected to take in State <code>s</code>
@@ -530,7 +530,7 @@ public abstract class Option extends Action {
 	}
 
 	/**
-	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(burlap.oomdp.core.State, String[])}
+	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(burlap.oomdp.core.states.State, String[])}
 	 * method was called previously for the state in which this option was initiated.
 	 * @param s the state in which a single step of the option is to be taken.
 	 * @param params the parameters that were passed to the option at initiation
@@ -564,7 +564,7 @@ public abstract class Option extends Action {
 
 	/**
 	 * Performs one step of execution of the option in the provided {@link burlap.oomdp.singleagent.environment.Environment}.
-	 * This method assuems that the {@link #initiateInState(burlap.oomdp.core.State, String[])} method
+	 * This method assuems that the {@link #initiateInState(burlap.oomdp.core.states.State, String[])} method
 	 * was called previously for the state in which this option was initiated.
 	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this option is to be applied
 	 * @param params the parameters that were passed to the option at initiation

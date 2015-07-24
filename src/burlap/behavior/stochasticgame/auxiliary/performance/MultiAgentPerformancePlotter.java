@@ -36,7 +36,7 @@ import org.jfree.data.xy.YIntervalSeriesCollection;
 import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
 import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.WorldObserver;

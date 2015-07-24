@@ -16,6 +16,7 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;

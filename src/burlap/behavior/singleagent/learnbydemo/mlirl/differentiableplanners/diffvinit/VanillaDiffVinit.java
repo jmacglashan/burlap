@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.dif
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * A class for the default condition when a value function initialization returns an unparameterized  value

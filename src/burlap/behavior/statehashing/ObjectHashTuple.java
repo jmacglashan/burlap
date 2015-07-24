@@ -1,6 +1,6 @@
 package burlap.behavior.statehashing;
 
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 
 public abstract class ObjectHashTuple {
 

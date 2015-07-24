@@ -7,9 +7,8 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.stochasticgames.AgentType;
 import burlap.oomdp.stochasticgames.SGDomain;
@@ -22,7 +21,7 @@ import burlap.oomdp.stochasticgames.SingleAction;
  * Each of the stochastic game single actions is converted into a single agent {@link burlap.oomdp.singleagent.Action} object with the same 
  * action name and parametrization. The created {@link burlap.oomdp.singleagent.SADomain}'s {@link burlap.oomdp.singleagent.Action} objects maintain the action specification of
  * the input {@link burlap.oomdp.stochasticgames.SGDomain}'s {@link burlap.oomdp.stochasticgames.SingleAction} (that is, their name and parameter types), but
- * the {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.State, String[])} and {@link burlap.oomdp.singleagent.Action#getTransitions(burlap.oomdp.core.State, String[])}
+ * the {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, String[])} and {@link burlap.oomdp.singleagent.Action#getTransitions(burlap.oomdp.core.states.State, String[])}
  * methods are undefined since the transition dynamics would depend on the action selection of other agents, which is unknown. Instead, actions can only
  * be executed through the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])} method only
  * in which the specified {@link burlap.oomdp.singleagent.environment.Environment} handles the decisions of the other agents. For example, this domain

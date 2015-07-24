@@ -1,7 +1,7 @@
 package burlap.oomdp.auxiliary.common;
 
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 
 

@@ -10,7 +10,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 
 /**

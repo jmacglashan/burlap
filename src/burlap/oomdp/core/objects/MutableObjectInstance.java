@@ -4,7 +4,6 @@ import java.util.*;
 
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.values.Value;
 
@@ -30,7 +29,7 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	protected String						name;
 
 	/**
-	 * The value assignment for this {@link burlap.oomdp.core.ObjectInstance}
+	 * The value assignment for this {@link ObjectInstance}
 	 */
 	protected List <Value>					values;
 	

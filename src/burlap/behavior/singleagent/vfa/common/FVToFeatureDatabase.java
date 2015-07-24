@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.Map;
  * to automatically construct state-action features. Specifically, the state features produced but the
  * {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} are duplicated into unique features for
  * each possible action. The duplication of features for actions is lazy. That is, every time a previously unseen
- * action is queried in the {@link #getActionFeaturesSets(burlap.oomdp.core.State, java.util.List)} method,
+ * action is queried in the {@link #getActionFeaturesSets(burlap.oomdp.core.states.State, java.util.List)} method,
  * it gets new state features assigned to it.
  * @author James MacGlashan.
  */

@@ -5,7 +5,7 @@ import java.util.Random;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;

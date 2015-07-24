@@ -1,9 +1,8 @@
-package burlap.oomdp.core;
+package burlap.oomdp.core.states;
 
 import java.util.*;
 
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.core.objects.ObjectInstance;
 
 
 /**

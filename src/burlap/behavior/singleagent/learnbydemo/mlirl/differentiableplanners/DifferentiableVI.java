@@ -8,7 +8,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 
 import java.util.*;
@@ -78,7 +78,7 @@ public class DifferentiableVI extends DifferentiableVFPlanner implements Planner
 
 
 	/**
-	 * Calling this method will force the planner to recompute the reachable states when the {@link #planFromState(burlap.oomdp.core.State)} method is called next.
+	 * Calling this method will force the planner to recompute the reachable states when the {@link #planFromState(burlap.oomdp.core.states.State)} method is called next.
 	 * This may be useful if the transition dynamics from the last planning call have changed and if planning needs to be restarted as a result.
 	 */
 	public void recomputeReachableStates(){

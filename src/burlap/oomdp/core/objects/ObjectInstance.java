@@ -1,7 +1,8 @@
-package burlap.oomdp.core;
+package burlap.oomdp.core.objects;
 
 import java.util.*;
 
+import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.values.Value;
 
 

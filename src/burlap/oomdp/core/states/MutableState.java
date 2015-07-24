@@ -2,8 +2,7 @@ package burlap.oomdp.core.states;
 
 import java.util.*;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
 
 
 /**

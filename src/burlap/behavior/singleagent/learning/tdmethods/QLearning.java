@@ -24,7 +24,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -38,7 +38,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * Tabular Q-learning algorithm [1]. This implementation will work correctly with Options [2]. The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
  * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
- * method before calling {@link #planFromState(burlap.oomdp.core.State)}.
+ * method before calling {@link #planFromState(burlap.oomdp.core.states.State)}.
  * The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
  * <br/><br/>
@@ -245,9 +245,9 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	/**
 	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
 	 * and the number of simulated episodes to use for planning when
-	 * the {@link #planFromState(burlap.oomdp.core.State)} method is called. If the
+	 * the {@link #planFromState(burlap.oomdp.core.states.State)} method is called. If the
 	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
-	 * are not set, the {@link #planFromState(burlap.oomdp.core.State)} method will throw a runtime exception.
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.states.State)} method will throw a runtime exception.
 	 * @param rf the reward function to use for planning
 	 * @param tf the terminal function to use for planning
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.

@@ -36,12 +36,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
 
-import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.ActionObserver;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-
-
 
 /**
  * This class is an action observer used to collect and plot performance data of a learning agent either by itself or against another learning agent. There are 

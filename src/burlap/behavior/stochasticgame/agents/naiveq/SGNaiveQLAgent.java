@@ -17,7 +17,7 @@ import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.Agent;
 import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;

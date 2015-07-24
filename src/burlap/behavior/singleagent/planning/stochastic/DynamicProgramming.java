@@ -19,7 +19,7 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;

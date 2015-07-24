@@ -4,7 +4,7 @@ import java.util.List;
 
 import burlap.behavior.policy.Policy;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 
 /**
@@ -40,7 +40,7 @@ public interface QFunction {
 		 * Returns the optimal state value function for a state given a {@link QFunction}.
 		 * The optimal value is the max Q-value. If no actions are permissible in the input state, then zero is returned.
 		 * @param qSource the {@link QFunction} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @return the max Q-value for all possible Q-values in the state.
 		 */
 		public static double getOptimalValue(QFunction qSource, State s){
@@ -59,7 +59,7 @@ public interface QFunction {
 		 * Returns the optimal state value for a state given a {@link QFunction}.
 		 * The optimal value is the max Q-value. If no actions are permissible in the input state or the input state is a terminal state, then zero is returned.
 		 * @param qSource the {@link QFunction} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @param tf a terminal function.
 		 * @return the max Q-value for all possible Q-values in the state or zero if there are not permissible actions or if the state is a terminal state.
 		 */
@@ -77,7 +77,7 @@ public interface QFunction {
 		 * Returns the state value under a given policy for a state and {@link QFunction}.
 		 * The value is the expected Q-value under the input policy action distribution. If no actions are permissible in the input state, then zero is returned.
 		 * @param qSource the {@link QFunction} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @param p the policy defining the action distribution.
 		 * @return the expected Q-value under the input policy action distribution
 		 */
@@ -100,7 +100,7 @@ public interface QFunction {
 		 * Returns the state value under a given policy for a state and {@link QFunction}.
 		 * The value is the expected Q-value under the input policy action distribution. If no actions are permissible in the input state, then zero is returned.
 		 * @param qSource the {@link QFunction} capable of producing Q-values.
-		 * @param s the query {@link burlap.oomdp.core.State} for which the value should be returned.
+		 * @param s the query {@link burlap.oomdp.core.states.State} for which the value should be returned.
 		 * @param p the policy defining the action distribution.
 		 * @param tf a terminal function.
 		 * @return the expected Q-value under the input policy action distribution or zero if there are not permissible actions or if the state is a terminal state.
