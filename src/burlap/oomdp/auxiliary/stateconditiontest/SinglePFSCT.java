@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.planning;
+package burlap.oomdp.auxiliary.stateconditiontest;
 
 import java.util.List;
 

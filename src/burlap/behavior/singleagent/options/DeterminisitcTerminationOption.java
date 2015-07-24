@@ -8,8 +8,8 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.singleagent.planning.StateConditionTest;
-import burlap.behavior.singleagent.planning.StateConditionTestIterable;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -64,7 +64,7 @@ public class DeterminisitcTerminationOption extends Option {
 	
 	/**
 	 * Initializes the option by creating the policy uses some provided option. The planner is called repeatedly on each state in the
-	 * initiation state set (which needs to be a {@link burlap.behavior.singleagent.planning.StateConditionTestIterable}) and then
+	 * initiation state set (which needs to be a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable}) and then
 	 * sets this options policy to the planner derived policy that is provided.
 	 * @param name the name of the option
 	 * @param init the iterable initiation states

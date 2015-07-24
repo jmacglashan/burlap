@@ -1,4 +1,4 @@
-package burlap.oomdp.singleagent.common;
+package burlap.oomdp.auxiliary.common;
 
 import java.util.List;
 

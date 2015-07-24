@@ -1,13 +1,13 @@
-package burlap.behavior.singleagent.planning.deterministic;
+package burlap.oomdp.auxiliary.common;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 
 
 /**
  * Creates a terminal function that indicates terminal states are any states that satisfy a goal condition
- * where the goal condition is specified by a {@link burlap.behavior.singleagent.planning.StateConditionTest} object. 
+ * where the goal condition is specified by a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object.
  * No other states are set as terminal states.
  * @author James MacGlashan
  *

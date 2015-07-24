@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.options.support;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 
@@ -10,7 +10,7 @@ import burlap.oomdp.core.TerminalFunction;
  * to use a planning or learning algorithm to define these policies, in which case a terminal
  * function for the option would need to be specified in order to learn or plan for its policy. This terminal function 
  * defines a set of states in which an option is applicable and the subgoal states of the option.
- * The subgoal state and applicable states are specified using {@link burlap.behavior.singleagent.planning.StateConditionTest}
+ * The subgoal state and applicable states are specified using {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest}
  * objects. The agent will terminate in any subgoal state or any state that is not an applicable state.
  * @author James MacGlashan
  *

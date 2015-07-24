@@ -1,7 +1,7 @@
 package burlap.oomdp.singleagent.common;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
-import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -9,7 +9,7 @@ import burlap.oomdp.singleagent.RewardFunction;
 
 
 /**
- * A reward function implementation designed around goal conditions that are specified by a {@link burlap.behavior.singleagent.planning.StateConditionTest} object
+ * A reward function implementation designed around goal conditions that are specified by a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object
  * or a {@link burlap.oomdp.core.TerminalFunction}.
  * When the agent transition to a state marked as a goal state, it returns a goal reward. Otherwise a default reward is returned.
  * @author James MacGlashan
@@ -23,7 +23,7 @@ public class GoalBasedRF implements RewardFunction {
 	
 	/**
 	 * Initializes with transitions to goal states returning a reward of 1 and all others returning 0
-	 * @param gc {@link burlap.behavior.singleagent.planning.StateConditionTest} object that specifies goal states. 
+	 * @param gc {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object that specifies goal states.
 	 */
 	public GoalBasedRF(StateConditionTest gc) {
 		this.gc = gc;
@@ -32,7 +32,7 @@ public class GoalBasedRF implements RewardFunction {
 	
 	/**
 	 * Initializes with transitions to goal states returning the given reward and all others returning 0.
-	 * @param gc {@link burlap.behavior.singleagent.planning.StateConditionTest} object that specifies goal states.
+	 * @param gc {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object that specifies goal states.
 	 * @param goalReward the reward returned for transitions to goal states.
 	 */
 	public GoalBasedRF(StateConditionTest gc, double goalReward) {
@@ -43,7 +43,7 @@ public class GoalBasedRF implements RewardFunction {
 	
 	/**
 	 * Initializes with transitions to goal states returning the given reward and all others returning 0.
-	 * @param gc {@link burlap.behavior.singleagent.planning.StateConditionTest} object that specifies goal states.
+	 * @param gc {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object that specifies goal states.
 	 * @param goalReward the reward returned for transitions to goal states.
 	 * @param defaultReward the default reward returned for all non-goal state transitions.
 	 */

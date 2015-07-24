@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
 import burlap.behavior.statehashing.StateHashFactory;

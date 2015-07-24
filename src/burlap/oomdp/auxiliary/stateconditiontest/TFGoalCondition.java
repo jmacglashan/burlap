@@ -1,6 +1,6 @@
-package burlap.behavior.singleagent.planning.deterministic;
+package burlap.oomdp.auxiliary.stateconditiontest;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 

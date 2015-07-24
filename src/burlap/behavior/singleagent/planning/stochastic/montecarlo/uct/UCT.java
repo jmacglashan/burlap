@@ -12,7 +12,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTStateNode.UCTStateConstructor;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -27,7 +27,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
- * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.behavior.singleagent.planning.StateConditionTest})
+ * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest})
  * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
  * <br/><br/>
  * The class also implements the {@link burlap.behavior.valuefunction.QFunction} interface. However, it will only return the Q-value
@@ -120,7 +120,7 @@ public class UCT extends OOMDPPlanner implements QFunction {
 	
 	/**
 	 * Tells the planner to stop planning if a goal state is ever found.
-	 * @param gc a {@link burlap.behavior.singleagent.planning.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
+	 * @param gc a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
 	 */
 	public void useGoalConditionStopCriteria(StateConditionTest gc){
 		this.goalCondition = gc;

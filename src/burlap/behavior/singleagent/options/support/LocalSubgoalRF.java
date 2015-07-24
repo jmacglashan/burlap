@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.options.support;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -11,7 +11,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * to use a planning or learning algorithm to define these policies, in which case a subgoal reward
  * function for the option would need to be specified. This reward function 
  * defines a set of states in which an option is applicable and the subgoal states of the option.
- * The subgoal state and applicable states are specified using {@link burlap.behavior.singleagent.planning.StateConditionTest}
+ * The subgoal state and applicable states are specified using {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest}
  * objects. By default, a subgoal reward of 0 is returned for transitions to the subgoal states, the most negative value
  * for transitions to states in which the option is not applicable and -1 for any other transitions. All of these
  * values can be changed.

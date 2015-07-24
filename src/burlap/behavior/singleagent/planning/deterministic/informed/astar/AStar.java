@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 import java.util.HashMap;
 import java.util.Map;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.BestFirst;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
