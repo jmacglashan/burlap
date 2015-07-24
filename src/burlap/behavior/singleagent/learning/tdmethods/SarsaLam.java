@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -131,7 +131,7 @@ public class SarsaLam extends QLearning {
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
-	 * @param qInit a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param qInit a {@link burlap.behavior.valuefunction.ValueFunctionInitialization} object that can be used to initialize the Q-values.
 	 * @param learningRate the learning rate
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.

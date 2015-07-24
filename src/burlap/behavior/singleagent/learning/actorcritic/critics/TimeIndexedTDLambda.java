@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;

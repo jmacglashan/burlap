@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.QValue;
+import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
-import burlap.behavior.singleagent.planning.QFunction;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.statehashing.StateHashFactory;

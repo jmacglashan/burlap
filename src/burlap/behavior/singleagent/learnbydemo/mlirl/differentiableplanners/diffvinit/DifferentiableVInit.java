@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit;
 
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 

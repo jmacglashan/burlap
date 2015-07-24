@@ -3,13 +3,13 @@ package burlap.behavior.singleagent.learning.tdmethods;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.behavior.singleagent.QValue;
+import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
- * This class is used to store the associated {@link burlap.behavior.singleagent.QValue} objects for a given hashed sated.
+ * This class is used to store the associated {@link burlap.behavior.valuefunction.QValue} objects for a given hashed sated.
  * @author James MacGlashan
  *
  */
@@ -27,7 +27,7 @@ public class QLearningStateNode {
 	
 	
 	/**
-	 * Creates a new object for the given hashed state. The list of {@link burlap.behavior.singleagent.QValue} objects is initialized to be empty.
+	 * Creates a new object for the given hashed state. The list of {@link burlap.behavior.valuefunction.QValue} objects is initialized to be empty.
 	 * @param s the hashed state for which to associate Q-values
 	 */
 	public QLearningStateNode(StateHashTuple s) {

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.stochasticgame.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgame.mavaluefunction.AgentQSourceMap;

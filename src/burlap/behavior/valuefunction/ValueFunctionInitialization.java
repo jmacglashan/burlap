@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent;
+package burlap.behavior.valuefunction;
 
 import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.oomdp.core.AbstractGroundedAction;

@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.support;
 
-import burlap.behavior.singleagent.QValue;
+import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;

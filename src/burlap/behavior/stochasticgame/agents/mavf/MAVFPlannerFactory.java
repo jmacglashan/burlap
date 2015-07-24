@@ -2,7 +2,7 @@ package burlap.behavior.stochasticgame.agents.mavf;
 
 import java.util.Map;
 
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.stochasticgame.mavaluefunction.MAValueFunctionPlanner;
 import burlap.behavior.stochasticgame.mavaluefunction.SGBackupOperator;

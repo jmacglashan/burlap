@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgame.agents.naiveq.history;
 
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.stochasticgames.Agent;

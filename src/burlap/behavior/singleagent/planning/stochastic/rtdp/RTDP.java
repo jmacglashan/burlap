@@ -5,8 +5,8 @@ import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunctionPlanner;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;

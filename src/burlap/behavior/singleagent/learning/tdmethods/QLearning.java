@@ -11,13 +11,13 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QFunction;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -203,7 +203,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
-	 * @param qInit a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param qInit a {@link burlap.behavior.valuefunction.ValueFunctionInitialization} object that can be used to initialize the Q-values.
 	 * @param learningRate the learning rate
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
@@ -224,7 +224,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
-	 * @param qInitFunction a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param qInitFunction a {@link burlap.behavior.valuefunction.ValueFunctionInitialization} object that can be used to initialize the Q-values.
 	 * @param learningRate the learning rate
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
@@ -259,7 +259,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	
 	/**
 	 * Sets how to initialize Q-values for previously unexperienced state-action pairs.
-	 * @param qInit a {@link burlap.behavior.singleagent.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param qInit a {@link burlap.behavior.valuefunction.ValueFunctionInitialization} object that can be used to initialize the Q-values.
 	 */
 	public void setQInitFunction(ValueFunctionInitialization qInit){
 		this.qInitFunction = qInit;
@@ -403,7 +403,7 @@ public class QLearning extends OOMDPPlanner implements QFunction, LearningAgent{
 	
 	/**
 	 * Returns the {@link QLearningStateNode} object stored for the given hashed state. If no {@link QLearningStateNode} object.
-	 * is stored, then it is created and has its Q-value initialize using this objects {@link burlap.behavior.singleagent.ValueFunctionInitialization} data member.
+	 * is stored, then it is created and has its Q-value initialize using this objects {@link burlap.behavior.valuefunction.ValueFunctionInitialization} data member.
 	 * @param s the hashed state for which to get the {@link QLearningStateNode} object
 	 * @return the {@link QLearningStateNode} object stored for the given hashed state. If no {@link QLearningStateNode} object.
 	 */

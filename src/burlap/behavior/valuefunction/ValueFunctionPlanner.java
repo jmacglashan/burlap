@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.planning;
+package burlap.behavior.valuefunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +8,10 @@ import java.util.Set;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.singleagent.planning.ActionTransitions;
+import burlap.behavior.singleagent.planning.HashedTransitionProbability;
+import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -599,7 +601,7 @@ public abstract class ValueFunctionPlanner extends OOMDPPlanner implements Value
 
 
 	/**
-	 * This class is used to store tabular value function values that can be manipulated with the {@link burlap.behavior.singleagent.planning.ValueFunctionPlanner}
+	 * This class is used to store tabular value function values that can be manipulated with the {@link ValueFunctionPlanner}
 	 * methods. It has no planning method defined and will throw a runtime exception if you try to call it. When you pass it a seed
 	 * value function (represented as a {@link java.util.Map}), it copies the values into its internal stored value function so that
 	 * changes to the original value function may be made without affecting this objects values.

@@ -4,11 +4,10 @@ import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.QValue;
+import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.singleagent.planning.QFunction;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 

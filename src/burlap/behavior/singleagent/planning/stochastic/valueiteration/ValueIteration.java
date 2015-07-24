@@ -8,7 +8,7 @@ import java.util.Set;
 
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.valuefunction.ValueFunctionPlanner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;

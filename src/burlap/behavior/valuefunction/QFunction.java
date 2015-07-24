@@ -1,9 +1,8 @@
-package burlap.behavior.singleagent.planning;
+package burlap.behavior.valuefunction;
 
 import java.util.List;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.QValue;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -16,17 +15,17 @@ import burlap.oomdp.core.TerminalFunction;
 public interface QFunction {
 
 	/**
-	 * Returns a {@link java.util.List} of {@link burlap.behavior.singleagent.QValue} objects for ever permissible action for the given input state.
+	 * Returns a {@link java.util.List} of {@link burlap.behavior.valuefunction.QValue} objects for ever permissible action for the given input state.
 	 * @param s the state for which Q-values are to be returned.
-	 * @return a {@link java.util.List} of {@link burlap.behavior.singleagent.QValue} objects for ever permissible action for the given input state.
+	 * @return a {@link java.util.List} of {@link burlap.behavior.valuefunction.QValue} objects for ever permissible action for the given input state.
 	 */
 	public List <QValue> getQs(State s);
 
 	/**
-	 * Returns the {@link burlap.behavior.singleagent.QValue} for the given state-action pair.
+	 * Returns the {@link burlap.behavior.valuefunction.QValue} for the given state-action pair.
 	 * @param s the input state
 	 * @param a the input action
-	 * @return the {@link burlap.behavior.singleagent.QValue} for the given state-action pair.
+	 * @return the {@link burlap.behavior.valuefunction.QValue} for the given state-action pair.
 	 */
 	public QValue getQ(State s, AbstractGroundedAction a);
 

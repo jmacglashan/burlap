@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgame.mavaluefunction;
 import java.util.HashMap;
 import java.util.Map;
 
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.State;

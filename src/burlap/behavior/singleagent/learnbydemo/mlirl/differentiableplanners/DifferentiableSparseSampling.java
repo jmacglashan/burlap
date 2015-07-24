@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
 
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit;
 import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.VanillaDiffVinit;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGradient;

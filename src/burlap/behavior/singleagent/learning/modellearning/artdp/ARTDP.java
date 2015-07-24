@@ -5,16 +5,16 @@ import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.singleagent.planning.QFunction;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.ValueFunctionPlanner;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -150,7 +150,7 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 	}
 	
 	/**
-	 * Sets the policy to the provided one. Should be a policy that operates on a {@link burlap.behavior.singleagent.planning.QFunction}. Will automatically set its
+	 * Sets the policy to the provided one. Should be a policy that operates on a {@link burlap.behavior.valuefunction.QFunction}. Will automatically set its
 	 * Q-source to this object.
 	 * @param policy the policy to use.
 	 */

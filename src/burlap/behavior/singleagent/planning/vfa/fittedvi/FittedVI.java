@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QFunction;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.statehashing.NameDependentStateHashFactory;
@@ -21,7 +21,7 @@ import java.util.List;
  * A class for performing Fitted Value Iteration [1]. This is a variant of value iteration that takes a set of
  * sample states from a domain and performs synchronous value iteration on the samples by using the Bellman operator
  * and a current approximation of the value function. Specifically, the value function is seeded to some initial value
- * (by default zero, but it can be set to something else with the {@link #setVInit(burlap.behavior.singleagent.ValueFunctionInitialization)}
+ * (by default zero, but it can be set to something else with the {@link #setVInit(burlap.behavior.valuefunction.ValueFunctionInitialization)}
  * method). For each state sample, a new value for the state is computed by applying the bellman operator (using the model
  * of the world and the current, initially zero-valued, value function approximation). The newly computed values for each
  * state are then used as a supervised instance to train the next iteration of the value function.
@@ -326,7 +326,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QFunction {
 
 
 	/**
-	 * A class for {@link burlap.behavior.singleagent.ValueFunctionInitialization} that always points to the outer class's current value function approximation.
+	 * A class for {@link burlap.behavior.valuefunction.ValueFunctionInitialization} that always points to the outer class's current value function approximation.
 	 */
 	public class VFAVInit implements ValueFunctionInitialization{
 
