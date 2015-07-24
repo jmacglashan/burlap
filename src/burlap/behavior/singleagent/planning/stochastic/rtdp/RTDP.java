@@ -5,8 +5,9 @@ import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -37,7 +38,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class RTDP extends ValueFunctionPlanner {
+public class RTDP extends DynamicProgramming implements Planner{
 
 	
 	/**

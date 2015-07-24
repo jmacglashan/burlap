@@ -3,6 +3,7 @@ package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
@@ -19,7 +20,7 @@ import java.util.*;
  * planner except for being in the differentiable value function case.
  * @author James MacGlashan.
  */
-public class DifferentiableVI extends DifferentiableVFPlanner{
+public class DifferentiableVI extends DifferentiableVFPlanner implements Planner {
 
 	/**
 	 * When the maximum change in the value function is smaller than this value, VI will terminate.

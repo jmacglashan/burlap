@@ -8,7 +8,8 @@ import java.util.Set;
 
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
@@ -32,7 +33,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class ValueIteration extends ValueFunctionPlanner{
+public class ValueIteration extends DynamicProgramming implements Planner {
 
 	/**
 	 * When the maximum change in the value function is smaller than this value, VI will terminate.

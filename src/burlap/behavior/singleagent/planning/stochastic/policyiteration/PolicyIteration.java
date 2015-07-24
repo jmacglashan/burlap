@@ -9,8 +9,9 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.policy.SolverDerivedPolicy;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.GreedyDeterministicQPolicy;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
@@ -19,7 +20,7 @@ import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 
-public class PolicyIteration extends ValueFunctionPlanner {
+public class PolicyIteration extends DynamicProgramming implements Planner {
 
 	/**
 	 * When the maximum change in the value function is smaller than this value, policy evaluation will terminate. 
@@ -140,7 +141,7 @@ public class PolicyIteration extends ValueFunctionPlanner {
 			
 			double delta;
 			do{
-				StaticVFPlanner lastValueFunction = this.getCopyOfValueFunction();
+				DynamicProgramming lastValueFunction = this.getCopyOfValueFunction();
 				this.evaluativePolicy.setSolver(lastValueFunction);
 				delta = this.evaluatePolicy();
 				iterations++;

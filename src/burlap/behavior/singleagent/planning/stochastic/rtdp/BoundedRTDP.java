@@ -6,9 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;
@@ -52,7 +53,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class BoundedRTDP extends ValueFunctionPlanner {
+public class BoundedRTDP extends DynamicProgramming implements Planner {
 
 	
 	/**
@@ -119,14 +120,14 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	
 	
 	/**
-	 * Whether the current {@link ValueFunctionPlanner} valueFunction reference points to the lower bound value function or the upper bound value function.
+	 * Whether the current {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} valueFunction reference points to the lower bound value function or the upper bound value function.
 	 * If true, then it points to the lower bound; if false then to the upper bound.
 	 */
 	protected boolean							currentValueFunctionIsLower = false;
 	
 	
 	/**
-	 * Sets what the {@link ValueFunctionPlanner} valueFunction reference points to (the lower bound or upperbound) once a planning rollout is complete.
+	 * Sets what the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} valueFunction reference points to (the lower bound or upperbound) once a planning rollout is complete.
 	 * If true, then it points to the lower bound; if false then the upper bound. Pointing to the lower bound is default and provides any-time planning
 	 * performance.
 	 */

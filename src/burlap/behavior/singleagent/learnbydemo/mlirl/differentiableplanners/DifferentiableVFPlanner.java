@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGrad
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.State;
@@ -22,11 +22,11 @@ import java.util.Map;
  * Specifically, all subclasses are assumed to use a Boltzmann backup operator and the reward functions
  * must be differentiable by subclassing the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
  * class. The normal {@link #performBellmanUpdateOn(burlap.behavior.statehashing.StateHashTuple)} method
- * of the {@link burlap.behavior.singleagent.planning.ValueFunctionPlanner} class is overriden
+ * of the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} class is overriden
  * with a method that uses the Boltzmann backup operator.
  * @author James MacGlashan.
  */
-public abstract class DifferentiableVFPlanner extends ValueFunctionPlanner implements QGradientPlanner {
+public abstract class DifferentiableVFPlanner extends DynamicProgramming implements QGradientPlanner {
 
 	/**
 	 * The value function gradient for each state.

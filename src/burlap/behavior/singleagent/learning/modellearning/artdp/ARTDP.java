@@ -14,7 +14,7 @@ import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -40,7 +40,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * @author James MacGlashan
  *
  */
-public class ARTDP extends MDPSolver implements QFunction,LearningAgent {
+public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 	/**
 	 * The model of the world that is being learned.
@@ -50,7 +50,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent {
 	/**
 	 * The planner used on the modeled world to update the value function
 	 */
-	protected ValueFunctionPlanner				modelPlanner;
+	protected DynamicProgramming modelPlanner;
 	
 	/**
 	 * the policy to follow
@@ -260,11 +260,11 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent {
 	
 	
 	/**
-	 * The value funciton planner that operates on the modeled world.
+	 * The value function planner that operates on the modeled world.
 	 * @author James MacGlashan
 	 *
 	 */
-	protected class ARTDPPlanner extends ValueFunctionPlanner{
+	protected class ARTDPPlanner extends DynamicProgramming {
 
 		/**
 		 * Initializes
@@ -297,13 +297,6 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent {
 			
 			this.valueInitializer = vInit;
 		}
-		
-		@Override
-		public void planFromState(State initialState) {
-			throw new UnsupportedOperationException("This method should not be called for the inner ARTDP planner");
-		}
-		
-		
 		
 	}
 
