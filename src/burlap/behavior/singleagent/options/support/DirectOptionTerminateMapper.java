@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.options;
+package burlap.behavior.singleagent.options.support;
 
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -10,7 +10,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * end terminal state, rather than having to simulate each step of execution. This interface provides a means
  * for defining the transition dynamics, the number of steps and cumulative reward, so that
  * an option can immediately take the agent to the next state without having to perform simulation.
- * After implementing this interface, it can then be provided to any {@link Option} object
+ * After implementing this interface, it can then be provided to any {@link burlap.behavior.singleagent.options.Option} object
  * to prevent the option from performing the simulation.
  * If the options path and number of steps cannot be guaranteed in advance, then this interface
  * should not be implemented.

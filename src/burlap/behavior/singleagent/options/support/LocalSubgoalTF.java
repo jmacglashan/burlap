@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.options;
+package burlap.behavior.singleagent.options.support;
 
 import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.oomdp.core.State;

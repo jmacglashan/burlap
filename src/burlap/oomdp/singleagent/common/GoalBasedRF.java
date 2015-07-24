@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learning;
+package burlap.oomdp.singleagent.common;
 
 import burlap.behavior.singleagent.planning.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
@@ -9,7 +9,8 @@ import burlap.oomdp.singleagent.RewardFunction;
 
 
 /**
- * A reward function implementation designed around goal conditions that are specified by a {@link burlap.behavior.singleagent.planning.StateConditionTest} object.
+ * A reward function implementation designed around goal conditions that are specified by a {@link burlap.behavior.singleagent.planning.StateConditionTest} object
+ * or a {@link burlap.oomdp.core.TerminalFunction}.
  * When the agent transition to a state marked as a goal state, it returns a goal reward. Otherwise a default reward is returned.
  * @author James MacGlashan
  *
@@ -92,8 +93,23 @@ public class GoalBasedRF implements RewardFunction {
 	public StateConditionTest getGoalCondition(){
 		return this.gc;
 	}
-	
-	
+
+
+	public double getGoalReward() {
+		return goalReward;
+	}
+
+	public void setGoalReward(double goalReward) {
+		this.goalReward = goalReward;
+	}
+
+	public double getDefaultReward() {
+		return defaultReward;
+	}
+
+	public void setDefaultReward(double defaultReward) {
+		this.defaultReward = defaultReward;
+	}
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {

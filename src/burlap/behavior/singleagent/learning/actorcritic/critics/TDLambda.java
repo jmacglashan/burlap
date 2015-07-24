@@ -10,7 +10,7 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.options.OptionEvaluatingRF;
+import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
 import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;

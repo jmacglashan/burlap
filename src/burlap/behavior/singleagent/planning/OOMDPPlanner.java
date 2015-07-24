@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.options.OptionEvaluatingRF;
+import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.debugtools.DPrint;

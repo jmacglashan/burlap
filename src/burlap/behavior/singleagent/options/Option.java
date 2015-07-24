@@ -9,6 +9,8 @@ import java.util.Random;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.singleagent.options.support.DirectOptionTerminateMapper;
+import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.planning.StateMapping;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
@@ -381,7 +383,7 @@ public abstract class Option extends Action {
 	
 	/**
 	 * Sets this option to determine its execution results using a direct terminal state mapping rather than actually executing each action selcted
-	 * by the option step by step. A method like this should only be used under specific circumstances. See the {@link DirectOptionTerminateMapper}
+	 * by the option step by step. A method like this should only be used under specific circumstances. See the {@link burlap.behavior.singleagent.options.support.DirectOptionTerminateMapper}
 	 * class documentation for more information.
 	 * @param tm the direct state to terminal state mapping to use.
 	 */

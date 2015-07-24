@@ -14,7 +14,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
+import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.valuefunction.QFunction;
