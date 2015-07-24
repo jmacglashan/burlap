@@ -2,9 +2,9 @@ package burlap.testing;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
+import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.behavior.singleagent.planning.deterministic.informed.NullHeuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.statehashing.DiscreteStateHashFactory;

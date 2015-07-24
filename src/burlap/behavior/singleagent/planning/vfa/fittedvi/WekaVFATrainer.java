@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
-import burlap.behavior.singleagent.planning.ValueFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.datastructures.WekaInterfaces;
 import burlap.oomdp.core.State;

@@ -12,7 +12,7 @@ import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
+import burlap.behavior.policy.PlannerDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunctionPlanner;
 import burlap.behavior.policy.BoltzmannQPolicy;

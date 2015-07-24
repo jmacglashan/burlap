@@ -4,7 +4,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.singleagent.planning.ValueFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.statehashing.NameDependentStateHashFactory;
 import burlap.debugtools.DPrint;

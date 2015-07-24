@@ -7,10 +7,10 @@ import org.junit.Test;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
+import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
@@ -23,7 +23,7 @@ import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.common.SinglePFTF;
+import burlap.oomdp.auxiliary.common.SinglePFTF;
 import burlap.oomdp.singleagent.common.UniformCostRF;
 
 public class TestPlanning {

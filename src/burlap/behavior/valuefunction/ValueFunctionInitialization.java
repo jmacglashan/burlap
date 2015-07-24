@@ -1,6 +1,5 @@
 package burlap.behavior.valuefunction;
 
-import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 
@@ -8,8 +7,8 @@ import burlap.oomdp.core.State;
 /**
  * This interface may be used by planning and learning algorithms that require an initialization value for the Q-value function or the value function.
  * A common implementation for initializing all values to the same constant is provided. This class extends the
- * {@link burlap.behavior.singleagent.planning.ValueFunction} class, so the initialization for the value function.
- * may be retrieved with the standard {@link burlap.behavior.singleagent.planning.ValueFunction#value(burlap.oomdp.core.State)} method.
+ * {@link ValueFunction} class, so the initialization for the value function.
+ * may be retrieved with the standard {@link ValueFunction#value(burlap.oomdp.core.State)} method.
  * It also adds a {@link #qValue(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} method for initializing
  * Q-values.
  * @author James MacGlashan

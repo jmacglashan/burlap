@@ -11,7 +11,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.options.support.DirectOptionTerminateMapper;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
-import burlap.behavior.singleagent.planning.StateMapping;
+import burlap.oomdp.auxiliary.StateMapping;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.auxiliary.common.NullTermination;

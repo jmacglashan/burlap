@@ -7,7 +7,6 @@ import javax.management.RuntimeErrorException;
 
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;

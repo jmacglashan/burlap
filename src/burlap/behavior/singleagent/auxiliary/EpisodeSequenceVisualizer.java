@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent;
+package burlap.behavior.singleagent.auxiliary;
 
 
 import java.awt.BorderLayout;
@@ -19,6 +19,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
+import burlap.behavior.policy.PlannerDerivedPolicy;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;

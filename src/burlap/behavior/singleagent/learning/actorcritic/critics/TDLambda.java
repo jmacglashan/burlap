@@ -11,7 +11,7 @@ import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
-import burlap.behavior.singleagent.planning.ValueFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;
 import burlap.oomdp.core.State;

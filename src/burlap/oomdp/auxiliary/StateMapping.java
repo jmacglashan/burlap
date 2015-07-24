@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.planning;
+package burlap.oomdp.auxiliary;
 
 import burlap.oomdp.core.State;
 

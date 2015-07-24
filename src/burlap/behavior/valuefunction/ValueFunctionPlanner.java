@@ -11,7 +11,6 @@ import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.planning.ActionTransitions;
 import burlap.behavior.singleagent.planning.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.ValueFunction;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.statehashing.StateHashTuple;

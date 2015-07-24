@@ -7,7 +7,7 @@ import javax.management.RuntimeErrorException;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
+import burlap.behavior.policy.PlannerDerivedPolicy;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
 import burlap.oomdp.core.State;
