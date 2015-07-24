@@ -598,17 +598,14 @@ public class LSPI extends OOMDPPlanner implements QFunction, LearningAgent {
 		return false;
 	}
 
-	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
 		return this.episodeHistory.getLast();
 	}
 
-	@Override
 	public void setNumEpisodesToStore(int numEps) {
 		this.numEpisodesToStore = numEps;
 	}
 
-	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return this.episodeHistory;
 	}

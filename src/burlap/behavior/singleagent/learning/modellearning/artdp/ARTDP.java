@@ -196,12 +196,10 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 
 
 
-	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
-	@Override
 	public void setNumEpisodesToStore(int numEps) {
 		if(numEps > 0){
 			numEpisodesToStore = numEps;
@@ -211,7 +209,6 @@ public class ARTDP extends OOMDPPlanner implements QFunction,LearningAgent {
 		}
 	}
 
-	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return episodeHistory;
 	}

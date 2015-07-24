@@ -162,22 +162,18 @@ public class ActorCritic extends OOMDPPlanner implements LearningAgent {
 
 
 
-	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
-	@Override
 	public void setNumEpisodesToStore(int numEps) {
 		this.numEpisodesToStore = numEps;
 	}
 
-	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return this.episodeHistory;
 	}
 
-	@Override
 	public void planFromState(State initialState) {
 
 		SimulatedEnvironment env = new SimulatedEnvironment(this.domain, this.rf, this.tf, initialState);

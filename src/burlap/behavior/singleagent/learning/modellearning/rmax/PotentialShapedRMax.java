@@ -272,12 +272,10 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 				this.modeledDomain.getActions());
 	}
 
-	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
-	@Override
 	public void setNumEpisodesToStore(int numEps) {
 		if(numEps > 0){
 			numEpisodesToStore = numEps;
@@ -287,7 +285,6 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		}
 	}
 
-	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return episodeHistory;
 	}
