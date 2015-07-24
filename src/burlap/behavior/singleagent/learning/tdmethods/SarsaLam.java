@@ -21,7 +21,9 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 /**
  * Tabular SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. The implementation can either be used for learning or planning,
- * the latter of which is performed by running many learning episodes in succession. The number of episodes used for planning can be determined
+ * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
+ * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
+ * method before calling {@link #planFromState(burlap.oomdp.core.State)}. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
  * <br/><br/>
  * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
@@ -53,18 +55,16 @@ public class SarsaLam extends QLearning {
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
 	 * @param qInit the initial Q-value to user everywhere
 	 * @param learningRate the learning rate
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
 			double qInit, double learningRate, double lambda) {
 		
-		super(domain, rf, tf, gamma, hashingFactory, qInit, learningRate);
+		super(domain, gamma, hashingFactory, qInit, learningRate);
 		this.sarsalamInit(lambda);
 		
 	}
@@ -75,8 +75,6 @@ public class SarsaLam extends QLearning {
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
 	 * @param qInit the initial Q-value to user everywhere
@@ -84,10 +82,10 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
 			double qInit, double learningRate, int maxEpisodeSize, double lambda) {
 		
-		super(domain, rf, tf, gamma, hashingFactory, qInit, learningRate, maxEpisodeSize);
+		super(domain, gamma, hashingFactory, qInit, learningRate, maxEpisodeSize);
 		this.sarsalamInit(lambda);
 		
 	}
@@ -101,8 +99,6 @@ public class SarsaLam extends QLearning {
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
 	 * @param qInit the initial Q-value to user everywhere
@@ -111,10 +107,10 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 		
-		super(domain, rf, tf, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
+		super(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
 		this.sarsalamInit(lambda);
 		
 	}
@@ -127,8 +123,6 @@ public class SarsaLam extends QLearning {
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
 	 * @param qInit a {@link burlap.behavior.valuefunction.ValueFunctionInitialization} object that can be used to initialize the Q-values.
@@ -137,10 +131,10 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
 			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 		
-		super(domain, rf, tf, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
+		super(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
 		this.sarsalamInit(lambda);
 	}
 	

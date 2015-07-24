@@ -25,6 +25,10 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * That action is taken and a resulting state is observed. The {@link Critic} is then asked to critique this behavior
  * which is returned in a {@link CritiqueResult} object and then passed along to the {@link Actor} so that the actor may
  * update is behavior accordingly.
+ * <br/><br/>
+ * In addition to learning, this algorithm can also be used for planning using the {@link #planFromState(burlap.oomdp.core.State)}
+ * method. If you plan to use it for planning, you should call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
+ * method before calling the {@link #planFromState(burlap.oomdp.core.State)}.
  * 
  * @author James MacGlashan
  *
@@ -69,42 +73,53 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	/**
 	 * Initializes the learning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function to use
-	 * @param tf the terminal state function to use
 	 * @param gamma the discount factor
 	 * @param actor the actor component to use to select actions
 	 * @param critic the critic component to use to critique 
 	 */
-	public ActorCritic(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, Actor actor, Critic critic) {
+	public ActorCritic(Domain domain, double gamma, Actor actor, Critic critic) {
 		this.actor = actor;
 		this.critic = critic;
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
 		numEpisodesToStore = 1;
-		this.solverInit(domain, rf, tf, gamma, null);
+		this.solverInit(domain, null, null, gamma, null);
 	}
 	
 	
 	/**
 	 * Initializes the learning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function to use
-	 * @param tf the terminal state function to use
 	 * @param gamma the discount factor
 	 * @param actor the actor component to use to select actions
 	 * @param critic the critic component to use to critique 
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode before the agent gives up.
 	 */
-	public ActorCritic(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, Actor actor, Critic critic, int maxEpisodeSize) {
+	public ActorCritic(Domain domain, double gamma, Actor actor, Critic critic, int maxEpisodeSize) {
 		this.actor = actor;
 		this.critic = critic;
 		this.maxEpisodeSize = maxEpisodeSize;
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
 		numEpisodesToStore = 1;
-		this.solverInit(domain, rf, tf, gamma, null);
+		this.solverInit(domain, null, null, gamma, null);
 	}
-	
+
+	/**
+	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
+	 * and the number of simulated episodes to use for planning when
+	 * the {@link #planFromState(burlap.oomdp.core.State)} method is called. If the
+	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.State)} method will throw a runtime exception.
+	 * @param rf the reward function to use for planning
+	 * @param tf the terminal function to use for planning
+	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.
+	 */
+	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numEpisodesForPlanning){
+		this.rf = rf;
+		this.tf = tf;
+		this.numEpisodesForPlanning = numEpisodesForPlanning;
+	}
 	
 	
 	@Override
@@ -175,6 +190,10 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	}
 
 	public void planFromState(State initialState) {
+
+		if(this.rf == null || this.tf == null){
+			throw new RuntimeException("QLearning (and its subclasses) cannot execute planFromState because the reward function and/or terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
+		}
 
 		SimulatedEnvironment env = new SimulatedEnvironment(this.domain, this.rf, this.tf, initialState);
 

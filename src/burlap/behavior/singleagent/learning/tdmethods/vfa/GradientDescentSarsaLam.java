@@ -40,7 +40,9 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * with both linear and non-linear value function approximations by using the gradient value provided to it through the 
  * {@link burlap.behavior.singleagent.vfa.ValueFunctionApproximation} interface provided. <p/>
  * The implementation can either be used for learning or planning,
- * the latter of which is performed by running many learning episodes in succession. The number of episodes used for planning can be determined
+ * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
+ * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
+ * method before calling {@link #planFromState(burlap.oomdp.core.State)}. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the VFA weight threshold.
  * <br/><br/>
  * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
@@ -159,17 +161,15 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param vfa the value function approximation method to use for estimate Q-values
 	 * @param learningRate the learning rate
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
+	public GradientDescentSarsaLam(Domain domain, double gamma, ValueFunctionApproximation vfa,
 			double learningRate, double lambda) {
 		
-		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE, lambda);
+		this.GDSLInit(domain, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE, lambda);
 		
 	}
 	
@@ -179,18 +179,16 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param vfa the value function approximation method to use for estimate Q-values
 	 * @param learningRate the learning rate
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
+	public GradientDescentSarsaLam(Domain domain, double gamma, ValueFunctionApproximation vfa,
 			double learningRate, int maxEpisodeSize, double lambda) {
 		
-		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize, lambda);
+		this.GDSLInit(domain, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize, lambda);
 		
 	}
 	
@@ -200,8 +198,6 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param vfa the value function approximation method to use for estimate Q-values
 	 * @param learningRate the learning rate
@@ -209,10 +205,10 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
+	public GradientDescentSarsaLam(Domain domain, double gamma, ValueFunctionApproximation vfa,
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 	
-		this.GDSLInit(domain, rf, tf, gamma, vfa, learningRate, learningPolicy, maxEpisodeSize, lambda);
+		this.GDSLInit(domain, gamma, vfa, learningRate, learningPolicy, maxEpisodeSize, lambda);
 	}
 
 	
@@ -221,8 +217,6 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param vfa the value function approximation method to use for estimate Q-values
 	 * @param learningRate the learning rate
@@ -230,10 +224,10 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	protected void GDSLInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, ValueFunctionApproximation vfa, 
+	protected void GDSLInit(Domain domain, double gamma, ValueFunctionApproximation vfa,
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda){
 		
-		this.solverInit(domain, rf, tf, gamma, null);
+		this.solverInit(domain, null, null, gamma, null);
 		this.vfa = vfa;
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
@@ -247,6 +241,22 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		maxWeightChangeForPlanningTermination = 0.;
 
 		
+	}
+
+	/**
+	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
+	 * and the number of simulated episodes to use for planning when
+	 * the {@link #planFromState(burlap.oomdp.core.State)} method is called. If the
+	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.State)} method will throw a runtime exception.
+	 * @param rf the reward function to use for planning
+	 * @param tf the terminal function to use for planning
+	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.
+	 */
+	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numEpisodesForPlanning){
+		this.rf = rf;
+		this.tf = tf;
+		this.numEpisodesForPlanning = numEpisodesForPlanning;
 	}
 	
 	
@@ -606,6 +616,10 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 	@Override
 	public void planFromState(State initialState) {
+
+		if(this.rf == null || this.tf == null){
+			throw new RuntimeException("QLearning (and its subclasses) cannot execute planFromState because the reward function and terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
+		}
 
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, initialState);
 
