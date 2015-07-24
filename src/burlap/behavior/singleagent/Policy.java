@@ -21,6 +21,94 @@ import com.sun.tools.javac.comp.Env;
 
 /**
  * This abstract class is used to store a policy for a domain that can be queried and perform common operations with the policy.
+ * This class provides a number of important methods for working with and defining policies. To implement this class
+ * you must implement the methods:
+ * {@link #getAction(burlap.oomdp.core.State)},
+ * {@link #getActionDistributionForState(burlap.oomdp.core.State)},
+ * {@link #isStochastic()}, and
+ * {@link #isDefinedFor(burlap.oomdp.core.State)}.
+ * <br/><br/>
+ * The {@link #getAction(burlap.oomdp.core.State)} should return the action (specified by an
+ * {@link burlap.oomdp.core.AbstractGroundedAction}; e.g., a {@link burlap.oomdp.singleagent.GroundedAction} for
+ * single agent domains) this policy defines for the
+ * input {@link burlap.oomdp.core.State}. If this {@link burlap.behavior.singleagent.Policy} is a stochastic policy,
+ * then the {@link #getAction(burlap.oomdp.core.State)} method should sample an action from its probability distribution
+ * and return it.
+ * <br/><br/>
+ * The {@link #getActionDistributionForState(burlap.oomdp.core.State)} should return this {@link burlap.behavior.singleagent.Policy}'s
+ * action selection probability distribution for the input {@link burlap.oomdp.core.State}. The probability distribution is
+ * specified by returning a {@link java.util.List} of {@link burlap.behavior.singleagent.Policy.ActionProb} instances.
+ * An {@link burlap.behavior.singleagent.Policy.ActionProb} is a pair consisting of an {@link burlap.oomdp.core.AbstractGroundedAction}
+ * specifying the action and a double specifying the probability that this {@link burlap.behavior.singleagent.Policy} would
+ * select that action.
+ * <br/><br/>
+ * The {@link #isStochastic()} method should return true if this {@link burlap.behavior.singleagent.Policy} is
+ * stochastic and false if it is deterministic.
+ * <br/><br/>
+ * The {@link #isDefinedFor(burlap.oomdp.core.State)} method should return true if this {@link burlap.behavior.singleagent.Policy}
+ * is defined for the input {@link burlap.oomdp.core.State} and false if it is not.
+ * <br/><br/>
+ * This abstract class also has some pre-implemented methods that can be used to help define these required methods. For example,
+ * if the {@link #getActionDistributionForState(burlap.oomdp.core.State)} is implemented and stochastic, then the
+ * {@link #getAction(burlap.oomdp.core.State)} can be trivially implemented by having it return the result of the
+ * superclass method {@link #sampleFromActionDistribution(burlap.oomdp.core.State)}, which will get the probability
+ * distribution from the {@link #getActionDistributionForState(burlap.oomdp.core.State)}, roll a random number
+ * and return an action based on the fully define action distribution. Inversely, if the policy is deterministic and
+ * the {@link #getAction(burlap.oomdp.core.State)} is implemented, then the
+ * {@link #getActionDistributionForState(burlap.oomdp.core.State)} method can be trivially implemented by having it
+ * return the result of {@link #getDeterministicPolicy(burlap.oomdp.core.State)}, which will call {@link #getAction(burlap.oomdp.core.State)}
+ * and wrap the result in an {@link burlap.behavior.singleagent.Policy.ActionProb} object with assigned probability of 1.0.
+ * <br/><br/><br/><br/>
+ * <b>Superclass method</b><br/>
+ * This class also has many superclass methods for interacting with policy. These include
+ * {@link #getProbOfAction(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)},
+ * {@link #evaluateBehavior(burlap.oomdp.core.State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction)}
+ * (and other variants of the method signature), and {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment)} (and
+ * other variants of the method signature).
+ * <br/><br/>
+ * The {@link #getProbOfAction(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} method
+ * takes as input a {@link burlap.oomdp.core.State} and {@link burlap.oomdp.core.AbstractGroundedAction} and returns
+ * the probability of this {@link burlap.behavior.singleagent.Policy} selecting that action. It uses the result of the
+ * {@link #getActionDistributionForState(burlap.oomdp.core.State)} method to determine the full distribution, finds
+ * the matching {@link burlap.oomdp.core.AbstractGroundedAction} in the returned list, and then returns its assigned probability.
+ * It may be possible to return this value in a more efficient way than enumerating the full probability distribution,
+ * in which case you may want to consider overriding the method.
+ * <br/><br/>
+ * The {@link #evaluateBehavior(burlap.oomdp.core.State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction)},
+ * {@link #evaluateBehavior(burlap.oomdp.core.State, burlap.oomdp.singleagent.RewardFunction, int)}, and
+ * {@link #evaluateBehavior(burlap.oomdp.core.State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
+ * methods will all evaluate this policy by rolling it out from the input {@link burlap.oomdp.core.State} or until
+ * it reaches a terminal state or executes for the maximum number of steps (depending on which version of the method you use).
+ * The resulting behavior will be saved in an {@link burlap.behavior.singleagent.EpisodeAnalysis} object that is returned.
+ * Note that this method requires that the returned {@link burlap.oomdp.core.AbstractGroundedAction} instances are
+ * able to be executed using the action's defined transition dynamics. For single agent domains in which the actions
+ * are {@link burlap.oomdp.singleagent.GroundedAction} instances, this will work as long as the corresponding
+ * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.State, String[])} method is implemented. If this
+ * policy defines the policy for an agent in a stochastic game, returning {@link burlap.oomdp.stochasticgames.GroundedSingleAction} instances
+ * for the action, then the policy cannot be rolled out since the outcome state would depend on the action selection of
+ * other agents.
+ * <br/><br/>
+ * The {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment)} and
+ * {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment, int)}
+ * methods will execute this policy in some input {@link burlap.oomdp.singleagent.environment.Environment} until either
+ * the {@link burlap.oomdp.singleagent.environment.Environment} reaches a terminal state or the maximum number of
+ * steps are taken (depending on which method signature is used). This method is useful if a policy was computed
+ * with a planning algorithm using some model of the world and then needs to be executed in an environment which may
+ * have slightly different transitions; for example, planning a policy for a robot using a model of the world and then
+ * executing it on the actual robot by following the policy in an {@link burlap.oomdp.singleagent.environment.Environment}.
+ * <br/><br/>
+ * All of the evaluateBehavior methods also know how to work with {@link burlap.behavior.singleagent.options.Option}s.
+ * In particular, they also are able to record
+ * the option execution in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} object in verbose ways
+ * for better debugging. By default, when an option is selected in an evaluateBehavior method, each primitive step
+ * will be recorded in the {@link burlap.behavior.singleagent.EpisodeAnalysis} object, rather than only recording that
+ * the option was taken. Additionally, in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis}, each primitive
+ * step by default will be annotated with the option the executed and which step in the option execution that it was.
+ * If you would like to disable option decomposition and/or the option annotation, you can do so with the
+ * {@link #evaluateMethodsShouldDecomposeOption(boolean)} and {@link #evaluateMethodsShouldAnnotateOptionDecomposition(boolean)}
+ * methods.
+ *
+ *
  * @author James MacGlashan
  *
  */
@@ -139,10 +227,12 @@ public abstract class Policy {
 	
 	/**
 	 * This is a helper method for stochastic policies. If the policy is stochastic, then rather than
-	 * having the subclass policy define both the getAction method and getActionDistribution method,
-	 * the subclass needs to only define the getActionDistribution method and the getAction method can simply
+	 * having the subclass policy define both the {@link #getAction(burlap.oomdp.core.State)} method and
+	 * {@link #getActionDistributionForState(burlap.oomdp.core.State)} method,
+	 * the subclass needs to only define the {@link #getActionDistributionForState(burlap.oomdp.core.State)} method and
+	 * the {@link #getAction(burlap.oomdp.core.State)} method can simply
 	 * call this method to return an action.
-	 * @param s
+	 * @param s the input state from which an action should be selected.
 	 * @return an {@link AbstractGroundedAction} to take
 	 */
 	protected AbstractGroundedAction sampleFromActionDistribution(State s){
