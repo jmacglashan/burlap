@@ -9,8 +9,8 @@ import burlap.oomdp.core.TerminalFunction;
 /**
  * A factory for generating {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} objects.
  * This class is use for {@link burlap.behavior.singleagent.learnbydemo.mlirl.MultipleIntentionsMLIRL}, so that it
- * can generate a different differentiable planner for each cluster; that way, after a maximization step,
- * it can query the policy for each cluster in any state without replanning,rather than using a single planner
+ * can generate a different differentiable valueFunction for each cluster; that way, after a maximization step,
+ * it can query the policy for each cluster in any state without replanning,rather than using a single valueFunction
  * instance that would require replanning for each cluster (since it would have to switch the reward function).
  * @author James MacGlashan.
  */
@@ -20,7 +20,7 @@ public interface QGradientPlannerFactory {
 	 * Returns a {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} for an
 	 * {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} object's domain,
 	 * reward function, discount factor, and Boltzmann beta parameter.
-	 * @param request the request defining the problem the planner should solve.
+	 * @param request the request defining the problem the valueFunction should solve.
 	 * @return a {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} instance.
 	 */
 	public QGradientPlanner generateDifferentiablePlannerForRequest(MLIRLRequest request);
@@ -32,7 +32,7 @@ public interface QGradientPlannerFactory {
 	public static class DifferentiableVIFactory implements QGradientPlannerFactory{
 
 		/**
-		 * The {@link burlap.behavior.statehashing.StateHashFactory} used by the planner.
+		 * The {@link burlap.behavior.statehashing.StateHashFactory} used by the valueFunction.
 		 */
 		protected StateHashFactory hashingFactory;
 
@@ -48,7 +48,7 @@ public interface QGradientPlannerFactory {
 
 
 		/**
-		 * The terminal function that the planner uses. Default is a a {@link burlap.oomdp.auxiliary.common.NullTermination}.
+		 * The terminal function that the valueFunction uses. Default is a a {@link burlap.oomdp.auxiliary.common.NullTermination}.
 		 */
 		protected TerminalFunction tf = new NullTermination();
 

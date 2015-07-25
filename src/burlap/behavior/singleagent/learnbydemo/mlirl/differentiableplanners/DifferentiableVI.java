@@ -17,7 +17,7 @@ import java.util.*;
  * Performs Differentiable Value Iteration using the Boltzmann backup operator and a
  * {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}. This class
  * behaves the same as the normal {@link burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration}
- * planner except for being in the differentiable value function case.
+ * valueFunction except for being in the differentiable value function case.
  * @author James MacGlashan.
  */
 public class DifferentiableVI extends DifferentiableVFPlanner implements Planner {
@@ -56,7 +56,7 @@ public class DifferentiableVI extends DifferentiableVFPlanner implements Planner
 
 
 	/**
-	 * Initializes the planner.
+	 * Initializes the valueFunction.
 	 * @param domain the domain in which to plan
 	 * @param rf the differentiable reward function that will be used
 	 * @param tf the terminal state function
@@ -78,7 +78,7 @@ public class DifferentiableVI extends DifferentiableVFPlanner implements Planner
 
 
 	/**
-	 * Calling this method will force the planner to recompute the reachable states when the {@link #planFromState(burlap.oomdp.core.states.State)} method is called next.
+	 * Calling this method will force the valueFunction to recompute the reachable states when the {@link #planFromState(burlap.oomdp.core.states.State)} method is called next.
 	 * This may be useful if the transition dynamics from the last planning call have changed and if planning needs to be restarted as a result.
 	 */
 	public void recomputeReachableStates(){

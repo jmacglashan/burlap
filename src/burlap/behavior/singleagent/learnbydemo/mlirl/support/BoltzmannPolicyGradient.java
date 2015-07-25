@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * This class provides methods to compute the gradient of a Boltzmann policy. Numerous logarithmic tricks are
  * performed to to avoid overflow issues that a straight computation of the exponentials might induce. The methods
- * require that that input come from a differentiable planner and reward functions, which means that the planner
+ * require that that input come from a differentiable valueFunction and reward functions, which means that the valueFunction
  * should be implementing a Boltzmann value backup instead of a Bellman value backup.
  * @author James MacGlashan.
  */
@@ -18,10 +18,10 @@ public class BoltzmannPolicyGradient {
 
 
 	/**
-	 * Computes the gradient of a Boltzmann policy using the given differentiable planner.
+	 * Computes the gradient of a Boltzmann policy using the given differentiable valueFunction.
 	 * @param s the input state of the policy gradient
 	 * @param a the action whose policy probability gradient being queried
-	 * @param planner the differentiable {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} planner
+	 * @param planner the differentiable {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} valueFunction
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @return the gradient of the policy.
 	 */
@@ -74,8 +74,8 @@ public class BoltzmannPolicyGradient {
 	}
 
 	/**
-	 * Computes the gradient of a Boltzmann policy using values derived from a Differentiable Botlzmann backup planner.
-	 * @param rf the planner's {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
+	 * Computes the gradient of a Boltzmann policy using values derived from a Differentiable Botlzmann backup valueFunction.
+	 * @param rf the valueFunction's {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @param qs an array holding the Q-value for each action.
 	 * @param maxBetaScaled the maximum Q-value after being scaled by the parameter beta

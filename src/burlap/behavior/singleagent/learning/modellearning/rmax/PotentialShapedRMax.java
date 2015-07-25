@@ -28,7 +28,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * Potential Shaped RMax [1] is a generalization of RMax in which a potential-shaped reward function is used to provide less (but still admissible)
  * optimistic views of unknown state transitions. If no potential function is provided to this class, then it defaults to classic RMax optimism.
  *
- * The default constructor will use value iteration for planning, but you can provide any planner you'd like. Similarly,
+ * The default constructor will use value iteration for planning, but you can provide any valueFunction you'd like. Similarly,
  * the default constructor will use a tabular transition/reward model, but you can also provide your own model learning.
  * See the {@link burlap.behavior.singleagent.learning.modellearning.Model} class for more information on defining your
  * own model.
@@ -46,7 +46,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	protected Model								model;
 	
 	/**
-	 * The modeled domain object containing the modeled actions that a planner will use.
+	 * The modeled domain object containing the modeled actions that a valueFunction will use.
 	 */
 	protected Domain							modeledDomain;
 	
@@ -84,7 +84,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	
 	
 	/**
-	 * Initializes for a tabular model, VI planner, and standard RMax paradigm
+	 * Initializes for a tabular model, VI valueFunction, and standard RMax paradigm
 	 * @param domain the real world domain
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory to use for VI and the tabular model
@@ -111,7 +111,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	
 	
 	/**
-	 * Initializes for a tabular model, VI planner, and potential shaped function.
+	 * Initializes for a tabular model, VI valueFunction, and potential shaped function.
 	 * @param domain the real world domain
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory to use for VI and the tabular model
@@ -138,13 +138,13 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	
 	
 	/**
-	 * Initializes for a given model, model planner, and potential shaped function.
+	 * Initializes for a given model, model valueFunction, and potential shaped function.
 	 * @param domain the real world domain
 	 * @param gamma the discount factor
 	 * @param hashingFactory a state hashing factory for indexing states
 	 * @param potential the admissible potential function
 	 * @param model the model/model-learning algorithm to use
-	 * @param plannerGenerator a generator for a model planner
+	 * @param plannerGenerator a generator for a model valueFunction
 	 */
 	public PotentialShapedRMax(Domain domain, double gamma, StateHashFactory hashingFactory, PotentialFunction potential,
 			Model model, ModelPlannerGenerator plannerGenerator){

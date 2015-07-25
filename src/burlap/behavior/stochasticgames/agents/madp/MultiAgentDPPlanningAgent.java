@@ -29,17 +29,17 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 
 	
 	/**
-	 * The planner this agent will use to estiamte the value function and thereby determine its policy.
+	 * The valueFunction this agent will use to estiamte the value function and thereby determine its policy.
 	 */
 	protected MADynamicProgramming planner;
 	
 	/**
-	 * The policy dervied from a joint policy derived from the planner's value function estimate that this agent will follow.
+	 * The policy dervied from a joint policy derived from the valueFunction's value function estimate that this agent will follow.
 	 */
 	protected PolicyFromJointPolicy			policy;
 	
 	/**
-	 * Whether the agent definitions for this planner have been set yet.
+	 * Whether the agent definitions for this valueFunction have been set yet.
 	 */
 	protected boolean						setAgentDefinitions = false;
 	
@@ -47,9 +47,9 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 	
 	/**
 	 * Initializes. The underlining joint policy of the policy must be an instance of {@link MAQSourcePolicy} or a runtime exception will be thrown.
-	 * The joint policy will automatically be set to use the provided planner as the value function source.
+	 * The joint policy will automatically be set to use the provided valueFunction as the value function source.
 	 * @param domain the domain in which the agent will act
-	 * @param planner the planner the agent should use for determining its policy
+	 * @param planner the valueFunction the agent should use for determining its policy
 	 * @param policy the policy that will use the planners value function as a source.
 	 */
 	public MultiAgentDPPlanningAgent(SGDomain domain, MADynamicProgramming planner, PolicyFromJointPolicy policy){
@@ -65,9 +65,9 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 	
 	
 	/**
-	 * Sets the policy derived from this agents planner to follow. he underlining joint policy of the policy must be an instance of {@link MAQSourcePolicy} 
+	 * Sets the policy derived from this agents valueFunction to follow. he underlining joint policy of the policy must be an instance of {@link MAQSourcePolicy}
 	 * or a runtime exception will be thrown.
-	 * The joint policy will automatically be set to use the provided planner as the value function source.
+	 * The joint policy will automatically be set to use the provided valueFunction as the value function source.
 	 * @param policy the policy that will use the planners value function as a source.
 	 */
 	public void setPolicy(PolicyFromJointPolicy policy){

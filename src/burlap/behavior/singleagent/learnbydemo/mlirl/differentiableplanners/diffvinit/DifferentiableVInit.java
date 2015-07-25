@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * An interface for value function initialization that is differentiable with respect to some parameters. This
  * interface is useful for DifferentiableSparseSampling which may be used to learn the value of leaf nodes
- * in a finite horizon planner.
+ * in a finite horizon valueFunction.
  *
  * @author James MacGlashan.
  */

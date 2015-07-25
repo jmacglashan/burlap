@@ -142,6 +142,11 @@ public class VIModelPlanner implements ModelPlanner, QFunction {
 	}
 
 	@Override
+	public double value(State s) {
+		return this.vi.value(s);
+	}
+
+	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
 		return this.vi.getQ(s, a);
 	}

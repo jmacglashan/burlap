@@ -34,7 +34,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * The class also implements the {@link burlap.behavior.valuefunction.QFunction} interface. However, it will only return the Q-value
  * for a state if that state is the root node of the tree. If it is not the root node of the tree, then it will automatically reset the planning results
  * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.policy.GreedyQPolicy}
- * with this planner in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
+ * with this valueFunction in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
  * Replanning fresh after each step in the world is the standard UCT approach. If you instead want a policy that walks
  * through the tree it generated from some source state,
  * (so that each step computes a Q-value for a shorter horizon than the step before), you can use the
@@ -120,7 +120,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	
 	
 	/**
-	 * Tells the planner to stop planning if a goal state is ever found.
+	 * Tells the valueFunction to stop planning if a goal state is ever found.
 	 * @param gc a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
 	 */
 	public void useGoalConditionStopCriteria(StateConditionTest gc){
@@ -220,6 +220,11 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		}
 
 		throw new RuntimeException("UCT does not know about action: " + a.toString() + "; cannot return Q-value for it");
+	}
+
+	@Override
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
 	}
 
 	@Override
@@ -339,7 +344,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	
 	/**
 	 * Returns true if rollouts and planning should cease. Planning will stop
-	 * if the planner is told to terminate upon finding a goal and one was found, or if
+	 * if the valueFunction is told to terminate upon finding a goal and one was found, or if
 	 * the maximum number of rollouts have already been performed.
 	 * @return true if rollouts and planning should cease; false otherwise.
 	 */

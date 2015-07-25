@@ -527,6 +527,16 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		return this.getQFromFeaturesFor(results, s, (GroundedAction)a);
 		
 	}
+
+	@Override
+	public double value(State s) {
+		if(this.tf != null) {
+			return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
+		}
+		else{
+			return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		}
+	}
 	
 	
 	/**

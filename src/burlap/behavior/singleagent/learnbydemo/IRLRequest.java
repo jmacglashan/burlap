@@ -38,7 +38,7 @@ public class IRLRequest {
 
 
 	/**
-	 * Values will not be initialized. You must use the setters for the domain, planner, and expert episodes.
+	 * Values will not be initialized. You must use the setters for the domain, valueFunction, and expert episodes.
 	 */
 	public IRLRequest(){
 

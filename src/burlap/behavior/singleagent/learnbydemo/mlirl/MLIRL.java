@@ -96,7 +96,7 @@ public class MLIRL {
 
 	/**
 	 * Sets whether information during learning is printed to the terminal. Will automatically toggle the debug printing
-	 * for the underlying planner as well.
+	 * for the underlying valueFunction as well.
 	 * @param printDebug if true, information is printed to the terminal; if false then it is silent.
 	 */
 	public void toggleDebugPrinting(boolean printDebug){
@@ -128,7 +128,7 @@ public class MLIRL {
 	 */
 	public void performIRL(){
 
-		//reset planner
+		//reset valueFunction
 		this.request.getPlanner().resetSolver();
 		double lastLikelihood = this.logLikelihood();
 		DPrint.cl(this.debugCode, "RF: " + this.request.getRf().toString());
@@ -154,7 +154,7 @@ public class MLIRL {
 				maxChange = Math.max(maxChange, delta);
 			}
 
-			//reset planner
+			//reset valueFunction
 			this.request.getPlanner().resetSolver();
 
 			double newLikelihood = this.logLikelihood();

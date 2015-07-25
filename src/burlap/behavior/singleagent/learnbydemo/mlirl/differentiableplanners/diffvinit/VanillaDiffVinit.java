@@ -8,7 +8,7 @@ import burlap.oomdp.core.states.State;
 /**
  * A class for the default condition when a value function initialization returns an unparameterized  value
  * for each state, but must be differentiable
- * with respect to the reward function parameters for use with a differentiable finite horizon planner.
+ * with respect to the reward function parameters for use with a differentiable finite horizon valueFunction.
  * @author James MacGlashan.
  */
 public class VanillaDiffVinit implements DifferentiableVInit {

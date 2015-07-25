@@ -8,7 +8,7 @@ import java.util.List;
 
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.visualizer.RenderLayer;
@@ -36,9 +36,9 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 	
 	
 	/**
-	 * The QComputable planner to use for finding the value function
+	 * The {@link burlap.behavior.valuefunction.ValueFunction} to query for state values
 	 */
-	protected QFunction planner;
+	protected ValueFunction 					valueFunction;
 	
 	
 	
@@ -46,12 +46,12 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 	 * Initializes the visualizer.
 	 * @param states the states whose value should be rendered.
 	 * @param svp the value function state visualizer to use.
-	 * @param planner the planner that can return the value function.
+	 * @param valueFunction the valueFunction that can return the state values.
 	 */
-	public ValueFunctionRenderLayer(Collection <State> states, StateValuePainter svp, QFunction planner){
+	public ValueFunctionRenderLayer(Collection <State> states, StateValuePainter svp, ValueFunction valueFunction){
 		this.statesToVisualize = states;
 		this.svp = svp;
-		this.planner = planner;
+		this.valueFunction = valueFunction;
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 		double minV = Double.POSITIVE_INFINITY;
 		double maxV = Double.NEGATIVE_INFINITY;
 		for(State s : this.statesToVisualize){
-			double v = this.getVValue(s);
+			double v = this.valueFunction.value(s);
 			values.add(v);
 			if(v < minV){
 				minV = v;
@@ -115,39 +115,5 @@ public class ValueFunctionRenderLayer implements RenderLayer {
 		
 
 	}
-	
-	
-	/**
-	 * Returns the value for a state
-	 * @param s the state for which to get the value
-	 * @return the value for a state
-	 */
-	protected double getVValue(State s){
-		
-		/*
-		 * check the terminal function for the planner if we can get it. If
-		 * the input state is a terminal state, then reutrn 0 since the value of all terminal states is 0.
-		 */
-		TerminalFunction tf = null;
-		if(this.planner instanceof MDPSolver){
-			tf = ((MDPSolver)this.planner).getTF();
-		}
-		
-		if(tf != null){
-			if(tf.isTerminal(s)){
-				return 0.;
-			}
-		}
-		
-		List <QValue> qs = this.planner.getQs(s);
-		double max = Double.NEGATIVE_INFINITY;
-		for(QValue q : qs){
-			if(q.q > max){
-				max = q.q;
-			}
-		}
-		return max;
-	}
-	
 
 }

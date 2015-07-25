@@ -95,7 +95,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	
 	
 	/**
-	 * Initializes all the main datstructres of the value function planner
+	 * Initializes all the main datstructres of the value function valueFunction
 	 * @param domain the domain in which to perform planning
 	 * @param agentDefinitions the definitions of the agents involved in the planning problem.
 	 * @param jointActionModel the joint action model

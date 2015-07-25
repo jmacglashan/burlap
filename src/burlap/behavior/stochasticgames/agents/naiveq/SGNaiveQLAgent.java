@@ -327,6 +327,12 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 
 
 	@Override
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+	}
+
+
+	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
 		
 		GroundedSGAgentAction gsa = (GroundedSGAgentAction)a;

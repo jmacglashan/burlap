@@ -7,7 +7,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 /**
  * The SearchNode class is used for classic deterministic forward search planners. It represents a current state, a back pointer
  * to the search node from which this node's state was generated, and the action that was taken in the generating node's state to
- * produce this node's state. Once a goal state is found by the forward search planner, the back pointers can be traced to
+ * produce this node's state. Once a goal state is found by the forward search valueFunction, the back pointers can be traced to
  * find the plan that got to the goal.
  * @author James MacGlashan
  *

@@ -6,7 +6,7 @@ import burlap.oomdp.core.states.State;
 
 /**
  * A class for defining a (differentiable) linear function over state features for value function initialization. This class is useful
- * for learning the value function initialization for leaf nodes of a finite horizon planner with {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL}.
+ * for learning the value function initialization for leaf nodes of a finite horizon valueFunction with {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL}.
  * @author James MacGlashan.
  */
 public class LinearStateDiffVF extends DifferentiableVInit.ParamedDiffVInit {

@@ -25,7 +25,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * tree. Any state not visited by the greedy path in the UCT tree is excluded from the policy and will result
  * in an error if this policy is queried for such a state.
  *  
- * A more robust policy would cause the planner to be called at each state to build a new tree.
+ * A more robust policy would cause the valueFunction to be called at each state to build a new tree.
  * @author James MacGlashan
  *
  */
@@ -36,8 +36,8 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 	Map<StateHashTuple, GroundedAction> 	policy;
 	
 	/**
-	 * Initializes the policy with the UCT planner
-	 * @param planner the UCT planner whose tree should be walked.
+	 * Initializes the policy with the UCT valueFunction
+	 * @param planner the UCT valueFunction whose tree should be walked.
 	 */
 	public UCTTreeWalkPolicy(UCT planner){
 		this.planner = planner;

@@ -14,7 +14,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * and value function initialization feature dimension.
  * <br/>
  * This class is useful when learning both a reward function and the shaping values at the leaf nodes of
- * a finite horizon planner.
+ * a finite horizon valueFunction.
  * @author James MacGlashan.
  */
 public class LinearDiffRFVInit extends DifferentiableRF implements DifferentiableVInit {

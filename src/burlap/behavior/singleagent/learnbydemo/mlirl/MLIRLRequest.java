@@ -50,17 +50,17 @@ public class MLIRLRequest extends IRLRequest{
 
 	/**
 	 * Initializes the request without any expert trajectory weights (which will be assumed to have a value 1).
-	 * If the provided planner is not null and does not implement the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner}
+	 * If the provided valueFunction is not null and does not implement the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner}
 	 * interface, an exception will be thrown.
 	 * @param domain the domain in which trajectories are provided.
-	 * @param planner a planner that implements the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} interface.
+	 * @param planner a valueFunction that implements the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} interface.
 	 * @param expertEpisodes the expert episodes/trajectories to use for training.
 	 * @param rf the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} model to use.
 	 */
 	public MLIRLRequest(Domain domain, Planner planner, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf){
 		super(domain, planner, expertEpisodes);
 		if(planner != null && !(planner instanceof QGradientPlanner)){
-			throw new RuntimeException("Error: MLIRLRequest requires the planner to be an instance of QGradientPlanner");
+			throw new RuntimeException("Error: MLIRLRequest requires the valueFunction to be an instance of QGradientPlanner");
 		}
 		this.rf = rf;
 	}
@@ -73,11 +73,11 @@ public class MLIRLRequest extends IRLRequest{
 	 * {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} instance will be
 	 * a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI} that plans
 	 * either until the maximum change is the value function is no greater than 0.01 or until 500 iterations have been performed.
-	 * A default gamma (discount) value of 0.99 will be used for the planner and no terminal states will be used.
+	 * A default gamma (discount) value of 0.99 will be used for the valueFunction and no terminal states will be used.
 	 * @param domain the domain in which trajectories are provided.
 	 * @param expertEpisodes the expert episodes/trajectories to use for training.
 	 * @param rf the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} model to use.
-	 * @param hashingFactory the state hashing factory to use for the created planner.
+	 * @param hashingFactory the state hashing factory to use for the created valueFunction.
 	 */
 	public MLIRLRequest(Domain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, StateHashFactory hashingFactory){
 		super(domain, null, expertEpisodes);
@@ -117,7 +117,7 @@ public class MLIRLRequest extends IRLRequest{
 	@Override
 	public void setPlanner(Planner p) {
 		if(planner != null && !(p instanceof QGradientPlanner)){
-			throw new RuntimeException("Error: MLIRLRequest requires the planner to be an instance of QGradientPlanner");
+			throw new RuntimeException("Error: MLIRLRequest requires the valueFunction to be an instance of QGradientPlanner");
 		}
 		this.planner = p;
 	}

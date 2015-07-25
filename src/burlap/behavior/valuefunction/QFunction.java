@@ -8,11 +8,11 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 
 /**
- * An interface for planning and learning classes that can return/compute Q-values.
+ * An interface for MDP solvers that can return/compute Q-values.
  * @author James MacGlashan
  *
  */
-public interface QFunction {
+public interface QFunction extends ValueFunction{
 
 	/**
 	 * Returns a {@link java.util.List} of {@link burlap.behavior.valuefunction.QValue} objects for ever permissible action for the given input state.

@@ -23,7 +23,7 @@ public class MADPPlanAgentFactory implements AgentFactory {
 	/**
 	 * Initializes.
 	 * @param domain the domain for the agents
-	 * @param planner the planner object that will be used by all generated agents
+	 * @param planner the valueFunction object that will be used by all generated agents
 	 * @param policy the policy that will be copied and supplied to all generated objects
 	 */
 	public MADPPlanAgentFactory(SGDomain domain, MADynamicProgramming planner, PolicyFromJointPolicy policy){
@@ -36,7 +36,7 @@ public class MADPPlanAgentFactory implements AgentFactory {
 	/**
 	 * Initializes
 	 * @param domain the domain for the agents
-	 * @param plannerFactory the planner factory that will be used to generate a planner for the agents
+	 * @param plannerFactory the valueFunction factory that will be used to generate a valueFunction for the agents
 	 * @param policy the policy that will be copied and supplied to all generated objects
 	 */
 	public MADPPlanAgentFactory(SGDomain domain, MADPPlannerFactory plannerFactory, PolicyFromJointPolicy policy){

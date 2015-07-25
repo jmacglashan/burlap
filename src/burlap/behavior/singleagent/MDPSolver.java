@@ -66,7 +66,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	protected Map <StateHashTuple, StateHashTuple>					mapToStateIndex;
 	
 	/**
-	 * Indicates whether the action set for this planner includes parametrized actions
+	 * Indicates whether the action set for this valueFunction includes parametrized actions
 	 */
 	protected boolean												containsParameterizedActions;
 	
@@ -235,7 +235,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 
 	/**
 	 * Takes a source parametrized GroundedAction and a matching between object instances of two different states and returns a GroudnedAction
-	 * with parameters using the matched parameters. This method is useful a stored state and action pair in the planner data structure has different
+	 * with parameters using the matched parameters. This method is useful a stored state and action pair in the valueFunction data structure has different
 	 * object name identifiers than a query state that is otherwise identical. The matching is from the state in which the source action is applied
 	 * to some target state that is not provided to this method.
 	 * @param a the source action that needs to be translated
@@ -261,7 +261,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	
 	
 	/**
-	 * Returns all grounded actions in the provided state for all the actions that this planner can use.
+	 * Returns all grounded actions in the provided state for all the actions that this valueFunction can use.
 	 * @param s the source state for which to get all GroundedActions.
 	 * @return all GroundedActions.
 	 */

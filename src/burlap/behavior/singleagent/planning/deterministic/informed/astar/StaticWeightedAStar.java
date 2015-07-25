@@ -33,7 +33,7 @@ public class StaticWeightedAStar extends AStar {
 	
 	
 	/**
-	 * Initializes the planner. Returned solution will be at most \epsilon times the optimal solution cost.
+	 * Initializes the valueFunction. Returned solution will be at most \epsilon times the optimal solution cost.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function that represents costs as negative reward
 	 * @param gc should evaluate to true for goal states; false otherwise

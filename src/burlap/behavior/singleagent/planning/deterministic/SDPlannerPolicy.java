@@ -14,8 +14,8 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
- * This is a static deterministic planner policy, which means
- * if the source deterministic planner has not already computed
+ * This is a static deterministic valueFunction policy, which means
+ * if the source deterministic valueFunction has not already computed
  * and cached the plan for a query state, then this policy
  * is undefined for that state and will cause the policy to throw
  * a corresponding {@link burlap.behavior.policy.Policy.PolicyUndefinedException} exception object.
@@ -53,7 +53,7 @@ public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 	public AbstractGroundedAction getAction(State s) {
 		
 		if(this.dp == null){
-			throw new RuntimeException("The planner used by this Policy is not defined; therefore, the policy is undefined.");
+			throw new RuntimeException("The valueFunction used by this Policy is not defined; therefore, the policy is undefined.");
 		}
 		
 		if(this.dp.hasCachedPlanForState(s)){
@@ -89,7 +89,7 @@ public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 	@Override
 	public boolean isDefinedFor(State s) {
 		if(this.dp == null){
-			throw new RuntimeException("The planner used by this Policy is not defined; therefore, the policy is undefined.");
+			throw new RuntimeException("The valueFunction used by this Policy is not defined; therefore, the policy is undefined.");
 		}
 		if(this.dp.hasCachedPlanForState(s)){
 			return true;

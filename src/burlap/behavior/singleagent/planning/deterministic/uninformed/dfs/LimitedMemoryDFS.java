@@ -17,10 +17,10 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 /**
  * This is a modified version of DFS that maintains a memory of the last n states it has previously expanded.
- * Any potential path that will lead to a state that is in its memory will be pruned from the search tree. This planner
+ * Any potential path that will lead to a state that is in its memory will be pruned from the search tree. This valueFunction
  * gives some of the reduced searching power gained when using DFS with a closed with, but with a constant memory space cost
  * that is traded for less pruning power. If there is an imposed search depth and a potential path will explore
- * a state in the memory, but will explore it at an earlier depth, the planner will explore it anyway, since it's
+ * a state in the memory, but will explore it at an earlier depth, the valueFunction will explore it anyway, since it's
  * possible it will lead to a goal given that it can expand further than the previous exploration.
  * 
  * <p/>
@@ -36,7 +36,7 @@ public class LimitedMemoryDFS extends DFS {
 
 	
 	/**
-	 * the size of the memory; that is, the number of recently expanded search nodes the planner will remember.
+	 * the size of the memory; that is, the number of recently expanded search nodes the valueFunction will remember.
 	 */
 	protected int									memorySize;
 	

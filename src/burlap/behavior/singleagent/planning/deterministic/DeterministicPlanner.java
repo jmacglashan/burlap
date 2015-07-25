@@ -24,8 +24,8 @@ import burlap.oomdp.singleagent.RewardFunction;
  * Although these planners do not strictly compute policies, but instead action sequences to be executed from some initial state, 
  * it also stores an internal partial policy
  * that specifies which action to take in each state that is on the path of a plan it has previously found. If the same
- * planner is used multiple times from different initial states (but keep the same goal condition) it will progressively fill out the policy.
- * If the planner fails to find a valid plan, it will throw a {@link PlanningFailedException} runtime exception.
+ * valueFunction is used multiple times from different initial states (but keep the same goal condition) it will progressively fill out the policy.
+ * If the valueFunction fails to find a valid plan, it will throw a {@link PlanningFailedException} runtime exception.
  * @author James MacGlashan
  *
  */
@@ -37,14 +37,14 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	protected StateConditionTest						gc;
 	
 	/**
-	 * Stores the action plan found by the planner as a deterministic policy
+	 * Stores the action plan found by the valueFunction as a deterministic policy
 	 */
 	protected Map <StateHashTuple, GroundedAction>		internalPolicy;
 	
 	
 	
 	/**
-	 * Initializes the planner. For some planners the reward function is not necessary, but for others that account for cost, like UFC, it should
+	 * Initializes the valueFunction. For some planners the reward function is not necessary, but for others that account for cost, like UFC, it should
 	 * be provided. This method will automatically call the OOMDPPlanner init with the discount factor set to 1.
 	 * @param domain the domain in which to plan.
 	 * @param rf the reward function to use (probably should be negative to be compatible with most forward search planners)
@@ -68,7 +68,7 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	}
 
 	/**
-	 * Returns whether the planner has a plan solution from the provided state.
+	 * Returns whether the valueFunction has a plan solution from the provided state.
 	 * @param s the state to test whether a plan solution currently exists.
 	 * @return true if a plan solution from the given state exists; false otherwise.
 	 */
@@ -81,8 +81,8 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	
 	
 	/**
-	 * Returns the action suggested by the planner for the given state. If a plan including this state
-	 * has not already been computed, the planner will be called from this state to find one.
+	 * Returns the action suggested by the valueFunction for the given state. If a plan including this state
+	 * has not already been computed, the valueFunction will be called from this state to find one.
 	 * @param s the state for which the suggested action is to be returned.
 	 * @return The suggested action for the given state.
 	 */
@@ -109,7 +109,7 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	
 	
 	/**
-	 * Encodes a solution path found by the planner into this class's internal policy structure. If a state
+	 * Encodes a solution path found by the valueFunction into this class's internal policy structure. If a state
 	 * was visited more than once in the solution path, then the action used for the last occurrence of the
 	 * state is used. If a null search node is passed to this method, it indicates that a plan was not
 	 * found and a {@link PlanningFailedException} runtime exception is thrown.

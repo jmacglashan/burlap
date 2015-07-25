@@ -29,7 +29,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * An implementation of the Sparse Sampling (SS) [1] planning algorithm. SS's computational complexity is indepdent of the state space size, which makes it appealing
  * for exponentially large or infinite state space MDPs and it guarantees epsilon optimal planning under certain conditions (use the {@link #setHAndCByMDPError(double, double, int)}
  * method to ensure this, however, the required horizon and C will probably be intractably large). SS must replan for every new state it sees, so an agent following it in general must replan after every step it takes in the real world. Using a
- * Q-based {@link Policy} object, will ensure this behavior because this algorithm will call the planner whenever it's quried for the Q-value for a state it has not seen.
+ * Q-based {@link Policy} object, will ensure this behavior because this algorithm will call the valueFunction whenever it's quried for the Q-value for a state it has not seen.
  * <p/>
  * The algorithm operates by building a tree frome the source initial state. The tree is built by sampling C outcome states for each possible state-action pair, thereby generating new
  * state nodes in the tree. The tree is built out to a fixed height H and then in a tail recursive way, the Q-value and state value is estimated using a Bellman update as if the C samples perfectly defined
@@ -220,7 +220,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	
 	
 	/**
-	 * Sets whether this planner will compute the exact finite horizon value funciton (using the full transition dynamics) or if sampling
+	 * Sets whether this valueFunction will compute the exact finite horizon value funciton (using the full transition dynamics) or if sampling
 	 * to estimate the value function will be used. The default of this class is to use sampling.
 	 * @param computeExactValueFunction if true, the exact finite horizon value function is computed; if false, then sampling is used.
 	 */
@@ -230,7 +230,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	
 	
 	/**
-	 * Returns whether this planner comptues the exact finite horizon value function (by using the full transition dynamics) or whether
+	 * Returns whether this valueFunction comptues the exact finite horizon value function (by using the full transition dynamics) or whether
 	 * it estimates the value funciton with sampling.
 	 * @return true if the exact finite horizon value function is estimate; false if sampling is used.
 	 */
@@ -365,6 +365,12 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		
 		
 		return null;
+	}
+
+
+	@Override
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
 	}
 	
 	

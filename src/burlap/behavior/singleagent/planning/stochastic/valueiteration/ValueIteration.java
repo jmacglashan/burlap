@@ -65,7 +65,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	
 	
 	/**
-	 * Initializers the planner.
+	 * Initializers the valueFunction.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
 	 * @param tf the terminal state function
@@ -85,7 +85,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	
 	
 	/**
-	 * Calling this method will force the planner to recompute the reachable states when the {@link #planFromState(State)} method is called next.
+	 * Calling this method will force the valueFunction to recompute the reachable states when the {@link #planFromState(State)} method is called next.
 	 * This may be useful if the transition dynamics from the last planning call have changed and if planning needs to be restarted as a result.
 	 */
 	public void recomputeReachableStates(){

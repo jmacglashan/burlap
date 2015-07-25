@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
 
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit;
@@ -25,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A Differentiable finite horizon planner that can also use sparse sampling over the transition dynamics when the
- * transition function is very large or infinite. This planner can be used to perform Receding Horizon Inverse
+ * A Differentiable finite horizon valueFunction that can also use sparse sampling over the transition dynamics when the
+ * transition function is very large or infinite. This valueFunction can be used to perform Receding Horizon Inverse
  * Reinforcement Learning [1] with BURLAP's implementation of maximum likelihood inverse reinforcement learning
  * ({@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL}) [2]. Additionally, the value of the leaf
- * nodes of this planner may also be parametrized using a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
+ * nodes of this valueFunction may also be parametrized using a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
  * object and learned with {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL},
  * enabling a nice separation of shaping features/rewards and the learned (or known) reward function.
  * <br/>
@@ -258,6 +259,11 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		}
 
 		return null;
+	}
+
+	@Override
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
 	}
 
 	@Override

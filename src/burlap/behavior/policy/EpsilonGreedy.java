@@ -15,7 +15,7 @@ import burlap.oomdp.core.states.State;
 
 
 /**
- * This class defines a an epsilon-greedy policy over Q-values and requires a QComputable planner to be specified.
+ * This class defines a an epsilon-greedy policy over Q-values and requires a QComputable valueFunction to be specified.
  * With probability epsilon the policy will return a random action (with uniform distribution over all possible action).
  * With probability 1 - epsilon the policy will return the greedy action. If multiple actions tie for the highest Q-value,
  * then one of the tied actions is randomly selected.

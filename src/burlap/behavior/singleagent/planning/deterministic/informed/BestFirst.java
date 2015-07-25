@@ -17,7 +17,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * An abstract class for implementing Best-first search planning. Best-first search planning stores children node in a priority queue
  * where the priority of nodes is indicated by an f-function. Different Best-first search planning algorithms are implemented
  * by changing how the f-score is computed, which is an abstract method of this class that needs to be override. A*, for instance,
- * is a Best-first planner in which the f-score is g(s) + h(s), where g(s) is the cost to state s, and h(s) is the heuristic score for s.
+ * is a Best-first valueFunction in which the f-score is g(s) + h(s), where g(s) is the cost to state s, and h(s) is the heuristic score for s.
  * Best-first search requires checking if the open queue already has a search node stored in it and possibly modifying its priority and back pointers
  * if a better path to it has been found. To efficiently provide that functionality, this class makes use of a custom
  * hash-backed priority queue (heap) which performs contains tests using a hash map.

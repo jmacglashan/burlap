@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * has deterministic termination conditions in any state where the policy is undefined, or in any state
  * that is in the termination set. In general, this method should be used instead of the {@link PolicyDefinedSubgoalOption}
  * when the client needs more control over in which states the option can be initiated and in which states it terminates.
- * One other advantage of this option is that it can be passed a planner from which its policy will be created. The planner
+ * One other advantage of this option is that it can be passed a valueFunction from which its policy will be created. The valueFunction
  * will be called from each initiation state provided to the option constructor.
  * @author James MacGlashan
  *
@@ -65,14 +65,14 @@ public class DeterministicTerminationOption extends Option {
 	
 	
 	/**
-	 * Initializes the option by creating the policy uses some provided option. The planner is called repeatedly on each state in the
+	 * Initializes the option by creating the policy uses some provided option. The valueFunction is called repeatedly on each state in the
 	 * initiation state set (which needs to be a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable}) and then
-	 * sets this options policy to the planner derived policy that is provided.
+	 * sets this options policy to the valueFunction derived policy that is provided.
 	 * @param name the name of the option
 	 * @param init the iterable initiation states
 	 * @param terminaitonStates the termination states of the option
-	 * @param planner the planner to be used to create the policy for this option
-	 * @param p the planner derived policy to use after planning from each initial state is performed.
+	 * @param planner the valueFunction to be used to create the policy for this option
+	 * @param p the valueFunction derived policy to use after planning from each initial state is performed.
 	 */
 	public DeterministicTerminationOption(String name, StateConditionTestIterable init, StateConditionTest terminaitonStates, Planner planner, SolverDerivedPolicy p){
 		
@@ -89,7 +89,7 @@ public class DeterministicTerminationOption extends Option {
 		this.parameterClasses = new String[0];
 		this.parameterOrderGroup = new String[0];
 		
-		//now construct the policy using the planner from each possible initiation state
+		//now construct the policy using the valueFunction from each possible initiation state
 		for(State si : init){
 			planner.planFromState(si);
 		}
@@ -100,15 +100,15 @@ public class DeterministicTerminationOption extends Option {
 	}
 	
 	/**
-	 * Initializes the option by creating the policy uses some provided option. The planner is called repeatedly on each state in the
+	 * Initializes the option by creating the policy uses some provided option. The valueFunction is called repeatedly on each state in the
 	 * the list <code>seedStatesForPlanning</code> and then
-	 * sets this options policy to the planner derived policy that is provided.
+	 * sets this options policy to the valueFunction derived policy that is provided.
 	 * @param name the name of the option
 	 * @param init the initiation conditions of the option
 	 * @param terminationStates the termination states of the option
-	 * @param seedStatesForPlanning the states that should be used as initial states for the planner
-	 * @param planner the planner that is used to create the policy for this option
-	 * @param p the planner derived policy to use after planning from each initial state is performed.
+	 * @param seedStatesForPlanning the states that should be used as initial states for the valueFunction
+	 * @param planner the valueFunction that is used to create the policy for this option
+	 * @param p the valueFunction derived policy to use after planning from each initial state is performed.
 	 */
 	public DeterministicTerminationOption(String name, StateConditionTest init, StateConditionTest terminationStates, List<State> seedStatesForPlanning,
 										  Planner planner, SolverDerivedPolicy p){
@@ -126,7 +126,7 @@ public class DeterministicTerminationOption extends Option {
 		this.parameterClasses = new String[0];
 		this.parameterOrderGroup = new String[0];
 		
-		//now construct the policy using the planner from each possible initiation state
+		//now construct the policy using the valueFunction from each possible initiation state
 		for(State si : seedStatesForPlanning){
 			planner.planFromState(si);
 		}

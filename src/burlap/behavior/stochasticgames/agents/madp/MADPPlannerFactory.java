@@ -42,16 +42,16 @@ public interface MADPPlannerFactory {
 		
 		
 		/**
-		 * Initializes with a given planner reference.
-		 * @param plannerRefernece the planner reference to return
+		 * Initializes with a given valueFunction reference.
+		 * @param plannerRefernece the valueFunction reference to return
 		 */
 		public ConstantMADPPlannerFactory(MADynamicProgramming plannerRefernece){
 			this.plannerReferece = plannerRefernece;
 		}
 		
 		/**
-		 * Changes the planner reference
-		 * @param plannerReference the planner reference to return
+		 * Changes the valueFunction reference
+		 * @param plannerReference the valueFunction reference to return
 		 */
 		public void setPlannerReference(MADynamicProgramming plannerReference){
 			this.plannerReferece = plannerReference;

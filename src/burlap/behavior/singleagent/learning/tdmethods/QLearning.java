@@ -138,7 +138,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	/**
 	 * Initializes Q-learning with 0.1 epsilon greedy policy, the same Q-value initialization everywhere, and places no limit on the number of steps the 
 	 * agent can take in an episode. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -154,7 +154,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 
 	/**
 	 * Initializes Q-learning with 0.1 epsilon greedy policy, the same Q-value initialization everywhere. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -173,7 +173,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * Initializes the same Q-value initialization everywhere. Note that if the provided policy is derived from the Q-value of this learning agent (as it should be),
 	 * you may need to set the policy to point to this object after call this constructor; the constructor will not do this automatically in case it was by design
 	 * to use the policy that was learned in some other domain. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -193,7 +193,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * Initializes the algorithm. Note that if the provided policy is derived from the Q-value of this learning agent (as it should be),
 	 * you may need to set the policy to point to this object after call this constructor; the constructor will not do this automatically in case it was by design
 	 * to use the policy that was learned in some other domain. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -212,7 +212,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	
 	/**
 	 * Initializes the algorithm. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -409,7 +409,12 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		
 		return null; //no action for this state indexed
 	}
-	
+
+
+	@Override
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+	}
 	
 	/**
 	 * Returns the {@link QLearningStateNode} object stored for the given hashed state. If no {@link QLearningStateNode} object.

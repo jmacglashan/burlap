@@ -46,7 +46,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	protected Model								model;
 	
 	/**
-	 * The planner used on the modeled world to update the value function
+	 * The valueFunction used on the modeled world to update the value function
 	 */
 	protected DynamicProgramming 				modelPlanner;
 	
@@ -249,7 +249,12 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		q.a = nga;
 		return q;
 	}
-	
+
+
+	@Override
+	public double value(State s) {
+		return this.modelPlanner.value(s);
+	}
 	
 	public void resetSolver(){
 		this.model.resetModel();

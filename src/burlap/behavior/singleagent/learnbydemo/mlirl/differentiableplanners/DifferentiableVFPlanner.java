@@ -50,7 +50,7 @@ public abstract class DifferentiableVFPlanner extends DynamicProgramming impleme
 	/**
 	 * Overrides the superclass method to perform a Boltzmann backup operator
 	 * instead of a Bellman backup operator.
-	 * Results are stored in this planner's internal map.
+	 * Results are stored in this valueFunction's internal map.
 	 * @param sh the hashed state on which to perform the Boltzmann update.
 	 * @return the new value
 	 */
@@ -82,7 +82,7 @@ public abstract class DifferentiableVFPlanner extends DynamicProgramming impleme
 
 	/**
 	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.behavior.statehashing.StateHashTuple}.
-	 * Results are stored in this planner's internal map.
+	 * Results are stored in this valueFunction's internal map.
 	 * @param sh the hashed state on which to perform the Boltzmann gradient update.
 	 * @return the gradient.
 	 */

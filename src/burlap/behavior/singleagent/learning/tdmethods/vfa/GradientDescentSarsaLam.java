@@ -159,7 +159,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	/**
 	 * Initializes SARSA(\lambda) with 0.1 epsilon greedy policy and places no limit on the number of steps the 
 	 * agent can take in an episode. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -177,7 +177,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	
 	/**
 	 * Initializes SARSA(\lambda) with 0.1 epsilon greedy policy. By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -196,7 +196,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	
 	/**
 	 * Initializes SARSA(\lambda) By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -215,7 +215,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	
 	/**
 	 * Initializes SARSA(\lambda) By default the agent will only save the last learning episode and a call to the {@link #planFromState(State)} method
-	 * will cause the planner to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
+	 * will cause the valueFunction to use only one episode for planning; this should probably be changed to a much larger value if you plan on using this
 	 * algorithm as a planning algorithm.
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
@@ -571,7 +571,11 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		
 		return this.getQFromFeaturesFor(results, s, (GroundedAction)a);
 	}
-	
+
+	@Override
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+	}
 	
 	/**
 	 * Creates a Q-value object in which the Q-value is determined from VFA.

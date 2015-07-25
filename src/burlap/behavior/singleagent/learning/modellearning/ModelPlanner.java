@@ -24,19 +24,19 @@ public interface ModelPlanner {
 	public void initializePlannerIn(State s);
 	
 	/**
-	 * Tells the planner that the model has changed and that it will need to replan accordingly
+	 * Tells the valueFunction that the model has changed and that it will need to replan accordingly
 	 * @param changedState the source state that caused a change in the model.
 	 */
 	public void modelChanged(State changedState);
 	
 	/**
-	 * Returns a policy encoding the planner's results.
+	 * Returns a policy encoding the valueFunction's results.
 	 * @return a policy object
 	 */
 	public Policy modelPlannedPolicy();
 	
 	/**
-	 * Resets planner as if no planning had never been called.
+	 * Resets valueFunction as if no planning had never been called.
 	 */
 	public void resetPlanner();
 

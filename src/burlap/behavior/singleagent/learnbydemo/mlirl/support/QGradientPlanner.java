@@ -7,7 +7,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 import java.util.List;
 
 /**
- * An interface for a planner that can produce Q-value gradients.
+ * An interface for a valueFunction that can produce Q-value gradients.
  * @author James MacGlashan.
  */
 public interface QGradientPlanner extends QFunction {
@@ -31,8 +31,8 @@ public interface QGradientPlanner extends QFunction {
 
 
 	/**
-	 * Sets this planner's Boltzmann beta parameter used to compute gradients. As beta gets larger, the policy becomes more deterministic.
-	 * @param beta the value to which this planner's Boltzmann beta parameter will be set
+	 * Sets this valueFunction's Boltzmann beta parameter used to compute gradients. As beta gets larger, the policy becomes more deterministic.
+	 * @param beta the value to which this valueFunction's Boltzmann beta parameter will be set
 	 */
 	public void setBoltzmannBetaParameter(double beta);
 

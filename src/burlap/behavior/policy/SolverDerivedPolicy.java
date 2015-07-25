@@ -11,7 +11,7 @@ import burlap.behavior.singleagent.MDPSolverInterface;
  */
 public interface SolverDerivedPolicy {
 	/**
-	 * Sets the planner whose results affect this policy.
+	 * Sets the valueFunction whose results affect this policy.
 	 * @param solver the solver from which this policy is derived
 	 */
 	public void setSolver(MDPSolverInterface solver);

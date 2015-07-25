@@ -323,7 +323,7 @@ public class MultipleIntentionsMLIRL {
 	 * Initializes cluster data; i.e., it initializes RF parameters, cluster prior parameters (to uniform), and creates {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest}
 	 * objects for each cluster.
 	 * @param k the number of clusters
-	 * @param plannerFactory the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory} to use to generate a planner for each cluster.
+	 * @param plannerFactory the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory} to use to generate a valueFunction for each cluster.
 	 */
 	protected void initializeClusters(int k, QGradientPlannerFactory plannerFactory){
 

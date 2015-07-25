@@ -67,7 +67,7 @@ public class DynamicWeightedAStar extends AStar {
 	
 	
 	/**
-	 * Initializes the planner.
+	 * Initializes the valueFunction.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function that represents costs as negative reward
 	 * @param gc should evaluate to true for goal states; false otherwise

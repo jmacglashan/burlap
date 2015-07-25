@@ -104,8 +104,8 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 
 	/**
 	 * Sets the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory} to use and also
-	 * sets this request object's planner instance to a planner generated from it, if it has not already been set.
-	 * Setting a planner instance ensures that the {@link #isValid()} methods do not return false.
+	 * sets this request object's valueFunction instance to a valueFunction generated from it, if it has not already been set.
+	 * Setting a valueFunction instance ensures that the {@link #isValid()} methods do not return false.
 	 * @param plannerFactory the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory} to use
 	 */
 	public void setPlannerFactory(QGradientPlannerFactory plannerFactory) {
