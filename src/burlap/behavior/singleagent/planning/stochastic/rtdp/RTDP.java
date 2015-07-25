@@ -201,9 +201,15 @@ public class RTDP extends DynamicProgramming implements Planner{
 	public int getNumberOfBellmanUpdates(){
 		return this.numberOfBellmanUpdates;
 	}
-	
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		
 		if(!useBatch){
 			this.normalRTDP(initialState);
@@ -211,6 +217,8 @@ public class RTDP extends DynamicProgramming implements Planner{
 		else{
 			this.batchRTDP(initialState);
 		}
+
+		return new GreedyQPolicy(this);
 
 	}
 	

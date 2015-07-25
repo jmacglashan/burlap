@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
@@ -102,15 +103,22 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	public void toggleReachabiltiyTerminalStatePruning(boolean toggle){
 		this.stopReachabilityFromTerminalStates = toggle;
 	}
-	
-	
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState){
+	public GreedyQPolicy planFromState(State initialState){
 		this.initializeOptionsForExpectationComputations();
 		if(this.performReachabilityFrom(initialState) || !this.hasRunVI){
 			this.runVI();
 		}
-			
+
+		return new GreedyQPolicy(this);
 	}
 	
 	@Override

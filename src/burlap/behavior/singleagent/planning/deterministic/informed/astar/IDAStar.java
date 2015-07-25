@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
@@ -61,17 +62,26 @@ public class IDAStar extends DeterministicPlanner {
 		nodeComparator = new PrioritizedSearchNode.PSNComparator();
 		
 	}
-	
-	
-	
-	
+
+
+
+
+	/**
+	 * Plans and returns a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}. If
+	 * a {@link burlap.oomdp.core.states.State} is not in the solution path of this planner, then
+	 * the {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy} will throw
+	 * a runtime exception. If you want a policy that will dynamically replan for unknown states,
+	 * you should create your own {@link burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy}.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public SDPlannerPolicy planFromState(State initialState) {
 		
 		StateHashTuple sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
-			return ; //no need to plan since this is already solved
+			return new SDPlannerPolicy(this); //no need to plan since this is already solved
 		}
 		
 		
@@ -84,7 +94,7 @@ public class IDAStar extends DeterministicPlanner {
 			
 			PrioritizedSearchNode cand = this.FLimtedDFS(initialPSN, nextMinR, 0.);
 			if(cand == null){
-				return ; //FAIL CONDITION, EVERY PATH LEADS TO A DEAD END
+				return new SDPlannerPolicy(this); //FAIL CONDITION, EVERY PATH LEADS TO A DEAD END
 			}
 			
 			//was the goal found within the limit?
@@ -103,7 +113,7 @@ public class IDAStar extends DeterministicPlanner {
 		//search to goal complete now follow back pointers to set policy
 		this.encodePlanIntoPolicy(solutionNode);
 		
-		
+		return new SDPlannerPolicy(this);
 
 	}
 	

@@ -1,5 +1,7 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
 
+import burlap.behavior.policy.BoltzmannQPolicy;
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
@@ -300,8 +302,15 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		return null;
 	}
 
+
+	/**
+	 * Plans from the input state and returns a {@link burlap.behavior.policy.BoltzmannQPolicy} following the
+	 * Boltzmann parameter used for value Botlzmann value backups in this planner.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.BoltzmannQPolicy}
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public BoltzmannQPolicy planFromState(State initialState) {
 
 		if(this.forgetPreviousPlanResults){
 			this.rootLevelQValues.clear();
@@ -309,7 +318,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		StateHashTuple sh = this.hashingFactory.hashState(initialState);
 		if(this.rootLevelQValues.containsKey(sh)){
-			return; //already planned for this state
+			return new BoltzmannQPolicy(this, 1./this.boltzBeta); //already planned for this state
 		}
 
 		DPrint.cl(this.debugCode, "Beginning Planning.");
@@ -325,6 +334,8 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		}
 
 		this.mapToStateIndex.put(sh, sh);
+
+		return new BoltzmannQPolicy(this, 1./this.boltzBeta);
 
 	}
 

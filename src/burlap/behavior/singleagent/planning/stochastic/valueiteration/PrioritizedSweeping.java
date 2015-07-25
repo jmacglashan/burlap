@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.statehashing.StateHashFactory;
@@ -64,13 +65,7 @@ public class PrioritizedSweeping extends ValueIteration{
 	}
 
 
-	@Override
-	public void planFromState(State initialState) {
-		super.planFromState(initialState);
-	}
-	
-	
-	
+
 	@Override
 	public void runVI(){
 		

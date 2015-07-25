@@ -10,6 +10,7 @@ import java.util.Set;
 
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.Planner;
@@ -619,8 +620,15 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		return ActionApproximationResult.extractApproximationForAction(results, ga);
 	}
 
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 
 		if(this.rf == null || this.tf == null){
 			throw new RuntimeException("QLearning (and its subclasses) cannot execute planFromState because the reward function and terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
@@ -633,6 +641,8 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			this.runLearningEpisode(env);
 			eCount++;
 		}while(eCount < numEpisodesForPlanning && maxWeightChangeInLastEpisode > maxWeightChangeForPlanningTermination);
+
+		return new GreedyQPolicy(this);
 
 	}
 	

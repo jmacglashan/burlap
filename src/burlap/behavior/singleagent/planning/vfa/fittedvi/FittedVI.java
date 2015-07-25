@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
@@ -294,9 +295,16 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	}
 
 
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		this.runVI();
+		return new GreedyQPolicy(this);
 	}
 
 	@Override

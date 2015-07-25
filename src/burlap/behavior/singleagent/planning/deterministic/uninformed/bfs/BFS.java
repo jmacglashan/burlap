@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
@@ -44,15 +46,24 @@ public class BFS extends DeterministicPlanner {
 	public BFS(Domain domain, StateConditionTest gc, StateHashFactory hashingFactory){
 		this.deterministicPlannerInit(domain, new UniformCostRF(), new NullTermination(), gc, hashingFactory);
 	}
-	
-	
+
+
+	/**
+	 * Plans and returns a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}. If
+	 * a {@link burlap.oomdp.core.states.State} is not in the solution path of this planner, then
+	 * the {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy} will throw
+	 * a runtime exception. If you want a policy that will dynamically replan for unknown states,
+	 * you should create your own {@link burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy}.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public SDPlannerPolicy planFromState(State initialState) {
 		
 		StateHashTuple sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
-			return ; //no need to plan since this is already solved
+			return new SDPlannerPolicy(this); //no need to plan since this is already solved
 		}
 		
 		
@@ -121,6 +132,8 @@ public class BFS extends DeterministicPlanner {
 
 		
 		DPrint.cl(debugCode,"Num Expanded: " + nexpanded);
+
+		return new SDPlannerPolicy(this);
 		
 	}
 

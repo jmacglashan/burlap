@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
@@ -291,10 +292,16 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	public int getNumberOfStateNodesCreated(){
 		return this.nodesByHeight.size() + this.rootLevelQValues.size();
 	}
-	
-	
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		
 		if(this.forgetPreviousPlanResults){
 			this.rootLevelQValues.clear();
@@ -302,7 +309,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		
 		StateHashTuple sh = this.hashingFactory.hashState(initialState);
 		if(this.rootLevelQValues.containsKey(sh)){
-			return; //already planned for this state
+			return new GreedyQPolicy(this); //already planned for this state
 		}
 		
 		DPrint.cl(this.debugCode, "Beginning Planning.");
@@ -318,6 +325,8 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		}
 		
 		this.mapToStateIndex.put(sh, sh);
+
+		return new GreedyQPolicy(this);
 
 	}
 

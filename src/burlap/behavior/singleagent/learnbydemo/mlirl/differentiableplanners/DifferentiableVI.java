@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
 
+import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
@@ -20,7 +21,7 @@ import java.util.*;
  * valueFunction except for being in the differentiable value function case.
  * @author James MacGlashan.
  */
-public class DifferentiableVI extends DifferentiableVFPlanner implements Planner {
+public class DifferentiableVI extends DifferentiableDP implements Planner {
 
 	/**
 	 * When the maximum change in the value function is smaller than this value, VI will terminate.
@@ -97,13 +98,22 @@ public class DifferentiableVI extends DifferentiableVFPlanner implements Planner
 	}
 
 
+
+	/**
+	 * Plans from the input state and returns a {@link burlap.behavior.policy.BoltzmannQPolicy} following the
+	 * Boltzmann parameter used for value Botlzmann value backups in this planner.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.BoltzmannQPolicy}
+	 */
 	@Override
-	public void planFromState(State initialState){
+	public BoltzmannQPolicy planFromState(State initialState){
 		this.initializeOptionsForExpectationComputations();
 		if(!this.valueFunction.containsKey(this.hashingFactory.hashState(initialState))){
 			this.performReachabilityFrom(initialState);
 			this.runVI();
 		}
+
+		return new BoltzmannQPolicy(this, 1./this.boltzBeta);
 
 	}
 

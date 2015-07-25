@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.options.Option;
@@ -126,10 +127,16 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	public void useGoalConditionStopCriteria(StateConditionTest gc){
 		this.goalCondition = gc;
 	}
-	
-	
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		
 		foundGoal = false;
 		
@@ -170,6 +177,8 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 			//System.out.println("\nRollouts: " + numRollOutsFromRoot + "; Best Action Expected Return: " + this.bestReturnAction(root).averageReturn());
 		}
 		DPrint.cl(debugCode, "\nRollouts: " + numRollOutsFromRoot + "; Best Action Expected Return: " + this.bestReturnAction(root).averageReturn());
+
+		return new GreedyQPolicy(this);
 
 	}
 

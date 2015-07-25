@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
@@ -231,9 +232,17 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	public void setRunRolloutsInRevere(boolean runRolloutsInRevers){
 		this.runRolloutsInReverse = runRolloutsInRevers;
 	}
-	
+
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 	
 		DPrint.cl(this.debugCode, "Beginning Planning.");
 		int nr = 0;
@@ -243,6 +252,8 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		
 		
 		DPrint.cl(this.debugCode, "Finished planning with a total of " + this.numBellmanUpdates + " backups.");
+
+		return new GreedyQPolicy(this);
 
 	}
 	

@@ -18,15 +18,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class for performing dynamic programming based planning with a differentiable value backup operator.
+ * A class for performing dynamic programming with a differentiable value backup operator.
  * Specifically, all subclasses are assumed to use a Boltzmann backup operator and the reward functions
  * must be differentiable by subclassing the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
  * class. The normal {@link #performBellmanUpdateOn(burlap.behavior.statehashing.StateHashTuple)} method
- * of the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} class is overriden
+ * of the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} class is overridden
  * with a method that uses the Boltzmann backup operator.
  * @author James MacGlashan.
  */
-public abstract class DifferentiableVFPlanner extends DynamicProgramming implements QGradientPlanner {
+public abstract class DifferentiableDP extends DynamicProgramming implements QGradientPlanner {
 
 	/**
 	 * The value function gradient for each state.

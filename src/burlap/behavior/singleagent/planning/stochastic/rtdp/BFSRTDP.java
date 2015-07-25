@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
@@ -100,15 +101,21 @@ public class BFSRTDP extends RTDP {
 	public void setGoalCondition(StateConditionTest gc){
 		this.goalCondition = gc;
 	}
-	
-	
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		StateHashTuple sh = this.stateHash(initialState);
 		if(!mapToStateIndex.containsKey(sh)){
 			this.performInitialPassFromState(initialState);
 		}
-		super.planFromState(initialState);
+		return super.planFromState(initialState);
 
 	}
 	

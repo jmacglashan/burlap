@@ -9,6 +9,7 @@ import javax.management.RuntimeErrorException;
 
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.Planner;
@@ -460,8 +461,14 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		return max;
 	}
 
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 
 		if(this.rf == null || this.tf == null){
 			throw new RuntimeException("QLearning (and its subclasses) cannot execute planFromState because the reward function and/or terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
@@ -475,6 +482,8 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			eCount++;
 		}while(eCount < numEpisodesForPlanning && maxQChangeInLastEpisode > maxQChangeForPlanningTermination);
 
+
+		return new GreedyQPolicy(this);
 
 	}
 
