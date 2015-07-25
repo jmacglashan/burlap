@@ -12,8 +12,8 @@ import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.options.support.DirectOptionTerminateMapper;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.oomdp.auxiliary.StateMapping;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -155,17 +155,17 @@ public abstract class Option extends Action {
 	/**
 	 * State hash factory used to cache the transition probabilities so that they only need to be computed once for each state
 	 */
-	protected StateHashFactory										expectationStateHashingFactory;
+	protected HashableStateFactory expectationStateHashingFactory;
 	
 	/**
 	 * The cached transition probabilities from each initiation state
 	 */
-	protected Map<StateHashTuple, List <TransitionProbability>> 	cachedExpectations;
+	protected Map<HashableState, List <TransitionProbability>> 	cachedExpectations;
 	
 	/**
 	 * The cached expected reward from each initiation state
 	 */
-	protected Map<StateHashTuple, Double>							cachedExpectedRewards;
+	protected Map<HashableState, Double>							cachedExpectedRewards;
 	
 	
 	/**
@@ -311,10 +311,10 @@ public abstract class Option extends Action {
 	 * Sets the option to use the provided hashing factory for caching transition probability results.
 	 * @param hashingFactory the state hashing factory to use.
 	 */
-	public void setExpectationHashingFactory(StateHashFactory hashingFactory){
+	public void setExpectationHashingFactory(HashableStateFactory hashingFactory){
 		this.expectationStateHashingFactory = hashingFactory;
-		this.cachedExpectations = new HashMap<StateHashTuple, List<TransitionProbability>>();
-		this.cachedExpectedRewards = new HashMap<StateHashTuple, Double>();
+		this.cachedExpectations = new HashMap<HashableState, List<TransitionProbability>>();
+		this.cachedExpectedRewards = new HashMap<HashableState, Double>();
 	}
 	
 	
@@ -638,7 +638,7 @@ public abstract class Option extends Action {
 	 * @return the expected reward to be received from initiating this option from state s.
 	 */
 	public double getExpectedRewards(State s, String [] params){
-		StateHashTuple sh = this.expectationStateHashingFactory.hashState(s);
+		HashableState sh = this.expectationStateHashingFactory.hashState(s);
 		Double result = this.cachedExpectedRewards.get(sh);
 		if(result != null){
 			return result;
@@ -651,7 +651,7 @@ public abstract class Option extends Action {
 	@Override
 	public List<TransitionProbability> getTransitions(State st, String [] params){
 		
-		StateHashTuple sh = this.expectationStateHashingFactory.hashState(st);
+		HashableState sh = this.expectationStateHashingFactory.hashState(st);
 		
 		List <TransitionProbability> result = this.cachedExpectations.get(sh);
 		if(result != null){
@@ -661,14 +661,14 @@ public abstract class Option extends Action {
 		this.initiateInState(st, params);
 		
 		ExpectationSearchNode esn = new ExpectationSearchNode(st, params);
-		Map <StateHashTuple, Double> possibleTerminations = new HashMap<StateHashTuple, Double>();
+		Map <HashableState, Double> possibleTerminations = new HashMap<HashableState, Double>();
 		double [] expectedReturn = new double[]{0.};
 		this.iterateExpectationScan(esn, 1., possibleTerminations, expectedReturn);
 		
 		this.cachedExpectedRewards.put(sh, expectedReturn[0]);
 		
 		List <TransitionProbability> transition = new ArrayList<TransitionProbability>();
-		for(Map.Entry<StateHashTuple, Double> e : possibleTerminations.entrySet()){
+		for(Map.Entry<HashableState, Double> e : possibleTerminations.entrySet()){
 			TransitionProbability tp = new TransitionProbability(e.getKey().s, e.getValue());
 			transition.add(tp);
 		}
@@ -693,7 +693,7 @@ public abstract class Option extends Action {
 	 * @param expectedReturn the expected discounted cumulative reward up to node src (this is an array of length 1 that is used to be a mutable double)
 	 */
 	protected void iterateExpectationScan(ExpectationSearchNode src, double stackedDiscount, 
-			Map <StateHashTuple, Double> possibleTerminations, double [] expectedReturn){
+			Map <HashableState, Double> possibleTerminations, double [] expectedReturn){
 		
 		
 		double probTerm = 0.0; //can never terminate in initiation state
@@ -744,8 +744,8 @@ public abstract class Option extends Action {
 	 * @param s a possible termination state
 	 * @param p the discounted probability of reaching s for some specific number of steps not already summed into the respective possibleTerminations map. 
 	 */
-	protected void accumulateDiscountedProb(Map <StateHashTuple, Double> possibleTerminations, State s, double p){
-		StateHashTuple sh = expectationStateHashingFactory.hashState(s);
+	protected void accumulateDiscountedProb(Map <HashableState, Double> possibleTerminations, State s, double p){
+		HashableState sh = expectationStateHashingFactory.hashState(s);
 		Double stored = possibleTerminations.get(sh);
 		double newP = p;
 		if(stored != null){

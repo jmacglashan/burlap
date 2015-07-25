@@ -13,9 +13,8 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.statehashing.NameDependentStateHashFactory;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -54,7 +53,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * <p/>
  * This class will work with {@link Option}s, but including options will necessarily *increase* the computational complexity, so they are not reccommeneded.
  * <p/>
- * This class requires a {@link StateHashFactory}; if the domain is continuous, just use a {@link NameDependentStateHashFactory} instance.
+ * This class requires a {@link burlap.behavior.statehashing.HashableStateFactory}; if the domain is continuous, just use a {@link burlap.behavior.statehashing.NameDependentHashableStateFactory} instance.
  * <p/>
  * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is, the
@@ -115,7 +114,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	/**
 	 * The root state node Q-values that have been estimated by previous planning calls.
 	 */
-	protected Map<StateHashTuple, List<QValue>> rootLevelQValues;
+	protected Map<HashableState, List<QValue>> rootLevelQValues;
 	
 	
 	/**
@@ -134,16 +133,16 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
-	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes. If the domain is continuous, use a {@link NameDependentStateHashFactory}
+	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes. If the domain is continuous, use a {@link burlap.behavior.statehashing.NameDependentHashableStateFactory}
 	 * @param h the height of the tree
 	 * @param c the number of transition dynamics samples used. If set to -1, then the full transition dynamics are used.
 	 */
-	public SparseSampling(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int h, int c){
+	public SparseSampling(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int h, int c){
 		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.h = h;
 		this.c = c;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, SparseSampling.StateNode>();
-		this.rootLevelQValues = new HashMap<StateHashTuple, List<QValue>>();
+		this.rootLevelQValues = new HashMap<HashableState, List<QValue>>();
 		if(this.c < 0){
 			this.computeExactValueFunction = true;
 		}
@@ -307,7 +306,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			this.rootLevelQValues.clear();
 		}
 		
-		StateHashTuple sh = this.hashingFactory.hashState(initialState);
+		HashableState sh = this.hashingFactory.hashState(initialState);
 		if(this.rootLevelQValues.containsKey(sh)){
 			return new GreedyQPolicy(this); //already planned for this state
 		}
@@ -341,7 +340,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	@Override
 	public List<QValue> getQs(State s) {
 		
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		List<QValue> qs = this.rootLevelQValues.get(sh);
 		if(qs == null){
 			this.planFromState(s);
@@ -354,7 +353,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
 		
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		List<QValue> qs = this.rootLevelQValues.get(sh);
 		if(qs == null){
 			this.planFromState(s);
@@ -362,7 +361,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		}
 		
 		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
-			StateHashTuple storedSh = this.mapToStateIndex.get(sh);
+			HashableState storedSh = this.mapToStateIndex.get(sh);
 			a = a.translateParameters(s, storedSh.s);
 		}
 		
@@ -410,7 +409,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	 * @return the state node for the given state at the given height in the tree
 	 */
 	protected StateNode getStateNode(State s, int height){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		HashedHeightState hhs = new HashedHeightState(sh, height);
 		StateNode sn = this.nodesByHeight.get(hhs);
 		if(sn == null){
@@ -432,7 +431,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		/**
 		 * The hashed state this node represents
 		 */
-		StateHashTuple sh;
+		HashableState sh;
 		
 		/**
 		 * The height of the node (distance from a leaf)
@@ -455,7 +454,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @param sh the hashed state
 		 * @param height the height of the node
 		 */
-		public StateNode(StateHashTuple sh, int height){
+		public StateNode(HashableState sh, int height){
 			this.sh = sh;
 			this.height = height;
 		}
@@ -597,7 +596,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		/**
 		 * The hashed state
 		 */
-		public StateHashTuple sh;
+		public HashableState sh;
 		
 		/**
 		 * The height of the state
@@ -610,7 +609,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @param sh the hashed state
 		 * @param height the height of the state.
 		 */
-		public HashedHeightState(StateHashTuple sh, int height){
+		public HashedHeightState(HashableState sh, int height){
 			this.sh = sh;
 			this.height = height;
 		}

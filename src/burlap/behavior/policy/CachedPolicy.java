@@ -1,7 +1,7 @@
 package burlap.behavior.policy;
 
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
 
@@ -21,12 +21,12 @@ public class CachedPolicy extends Policy{
 	/**
 	 * The hashing factory to use for indexing states
 	 */
-	protected StateHashFactory hashingFactory;
+	protected HashableStateFactory hashingFactory;
 
 	/**
 	 * The cached action selection probabilities
 	 */
-	protected Map<StateHashTuple, List<Policy.ActionProb>> actionSelection = new HashMap<StateHashTuple, List<Policy.ActionProb>>();
+	protected Map<HashableState, List<Policy.ActionProb>> actionSelection = new HashMap<HashableState, List<Policy.ActionProb>>();
 
 	/**
 	 * The source policy that gets cached
@@ -36,10 +36,10 @@ public class CachedPolicy extends Policy{
 
 	/**
 	 * Initializes
-	 * @param hashingFactory the {@link burlap.behavior.statehashing.StateHashFactory} to use for indexing states
+	 * @param hashingFactory the {@link burlap.behavior.statehashing.HashableStateFactory} to use for indexing states
 	 * @param sourcePolicy the source policy that will be lazily cached.
 	 */
-	public CachedPolicy(StateHashFactory hashingFactory, Policy sourcePolicy) {
+	public CachedPolicy(HashableStateFactory hashingFactory, Policy sourcePolicy) {
 		this.hashingFactory = hashingFactory;
 		this.sourcePolicy = sourcePolicy;
 	}
@@ -47,14 +47,14 @@ public class CachedPolicy extends Policy{
 
 	/**
 	 * Initializes
-	 * @param hashingFactory the {@link burlap.behavior.statehashing.StateHashFactory} to use for indexing states
+	 * @param hashingFactory the {@link burlap.behavior.statehashing.HashableStateFactory} to use for indexing states
 	 * @param sourcePolicy the source policy that will be lazily cached.
 	 * @param cacheCapacity the initial memory capacity to be set aside for the policy cache
 	 */
-	public CachedPolicy(StateHashFactory hashingFactory, Policy sourcePolicy, int cacheCapacity) {
+	public CachedPolicy(HashableStateFactory hashingFactory, Policy sourcePolicy, int cacheCapacity) {
 		this.hashingFactory = hashingFactory;
 		this.sourcePolicy = sourcePolicy;
-		this.actionSelection = new HashMap<StateHashTuple, List<ActionProb>>(cacheCapacity);
+		this.actionSelection = new HashMap<HashableState, List<ActionProb>>(cacheCapacity);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class CachedPolicy extends Policy{
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		List<Policy.ActionProb> aps = this.actionSelection.get(sh);
 		if(aps == null){
 			aps = this.sourcePolicy.getActionDistributionForState(s);
@@ -80,7 +80,7 @@ public class CachedPolicy extends Policy{
 
 	@Override
 	public boolean isDefinedFor(State s) {
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		return this.actionSelection.containsKey(sh) ? true : this.sourcePolicy.isDefinedFor(s);
 	}
 }

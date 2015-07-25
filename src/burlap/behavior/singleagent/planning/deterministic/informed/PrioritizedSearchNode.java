@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.planning.deterministic.informed;
 import java.util.Comparator;
 
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
@@ -28,7 +28,7 @@ public class PrioritizedSearchNode extends SearchNode {
 	 * @param s the hashed input state this node represents.
 	 * @param p the priority of this node.
 	 */
-	public PrioritizedSearchNode(StateHashTuple s, double p){
+	public PrioritizedSearchNode(HashableState s, double p){
 		super(s);
 		priority = p;
 	}
@@ -41,7 +41,7 @@ public class PrioritizedSearchNode extends SearchNode {
 	 * @param bp the search node that contains the previous state from which s was generated.
 	 * @param p the priority of the node.
 	 */
-	public PrioritizedSearchNode(StateHashTuple s, GroundedAction ga, SearchNode bp, double p){
+	public PrioritizedSearchNode(HashableState s, GroundedAction ga, SearchNode bp, double p){
 		super(s,ga,bp);
 		priority = p;
 	}

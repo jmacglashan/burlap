@@ -21,8 +21,8 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -64,7 +64,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	/**
 	 * The tabular mapping from states to Q-values
 	 */
-	protected Map<StateHashTuple, QLearningStateNode>				qIndex;
+	protected Map<HashableState, QLearningStateNode>				qIndex;
 	
 	/**
 	 * The object that defines how Q-values are initialized.
@@ -147,7 +147,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param qInit the initial Q-value to user everywhere
 	 * @param learningRate the learning rate
 	 */
-	public QLearning(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate) {
 		this.QLInit(domain, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE);
 	}
@@ -164,7 +164,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningRate the learning rate
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	public QLearning(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, int maxEpisodeSize) {
 		this.QLInit(domain, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize);
 	}
@@ -184,7 +184,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	public QLearning(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
 		this.QLInit(domain, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, learningPolicy, maxEpisodeSize);
 	}
@@ -204,7 +204,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	public QLearning(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
 		this.QLInit(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
 	}
@@ -223,11 +223,11 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	protected void QLInit(Domain domain, double gamma, StateHashFactory hashingFactory,
+	protected void QLInit(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			ValueFunctionInitialization qInitFunction, double learningRate, Policy learningPolicy, int maxEpisodeSize){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);
-		this.qIndex = new HashMap<StateHashTuple, QLearningStateNode>();
+		this.qIndex = new HashMap<HashableState, QLearningStateNode>();
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
 		this.maxEpisodeSize = maxEpisodeSize;
@@ -382,7 +382,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param s the hashed state for which to get the Q-values.
 	 * @return the possible Q-values for a given hashed stated.
 	 */
-	protected List<QValue> getQs(StateHashTuple s) {
+	protected List<QValue> getQs(HashableState s) {
 		QLearningStateNode node = this.getStateNode(s);
 		return node.qEntry;
 	}
@@ -394,7 +394,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param a the action
 	 * @return the Q-value for a given hashed state and action; null is returned if there is not Q-value currently stored.
 	 */
-	protected QValue getQ(StateHashTuple s, GroundedAction a) {
+	protected QValue getQ(HashableState s, GroundedAction a) {
 		QLearningStateNode node = this.getStateNode(s);
 		
 		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
@@ -423,7 +423,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param s the hashed state for which to get the {@link QLearningStateNode} object
 	 * @return the {@link QLearningStateNode} object stored for the given hashed state. If no {@link QLearningStateNode} object.
 	 */
-	protected QLearningStateNode getStateNode(StateHashTuple s){
+	protected QLearningStateNode getStateNode(HashableState s){
 		
 		QLearningStateNode node = qIndex.get(s);
 		
@@ -450,7 +450,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param s the state for which to get he maximum Q-value;
 	 * @return the maximum Q-value in the hashed stated.
 	 */
-	protected double getMaxQ(StateHashTuple s){
+	protected double getMaxQ(HashableState s){
 		List <QValue> qs = this.getQs(s);
 		double max = Double.NEGATIVE_INFINITY;
 		for(QValue q : qs){
@@ -500,7 +500,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		State initialState = env.getCurState();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
-		StateHashTuple curState = this.stateHash(initialState);
+		HashableState curState = this.stateHash(initialState);
 		eStepCounter = 0;
 
 		maxQChangeInLastEpisode = 0.;
@@ -512,7 +512,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			EnvironmentOutcome eo = action.executeIn(env);
 
 
-			StateHashTuple nextState = this.stateHash(eo.sp);
+			HashableState nextState = this.stateHash(eo.sp);
 			double maxQ = 0.;
 
 			if(!eo.terminated){

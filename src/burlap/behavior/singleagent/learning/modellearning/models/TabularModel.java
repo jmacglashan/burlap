@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.singleagent.learning.modellearning.Model;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
@@ -34,17 +34,17 @@ public class TabularModel extends Model {
 	/**
 	 * The hashing factory to use for indexing states
 	 */
-	protected StateHashFactory					hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * A mapping from (hashed) states to state nodes that store transition statistics
 	 */
-	protected Map<StateHashTuple, StateNode> 	stateNodes;
+	protected Map<HashableState, StateNode> 	stateNodes;
 	
 	/**
 	 * The set of states marked as terminal states.
 	 */
-	protected Set<StateHashTuple> 				terminalStates;
+	protected Set<HashableState> 				terminalStates;
 	
 	/**
 	 * The number of transitions necessary to be confident in a model's prediction.
@@ -67,11 +67,11 @@ public class TabularModel extends Model {
 	 * @param hashingFactory the hashing factory to index states
 	 * @param nConfident the number of observed transitions to be confidnent in the model's prediction.
 	 */
-	public TabularModel(Domain sourceDomain, StateHashFactory hashingFactory, int nConfident){
+	public TabularModel(Domain sourceDomain, HashableStateFactory hashingFactory, int nConfident){
 		this.sourceDomain = sourceDomain;
 		this.hashingFactory = hashingFactory;
-		this.stateNodes = new HashMap<StateHashTuple, TabularModel.StateNode>();
-		this.terminalStates = new HashSet<StateHashTuple>();
+		this.stateNodes = new HashMap<HashableState, TabularModel.StateNode>();
+		this.terminalStates = new HashSet<HashableState>();
 		this.nConfident = nConfident;
 		
 		this.modeledTF = new TerminalFunction() {
@@ -126,7 +126,7 @@ public class TabularModel extends Model {
 	@Override
 	public boolean stateTransitionsAreModeled(State s) {
 
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		StateNode sn = this.stateNodes.get(sh);
 		if(sn == null){
 			return false;
@@ -147,7 +147,7 @@ public class TabularModel extends Model {
 
 		List<AbstractGroundedAction> unmodeled = new ArrayList<AbstractGroundedAction>();
 
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		StateNode sn = this.stateNodes.get(sh);
 		if(sn == null){
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(
@@ -201,8 +201,8 @@ public class TabularModel extends Model {
 	@Override
 	public void updateModel(State s, GroundedAction ga, State sprime, double r, boolean sprimeIsTerminal) {
 		
-		StateHashTuple sh = this.hashingFactory.hashState(s);
-		StateHashTuple shp = this.hashingFactory.hashState(sprime);
+		HashableState sh = this.hashingFactory.hashState(s);
+		HashableState shp = this.hashingFactory.hashState(sprime);
 		
 		if(sprimeIsTerminal){
 			this.terminalStates.add(shp);
@@ -220,7 +220,7 @@ public class TabularModel extends Model {
 	 * @param ga the grounded action
 	 * @return the associated {@link TabularModel.StateActionNode} or null if it does not exist.
 	 */
-	protected StateActionNode getStateActionNode(StateHashTuple sh, GroundedAction ga){
+	protected StateActionNode getStateActionNode(HashableState sh, GroundedAction ga){
 
 		StateNode sn = this.stateNodes.get(sh);
 		if(sn == null){
@@ -236,7 +236,7 @@ public class TabularModel extends Model {
 	 * @param ga the grounded action
 	 * @return the associated {@link TabularModel.StateActionNode}
 	 */
-	protected StateActionNode getOrCreateActionNode(StateHashTuple sh, GroundedAction ga){
+	protected StateActionNode getOrCreateActionNode(HashableState sh, GroundedAction ga){
 
 		StateNode sn = this.stateNodes.get(sh);
 		StateActionNode toReturn = null;
@@ -283,7 +283,7 @@ public class TabularModel extends Model {
 		/**
 		 * The hashed state this node wraps
 		 */
-		StateHashTuple sh;
+		HashableState sh;
 		
 		/**
 		 * Maps from actions to state-aciton nodes that store statistics about the acitons taken from this state
@@ -295,7 +295,7 @@ public class TabularModel extends Model {
 		 * Initializes
 		 * @param sh the hashed state this node wraps.
 		 */
-		public StateNode(StateHashTuple sh){
+		public StateNode(HashableState sh){
 			this.sh = sh;
 			this.actionNodes = new HashMap<GroundedAction, TabularModel.StateActionNode>();
 		}
@@ -350,7 +350,7 @@ public class TabularModel extends Model {
 		/**
 		 * A map to the states to which this action from the associated state transition.
 		 */
-		Map<StateHashTuple, OutcomeState> outcomes;
+		Map<HashableState, OutcomeState> outcomes;
 		
 		
 		/**
@@ -362,7 +362,7 @@ public class TabularModel extends Model {
 			this.sumR = 0.;
 			this.nTries = 0;
 			
-			this.outcomes = new HashMap<StateHashTuple, TabularModel.OutcomeState>();
+			this.outcomes = new HashMap<HashableState, TabularModel.OutcomeState>();
 		}
 		
 		
@@ -372,12 +372,12 @@ public class TabularModel extends Model {
 		 * @param r the reward received for one observaiton
 		 * @param sprime the outcome recieved for one observation
 		 */
-		public StateActionNode(GroundedAction ga, double r, StateHashTuple sprime){
+		public StateActionNode(GroundedAction ga, double r, HashableState sprime){
 			this.ga = ga;
 			this.sumR = r;
 			this.nTries = 1;
 			
-			this.outcomes = new HashMap<StateHashTuple, TabularModel.OutcomeState>();
+			this.outcomes = new HashMap<HashableState, TabularModel.OutcomeState>();
 			this.outcomes.put(sprime, new OutcomeState(sprime));
 		}
 		
@@ -386,7 +386,7 @@ public class TabularModel extends Model {
 		 * @param r the reward received
 		 * @param sprime the outcome state
 		 */
-		public void update(double r, StateHashTuple sprime){
+		public void update(double r, HashableState sprime){
 			this.nTries++;
 			this.sumR += r;
 			OutcomeState stored = this.outcomes.get(sprime);
@@ -411,7 +411,7 @@ public class TabularModel extends Model {
 		/**
 		 * The hased outcome state observed
 		 */
-		StateHashTuple osh;
+		HashableState osh;
 		
 		/**
 		 * The number of times it has been observed
@@ -423,7 +423,7 @@ public class TabularModel extends Model {
 		 * Initializes for the given outcome state with an observation count of 1
 		 * @param osh the observed hased outcome state
 		 */
-		public OutcomeState(StateHashTuple osh){
+		public OutcomeState(HashableState osh){
 			this.osh = osh;
 			nTimes = 1;
 		}

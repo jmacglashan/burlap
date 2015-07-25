@@ -3,9 +3,8 @@ package burlap.behavior.singleagent.learnbydemo.mlirl;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.core.Domain;
 
 import java.util.List;
@@ -48,16 +47,16 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 
 	/**
 	 * Initializes using a default {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory.DifferentiableVIFactory} that
-	 * is based on the provided {@link burlap.behavior.statehashing.StateHashFactory} object.
+	 * is based on the provided {@link burlap.behavior.statehashing.HashableStateFactory} object.
 	 * @param domain the domain of the problem
 	 * @param expertEpisodes the expert trajectories
 	 * @param rf the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} model to use.
 	 * @param k the number of clusters
-	 * @param stateHashFactory the {@link burlap.behavior.statehashing.StateHashFactory} to use for the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory.DifferentiableVIFactory} that will be created.
+	 * @param hashableStateFactory the {@link burlap.behavior.statehashing.HashableStateFactory} to use for the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory.DifferentiableVIFactory} that will be created.
 	 */
-	public MultipleIntentionsMLIRLRequest(Domain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, int k, StateHashFactory stateHashFactory) {
+	public MultipleIntentionsMLIRLRequest(Domain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, int k, HashableStateFactory hashableStateFactory) {
 		super(domain, null, expertEpisodes, rf);
-		this.plannerFactory = new QGradientPlannerFactory.DifferentiableVIFactory(stateHashFactory);
+		this.plannerFactory = new QGradientPlannerFactory.DifferentiableVIFactory(hashableStateFactory);
 		this.k = k;
 		this.setPlanner((Planner) plannerFactory.generateDifferentiablePlannerForRequest(this));
 	}

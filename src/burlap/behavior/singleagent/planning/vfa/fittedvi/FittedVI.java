@@ -8,7 +8,7 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.statehashing.NameDependentStateHashFactory;
+import burlap.behavior.statehashing.NameDependentHashableStateFactory;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -126,7 +126,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
 	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, int transitionSamples, double maxDelta, int maxIterations){
-		this.solverInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
+		this.solverInit(domain, rf, tf, gamma, new NameDependentHashableStateFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.transitionSamples = transitionSamples;
 		this.maxDelta = maxDelta;
@@ -152,7 +152,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
 	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, List<State> samples, int transitionSamples, double maxDelta, int maxIterations){
-		this.solverInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
+		this.solverInit(domain, rf, tf, gamma, new NameDependentHashableStateFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.samples = samples;
 		this.transitionSamples = transitionSamples;

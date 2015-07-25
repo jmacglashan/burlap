@@ -5,8 +5,8 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -67,7 +67,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	 * @param maxDelta when the maximum change in the value function is smaller than this value, VI will terminate.
 	 * @param maxIterations when the number of VI iterations exceeds this value, VI will terminate.
 	 */
-	public DifferentiableVI(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, double boltzBeta, StateHashFactory hashingFactory, double maxDelta, int maxIterations){
+	public DifferentiableVI(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, double boltzBeta, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
 
 		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 
@@ -84,7 +84,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	 */
 	public void recomputeReachableStates(){
 		this.foundReachableStates = false;
-		this.transitionDynamics = new HashMap<StateHashTuple, List<ActionTransitions>>();
+		this.transitionDynamics = new HashMap<HashableState, List<ActionTransitions>>();
 	}
 
 
@@ -136,13 +136,13 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use the planFromState, performReachabilityFrom, addStateToStateSpace or addStatesToStateSpace methods at least once before calling runVI.");
 		}
 
-		Set<StateHashTuple> states = mapToStateIndex.keySet();
+		Set<HashableState> states = mapToStateIndex.keySet();
 
 		int i = 0;
 		for(i = 0; i < this.maxIterations; i++){
 
 			double delta = 0.;
-			for(StateHashTuple sh : states){
+			for(HashableState sh : states){
 
 				double v = this.value(sh);
 				double newV = this.performBellmanUpdateOn(sh);
@@ -169,7 +169,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	 * @param s the state to add
 	 */
 	public void addStateToStateSpace(State s){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		this.mapToStateIndex.put(sh, sh);
 		this.foundReachableStates = true;
 	}
@@ -195,19 +195,19 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 
 
 
-		StateHashTuple sih = this.stateHash(si);
+		HashableState sih = this.stateHash(si);
 
 		DPrint.cl(this.debugCode, "Starting reachability analysis");
 
 		//add to the open list
-		LinkedList<StateHashTuple> openList = new LinkedList<StateHashTuple>();
-		Set <StateHashTuple> openedSet = new HashSet<StateHashTuple>();
+		LinkedList<HashableState> openList = new LinkedList<HashableState>();
+		Set <HashableState> openedSet = new HashSet<HashableState>();
 		openList.offer(sih);
 		openedSet.add(sih);
 
 
 		while(openList.size() > 0){
-			StateHashTuple sh = openList.poll();
+			HashableState sh = openList.poll();
 
 			//skip this if it's already been expanded
 			if(!mapToStateIndex.containsKey(sh)){
@@ -224,7 +224,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
 			for(ActionTransitions at : transitions){
 				for(HashedTransitionProbability tp : at.transitions){
-					StateHashTuple tsh = tp.sh;
+					HashableState tsh = tp.sh;
 					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
 						openedSet.add(tsh);
 						openList.offer(tsh);

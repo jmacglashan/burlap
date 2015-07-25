@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 
@@ -41,8 +41,8 @@ public interface QSourceForSingleAgent {
 	 */
 	public class HashBackedQSource implements QSourceForSingleAgent{
 
-		protected HashMap<StateHashTuple, Map<JointAction, JAQValue>>	qValues;
-		protected StateHashFactory										hashingFactory;
+		protected HashMap<HashableState, Map<JointAction, JAQValue>>	qValues;
+		protected HashableStateFactory hashingFactory;
 		protected ValueFunctionInitialization							qInit;		
 		
 		
@@ -52,8 +52,8 @@ public interface QSourceForSingleAgent {
 		 * @param hashingFactory the state hashing factory used to index states
 		 * @param qInit the value function intitliazaiton to use for previously unqueried states
 		 */
-		public HashBackedQSource(StateHashFactory hashingFactory, ValueFunctionInitialization qInit){
-			this.qValues = new HashMap<StateHashTuple, Map<JointAction,JAQValue>>();
+		public HashBackedQSource(HashableStateFactory hashingFactory, ValueFunctionInitialization qInit){
+			this.qValues = new HashMap<HashableState, Map<JointAction,JAQValue>>();
 			this.hashingFactory = hashingFactory;
 			this.qInit = qInit;
 		}
@@ -98,7 +98,7 @@ public interface QSourceForSingleAgent {
 		 */
 		protected Map<JointAction, JAQValue> getJAMap(State s){
 			
-			StateHashTuple sh = this.hashingFactory.hashState(s);
+			HashableState sh = this.hashingFactory.hashState(s);
 			Map<JointAction, JAQValue> storedMap = this.qValues.get(sh);
 			if(storedMap == null){
 				storedMap = new HashMap<JointAction, JAQValue>();

@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgames.agents.madp;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.dpplanners.MAValueIteration;
@@ -107,7 +107,7 @@ public interface MADPPlannerFactory {
 		/**
 		 * The state hashing factory used to query the value function for individual states
 		 */
-		protected StateHashFactory				hashingFactory;
+		protected HashableStateFactory hashingFactory;
 		
 		/**
 		 * The Q-value initialization function to use.
@@ -145,7 +145,7 @@ public interface MADPPlannerFactory {
 		 * @param maxIterations the maximum number of iterations allowed
 		 */
 		public MAVIPlannerFactory(SGDomain domain, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction, 
-				double discount, StateHashFactory hashingFactory, double qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+				double discount, HashableStateFactory hashingFactory, double qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 			
 			this.domain = domain;
 			this.jointActionModel = jointActionModel;
@@ -174,7 +174,7 @@ public interface MADPPlannerFactory {
 		 * @param maxIterations the maximum number of iterations allowed
 		 */
 		public MAVIPlannerFactory(SGDomain domain, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction, 
-				double discount, StateHashFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+				double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 			
 			this.domain = domain;
 			this.jointActionModel = jointActionModel;
@@ -204,7 +204,7 @@ public interface MADPPlannerFactory {
 		 * @param maxIterations the maximum number of iterations allowed
 		 */
 		public MAVIPlannerFactory(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction,
-				double discount, StateHashFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+				double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 			
 			this.domain = domain;
 			this.agentDefinitions = agentDefinitions;

@@ -13,8 +13,8 @@ import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.GreedyDeterministicQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -69,7 +69,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @param maxEvaluationIterations when the number of policy evaluation iterations exceeds this value, policy evaluation will terminate.
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
-	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxDelta, int maxEvaluationIterations, int maxPolicyIterations){
+	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxEvaluationIterations, int maxPolicyIterations){
 		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.maxEvalDelta = maxDelta;
@@ -93,7 +93,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @param maxEvaluationIterations when the number of policy evaluation iterations exceeds this value, policy evaluation will terminate.
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
-	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxPIDelta, double maxEvalDelta, int maxEvaluationIterations, int maxPolicyIterations){
+	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxPIDelta, double maxEvalDelta, int maxEvaluationIterations, int maxPolicyIterations){
 		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.maxEvalDelta = maxEvalDelta;
@@ -178,13 +178,13 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		
 		double maxChangeInPolicyEvaluation = Double.NEGATIVE_INFINITY;
 		
-		Set <StateHashTuple> states = mapToStateIndex.keySet();
+		Set <HashableState> states = mapToStateIndex.keySet();
 		
 		int i = 0;
 		for(i = 0; i < this.maxIterations; i++){
 			
 			double delta = 0.;
-			for(StateHashTuple sh : states){
+			for(HashableState sh : states){
 				
 				double v = this.value(sh);
 				double maxQ = this.performFixedPolicyBellmanUpdateOn(sh, (Policy)this.evaluativePolicy);
@@ -220,7 +220,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		
 		
 		
-		StateHashTuple sih = this.stateHash(si);
+		HashableState sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
 		if(transitionDynamics.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
@@ -229,14 +229,14 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		DPrint.cl(this.debugCode, "Starting reachability analysis");
 		
 		//add to the open list
-		LinkedList <StateHashTuple> openList = new LinkedList<StateHashTuple>();
-		Set <StateHashTuple> openedSet = new HashSet<StateHashTuple>();
+		LinkedList <HashableState> openList = new LinkedList<HashableState>();
+		Set <HashableState> openedSet = new HashSet<HashableState>();
 		openList.offer(sih);
 		openedSet.add(sih);
 		
 		
 		while(openList.size() > 0){
-			StateHashTuple sh = openList.poll();
+			HashableState sh = openList.poll();
 			
 			//skip this if it's already been expanded
 			if(transitionDynamics.containsKey(sh)){
@@ -255,7 +255,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
 			for(ActionTransitions at : transitions){
 				for(HashedTransitionProbability tp : at.transitions){
-					StateHashTuple tsh = tp.sh;
+					HashableState tsh = tp.sh;
 					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
 						openedSet.add(tsh);
 						openList.offer(tsh);

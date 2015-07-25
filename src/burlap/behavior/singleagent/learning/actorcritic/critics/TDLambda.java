@@ -12,8 +12,8 @@ import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
@@ -48,7 +48,7 @@ public class TDLambda implements Critic, ValueFunction {
 	/**
 	 * The state hashing factor used for hashing states and performing state equality checks.
 	 */
-	protected StateHashFactory						hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * The learning rate function that affects how quickly the estimated value function changes.
@@ -69,7 +69,7 @@ public class TDLambda implements Critic, ValueFunction {
 	/**
 	 * The state value function.
 	 */
-	protected Map<StateHashTuple, VValue>			vIndex;
+	protected Map<HashableState, VValue>			vIndex;
 	
 	/**
 	 * The eligibility traces for the current episode.
@@ -93,7 +93,7 @@ public class TDLambda implements Critic, ValueFunction {
 	 * @param vinit a constant value function initialization value to use.
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 */
-	public TDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, double vinit, double lambda) {
+	public TDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda) {
 		this.rf = rf;
 		this.tf = tf;
 		this.gamma = gamma;
@@ -104,7 +104,7 @@ public class TDLambda implements Critic, ValueFunction {
 		this.lambda = lambda;
 		
 		
-		vIndex = new HashMap<StateHashTuple, VValue>();
+		vIndex = new HashMap<HashableState, VValue>();
 	}
 	
 	
@@ -119,7 +119,7 @@ public class TDLambda implements Critic, ValueFunction {
 	 * @param vinit a method of initializing the value function for previously unvisited states.
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 */
-	public TDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda) {
+	public TDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda) {
 		this.rf = rf;
 		this.tf = tf;
 		this.gamma = gamma;
@@ -130,7 +130,7 @@ public class TDLambda implements Critic, ValueFunction {
 		this.lambda = lambda;
 		
 		
-		vIndex = new HashMap<StateHashTuple, VValue>();
+		vIndex = new HashMap<HashableState, VValue>();
 	}
 
 	
@@ -173,8 +173,8 @@ public class TDLambda implements Critic, ValueFunction {
 	@Override
 	public CritiqueResult critiqueAndUpdate(State s, GroundedAction ga, State sprime) {
 		
-		StateHashTuple sh = hashingFactory.hashState(s);
-		StateHashTuple shprime = hashingFactory.hashState(sprime);
+		HashableState sh = hashingFactory.hashState(s);
+		HashableState shprime = hashingFactory.hashState(sprime);
 		
 		double r = this.rf.reward(s, ga, sprime);
 		double discount = gamma;
@@ -241,7 +241,7 @@ public class TDLambda implements Critic, ValueFunction {
 	 * @param sh the hased state for which the value should be returned.
 	 * @return the {@link TDLambda.VValue} object (storing the value) for the given hashed stated.
 	 */
-	protected VValue getV(StateHashTuple sh){
+	protected VValue getV(HashableState sh){
 		VValue v = this.vIndex.get(sh);
 		if(v == null){
 			v = new VValue(this.vInitFunction.value(sh.s));
@@ -290,7 +290,7 @@ public class TDLambda implements Critic, ValueFunction {
 		/**
 		 * The hashed state with which the eligibility value is associated.
 		 */
-		public StateHashTuple	sh;
+		public HashableState sh;
 		
 		/**
 		 * The value associated with the state.
@@ -304,7 +304,7 @@ public class TDLambda implements Critic, ValueFunction {
 		 * @param eligibility the eligibility of the state
 		 * @param v the value function value for the state.
 		 */
-		public StateEligibilityTrace(StateHashTuple sh, double eligibility, VValue v){
+		public StateEligibilityTrace(HashableState sh, double eligibility, VValue v){
 			this.sh = sh;
 			this.eligibility = eligibility;
 			this.v = v;

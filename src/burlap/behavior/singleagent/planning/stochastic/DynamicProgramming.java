@@ -10,8 +10,8 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
@@ -56,13 +56,13 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	/**
 	 * A data structure for storing the hashed transition dynamics from each state, if this algorithm is set to use them.
 	 */
-	protected Map <StateHashTuple, List<ActionTransitions>>			transitionDynamics;
+	protected Map <HashableState, List<ActionTransitions>>			transitionDynamics;
 	
 	
 	/**
 	 * A map for storing the current value function estimate for each state.
 	 */
-	protected Map <StateHashTuple, Double>							valueFunction;
+	protected Map <HashableState, Double>							valueFunction;
 	
 	
 	/**
@@ -75,7 +75,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	/**
 	 * Common init method for {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} instances. This will automatically call the
-	 * {@link burlap.behavior.singleagent.MDPSolver#solverInit(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double, burlap.behavior.statehashing.StateHashFactory)}
+	 * {@link burlap.behavior.singleagent.MDPSolver#solverInit(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double, burlap.behavior.statehashing.HashableStateFactory)}
 	 * method.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
@@ -83,12 +83,12 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory
 	 */
-	public void DPPInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory){
+	public void DPPInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory){
 		
 		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		
-		this.transitionDynamics = new HashMap<StateHashTuple, List<ActionTransitions>>();
-		this.valueFunction = new HashMap<StateHashTuple, Double>();
+		this.transitionDynamics = new HashMap<HashableState, List<ActionTransitions>>();
+		this.valueFunction = new HashMap<HashableState, Double>();
 		
 		
 		
@@ -125,7 +125,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @return true if the the value for the given state has already been computed; false otherwise.
 	 */
 	public boolean hasComputedValueFor(State s){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		return this.valueFunction.containsKey(sh);
 	}
 	
@@ -138,7 +138,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 */
 	@Override
 	public double value(State s){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		return this.value(sh);
 	}
 	
@@ -148,7 +148,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @param sh the hashed state to evaluate.
 	 * @return the value function evaluation of the given state.
 	 */
-	public double value(StateHashTuple sh){
+	public double value(HashableState sh){
 		if(this.tf.isTerminal(sh.s)){
 			return 0.;
 		}
@@ -173,9 +173,9 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	@Override
 	public List <QValue> getQs(State s){
 		
-		StateHashTuple sh = this.stateHash(s);
+		HashableState sh = this.stateHash(s);
 		Map<String,String> matching = null;
-		StateHashTuple indexSH = mapToStateIndex.get(sh);
+		HashableState indexSH = mapToStateIndex.get(sh);
 		
 		if(indexSH == null){
 			//then this is an unexplored state
@@ -209,9 +209,9 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		
 		
 		if(this.useCachedTransitions){
-			StateHashTuple sh = this.stateHash(s);
+			HashableState sh = this.stateHash(s);
 			Map<String,String> matching = null;
-			StateHashTuple indexSH = mapToStateIndex.get(sh);
+			HashableState indexSH = mapToStateIndex.get(sh);
 			
 			if(indexSH == null){
 				//then this is an unexplored state
@@ -227,7 +227,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		}
 		else{
 			
-			StateHashTuple sh = this.stateHash(s);
+			HashableState sh = this.stateHash(s);
 			double dq = this.computeQ(sh, (GroundedAction)a);
 			
 			QValue q = new QValue(s, a, dq);
@@ -247,8 +247,8 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 */
 	public List <State> getAllStates(){
 		List <State> result = new ArrayList<State>(valueFunction.size());
-		Set<StateHashTuple> shs = valueFunction.keySet();
-		for(StateHashTuple sh : shs){
+		Set<HashableState> shs = valueFunction.keySet();
+		for(HashableState sh : shs){
 			result.add(sh.s);
 		}
 		return result;
@@ -262,7 +262,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 
 
 		//copy the value function
-		for(Map.Entry<StateHashTuple, Double> e : this.valueFunction.entrySet()){
+		for(Map.Entry<HashableState, Double> e : this.valueFunction.entrySet()){
 			dpCopy.valueFunction.put(e.getKey(), e.getValue());
 		}
 		return dpCopy;
@@ -277,7 +277,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @param matching the object instance matching from sh to the corresponding state stored in the value function
 	 * @return the Q-value
 	 */
-	protected QValue getQ(StateHashTuple sh, GroundedAction a, Map <String, String> matching){
+	protected QValue getQ(HashableState sh, GroundedAction a, Map <String, String> matching){
 		
 		//translate grounded action if necessary
 		GroundedAction ta = a;
@@ -311,7 +311,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @param sh the input state from which to get the transitions
 	 * @return the stored action transitions for the given state
 	 */
-	protected List <ActionTransitions> getActionsTransitions(StateHashTuple sh){
+	protected List <ActionTransitions> getActionsTransitions(HashableState sh){
 		List <ActionTransitions> allTransitions = transitionDynamics.get(sh);
 		
 		if(allTransitions == null){
@@ -374,7 +374,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @param sh the hashed state on which to perform the Bellman update.
 	 * @return the new value of the state.
 	 */
-	protected double performBellmanUpdateOn(StateHashTuple sh){
+	protected double performBellmanUpdateOn(HashableState sh){
 		
 		if(this.tf.isTerminal(sh.s)){
 			//terminal states always have a state value of 0
@@ -424,7 +424,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @param p the policy that is being evaluated
 	 * @return the new value of the state
 	 */
-	protected double performFixedPolicyBellmanUpdateOn(StateHashTuple sh, Policy p){
+	protected double performFixedPolicyBellmanUpdateOn(HashableState sh, Policy p){
 		
 		
 		if(this.tf.isTerminal(sh.s)){
@@ -533,7 +533,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @param ga the given action
 	 * @return the double value of a Q-value for the given state-aciton pair.
 	 */
-	protected double computeQ(StateHashTuple sh, GroundedAction ga){
+	protected double computeQ(HashableState sh, GroundedAction ga){
 		
 		double q = 0.;
 		
@@ -616,14 +616,14 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		 * @param allActions the set of actions for computing Q-values
 		 * @param srcValueFunction the source value function to copy.
 		 */
-		public StaticVFPlanner(Domain domain, RewardFunction rf, double gamma, StateHashFactory hashingFactory, List<Action> allActions, Map <StateHashTuple, Double> srcValueFunction){
+		public StaticVFPlanner(Domain domain, RewardFunction rf, double gamma, HashableStateFactory hashingFactory, List<Action> allActions, Map <HashableState, Double> srcValueFunction){
 			this.DPPInit(domain, rf, new NullTermination(), gamma, hashingFactory);
 			for(Action a : allActions){
 				this.addNonDomainReferencedAction(a);
 			}
 
 			//copy the value function
-			for(Map.Entry<StateHashTuple, Double> e : srcValueFunction.entrySet()){
+			for(Map.Entry<HashableState, Double> e : srcValueFunction.entrySet()){
 				this.valueFunction.put(e.getKey(), e.getValue());
 			}
 

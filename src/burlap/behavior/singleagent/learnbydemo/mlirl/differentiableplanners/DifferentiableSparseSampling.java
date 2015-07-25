@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
 
 import burlap.behavior.policy.BoltzmannQPolicy;
-import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
@@ -14,8 +13,8 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.*;
@@ -77,7 +76,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	/**
 	 * The root state node Q-values that have been estimated by previous planning calls.
 	 */
-	protected Map<StateHashTuple, QAndQGradient> rootLevelQValues;
+	protected Map<HashableState, QAndQGradient> rootLevelQValues;
 
 
 	/**
@@ -110,13 +109,13 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	 * @param c how many samples from the transition dynamics to use. Set to -1 to use the full (unsampled) transition dynamics.
 	 * @param boltzBeta the Boltzmann beta parameter for the differentiable Boltzmann (softmax) backup equation. The larger the value the more deterministic, the closer to 1 the softer.
 	 */
-	public DifferentiableSparseSampling(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int h, int c, double boltzBeta){
+	public DifferentiableSparseSampling(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int h, int c, double boltzBeta){
 		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.h = h;
 		this.c = c;
 		this.boltzBeta = boltzBeta;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, DiffStateNode>();
-		this.rootLevelQValues = new HashMap<StateHashTuple, DifferentiableSparseSampling.QAndQGradient>();
+		this.rootLevelQValues = new HashMap<HashableState, DifferentiableSparseSampling.QAndQGradient>();
 		this.rfDim = rf.getParameterDimension();
 
 		this.vinit = new VanillaDiffVinit(new ValueFunctionInitialization.ConstantValueFunctionInitialization(), rf);
@@ -229,7 +228,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	@Override
 	public List<QValue> getQs(State s) {
 
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
 		if(qvs == null){
 			this.planFromState(s);
@@ -242,7 +241,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
 
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
 		if(qvs == null){
 			this.planFromState(s);
@@ -250,7 +249,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		}
 
 		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
-			StateHashTuple storedSh = this.mapToStateIndex.get(sh);
+			HashableState storedSh = this.mapToStateIndex.get(sh);
 			a = a.translateParameters(s, storedSh.s);
 		}
 
@@ -270,7 +269,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 	@Override
 	public List<QGradientTuple> getAllQGradients(State s) {
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
 		if(qvs == null){
 			this.planFromState(s);
@@ -281,7 +280,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 	@Override
 	public QGradientTuple getQGradient(State s, GroundedAction a) {
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
 		if(qvs == null){
 			this.planFromState(s);
@@ -289,7 +288,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		}
 
 		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
-			StateHashTuple storedSh = this.mapToStateIndex.get(sh);
+			HashableState storedSh = this.mapToStateIndex.get(sh);
 			a = (GroundedAction)a.translateParameters(s, storedSh.s);
 		}
 
@@ -316,7 +315,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			this.rootLevelQValues.clear();
 		}
 
-		StateHashTuple sh = this.hashingFactory.hashState(initialState);
+		HashableState sh = this.hashingFactory.hashState(initialState);
 		if(this.rootLevelQValues.containsKey(sh)){
 			return new BoltzmannQPolicy(this, 1./this.boltzBeta); //already planned for this state
 		}
@@ -374,7 +373,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	 * @return the state node for the given state at the given height in the tree
 	 */
 	protected DiffStateNode getStateNode(State s, int height){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		SparseSampling.HashedHeightState hhs = new SparseSampling.HashedHeightState(sh, height);
 		DiffStateNode sn = this.nodesByHeight.get(hhs);
 		if(sn == null){
@@ -397,7 +396,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		/**
 		 * The hashed state this node represents
 		 */
-		StateHashTuple sh;
+		HashableState sh;
 
 		/**
 		 * The height of the node (distance from a leaf)
@@ -421,7 +420,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		boolean closed = false;
 
 
-		public DiffStateNode(StateHashTuple sh, int height){
+		public DiffStateNode(HashableState sh, int height){
 			this.sh = sh;
 			this.height = height;
 		}

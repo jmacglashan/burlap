@@ -6,7 +6,7 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.states.State;
@@ -40,7 +40,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 	 * @param successorState the next state that was generated
 	 * @return the f-score for the next state.
 	 */
-	public abstract double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, StateHashTuple successorState);
+	public abstract double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState);
 	
 	
 	/**
@@ -99,7 +99,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 	public SDPlannerPolicy planFromState(State initialState) {
 		
 		//first determine if there is even a need to plan
-		StateHashTuple sih = this.stateHash(initialState);
+		HashableState sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
 			return new SDPlannerPolicy(this); //no need to plan since this is already solved
@@ -145,7 +145,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 				List<GroundedAction> gas = a.getAllApplicableGroundedActions(s);
 				for(GroundedAction ga : gas){
 					State ns = ga.executeIn(s);
-					StateHashTuple nsh = this.stateHash(ns);
+					HashableState nsh = this.stateHash(ns);
 					
 					double F = this.computeF(node, ga, nsh);
 					PrioritizedSearchNode npsn = new PrioritizedSearchNode(nsh, ga, node, F);

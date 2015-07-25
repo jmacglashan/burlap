@@ -9,8 +9,8 @@ import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -97,7 +97,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
-	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth){
+	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth){
 		
 		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
@@ -128,7 +128,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
-	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
+	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
 		
 		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
@@ -240,7 +240,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 			double delta = 0;
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
-				StateHashTuple sh = this.hashingFactory.hashState(curState);
+				HashableState sh = this.hashingFactory.hashState(curState);
 				
 				//select an action
 				GroundedAction ga = (GroundedAction)this.rollOutPolicy.getAction(curState);
@@ -288,7 +288,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 		for(int i = 0; i < numRollouts; i++){
 			
 			EpisodeAnalysis ea = this.rollOutPolicy.evaluateBehavior(initialState, rf, tf, maxDepth);
-			LinkedList <StateHashTuple> orderedStates = new LinkedList<StateHashTuple>();
+			LinkedList <HashableState> orderedStates = new LinkedList<HashableState>();
 			for(State s : ea.stateSequence){
 				orderedStates.addFirst(this.stateHash(s));
 			}
@@ -317,10 +317,10 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 * @param states the ordered list of states on which to perform Bellamn updates.
 	 * @return the maximum change in the value function for the given states
 	 */
-	protected double performOrderedBellmanUpdates(List <StateHashTuple> states){
+	protected double performOrderedBellmanUpdates(List <HashableState> states){
 		
 		double delta = 0.;
-		for(StateHashTuple sh : states){
+		for(HashableState sh : states){
 			
 			double v = this.value(sh);
 			

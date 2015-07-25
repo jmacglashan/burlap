@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.explorer.VisualExplorer;
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
  * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning, the
- * {@link burlap.behavior.statehashing.NameDependentStateHashFactory} should be used.
+ * {@link burlap.behavior.statehashing.NameDependentHashableStateFactory} should be used.
  * @author James MacGlashan
  *
  */

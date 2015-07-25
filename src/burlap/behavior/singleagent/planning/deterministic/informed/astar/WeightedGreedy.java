@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -41,14 +41,14 @@ public class WeightedGreedy extends AStar {
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 * @param costWeight a fraction 0 <= w <= 1. When w = 0, the search is fully greedy. When w = 1, the search is optimal and equivalent to A*.
 	 */
-	public WeightedGreedy(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic, double costWeight) {
+	public WeightedGreedy(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double costWeight) {
 		super(domain, rf, gc, hashingFactory, heuristic);
 		this.costWeight = costWeight;
 	}
 	
 	
 	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, StateHashTuple successorState) {
+	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
 		double cumR = 0.;
 		double r = 0.;
 		if(parentNode != null){

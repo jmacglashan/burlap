@@ -8,8 +8,8 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -59,7 +59,7 @@ public class SarsaLam extends QLearning {
 	 * @param learningRate the learning rate
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate);
@@ -80,7 +80,7 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, int maxEpisodeSize, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate, maxEpisodeSize);
@@ -105,7 +105,7 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
@@ -129,7 +129,7 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, StateHashFactory hashingFactory,
+	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
 			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
@@ -151,7 +151,7 @@ public class SarsaLam extends QLearning {
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxQChangeInLastEpisode = 0.;
 
-		StateHashTuple curState = this.stateHash(initialState);
+		HashableState curState = this.stateHash(initialState);
 		eStepCounter = 0;
 		LinkedList<EligibilityTrace> traces = new LinkedList<SarsaLam.EligibilityTrace>();
 
@@ -164,7 +164,7 @@ public class SarsaLam extends QLearning {
 
 			EnvironmentOutcome eo = action.executeIn(env);
 
-			StateHashTuple nextState = this.stateHash(eo.sp);
+			HashableState nextState = this.stateHash(eo.sp);
 			GroundedAction nextAction = (GroundedAction)learningPolicy.getAction(nextState.s);
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
@@ -274,7 +274,7 @@ public class SarsaLam extends QLearning {
 		/**
 		 * The state for this trace
 		 */
-		public StateHashTuple			sh;
+		public HashableState sh;
 		
 		/**
 		 * The current Q-value info for this trace (contains the action reference)
@@ -294,7 +294,7 @@ public class SarsaLam extends QLearning {
 		 * @param q the q-value (containing the action reference) of the trace
 		 * @param elgigbility the eligibility value
 		 */
-		public EligibilityTrace(StateHashTuple sh, QValue q, double elgigbility){
+		public EligibilityTrace(HashableState sh, QValue q, double elgigbility){
 			this.sh = sh;
 			this.q = q;
 			this.eligibility = elgigbility;

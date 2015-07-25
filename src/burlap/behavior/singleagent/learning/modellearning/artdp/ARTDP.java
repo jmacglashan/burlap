@@ -16,7 +16,7 @@ import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.BoltzmannQPolicy;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -82,7 +82,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, double gamma, StateHashFactory hashingFactory, double vInit){
+	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, double vInit){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
@@ -106,7 +106,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit){
+	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
@@ -131,7 +131,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param model the model algorithm to use
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, double gamma, StateHashFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
+	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		

@@ -12,8 +12,8 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -38,7 +38,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	/**
 	 * The tabular map from (hashed) states to the list of Q-values for each action in those states
 	 */	
-	protected Map<StateHashTuple, List<QValue>>							qMap;
+	protected Map<HashableState, List<QValue>>							qMap;
 	
 	/**
 	 * A map from hashed states to the internal state representation for the states stored in the q-table. 
@@ -46,7 +46,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * that can affect the parameters in GroundedActions.
 	 * 
 	 */
-	protected Map <StateHashTuple, State>								stateRepresentations;
+	protected Map <HashableState, State>								stateRepresentations;
 	
 	/**
 	 * A state abstraction to use.
@@ -77,7 +77,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	/**
 	 * The state hashing factory to use.
 	 */
-	protected StateHashFactory											hashFactory;
+	protected HashableStateFactory hashFactory;
 	
 	
 	/**
@@ -93,15 +93,15 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @param learningRate the learning rate
 	 * @param hashFactory the state hashing factory
 	 */
-	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory) {
+	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = new ValueFunctionInitialization.ConstantValueFunctionInitialization(0.);
 		
-		this.qMap = new HashMap<StateHashTuple, List<QValue>>();
-		stateRepresentations = new HashMap<StateHashTuple, State>();
+		this.qMap = new HashMap<HashableState, List<QValue>>();
+		stateRepresentations = new HashMap<HashableState, State>();
 		this.policy = new EpsilonGreedy(this, 0.1);
 		
 		this.storedMapAbstraction = new NullAbstractionNoCopy();
@@ -116,15 +116,15 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @param defaultQ the default to which all Q-values will be initialized
 	 * @param hashFactory the state hashing factory
 	 */
-	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, double defaultQ, StateHashFactory hashFactory) {
+	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, double defaultQ, HashableStateFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = new ValueFunctionInitialization.ConstantValueFunctionInitialization(defaultQ);
 		
-		this.qMap = new HashMap<StateHashTuple, List<QValue>>();
-		stateRepresentations = new HashMap<StateHashTuple, State>();
+		this.qMap = new HashMap<HashableState, List<QValue>>();
+		stateRepresentations = new HashMap<HashableState, State>();
 		this.policy = new EpsilonGreedy(this, 0.1);
 		
 		this.storedMapAbstraction = new NullAbstractionNoCopy();
@@ -138,15 +138,15 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @param qInitizalizer the Q-value initialization method
 	 * @param hashFactory the state hashing factory
 	 */
-	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, ValueFunctionInitialization qInitizalizer, StateHashFactory hashFactory) {
+	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, ValueFunctionInitialization qInitizalizer, HashableStateFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
 		this.qInit = qInitizalizer;
 		
-		this.qMap = new HashMap<StateHashTuple, List<QValue>>();
-		stateRepresentations = new HashMap<StateHashTuple, State>();
+		this.qMap = new HashMap<HashableState, List<QValue>>();
+		stateRepresentations = new HashMap<HashableState, State>();
 		this.policy = new EpsilonGreedy(this, 0.1);
 		
 		this.storedMapAbstraction = new NullAbstractionNoCopy();
@@ -237,11 +237,11 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	
 	
 	/**
-	 * First abstracts state s, and then returns the {@link burlap.behavior.statehashing.StateHashTuple} object for the abstracted state.
+	 * First abstracts state s, and then returns the {@link burlap.behavior.statehashing.HashableState} object for the abstracted state.
 	 * @param s the state for which the state hash should be returned.
 	 * @return the hashed state.
 	 */
-	protected StateHashTuple stateHash(State s){
+	protected HashableState stateHash(State s){
 		State abstracted = this.storedMapAbstraction.abstraction(s);
 		return hashFactory.hashState(abstracted);
 	}
@@ -268,7 +268,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		
 		List<GroundedSGAgentAction> gsas = SGAgentAction.getAllPossibleGroundedSingleActions(s, worldAgentName, agentType.actions);
 		
-		StateHashTuple shq = this.stateHash(s);
+		HashableState shq = this.stateHash(s);
 		
 		State storedRep = stateRepresentations.get(shq);
 		if(storedRep == null){
@@ -337,7 +337,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		
 		GroundedSGAgentAction gsa = (GroundedSGAgentAction)a;
 		
-		StateHashTuple shq = this.stateHash(s);
+		HashableState shq = this.stateHash(s);
 		
 		State storedRep = stateRepresentations.get(shq);
 		if(storedRep == null){

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
@@ -64,7 +64,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	 * @param inputDomain the input domain to be wrapped
 	 * @param hashingFactory the hashing factory used to enumerate states from the input domain
 	 */
-	public TabulatedDomainWrapper(Domain inputDomain, StateHashFactory hashingFactory){
+	public TabulatedDomainWrapper(Domain inputDomain, HashableStateFactory hashingFactory){
 		this.inputDomain = inputDomain;
 		this.enumerator = new StateEnumerator(this.inputDomain, hashingFactory);
 	}

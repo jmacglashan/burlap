@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgames.agents.naiveq;
 
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;
@@ -38,7 +38,7 @@ public class SGNaiveQFactory implements AgentFactory {
 	/**
 	 * The state hashing factory the Q-learning algorithm will use
 	 */
-	protected StateHashFactory											stateHash; 
+	protected HashableStateFactory stateHash;
 	
 	
 	/**
@@ -56,7 +56,7 @@ public class SGNaiveQFactory implements AgentFactory {
 	 * @param defaultQ The default Q-value to which Q-values will be initialized
 	 * @param stateHash The state hashing factory the Q-learning algorithm will use
 	 */
-	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash) {
+	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, HashableStateFactory stateHash) {
 		this.domain = domain;
 		this.discount = discount;
 		this.learningRate = learningRate;
@@ -75,7 +75,7 @@ public class SGNaiveQFactory implements AgentFactory {
 	 * @param stateHash The state hashing factory the Q-learning algorithm will use
 	 * @param storedAbstraction the state abstraction the Q-learning algorithm will use
 	 */
-	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, StateHashFactory stateHash, StateAbstraction storedAbstraction) {
+	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, HashableStateFactory stateHash, StateAbstraction storedAbstraction) {
 		this.domain = domain;
 		this.discount = discount;
 		this.learningRate = learningRate;

@@ -8,8 +8,8 @@ import java.util.Map;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -31,7 +31,7 @@ public class TimeIndexedTDLambda extends TDLambda {
 	/**
 	 * The time/depth indexed value function
 	 */
-	protected List<Map<StateHashTuple, VValue>>			vTIndex;
+	protected List<Map<HashableState, VValue>>			vTIndex;
 	
 	/**
 	 * The current time index / depth of the current episode
@@ -54,10 +54,10 @@ public class TimeIndexedTDLambda extends TDLambda {
 	 * @param vinit a constant value function initialization value to use.
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 */
-	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, double vinit, double lambda) {
+	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda) {
 		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
 		
-		this.vTIndex = new ArrayList<Map<StateHashTuple,VValue>>();
+		this.vTIndex = new ArrayList<Map<HashableState,VValue>>();
 		
 	}
 	
@@ -73,11 +73,11 @@ public class TimeIndexedTDLambda extends TDLambda {
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 * @param maxEpisodeSize the maximum number of steps possible in an episode
 	 */
-	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, double vinit, double lambda, int maxEpisodeSize) {
+	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda, int maxEpisodeSize) {
 		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
 		
 		this.maxEpisodeSize = maxEpisodeSize;
-		this.vTIndex = new ArrayList<Map<StateHashTuple,VValue>>();
+		this.vTIndex = new ArrayList<Map<HashableState,VValue>>();
 		
 	}
 	
@@ -93,11 +93,11 @@ public class TimeIndexedTDLambda extends TDLambda {
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 * @param maxEpisodeSize the maximum number of steps possible in an episode
 	 */
-	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda, int maxEpisodeSize) {
+	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda, int maxEpisodeSize) {
 		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
 		
 		this.maxEpisodeSize = maxEpisodeSize;
-		this.vTIndex = new ArrayList<Map<StateHashTuple,VValue>>();
+		this.vTIndex = new ArrayList<Map<HashableState,VValue>>();
 		
 	}
 
@@ -133,8 +133,8 @@ public class TimeIndexedTDLambda extends TDLambda {
 	@Override
 	public CritiqueResult critiqueAndUpdate(State s, GroundedAction ga, State sprime) {
 		
-		StateHashTuple sh = hashingFactory.hashState(s);
-		StateHashTuple shprime = hashingFactory.hashState(sprime);
+		HashableState sh = hashingFactory.hashState(s);
+		HashableState shprime = hashingFactory.hashState(sprime);
 		
 		double r = this.rf.reward(s, ga, sprime);
 		double discount = gamma;
@@ -184,13 +184,13 @@ public class TimeIndexedTDLambda extends TDLambda {
 	 * @param t the time/depth at which the state is visited
 	 * @return the {@link TDLambda.VValue} object (storing the value) for a given hashed stated at the specified time/depth
 	 */
-	protected VValue getV(StateHashTuple sh, int t){
+	protected VValue getV(HashableState sh, int t){
 		
 		while(vTIndex.size() <= t){
-			vTIndex.add(new HashMap<StateHashTuple, TDLambda.VValue>());
+			vTIndex.add(new HashMap<HashableState, TDLambda.VValue>());
 		}
 		
-		Map <StateHashTuple, VValue> timeMap = vTIndex.get(t);
+		Map <HashableState, VValue> timeMap = vTIndex.get(t);
 		
 		VValue v = timeMap.get(sh);
 		if(v == null){
@@ -228,7 +228,7 @@ public class TimeIndexedTDLambda extends TDLambda {
 		 * @param eligibility the eligibility of the state
 		 * @param v the value function value for the state.
 		 */
-		public StateTimeElibilityTrace(StateHashTuple sh, int time, double eligibility, VValue v) {
+		public StateTimeElibilityTrace(HashableState sh, int time, double eligibility, VValue v) {
 			super(sh, eligibility, v);
 			this.timeIndex = time;
 		}

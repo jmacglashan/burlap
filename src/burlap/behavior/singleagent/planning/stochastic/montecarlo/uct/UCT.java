@@ -17,8 +17,8 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTStateNode.UCTStateConstructor;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -51,8 +51,8 @@ import burlap.oomdp.singleagent.RewardFunction;
  */
 public class UCT extends MDPSolver implements Planner, QFunction {
 
-	protected List<Map<StateHashTuple, UCTStateNode>> 			stateDepthIndex;
-	protected Map <StateHashTuple, List <UCTStateNode>>			statesToStateNodes;
+	protected List<Map<HashableState, UCTStateNode>> 			stateDepthIndex;
+	protected Map <HashableState, List <UCTStateNode>>			statesToStateNodes;
 	protected UCTStateNode										root;
 	protected int												maxHorizon;
 	protected int												maxRollOutsFromRoot;
@@ -66,7 +66,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	protected boolean											foundGoal;
 	protected boolean											foundGoalOnRollout;
 	
-	protected Set<StateHashTuple>								uniqueStatesInTree;
+	protected Set<HashableState>								uniqueStatesInTree;
 	
 	protected int												treeSize;
 	protected int												numVisits;
@@ -86,7 +86,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	 * @param nRollouts the number of rollouts to perform 
 	 * @param explorationBias the exploration bias constant (suggested >2)
 	 */
-	public UCT(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
+	public UCT(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
 		stateNodeConstructor = new UCTStateConstructor();
 		actionNodeConstructor = new UCTActionConstructor();
@@ -97,7 +97,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		
 	}
 	
-	protected void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
+	protected void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
 		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.maxHorizon = horizon;
@@ -143,14 +143,14 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		treeSize = 1;
 		numVisits = 0;
 		
-		StateHashTuple shi = this.stateHash(initialState);
+		HashableState shi = this.stateHash(initialState);
 		root = stateNodeConstructor.generate(shi, 0, actions, actionNodeConstructor);
 		
-		uniqueStatesInTree = new HashSet<StateHashTuple>();
+		uniqueStatesInTree = new HashSet<HashableState>();
 		
-		stateDepthIndex = new ArrayList<Map<StateHashTuple,UCTStateNode>>();
-		statesToStateNodes = new HashMap<StateHashTuple, List<UCTStateNode>>();
-		Map <StateHashTuple, UCTStateNode> depth0Map = new HashMap<StateHashTuple, UCTStateNode>();
+		stateDepthIndex = new ArrayList<Map<HashableState,UCTStateNode>>();
+		statesToStateNodes = new HashMap<HashableState, List<UCTStateNode>>();
+		Map <HashableState, UCTStateNode> depth0Map = new HashMap<HashableState, UCTStateNode>();
 		depth0Map.put(shi, root);
 		stateDepthIndex.add(depth0Map);
 		
@@ -191,7 +191,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		}
 
 		//if the root node isn't the query state, then replan
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		if(!sh.equals(this.root.state)){
 			this.resetSolver();
 			this.planFromState(s);
@@ -215,7 +215,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		}
 
 		//if the root node isn't the query state, then replan
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		if(!sh.equals(this.root.state)){
 			this.resetSolver();
 			this.planFromState(s);
@@ -292,7 +292,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		
 		
 		//sample the action
-		StateHashTuple shprime = this.stateHash(anode.action.executeIn(node.state.s));
+		HashableState shprime = this.stateHash(anode.action.executeIn(node.state.s));
 		double r = rf.reward(node.state.s, anode.action, shprime.s);
 		int depthChange = 1;
 		if(!anode.action.action.isPrimitive()){
@@ -425,7 +425,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		if(untriedNodes){
 			List <UCTActionNode> candidates2 = new ArrayList<UCTActionNode>(candidates.size());
 			for(UCTActionNode anode : candidates){
-				StateHashTuple sample = this.stateHash(anode.action.executeIn(snode.state.s));
+				HashableState sample = this.stateHash(anode.action.executeIn(snode.state.s));
 				if(!uniqueStatesInTree.contains(sample)){
 					candidates2.add(anode);
 				}
@@ -469,7 +469,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	 * @param d the depth of the state
 	 * @return the corresponding {@link UCTStateNode}
 	 */
-	protected UCTStateNode queryTreeIndex(StateHashTuple sh, int d){
+	protected UCTStateNode queryTreeIndex(HashableState sh, int d){
 		
 		if(d >= stateDepthIndex.size()){
 			return null;
@@ -486,7 +486,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	protected void addNodeToIndexTree(UCTStateNode snode){
 		
 		while(stateDepthIndex.size() <= snode.depth){
-			stateDepthIndex.add(new HashMap<StateHashTuple, UCTStateNode>());
+			stateDepthIndex.add(new HashMap<HashableState, UCTStateNode>());
 		}
 		
 		stateDepthIndex.get(snode.depth).put(snode.state, snode);

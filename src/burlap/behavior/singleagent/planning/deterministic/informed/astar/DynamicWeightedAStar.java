@@ -9,8 +9,8 @@ import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
@@ -59,7 +59,7 @@ public class DynamicWeightedAStar extends AStar {
 	/**
 	 * Data structure for storing the depth of explored states
 	 */
-	protected Map <StateHashTuple, Integer>					depthMap;
+	protected Map <HashableState, Integer>					depthMap;
 	
 	/**
 	 * maintains the depth of the last explored node
@@ -77,7 +77,7 @@ public class DynamicWeightedAStar extends AStar {
 	 * @param epsilon parameter > 1 indicating greediness; the larger the value the more greedy.
 	 * @param expectedDepth the expected depth of the plan
 	 */
-	public DynamicWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic, double epsilon, int expectedDepth) {
+	public DynamicWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double epsilon, int expectedDepth) {
 		super(domain, rf, gc, hashingFactory, heuristic);
 		this.epsilon = epsilon;
 		this.expectedDepth = expectedDepth;
@@ -86,7 +86,7 @@ public class DynamicWeightedAStar extends AStar {
 	@Override
 	public void prePlanPrep(){
 		super.prePlanPrep();
-		depthMap = new HashMap<StateHashTuple, Integer>();
+		depthMap = new HashMap<HashableState, Integer>();
 	}
 	
 	@Override
@@ -126,7 +126,7 @@ public class DynamicWeightedAStar extends AStar {
 	public SDPlannerPolicy planFromState(State initialState) {
 		
 		//first determine if there is even a need to plan
-		StateHashTuple sih = this.stateHash(initialState);
+		HashableState sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
 			return new SDPlannerPolicy(this); //no need to plan since this is already solved
@@ -173,7 +173,7 @@ public class DynamicWeightedAStar extends AStar {
 				List<GroundedAction> gas = a.getAllApplicableGroundedActions(s);
 				for(GroundedAction ga : gas){
 					State ns = ga.executeIn(s);
-					StateHashTuple nsh = this.stateHash(ns);
+					HashableState nsh = this.stateHash(ns);
 					
 					double F = this.computeF(node, ga, nsh);
 					PrioritizedSearchNode npsn = new PrioritizedSearchNode(nsh, ga, node, F);
@@ -226,7 +226,7 @@ public class DynamicWeightedAStar extends AStar {
 	
 	
 	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, StateHashTuple successorState) {
+	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
 		double cumR = 0.;
 		double r = 0.;
 		int d = 0;

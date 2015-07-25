@@ -15,9 +15,9 @@ import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.behavior.statehashing.NameDependentStateHashFactory;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.NameDependentHashableStateFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -177,7 +177,7 @@ public class ApprenticeshipLearning {
 
 		Planner planner = request.getPlanner();
 		TerminalFunction terminalFunction = planner.getTF();
-		StateHashFactory stateHashingFactory = planner.getHashingFactory();
+		HashableStateFactory stateHashingFactory = planner.getHashingFactory();
 
 		// (1). Randomly generate policy pi^(0)
 		Domain domain = request.getDomain();
@@ -278,7 +278,7 @@ public class ApprenticeshipLearning {
 		//Planning objects
 		Planner planner = request.getPlanner();
 		TerminalFunction terminalFunction = planner.getTF();
-		StateHashFactory stateHashingFactory = planner.getHashingFactory();
+		HashableStateFactory stateHashingFactory = planner.getHashingFactory();
 
 		//(0) set up policy array; exper feature expectation
 		List<Policy> policyHistory = new ArrayList<Policy>();
@@ -543,10 +543,10 @@ public class ApprenticeshipLearning {
 	 *
 	 */
 	public static class RandomPolicy extends Policy {
-		Map<StateHashTuple, GroundedAction> stateActionMapping;
+		Map<HashableState, GroundedAction> stateActionMapping;
 		List<Action> actions;
-		Map<StateHashTuple, List<ActionProb>> stateActionDistributionMapping;
-		StateHashFactory hashFactory;
+		Map<HashableState, List<ActionProb>> stateActionDistributionMapping;
+		HashableStateFactory hashFactory;
 		Random rando;
 
 		/**
@@ -554,11 +554,11 @@ public class ApprenticeshipLearning {
 		 * @param domain Domain object for which we need to plan
 		 */
 		private RandomPolicy(Domain domain) {
-			this.stateActionMapping = new HashMap<StateHashTuple, GroundedAction>();
-			this.stateActionDistributionMapping = new HashMap<StateHashTuple, List<ActionProb>>();
+			this.stateActionMapping = new HashMap<HashableState, GroundedAction>();
+			this.stateActionDistributionMapping = new HashMap<HashableState, List<ActionProb>>();
 			this.actions = domain.getActions();
 			this.rando = new Random();
-			this.hashFactory = new NameDependentStateHashFactory();
+			this.hashFactory = new NameDependentHashableStateFactory();
 		}
 
 		public static Policy generateRandomPolicy(Domain domain) {
@@ -572,7 +572,7 @@ public class ApprenticeshipLearning {
 		 * @param state State for which to generate actions.
 		 */
 		private void addNewDistributionForState(State state) {
-			StateHashTuple stateHashTuple = this.hashFactory.hashState(state);
+			HashableState hashableState = this.hashFactory.hashState(state);
 
 			// Get all possible actions from this state
 			//List<GroundedAction> groundedActions = state.getAllGroundedActionsFor(this.actions);
@@ -593,20 +593,20 @@ public class ApprenticeshipLearning {
 				newActionDistribution.add(actionProb);
 			}
 
-			this.stateActionDistributionMapping.put(stateHashTuple, newActionDistribution);
+			this.stateActionDistributionMapping.put(hashableState, newActionDistribution);
 		}
 
 		@Override
 		public AbstractGroundedAction getAction(State s) {
-			StateHashTuple stateHashTuple = this.hashFactory.hashState(s);
+			HashableState hashableState = this.hashFactory.hashState(s);
 
 			// If this state has not yet been visited, we need to compute a new distribution of actions
-			if (!this.stateActionDistributionMapping.containsKey(stateHashTuple)) {
+			if (!this.stateActionDistributionMapping.containsKey(hashableState)) {
 				this.addNewDistributionForState(s);
 			}
 
 			// Get the action probability distribution for this state
-			List<ActionProb> actionDistribution = this.stateActionDistributionMapping.get(stateHashTuple);
+			List<ActionProb> actionDistribution = this.stateActionDistributionMapping.get(hashableState);
 			Double roll = this.rando.nextDouble();
 			Double probabilitySum = 0.0;
 
@@ -622,13 +622,13 @@ public class ApprenticeshipLearning {
 
 		@Override
 		public List<ActionProb> getActionDistributionForState(State s) {
-			StateHashTuple stateHashTuple = this.hashFactory.hashState(s);
+			HashableState hashableState = this.hashFactory.hashState(s);
 
 			// If this state has not yet been visited, we need to compute a new distribution of actions
-			if (!this.stateActionDistributionMapping.containsKey(stateHashTuple)) {
+			if (!this.stateActionDistributionMapping.containsKey(hashableState)) {
 				this.addNewDistributionForState(s);
 			}
-			return new ArrayList<ActionProb>(this.stateActionDistributionMapping.get(stateHashTuple));
+			return new ArrayList<ActionProb>(this.stateActionDistributionMapping.get(hashableState));
 		}
 
 		@Override

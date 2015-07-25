@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.planning.stochastic;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -29,7 +29,7 @@ public class ActionTransitions {
 	 * @param transitions the transition probabilities
 	 * @param hashingFactory a hashingFactory that can be used to hash the states in the TransitionProbability data structure.
 	 */
-	public ActionTransitions(GroundedAction ga, List <TransitionProbability> transitions, StateHashFactory hashingFactory){
+	public ActionTransitions(GroundedAction ga, List <TransitionProbability> transitions, HashableStateFactory hashingFactory){
 		this.ga = ga;
 		this.transitions = this.getHashedTransitions(transitions, hashingFactory);
 	}
@@ -41,7 +41,7 @@ public class ActionTransitions {
 	 * @param ga the GroundedAction to be applied in the source state
 	 * @param hashingFactory a hashingFactory that can be used to hash the states in the TransitionProbability data structures that are returned from applying ga in s.
 	 */
-	public ActionTransitions(State s, GroundedAction ga, StateHashFactory hashingFactory){
+	public ActionTransitions(State s, GroundedAction ga, HashableStateFactory hashingFactory){
 		this.ga = ga;
 		this.transitions = this.getHashedTransitions(ga.action.getTransitions(s, ga.params), hashingFactory);
 	}
@@ -56,7 +56,7 @@ public class ActionTransitions {
 		return ga.equals(oga);
 	}
 	
-	private List <HashedTransitionProbability> getHashedTransitions(List <TransitionProbability> tps, StateHashFactory hashingFactory){
+	private List <HashedTransitionProbability> getHashedTransitions(List <TransitionProbability> tps, HashableStateFactory hashingFactory){
 		List <HashedTransitionProbability> htps = new ArrayList<HashedTransitionProbability>();
 		for(TransitionProbability tp : tps){
 			htps.add(new HashedTransitionProbability(tp, hashingFactory));

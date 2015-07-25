@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 
@@ -20,7 +20,7 @@ public class UCTStateNode {
 	/**
 	 * The (hashed) state this node wraps
 	 */
-	public StateHashTuple			state;
+	public HashableState state;
 	
 	/**
 	 * The depth the UCT tree
@@ -45,7 +45,7 @@ public class UCTStateNode {
 	 * @param actions the possible OO-MDP actions that can be taken
 	 * @param constructor a {@link UCTActionNode} factory that can be used to create ActionNodes for each of the actions.
 	 */
-	public UCTStateNode(StateHashTuple s, int d, List <Action> actions, UCTActionConstructor constructor){
+	public UCTStateNode(HashableState s, int d, List <Action> actions, UCTActionConstructor constructor){
 		
 		state = s;
 		depth = d;
@@ -98,7 +98,7 @@ public class UCTStateNode {
 		 * @param constructor a {@link UCTActionNode} factory that can be used to create ActionNodes for each of the actions.
 		 * @return a {@link UCTStateNode} instance.
 		 */
-		public UCTStateNode generate(StateHashTuple s, int d, List <Action> actions, UCTActionConstructor constructor){
+		public UCTStateNode generate(HashableState s, int d, List <Action> actions, UCTActionConstructor constructor){
 			return new UCTStateNode(s, d, actions, constructor);
 		}
 		

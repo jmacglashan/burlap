@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.statehashing.DiscreteStateHashFactory;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.DiscreteHashableStateFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.behavior.stochasticgames.agents.naiveq.SGNaiveQLAgent;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
@@ -27,7 +27,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * previous time steps. If the constructor is not passed the maximum number of players and an {@link ActionIdMap} to use,
  * then when the first game starts, it will be initialized to an {@link ParameterNaiveActionIdMap} and the number of
  * players will be set to the number of players in the world which this agent has joined. If the world contains
- * parameterized actions, this may be a problem and you should use the {@link #SGQWActionHistory(SGDomain, double, double, StateHashFactory, int, int, ActionIdMap)}
+ * parameterized actions, this may be a problem and you should use the {@link #SGQWActionHistory(SGDomain, double, double, burlap.behavior.statehashing.HashableStateFactory, int, int, ActionIdMap)}
  * constructor to resolve action parameterization instead.
  * 
  * <p/>
@@ -97,7 +97,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	 * @param maxPlayers the maximum number of players that will be in the game
 	 * @param actionMap a mapping from actions to integer identifiers for them
 	 */
-	public SGQWActionHistory(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory, int historySize, int maxPlayers, ActionIdMap actionMap) {
+	public SGQWActionHistory(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory, int historySize, int maxPlayers, ActionIdMap actionMap) {
 		super(d, discount, learningRate, hashFactory);
 		this.historySize = historySize;
 		this.actionMap = actionMap;
@@ -115,7 +115,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	 * @param hashFactory the state hashing factory to use
 	 * @param historySize the number of previous steps to remember and with which to augment the state space
 	 */
-	public SGQWActionHistory(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory, int historySize) {
+	public SGQWActionHistory(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory, int historySize) {
 		super(d, discount, learningRate, hashFactory);
 		this.historySize = historySize;
 	}
@@ -148,8 +148,8 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 		attsForHistoryHashing.add(histAID);
 		
 		//ugly, but not sure how to resolve at the moment...
-		if(this.hashFactory instanceof DiscreteStateHashFactory){
-			((DiscreteStateHashFactory) this.hashFactory).setAttributesForClass(CLASSHISTORY, attsForHistoryHashing);
+		if(this.hashFactory instanceof DiscreteHashableStateFactory){
+			((DiscreteHashableStateFactory) this.hashFactory).setAttributesForClass(CLASSHISTORY, attsForHistoryHashing);
 		}
 	}
 
@@ -285,7 +285,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	}
 	
 	@Override
-	protected StateHashTuple stateHash(State s){
+	protected HashableState stateHash(State s){
 		State augS = this.getHistoryAugmentedState(this.storedMapAbstraction.abstraction(s));
 		return hashFactory.hashState(augS);
 	}

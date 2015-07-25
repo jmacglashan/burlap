@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -41,13 +41,13 @@ public class StaticWeightedAStar extends AStar {
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 * @param epsilon parameter > 1. The larger the value the more greedy. 
 	 */
-	public StaticWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic, double epsilon) {
+	public StaticWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double epsilon) {
 		super(domain, rf, gc, hashingFactory, heuristic);
 		this.epsilonP1 = 1. + epsilon;
 	}
 	
 	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, StateHashTuple successorState) {
+	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
 		double cumR = 0.;
 		double r = 0.;
 		if(parentNode != null){

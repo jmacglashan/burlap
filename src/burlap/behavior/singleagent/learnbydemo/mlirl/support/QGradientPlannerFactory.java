@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnbydemo.mlirl.support;
 
 import burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest;
 import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.TerminalFunction;
 
@@ -32,9 +32,9 @@ public interface QGradientPlannerFactory {
 	public static class DifferentiableVIFactory implements QGradientPlannerFactory{
 
 		/**
-		 * The {@link burlap.behavior.statehashing.StateHashFactory} used by the valueFunction.
+		 * The {@link burlap.behavior.statehashing.HashableStateFactory} used by the valueFunction.
 		 */
-		protected StateHashFactory hashingFactory;
+		protected HashableStateFactory hashingFactory;
 
 		/**
 		 * The value function change threshold to stop VI. Default is 0.01.
@@ -54,24 +54,24 @@ public interface QGradientPlannerFactory {
 
 
 		/**
-		 * Initializes the factory with the given {@link burlap.behavior.statehashing.StateHashFactory}.
+		 * Initializes the factory with the given {@link burlap.behavior.statehashing.HashableStateFactory}.
 		 * The terminal function will be defaulted to a {@link burlap.oomdp.auxiliary.common.NullTermination};
 		 * value function change threshold to 0.01; and the max VI iterations to 500.
-		 * @param hashingFactory the {@link burlap.behavior.statehashing.StateHashFactory} to use for planning.
+		 * @param hashingFactory the {@link burlap.behavior.statehashing.HashableStateFactory} to use for planning.
 		 */
-		public DifferentiableVIFactory(StateHashFactory hashingFactory){
+		public DifferentiableVIFactory(HashableStateFactory hashingFactory){
 			this.hashingFactory = hashingFactory;
 		}
 
 
 		/**
 		 * Initializes.
-		 * @param hashingFactory the {@link burlap.behavior.statehashing.StateHashFactory} to use for planning.
+		 * @param hashingFactory the {@link burlap.behavior.statehashing.HashableStateFactory} to use for planning.
 		 * @param tf The terminal function that the generated planners use.
 		 * @param maxDelta The value function change threshold to stop VI.
 		 * @param maxIterations The maximum allowed number of VI iterations
 		 */
-		public DifferentiableVIFactory(StateHashFactory hashingFactory, TerminalFunction tf, double maxDelta, int maxIterations){
+		public DifferentiableVIFactory(HashableStateFactory hashingFactory, TerminalFunction tf, double maxDelta, int maxIterations){
 			this.hashingFactory = hashingFactory;
 			this.maxDelta = maxDelta;
 			this.maxIterations = maxIterations;

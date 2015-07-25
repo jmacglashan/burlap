@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
@@ -21,7 +21,7 @@ import java.util.Map;
  * A class for performing dynamic programming with a differentiable value backup operator.
  * Specifically, all subclasses are assumed to use a Boltzmann backup operator and the reward functions
  * must be differentiable by subclassing the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
- * class. The normal {@link #performBellmanUpdateOn(burlap.behavior.statehashing.StateHashTuple)} method
+ * class. The normal {@link #performBellmanUpdateOn(burlap.behavior.statehashing.HashableState)} method
  * of the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} class is overridden
  * with a method that uses the Boltzmann backup operator.
  * @author James MacGlashan.
@@ -31,7 +31,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	/**
 	 * The value function gradient for each state.
 	 */
-	protected Map<StateHashTuple, double[]> valueGradient = new HashMap<StateHashTuple, double[]>();
+	protected Map<HashableState, double[]> valueGradient = new HashMap<HashableState, double[]>();
 
 	/**
 	 * The Boltzmann backup operator beta parameter. The larger the beta, the more deterministic the
@@ -55,7 +55,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 * @return the new value
 	 */
 	@Override
-	protected double performBellmanUpdateOn(StateHashTuple sh){
+	protected double performBellmanUpdateOn(HashableState sh){
 
 		if(this.tf.isTerminal(sh.s)){
 			this.valueFunction.put(sh, 0.);
@@ -81,12 +81,12 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	}
 
 	/**
-	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.behavior.statehashing.StateHashTuple}.
+	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.behavior.statehashing.HashableState}.
 	 * Results are stored in this valueFunction's internal map.
 	 * @param sh the hashed state on which to perform the Boltzmann gradient update.
 	 * @return the gradient.
 	 */
-	protected double [] performDPValueGradientUpdateOn(StateHashTuple sh){
+	protected double [] performDPValueGradientUpdateOn(HashableState sh){
 		//updates gradient of value function for the given state using bellman-like method
 
 		//prepare value function gradient double array
@@ -140,7 +140,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 */
 	public double [] getValueGradient(State s){
 		//returns deriviate value
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		double [] grad = this.valueGradient.get(sh);
 		if(grad == null){
 			grad = new double[((DifferentiableRF)this.rf).getParameterDimension()];

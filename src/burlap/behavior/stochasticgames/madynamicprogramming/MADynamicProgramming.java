@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -68,7 +68,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	/**
 	 * The state hashing factory used to query the value function for individual states
 	 */
-	protected StateHashFactory				hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * The Q-value initialization function to use.
@@ -107,7 +107,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * @param backupOperator the solution concept backup operator to use.
 	 */
 	public void initMAVF(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction,
-			double discount, StateHashFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
+			double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
 	
 		this.domain = domain;
 		this.jointActionModel = jointActionModel;
@@ -183,7 +183,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 */
 	public double backupAllValueFunctions(State s){
 		
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		
 		double maxChange = Double.NEGATIVE_INFINITY;
 		for(String agentName : this.agentDefinitions.keySet()){
@@ -249,7 +249,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		/**
 		 * The tabular value function
 		 */
-		protected Map<StateHashTuple, Double> valueFunction = new HashMap<StateHashTuple, Double>();
+		protected Map<HashableState, Double> valueFunction = new HashMap<HashableState, Double>();
 		
 		
 		/**
@@ -273,7 +273,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 				for(int i = 0; i < jat.tps.size(); i++){
 					TransitionProbability tp = jat.tps.get(i);
 					double p = tp.p;
-					StateHashTuple sh = MADynamicProgramming.this.hashingFactory.hashState(tp.s);
+					HashableState sh = MADynamicProgramming.this.hashingFactory.hashState(tp.s);
 					double r = jat.jrs.get(i).get(this.agentName);
 					double vprime = this.getValue(sh);
 					
@@ -300,7 +300,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		 * @param sh the state for which the value is to be returned.
 		 * @return the value of the state.
 		 */
-		public double getValue(StateHashTuple sh){
+		public double getValue(HashableState sh){
 			Double stored = this.valueFunction.get(sh);
 			if(stored != null){
 				return stored;
@@ -319,7 +319,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		 * @param sh the hashed state for which the value is to be set
 		 * @param v the value to set the state to.
 		 */
-		public void setValue(StateHashTuple sh, double v){
+		public void setValue(HashableState sh, double v){
 			this.valueFunction.put(sh, v);
 		}
 		

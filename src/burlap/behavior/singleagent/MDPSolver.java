@@ -7,8 +7,8 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -35,7 +35,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	/**
 	 * The hashing factory to use for hashing states in tabular solvers
 	 */
-	protected StateHashFactory										hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * The task reward function
@@ -59,11 +59,11 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	protected List <Action>											actions;
 	
 	/**
-	 * A mapping to internal stored hashed states ({@link burlap.behavior.statehashing.StateHashTuple}) that are stored.
+	 * A mapping to internal stored hashed states ({@link burlap.behavior.statehashing.HashableState}) that are stored.
 	 * Useful since two identical states may have different object instance name identifiers
 	 * that can affect the parameters in GroundedActions.
 	 */
-	protected Map <StateHashTuple, StateHashTuple>					mapToStateIndex;
+	protected Map <HashableState, HashableState>					mapToStateIndex;
 	
 	/**
 	 * Indicates whether the action set for this valueFunction includes parametrized actions
@@ -83,7 +83,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	public abstract void resetSolver();
 	
 	@Override
-	public void solverInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory){
+	public void solverInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory){
 		
 		this.domain = domain;
 		this.rf = rf;
@@ -91,7 +91,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
 		
-		mapToStateIndex = new HashMap<StateHashTuple, StateHashTuple>();
+		mapToStateIndex = new HashMap<HashableState, HashableState>();
 		
 		containsParameterizedActions = false;
 		List <Action> actions = domain.getActions();
@@ -160,12 +160,12 @@ public abstract class MDPSolver implements MDPSolverInterface{
 
 
 	@Override
-	public void setHashingFactory(StateHashFactory hashingFactory) {
+	public void setHashingFactory(HashableStateFactory hashingFactory) {
 		this.hashingFactory = hashingFactory;
 	}
 
 	@Override
-	public StateHashFactory getHashingFactory(){
+	public HashableStateFactory getHashingFactory(){
 		return this.hashingFactory;
 	}
 	
@@ -255,7 +255,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	 * @param s the state to hash
 	 * @return a StateHashTuple produce from this planners StateHashFactory.
 	 */
-	public StateHashTuple stateHash(State s){
+	public HashableState stateHash(State s){
 		return hashingFactory.hashState(s);
 	}
 	

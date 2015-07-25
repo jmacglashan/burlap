@@ -1,14 +1,12 @@
 package burlap.behavior.singleagent.learnbydemo.mlirl;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.learnbydemo.IRLRequest;
 import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 
@@ -69,7 +67,7 @@ public class MLIRLRequest extends IRLRequest{
 	/**
 	 * Initializes without any expert trajectory weights (which will be assumed to have a value 1) and requests
 	 * a default {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} instance to be created using
-	 * the {@link burlap.behavior.statehashing.StateHashFactory} provided. The
+	 * the {@link burlap.behavior.statehashing.HashableStateFactory} provided. The
 	 * {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} instance will be
 	 * a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI} that plans
 	 * either until the maximum change is the value function is no greater than 0.01 or until 500 iterations have been performed.
@@ -79,7 +77,7 @@ public class MLIRLRequest extends IRLRequest{
 	 * @param rf the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} model to use.
 	 * @param hashingFactory the state hashing factory to use for the created valueFunction.
 	 */
-	public MLIRLRequest(Domain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, StateHashFactory hashingFactory){
+	public MLIRLRequest(Domain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, HashableStateFactory hashingFactory){
 		super(domain, null, expertEpisodes);
 		this.rf = rf;
 		this.planner = new DifferentiableVI(domain, rf, new NullTermination(), gamma, this.boltzmannBeta, hashingFactory, 0.01, 500);

@@ -9,8 +9,8 @@ import java.util.Set;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -39,7 +39,7 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	/**
 	 * Stores the action plan found by the valueFunction as a deterministic policy
 	 */
-	protected Map <StateHashTuple, GroundedAction>		internalPolicy;
+	protected Map <HashableState, GroundedAction>		internalPolicy;
 	
 	
 	
@@ -52,11 +52,11 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	 * @param gc test for goal conditions that should return true for goal states and false for non-goal states.
 	 * @param hashingFactory the hashing factory to use for states.
 	 */
-	public void deterministicPlannerInit(Domain domain, RewardFunction rf, TerminalFunction tf, StateConditionTest gc, StateHashFactory hashingFactory){
+	public void deterministicPlannerInit(Domain domain, RewardFunction rf, TerminalFunction tf, StateConditionTest gc, HashableStateFactory hashingFactory){
 		
 		this.solverInit(domain, rf, tf, 1., hashingFactory); //goal condition doubles as termination function for deterministic planners
 		this.gc = gc;
-		this.internalPolicy = new HashMap<StateHashTuple, GroundedAction>();
+		this.internalPolicy = new HashMap<HashableState, GroundedAction>();
 	
 
 	}
@@ -73,8 +73,8 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	 * @return true if a plan solution from the given state exists; false otherwise.
 	 */
 	public boolean hasCachedPlanForState(State s){
-		StateHashTuple sh = this.stateHash(s);
-		StateHashTuple indexSH = mapToStateIndex.get(sh);
+		HashableState sh = this.stateHash(s);
+		HashableState indexSH = mapToStateIndex.get(sh);
 		
 		return indexSH != null;
 	}
@@ -88,8 +88,8 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	 */
 	public GroundedAction querySelectedActionForState(State s){
 		
-		StateHashTuple sh = this.stateHash(s);
-		StateHashTuple indexSH = mapToStateIndex.get(sh);
+		HashableState sh = this.stateHash(s);
+		HashableState indexSH = mapToStateIndex.get(sh);
 		if(indexSH == null){
 			this.planFromState(s);
 			return internalPolicy.get(sh); //no need to translate because if the state didn't exist then it got indexed with this state's rep
@@ -123,7 +123,7 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 		
 		SearchNode curNode = lastVisitedNode;
 		while(curNode.backPointer != null){
-			StateHashTuple bpsh = curNode.backPointer.s;
+			HashableState bpsh = curNode.backPointer.s;
 			if(!mapToStateIndex.containsKey(bpsh)){ //makes sure earlier plan duplicate nodes do not replace the correct later visits
 				internalPolicy.put(bpsh, curNode.generatingAction);
 				mapToStateIndex.put(bpsh, bpsh);
@@ -165,7 +165,7 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	 */
 	protected boolean planHasDupilicateStates(SearchNode lastVisitedNode){
 		
-		Set<StateHashTuple> statesInPlan = new HashSet<StateHashTuple>();
+		Set<HashableState> statesInPlan = new HashSet<HashableState>();
 		SearchNode curNode = lastVisitedNode;
 		while(curNode.backPointer != null){
 			if(statesInPlan.contains(curNode.s)){

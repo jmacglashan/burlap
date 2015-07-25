@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 import burlap.behavior.singleagent.auxiliary.StateReachability;
-import burlap.behavior.statehashing.NameDependentStateHashFactory;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.NameDependentHashableStateFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.SADomain;
@@ -23,12 +23,12 @@ public class RandomStartStateGenerator implements StateGenerator {
 	private Random 		random;
 
 	/**
-	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link NameDependentStateHashFactory}.
+	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link burlap.behavior.statehashing.NameDependentHashableStateFactory}.
 	 * @param domain the domain from which states will be drawn.
 	 * @param seedState the seed state from which the reachable states will be found.
 	 */
 	public RandomStartStateGenerator(SADomain domain, State seedState) {
-		StateHashFactory hashFactory = new NameDependentStateHashFactory();
+		HashableStateFactory hashFactory = new NameDependentHashableStateFactory();
 		this.reachableStates = StateReachability.getReachableStates(seedState, domain, hashFactory);
 		this.random = new Random();
 	}
@@ -40,7 +40,7 @@ public class RandomStartStateGenerator implements StateGenerator {
 	 * @param seedState the seed state from which the reachable states will be found.
 	 * @param hashFactory the hash factory to use for the reachability analysis.
 	 */
-	public RandomStartStateGenerator(SADomain domain, State seedState, StateHashFactory hashFactory) {
+	public RandomStartStateGenerator(SADomain domain, State seedState, HashableStateFactory hashFactory) {
 		this.reachableStates = StateReachability.getReachableStates(seedState, domain, hashFactory);
 		this.random = new Random();
 	}

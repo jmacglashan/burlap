@@ -9,8 +9,8 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 /**
  * And Actor component whose policy is defined by a Boltzmann distribution over action preferences. This actor stores
- * state-action preferences tabularly and therefore requires a {@link burlap.behavior.statehashing.StateHashFactory} to perform lookups.
+ * state-action preferences tabularly and therefore requires a {@link burlap.behavior.statehashing.HashableStateFactory} to perform lookups.
  * @author James MacGlashan
  *
  */
@@ -40,7 +40,7 @@ public class BoltzmannActor extends Actor {
 	/**
 	 * The hashing factory used to hash states and evaluate state equality
 	 */
-	protected StateHashFactory						hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * The learning rate used to update action preferences in response to critiques.
@@ -51,7 +51,7 @@ public class BoltzmannActor extends Actor {
 	 * A map from (hashed) states to Policy nodes; the latter of which contains the action preferences
 	 * for each applicable action in the state.
 	 */
-	protected Map<StateHashTuple, PolicyNode>		preferences;
+	protected Map<HashableState, PolicyNode>		preferences;
 	
 	
 	/**
@@ -72,13 +72,13 @@ public class BoltzmannActor extends Actor {
 	 * @param hashingFactory the state hashing factory to use for state hashing and equality checks
 	 * @param learningRate the learning rate that affects how quickly the agent adjusts its action preferences.
 	 */
-	public BoltzmannActor(Domain domain, StateHashFactory hashingFactory, double learningRate) {
+	public BoltzmannActor(Domain domain, HashableStateFactory hashingFactory, double learningRate) {
 		this.domain = domain;
 		this.actions = new ArrayList<Action>(domain.getActions());
 		this.hashingFactory = hashingFactory;
 		this.learningRate = new ConstantLR(learningRate);
 		
-		this.preferences = new HashMap<StateHashTuple, BoltzmannActor.PolicyNode>();
+		this.preferences = new HashMap<HashableState, BoltzmannActor.PolicyNode>();
 		
 		
 		for(Action a : actions){
@@ -102,7 +102,7 @@ public class BoltzmannActor extends Actor {
 	@Override
 	public void updateFromCritqique(CritiqueResult critqiue) {
 		
-		StateHashTuple sh = this.hashingFactory.hashState(critqiue.getS());
+		HashableState sh = this.hashingFactory.hashState(critqiue.getS());
 		PolicyNode node = this.getNode(sh);
 		
 		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s, critqiue.getA());
@@ -134,7 +134,7 @@ public class BoltzmannActor extends Actor {
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
 		
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		PolicyNode node = this.getNode(sh);
 		
 		double [] prefs = new double[node.preferences.size()];
@@ -180,7 +180,7 @@ public class BoltzmannActor extends Actor {
 	 * @param sh The (hashed) state of the {@link BoltzmannActor.PolicyNode} to return
 	 * @return the {@link BoltzmannActor.PolicyNode} object for the given input state.
 	 */
-	protected PolicyNode getNode(StateHashTuple sh){
+	protected PolicyNode getNode(HashableState sh){
 		
 		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
 		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
@@ -224,7 +224,7 @@ public class BoltzmannActor extends Actor {
 	 * @param node the {@link BoltzmannActor.PolicyNode} object that contains the Action preference.
 	 * @return the {@link BoltzmannActor.ActionPreference} object for the given action stored in the given {@link BoltzmannActor.PolicyNode}; null if it does not exist.
 	 */
-	protected ActionPreference getMatchingPreference(StateHashTuple sh, GroundedAction ga, PolicyNode node){
+	protected ActionPreference getMatchingPreference(HashableState sh, GroundedAction ga, PolicyNode node){
 		
 		GroundedAction translatedAction = ga;
 		if(ga.params.length > 0  && !this.domain.isObjectIdentifierDependent() && ga.parametersAreObjects()){
@@ -279,7 +279,7 @@ public class BoltzmannActor extends Actor {
 		/**
 		 * A hashed state object.
 		 */
-		public StateHashTuple			sh;
+		public HashableState sh;
 		
 		/**
 		 * The action preferences for actions applicable in sh.
@@ -291,7 +291,7 @@ public class BoltzmannActor extends Actor {
 		 * Initializes with an empty list of action preferences for the given input state sh.
 		 * @param sh the input state for which this PolicyNode will be created.
 		 */
-		public PolicyNode(StateHashTuple sh){
+		public PolicyNode(HashableState sh){
 			this.sh = sh;
 			this.preferences = new ArrayList<BoltzmannActor.ActionPreference>();
 		}

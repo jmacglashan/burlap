@@ -10,8 +10,8 @@ import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -69,7 +69,7 @@ public class VIModelPlanner implements ModelPlanner, QFunction {
 	/**
 	 * The hashing factory to use
 	 */
-	protected StateHashFactory		hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * The maximium VI delta
@@ -84,7 +84,7 @@ public class VIModelPlanner implements ModelPlanner, QFunction {
 	/**
 	 * States the agent has observed during learning.
 	 */
-	protected Set<StateHashTuple>	observedStates = new HashSet<StateHashTuple>();
+	protected Set<HashableState>	observedStates = new HashSet<HashableState>();
 	
 	
 	/**
@@ -97,7 +97,7 @@ public class VIModelPlanner implements ModelPlanner, QFunction {
 	 * @param maxDelta max value function delta in VI
 	 * @param maxIterations max iterations of VI
 	 */
-	public VIModelPlanner(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxDelta, int maxIterations){
+	public VIModelPlanner(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
 		
 		this.domain = domain;
 		this.rf = rf;
@@ -170,7 +170,7 @@ public class VIModelPlanner implements ModelPlanner, QFunction {
 		this.modelPolicy = new ReplanIfUnseenPolicy(new GreedyQPolicy(vi));
 		
 		//seed state space from what we know exists
-		for(StateHashTuple sh : this.observedStates){
+		for(HashableState sh : this.observedStates){
 			this.vi.performReachabilityFrom(sh.s);
 		}
 		
@@ -237,11 +237,11 @@ public class VIModelPlanner implements ModelPlanner, QFunction {
 
 	public static class VIModelPlannerGenerator implements ModelPlannerGenerator{
 
-		StateHashFactory hashingFactory;
+		HashableStateFactory hashingFactory;
 		double maxDelta;
 		int maxIterations;
 
-		public VIModelPlannerGenerator(StateHashFactory hashingFactory, double maxDelta, int maxIterations){
+		public VIModelPlannerGenerator(HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
 			this.hashingFactory = hashingFactory;
 			this.maxDelta = maxDelta;
 			this.maxIterations = maxIterations;

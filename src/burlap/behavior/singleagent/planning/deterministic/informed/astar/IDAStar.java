@@ -11,8 +11,8 @@ import burlap.behavior.singleagent.planning.deterministic.SearchNode;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode.PSNComparator;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
@@ -54,7 +54,7 @@ public class IDAStar extends DeterministicPlanner {
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 */
-	public IDAStar(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic){
+	public IDAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic){
 		
 		this.deterministicPlannerInit(domain, rf, new NullTermination(), gc, hashingFactory);
 		
@@ -78,7 +78,7 @@ public class IDAStar extends DeterministicPlanner {
 	@Override
 	public SDPlannerPolicy planFromState(State initialState) {
 		
-		StateHashTuple sih = this.stateHash(initialState);
+		HashableState sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
 			return new SDPlannerPolicy(this); //no need to plan since this is already solved
@@ -153,7 +153,7 @@ public class IDAStar extends DeterministicPlanner {
 		for(GroundedAction ga : gas){
 			
 			State ns = ga.executeIn(s);
-			StateHashTuple nsh = this.stateHash(ns);
+			HashableState nsh = this.stateHash(ns);
 			
 			double r = rf.reward(s, ga, ns);
 			double g = cumulatedReward + r;

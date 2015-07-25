@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent;
 
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
@@ -25,7 +25,7 @@ public interface MDPSolverInterface {
 	 * @param gamma the MDP discount factor
 	 * @param hashingFactory the hashing factory used to store states (may be set to null if the solver is not tabular)
 	 */
-	void solverInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory);
+	void solverInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory);
 
 
 	/**
@@ -86,16 +86,16 @@ public interface MDPSolverInterface {
 
 
 	/**
-	 * Sets the {@link burlap.behavior.statehashing.StateHashFactory} used to hash states for tabular solvers.
-	 * @param hashingFactory the {@link burlap.behavior.statehashing.StateHashFactory} used to hash states for tabular solvers.
+	 * Sets the {@link burlap.behavior.statehashing.HashableStateFactory} used to hash states for tabular solvers.
+	 * @param hashingFactory the {@link burlap.behavior.statehashing.HashableStateFactory} used to hash states for tabular solvers.
 	 */
-	void setHashingFactory(StateHashFactory hashingFactory);
+	void setHashingFactory(HashableStateFactory hashingFactory);
 
 	/**
-	 * Returns the {@link burlap.behavior.statehashing.StateHashFactory} this solver uses.
-	 * @return the {@link burlap.behavior.statehashing.StateHashFactory} this solver uses.
+	 * Returns the {@link burlap.behavior.statehashing.HashableStateFactory} this solver uses.
+	 * @return the {@link burlap.behavior.statehashing.HashableStateFactory} this solver uses.
 	 */
-	StateHashFactory getHashingFactory();
+	HashableStateFactory getHashingFactory();
 
 
 	/**

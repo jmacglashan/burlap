@@ -14,7 +14,7 @@ import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelP
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -93,7 +93,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
-	public PotentialShapedRMax(Domain domain, double gamma, StateHashFactory hashingFactory, double maxReward, int nConfident,
+	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, double maxReward, int nConfident,
 			double maxVIDelta, int maxVIPasses){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);
@@ -120,7 +120,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
-	public PotentialShapedRMax(Domain domain, double gamma, StateHashFactory hashingFactory, PotentialFunction potential, int nConfident,
+	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, PotentialFunction potential, int nConfident,
 			double maxVIDelta, int maxVIPasses){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);
@@ -146,7 +146,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * @param model the model/model-learning algorithm to use
 	 * @param plannerGenerator a generator for a model valueFunction
 	 */
-	public PotentialShapedRMax(Domain domain, double gamma, StateHashFactory hashingFactory, PotentialFunction potential,
+	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, PotentialFunction potential,
 			Model model, ModelPlannerGenerator plannerGenerator){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);

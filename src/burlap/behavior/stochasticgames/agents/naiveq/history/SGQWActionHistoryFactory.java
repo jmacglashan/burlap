@@ -2,7 +2,7 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;
 import burlap.oomdp.stochasticgames.SGDomain;
@@ -34,7 +34,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	/**
 	 * The state hashing factory the Q-learning algorithm will use
 	 */
-	protected StateHashFactory											stateHash; 
+	protected HashableStateFactory stateHash;
 	
 	/**
 	 * How much history the agent should remember
@@ -74,7 +74,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	 * @param maxPlayers The maximum number of players that can be in the game
 	 * @param actionMap An action mapping to map from actions to int values
 	 */
-	public SGQWActionHistoryFactory(SGDomain d, double discount, double learningRate, StateHashFactory stateHash, int historySize, int maxPlayers, ActionIdMap actionMap) {
+	public SGQWActionHistoryFactory(SGDomain d, double discount, double learningRate, HashableStateFactory stateHash, int historySize, int maxPlayers, ActionIdMap actionMap) {
 		this.domain = d;
 		this.learningRate = learningRate;
 		this.stateHash = stateHash;
@@ -91,7 +91,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	 * @param stateHash The state hashing factory the Q-learning algorithm will use
 	 * @param historySize How much history the agent should remember
 	 */
-	public SGQWActionHistoryFactory(SGDomain d, double discount, double learningRate, StateHashFactory stateHash, int historySize) {
+	public SGQWActionHistoryFactory(SGDomain d, double discount, double learningRate, HashableStateFactory stateHash, int historySize) {
 		this.domain = d;
 		this.learningRate = learningRate;
 		this.stateHash = stateHash;

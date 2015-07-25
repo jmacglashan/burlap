@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
@@ -18,7 +18,7 @@ public class QLearningStateNode {
 	/**
 	 * A hashed state entry for which Q-value will be stored.
 	 */
-	public StateHashTuple			s;
+	public HashableState s;
 	
 	/**
 	 * The Q-values for this object's state.
@@ -30,7 +30,7 @@ public class QLearningStateNode {
 	 * Creates a new object for the given hashed state. The list of {@link burlap.behavior.valuefunction.QValue} objects is initialized to be empty.
 	 * @param s the hashed state for which to associate Q-values
 	 */
-	public QLearningStateNode(StateHashTuple s) {
+	public QLearningStateNode(HashableState s) {
 		this.s = s;
 		qEntry = new ArrayList<QValue>();
 	}

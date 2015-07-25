@@ -7,8 +7,8 @@ import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.BestFirst;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
@@ -39,7 +39,7 @@ public class AStar extends BestFirst{
 	/**
 	 * Data structure for maintaining g(n): the cost so far to node n
 	 */
-	protected Map <StateHashTuple, Double> 				cumulatedRewardMap;
+	protected Map <HashableState, Double> 				cumulatedRewardMap;
 	
 	/**
 	 * Store the most recent cumulative reward received to some node.
@@ -56,7 +56,7 @@ public class AStar extends BestFirst{
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 */
-	public AStar(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic){
+	public AStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic){
 		
 		this.deterministicPlannerInit(domain, rf, new NullTermination(), gc, hashingFactory);
 		
@@ -69,7 +69,7 @@ public class AStar extends BestFirst{
 
 	@Override
 	public void prePlanPrep(){
-		cumulatedRewardMap = new HashMap<StateHashTuple, Double>();
+		cumulatedRewardMap = new HashMap<HashableState, Double>();
 	}
 	
 	@Override
@@ -91,7 +91,7 @@ public class AStar extends BestFirst{
 
 
 	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, StateHashTuple successorState) {
+	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
 		double cumR = 0.;
 		double r = 0.;
 		if(parentNode != null){

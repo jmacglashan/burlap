@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgames.agents.maql;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.CoCoQ;
@@ -28,14 +28,14 @@ public class MAQLFactory implements AgentFactory {
 	protected double						discount;
 	protected LearningRate					learningRate;
 	protected ValueFunctionInitialization	qInit;
-	protected StateHashFactory				hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	protected SGBackupOperator				backupOperator;
 	protected PolicyFromJointPolicy			learningPolicy;
 	protected boolean						queryOtherAgentsQSource;
 	
 	
 	/**
-	 * Empty constructor. All parameters will need to be set with the {@link #init(SGDomain, double, LearningRate, StateHashFactory, ValueFunctionInitialization, SGBackupOperator, boolean, PolicyFromJointPolicy)} function
+	 * Empty constructor. All parameters will need to be set with the {@link #init(SGDomain, double, LearningRate, burlap.behavior.statehashing.HashableStateFactory, ValueFunctionInitialization, SGBackupOperator, boolean, PolicyFromJointPolicy)} function
 	 * after construction.
 	 */
 	public MAQLFactory(){
@@ -53,7 +53,7 @@ public class MAQLFactory implements AgentFactory {
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 */
-	public MAQLFactory(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory, double qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
+	public MAQLFactory(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory, double qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
 		this.domain = d;
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
@@ -76,7 +76,7 @@ public class MAQLFactory implements AgentFactory {
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 * @param learningPolicy the learningPolicy to follow
 	 */
-	public MAQLFactory(SGDomain d, double discount, LearningRate learningRate, StateHashFactory hashFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, PolicyFromJointPolicy learningPolicy){
+	public MAQLFactory(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, PolicyFromJointPolicy learningPolicy){
 		this.domain = d;
 		this.discount = discount;
 		this.learningRate = learningRate;
@@ -99,7 +99,7 @@ public class MAQLFactory implements AgentFactory {
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 * @param learningPolicy the learningPolicy to follow
 	 */
-	public void init(SGDomain d, double discount, LearningRate learningRate, StateHashFactory hashFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, PolicyFromJointPolicy learningPolicy){
+	public void init(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, PolicyFromJointPolicy learningPolicy){
 		this.domain = d;
 		this.discount = discount;
 		this.learningRate = learningRate;
@@ -131,7 +131,7 @@ public class MAQLFactory implements AgentFactory {
 	 */
 	public static class CoCoQLearningFactory extends MAQLFactory{
 		
-		public CoCoQLearningFactory(SGDomain d, double discount, LearningRate learningRate, StateHashFactory hashFactory, ValueFunctionInitialization qInit, boolean queryOtherAgentsForTheirQValues, double epsilon){
+		public CoCoQLearningFactory(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, ValueFunctionInitialization qInit, boolean queryOtherAgentsForTheirQValues, double epsilon){
 			this.init(d, discount, learningRate, hashFactory, qInit, new CoCoQ(), queryOtherAgentsForTheirQValues, new PolicyFromJointPolicy(new EGreedyMaxWellfare(epsilon)));
 		}
 		
@@ -145,7 +145,7 @@ public class MAQLFactory implements AgentFactory {
 	 */
 	public static class MAMaxQLearningFactory extends MAQLFactory{
 		
-		public MAMaxQLearningFactory(SGDomain d, double discount, LearningRate learningRate, StateHashFactory hashFactory, ValueFunctionInitialization qInit, boolean queryOtherAgentsForTheirQValues, double epsilon){
+		public MAMaxQLearningFactory(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, ValueFunctionInitialization qInit, boolean queryOtherAgentsForTheirQValues, double epsilon){
 			this.init(d, discount, learningRate, hashFactory, qInit, new MaxQ(), queryOtherAgentsForTheirQValues, new PolicyFromJointPolicy(new EGreedyJointPolicy(epsilon)));
 		}
 		

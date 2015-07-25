@@ -22,26 +22,26 @@ import burlap.oomdp.core.states.State;
  * @author James MacGlashan
  *
  */
-public class NameDependentStateHashFactory implements StateHashFactory {
+public class NameDependentHashableStateFactory implements HashableStateFactory {
 
 	protected List <String>				objectNameOrder;
 	protected Set <String>				objectNames;
 	
 	
-	public NameDependentStateHashFactory(){
+	public NameDependentHashableStateFactory(){
 		objectNameOrder = new ArrayList<String>();
 		objectNames = new HashSet<String>();
 	}
 	
 	@Override
-	public StateHashTuple hashState(State s) {
+	public HashableState hashState(State s) {
 		
 		if(objectNameOrder.size() != s.numTotalObjects()){
 			this.addNewObjectNames(s);
 		}
 		
 		
-		return new NameDependentStateHashTuple(s);
+		return new NameDependentHashableState(s);
 	}
 	
 	protected void addNewObjectNames(State s){
@@ -56,19 +56,19 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 	}
 	
 	
-	public class NameDependentStateHashTuple extends StateHashTuple{
+	public class NameDependentHashableState extends HashableState.CachedHashableState {
 
-		public NameDependentStateHashTuple(State s) {
+		public NameDependentHashableState(State s) {
 			super(s);
 		}
 
 		@Override
-		public void computeHashCode() {
+		public int computeHashCode() {
 			
 			StringBuffer buf = new StringBuffer();
 			
 			boolean completeMatch = true;
-			for(String oname : NameDependentStateHashFactory.this.objectNameOrder){
+			for(String oname : NameDependentHashableStateFactory.this.objectNameOrder){
 				ObjectInstance o = this.s.getObject(oname);
 				if(o != null){
 					buf.append(o.getObjectDescription());
@@ -79,10 +79,10 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 			}
 			
 			if(!completeMatch){
-				int start = NameDependentStateHashFactory.this.objectNameOrder.size();
-				NameDependentStateHashFactory.this.addNewObjectNames(this.s);
-				for(int i = start; i < NameDependentStateHashFactory.this.objectNameOrder.size(); i++){
-					ObjectInstance o = this.s.getObject(NameDependentStateHashFactory.this.objectNameOrder.get(i));
+				int start = NameDependentHashableStateFactory.this.objectNameOrder.size();
+				NameDependentHashableStateFactory.this.addNewObjectNames(this.s);
+				for(int i = start; i < NameDependentHashableStateFactory.this.objectNameOrder.size(); i++){
+					ObjectInstance o = this.s.getObject(NameDependentHashableStateFactory.this.objectNameOrder.get(i));
 					if(o != null){
 						buf.append(o.getObjectDescription());
 					}
@@ -91,7 +91,8 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 			
 			this.hashCode = buf.toString().hashCode();
 			this.needToRecomputeHashCode = false;
-			
+
+			return this.hashCode;
 		}
 		
 		
@@ -100,10 +101,10 @@ public class NameDependentStateHashFactory implements StateHashFactory {
 			if(this == other){
 				return true;
 			}
-			if(!(other instanceof StateHashTuple)){
+			if(!(other instanceof HashableState)){
 				return false;
 			}
-			StateHashTuple o = (StateHashTuple)other;
+			HashableState o = (HashableState)other;
 			
 			List <ObjectInstance> obs = this.s.getAllObjects();
 			for(ObjectInstance ob : obs){

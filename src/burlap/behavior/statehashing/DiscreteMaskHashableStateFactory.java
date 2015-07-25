@@ -14,14 +14,14 @@ import burlap.oomdp.core.values.Value;
 
 
 /**
- * Like the {@link DiscreteStateHashFactory} (which this class extends) this class computes unique hash codes for states
+ * Like the {@link DiscreteHashableStateFactory} (which this class extends) this class computes unique hash codes for states
  * based on attributes that the client specifies to use. However, unlike the superclass, this class also performs
  * state equality checks using only the attributes specified for each class. This is often a useful abstraction
  * for components like options whose policies are invariant to attributes specifying properties like ultimate task goal locations.
  * @author James MacGlashan
  *
  */
-public class DiscreteMaskHashingFactory extends DiscreteStateHashFactory {
+public class DiscreteMaskHashableStateFactory extends DiscreteHashableStateFactory {
 
 	//this is here for future implementation so that the client can specify different attributes for hashing versus equality checks
 	//that functionality is not yet implemented, however, so it can be ignored.
@@ -31,7 +31,7 @@ public class DiscreteMaskHashingFactory extends DiscreteStateHashFactory {
 	/**
 	 * Initializes this hashing factory to compute hash codes and equality checks with all attributes of all object classes.
 	 */
-	public DiscreteMaskHashingFactory() {
+	public DiscreteMaskHashableStateFactory() {
 		super();
 		attributesForEquality = null;
 	}
@@ -40,20 +40,20 @@ public class DiscreteMaskHashingFactory extends DiscreteStateHashFactory {
 	 * Initializes this hashing factory to hash and equality check on only the attributes for the specified classes in the provided map
 	 * @param attributesForHashCode a map from object class names to the attributes that should be used in the hash calculation and equality check for those object classes.
 	 */
-	public DiscreteMaskHashingFactory(Map<String, List<Attribute>> attributesForHashCode) {
+	public DiscreteMaskHashableStateFactory(Map<String, List<Attribute>> attributesForHashCode) {
 		super(attributesForHashCode);
 		attributesForEquality = null;
 	}
 	
 	@Override
-	public StateHashTuple hashState(State s){
-		return new DiscreteMaskHashTuple(s);
+	public HashableState hashState(State s){
+		return new DiscreteMaskHashableState(s);
 	}
 	
 	
-	public class DiscreteMaskHashTuple extends DiscreteStateHashTuple{
+	public class DiscreteMaskHashableState extends DiscreteHashableState {
 
-		public DiscreteMaskHashTuple(State s) {
+		public DiscreteMaskHashableState(State s) {
 			super(s);
 		}
 		
@@ -64,13 +64,13 @@ public class DiscreteMaskHashingFactory extends DiscreteStateHashFactory {
 			if(this == other){
 				return true;
 			}
-			if(!(other instanceof StateHashTuple)){
+			if(!(other instanceof HashableState)){
 				return false;
 			}
 			
 			
 			
-			StateHashTuple that = (StateHashTuple)other;
+			HashableState that = (HashableState)other;
 			
 			
 			Collection<String> classesToCheck = null;

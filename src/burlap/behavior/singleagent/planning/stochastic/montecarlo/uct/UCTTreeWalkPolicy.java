@@ -9,7 +9,7 @@ import java.util.Map;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -33,7 +33,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 
 	UCT 									planner;
 	
-	Map<StateHashTuple, GroundedAction> 	policy;
+	Map<HashableState, GroundedAction> 	policy;
 	
 	/**
 	 * Initializes the policy with the UCT valueFunction
@@ -58,7 +58,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 	 * computes a hash-backed policy for every state visited along the greedy path of the UCT tree.
 	 */
 	public void computePolicyFromTree(){
-		policy = new HashMap<StateHashTuple, GroundedAction>();
+		policy = new HashMap<HashableState, GroundedAction>();
 
 		if(this.planner.getRoot() == null){
 			return ;

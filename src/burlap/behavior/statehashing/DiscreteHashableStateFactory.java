@@ -28,14 +28,14 @@ import burlap.oomdp.core.ObjectClass;
  * @author James MacGlashan
  *
  */
-public class DiscreteStateHashFactory implements StateHashFactory {
+public class DiscreteHashableStateFactory implements HashableStateFactory {
 
 	protected Map<String, List<Attribute>>	attributesForHashCode;
 	
 	/**
 	 * Initializes this hashing factory to compute hash codes with all attributes of all object classes.
 	 */
-	public DiscreteStateHashFactory() {
+	public DiscreteHashableStateFactory() {
 		attributesForHashCode = null;
 	}
 	
@@ -43,7 +43,7 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 	 * Initializes this hashing factory to hash on only the attributes for the specified classes in the provided map
 	 * @param attributesForHashCode a map from object class names to the attributes that should be used in the hash calculation for those object classes.
 	 */
-	public DiscreteStateHashFactory(Map<String, List<Attribute>> attributesForHashCode){
+	public DiscreteHashableStateFactory(Map<String, List<Attribute>> attributesForHashCode){
 		this.attributesForHashCode = attributesForHashCode;
 	}
 	
@@ -100,22 +100,22 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 	}
 	
 	@Override
-	public StateHashTuple hashState(State s){
-		return new DiscreteStateHashTuple(s);
+	public HashableState hashState(State s){
+		return new DiscreteHashableState(s);
 	}
 	
 	
 	
-	public class DiscreteStateHashTuple extends StateHashTuple{
+	public class DiscreteHashableState extends HashableState.CachedHashableState {
 		
 
-		public DiscreteStateHashTuple(State s) {
+		public DiscreteHashableState(State s) {
 			super(s);
 		}
 
 
 		@Override
-		public void computeHashCode(){
+		public int computeHashCode(){
 			
 			List <String> objectClasses = this.getOrderedClasses();
 			int totalVol = 1;
@@ -141,6 +141,7 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 			}
 			
 			needToRecomputeHashCode = false;
+			return this.hashCode;
 			
 			
 		}
@@ -199,8 +200,8 @@ public class DiscreteStateHashFactory implements StateHashFactory {
 		}
 		
 		private List <Attribute> getAttributesForClass(ObjectClass oc){
-			if(DiscreteStateHashFactory.this.attributesForHashCode != null){
-				List <Attribute> selectedAtts = DiscreteStateHashFactory.this.attributesForHashCode.get(oc.name);
+			if(DiscreteHashableStateFactory.this.attributesForHashCode != null){
+				List <Attribute> selectedAtts = DiscreteHashableStateFactory.this.attributesForHashCode.get(oc.name);
 				if(selectedAtts == null){
 					//no definition at all for this class, so return empty list
 					return new ArrayList<Attribute>();

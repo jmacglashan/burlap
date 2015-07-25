@@ -11,8 +11,8 @@ import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
@@ -83,12 +83,12 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	/**
 	 * The lower bound value function
 	 */
-	protected Map<StateHashTuple, Double>		lowerBoundV = new HashMap<StateHashTuple, Double>();
+	protected Map<HashableState, Double>		lowerBoundV = new HashMap<HashableState, Double>();
 	
 	/**
 	 * The upperbound value function
 	 */
-	protected Map<StateHashTuple, Double>		upperBoundV = new HashMap<StateHashTuple, Double>();
+	protected Map<HashableState, Double>		upperBoundV = new HashMap<HashableState, Double>();
 	
 	
 	/**
@@ -171,7 +171,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @param maxDiff the max permitted difference in value function margin to permit planning termination. This value is also used to prematurely stop a rollout if the next state's margin is under this value.
 	 * @param maxRollouts the maximum number of rollouts permitted before planning is forced to terminate. If set to -1 then there is no limit.
 	 */
-	public BoundedRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	public BoundedRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory,
 			ValueFunctionInitialization lowerVInit, ValueFunctionInitialization upperVInit, double maxDiff, int maxRollouts){
 		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		this.lowerVInit = lowerVInit;
@@ -299,9 +299,9 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @return the margin between the lower bound and upper bound value function for the initial state.
 	 */
 	public double runRollout(State s){
-		LinkedList<StateHashTuple> trajectory = new LinkedList<StateHashTuple>();
+		LinkedList<HashableState> trajectory = new LinkedList<HashableState>();
 		
-		StateHashTuple csh = this.hashingFactory.hashState(s);
+		HashableState csh = this.hashingFactory.hashState(s);
 		
 		while(!this.tf.isTerminal(csh.s) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
 			
@@ -341,7 +341,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		//run in reverse
 		if(this.runRolloutsInReverse){
 			while(trajectory.size() > 0){
-				StateHashTuple sh = trajectory.pop();
+				HashableState sh = trajectory.pop();
 				this.setValueFunctionToLowerBound();
 				QValue mxL = this.maxQ(sh.s);
 				this.lowerBoundV.put(sh, mxL.q);
@@ -380,7 +380,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	protected StateSelectionAndExpectedGap getNextState(State s, GroundedAction a){
 		
 		if(this.selectionMode == StateSelectionMode.MODELBASED){
-			StateHashTuple nsh =  this.hashingFactory.hashState(a.executeIn(s));
+			HashableState nsh =  this.hashingFactory.hashState(a.executeIn(s));
 			double gap = this.getGap(nsh);
 			return new StateSelectionAndExpectedGap(nsh, gap);
 		}
@@ -406,9 +406,9 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		List<TransitionProbability> tps = a.action.getTransitions(s, a.params);
 		double sum = 0.;
 		double maxGap = Double.NEGATIVE_INFINITY;
-		List<StateHashTuple> maxStates = new ArrayList<StateHashTuple>(tps.size());
+		List<HashableState> maxStates = new ArrayList<HashableState>(tps.size());
 		for(TransitionProbability tp : tps){
-			StateHashTuple nsh = this.hashingFactory.hashState(tp.s);
+			HashableState nsh = this.hashingFactory.hashState(tp.s);
 			double gap = this.getGap(nsh);
 			sum += tp.p*gap;
 			if(gap == maxGap){
@@ -440,10 +440,10 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		List<TransitionProbability> tps = a.action.getTransitions(s, a.params);
 		double sum = 0.;
 		double [] weightedGap = new double[tps.size()];
-		StateHashTuple[] hashedStates = new StateHashTuple[tps.size()];
+		HashableState[] hashedStates = new HashableState[tps.size()];
 		for(int i = 0; i < tps.size(); i++){
 			TransitionProbability tp = tps.get(i);
-			StateHashTuple nsh = this.hashingFactory.hashState(tp.s);
+			HashableState nsh = this.hashingFactory.hashState(tp.s);
 			hashedStates[i] = nsh;
 			double gap = this.getGap(nsh);
 			weightedGap[i] = tp.p*gap;
@@ -470,7 +470,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @param sh the state whose margin should be returned.
 	 * @return the lower bound and upper bound value function margin/gap for the given state
 	 */
-	protected double getGap(StateHashTuple sh){
+	protected double getGap(HashableState sh){
 		this.setValueFunctionToLowerBound();
 		double l = this.value(sh);
 		this.setValueFunctionToUpperBound();
@@ -520,7 +520,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		/**
 		 * The selected state
 		 */
-		public StateHashTuple sh;
+		public HashableState sh;
 		
 		/**
 		 * The expected margin/gap of the value function from the source transition
@@ -532,7 +532,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		 * @param sh The selected state
 		 * @param expectedGap The expected margin/gap of the value function from the source transition
 		 */
-		public StateSelectionAndExpectedGap(StateHashTuple sh, double expectedGap){
+		public StateSelectionAndExpectedGap(HashableState sh, double expectedGap){
 			this.sh = sh;
 			this.expectedGap = expectedGap;
 		}

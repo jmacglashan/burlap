@@ -6,7 +6,7 @@ import java.util.Map;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
@@ -91,7 +91,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	/**
 	 * The state hashing factory used to index Q-values by state
 	 */
-	protected StateHashFactory							hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * The backup operator that defines the solution concept being learned
@@ -139,7 +139,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 */
-	public MultiAgentQLearning(SGDomain d, double discount, double learningRate, StateHashFactory hashFactory, double qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
+	public MultiAgentQLearning(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory, double qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
@@ -166,7 +166,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 */
-	public MultiAgentQLearning(SGDomain d, double discount, LearningRate learningRate, StateHashFactory hashFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
+	public MultiAgentQLearning(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = learningRate;

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.singleagent.GroundedAction;
 
 /**
@@ -34,7 +34,7 @@ public class UCTActionNode {
 	 * The possible successor states. Stores a list of nodes for the same outcome state
 	 * since options may reach the same outcome state after a different number steps causing a further depth in the tree.
 	 */
-	public Map<StateHashTuple, List<UCTStateNode>>		successorStates;
+	public Map<HashableState, List<UCTStateNode>>		successorStates;
 	
 	
 	/**
@@ -45,7 +45,7 @@ public class UCTActionNode {
 		action = a;
 		sumReturn = 0.;
 		n = 0;
-		successorStates = new HashMap<StateHashTuple, List<UCTStateNode>>();
+		successorStates = new HashMap<HashableState, List<UCTStateNode>>();
 	}
 	
 	/**

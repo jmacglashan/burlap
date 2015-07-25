@@ -5,13 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
@@ -43,7 +42,7 @@ public class BFS extends DeterministicPlanner {
 	 * @param gc the test for goal states
 	 * @param hashingFactory the state hashing factory to use.
 	 */
-	public BFS(Domain domain, StateConditionTest gc, StateHashFactory hashingFactory){
+	public BFS(Domain domain, StateConditionTest gc, HashableStateFactory hashingFactory){
 		this.deterministicPlannerInit(domain, new UniformCostRF(), new NullTermination(), gc, hashingFactory);
 	}
 
@@ -60,7 +59,7 @@ public class BFS extends DeterministicPlanner {
 	@Override
 	public SDPlannerPolicy planFromState(State initialState) {
 		
-		StateHashTuple sih = this.stateHash(initialState);
+		HashableState sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
 			return new SDPlannerPolicy(this); //no need to plan since this is already solved
@@ -109,7 +108,7 @@ public class BFS extends DeterministicPlanner {
 			//add children reach from each deterministic action
 			for(GroundedAction ga : gas){
 				State ns = ga.executeIn(s);
-				StateHashTuple nsh = this.stateHash(ns);
+				HashableState nsh = this.stateHash(ns);
 				SearchNode nsn = new SearchNode(nsh, ga, node);
 				
 				if(openedSet.contains(nsn)){

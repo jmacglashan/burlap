@@ -1,28 +1,28 @@
 package burlap.behavior.singleagent.planning.stochastic;
 
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 
 /**
- * An analog to the {@link burlap.oomdp.core.TransitionProbability}, except it stores {@link burlap.behavior.statehashing.StateHashTuple} objects
+ * An analog to the {@link burlap.oomdp.core.TransitionProbability}, except it stores {@link burlap.behavior.statehashing.HashableState} objects
  * instead of {@link burlap.oomdp.core.states.State} objects.
  * @author James MacGlashan
  *
  */
 public class HashedTransitionProbability {
 
-	public StateHashTuple sh;
+	public HashableState sh;
 	public double p;
 	
 	
 	/**
-	 * Initializes with a {@link burlap.behavior.statehashing.StateHashTuple} and probability for the transition
+	 * Initializes with a {@link burlap.behavior.statehashing.HashableState} and probability for the transition
 	 * @param sh the hashed state that the agent transitions to
 	 * @param p the probability of the transition
 	 */
-	public HashedTransitionProbability(StateHashTuple sh, double p){
+	public HashedTransitionProbability(HashableState sh, double p){
 		this.sh = sh;
 		this.p = p;
 	}
@@ -34,7 +34,7 @@ public class HashedTransitionProbability {
 	 * @param p the probability of the transition
 	 * @param hashingFactory the hashing factory to use to hash the input state
 	 */
-	public HashedTransitionProbability(State s, double p, StateHashFactory hashingFactory){
+	public HashedTransitionProbability(State s, double p, HashableStateFactory hashingFactory){
 		this.sh = hashingFactory.hashState(s);
 		this.p = p;
 	}
@@ -45,7 +45,7 @@ public class HashedTransitionProbability {
 	 * @param tp the {@link burlap.oomdp.core.TransitionProbability} to hash
 	 * @param hashingFactory the hashing factory to use.
 	 */
-	public HashedTransitionProbability(TransitionProbability tp, StateHashFactory hashingFactory){
+	public HashedTransitionProbability(TransitionProbability tp, HashableStateFactory hashingFactory){
 		this.sh = hashingFactory.hashState(tp.s);
 		this.p = tp.p;
 	}

@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.statehashing.HashableState;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
@@ -17,7 +17,7 @@ public class SearchNode {
 	/**
 	 * The (hashed) state of this node
 	 */
-	public StateHashTuple 		s;
+	public HashableState s;
 	
 	
 	/**
@@ -37,7 +37,7 @@ public class SearchNode {
 	 * is the search node for an initial state. Otherwise, these fields should be filled in.
 	 * @param s the hashed input state this node will represent.
 	 */
-	public SearchNode(StateHashTuple s){
+	public SearchNode(HashableState s){
 		this.s = s;
 		this.generatingAction = null;
 		this.backPointer = null;
@@ -50,7 +50,7 @@ public class SearchNode {
 	 * @param ga the action that was used to generate s
 	 * @param bp the search node that contains the previous state from which s was generated.
 	 */
-	public SearchNode(StateHashTuple s, GroundedAction ga, SearchNode bp){
+	public SearchNode(HashableState s, GroundedAction ga, SearchNode bp){
 		this.s = s;
 		this.generatingAction = ga;
 		this.backPointer = bp;
