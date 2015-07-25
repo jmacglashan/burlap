@@ -80,15 +80,13 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	/**
 	 * Initializes using a tabular model of the world and a Boltzmann policy with a fixed temperature of 0.1. 
 	 * @param domain the domain
-	 * @param rf the reward function
-	 * @param tf the termianl function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit){
+	public ARTDP(Domain domain, double gamma, StateHashFactory hashingFactory, double vInit){
 		
-		this.solverInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -104,15 +102,13 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	/**
 	 * Initializes using a tabular model of the world and a Boltzmann policy with a fixed temperature of 0.1. 
 	 * @param domain the domain
-	 * @param rf the reward function
-	 * @param tf the termianl function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit){
+	public ARTDP(Domain domain, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit){
 		
-		this.solverInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
@@ -128,16 +124,14 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	/**
 	 * Initializes using the provided model algorithm and a Boltzmann policy with a fixed temperature of 0.1. 
 	 * @param domain the domain
-	 * @param rf the reward function
-	 * @param tf the termianl function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param model the model algorithm to use
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
+	public ARTDP(Domain domain, double gamma, StateHashFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
 		
-		this.solverInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = model;
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
