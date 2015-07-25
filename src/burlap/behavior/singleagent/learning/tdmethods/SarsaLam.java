@@ -169,7 +169,7 @@ public class SarsaLam extends QLearning {
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
 
-			if(tf.isTerminal(nextState.s)){
+			if(env.curStateIsTerminal()){
 				nextQV = 0.;
 			}
 
