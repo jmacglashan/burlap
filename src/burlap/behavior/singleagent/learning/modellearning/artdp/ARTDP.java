@@ -89,7 +89,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
@@ -111,7 +111,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
@@ -134,7 +134,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = model;
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);

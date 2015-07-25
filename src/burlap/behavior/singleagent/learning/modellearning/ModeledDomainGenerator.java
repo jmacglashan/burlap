@@ -29,15 +29,6 @@ import burlap.oomdp.singleagent.GroundedAction;
  */
 public class ModeledDomainGenerator implements DomainGenerator{
 
-	/**
-	 * Name of both the object class and single binary attribute used to indicate a RMax fictitious state.
-	 */
-	public static final String RMAXFICTIOUSSTATENAME = "RMAXState";
-	
-	/**
-	 * Name of the only action that can be taken from a fictitious RMAx state.
-	 */
-	public static final String RMAXFICTIOUSSTATEACTIONNAME = "RMAXAction";
 	
 	/**
 	 * The domain object to be returned
@@ -53,21 +44,14 @@ public class ModeledDomainGenerator implements DomainGenerator{
 	 * was created, make a call to the {@link #generateDomain()} method.
 	 * @param sourceDomain the source domain that the create domain will reflect.
 	 */
-	public ModeledDomainGenerator(Domain sourceDomain, Model model, boolean useRMaxTransitionsAndFictitousState){
+	public ModeledDomainGenerator(Domain sourceDomain, Model model){
 		
 		//model domain copies object classes
 		modelDomain = sourceDomain.getNewDomainWithCopiedObjectClasses();
-		
-		if(useRMaxTransitionsAndFictitousState){
-			Attribute att = new Attribute(modelDomain, RMAXFICTIOUSSTATENAME, Attribute.AttributeType.BOOLEAN);
-			ObjectClass rmaxstate = new ObjectClass(modelDomain, RMAXFICTIOUSSTATENAME);
-			rmaxstate.addAttribute(att);
-			
-			new RMaxStateAction();
-		}
+
 		
 		for(Action srcA : sourceDomain.getActions()){
-			new ModeledAction(modelDomain, srcA, model, useRMaxTransitionsAndFictitousState);
+			new ModeledAction(modelDomain, srcA, model);
 		}
 		
 		
@@ -89,10 +73,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		return modelDomain;
 	}
 
-	
-	public static boolean isRmaxFictitiousState(State s){
-		return s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0;
-	}
+
 	
 	
 	/**
@@ -116,114 +97,38 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		 * The model of the transition dynamics that specify the outcomes of this action
 		 */
 		protected Model model;
-		
-		/**
-		 * Whether this action follows the RMax paradigm of transition to a fictious RMax state when the model is not known
-		 */
-		protected boolean useRMax;
-		
-		/**
-		 * The fictitious RMax state this action will transition to for unknown transitions. Only used in RMax paradigms
-		 */
-		protected State RMaxState = null;
-		
-		
+
 		/**
 		 * Initializes.
 		 * @param modelDomain the model of the domain with which this action is associated
 		 * @param sourceAction the source action this action models
 		 * @param model the model specifying transition dynamics
-		 * @param useRMax whether the RMax paradigm of transfering to fictious states for unkown transitions is followed.
 		 */
-		public ModeledAction(Domain modelDomain, Action sourceAction, Model model, boolean useRMax){
+		public ModeledAction(Domain modelDomain, Action sourceAction, Model model){
 			super(sourceAction.getName(), modelDomain, sourceAction.getParameterClasses(), sourceAction.getParameterOrderGroups());
 			this.sourceAction = sourceAction;
 			this.model = model;
-			this.useRMax = useRMax;
-			if(useRMax){
-				RMaxState = new MutableState();
-				ObjectInstance o = new MutableObjectInstance(ModeledDomainGenerator.this.modelDomain.getObjectClass(RMAXFICTIOUSSTATENAME), "rmax");
-				o.setValue(RMAXFICTIOUSSTATENAME, 1);
-				RMaxState.addObject(o);
-			}
+
 		}
 		
 		@Override
 		public boolean applicableInState(State s, String [] params){
-			if(s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0){
-				return false; //action cannot be performed in rmax state
-			}
 			return this.sourceAction.applicableInState(s, params);
 		}
 
 		@Override
 		protected State performActionHelper(State s, String[] params) {
-			
-			if(this.useRMax){
-				if(!this.model.transitionIsModeled(s, new GroundedAction(sourceAction, params))){
-					return this.RMaxState;
-				}
-			}
-			
-			
 			return this.model.sampleModel(s, new GroundedAction(sourceAction, params));
 		}
 		
 		
 		@Override
 		public List<TransitionProbability> getTransitions(State s, String [] params){
-			
-			
-			
-			if(this.useRMax){
-				if(!this.model.transitionIsModeled(s, new GroundedAction(sourceAction, params))){
-					List <TransitionProbability> transition = new ArrayList<TransitionProbability>();
-					TransitionProbability tp = new TransitionProbability(this.RMaxState, 1.);
-					transition.add(tp);
-					return transition;
-				}
-			}
-			
-			
 			return this.model.getTransitionProbabilities(s, new GroundedAction(sourceAction, params));
 		}
 		
 		
 	}
-	
-	
-	
-	/**
-	 * An action that is only executable in the ficitious RMax state and which always transitions back to the fictitious RMax state.
-	 * @author James MacGlashan
-	 *
-	 */
-	public class RMaxStateAction extends Action{
 
-		/**
-		 * Initializes for the owning ModeledDomainGenerator instance's ModeledDomain instance
-		 */
-		public RMaxStateAction(){
-			super(RMAXFICTIOUSSTATEACTIONNAME, modelDomain, "");
-		}
-		
-		@Override
-		public boolean applicableInState(State s, String [] params){
-			if(s.getObjectsOfClass(RMAXFICTIOUSSTATENAME).size() > 0){
-				return true; //action cannot be performed in rmax state
-			}
-			return false;
-		}
-		
-		@Override
-		protected State performActionHelper(State s, String[] params) {
-			return s; //goes back to the same RMax state
-		}
-
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return this.deterministicTransition(s, params);
-		}
-	}
 	
 }

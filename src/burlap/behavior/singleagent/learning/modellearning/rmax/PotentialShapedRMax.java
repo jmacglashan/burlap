@@ -99,7 +99,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		this.model = new TabularModel(domain, hashingFactory, nConfident);
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
@@ -126,7 +126,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		this.model = new TabularModel(domain, hashingFactory, nConfident);
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
@@ -152,7 +152,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		this.model = model;
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
@@ -316,14 +316,6 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		
 		@Override
 		public boolean isTerminal(State s) {
-
-
-			//RMaxStates are terminal states
-			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
-				return true;
-			}
-
-
 			//states with unmodeled transitions are terminal states; bias will be captured by the potential function
 			if(!PotentialShapedRMax.this.model.stateTransitionsAreModeled(s)){
 				return true;
@@ -367,9 +359,6 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 
 		@Override
 		public double potentialValue(State s) {
-			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
-				return 0.;
-			}
 			return this.vmax;
 		}
 		
@@ -409,10 +398,6 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
-			if(ModeledDomainGenerator.isRmaxFictitiousState(sprime)){
-				return 0.; //transitions to fictitious state have no value; bias handled by potential up to unknown state
-			}
-
 			double nextStatePotential = 0.;
 			if(!PotentialShapedRMax.this.model.getModelTF().isTerminal(sprime)){
 				nextStatePotential = this.potential.potentialValue(sprime);
