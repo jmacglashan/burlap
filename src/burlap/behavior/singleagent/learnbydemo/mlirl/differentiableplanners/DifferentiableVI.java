@@ -68,7 +68,7 @@ public class DifferentiableVI extends DifferentiableVFPlanner implements Planner
 	 */
 	public DifferentiableVI(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, double boltzBeta, StateHashFactory hashingFactory, double maxDelta, int maxIterations){
 
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;

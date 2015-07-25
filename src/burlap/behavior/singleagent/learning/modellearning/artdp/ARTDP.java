@@ -20,10 +20,8 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
@@ -93,7 +91,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new DynamicProgramming();
-		this.modelPlanner.VFPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(),gamma, hashingFactory);
+		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
 		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
@@ -117,7 +115,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new DynamicProgramming();
-		this.modelPlanner.VFPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(),gamma, hashingFactory);
+		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
 		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
@@ -142,7 +140,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new DynamicProgramming();
-		this.modelPlanner.VFPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(),gamma, hashingFactory);
+		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
 		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		

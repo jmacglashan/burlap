@@ -172,7 +172,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 */
 	public BoundedRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
 			ValueFunctionInitialization lowerVInit, ValueFunctionInitialization upperVInit, double maxDiff, int maxRollouts){
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		this.lowerVInit = lowerVInit;
 		this.upperVInit = upperVInit;
 		this.maxDiff = maxDiff;

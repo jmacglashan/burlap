@@ -27,13 +27,14 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
- * This class extends the OOMDP planner to define a class of planners that compute state value functions
- * using the tabular Bellman update, such as ValueIteraiton. It defines data members for storing hashed transition dynamics
+ * A class for performing dynamic programming operations: updating the value function using a Bellman backup.
+ * It defines data members for storing hashed transition dynamics
  * (so that they can be quickly retrieved without multiple calls to the action transition generation) and a map
- * from states to their values. It also adds support for the QComputable planner which can return
+ * from states to their values. It also implements {@link burlap.behavior.valuefunction.QFunction} which can return
  * Q-values by using the transition dynamics and the stored value function.
  * <p/>
- * Note that by default ValueFunction planners will cache the transition dynamics so that they do not have to be procedurally generated
+ * Note that by default {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} instances
+ * will cache the transition dynamics so that they do not have to be procedurally generated
  * by the {@link burlap.oomdp.singleagent.Action}. Transition dynamic caching can be disable by calling the {@link #toggleUseCachedTransitionDynamics(boolean)}
  * method. This may be desirable if the transition dynamics are expected to change with time, such as when the model is being learned in model-based RL.
  * @author James MacGlashan
@@ -73,14 +74,16 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	
 	/**
-	 * Common init method for ValueFunction Planners. This will automatically call the OOMDPPLanner init method.
+	 * Common init method for {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} instances. This will automatically call the
+	 * {@link burlap.behavior.singleagent.MDPSolver#solverInit(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double, burlap.behavior.statehashing.StateHashFactory)}
+	 * method.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
 	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory
 	 */
-	public void VFPInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory){
+	public void DPPInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory){
 		
 		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		
@@ -255,7 +258,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	public DynamicProgramming getCopyOfValueFunction(){
 
 		DynamicProgramming dpCopy = new DynamicProgramming();
-		dpCopy.VFPInit(this.domain, this.rf, this.tf, this.gamma, this.hashingFactory);
+		dpCopy.DPPInit(this.domain, this.rf, this.tf, this.gamma, this.hashingFactory);
 
 
 		//copy the value function
@@ -319,11 +322,6 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 			
 			
 			//first get all grounded actions for this state
-			/*
-			List <GroundedAction> gas = new ArrayList<GroundedAction>();
-			for(Action a : actions){
-				gas.addAll(sh.s.getAllGroundedActionsFor(a));
-			}*/
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			
 			//now add transitions
@@ -619,7 +617,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		 * @param srcValueFunction the source value function to copy.
 		 */
 		public StaticVFPlanner(Domain domain, RewardFunction rf, double gamma, StateHashFactory hashingFactory, List<Action> allActions, Map <StateHashTuple, Double> srcValueFunction){
-			this.VFPInit(domain, rf, new NullTermination(), gamma, hashingFactory);
+			this.DPPInit(domain, rf, new NullTermination(), gamma, hashingFactory);
 			for(Action a : allActions){
 				this.addNonDomainReferencedAction(a);
 			}

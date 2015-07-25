@@ -69,7 +69,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
 	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxDelta, int maxEvaluationIterations, int maxPolicyIterations){
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.maxEvalDelta = maxDelta;
 		this.maxPIDelta = maxDelta;
@@ -93,7 +93,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
 	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxPIDelta, double maxEvalDelta, int maxEvaluationIterations, int maxPolicyIterations){
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.maxEvalDelta = maxEvalDelta;
 		this.maxPIDelta = maxPIDelta;

@@ -99,7 +99,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 */
 	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth){
 		
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.numRollouts = numRollouts;
 		this.maxDelta = maxDelta;
@@ -130,7 +130,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 */
 	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
 		
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.numRollouts = numRollouts;
 		this.maxDelta = maxDelta;

@@ -76,7 +76,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	 */
 	public ValueIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxDelta, int maxIterations){
 		
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
