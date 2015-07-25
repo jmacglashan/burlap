@@ -8,8 +8,8 @@ import java.util.Set;
 
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;

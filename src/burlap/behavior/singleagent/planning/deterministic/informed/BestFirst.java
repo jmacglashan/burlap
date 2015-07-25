@@ -6,7 +6,7 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.states.State;

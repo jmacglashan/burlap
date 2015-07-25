@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgames.agents.naiveq;
 
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;

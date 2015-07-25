@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.statehashing.DiscreteHashableStateFactory;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.DiscreteHashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.stochasticgames.agents.naiveq.SGNaiveQLAgent;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
@@ -27,7 +27,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * previous time steps. If the constructor is not passed the maximum number of players and an {@link ActionIdMap} to use,
  * then when the first game starts, it will be initialized to an {@link ParameterNaiveActionIdMap} and the number of
  * players will be set to the number of players in the world which this agent has joined. If the world contains
- * parameterized actions, this may be a problem and you should use the {@link #SGQWActionHistory(SGDomain, double, double, burlap.behavior.statehashing.HashableStateFactory, int, int, ActionIdMap)}
+ * parameterized actions, this may be a problem and you should use the {@link #SGQWActionHistory(SGDomain, double, double, burlap.oomdp.statehashing.HashableStateFactory, int, int, ActionIdMap)}
  * constructor to resolve action parameterization instead.
  * 
  * <p/>

@@ -1,12 +1,12 @@
 package burlap.behavior.singleagent.planning.stochastic;
 
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 
 /**
- * An analog to the {@link burlap.oomdp.core.TransitionProbability}, except it stores {@link burlap.behavior.statehashing.HashableState} objects
+ * An analog to the {@link burlap.oomdp.core.TransitionProbability}, except it stores {@link burlap.oomdp.statehashing.HashableState} objects
  * instead of {@link burlap.oomdp.core.states.State} objects.
  * @author James MacGlashan
  *
@@ -18,7 +18,7 @@ public class HashedTransitionProbability {
 	
 	
 	/**
-	 * Initializes with a {@link burlap.behavior.statehashing.HashableState} and probability for the transition
+	 * Initializes with a {@link burlap.oomdp.statehashing.HashableState} and probability for the transition
 	 * @param sh the hashed state that the agent transitions to
 	 * @param p the probability of the transition
 	 */

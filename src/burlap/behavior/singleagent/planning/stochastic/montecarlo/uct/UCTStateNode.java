@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 

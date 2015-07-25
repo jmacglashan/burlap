@@ -9,8 +9,8 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 /**
  * And Actor component whose policy is defined by a Boltzmann distribution over action preferences. This actor stores
- * state-action preferences tabularly and therefore requires a {@link burlap.behavior.statehashing.HashableStateFactory} to perform lookups.
+ * state-action preferences tabularly and therefore requires a {@link burlap.oomdp.statehashing.HashableStateFactory} to perform lookups.
  * @author James MacGlashan
  *
  */

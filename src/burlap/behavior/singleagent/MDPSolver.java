@@ -7,8 +7,8 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
@@ -59,7 +59,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	protected List <Action>											actions;
 	
 	/**
-	 * A mapping to internal stored hashed states ({@link burlap.behavior.statehashing.HashableState}) that are stored.
+	 * A mapping to internal stored hashed states ({@link burlap.oomdp.statehashing.HashableState}) that are stored.
 	 * Useful since two identical states may have different object instance name identifiers
 	 * that can affect the parameters in GroundedActions.
 	 */

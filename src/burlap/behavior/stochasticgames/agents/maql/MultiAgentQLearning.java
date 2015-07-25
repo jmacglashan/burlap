@@ -6,7 +6,7 @@ import java.util.Map;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;

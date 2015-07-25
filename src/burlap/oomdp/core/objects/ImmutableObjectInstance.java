@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.statehashing.ObjectHashTuple;
+import burlap.oomdp.statehashing.ObjectHashTuple;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.ObjectClass;

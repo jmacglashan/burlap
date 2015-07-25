@@ -2,7 +2,7 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;
 import burlap.oomdp.stochasticgames.SGDomain;

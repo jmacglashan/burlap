@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.Diff
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 
@@ -67,7 +67,7 @@ public class MLIRLRequest extends IRLRequest{
 	/**
 	 * Initializes without any expert trajectory weights (which will be assumed to have a value 1) and requests
 	 * a default {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} instance to be created using
-	 * the {@link burlap.behavior.statehashing.HashableStateFactory} provided. The
+	 * the {@link burlap.oomdp.statehashing.HashableStateFactory} provided. The
 	 * {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} instance will be
 	 * a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI} that plans
 	 * either until the maximum change is the value function is no greater than 0.01 or until 500 iterations have been performed.

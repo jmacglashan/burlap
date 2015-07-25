@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
@@ -21,7 +21,7 @@ import java.util.Map;
  * A class for performing dynamic programming with a differentiable value backup operator.
  * Specifically, all subclasses are assumed to use a Boltzmann backup operator and the reward functions
  * must be differentiable by subclassing the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
- * class. The normal {@link #performBellmanUpdateOn(burlap.behavior.statehashing.HashableState)} method
+ * class. The normal {@link #performBellmanUpdateOn(burlap.oomdp.statehashing.HashableState)} method
  * of the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} class is overridden
  * with a method that uses the Boltzmann backup operator.
  * @author James MacGlashan.
@@ -81,7 +81,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	}
 
 	/**
-	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.behavior.statehashing.HashableState}.
+	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.oomdp.statehashing.HashableState}.
 	 * Results are stored in this valueFunction's internal map.
 	 * @param sh the hashed state on which to perform the Boltzmann gradient update.
 	 * @return the gradient.

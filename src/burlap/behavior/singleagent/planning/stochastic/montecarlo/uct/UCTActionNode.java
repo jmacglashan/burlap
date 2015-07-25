@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.singleagent.GroundedAction;
 
 /**

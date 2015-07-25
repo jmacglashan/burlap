@@ -12,8 +12,8 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -237,7 +237,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	
 	
 	/**
-	 * First abstracts state s, and then returns the {@link burlap.behavior.statehashing.HashableState} object for the abstracted state.
+	 * First abstracts state s, and then returns the {@link burlap.oomdp.statehashing.HashableState} object for the abstracted state.
 	 * @param s the state for which the state hash should be returned.
 	 * @return the hashed state.
 	 */

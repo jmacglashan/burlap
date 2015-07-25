@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.debugtools.DPrint;

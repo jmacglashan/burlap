@@ -15,7 +15,7 @@ import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.dfs.DFS;
-import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.oomdp.statehashing.DiscreteHashableStateFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldStateParser;
 import burlap.oomdp.core.Domain;
@@ -34,7 +34,7 @@ public class TestPlanning {
 	RewardFunction rf;
 	TerminalFunction tf;
 	StateConditionTest goalCondition;
-	DiscreteStateHashFactory hashingFactory;
+	DiscreteHashableStateFactory hashingFactory;
 	@Before
 	public void setup() {
 		this.gw = new GridWorldDomain(11, 11);
@@ -43,7 +43,7 @@ public class TestPlanning {
 		this.rf = new UniformCostRF();
 		this.tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PFATLOCATION));
 		this.goalCondition = new TFGoalCondition(this.tf);
-		this.hashingFactory = new DiscreteStateHashFactory();
+		this.hashingFactory = new DiscreteHashableStateFactory();
 		this.hashingFactory.setAttributesForClass(GridWorldDomain.CLASSAGENT,
 				this.domain.getObjectClass(GridWorldDomain.CLASSAGENT).attributeList);
 	}

@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgames.agents.madp;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.dpplanners.MAValueIteration;

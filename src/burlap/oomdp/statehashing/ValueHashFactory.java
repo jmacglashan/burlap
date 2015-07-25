@@ -1,4 +1,4 @@
-package burlap.behavior.statehashing;
+package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.values.Value;
 

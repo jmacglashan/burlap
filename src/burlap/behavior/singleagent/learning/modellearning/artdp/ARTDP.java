@@ -16,7 +16,7 @@ import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.BoltzmannQPolicy;
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;

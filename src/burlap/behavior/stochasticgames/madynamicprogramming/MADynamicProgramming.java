@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;

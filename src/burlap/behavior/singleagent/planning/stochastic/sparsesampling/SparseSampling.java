@@ -13,8 +13,8 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
@@ -53,7 +53,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * <p/>
  * This class will work with {@link Option}s, but including options will necessarily *increase* the computational complexity, so they are not reccommeneded.
  * <p/>
- * This class requires a {@link burlap.behavior.statehashing.HashableStateFactory}; if the domain is continuous, just use a {@link burlap.behavior.statehashing.NameDependentHashableStateFactory} instance.
+ * This class requires a {@link burlap.oomdp.statehashing.HashableStateFactory}; if the domain is continuous, just use a {@link burlap.oomdp.statehashing.NameDependentHashableStateFactory} instance.
  * <p/>
  * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is, the
@@ -133,7 +133,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
-	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes. If the domain is continuous, use a {@link burlap.behavior.statehashing.NameDependentHashableStateFactory}
+	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes. If the domain is continuous, use a {@link burlap.oomdp.statehashing.NameDependentHashableStateFactory}
 	 * @param h the height of the tree
 	 * @param c the number of transition dynamics samples used. If set to -1, then the full transition dynamics are used.
 	 */

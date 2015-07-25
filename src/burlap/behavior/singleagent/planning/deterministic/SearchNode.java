@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.singleagent.GroundedAction;
 
 

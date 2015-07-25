@@ -10,8 +10,8 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.statehashing.HashableStateFactory;
-import burlap.behavior.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
@@ -75,7 +75,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	/**
 	 * Common init method for {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} instances. This will automatically call the
-	 * {@link burlap.behavior.singleagent.MDPSolver#solverInit(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double, burlap.behavior.statehashing.HashableStateFactory)}
+	 * {@link burlap.behavior.singleagent.MDPSolver#solverInit(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double, burlap.oomdp.statehashing.HashableStateFactory)}
 	 * method.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function

@@ -14,7 +14,7 @@ import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelP
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;

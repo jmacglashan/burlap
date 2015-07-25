@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 import burlap.behavior.singleagent.auxiliary.StateReachability;
-import burlap.behavior.statehashing.NameDependentHashableStateFactory;
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.NameDependentHashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.SADomain;
@@ -23,7 +23,7 @@ public class RandomStartStateGenerator implements StateGenerator {
 	private Random 		random;
 
 	/**
-	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link burlap.behavior.statehashing.NameDependentHashableStateFactory}.
+	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link burlap.oomdp.statehashing.NameDependentHashableStateFactory}.
 	 * @param domain the domain from which states will be drawn.
 	 * @param seedState the seed state from which the reachable states will be found.
 	 */

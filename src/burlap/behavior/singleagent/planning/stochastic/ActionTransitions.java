@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.planning.stochastic;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.behavior.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
