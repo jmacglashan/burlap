@@ -40,7 +40,12 @@ public interface ModelPlanner {
 	 */
 	public void resetPlanner();
 
-	
+
+	/**
+	 * An interface for providing a method that can generated a {@link burlap.behavior.singleagent.learning.modellearning.ModelPlanner} with
+	 * the {@link #getModelPlanner(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double)}
+	 * method.
+	 */
 	public static interface ModelPlannerGenerator{
 		public ModelPlanner getModelPlanner(Domain modelDomain, RewardFunction modeledRewardFunction, TerminalFunction modeledTerminalFunction, double discount);
 	}
