@@ -233,7 +233,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 
 			boolean modeledTerminal = this.model.getModelTF().isTerminal(eo.sp);
 
-			if(!this.model.transitionIsModeled(curState, ga) || !this.model.stateTransitionsAreModeled(eo.sp)){
+			if(!this.model.transitionIsModeled(curState, ga) || (!this.model.stateTransitionsAreModeled(eo.sp) && !modeledTerminal)){
 				this.model.updateModel(eo);
 				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(eo.sp))){
 					this.modelPlanner.modelChanged(curState);
