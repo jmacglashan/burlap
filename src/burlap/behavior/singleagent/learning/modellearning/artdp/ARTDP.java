@@ -50,7 +50,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	/**
 	 * The planner used on the modeled world to update the value function
 	 */
-	protected DynamicProgramming modelPlanner;
+	protected DynamicProgramming 				modelPlanner;
 	
 	/**
 	 * the policy to follow
@@ -92,7 +92,9 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
-		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
+		this.modelPlanner = new DynamicProgramming();
+		this.modelPlanner.VFPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(),gamma, hashingFactory);
+		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
 		
@@ -114,7 +116,9 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
-		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
+		this.modelPlanner = new DynamicProgramming();
+		this.modelPlanner.VFPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(),gamma, hashingFactory);
+		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
 		
@@ -137,11 +141,14 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
-		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
+		this.modelPlanner = new DynamicProgramming();
+		this.modelPlanner.VFPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(),gamma, hashingFactory);
+		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
 		
 	}
+
 	
 	/**
 	 * Sets the policy to the provided one. Should be a policy that operates on a {@link burlap.behavior.valuefunction.QFunction}. Will automatically set its
@@ -251,52 +258,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		this.modelPlanner.resetSolver();
 		this.episodeHistory.clear();
 	}
-	
-	
-	/**
-	 * The value function planner that operates on the modeled world.
-	 * @author James MacGlashan
-	 *
-	 */
-	protected class ARTDPPlanner extends DynamicProgramming {
 
-		/**
-		 * Initializes
-		 * @param domain the modeled domain
-		 * @param rf the modeled reward function
-		 * @param tf the modeled terminal function
-		 * @param gamma the discount factor
-		 * @param hashingFactory the hashing factory
-		 * @param vInit the constant value function initialization to use
-		 */
-		public ARTDPPlanner(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit){
-			this(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit));
-		}
-		
-		
-		/**
-		 * Initializes
-		 * @param domain the modeled domain
-		 * @param rf the modeled reward function
-		 * @param tf the modeled terminal function
-		 * @param gamma the discount factor
-		 * @param hashingFactory the hashing factory
-		 * @param vInit the value function initialization to use
-		 */
-		public ARTDPPlanner(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit){
-			VFPInit(domain, rf, tf, gamma, hashingFactory);
-			
-			//don't cache transition dynamics because our leanred model keeps changing!
-			this.useCachedTransitions = false;
-			
-			this.valueInitializer = vInit;
-		}
-		
-	}
-
-
-
-	
 	
 
 }
