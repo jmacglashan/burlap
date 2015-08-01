@@ -28,7 +28,7 @@ public class MutableState extends OOMDPState implements State{
 	/**
 	 * Map of object instances organized by class name
 	 */
-	protected Map <String, List <ObjectInstance>>			objectIndexByTrueClass;
+	protected Map <String, List <ObjectInstance>> 			objectIndexByClass;
 
 	
 	
@@ -122,7 +122,7 @@ public class MutableState extends OOMDPState implements State{
 		
 		objectInstances = new ArrayList <ObjectInstance>();
 		objectMap = new HashMap <String, ObjectInstance>();
-		objectIndexByTrueClass = new HashMap <String, List <ObjectInstance>>();
+		objectIndexByClass = new HashMap <String, List <ObjectInstance>>();
 	}
 	
 	
@@ -161,14 +161,14 @@ public class MutableState extends OOMDPState implements State{
 		String otclass = o.getClassName();
 		
 		//manage true indexing
-		if(objectIndexByTrueClass.containsKey(otclass)){
-			objectIndexByTrueClass.get(otclass).add(o);
+		if(objectIndexByClass.containsKey(otclass)){
+			objectIndexByClass.get(otclass).add(o);
 		}
 		else{
 			
 			ArrayList <ObjectInstance> classList = new ArrayList <ObjectInstance>();
 			classList.add(o);
-			objectIndexByTrueClass.put(otclass, classList);
+			objectIndexByClass.put(otclass, classList);
 			
 		}
 		
@@ -221,7 +221,7 @@ public class MutableState extends OOMDPState implements State{
 		
 		
 		String otclass = o.getClassName();
-		List <ObjectInstance> classTList = objectIndexByTrueClass.get(otclass);
+		List <ObjectInstance> classTList = objectIndexByClass.get(otclass);
 		
 		//if this index has more than one entry, then we can just remove from it and be done
 		if(classTList.size() > 1){
@@ -229,7 +229,7 @@ public class MutableState extends OOMDPState implements State{
 		}
 		else{
 			//otherwise we have to remove class entries for it
-			objectIndexByTrueClass.remove(otclass);
+			objectIndexByClass.remove(otclass);
 		}
 		
 		
@@ -275,7 +275,7 @@ public class MutableState extends OOMDPState implements State{
 		
 		Set<String> matchedObs = new HashSet<String>();
 		
-		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
+		for(List <ObjectInstance> objects : objectIndexByClass.values()){
 			
 			String oclass = objects.get(0).getClassName();
 			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
@@ -327,7 +327,7 @@ public class MutableState extends OOMDPState implements State{
 		}
 		
 		Set<String> matchedObjects = new HashSet<String>();
-		for(List <ObjectInstance> objects : objectIndexByTrueClass.values()){
+		for(List <ObjectInstance> objects : objectIndexByClass.values()){
 			
 			String oclass = objects.get(0).getClassName();
 			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
@@ -396,7 +396,7 @@ public class MutableState extends OOMDPState implements State{
 	 * @return all objects that belong to the object class named oclass
 	 */
 	public List <ObjectInstance> getObjectsOfClass(String oclass){
-		List <ObjectInstance> tmp = objectIndexByTrueClass.get(oclass);
+		List <ObjectInstance> tmp = objectIndexByClass.get(oclass);
 		if(tmp == null){
 			return new ArrayList <ObjectInstance>();
 		}
@@ -410,7 +410,7 @@ public class MutableState extends OOMDPState implements State{
 	 * @return the first indexed object of the object class named oclass
 	 */
 	public ObjectInstance getFirstObjectOfClass(String oclass){
-		List <ObjectInstance> obs = this.objectIndexByTrueClass.get(oclass);
+		List <ObjectInstance> obs = this.objectIndexByClass.get(oclass);
 		if(obs != null && obs.size() > 0){
 			return obs.get(0);
 		}
@@ -422,7 +422,7 @@ public class MutableState extends OOMDPState implements State{
 	 * @return a set of of the object class names for all object classes that have instantiated objects in this state.
 	 */
 	public Set <String> getObjectClassesPresent(){
-		return new HashSet<String>(objectIndexByTrueClass.keySet());
+		return new HashSet<String>(objectIndexByClass.keySet());
 	}
 	
 	
@@ -431,24 +431,10 @@ public class MutableState extends OOMDPState implements State{
 	 * @return a list of list of object instances, grouped by object class
 	 */
 	public List <List <ObjectInstance>> getAllObjectsByClass(){
-		return new ArrayList<List<ObjectInstance>>(objectIndexByTrueClass.values());
+		return new ArrayList<List<ObjectInstance>>(objectIndexByClass.values());
 	}
 	
-	
-	/**
-	 * Returns a string representation of this state using only observable object instances.
-	 * @return a string representation of this state using only observable object instances.
-	 */
-	public String getStateDescription(){
-		
-		String desc = "";
-		for(ObjectInstance o : objectInstances){
-			desc = desc + o.getObjectDescription() + "\n";
-		}
-		
-		return desc;
-	
-	}
+
 
 
 	/**
@@ -519,7 +505,7 @@ public class MutableState extends OOMDPState implements State{
 		List <String> uniqueRenames = this.identifyUniqueClassesInParameters(paramOrderGroups);
 		List <String> uniqueParamClases = this.identifyUniqueClassesInParameters(paramClasses);
 		
-		Map <String, List <ObjectInstance>>	instanceMap = objectIndexByTrueClass;
+		Map <String, List <ObjectInstance>>	instanceMap = objectIndexByClass;
 		
 		//first make sure we have objects for each class parameter; if not return empty list
 		for(String oclass : uniqueParamClases){

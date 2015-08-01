@@ -134,10 +134,6 @@ public abstract class HashableState implements State{
 		return s.getAllObjectsByClass();
 	}
 
-	@Override
-	public String getStateDescription() {
-		return s.getStateDescription();
-	}
 
 	@Override
 	public String getCompleteStateDescription() {

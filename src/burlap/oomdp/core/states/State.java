@@ -137,13 +137,7 @@ public interface State {
 	 * @return a list of list of object instances, grouped by object class
 	 */
 	List <List <ObjectInstance>> getAllObjectsByClass();
-	
-	
-	/**
-	 * Returns a string representation of this state using only observable object instances.
-	 * @return a string representation of this state using only observable object instances.
-	 */
-	String getStateDescription();
+
 
 	/**
 	 * Returns a string representation of this state using observable and hidden object instances.

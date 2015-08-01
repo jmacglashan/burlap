@@ -219,7 +219,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		
 		/*
 		Map<String, List<Integer>> immutableListObjectsMap = new HashMap<String, List<Integer>>();
-		for (Map.Entry<String, List<Integer>> entry : objectIndexByTrueClass.entrySet()) {
+		for (Map.Entry<String, List<Integer>> entry : objectIndexByClass.entrySet()) {
 			immutableListObjectsMap.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
 		}*/
 		return objectIndexByTrueClass;
@@ -727,21 +727,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		return this.objectClassMap;
 	}
 	
-	
-	/**
-	 * Returns a string representation of this state using only observable object instances.
-	 * @return a string representation of this state using only observable object instances.
-	 */
-	public String getStateDescription(){
-		
-		StringBuilder builder = new StringBuilder(200);
-		String desc = "";
-		for(ObjectInstance o : objectInstances){
-			builder = o.buildObjectDescription(builder).append("\n");
-		}
-		
-		return builder.toString();
-	}
+
 	
 	
 	/**
@@ -983,7 +969,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	private List <Integer> objectsMatchingClass(Collection <Integer> sourceObs, String cname){
 		List <Integer> res = new ArrayList<Integer>(sourceObs);
 		int pos = this.objectClassMap.get(cname);
-		List<Integer> allClassObjects = this.objectIndexByTrueClass.get(pos);
+		List<Integer> allClassObjects = this.objectIndexByClass.get(pos);
 		res.retainAll(allClassObjects);
 		
 		return res;
