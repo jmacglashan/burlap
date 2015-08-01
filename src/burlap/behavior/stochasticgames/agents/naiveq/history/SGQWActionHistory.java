@@ -1,25 +1,23 @@
 package burlap.behavior.stochasticgames.agents.naiveq.history;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import burlap.behavior.valuefunction.QValue;
-import burlap.oomdp.statehashing.DiscreteHashableStateFactory;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.stochasticgames.agents.naiveq.SGNaiveQLAgent;
+import burlap.behavior.valuefunction.QValue;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.stochasticgames.SGAgent;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGDomain;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -140,17 +138,8 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 		classHistory.addAttribute(histNum);
 		classHistory.addAttribute(histPN);
 		classHistory.addAttribute(histAID);
-		
-		
-		List <Attribute> attsForHistoryHashing = new ArrayList<Attribute>();
-		attsForHistoryHashing.add(histNum);
-		attsForHistoryHashing.add(histPN);
-		attsForHistoryHashing.add(histAID);
-		
-		//ugly, but not sure how to resolve at the moment...
-		if(this.hashFactory instanceof DiscreteHashableStateFactory){
-			((DiscreteHashableStateFactory) this.hashFactory).setAttributesForClass(CLASSHISTORY, attsForHistoryHashing);
-		}
+
+
 	}
 
 	@Override

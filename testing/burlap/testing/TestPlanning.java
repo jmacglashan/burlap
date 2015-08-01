@@ -1,30 +1,29 @@
 package burlap.testing;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.dfs.DFS;
-import burlap.oomdp.statehashing.DiscreteHashableStateFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldStateParser;
+import burlap.oomdp.auxiliary.common.SinglePFTF;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.auxiliary.common.SinglePFTF;
 import burlap.oomdp.singleagent.common.UniformCostRF;
+import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TestPlanning {
 	public static final double delta = 0.000001;
@@ -34,7 +33,7 @@ public class TestPlanning {
 	RewardFunction rf;
 	TerminalFunction tf;
 	StateConditionTest goalCondition;
-	DiscreteHashableStateFactory hashingFactory;
+	SimpleHashableStateFactory hashingFactory;
 	@Before
 	public void setup() {
 		this.gw = new GridWorldDomain(11, 11);
@@ -43,9 +42,7 @@ public class TestPlanning {
 		this.rf = new UniformCostRF();
 		this.tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PFATLOCATION));
 		this.goalCondition = new TFGoalCondition(this.tf);
-		this.hashingFactory = new DiscreteHashableStateFactory();
-		this.hashingFactory.setAttributesForClass(GridWorldDomain.CLASSAGENT,
-				this.domain.getObjectClass(GridWorldDomain.CLASSAGENT).attributeList);
+		this.hashingFactory = new SimpleHashableStateFactory();
 	}
 	
 	@Test

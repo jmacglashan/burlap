@@ -7,7 +7,6 @@ import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.behavior.singleagent.planning.deterministic.informed.NullHeuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
-import burlap.oomdp.statehashing.DiscreteHashableStateFactory;
 import burlap.domain.singleagent.blockdude.BlockDude;
 import burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor;
 import burlap.domain.singleagent.blockdude.BlockDudeTF;
@@ -16,6 +15,7 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.UniformCostRF;
+import burlap.oomdp.statehashing.SimpleHashableStateFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class TestBlockDude {
 			RewardFunction rf = new UniformCostRF();
 			StateConditionTest sc = new TFGoalCondition(tf);
 
-			AStar astar = new AStar(d, rf, sc, new DiscreteHashableStateFactory(), new NullHeuristic());
+			AStar astar = new AStar(d, rf, sc, new SimpleHashableStateFactory(), new NullHeuristic());
 			astar.toggleDebugPrinting(false);
 			astar.planFromState(s);
 

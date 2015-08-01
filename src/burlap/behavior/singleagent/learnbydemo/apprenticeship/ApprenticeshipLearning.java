@@ -15,7 +15,6 @@ import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.statehashing.NameDependentHashableStateFactory;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
@@ -28,6 +27,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.UniformCostRF;
 
+import burlap.oomdp.statehashing.SimpleHashableStateFactory;
 import com.joptimizer.functions.ConvexMultivariateRealFunction;
 import com.joptimizer.functions.LinearMultivariateRealFunction;
 import com.joptimizer.functions.PSDQuadraticMultivariateRealFunction;
@@ -558,7 +558,7 @@ public class ApprenticeshipLearning {
 			this.stateActionDistributionMapping = new HashMap<HashableState, List<ActionProb>>();
 			this.actions = domain.getActions();
 			this.rando = new Random();
-			this.hashFactory = new NameDependentHashableStateFactory();
+			this.hashFactory = new SimpleHashableStateFactory(true);
 		}
 
 		public static Policy generateRandomPolicy(Domain domain) {

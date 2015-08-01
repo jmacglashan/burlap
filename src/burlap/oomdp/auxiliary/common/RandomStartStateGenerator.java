@@ -1,14 +1,14 @@
 package burlap.oomdp.auxiliary.common;
 
-import java.util.List;
-import java.util.Random;
-
 import burlap.behavior.singleagent.auxiliary.StateReachability;
-import burlap.oomdp.statehashing.NameDependentHashableStateFactory;
-import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -23,12 +23,12 @@ public class RandomStartStateGenerator implements StateGenerator {
 	private Random 		random;
 
 	/**
-	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link burlap.oomdp.statehashing.NameDependentHashableStateFactory}.
+	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link burlap.oomdp.statehashing.SimpleHashableStateFactory} with identifier dependence.
 	 * @param domain the domain from which states will be drawn.
 	 * @param seedState the seed state from which the reachable states will be found.
 	 */
 	public RandomStartStateGenerator(SADomain domain, State seedState) {
-		HashableStateFactory hashFactory = new NameDependentHashableStateFactory();
+		HashableStateFactory hashFactory = new SimpleHashableStateFactory(false);
 		this.reachableStates = StateReachability.getReachableStates(seedState, domain, hashFactory);
 		this.random = new Random();
 	}

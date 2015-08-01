@@ -7,29 +7,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A factory for producing {@link burlap.oomdp.statehashing.HashableState} objects that computes hash codes
- * and test for state equality after discretizing any real values. Discretizing is performed by flooring
- * real values to the nearest user-defined multiple. For example, if the multiple is set to 0.5, then 9.73
- * would become 9.5, and 102.3 would become 102. Note using a
- * multiple value of 1.0 is equivalent to floor values to their corresponding int value.
- * Large multiple values result in course discretization and small
- * multiple values result in a fine discretization.
- * <br/><br/>
- * The multiple used can be specified for individual attributes so that different attributes have different degrees of discretization. To set
- * the multiple used for an specific attribute, use the {@link #addFloorDiscretizingMultipleFor(String, double)} method. When a continuous attribute is to be
- * hashed or compared, it is first checked if there has been a specific multiple value set for it. If so, that multiple is used for discretization. If not,
- * the default multiple is used. The default multiple may be set
- * though the constructors or by
- * using the {@link #setDefaultFloorDiscretizingMultiple(double)} method.
+ * A class for producing {@link burlap.oomdp.statehashing.HashableState} objects that computes hash codes and tests
+ * for {@link burlap.oomdp.core.states.State} equality by discretizing real-valued attributes and by masking (ignoring)
+ * either {@link burlap.oomdp.core.Attribute}s and/or {@link burlap.oomdp.core.ObjectClass}es. For more information
+ * on how discretization is performed, see the {@link DiscretizingHashableStateFactory}
+ * class documentation and for more information on how {@link burlap.oomdp.core.Attribute}/{@link burlap.oomdp.core.ObjectClass}
+ * masking is performed see the {@link MaskedHashableStateFactory} class
+ * documentation.
  * <br/><br/>
  * This class extends {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
  * to be object identifier/name independent or dependent and can be set to use {@link burlap.oomdp.statehashing.HashableState}
  * instances that hash their hash code or not. See the {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}
  * class documentation for more information on those features.
- *
  * @author James MacGlashan.
  */
-public class DiscretizingHashableStateFactory extends SimpleHashableStateFactory{
+public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateFactory {
 
 	/**
 	 * The multiples to use for specific attributes
@@ -42,33 +34,53 @@ public class DiscretizingHashableStateFactory extends SimpleHashableStateFactory
 	protected double defaultMultiple;
 
 
+
+
 	/**
-	 * Initializes with object identifier independence and no hash code caching.
-	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
+	 * Initializes with object identifier independence, no hash code caching and object class or attribute masks.
+	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set. The default is 1.0, which
+	 * corresponds to integer floor discretization.
 	 */
-	public DiscretizingHashableStateFactory(double defaultMultiple) {
+	public DiscretizingMaskedHashableStateFactory(double defaultMultiple) {
 		this.defaultMultiple = defaultMultiple;
 	}
 
 
 	/**
-	 * Initializes with non hash code caching
+	 * Initializes with non hash code caching and object class or attribute masks
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
-	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
+	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set. The default is 1.0, which
+	 * corresponds to integer floor discretization.
 	 */
-	public DiscretizingHashableStateFactory(boolean identifierIndependent, double defaultMultiple) {
+	public DiscretizingMaskedHashableStateFactory(boolean identifierIndependent, double defaultMultiple) {
 		super(identifierIndependent);
 		this.defaultMultiple = defaultMultiple;
 	}
+
 
 	/**
 	 * Initializes.
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
 	 * @param useCached if true then the hash code for each produced {@link burlap.oomdp.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
+	 * corresponds to integer floor discretization.
 	 */
-	public DiscretizingHashableStateFactory(boolean identifierIndependent, boolean useCached, double defaultMultiple) {
+	public DiscretizingMaskedHashableStateFactory(boolean identifierIndependent, boolean useCached, double defaultMultiple) {
 		super(identifierIndependent, useCached);
+		this.defaultMultiple = defaultMultiple;
+	}
+
+
+	/**
+	 * Initializes with a specified attribute or object class mask.
+	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
+	 * @param useCached if true then the hash code for each produced {@link burlap.oomdp.statehashing.HashableState} will be cached; if false then they will not be cached.
+	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
+	 * @param maskNamesAreForAttributes whether the specified masks are masks for attributes or object classes. True for attributes, false for object classes.
+	 * @param masks the names of the {@link burlap.oomdp.core.Attribute}s or {@link burlap.oomdp.core.ObjectClass} that will be masks (ignored from state hashing and equality checks)
+	 */
+	public DiscretizingMaskedHashableStateFactory(boolean identifierIndependent, boolean useCached, double defaultMultiple, boolean maskNamesAreForAttributes, String... masks) {
+		super(identifierIndependent, useCached, maskNamesAreForAttributes, masks);
 		this.defaultMultiple = defaultMultiple;
 	}
 
@@ -170,5 +182,4 @@ public class DiscretizingHashableStateFactory extends SimpleHashableStateFactory
 		int div = (int)(num / mult);
 		return div;
 	}
-
 }
