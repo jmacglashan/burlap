@@ -53,7 +53,7 @@ public class UniversalSGAgentAction extends SGAgentAction {
 	}
 
 	@Override
-	public boolean isApplicableInState(State s, String actingAgent, String [] params) {
+	public boolean applicableInState(State s, String actingAgent, String[] params) {
 		return true;
 	}
 

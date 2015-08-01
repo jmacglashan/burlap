@@ -370,7 +370,7 @@ public class SGVisualExplorer extends JFrame {
 								params[i - 2] = comps[i];
 							}
 							GroundedSGAgentAction gsa = new GroundedSGAgentAction(agentAction[0], sa, params);
-							if(sa.isApplicableInState(curState, agentAction[0], params)){
+							if(sa.applicableInState(curState, agentAction[0], params)){
 								SGVisualExplorer.this.nextAction.addAction(gsa);
 								SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
 							}
@@ -577,7 +577,7 @@ public class SGVisualExplorer extends JFrame {
 			return null;
 		}
 		GroundedSGAgentAction gsa = new GroundedSGAgentAction(aname, sa, params);
-		if(!sa.isApplicableInState(curState, aname, params)){
+		if(!sa.applicableInState(curState, aname, params)){
 			warningMessage = gsa.toString() + " is not applicable in the current state; nothing changed";
 			return null;
 		}

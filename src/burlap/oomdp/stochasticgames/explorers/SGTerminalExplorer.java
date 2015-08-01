@@ -286,7 +286,7 @@ public class SGTerminalExplorer {
 					}
 					else{
 						GroundedSGAgentAction gsa = new GroundedSGAgentAction(agentName, sa, params);
-						if(sa.isApplicableInState(s, agentName, params)){
+						if(sa.applicableInState(s, agentName, params)){
 							System.out.println("Setting action: " + agentName + "::" + actionName);
 							curJointAction.addAction(gsa);
 						}

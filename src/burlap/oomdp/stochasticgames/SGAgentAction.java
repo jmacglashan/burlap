@@ -36,7 +36,7 @@ public abstract class SGAgentAction {
 	 * @param params the parameters applied
 	 * @return true if this action can be executed; false otherwise.
 	 */
-	public abstract boolean isApplicableInState(State s, String actingAgent, String [] params);
+	public abstract boolean applicableInState(State s, String actingAgent, String[] params);
 	
 	
 	/**
@@ -134,7 +134,7 @@ public abstract class SGAgentAction {
 		List <GroundedSGAgentAction> res = new ArrayList<GroundedSGAgentAction>();
 		
 		if(this.parameterTypes.length == 0){
-			if(this.isApplicableInState(s, actingAgent, new String[]{})){
+			if(this.applicableInState(s, actingAgent, new String[]{})){
 				res.add(new GroundedSGAgentAction(actingAgent, this, new String[]{}));
 			}
 			return res; //no parameters so just the single ga without params
@@ -144,7 +144,7 @@ public abstract class SGAgentAction {
 		
 		for(List <String> params : bindings){
 			String [] aparams = params.toArray(new String[params.size()]);
-			if(this.isApplicableInState(s, actingAgent, aparams)){
+			if(this.applicableInState(s, actingAgent, aparams)){
 				res.add(new GroundedSGAgentAction(actingAgent, this, aparams));
 			}
 		}

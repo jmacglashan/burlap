@@ -699,7 +699,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isApplicableInState(State s, String actingAgent, String[] params) {
+		public boolean applicableInState(State s, String actingAgent, String[] params) {
 			
 			ObjectInstance a = s.getObject(actingAgent);
 			int pn = a.getIntValForAttribute(ATTPN);
