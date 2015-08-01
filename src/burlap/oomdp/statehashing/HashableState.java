@@ -13,17 +13,17 @@ import java.util.Set;
 /**
  * This class provides a hash value for {@link burlap.oomdp.core.states.State} objects. This is useful for tabular
  * planning and learning algorithms that make use of hash-backed sets or maps for fast retrieval. You can
- * access the state it hashes from the public data member s.
- * <p/>
- * By default, equality checks use the standard {@link burlap.oomdp.core.states.State} object equality check. If you need
- * to handle this specially, (such as providing state abstraction), then the equals method should be overridden.
+ * access the state it hashes from the public data member {@link #s}. If the {@link burlap.oomdp.core.states.State}
+ * delegate {@link #s} is a {@link burlap.oomdp.statehashing.HashableState} itself, and you wish
+ * to get the underlying {@link burlap.oomdp.core.states.State}, then you should use the
+ * {@link #getSourceState()} method, which will recursively descend and return the base source {@link burlap.oomdp.core.states.State}.
+ * <br/><br/>
+ * Implementing this class requires implementing
+ * the {@link #hashCode()} and {@link #equals(Object)} method.
  * <br/><br/>
  * Note that this class implements the {@link burlap.oomdp.core.states.State} interface; however,
  * because the purpose of this class is to used with hashed data structures, it is not recommended that
- * you modify the state and for that reason the state modifying methods will throw runtime exceptions. If you
- * wish to edit state anyway, get the underlying source state, either by directly accessing the public data member
- * {@link #s} or by using the {@link #getSourceState()} method, which will recurisively return the underlying
- * {@link burlap.oomdp.core.states.State} even if {@link #s} is a {@link burlap.oomdp.statehashing.HashableState} itself.
+ * you modify the state.
  *
  * @author James MacGlashan
  *
@@ -31,7 +31,7 @@ import java.util.Set;
 public abstract class HashableState implements State{
 
 	/**
-	 * The state to be hashed
+	 * The source {@link burlap.oomdp.core.states.State} to be hashed and evaluated by the {@link #hashCode()} and {@link #equals(Object)} method.
 	 */
 	public State s;
 
@@ -56,51 +56,42 @@ public abstract class HashableState implements State{
 	public abstract int hashCode();
 
 	@Override
-	public boolean equals(Object obj){
-		if(this == obj){
-			return true;
-		}
-		if(!(obj instanceof HashableState)){
-			return false;
-		}
-		HashableState o = (HashableState)obj;
-		return s.equals(o.s);
-	}
+	public abstract boolean equals(Object obj);
 
 
 	@Override
 	public State addObject(ObjectInstance o) {
-		throw new RuntimeException("HashableState instances do not support state modifying methods since modifying a hashed state can corrupt its index in Hashed data structures. If you wish to edit the state anyway, use the getSourceStateMethod and edit the underlying state directly.");
+		return s.addObject(o);
 	}
 
 	@Override
 	public State addAllObjects(Collection<ObjectInstance> objects) {
-		throw new RuntimeException("HashableState instances do not support state modifying methods since modifying a hashed state can corrupt its index in Hashed data structures. If you wish to edit the state anyway, use the getSourceStateMethod and edit the underlying state directly.");
+		return s.addAllObjects(objects);
 	}
 
 	@Override
 	public State removeObject(String oname) {
-		throw new RuntimeException("HashableState instances do not support state modifying methods since modifying a hashed state can corrupt its index in Hashed data structures. If you wish to edit the state anyway, use the getSourceStateMethod and edit the underlying state directly.");
+		return s.removeObject(oname);
 	}
 
 	@Override
 	public State removeObject(ObjectInstance o) {
-		throw new RuntimeException("HashableState instances do not support state modifying methods since modifying a hashed state can corrupt its index in Hashed data structures. If you wish to edit the state anyway, use the getSourceStateMethod and edit the underlying state directly.");
+		return s.removeObject(o);
 	}
 
 	@Override
 	public State removeAllObjects(Collection<ObjectInstance> objects) {
-		throw new RuntimeException("HashableState instances do not support state modifying methods since modifying a hashed state can corrupt its index in Hashed data structures. If you wish to edit the state anyway, use the getSourceStateMethod and edit the underlying state directly.");
+		return s.removeAllObjects(objects);
 	}
 
 	@Override
 	public State renameObject(String originalName, String newName) {
-		throw new RuntimeException("HashableState instances do not support state modifying methods since modifying a hashed state can corrupt its index in Hashed data structures. If you wish to edit the state anyway, use the getSourceStateMethod and edit the underlying state directly.");
+		return s.renameObject(originalName, newName);
 	}
 
 	@Override
 	public State renameObject(ObjectInstance o, String newName) {
-		throw new RuntimeException("HashableState instances do not support state modifying methods since modifying a hashed state can corrupt its index in Hashed data structures. If you wish to edit the state anyway, use the getSourceStateMethod and edit the underlying state directly.");
+		return s.renameObject(o, newName);
 	}
 
 	@Override
