@@ -7,10 +7,9 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.Model;
-import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
-import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlannerGenerator;
+import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
-import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
+import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelLearningPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
@@ -64,7 +63,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	/**
 	 * The model-adaptive planning algorithm to use
 	 */
-	protected ModelPlanner						modelPlanner;
+	protected ModelLearningPlanner 				modelPlanner;
 	
 	
 	/**
@@ -105,7 +104,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), new RMaxPotential(maxReward, gamma));
 		
-		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
+		this.modelPlanner = new VIModelLearningPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
 	}
 	
@@ -132,22 +131,21 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
 		
-		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
+		this.modelPlanner = new VIModelLearningPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
 	}
 	
 	
 	/**
-	 * Initializes for a given model, model valueFunction, and potential shaped function.
+	 * Initializes for a given model, model learning planner, and potential shaped function.
 	 * @param domain the real world domain
-	 * @param gamma the discount factor
 	 * @param hashingFactory a state hashing factory for indexing states
 	 * @param potential the admissible potential function
 	 * @param model the model/model-learning algorithm to use
 	 * @param plannerGenerator a generator for a model valueFunction
 	 */
-	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, PotentialFunction potential,
-			Model model, ModelPlannerGenerator plannerGenerator){
+	public PotentialShapedRMax(Domain domain, HashableStateFactory hashingFactory, PotentialFunction potential,
+			Model model, ModelLearningPlanner plannerGenerator){
 		
 		this.solverInit(domain, null, null, gamma, hashingFactory);
 		this.model = model;
@@ -157,8 +155,11 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
-		
-		this.modelPlanner = plannerGenerator.getModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma);
+
+		this.modelPlanner = plannerGenerator;
+		this.modelPlanner.setDomain(modeledDomain);
+		this.modelPlanner.setRf(modeledRewardFunction);
+		this.modelPlanner.setTf(modeledTerminalFunction);
 		
 	}
 
@@ -184,7 +185,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * Returns the planning algorithm used on the model that can be iteratively updated as the model changes.
 	 * @return the planning algorithm used on the model
 	 */
-	public ModelPlanner getModelPlanner() {
+	public ModelLearningPlanner getModelPlanner() {
 		return modelPlanner;
 	}
 
@@ -287,7 +288,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	@Override
 	public void resetSolver(){
 		this.model.resetModel();
-		this.modelPlanner.resetPlanner();
+		this.modelPlanner.resetSolver();
 		this.episodeHistory.clear();
 	}
 	

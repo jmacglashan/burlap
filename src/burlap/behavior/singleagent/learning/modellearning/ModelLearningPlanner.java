@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learning.modellearning;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
@@ -13,11 +14,11 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public interface ModelPlanner {
+public interface ModelLearningPlanner extends Planner{
 
 	/**
 	 * This is method is expected to be called at the beginning of any new learning episode. This may be useful for planning algorithms
-	 * that do not solve the policy for every state since new episodes may starts in epsidoes the planning algorithm had not previously considered.
+	 * that do not solve the policy for every state since new episodes may starts in states the planning algorithm had not previously considered.
 	 * before a learning episode begins.
 	 * @param s the input state
 	 */
@@ -30,24 +31,10 @@ public interface ModelPlanner {
 	public void modelChanged(State changedState);
 	
 	/**
-	 * Returns a policy encoding the valueFunction's results.
+	 * Returns a policy encoding the planner's results.
 	 * @return a policy object
 	 */
 	public Policy modelPlannedPolicy();
-	
-	/**
-	 * Resets valueFunction as if no planning had never been called.
-	 */
-	public void resetPlanner();
 
-
-	/**
-	 * An interface for providing a method that can generated a {@link burlap.behavior.singleagent.learning.modellearning.ModelPlanner} with
-	 * the {@link #getModelPlanner(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double)}
-	 * method.
-	 */
-	public static interface ModelPlannerGenerator{
-		public ModelPlanner getModelPlanner(Domain modelDomain, RewardFunction modeledRewardFunction, TerminalFunction modeledTerminalFunction, double discount);
-	}
 	
 }
