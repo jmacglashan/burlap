@@ -147,6 +147,18 @@ public class DiscreteHashableStateFactory implements HashableStateFactory {
 		}
 
 		@Override
+		public boolean equals(Object obj) {
+			if(this == obj){
+				return true;
+			}
+			if(!(obj instanceof HashableState)){
+				return false;
+			}
+			HashableState o = (HashableState)obj;
+			return s.equals(o.s);
+		}
+
+		@Override
 		public State copy() {
 			return new DiscreteHashableState(this.s.copy());
 		}

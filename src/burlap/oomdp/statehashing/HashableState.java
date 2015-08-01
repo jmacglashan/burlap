@@ -189,19 +189,6 @@ public abstract class HashableState implements State{
 
 
 		@Override
-		public boolean equals(Object other){
-			if(this == other){
-				return true;
-			}
-			if(!(other instanceof HashableState)){
-				return false;
-			}
-			HashableState o = (HashableState)other;
-			return s.equals(o.s);
-
-		}
-
-		@Override
 		public int hashCode(){
 			if(needToRecomputeHashCode){
 				this.hashCode = this.computeHashCode();
