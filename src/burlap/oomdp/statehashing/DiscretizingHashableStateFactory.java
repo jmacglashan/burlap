@@ -153,8 +153,12 @@ public class DiscretizingHashableStateFactory implements HashableStateFactory {
 			return this.hashCode;
 			
 		}
-		
-		
+
+		@Override
+		public State copy() {
+			return new DiscretizedHashableState(this.s.copy());
+		}
+
 		//this method will assume that attributes are all discrete
 		private int getIndexValue(ObjectInstance o, ObjectClass oc){
 			

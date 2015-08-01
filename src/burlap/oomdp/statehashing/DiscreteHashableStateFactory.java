@@ -145,8 +145,12 @@ public class DiscreteHashableStateFactory implements HashableStateFactory {
 			
 			
 		}
-		
-		
+
+		@Override
+		public State copy() {
+			return new DiscreteHashableState(this.s.copy());
+		}
+
 		//this method will assume that attributes are all discrete
 		private int getIndexValue(ObjectInstance o, ObjectClass oc){
 			

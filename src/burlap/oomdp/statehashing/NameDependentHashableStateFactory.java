@@ -94,8 +94,12 @@ public class NameDependentHashableStateFactory implements HashableStateFactory {
 
 			return this.hashCode;
 		}
-		
-		
+
+		@Override
+		public State copy() {
+			return new NameDependentHashableState(this.s.copy());
+		}
+
 		@Override
 		public boolean equals(Object other){
 			if(this == other){
