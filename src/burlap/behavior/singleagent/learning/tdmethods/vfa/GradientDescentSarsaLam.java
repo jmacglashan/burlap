@@ -376,7 +376,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
 
-		State initialState = env.getCurState();
+		State initialState = env.getCurrentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxWeightChangeInLastEpisode = 0.;
@@ -390,7 +390,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		ActionApproximationResult curApprox = ActionApproximationResult.extractApproximationForAction(allCurApproxResults, action);
 
 
-		while(!env.curStateIsTerminal() && (eStepCounter < maxSteps || maxSteps == -1)){
+		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
 
 			WeightGradient gradient = this.vfa.getWeightGradient(curApprox.approximationResult);

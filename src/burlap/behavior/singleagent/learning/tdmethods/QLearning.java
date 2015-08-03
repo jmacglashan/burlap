@@ -497,14 +497,14 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 
 		this.toggleShouldAnnotateOptionDecomposition(shouldAnnotateOptions);
 
-		State initialState = env.getCurState();
+		State initialState = env.getCurrentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		HashableState curState = this.stateHash(initialState);
 		eStepCounter = 0;
 
 		maxQChangeInLastEpisode = 0.;
-		while(!env.curStateIsTerminal() && (eStepCounter < maxSteps || maxSteps == -1)){
+		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
 			GroundedAction action = (GroundedAction)learningPolicy.getAction(curState.s);
 			QValue curQ = this.getQ(curState, action);
@@ -545,7 +545,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			}
 
 			//move on polling environment for its current state in case it changed during processing
-			curState = this.stateHash(env.getCurState());
+			curState = this.stateHash(env.getCurrentObservation());
 			this.totalNumberOfSteps++;
 
 

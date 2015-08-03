@@ -186,7 +186,7 @@ public class VisualExplorer extends JFrame{
 	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
 	 */
 	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey){
-		this.currentEpisode = new EpisodeAnalysis(this.env.getCurState());
+		this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
 		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
 		this.isRecording = true;
 		
@@ -231,7 +231,7 @@ public class VisualExplorer extends JFrame{
 	 */
 	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey,
 									   String saveDirectory, StateParser sp){
-		this.currentEpisode = new EpisodeAnalysis(this.env.getCurState());
+		this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
 		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
 		this.isRecording = true;
 
@@ -281,7 +281,7 @@ public class VisualExplorer extends JFrame{
 			@Override
 			public void run() {
 				while(runLivePolling) {
-					State s = env.getCurState();
+					State s = env.getCurrentObservation();
 					if(s != null) {
 						updateState(s);
 					}
@@ -371,8 +371,8 @@ public class VisualExplorer extends JFrame{
 		});
 		bottomContainer.add(actionButton, BorderLayout.EAST);
 		
-		painter.updateState(this.env.getCurState());
-		this.updatePropTextArea(this.env.getCurState());
+		painter.updateState(this.env.getCurrentObservation());
+		this.updatePropTextArea(this.env.getCurrentObservation());
 
 		JButton showConsoleButton = new JButton("Show Console");
 		showConsoleButton.addActionListener(new ActionListener() {
@@ -399,7 +399,7 @@ public class VisualExplorer extends JFrame{
 
 		consoleFrame.getContentPane().add(consoleCommands, BorderLayout.NORTH);
 
-		this.stateConsole = new TextArea(this.getConsoleText(this.env.getCurState()), 40, 40, TextArea.SCROLLBARS_BOTH);
+		this.stateConsole = new TextArea(this.getConsoleText(this.env.getCurrentObservation()), 40, 40, TextArea.SCROLLBARS_BOTH);
 		this.consoleFrame.getContentPane().add(this.stateConsole, BorderLayout.CENTER);
 
 		JTextField consoleCommand = new JTextField(40);
@@ -412,7 +412,7 @@ public class VisualExplorer extends JFrame{
 				String [] comps = command.split(" ");
 				if(comps.length > 0){
 
-					State ns = VisualExplorer.this.env.getCurState().copy();
+					State ns = VisualExplorer.this.env.getCurrentObservation().copy();
 
 					boolean madeChange = false;
 					if(comps[0].equals("set")){
@@ -479,21 +479,21 @@ public class VisualExplorer extends JFrame{
 						VisualExplorer.this.executeAction(actionComps);
 					}
 					else if(comps[0].equals("pollState")){
-						updateState(env.getCurState());
+						updateState(env.getCurrentObservation());
 					}
 
 					if(madeChange) {
 						if(env instanceof StateSettableEnvironment) {
 							((StateSettableEnvironment)env).setCurStateTo(ns);
-							VisualExplorer.this.updateState(env.getCurState());
+							VisualExplorer.this.updateState(env.getCurrentObservation());
 							VisualExplorer.this.numSteps = 0;
 							if(VisualExplorer.this.currentEpisode != null) {
-								VisualExplorer.this.currentEpisode = new EpisodeAnalysis(env.getCurState());
+								VisualExplorer.this.currentEpisode = new EpisodeAnalysis(env.getCurrentObservation());
 							}
 						}
 						else{
 							warningMessage = "Cannot edit state because the Environment does not implement StateSettableEnvironment";
-							VisualExplorer.this.updateState(env.getCurState());
+							VisualExplorer.this.updateState(env.getCurrentObservation());
 						}
 					}
 				}
@@ -534,7 +534,7 @@ public class VisualExplorer extends JFrame{
 	protected String getConsoleText(State s){
 		StringBuilder sb = new StringBuilder(256);
 		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
-		if(this.env.curStateIsTerminal()){
+		if(this.env.isInTerminalState()){
 			sb.append("State IS terminal\n");
 		}
 		else{
@@ -603,17 +603,17 @@ public class VisualExplorer extends JFrame{
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
 			if(sea != null){
-				sea.applySpecialAction(this.env.getCurState());
+				sea.applySpecialAction(this.env.getCurrentObservation());
 			}
 			if(sea instanceof StateResetSpecialAction){
 				System.out.println("Number of steps before reset: " + numSteps);
 				numSteps = 0;
 				this.lastReward = 0.;
 				if(this.currentEpisode != null){
-					this.currentEpisode = new EpisodeAnalysis(this.env.getCurState());
+					this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
 				}
 			}
-			this.updateState(this.env.getCurState());
+			this.updateState(this.env.getCurrentObservation());
 		}
 		
 	}
@@ -641,11 +641,11 @@ public class VisualExplorer extends JFrame{
 		if(action == null){
 			this.warningMessage = "Unknown action: " + actionName + "; nothing changed";
 			System.out.println(warningMessage);
-			this.updateState(env.getCurState());
+			this.updateState(env.getCurrentObservation());
 		}
 		else{
 			GroundedAction ga = new GroundedAction(action, params);
-			if(ga.action.applicableInState(env.getCurState(), params)){
+			if(ga.action.applicableInState(env.getCurrentObservation(), params)){
 
 				EnvironmentOutcome eo = ga.executeIn(env);
 				if(this.currentEpisode != null){
@@ -656,12 +656,12 @@ public class VisualExplorer extends JFrame{
 
 
 				numSteps++;
-				this.updateState(this.env.getCurState());
+				this.updateState(this.env.getCurrentObservation());
 			}
 			else{
 				this.warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
 				System.out.println(warningMessage);
-				this.updateState(this.env.getCurState());
+				this.updateState(this.env.getCurrentObservation());
 			}
 
 		}

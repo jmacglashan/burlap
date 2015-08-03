@@ -25,7 +25,7 @@ public class StateResetSpecialAction implements SpecialExplorerAction {
 	@Override
 	public State applySpecialAction(State curState) {
 		this.env.resetEnvironment();
-		return this.env.getCurState();
+		return this.env.getCurrentObservation();
 	}
 
 }

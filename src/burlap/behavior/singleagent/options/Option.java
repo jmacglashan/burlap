@@ -512,17 +512,17 @@ public abstract class Option extends Action {
 	@Override
 	public EnvironmentOutcome performInEnvironment(Environment env, String[] params) {
 
-		State initialState = env.getCurState();
+		State initialState = env.getCurrentObservation();
 		this.initiateInState(initialState, params);
 		do{
 			this.oneStep(env, params);
-		}while(this.continueFromState(env.getCurState(), params) && !env.curStateIsTerminal());
+		}while(this.continueFromState(env.getCurrentObservation(), params) && !env.isInTerminalState());
 
 		EnvironmentOptionOutcome eoo = new EnvironmentOptionOutcome(initialState,
 																	new GroundedAction(this, params),
-																	env.getCurState(),
+																	env.getCurrentObservation(),
 																	this.lastCumulativeReward,
-																	env.curStateIsTerminal(),
+																	env.isInTerminalState(),
 																	this.discountFactor,
 																	this.lastNumSteps);
 
@@ -572,7 +572,7 @@ public abstract class Option extends Action {
 	 */
 	public EnvironmentOutcome oneStep(Environment env, String [] params){
 
-		GroundedAction ga = this.oneStepActionSelection(env.getCurState(), params);
+		GroundedAction ga = this.oneStepActionSelection(env.getCurrentObservation(), params);
 		EnvironmentOutcome eo = ga.executeIn(env);
 		if(eo instanceof EnvironmentOptionOutcome){
 			EnvironmentOptionOutcome eoo = (EnvironmentOptionOutcome)eo;

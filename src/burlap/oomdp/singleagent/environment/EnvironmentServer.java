@@ -87,8 +87,8 @@ public class EnvironmentServer implements Environment {
 
 
 	@Override
-	public State getCurState() {
-		return this.delegate.getCurState();
+	public State getCurrentObservation() {
+		return this.delegate.getCurrentObservation();
 	}
 
 	@Override
@@ -106,8 +106,8 @@ public class EnvironmentServer implements Environment {
 	}
 
 	@Override
-	public boolean curStateIsTerminal() {
-		return this.delegate.curStateIsTerminal();
+	public boolean isInTerminalState() {
+		return this.delegate.isInTerminalState();
 	}
 
 	@Override

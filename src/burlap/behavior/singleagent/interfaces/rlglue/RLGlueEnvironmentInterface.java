@@ -248,7 +248,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 	}
 
 	@Override
-	public State getCurState() {
+	public State getCurrentObservation() {
 		return this.curState;
 	}
 
@@ -294,7 +294,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 	}
 
 	@Override
-	public boolean curStateIsTerminal() {
+	public boolean isInTerminalState() {
 		return this.curStateIsTerminal;
 	}
 

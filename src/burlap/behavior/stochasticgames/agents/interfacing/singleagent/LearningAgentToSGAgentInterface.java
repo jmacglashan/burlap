@@ -148,7 +148,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 	}
 
 	@Override
-	public State getCurState() {
+	public State getCurrentObservation() {
 		return this.currentState;
 	}
 
@@ -185,7 +185,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 	}
 
 	@Override
-	public boolean curStateIsTerminal() {
+	public boolean isInTerminalState() {
 		return this.curStateIsTerminal;
 	}
 

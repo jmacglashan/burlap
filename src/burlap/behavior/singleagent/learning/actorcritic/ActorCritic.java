@@ -139,14 +139,14 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
 
 
-		State initialState = env.getCurState();
+		State initialState = env.getCurrentObservation();
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		State curState = initialState;
 
 		this.critic.initializeEpisode(curState);
 
 		int timeSteps = 0;
-		while(!env.curStateIsTerminal() && (timeSteps < maxSteps || maxSteps == -1)){
+		while(!env.isInTerminalState() && (timeSteps < maxSteps || maxSteps == -1)){
 
 			GroundedAction ga = (GroundedAction)this.actor.getAction(curState);
 			EnvironmentOutcome eo = ga.executeIn(env);
@@ -158,7 +158,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 			CritiqueResult critqiue = this.critic.critiqueAndUpdate(curState, ga, nextState);
 			this.actor.updateFromCritqique(critqiue);
 
-			curState = env.getCurState();
+			curState = env.getCurrentObservation();
 			timeSteps++;
 
 		}

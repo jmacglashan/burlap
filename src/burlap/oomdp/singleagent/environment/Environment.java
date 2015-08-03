@@ -5,10 +5,10 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
- * Environments define a current state and manage state and reward transitions when an action is executed in the environment through
+ * Environments define a current observation represetned with a {@link burlap.oomdp.core.states.State} and manage state and reward transitions when an action is executed in the environment through
  * the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)} method. {@link burlap.oomdp.singleagent.environment.Environment}
- * instances are what learning algorithms implementing {@link burlap.behavior.singleagent.learning.LearningAgent} interact with
- * the environment around them. Maintaining an Environment ensures that transitions are protected from an agent manipulating the state
+ * instances are what learning algorithms implementing {@link burlap.behavior.singleagent.learning.LearningAgent} interact with.
+ * Maintaining an Environment ensures that transitions are protected from an agent manipulating the state
  * and are also useful when a BURLAP agent is interacting with external or real time systems such as robotics. Environments
  * also make it easy to use a planning algorithm to compute a {@link burlap.behavior.policy.Policy} using some model of the world
  * and then have that policy executed in an {@link burlap.oomdp.singleagent.environment.Environment} that may behave differently
@@ -26,17 +26,16 @@ public interface Environment {
 
 	
 	/**
-	 * Returns the current state of the environment
-	 * @return the current state of the environment
+	 * Returns the current observation of the environment as a {@link burlap.oomdp.core.states.State}.
+	 * @return the current observation of the environment as a {@link burlap.oomdp.core.states.State}.
 	 */
-	State getCurState();
+	State getCurrentObservation();
 
-	
-	
+
 	/**
 	 * Executes the specified action in this environment
 	 * @param ga the GroundedAction that is to be performed in this environment.
-	 * @return the resulting state from applying the given GroundedAction in this environment.
+	 * @return the resulting observation and reward transition from applying the given GroundedAction in this environment.
 	 */
 	EnvironmentOutcome executeAction(GroundedAction ga);
 	
@@ -49,10 +48,10 @@ public interface Environment {
 	double getLastReward();
 	
 	/**
-	 * Returns whether the current environment state is a terminal state.
-	 * @return true if the current environment state is a terminal state; false otherwise.
+	 * Returns whether the environment is in a terminal state that prevents further action by the agent.
+	 * @return true if the current environment is in a terminal state; false otherwise.
 	 */
-	boolean curStateIsTerminal();
+	boolean isInTerminalState();
 
 
 	/**

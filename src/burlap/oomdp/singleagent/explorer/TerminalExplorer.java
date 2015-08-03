@@ -140,9 +140,9 @@ public class TerminalExplorer {
 
 		while(true){
 			
-			this.printState(this.env.getCurState());
+			this.printState(this.env.getCurrentObservation());
 
-			if(this.env.curStateIsTerminal()){
+			if(this.env.isInTerminalState()){
 				System.out.println("State IS terminal");
 			}
 			else{
@@ -170,7 +170,7 @@ public class TerminalExplorer {
 				else if(line.startsWith("#")){
 					//then do console command parsing
 					String command = line.substring(1).trim();
-					State ns = this.parseCommand(this.env.getCurState(), command);
+					State ns = this.parseCommand(this.env.getCurrentObservation(), command);
 					if(ns != null && this.env instanceof StateSettableEnvironment){
 						((StateSettableEnvironment) this.env).setCurStateTo(ns);
 					}
@@ -207,7 +207,7 @@ public class TerminalExplorer {
 					}
 					else{
 						GroundedAction ga = new GroundedAction(action, params);
-						if(action.applicableInState(this.env.getCurState(), params)) {
+						if(action.applicableInState(this.env.getCurrentObservation(), params)) {
 							ga.executeIn(this.env);
 						}
 						else{

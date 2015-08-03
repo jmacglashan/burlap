@@ -187,8 +187,8 @@ public abstract class SARSCollector {
 			}
 
 			int nsteps = 0;
-			while(!env.curStateIsTerminal() && nsteps < maxSteps){
-				List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, env.getCurState());
+			while(!env.isInTerminalState() && nsteps < maxSteps){
+				List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, env.getCurrentObservation());
 				GroundedAction ga = gas.get(RandomFactory.getMapped(0).nextInt(gas.size()));
 				EnvironmentOutcome eo = ga.executeIn(env);
 				intoDataset.add(eo.s, eo.a, eo.r, eo.sp);

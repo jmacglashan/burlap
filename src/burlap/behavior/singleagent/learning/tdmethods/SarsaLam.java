@@ -146,7 +146,7 @@ public class SarsaLam extends QLearning {
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps){
 
-		State initialState = env.getCurState();
+		State initialState = env.getCurrentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxQChangeInLastEpisode = 0.;
@@ -160,7 +160,7 @@ public class SarsaLam extends QLearning {
 
 
 
-		while(!env.curStateIsTerminal() && (eStepCounter < maxSteps || maxSteps == -1)){
+		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
 			EnvironmentOutcome eo = action.executeIn(env);
 
@@ -169,7 +169,7 @@ public class SarsaLam extends QLearning {
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
 
-			if(env.curStateIsTerminal()){
+			if(env.isInTerminalState()){
 				nextQV = 0.;
 			}
 

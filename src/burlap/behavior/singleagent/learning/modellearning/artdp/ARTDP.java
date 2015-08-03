@@ -168,13 +168,13 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
 
-		State initialState = env.getCurState();
+		State initialState = env.getCurrentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 
 		State curState = initialState;
 		int steps = 0;
-		while(!env.curStateIsTerminal() && (steps < maxSteps || maxSteps == -1)){
+		while(!env.isInTerminalState() && (steps < maxSteps || maxSteps == -1)){
 			GroundedAction ga = (GroundedAction)policy.getAction(curState);
 			EnvironmentOutcome eo = ga.executeIn(env);
 
@@ -185,7 +185,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 			this.modelPlanner.performBellmanUpdateOn(eo.s);
 
-			curState = env.getCurState();
+			curState = env.getCurrentObservation();
 			steps++;
 
 		}
