@@ -100,7 +100,7 @@ public abstract class Model {
 	 * @param eo The {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} specifying the observed interaction with an {@link burlap.oomdp.singleagent.environment.Environment}.
 	 */
 	public void updateModel(EnvironmentOutcome eo){
-		this.updateModel(eo.s, eo.a, eo.sp, eo.r, eo.terminated);
+		this.updateModel(eo.o, eo.a, eo.op, eo.r, eo.terminated);
 	}
 
 	

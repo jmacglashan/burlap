@@ -16,7 +16,7 @@ public class EnvironmentOutcome {
 	/**
 	 * The previous environment observation (as a {@link burlap.oomdp.core.states.State} when the action was taken.
 	 */
-	public State s;
+	public State o;
 
 	/**
 	 * The action taken in the environment
@@ -26,7 +26,7 @@ public class EnvironmentOutcome {
 	/**
 	 * The next environment observation (as a {@link burlap.oomdp.core.states.State}) following the action's execution.
 	 */
-	public State sp;
+	public State op;
 
 	/**
 	 * The reward received
@@ -41,16 +41,16 @@ public class EnvironmentOutcome {
 
 	/**
 	 * Initializes.
-	 * @param s The previous state of the environment when the action was taken.
+	 * @param o The previous state of the environment when the action was taken.
 	 * @param a The action taken in the environment
-	 * @param sp The next state to which the environment transitioned
+	 * @param op The next state to which the environment transitioned
 	 * @param r The reward received
 	 * @param terminated Whether the next state to which the environment transitioned is a terminal state (true if so, false otherwise)
 	 */
-	public EnvironmentOutcome(State s, GroundedAction a, State sp, double r, boolean terminated) {
-		this.s = s;
+	public EnvironmentOutcome(State o, GroundedAction a, State op, double r, boolean terminated) {
+		this.o = o;
 		this.a = a;
-		this.sp = sp;
+		this.op = op;
 		this.r = r;
 		this.terminated = terminated;
 	}

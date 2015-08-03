@@ -649,7 +649,7 @@ public class VisualExplorer extends JFrame{
 
 				EnvironmentOutcome eo = ga.executeIn(env);
 				if(this.currentEpisode != null){
-					this.currentEpisode.recordTransitionTo(ga, eo.sp, eo.r);
+					this.currentEpisode.recordTransitionTo(ga, eo.op, eo.r);
 				}
 
 				this.lastReward = eo.r;

@@ -416,7 +416,7 @@ public abstract class Policy {
 
 		if(ga.action.isPrimitive()|| !this.evaluateDecomposesOptions){
 			EnvironmentOutcome eo = ga.executeIn(env);
-			ea.recordTransitionTo(ga, eo.sp, eo.r);
+			ea.recordTransitionTo(ga, eo.op, eo.r);
 		}
 		else{
 			//then we need to decompose the option
@@ -428,7 +428,7 @@ public abstract class Policy {
 				//do step of option
 				GroundedAction cga = o.oneStepActionSelection(cur, ga.params);
 				EnvironmentOutcome eo = cga.executeIn(env);
-				State next = eo.sp;
+				State next = eo.op;
 				double r = eo.r;
 
 				if(annotateOptionDecomposition){

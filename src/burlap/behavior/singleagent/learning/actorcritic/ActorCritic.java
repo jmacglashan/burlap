@@ -150,7 +150,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 
 			GroundedAction ga = (GroundedAction)this.actor.getAction(curState);
 			EnvironmentOutcome eo = ga.executeIn(env);
-			State nextState = eo.sp;
+			State nextState = eo.op;
 			double r = eo.r;
 
 			ea.recordTransitionTo(ga, nextState, r);

@@ -512,7 +512,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			EnvironmentOutcome eo = action.executeIn(env);
 
 
-			HashableState nextState = this.stateHash(eo.sp);
+			HashableState nextState = this.stateHash(eo.op);
 			double maxQ = 0.;
 
 			if(!eo.terminated){

@@ -155,8 +155,8 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 	@Override
 	public void observeEnvironmentInteraction(EnvironmentOutcome eo) {
-		this.painter.updateState(eo.sp);
-		this.updatePropTextArea(eo.sp);
+		this.painter.updateState(eo.op);
+		this.updatePropTextArea(eo.op);
 		Thread waitThread = new Thread(new Runnable() {
 
 			@Override

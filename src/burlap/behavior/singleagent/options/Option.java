@@ -592,7 +592,7 @@ public abstract class Option extends Action {
 				NullAction annotatedPrimitive = new NullAction(this.name + "(" + (lastNumSteps-1) + ")-" + ga.action.getName());
 				recordAction = new GroundedAction(annotatedPrimitive, ga.params);
 			}
-			lastOptionExecutionResults.recordTransitionTo(recordAction, eo.sp, eo.r);
+			lastOptionExecutionResults.recordTransitionTo(recordAction, eo.op, eo.r);
 		}
 
 		return eo;

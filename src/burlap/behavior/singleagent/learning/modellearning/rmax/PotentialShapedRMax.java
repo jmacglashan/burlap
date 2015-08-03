@@ -230,13 +230,13 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 
 			GroundedAction ga = (GroundedAction)policy.getAction(curState);
 			EnvironmentOutcome eo = ga.executeIn(env);
-			ea.recordTransitionTo(ga, eo.sp, eo.r);
+			ea.recordTransitionTo(ga, eo.op, eo.r);
 
-			boolean modeledTerminal = this.model.getModelTF().isTerminal(eo.sp);
+			boolean modeledTerminal = this.model.getModelTF().isTerminal(eo.op);
 
-			if(!this.model.transitionIsModeled(curState, ga) || (!this.model.stateTransitionsAreModeled(eo.sp) && !modeledTerminal)){
+			if(!this.model.transitionIsModeled(curState, ga) || (!this.model.stateTransitionsAreModeled(eo.op) && !modeledTerminal)){
 				this.model.updateModel(eo);
-				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(eo.sp))){
+				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(eo.op))){
 					this.modelPlanner.modelChanged(curState);
 					policy = this.createUnmodeledFavoredPolicy();
 				}

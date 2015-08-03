@@ -397,7 +397,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 			EnvironmentOutcome eo = action.executeIn(env);
 
-			State nextState = eo.sp;
+			State nextState = eo.op;
 			GroundedAction nextAction = (GroundedAction)this.learningPolicy.getAction(nextState);
 			List<ActionApproximationResult> allNextApproxResults = this.getAllActionApproximations(nextState);
 			ActionApproximationResult nextApprox = ActionApproximationResult.extractApproximationForAction(allNextApproxResults, nextAction);
