@@ -70,16 +70,16 @@ public class TestBlockDude {
 			ph.add(3);
 			ph.add(15);
 			
-			State s = BlockDude.getCleanState(d, px, ph, 6);
-			s = BlockDude.setAgent(s, 9, 3, 1, 0);
-			s = BlockDude.setExit(s, 1, 0);
+			State o = BlockDude.getCleanState(d, px, ph, 6);
+			o = BlockDude.setAgent(o, 9, 3, 1, 0);
+			o = BlockDude.setExit(o, 1, 0);
 			
-			s = BlockDude.setBlock(s, 0, 5, 1);
-			s = BlockDude.setBlock(s, 1, 6, 1);
-			s = BlockDude.setBlock(s, 2, 14, 3);
-			s = BlockDude.setBlock(s, 3, 16, 4);
-			s = BlockDude.setBlock(s, 4, 17, 4);
-			s = BlockDude.setBlock(s, 5, 17, 5);
+			o = BlockDude.setBlock(o, 0, 5, 1);
+			o = BlockDude.setBlock(o, 1, 6, 1);
+			o = BlockDude.setBlock(o, 2, 14, 3);
+			o = BlockDude.setBlock(o, 3, 16, 4);
+			o = BlockDude.setBlock(o, 4, 17, 4);
+			o = BlockDude.setBlock(o, 5, 17, 5);
 			
 			TerminalFunction tf = new SinglePFTF(d.getPropFunction(BlockDude.PFATEXIT));
 			StateConditionTest sc = new SinglePFSCT(d.getPropFunction(BlockDude.PFATEXIT));
@@ -88,10 +88,10 @@ public class TestBlockDude {
 
 			AStar astar = new AStar(d, rf, sc, new DiscreteStateHashFactory(), new NullHeuristic());
 			astar.toggleDebugPrinting(false);
-			astar.planFromState(s);
+			astar.planFromState(o);
 
 			Policy p = new SDPlannerPolicy(astar);
-			EpisodeAnalysis ea = p.evaluateBehavior(s, rf, tf, 100);
+			EpisodeAnalysis ea = p.evaluateBehavior(o, rf, tf, 100);
 
 			State lastState = ea.stateSequence.get(ea.stateSequence.size() - 1);
 			Assert.assertEquals(true, tf.isTerminal(lastState));
