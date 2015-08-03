@@ -1,9 +1,8 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl;
+package burlap.behavior.singleagent.learnfromdemo.mlirl;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory;
-import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
@@ -16,7 +15,7 @@ import java.util.Random;
  * An implementation of Multiple Intentions Maximum-likelihood Inverse Reinforcement Learning [1]. This algorithm
  * takes as input a set of expert trajectories, a number of clusters, and a differentiable reward function model; and
  * clusters the trajectories assigning each cluster its own reward function parameter values. The algorithm uses
- * EM to find the reward function parameter values for each cluster and uses {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL}
+ * EM to find the reward function parameter values for each cluster and uses {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL}
  * to perform the maximization step of the parameter values. EM is run for a specified number of iterations.
  * <p/>
  * At initialization, the reward function parameters for each behavior cluster will be randomly assigned values between
@@ -36,7 +35,7 @@ public class MultipleIntentionsMLIRL {
 	protected MultipleIntentionsMLIRLRequest request;
 
 	/**
-	 * The invididual {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} objects for each behavior cluster.
+	 * The invididual {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} objects for each behavior cluster.
 	 */
 	protected List<MLIRLRequest> clusterRequests;
 
@@ -47,7 +46,7 @@ public class MultipleIntentionsMLIRL {
 
 
 	/**
-	 * The {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL} instance used to perform the maximization step
+	 * The {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL} instance used to perform the maximization step
 	 * for each clusters reward function parameter values.
 	 */
 	protected MLIRL mlirlInstance;
@@ -74,9 +73,9 @@ public class MultipleIntentionsMLIRL {
 	 * Initializes. Reward function parameters for each cluster will be initialized randomly between -1 and 1.
 	 * @param request the request that defines the problem.
 	 * @param emIterations the number of EM iterations to perform.
-	 * @param mlIRLLearningRate the learning rate of the underlying {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL} instance.
-	 * @param maxMLIRLLikelihoodChange the likelihood change threshold that causes {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL} gradient ascent to stop.
-	 * @param maxMLIRLSteps the maximum number of gradient ascent steps allowd by the underlying {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} gradient ascent.
+	 * @param mlIRLLearningRate the learning rate of the underlying {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL} instance.
+	 * @param maxMLIRLLikelihoodChange the likelihood change threshold that causes {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL} gradient ascent to stop.
+	 * @param maxMLIRLSteps the maximum number of gradient ascent steps allowd by the underlying {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} gradient ascent.
 	 */
 	public MultipleIntentionsMLIRL(MultipleIntentionsMLIRLRequest request,
 								   int emIterations, double mlIRLLearningRate, double maxMLIRLLikelihoodChange, int maxMLIRLSteps){
@@ -169,8 +168,8 @@ public class MultipleIntentionsMLIRL {
 
 
 	/**
-	 * Returns the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} obejcts defining each behavior cluster.
-	 * @return the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} obejcts defining each behavior cluster.
+	 * Returns the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} obejcts defining each behavior cluster.
+	 * @return the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} obejcts defining each behavior cluster.
 	 */
 	public List<DifferentiableRF> getClusterRFs(){
 		List<DifferentiableRF> rfs = new ArrayList<DifferentiableRF>(this.clusterPriors.length);
@@ -320,10 +319,10 @@ public class MultipleIntentionsMLIRL {
 
 
 	/**
-	 * Initializes cluster data; i.e., it initializes RF parameters, cluster prior parameters (to uniform), and creates {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest}
+	 * Initializes cluster data; i.e., it initializes RF parameters, cluster prior parameters (to uniform), and creates {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest}
 	 * objects for each cluster.
 	 * @param k the number of clusters
-	 * @param plannerFactory the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlannerFactory} to use to generate a valueFunction for each cluster.
+	 * @param plannerFactory the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory} to use to generate a valueFunction for each cluster.
 	 */
 	protected void initializeClusters(int k, QGradientPlannerFactory plannerFactory){
 
@@ -356,9 +355,9 @@ public class MultipleIntentionsMLIRL {
 
 
 	/**
-	 * Initializes the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} parameters
+	 * Initializes the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} parameters
 	 * for each cluster. Will set the parameters randomly between -1 and 1.
-	 * @param rfs the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} whose parameters are to be initialized.
+	 * @param rfs the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} whose parameters are to be initialized.
 	 */
 	protected void initializeClusterRFParameters(List<DifferentiableRF> rfs){
 		for(DifferentiableRF rf : rfs){

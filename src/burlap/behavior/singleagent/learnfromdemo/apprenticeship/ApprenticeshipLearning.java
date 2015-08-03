@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learnbydemo.apprenticeship;
+package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
 import java.util.ArrayList;
 import java.util.Arrays;

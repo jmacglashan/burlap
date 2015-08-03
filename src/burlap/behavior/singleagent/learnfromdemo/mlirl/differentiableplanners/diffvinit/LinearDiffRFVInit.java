@@ -1,14 +1,14 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 /**
- * A class for creating a {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} and
- * a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
+ * A class for creating a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} and
+ * a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
  * when the reward function and value function initialization are linear functions over some set of features.
  * The total parameter dimensionality will be the sum of the reward function feature dimension
  * and value function initialization feature dimension.

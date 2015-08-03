@@ -1,14 +1,14 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.support;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
-import burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest;
-import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.DifferentiableVI;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.TerminalFunction;
 
 /**
- * A factory for generating {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} objects.
- * This class is use for {@link burlap.behavior.singleagent.learnbydemo.mlirl.MultipleIntentionsMLIRL}, so that it
+ * A factory for generating {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} objects.
+ * This class is use for {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MultipleIntentionsMLIRL}, so that it
  * can generate a different differentiable valueFunction for each cluster; that way, after a maximization step,
  * it can query the policy for each cluster in any state without replanning,rather than using a single valueFunction
  * instance that would require replanning for each cluster (since it would have to switch the reward function).
@@ -17,17 +17,17 @@ import burlap.oomdp.core.TerminalFunction;
 public interface QGradientPlannerFactory {
 
 	/**
-	 * Returns a {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} for an
-	 * {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} object's domain,
+	 * Returns a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} for an
+	 * {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object's domain,
 	 * reward function, discount factor, and Boltzmann beta parameter.
 	 * @param request the request defining the problem the valueFunction should solve.
-	 * @return a {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} instance.
+	 * @return a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} instance.
 	 */
 	public QGradientPlanner generateDifferentiablePlannerForRequest(MLIRLRequest request);
 
 
 	/**
-	 * A {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.DifferentiableVI} factory.
+	 * A {@link burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.DifferentiableVI} factory.
 	 */
 	public static class DifferentiableVIFactory implements QGradientPlannerFactory{
 

@@ -1,7 +1,7 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.policy.BoltzmannQPolicy;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.Planner;
@@ -16,7 +16,7 @@ import java.util.*;
 
 /**
  * Performs Differentiable Value Iteration using the Boltzmann backup operator and a
- * {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}. This class
+ * {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}. This class
  * behaves the same as the normal {@link burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration}
  * valueFunction except for being in the differentiable value function case.
  * @author James MacGlashan.

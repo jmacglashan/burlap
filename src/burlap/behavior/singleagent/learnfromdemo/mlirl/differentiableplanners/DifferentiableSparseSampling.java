@@ -1,16 +1,16 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit;
-import burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.VanillaDiffVinit;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGradient;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.VanillaDiffVinit;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.oomdp.statehashing.HashableStateFactory;
@@ -30,9 +30,9 @@ import java.util.Map;
  * A Differentiable finite horizon valueFunction that can also use sparse sampling over the transition dynamics when the
  * transition function is very large or infinite. This valueFunction can be used to perform Receding Horizon Inverse
  * Reinforcement Learning [1] with BURLAP's implementation of maximum likelihood inverse reinforcement learning
- * ({@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL}) [2]. Additionally, the value of the leaf
- * nodes of this valueFunction may also be parametrized using a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
- * object and learned with {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL},
+ * ({@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL}) [2]. Additionally, the value of the leaf
+ * nodes of this valueFunction may also be parametrized using a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
+ * object and learned with {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL},
  * enabling a nice separation of shaping features/rewards and the learned (or known) reward function.
  * <br/>
  * <br/>

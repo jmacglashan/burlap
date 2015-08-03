@@ -1,10 +1,10 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGradient;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * A class for performing dynamic programming with a differentiable value backup operator.
  * Specifically, all subclasses are assumed to use a Boltzmann backup operator and the reward functions
- * must be differentiable by subclassing the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
+ * must be differentiable by subclassing the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}
  * class. The normal {@link #performBellmanUpdateOn(burlap.oomdp.statehashing.HashableState)} method
  * of the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} class is overridden
  * with a method that uses the Boltzmann backup operator.

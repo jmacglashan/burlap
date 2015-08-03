@@ -1,16 +1,16 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
- * A differentiable reward function wrapper for use with {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL} when
+ * A differentiable reward function wrapper for use with {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL} when
  * the reward function is known, but the value function initialization for leaf nodes is to be learned.
- * This class takes as input the true reward function and a {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
- * object to form the {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} object
- * that {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRL} will use.
+ * This class takes as input the true reward function and a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
+ * object to form the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} object
+ * that {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL} will use.
  *
  * @author James MacGlashan.
  */

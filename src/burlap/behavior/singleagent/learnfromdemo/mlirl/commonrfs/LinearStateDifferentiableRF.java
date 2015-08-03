@@ -1,12 +1,12 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.commonrfs;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 /**
- * A class for defining a linear state {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}.
+ * A class for defining a linear state {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}.
  * The features of the reward function are produced by a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}.
  * By default, the reward function is defined as: R(s, a, s') = w * f(s'), where w is the weight vector (the parameters)
  * of this object, * is the dot product operator, and f(s') is the feature vector for state s'. Alternatively, the reward function

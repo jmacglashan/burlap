@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -33,7 +33,7 @@ public interface DifferentiableVInit extends ValueFunctionInitialization {
 
 
 	/**
-	 * A abstract class for {@link burlap.behavior.singleagent.learnbydemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
+	 * A abstract class for {@link burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
 	 * that includes a double array of parameters and methods to modify them.
 	 *
 	 * @author James MacGlashan

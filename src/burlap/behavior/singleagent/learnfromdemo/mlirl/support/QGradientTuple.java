@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.support;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;

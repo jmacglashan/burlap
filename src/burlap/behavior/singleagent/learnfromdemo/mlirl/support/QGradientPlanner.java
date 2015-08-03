@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.support;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.valuefunction.QFunction;
 import burlap.oomdp.core.states.State;
@@ -14,7 +14,7 @@ public interface QGradientPlanner extends QFunction {
 
 
 	/**
-	 * Returns the list of Q-value gradients (returned as {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple objects}) for each action permissible in the given state.
+	 * Returns the list of Q-value gradients (returned as {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple objects}) for each action permissible in the given state.
 	 * @param s the state for which Q-value gradients are to be returned.
 	 * @return the list of Q-value gradients for each action permissible in the given state.
 	 */
@@ -22,7 +22,7 @@ public interface QGradientPlanner extends QFunction {
 
 
 	/**
-	 * Returns the Q-value gradient ({@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientTuple}) for the given state and action.
+	 * Returns the Q-value gradient ({@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple}) for the given state and action.
 	 * @param s the state for which the Q-value gradient is to be returned
 	 * @param a the action for which the Q-value gradient is to be returned.
 	 * @return the Q-value gradient for the given state and action.

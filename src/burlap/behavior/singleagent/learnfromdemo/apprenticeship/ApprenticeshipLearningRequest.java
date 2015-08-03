@@ -1,11 +1,10 @@
-package burlap.behavior.singleagent.learnbydemo.apprenticeship;
+package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.learnbydemo.IRLRequest;
-import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.learnfromdemo.IRLRequest;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;

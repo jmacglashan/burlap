@@ -1,6 +1,6 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.commonrfs;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A class for defining a state-action linear {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}.
+ * A class for defining a state-action linear {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}.
  * The class takes as input a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} and the set of possible
  * grounded actions that can be applied in the world. The dimensionality of this reward function is equal to |A|*|f|,
  * where A is the set of possible grounded actions, and |f| is the state feature vector dimensionality.

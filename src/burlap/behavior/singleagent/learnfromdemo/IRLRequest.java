@@ -1,7 +1,6 @@
-package burlap.behavior.singleagent.learnbydemo;
+package burlap.behavior.singleagent.learnfromdemo;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.core.Domain;
 

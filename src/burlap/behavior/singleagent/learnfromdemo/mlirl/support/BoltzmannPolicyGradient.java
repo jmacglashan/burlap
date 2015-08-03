@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl.support;
+package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.MDPSolver;
@@ -21,7 +21,7 @@ public class BoltzmannPolicyGradient {
 	 * Computes the gradient of a Boltzmann policy using the given differentiable valueFunction.
 	 * @param s the input state of the policy gradient
 	 * @param a the action whose policy probability gradient being queried
-	 * @param planner the differentiable {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner} valueFunction
+	 * @param planner the differentiable {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} valueFunction
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @return the gradient of the policy.
 	 */
@@ -75,7 +75,7 @@ public class BoltzmannPolicyGradient {
 
 	/**
 	 * Computes the gradient of a Boltzmann policy using values derived from a Differentiable Botlzmann backup valueFunction.
-	 * @param rf the valueFunction's {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF}
+	 * @param rf the valueFunction's {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @param qs an array holding the Q-value for each action.
 	 * @param maxBetaScaled the maximum Q-value after being scaled by the parameter beta

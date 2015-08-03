@@ -1,9 +1,9 @@
-package burlap.behavior.singleagent.learnbydemo.mlirl;
+package burlap.behavior.singleagent.learnfromdemo.mlirl;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.BoltzmannPolicyGradient;
-import burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.debugtools.DPrint;
@@ -14,13 +14,13 @@ import java.util.List;
 
 /**
  * An implementation of Maximum-likelihood Inverse Reinforcement Learning [1]. This class takes as input (from an
- * {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} object) a set of expert trajectories
- * through a domain and a {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.DifferentiableRF} model,
+ * {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object) a set of expert trajectories
+ * through a domain and a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} model,
  * and learns the parameters of the reward function model that maximizes the likelihood of the trajectories.
  * The reward function parameter spaces is searched using gradient ascent. Since the policy gradient it uses
  * is non-linear, it's possible that it may get stuck in local optimas. Computing the policy gradient is done
- * by iteratively replanning after each gradient ascent step with a {@link burlap.behavior.singleagent.learnbydemo.mlirl.support.QGradientPlanner}
- * instance provided in the {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} object.
+ * by iteratively replanning after each gradient ascent step with a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner}
+ * instance provided in the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object.
  * <p/>
  * The gradient ascent will stop either after a fixed number of steps or until the change in likelihood is smaller
  * than some threshold. If the max number of steps is set to -1, then it will continue until the change in likelihood
@@ -86,8 +86,8 @@ public class MLIRL {
 
 
 	/**
-	 * Sets the {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} object defining the IRL problem.
-	 * @param request the {@link burlap.behavior.singleagent.learnbydemo.mlirl.MLIRLRequest} object defining the IRL problem.
+	 * Sets the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object defining the IRL problem.
+	 * @param request the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object defining the IRL problem.
 	 */
 	public void setRequest(MLIRLRequest request){
 		this.request = request;
