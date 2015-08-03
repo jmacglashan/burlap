@@ -447,8 +447,9 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * Runs LSPI for either numIterations or until the change in the weight matrix is no greater than maxChange.
 	 * @param numIterations the maximum number of policy iterations.
 	 * @param maxChange when the weight change is smaller than this value, LSPI terminates.
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy} using this object as the {@link burlap.behavior.valuefunction.QFunction} source.
 	 */
-	public void runPolicyIteration(int numIterations, double maxChange){
+	public GreedyQPolicy runPolicyIteration(int numIterations, double maxChange){
 		
 		boolean converged = false;
 		for(int i = 0; i < numIterations && !converged; i++){
@@ -466,6 +467,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 			
 		}
 		DPrint.cl(0, "Finished Policy Iteration.");
+		return new GreedyQPolicy(this);
 	}
 	
 	
@@ -571,9 +573,8 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 			this.planningCollector = new SARSCollector.UniformRandomSARSCollector(this.actions);
 		}
 		this.dataset = this.planningCollector.collectNInstances(new ConstantStateGenerator(initialState), this.rf, this.numSamplesForPlanning, Integer.MAX_VALUE, this.tf, this.dataset);
-		this.runPolicyIteration(this.maxNumPlanningIterations, this.maxChange);
+		return this.runPolicyIteration(this.maxNumPlanningIterations, this.maxChange);
 
-		return new GreedyQPolicy(this);
 
 	}
 
