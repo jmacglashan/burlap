@@ -63,6 +63,9 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 
 	@Override
 	public Value setValue(String v) {
+		if(v.indexOf(';') != -1){
+			return new MultiTargetRelationalValue(this.attribute, Arrays.asList(v.split(";")));
+		}
 		return new MultiTargetRelationalValue(this.attribute, Arrays.asList(v));
 	}
 	
