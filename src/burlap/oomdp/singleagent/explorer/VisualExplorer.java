@@ -36,6 +36,9 @@ import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
+import burlap.oomdp.stateserialization.SerializableState;
+import burlap.oomdp.stateserialization.SerializableStateFactory;
+import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
 import burlap.oomdp.visualizer.Visualizer;
 
 /**
@@ -215,22 +218,20 @@ public class VisualExplorer extends JFrame{
 		
 	}
 
-
 	/**
 	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
 	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
 	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
 	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
-	 * recorded episodes is saved to disk in the directory saveDirectory with states parsed using sp.
+	 * recorded episodes is saved to disk in the directory saveDirectory. States will be serialized with {@link burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory}
 	 * The list of
 	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
 	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
 	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
 	 * @param saveDirectory the directory in which all episodes will be saved
-	 * @param sp the {@link burlap.oomdp.legacy.StateParser} to use for parsing states to strings.
 	 */
 	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey,
-									   String saveDirectory, StateParser sp){
+									   String saveDirectory){
 		this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
 		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
 		this.isRecording = true;
@@ -247,7 +248,43 @@ public class VisualExplorer extends JFrame{
 			}
 		});
 
-		this.keySpecialMap.put(finishedRecordingKey, new SaveEpisodeAction(saveDirectory, sp));
+		this.keySpecialMap.put(finishedRecordingKey, new SaveEpisodeAction(saveDirectory, new SimpleSerializableStateFactory()));
+
+	}
+
+
+	/**
+	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
+	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
+	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
+	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
+	 * recorded episodes is saved to disk in the directory saveDirectory.
+	 * The list of
+	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
+	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
+	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
+	 * @param saveDirectory the directory in which all episodes will be saved
+	 * @param serializableStateFactory the {@link burlap.oomdp.stateserialization.SerializableStateFactory} to use for serializing states
+	 */
+	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey,
+									   String saveDirectory, SerializableStateFactory serializableStateFactory){
+		this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
+		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
+		this.isRecording = true;
+
+		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
+
+			@Override
+			public State applySpecialAction(State curState) {
+				synchronized(VisualExplorer.this) {
+					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
+					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
+				}
+				return curState;
+			}
+		});
+
+		this.keySpecialMap.put(finishedRecordingKey, new SaveEpisodeAction(saveDirectory, serializableStateFactory));
 
 	}
 	
@@ -714,19 +751,19 @@ public class VisualExplorer extends JFrame{
 		protected String directory;
 
 		/**
-		 * The State parser used to save episodes
+		 * The {@link burlap.oomdp.stateserialization.SerializableStateFactory} used to serialize states.
 		 */
-		protected StateParser sp;
+		protected SerializableStateFactory serializableStateFactory;
 
 
 		/**
 		 * Initializes
 		 * @param directory the directory path in which episodes will be recorded
-		 * @param sp the state parser to use.
+		 * @param serializableStateFactory the {@link burlap.oomdp.stateserialization.SerializableStateFactory} to use for serializing states.
 		 */
-		public SaveEpisodeAction(String directory, StateParser sp){
+		public SaveEpisodeAction(String directory, SerializableStateFactory serializableStateFactory){
 			this.directory = directory;
-			this.sp = sp;
+			this.serializableStateFactory = serializableStateFactory;
 
 			if(!this.directory.endsWith("/")){
 				this.directory = this.directory + "/";
@@ -740,7 +777,7 @@ public class VisualExplorer extends JFrame{
 			synchronized(VisualExplorer.this) {
 				VisualExplorer.this.isRecording = false;
 				List<EpisodeAnalysis> episodes = VisualExplorer.this.getRecordedEpisodes();
-				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode");
+				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode", this.serializableStateFactory);
 				System.out.println("Recorded " + VisualExplorer.this.recordedEpisodes.size()
 						+ " episodes to directory " + this.directory);
 			}
