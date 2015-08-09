@@ -25,6 +25,8 @@ import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.stateserialization.SerializableState;
+import burlap.oomdp.stateserialization.SerializableStateFactory;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.visualizer.Visualizer;
@@ -65,7 +67,6 @@ public class GameSequenceVisualizer extends JFrame {
 	//Backend
 	protected List <String>							episodeFiles;
 	protected DefaultListModel						episodesListModel;
-	protected StateParser							sp;
 
 	protected List <GameAnalysis>					directGames;
 	
@@ -83,16 +84,15 @@ public class GameSequenceVisualizer extends JFrame {
 	 * Initializes the GameSequenceVisualizer. By default the state visualizer will be set to the size 800x800 pixels.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the games took place
-	 * @param sp a state parser that can be used to parse the states stored in the game files
 	 * @param experimentDirectory the path to the directory containing the game files.
 	 */
-	public GameSequenceVisualizer(Visualizer v, SGDomain d, StateParser sp, String experimentDirectory){
-		this.init(v, d, sp, experimentDirectory, 800, 800);
+	public GameSequenceVisualizer(Visualizer v, SGDomain d, String experimentDirectory){
+		this.init(v, d, experimentDirectory, 800, 800);
 	}
 
 
 	/**
-	 * Initializes the GameSequenceVisualizer with programmatially supplied list of {@link burlap.behavior.stochasticgames.GameAnalysis} objects to view.
+	 * Initializes the GameSequenceVisualizer with programatially supplied list of {@link burlap.behavior.stochasticgames.GameAnalysis} objects to view.
 	 * By default the state visualizer will be 800x800 pixels.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the games took place
@@ -107,13 +107,12 @@ public class GameSequenceVisualizer extends JFrame {
 	 * Initializes the GameSequenceVisualizer.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the games took place
-	 * @param sp a state parser that can be used to parse the states stored in the game files
 	 * @param experimentDirectory the path to the directory containing the game files.
 	 * @param width the width of the state visualizer canvas
 	 * @param height the height of the state visualizer canvas
 	 */
-	public GameSequenceVisualizer(Visualizer v, SGDomain d, StateParser sp, String experimentDirectory, int width, int height){
-		this.init(v, d, sp, experimentDirectory, width, height);
+	public GameSequenceVisualizer(Visualizer v, SGDomain d, String experimentDirectory, int width, int height){
+		this.init(v, d, experimentDirectory, width, height);
 	}
 
 
@@ -134,12 +133,11 @@ public class GameSequenceVisualizer extends JFrame {
 	 * Initializes the GameSequenceVisualizer.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the games took place
-	 * @param sp a state parser that can be used to parse the states stored in the game files
 	 * @param experimentDirectory the path to the directory containing the game files.
 	 * @param w the width of the state visualizer canvas
 	 * @param h the height of the state visualizer canvas
 	 */
-	public void init(Visualizer v, SGDomain d, StateParser sp, String experimentDirectory, int w, int h){
+	public void init(Visualizer v, SGDomain d, String experimentDirectory, int w, int h){
 		
 		painter = v;
 		domain = d;
@@ -152,8 +150,7 @@ public class GameSequenceVisualizer extends JFrame {
 		
 		cWidth = w;
 		cHeight = h;
-		
-		this.sp = sp;
+
 		
 		
 		this.initGUI();
@@ -332,7 +329,7 @@ public class GameSequenceVisualizer extends JFrame {
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directGames == null) {
-					curGA = GameAnalysis.parseFileIntoGA(episodeFiles.get(ind), domain, sp);
+					curGA = GameAnalysis.parseGame(domain, episodeFiles.get(ind));
 				}
 				else{
 					curGA = this.directGames.get(ind);
