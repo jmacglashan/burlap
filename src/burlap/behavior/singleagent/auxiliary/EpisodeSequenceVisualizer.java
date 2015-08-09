@@ -28,6 +28,8 @@ import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.stateserialization.SerializableStateFactory;
+import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
 import burlap.oomdp.visualizer.Visualizer;
 
 
@@ -67,7 +69,6 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	//Backend
 	protected List <String>							episodeFiles;
 	protected DefaultListModel						episodesListModel;
-	protected StateParser							sp;
 
 	protected List <EpisodeAnalysis>				directEpisodes;
 	
@@ -84,12 +85,11 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	 * Initializes the EpisodeSequenceVisualizer. By default the state visualizer will be set to the size 800x800 pixels.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
-	 * @param sp a state parser that can be used to parse the states stored in the episode files
 	 * @param experimentDirectory the path to the directory containing the episode files.
 	 */
-	public EpisodeSequenceVisualizer(Visualizer v, Domain d, StateParser sp, String experimentDirectory){
+	public EpisodeSequenceVisualizer(Visualizer v, Domain d, String experimentDirectory){
 		
-		this.init(v, d, sp, experimentDirectory, 800, 800);
+		this.init(v, d, experimentDirectory, 800, 800);
 		
 	}
 
@@ -97,14 +97,13 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	 * Initializes the EpisodeSequenceVisualizer.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
-	 * @param sp a state parser that can be used to parse the states stored in the episode files
 	 * @param experimentDirectory the path to the directory containing the episode files.
 	 * @param w the width of the state visualizer canvas
 	 * @param h the height of the state visualizer canvas
 	 */
-	public EpisodeSequenceVisualizer(Visualizer v, Domain d, StateParser sp, String experimentDirectory, int w, int h){
+	public EpisodeSequenceVisualizer(Visualizer v, Domain d, String experimentDirectory, int w, int h){
 
-		this.init(v, d, sp, experimentDirectory, w, h);
+		this.init(v, d, experimentDirectory, w, h);
 
 	}
 
@@ -136,12 +135,11 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	 * Initializes the EpisodeSequenceVisualizer with episodes read from disk.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
-	 * @param sp a state parser that can be used to parse the states stored in the episode files
 	 * @param experimentDirectory the path to the directory containing the episode files.
 	 * @param w the width of the state visualizer canvas
 	 * @param h the height of the state visualizer canvas
 	 */
-	public void init(Visualizer v, Domain d, StateParser sp, String experimentDirectory, int w, int h){
+	public void init(Visualizer v, Domain d, String experimentDirectory, int w, int h){
 		
 		painter = v;
 		domain = d;
@@ -154,8 +152,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		cWidth = w;
 		cHeight = h;
-		
-		this.sp = sp;
+
 		
 		
 		this.initGUI();
@@ -342,7 +339,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directEpisodes == null) {
-					curEA = EpisodeAnalysis.legacyParseFileIntoEA(episodeFiles.get(ind), domain, sp);
+					curEA = EpisodeAnalysis.parseFileIntoEA(episodeFiles.get(ind), domain);
 				}
 				else{
 					curEA = this.directEpisodes.get(ind);
