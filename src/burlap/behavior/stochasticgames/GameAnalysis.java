@@ -1,5 +1,6 @@
 package burlap.behavior.stochasticgames;
 
+import java.beans.IntrospectionException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,12 +12,27 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.stochasticgames.agents.RandomSGAgent;
+import burlap.debugtools.DPrint;
+import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
+import burlap.domain.stochasticgames.gridgame.GridGame;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.stateserialization.SerializableState;
+import burlap.oomdp.stateserialization.SerializableStateFactory;
+import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
+import burlap.oomdp.stochasticgames.*;
+import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.AbstractConstruct;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.*;
+import org.yaml.snakeyaml.representer.Represent;
+import org.yaml.snakeyaml.representer.Representer;
 
 
 /**
@@ -45,17 +61,17 @@ public class GameAnalysis {
 	/**
 	 * The sequence of states
 	 */
-	protected List<State>						states;
+	public List<State>							states;
 	
 	/**
 	 * The sequence of joint actions
 	 */
-	protected List<JointAction>					jointActions;
+	public List<JointAction>					jointActions;
 	
 	/**
 	 * The sequence of joint rewards
 	 */
-	protected List<Map<String, Double>>			jointRewards;
+	public List<Map<String, Double>>			jointRewards;
 	
 	
 	/**
@@ -257,29 +273,116 @@ public class GameAnalysis {
 	public Set<String> getAgentsInvolvedInGame() {
 		return agentsInvolvedInGame;
 	}
-	
-	
-	/**
-	 * Converts this game into a string representation.
-	 * @param sp the state parser to use to convert state objects to string representations.
-	 * @return a string representation of this episode.
-	 */
-	public String parseIntoString(StateParser sp){
-		
-		StringBuffer sbuf = new StringBuffer(256);
-		
-		for(int i = 0; i < states.size(); i++){
-			
-			sbuf.append("#EL#\n").append(sp.stateToString(states.get(i))).append("\n#ES#\n");
-			if(i < states.size()-1){
-				sbuf.append(jointActions.get(i).toString()).append("\n").append(jointRewardStringRep(jointRewards.get(i))).append("\n");
+
+
+
+
+	public String serialize(){
+		return serialize(new SimpleSerializableStateFactory());
+	}
+
+	public String serialize(SerializableStateFactory serializableStateFactory){
+
+		Yaml yaml = new Yaml(new GameAnalysisYamlRepresenter(serializableStateFactory));
+		String yamlOut = yaml.dump(this);
+		return yamlOut;
+	}
+
+	private class GameAnalysisYamlRepresenter extends Representer {
+		SerializableStateFactory serializableStateFactory;
+
+		public GameAnalysisYamlRepresenter(SerializableStateFactory serializableStateFactory) {
+			super();
+			this.serializableStateFactory = serializableStateFactory;
+			for(State s : states) {
+				this.representers.put(s.getClass(), new StateYamlRepresent());
 			}
-			
+			this.representers.put(JointAction.class, new JointActionYamlRepresent());
 		}
-		
-		
-		return sbuf.toString();
-		
+
+		private class StateYamlRepresent implements Represent {
+
+			@Override
+			public Node representData(Object o) {
+				try {
+					return representJavaBean(getProperties(serializableStateFactory.getGeneratedClass()), serializableStateFactory.serialize((State)o));
+				} catch(IntrospectionException e) {
+					throw new RuntimeException("GameAnalysis could not serialize one of the states. Got this error:\n" + e.getMessage());
+				}
+			}
+		}
+
+		private class JointActionYamlRepresent implements Represent{
+			@Override
+			public Node representData(Object o) {
+				return representScalar(new Tag("!action"), ((JointAction)o).toString());
+			}
+		}
+	}
+
+
+	public static GameAnalysis parseGame(SGDomain domain, String episodeString){
+
+		Yaml yaml = new Yaml(new GameAnalysisConstructor(domain));
+		GameAnalysis ga = (GameAnalysis)yaml.load(episodeString);
+		return ga;
+	}
+
+	private static class GameAnalysisConstructor extends Constructor {
+
+		SGDomain domain;
+
+		public GameAnalysisConstructor(SGDomain domain) {
+			this.domain = domain;
+			yamlConstructors.put(new Tag("!action"), new ActionConstruct());
+			yamlClassConstructors.put(NodeId.mapping, new EpisodeAnalysisConstruct());
+		}
+
+
+		private class EpisodeAnalysisConstruct extends Constructor.ConstructMapping{
+
+			@Override
+			protected Object constructJavaBean2ndStep(MappingNode node, Object object) {
+
+				Class type = node.getType();
+				if(type.equals(GameAnalysis.class)){
+					Map map = constructMapping(node);
+					List<JointAction> actionList = (List<JointAction>)map.get("jointActions");
+					List<Map<String, Double>> rewardList = (List<Map<String, Double>>)map.get("jointRewards");
+					List<SerializableState> stateList = (List<SerializableState>)map.get("states");
+					GameAnalysis ea = new GameAnalysis();
+					ea.jointActions = actionList;
+					ea.jointRewards = rewardList;
+					ea.states = SerializableState.deserializeStates(stateList, domain);
+					return ea;
+				}
+				else {
+					return super.constructJavaBean2ndStep(node, object);
+				}
+			}
+		}
+
+		private class ActionConstruct extends AbstractConstruct {
+
+			@Override
+			public Object construct(Node node) {
+				String val = (String) constructScalar((ScalarNode)node);
+				JointAction ja = parseStringIntoJointAction(val, domain);
+				return ja;
+			}
+		}
+	}
+
+
+
+
+	/**
+	 * Writes this game to a file. If the the directory for the specified file path do not exist, then they will be created.
+	 * If the file extension is not ".game" will automatically be added. States will be serialized with {@link burlap.oomdp.stateserialization.SerializableStateFactory}
+	 * @param path the path to the file in which to write this game.
+	 */
+	public void writeToFile(String path){
+		writeToFile(path, new SimpleSerializableStateFactory());
 	}
 	
 	
@@ -287,9 +390,9 @@ public class GameAnalysis {
 	 * Writes this game to a file. If the the directory for the specified file path do not exist, then they will be created.
 	 * If the file extension is not ".game" will automatically be added.
 	 * @param path the path to the file in which to write this game.
-	 * @param sp the state parser to use to convert state objects to string representations.
+	 * @param serializableStateFactory the {@link burlap.oomdp.stateserialization.SerializableStateFactory} used to serialize states.
 	 */
-	public void writeToFile(String path, StateParser sp){
+	public void writeToFile(String path, SerializableStateFactory serializableStateFactory){
 		
 		if(!path.endsWith(".game")){
 			path = path + ".game";
@@ -303,7 +406,7 @@ public class GameAnalysis {
 		
 		try{
 			
-			String str = this.parseIntoString(sp);
+			String str = this.serialize(serializableStateFactory);
 			BufferedWriter out = new BufferedWriter(new FileWriter(path));
 			out.write(str);
 			out.close();
@@ -314,31 +417,56 @@ public class GameAnalysis {
 		}
 		
 	}
-	
-	
-	
+
+
+
 	/**
-	 * Parses a string representing a {@link GameAnalysis} object into an actual {@link GameAnalysis} object.
+	 * Reads a game that was written to a file and turns into a {@link GameAnalysis} object.
+	 * @param path the path to the game file.
+	 * @param domain the stochastic games domain to which the states and actions belong
+	 * @return an {@link GameAnalysis} object.
+	 */
+	public static GameAnalysis parseFileIntoGA(String path, SGDomain domain){
+
+		//read whole file into string first
+		String fcont = null;
+		try{
+			fcont = new Scanner(new File(path)).useDelimiter("\\Z").next();
+		}catch(Exception E){
+			System.out.println(E);
+		}
+
+		return parseGame(domain, path);
+	}
+
+
+
+
+	
+
+
+	/**
+	 * Using the legacy BURLAP 1.0 GameAnalysis format, parses a string representing a {@link GameAnalysis} object into an actual {@link GameAnalysis} object.
 	 * @param str the string representation
 	 * @param domain the stochastic games domain to which the actions belong
 	 * @param sp the state parser used to represent states
 	 * @return a {@link GameAnalysis} object.
 	 */
-	public static GameAnalysis parseStringIntoGameAnalysis(String str, SGDomain domain, StateParser sp){
-		
+	public static GameAnalysis legacyParseStringIntoGameAnalysis(String str, SGDomain domain, StateParser sp){
+
 		GameAnalysis ga = new GameAnalysis();
-		
+
 		String [] elComps = str.split("#EL#\n");
-		
+
 		for(int i = 1; i < elComps.length; i++){
-			
+
 			String spToken = "\n#ES#";
 			if(!elComps[i].endsWith(spToken)){
 				spToken += "\n";
 			}
-			
+
 			String [] parts = elComps[i].split(spToken);
-			
+
 			State s = sp.stringToState(parts[0]);
 			if(i < elComps.length-1){
 				String [] ars = parts[1].split("\n");
@@ -348,21 +476,21 @@ public class GameAnalysis {
 				ga.getStates().add(s);
 			}
 		}
-		
-		
+
+
 		return ga;
 	}
 	
 	
 	
 	/**
-	 * Reads a game that was written to a file and turns into a {@link GameAnalysis} object.
+	 * Using the legacy BURLAP 1.0 format, reads a game that was written to a file and turns into a {@link GameAnalysis} object.
 	 * @param path the path to the game file.
 	 * @param domain the stochastic games domain to which the states and actions belong
 	 * @param sp a state parser that can parse the state string representation in the file
 	 * @return an {@link GameAnalysis} object.
 	 */
-	public static GameAnalysis parseFileIntoGA(String path, SGDomain domain, StateParser sp){
+	public static GameAnalysis legacyParseFileIntoGA(String path, SGDomain domain, StateParser sp){
 		
 		//read whole file into string first
 		String fcont = null;
@@ -372,7 +500,7 @@ public class GameAnalysis {
 			System.out.println(E);
 		}
 		
-		return parseStringIntoGameAnalysis(fcont, domain, sp);
+		return legacyParseStringIntoGameAnalysis(fcont, domain, sp);
 	}
 	
 	
@@ -443,6 +571,39 @@ public class GameAnalysis {
 		}
 		return jointReward;
 	}
-	
+
+
+	public static void main(String[] args) {
+
+		GridGame gg = new GridGame();
+		SGDomain domain = (SGDomain)gg.generateDomain();
+		State s = GridGame.getTurkeyInitialState(domain);
+
+		JointReward jr = new GridGame.GGJointRewardFunction(domain);
+		TerminalFunction tf = new GridGame.GGTerminalFunction(domain);
+		World world = new World(domain, jr, tf, new ConstantSGStateGenerator(s));
+		DPrint.toggleCode(world.getDebugId(),false);
+
+		SGAgent ragent1 = new RandomSGAgent();
+		SGAgent ragent2 = new RandomSGAgent();
+
+		SGAgentType type = new SGAgentType("agent", domain.getObjectClass(GridGame.CLASSAGENT), domain.getAgentActions());
+
+		ragent1.joinWorld(world, type);
+		ragent2.joinWorld(world, type);
+
+		GameAnalysis ga = world.runGame(20);
+		System.out.println(ga.maxTimeStep());
+
+		String serialized = ga.serialize();
+		System.out.println(serialized);
+
+		GameAnalysis read = GameAnalysis.parseGame(domain, serialized);
+		System.out.println(read.maxTimeStep());
+		System.out.println(read.getState(0).toString());
+
+
+	}
+
 	
 }
