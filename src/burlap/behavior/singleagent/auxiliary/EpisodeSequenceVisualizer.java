@@ -108,7 +108,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	}
 
 	/**
-	 * Initializes the EpisodeSequenceVisualizer with a programmatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * Initializes the EpisodeSequenceVisualizer with a programatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
 	 * By default the state visualizer will be set to the size 800x800 pixels.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
@@ -120,7 +120,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 
 
 	/**
-	 * Initializes the EpisodeSequenceVisualizer with a programmatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * Initializes the EpisodeSequenceVisualizer with a programatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
 	 * @param episodes the episodes to view
@@ -162,7 +162,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 
 
 	/**
-	 * Initializes the EpisodeSequenceVisualizer with programmatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * Initializes the EpisodeSequenceVisualizer with programatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
 	 * @param episodes the episodes to view
