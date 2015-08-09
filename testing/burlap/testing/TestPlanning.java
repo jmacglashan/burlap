@@ -9,7 +9,6 @@ import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.dfs.DFS;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.domain.singleagent.gridworld.GridWorldStateParser;
 import burlap.oomdp.auxiliary.common.SinglePFTF;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
@@ -29,7 +28,6 @@ public class TestPlanning {
 	public static final double delta = 0.000001;
 	GridWorldDomain gw;
 	Domain domain;
-	GridWorldStateParser parser;
 	RewardFunction rf;
 	TerminalFunction tf;
 	StateConditionTest goalCondition;

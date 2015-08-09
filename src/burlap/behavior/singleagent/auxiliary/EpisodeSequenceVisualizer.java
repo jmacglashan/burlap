@@ -21,7 +21,7 @@ import javax.swing.event.ListSelectionListener;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.datastructures.AlphanumericSorting;
-import burlap.oomdp.auxiliary.StateParser;
+import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
@@ -342,7 +342,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directEpisodes == null) {
-					curEA = EpisodeAnalysis.parseFileIntoEA(episodeFiles.get(ind), domain, sp);
+					curEA = EpisodeAnalysis.legacyParseFileIntoEA(episodeFiles.get(ind), domain, sp);
 				}
 				else{
 					curEA = this.directEpisodes.get(ind);

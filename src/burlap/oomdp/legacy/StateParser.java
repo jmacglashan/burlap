@@ -1,4 +1,4 @@
-package burlap.oomdp.auxiliary;
+package burlap.oomdp.legacy;
 
 import burlap.oomdp.core.states.State;
 

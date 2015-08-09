@@ -1,31 +1,77 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.auxiliary.StateParser;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.legacy.StateParser;
+import burlap.oomdp.stateserialization.SerializableState;
+import burlap.oomdp.stateserialization.SerializableStateFactory;
 
 import java.util.List;
 
 /**
- * @author Phillipe Morere
+ * A {@link burlap.oomdp.stateserialization.SerializableStateFactory} for simple string representations of {@link burlap.domain.singleagent.frostbite.FrostbiteDomain} states.
+ * @author James MacGlashan.
  */
-public class FrostbiteStateParser implements StateParser{
+public class SerializableFrostbiteStateFactory implements SerializableStateFactory {
 
-	Domain domain;
-
-
-	/**
-	 * Initializes for the specific frostbite domain instance.
-	 *
-	 * @param domain
-	 */
-	public FrostbiteStateParser(Domain domain) {
-		this.domain = domain;
+	@Override
+	public SerializableState serialize(State s) {
+		return new SerializableFrostbiteState(s);
 	}
 
 	@Override
-	public String stateToString(State s) {
+	public Class<?> getGeneratedClass() {
+		return SerializableFrostbiteState.class;
+	}
+
+
+	public static class SerializableFrostbiteState extends SerializableState {
+
+
+		public String stringRep;
+
+		public SerializableFrostbiteState() {
+		}
+
+		public SerializableFrostbiteState(State s) {
+			super(s);
+		}
+
+		@Override
+		public void serialize(State s) {
+			this.stringRep = stateToString(s);
+		}
+
+		@Override
+		public State deserialize(Domain domain) {
+			return stringToState(domain, this.stringRep);
+		}
+
+	}
+
+	public static class FrostbiteStateParser implements StateParser {
+
+		Domain domain;
+
+		public FrostbiteStateParser(Domain domain) {
+			this.domain = domain;
+		}
+
+		@Override
+		public String stateToString(State s) {
+			return SerializableFrostbiteStateFactory.stateToString(s);
+		}
+
+		@Override
+		public State stringToState(String str) {
+			return SerializableFrostbiteStateFactory.stringToState(domain, str);
+		}
+	}
+
+
+
+	public static String stateToString(State s){
 		StringBuffer buf = new StringBuffer(256);
 
 		ObjectInstance agent = s.getObjectsOfClass(FrostbiteDomain.AGENTCLASS).get(0);
@@ -50,8 +96,8 @@ public class FrostbiteStateParser implements StateParser{
 		return buf.toString();
 	}
 
-	@Override
-	public State stringToState(String str) {
+	public static State stringToState(Domain domain, String str){
+
 		str = str.trim();
 
 		String[] lineComps = str.split("\n");

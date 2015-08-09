@@ -1,4 +1,4 @@
-package burlap.oomdp.auxiliary.common;
+package burlap.oomdp.legacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.yaml.snakeyaml.Yaml;
 
-import burlap.oomdp.auxiliary.StateParser;
+import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;

@@ -20,7 +20,7 @@ import javax.swing.event.ListSelectionListener;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.datastructures.AlphanumericSorting;
-import burlap.oomdp.auxiliary.StateParser;
+import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.states.State;

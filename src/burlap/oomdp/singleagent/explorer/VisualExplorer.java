@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.auxiliary.StateParser;
+import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
@@ -227,7 +227,7 @@ public class VisualExplorer extends JFrame{
 	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
 	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
 	 * @param saveDirectory the directory in which all episodes will be saved
-	 * @param sp the {@link burlap.oomdp.auxiliary.StateParser} to use for parsing states to strings.
+	 * @param sp the {@link burlap.oomdp.legacy.StateParser} to use for parsing states to strings.
 	 */
 	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey,
 									   String saveDirectory, StateParser sp){
@@ -740,7 +740,7 @@ public class VisualExplorer extends JFrame{
 			synchronized(VisualExplorer.this) {
 				VisualExplorer.this.isRecording = false;
 				List<EpisodeAnalysis> episodes = VisualExplorer.this.getRecordedEpisodes();
-				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode", 0, this.sp);
+				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode");
 				System.out.println("Recorded " + VisualExplorer.this.recordedEpisodes.size()
 						+ " episodes to directory " + this.directory);
 			}

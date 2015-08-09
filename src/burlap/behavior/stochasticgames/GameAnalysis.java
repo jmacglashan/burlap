@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import burlap.oomdp.auxiliary.StateParser;
+import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;

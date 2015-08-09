@@ -1,4 +1,4 @@
-package burlap.oomdp.auxiliary.common;
+package burlap.oomdp.legacy;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import burlap.oomdp.auxiliary.StateParser;
+import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
