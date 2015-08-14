@@ -101,8 +101,21 @@ public class JointRewardFunctionWrapper implements RewardFunction {
 		for(JointActionProbability jap : japs){
 			List<TransitionProbability> transProbs = jam.transitionProbsFor(s, jap.getJointAction());
 			for(TransitionProbability tp : transProbs){
+				double otherReward = 0;
+				double myReward = 0;
+				myReward = jointReward.reward(s, jap.getJointAction(), sprime).get(agentName);
 				
-				reward = jointReward.reward(s, jap.getJointAction(), sprime).get(agentName);
+				if(agentName.contains("0")){
+					otherReward  = jointReward.reward(s, jap.getJointAction(), sprime).get("agent1");
+				}else{
+					otherReward  = jointReward.reward(s, jap.getJointAction(), sprime).get("agent0");
+				}
+				
+				if(otherReward > 0 || myReward>0){
+					reward = myReward - .5*(Math.max(otherReward-myReward, 0))+.1*otherReward;
+				}else{
+					reward = myReward;
+				}
 				expectedReward+=reward*jap.getProbability()*tp.p;
 				
 				

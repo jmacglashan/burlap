@@ -62,9 +62,10 @@ public class BRDPlanThenCombinePoliciesAgent extends
 				Policy newPolicy = plan(singleAgentDomain, rf);
 
 				newPolicies.put(lev, newPolicy);
+				//policy = newPolicy;
 			}
 			policy = constructPolicy(newPolicies, otherAgentName);
-
+			
 			// reset isFirstDay
 			isFirstDay = false;
 		}
