@@ -20,4 +20,8 @@ public class TransparentSetStrategyAgent extends SetStrategyAgent{
 		System.out.println();
 		return super.getAction(s);
 	}
+	
+	public Policy getPolicy(){
+		return this.policy;
+	}
 }

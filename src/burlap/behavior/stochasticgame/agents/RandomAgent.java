@@ -31,7 +31,6 @@ public class RandomAgent extends Agent {
 		
 		int r = RandomFactory.getMapped(0).nextInt(gsas.size());
 		GroundedSingleAction gsa = gsas.get(r);
-		
 		return gsa;
 	}
 
