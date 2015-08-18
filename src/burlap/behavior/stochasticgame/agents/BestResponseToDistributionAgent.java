@@ -38,7 +38,7 @@ public abstract class BestResponseToDistributionAgent extends Agent {
 
 	protected static double  TAU = 2.0;
 	private static double MAX_DIFF = 0.01, GAMMA = 0.99, MAX_DELTA = 0.001;
-	private static int MAX_ROLLOUTS = 100, MAX_ROLLOUT_DEPTH = 30,
+	private static int MAX_ROLLOUTS = 200, MAX_ROLLOUT_DEPTH = 50,
 			MAX_ITERATIONS = 1000000;
 
 	/*
