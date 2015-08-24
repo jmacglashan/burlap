@@ -13,6 +13,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.stochasticgame.saconversion.ConversionGenerator;
 import burlap.behavior.stochasticgame.saconversion.ExpectedPolicyWrapper;
 import burlap.behavior.stochasticgame.saconversion.JointRewardFunctionWrapper;
+import burlap.behavior.stochasticgame.saconversion.RewardCalculator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.SADomain;
@@ -36,8 +37,8 @@ public class BRDCombinePoliciesThenPlanAgent extends
 		BestResponseToDistributionAgent {
 
 	public BRDCombinePoliciesThenPlanAgent(SGDomain domain, StateHashFactory hashFactory,
-			double goalReward, boolean runValueIteration) {
-		super(domain, hashFactory, goalReward, runValueIteration);
+			double goalReward, boolean runValueIteration, RewardCalculator rewardCalc) {
+		super(domain, hashFactory, goalReward, runValueIteration, rewardCalc);
 	}
 
 	/**
@@ -119,7 +120,7 @@ public class BRDCombinePoliciesThenPlanAgent extends
 					new DiscreteStateHashFactory(),
 					new JointRewardFunctionWrapper(world.getRewardModel(),
 							getAgentName(), domain, otherAgentPolicies,
-							world.getActionModel(), domain.getSingleActions()));
+							world.getActionModel(), domain.getSingleActions(), this.rewardCalc));
 
 			policy = plan(singleAgentDomain, rf);
 			// reset isFirstDay

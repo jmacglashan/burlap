@@ -13,6 +13,7 @@ import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueItera
 import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.stochasticgame.saconversion.MinDistValueFunctionInitialization;
 import burlap.behavior.stochasticgame.saconversion.RTDPGreedyQPolicy;
+import burlap.behavior.stochasticgame.saconversion.RewardCalculator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -35,6 +36,7 @@ public abstract class BestResponseToDistributionAgent extends Agent {
 	protected int numLevels;
 
 	protected boolean isFirstDay;
+	protected RewardCalculator rewardCalc;
 
 	protected static double  TAU = 2.0;
 	private static double MAX_DIFF = 0.01, GAMMA = 0.99, MAX_DELTA = 0.001;
@@ -85,11 +87,12 @@ public abstract class BestResponseToDistributionAgent extends Agent {
 	}
 
 	public BestResponseToDistributionAgent(SGDomain domain, StateHashFactory hashFactory,
-			double goalReward, boolean runValueIteration) {
+			double goalReward, boolean runValueIteration, RewardCalculator rewardCalc) {
 		this.domain = domain;
 		this.hashFactory = hashFactory;
 		this.goalReward = goalReward;
 		this.runValueIteration = runValueIteration;
+		this.rewardCalc = rewardCalc;
 		
 		this.distributionOverAllOtherAgentPolicies = new HashMap<String, Map<Integer, Double>>();
 

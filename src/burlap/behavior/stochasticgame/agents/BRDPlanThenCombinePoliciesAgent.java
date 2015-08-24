@@ -8,6 +8,7 @@ import burlap.behavior.statehashing.StateHashFactory;
 import burlap.behavior.stochasticgame.saconversion.ConversionGenerator;
 import burlap.behavior.stochasticgame.saconversion.ExpectedPolicyWrapper;
 import burlap.behavior.stochasticgame.saconversion.JointRewardFunctionWrapper;
+import burlap.behavior.stochasticgame.saconversion.RewardCalculator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -19,8 +20,8 @@ public class BRDPlanThenCombinePoliciesAgent extends
 		BestResponseToDistributionAgent {
 
 	public BRDPlanThenCombinePoliciesAgent(SGDomain domain, StateHashFactory hashFactory,
-			double goalReward, boolean runValueIteration) {
-		super(domain, hashFactory, goalReward, runValueIteration);
+			double goalReward, boolean runValueIteration, RewardCalculator rewardCalc) {
+		super(domain, hashFactory, goalReward, runValueIteration, rewardCalc);
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class BRDPlanThenCombinePoliciesAgent extends
 				RewardFunction rf = new JointRewardFunctionWrapper(
 						world.getRewardModel(), getAgentName(), domain,
 						levelPolicies, world.getActionModel(),
-						domain.getSingleActions());
+						domain.getSingleActions(), this.rewardCalc);
 
 				Policy newPolicy = plan(singleAgentDomain, rf);
 

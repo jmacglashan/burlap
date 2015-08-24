@@ -33,121 +33,129 @@ public class JointRewardFunctionWrapper implements RewardFunction {
 	protected Map<String, Policy> agentPolicyMap;
 	protected JointActionModel jam;
 	protected List<SingleAction> actions;
+	private RewardCalculator rewardCalc;
 
-
-	public JointRewardFunctionWrapper(JointReward jointReward, String agentName, SGDomain sgDomain, Map<String,Policy> agentPolicyMap, 
-			JointActionModel jam, List<SingleAction> actions) {
+	public JointRewardFunctionWrapper(JointReward jointReward,
+			String agentName, SGDomain sgDomain,
+			Map<String, Policy> agentPolicyMap, JointActionModel jam,
+			List<SingleAction> actions, RewardCalculator rewardCalc) {
 		this.jointReward = jointReward;
 		this.agentName = agentName;
 		this.sgDomain = sgDomain;
 		this.agentPolicyMap = agentPolicyMap;
 		this.jam = jam;
 		this.actions = actions;
-
-
+		this.rewardCalc = rewardCalc;
 	}
+
+//	public JointRewardFunctionWrapper(JointReward jointReward,
+//			String agentName, SGDomain sgDomain,
+//			Map<String, Policy> agentPolicyMap, JointActionModel jam,
+//			List<SingleAction> actions) {
+//		this(jointReward, agentName, sgDomain, agentPolicyMap, jam, actions,
+//				new SelfishRewardCalculator());
+//	}
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
 
+		// need to get from a GroundedAction to a GroundedSingleAction that I
+		// can add to
 
-		//need to get from a GroundedAction to a GroundedSingleAction that I can add to
-
-		//convert GroundedAction to SingleAction
+		// convert GroundedAction to SingleAction
 
 		SingleAction sa = sgDomain.getSingleAction(a.actionName());
 
 		// this is the data structure we will use to calc the expected reward
 		List<JointActionProbability> japs = new ArrayList<JointActionProbability>();
 
-		//this map is from agent names to their policy at the given state
+		// this map is from agent names to their policy at the given state
 		Map<String, List<ActionProb>> mapOfActionProbs = new HashMap<String, List<ActionProb>>();
 
-		//this is used to map a counter to the agent name 
-		Map<Integer,String> mapping = new HashMap<Integer,String>();
+		// this is used to map a counter to the agent name
+		Map<Integer, String> mapping = new HashMap<Integer, String>();
 		List<ActionProb> actionProbs = new ArrayList<ActionProb>();
 		int i = 0;
-		if(agentPolicyMap==null){
-			//create the map from all agents to policy at this state
+		if (agentPolicyMap == null) {
+			// create the map from all agents to policy at this state
 
-			//for all actions create uniform 
-			List<GroundedSingleAction> gsas = sa.getAllGroundedActionsFor(s, agentName);
+			// for all actions create uniform
+			List<GroundedSingleAction> gsas = sa.getAllGroundedActionsFor(s,
+					agentName);
 
-			for(GroundedSingleAction gsa : gsas){
-				actionProbs.add(new ActionProb(gsa, 1.0/gsas.size()));
+			for (GroundedSingleAction gsa : gsas) {
+				actionProbs.add(new ActionProb(gsa, 1.0 / gsas.size()));
 			}
 			mapOfActionProbs.put(agentName, actionProbs);
-			mapping.put(i,agentName);
-			i=i+1;
+			mapping.put(i, agentName);
+			i = i + 1;
 
-		}else{
+		} else {
 
-			//create the map from all agents to policy at this state
+			// create the map from all agents to policy at this state
 
-			for(String agent : agentPolicyMap.keySet()){
-				actionProbs = agentPolicyMap.get(agent).getActionDistributionForState(s);
+			for (String agent : agentPolicyMap.keySet()) {
+				actionProbs = agentPolicyMap.get(agent)
+						.getActionDistributionForState(s);
 				mapOfActionProbs.put(agent, actionProbs);
-				mapping.put(i,agent);
-				i=i+1;
+				mapping.put(i, agent);
+				i = i + 1;
 			}
 		}
 
-		//add the non-normalized probability of taking all next joint actions
-		japs = addAllCombinations(s, mapOfActionProbs, mapping,a.params,sa);
+		// add the non-normalized probability of taking all next joint actions
+		japs = addAllCombinations(s, mapOfActionProbs, mapping, a.params, sa);
 		double expectedReward = 0.0;
 
-		//sum over all next states so me can normalize
+		// sum over all next states so me can normalize
 		double reward = 0.0;
-		for(JointActionProbability jap : japs){
-			List<TransitionProbability> transProbs = jam.transitionProbsFor(s, jap.getJointAction());
-			for(TransitionProbability tp : transProbs){
+		for (JointActionProbability jap : japs) {
+			List<TransitionProbability> transProbs = jam.transitionProbsFor(s,
+					jap.getJointAction());
+			for (TransitionProbability tp : transProbs) {
 				double otherReward = 0;
 				double myReward = 0;
-				myReward = jointReward.reward(s, jap.getJointAction(), sprime).get(agentName);
-				
-				if(agentName.contains("0")){
-					otherReward  = jointReward.reward(s, jap.getJointAction(), sprime).get("agent1");
-				}else{
-					otherReward  = jointReward.reward(s, jap.getJointAction(), sprime).get("agent0");
+				myReward = jointReward.reward(s, jap.getJointAction(), sprime)
+						.get(agentName);
+
+				if (agentName.contains("0")) {
+					otherReward = jointReward.reward(s, jap.getJointAction(),
+							sprime).get("agent1");
+				} else {
+					otherReward = jointReward.reward(s, jap.getJointAction(),
+							sprime).get("agent0");
 				}
-				
-				if(otherReward > 0 || myReward>0){
-					reward = myReward - .5*(Math.max(otherReward-myReward, 0))+.1*otherReward;
-				}else{
-					reward = myReward;
-				}
-				expectedReward+=reward*jap.getProbability()*tp.p;
-				
-				
+
+				reward = this.rewardCalc.getReward(myReward, otherReward);
+				expectedReward += reward * jap.getProbability() * tp.p;
+
 			}
 
 		}
-
 
 		return expectedReward;
 	}
 
 	private List<JointActionProbability> addAllCombinations(State s,
-			Map<String, List<ActionProb>> lists,
-			Map<Integer,String> mapping,String[] params, SingleAction sa) {
+			Map<String, List<ActionProb>> lists, Map<Integer, String> mapping,
+			String[] params, SingleAction sa) {
 
-		//this array just tracks where we are in each list of actions for each other agent
+		// this array just tracks where we are in each list of actions for each
+		// other agent
 		int[] counters = new int[lists.size()];
 
 		//
 		List<JointActionProbability> jaProbs = new ArrayList<JointActionProbability>();
-		do{
+		do {
 
-			JointActionProbability jaProb = getJointActionProbabilities(s, counters, mapping, lists,params, sa);
+			JointActionProbability jaProb = getJointActionProbabilities(s,
+					counters, mapping, lists, params, sa);
 			jaProbs.add(jaProb);
 
-
-		}while(increment(counters, mapping,lists));
-
+		} while (increment(counters, mapping, lists));
 
 		return jaProbs;
 	}
-
 
 	/**
 	 * 
@@ -158,58 +166,67 @@ public class JointRewardFunctionWrapper implements RewardFunction {
 	 * @param params
 	 * @return
 	 */
-	private JointActionProbability getJointActionProbabilities(State state, int[] counters, Map<Integer, String> mapping, 
-			Map<String, List<ActionProb>> sets, String [] params, SingleAction sa){
+	private JointActionProbability getJointActionProbabilities(State state,
+			int[] counters, Map<Integer, String> mapping,
+			Map<String, List<ActionProb>> sets, String[] params, SingleAction sa) {
 
-		//we are going to create a fake joint action for a set of other agent actions
+		// we are going to create a fake joint action for a set of other agent
+		// actions
 		JointAction ja = new JointAction();
 
-		//add the action agent's action
-		ja.addAction(new GroundedSingleAction(agentName,sa,params));
+		// add the action agent's action
+		ja.addAction(new GroundedSingleAction(agentName, sa, params));
 
-		//create and calculate the probability of this joint action
+		// create and calculate the probability of this joint action
 		double probOfJA = 1.0;
-		for(int i = 0; i<counters.length;i++){
+		for (int i = 0; i < counters.length; i++) {
 			String otherAgentName = mapping.get(i);
 			int actionNum = counters[i];
-			// Add to the joint action the grounded version of the acting agent's corresponding SingleAction and parameters:
-			
-			AbstractGroundedAction aga = sets.get(otherAgentName).get(actionNum).ga; //this is a GroundedAction
-			//temp.actionName();
-			//saDomain.getAction(temp.actionName());
-			
-			
-			
+			// Add to the joint action the grounded version of the acting
+			// agent's corresponding SingleAction and parameters:
+
+			AbstractGroundedAction aga = sets.get(otherAgentName)
+					.get(actionNum).ga; // this is a GroundedAction
+			// temp.actionName();
+			// saDomain.getAction(temp.actionName());
+
 			Random rand = new Random();
-			List<GroundedSingleAction>  otherAgentsActions = new ArrayList<GroundedSingleAction>();
-			for(SingleAction posSA : actions){
-				if(posSA.actionName==aga.actionName()){
-					otherAgentsActions = posSA.getAllGroundedActionsFor(state, otherAgentName);
+			List<GroundedSingleAction> otherAgentsActions = new ArrayList<GroundedSingleAction>();
+			for (SingleAction posSA : actions) {
+				if (posSA.actionName == aga.actionName()) {
+					otherAgentsActions = posSA.getAllGroundedActionsFor(state,
+							otherAgentName);
 				}
 			}
-			
-			ja.addAction(otherAgentsActions.get(rand.nextInt(otherAgentsActions.size())));
-			
-			
-			//multiply in the prob of this action from the other agents' policies
-			probOfJA=probOfJA*agentPolicyMap.get(otherAgentName).getProbOfAction(state, sets.get(otherAgentName).get(actionNum).ga);
+
+			ja.addAction(otherAgentsActions.get(rand.nextInt(otherAgentsActions
+					.size())));
+
+			// multiply in the prob of this action from the other agents'
+			// policies
+			probOfJA = probOfJA
+					* agentPolicyMap.get(otherAgentName).getProbOfAction(state,
+							sets.get(otherAgentName).get(actionNum).ga);
 		}
 
 		JointActionProbability jap = new JointActionProbability(ja, probOfJA);
-		//return the next states
+		// return the next states
 		return jap;
 	}
 
 	/**
-	 * this increments the counters so that we go through all other agent actions
+	 * this increments the counters so that we go through all other agent
+	 * actions
+	 * 
 	 * @param counters
 	 * @param mapping
 	 * @param sets
 	 * @return
 	 */
-	private static boolean increment(int[] counters, Map<Integer, String> mapping, Map<String, List<ActionProb>> sets){
-		for(int i=counters.length-1;i>=0;i--){
-			if(counters[i] < sets.get(mapping.get(i)).size()-1){
+	private static boolean increment(int[] counters,
+			Map<Integer, String> mapping, Map<String, List<ActionProb>> sets) {
+		for (int i = counters.length - 1; i >= 0; i--) {
+			if (counters[i] < sets.get(mapping.get(i)).size() - 1) {
 				counters[i]++;
 				return true;
 			} else {
@@ -218,8 +235,5 @@ public class JointRewardFunctionWrapper implements RewardFunction {
 		}
 		return false;
 	}
-
-
-
 
 }
