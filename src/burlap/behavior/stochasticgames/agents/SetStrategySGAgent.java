@@ -6,7 +6,7 @@ import burlap.behavior.policy.Policy;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 

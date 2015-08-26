@@ -10,6 +10,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
+import burlap.oomdp.core.*;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.valuefunction.QFunction;
@@ -17,11 +18,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -184,9 +181,9 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		}
 		
 		
-		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
-			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
-		}
+//		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
+//			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
+//		}
 		
 		
 		List <QValue> res = new ArrayList<QValue>();
@@ -194,6 +191,9 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 			//List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
 			List<GroundedAction> applications = a.getAllApplicableGroundedActions(s);
 			for(GroundedAction ga : applications){
+				if(matching == null && ga instanceof AbstractObjectParameterizedGroundedAction){
+					matching = sh.s.getObjectMatchingTo(indexSH.s, false);
+				}
 				res.add(this.getQ(sh, ga, matching));
 			}
 		}
@@ -219,7 +219,10 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 				mapToStateIndex.put(indexSH, indexSH);
 			}
 			
-			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
+//			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
+//				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
+//			}
+			if(a instanceof AbstractObjectParameterizedGroundedAction){
 				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
 			}
 			return this.getQ(sh, (GroundedAction)a, matching);
@@ -281,7 +284,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		
 		//translate grounded action if necessary
 		GroundedAction ta = a;
-		if(matching != null && a.parametersAreObjects()){
+		if(a instanceof AbstractObjectParameterizedGroundedAction){
 			ta = this.translateAction(ta, matching);
 		}
 		
@@ -492,7 +495,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		if(trans.ga.action instanceof Option){
 			
 			Option o = (Option)trans.ga.action;
-			double expectedR = o.getExpectedRewards(s, trans.ga.params);
+			double expectedR = o.getExpectedRewards(s, trans.ga);
 			q += expectedR;
 			
 			for(HashedTransitionProbability tp : trans.transitions){
@@ -540,10 +543,10 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		if(ga.action instanceof Option){
 			
 			Option o = (Option)ga.action;
-			double expectedR = o.getExpectedRewards(sh.s, ga.params);
+			double expectedR = o.getExpectedRewards(sh.s, ga);
 			q += expectedR;
 			
-			List <TransitionProbability> tps = o.getTransitions(sh.s, ga.params);
+			List <TransitionProbability> tps = o.getTransitions(sh.s, ga);
 			for(TransitionProbability tp : tps){
 				double vp = this.value(tp.s);
 				
@@ -555,7 +558,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		}
 		else{
 			
-			List <TransitionProbability> tps = ga.action.getTransitions(sh.s, ga.params);
+			List <TransitionProbability> tps = ga.getTransitions(sh.s);
 			for(TransitionProbability tp : tps){
 				double vp = this.value(tp.s);
 				

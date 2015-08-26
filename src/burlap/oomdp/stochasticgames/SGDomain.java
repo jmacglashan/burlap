@@ -9,6 +9,7 @@ import java.util.Set;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**

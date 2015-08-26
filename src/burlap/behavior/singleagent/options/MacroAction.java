@@ -56,7 +56,7 @@ public class MacroAction extends Option {
 	}
 
 	@Override
-	public double probabilityOfTermination(State s, String[] params) {
+	public double probabilityOfTermination(State s, GroundedAction groundedAction) {
 		if(curIndex >= actionSequence.size()){
 			return 1.;
 		}
@@ -64,12 +64,12 @@ public class MacroAction extends Option {
 	}
 
 	@Override
-	public void initiateInStateHelper(State s, String[] params) {
+	public void initiateInStateHelper(State s, GroundedAction groundedAction) {
 		curIndex = 0;
 	}
 
 	@Override
-	public GroundedAction oneStepActionSelection(State s, String[] params) {
+	public GroundedAction oneStepActionSelection(State s, GroundedAction groundedAction) {
 		
 		GroundedAction a = actionSequence.get(curIndex);
 		curIndex++;
@@ -78,8 +78,8 @@ public class MacroAction extends Option {
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s, String[] params) {
-		return this.getDeterministicPolicy(s, params);
+	public List<ActionProb> getActionDistributionForState(State s, GroundedAction groundedAction) {
+		return this.getDeterministicPolicy(s, groundedAction);
 	}
 
 	

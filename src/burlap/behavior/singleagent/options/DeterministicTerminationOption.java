@@ -58,9 +58,6 @@ public class DeterministicTerminationOption extends Option {
 		this.initiationTest = init;
 		this.terminationStates = terminationStates;
 		
-		this.parameterClasses = new String[0];
-		this.parameterOrderGroup = new String[0];
-		
 	}
 	
 	
@@ -85,9 +82,6 @@ public class DeterministicTerminationOption extends Option {
 		
 		this.initiationTest = init;
 		this.terminationStates = terminaitonStates;
-		
-		this.parameterClasses = new String[0];
-		this.parameterOrderGroup = new String[0];
 		
 		//now construct the policy using the valueFunction from each possible initiation state
 		for(State si : init){
@@ -122,9 +116,6 @@ public class DeterministicTerminationOption extends Option {
 		
 		this.initiationTest = init;
 		this.terminationStates = terminationStates;
-		
-		this.parameterClasses = new String[0];
-		this.parameterOrderGroup = new String[0];
 		
 		//now construct the policy using the valueFunction from each possible initiation state
 		for(State si : seedStatesForPlanning){
@@ -180,7 +171,7 @@ public class DeterministicTerminationOption extends Option {
 	}
 
 	@Override
-	public double probabilityOfTermination(State s, String[] params) {
+	public double probabilityOfTermination(State s, GroundedAction groundedAction) {
 		State ms = this.map(s);
 		if(terminationStates.satisfies(ms) || !policy.isDefinedFor(ms)){
 			return 1.;
@@ -191,7 +182,7 @@ public class DeterministicTerminationOption extends Option {
 	
 	
 	@Override
-	public boolean applicableInState(State st, String [] params){
+	public boolean applicableInState(State st, GroundedAction groundedAction){
 		if(initiationTest.satisfies(this.map(st))){
 			return true;
 		}
@@ -200,18 +191,18 @@ public class DeterministicTerminationOption extends Option {
 	
 	
 	@Override
-	public void initiateInStateHelper(State s, String[] params) {
+	public void initiateInStateHelper(State s, GroundedAction groundedAction) {
 		//no bookkeeping
 	}
 
 	@Override
-	public GroundedAction oneStepActionSelection(State s, String[] params) {
+	public GroundedAction oneStepActionSelection(State s, GroundedAction groundedAction) {
 		return (GroundedAction)policy.getAction(this.map(s));
 	}
 
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s, String[] params) {
+	public List<ActionProb> getActionDistributionForState(State s, GroundedAction groundedAction) {
 		return policy.getActionDistributionForState(this.map(s));
 	}
 

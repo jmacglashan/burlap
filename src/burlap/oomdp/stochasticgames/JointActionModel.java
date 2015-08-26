@@ -5,6 +5,7 @@ import java.util.List;
 
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 
 /**
  * This abstract class provides the interface and comment mechanisms for defining
@@ -31,7 +32,7 @@ public abstract class JointActionModel {
 		
 		//first make sure that every action satisfies the necessary preconditions
 		for(GroundedSGAgentAction gsa : ja){
-			if(!gsa.action.applicableInState(s, gsa.actingAgent, gsa.params)){
+			if(!gsa.action.applicableInState(s, gsa)){
 				throw new RuntimeException("The action " + gsa.toString() + " is not applicable in this state.");
 			}
 		}

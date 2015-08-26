@@ -13,6 +13,7 @@ import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 
 
 /**
@@ -52,23 +53,21 @@ public class World {
 	protected boolean							isRecordingGame = false;
 	
 	protected int								debugId;
-	
-	
-	
+
+
+
+
 	/**
-	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
-	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
-	 * unnecessary. Instead use the constructor {@link #World(SGDomain, JointReward, burlap.oomdp.core.TerminalFunction, SGStateGenerator)}
+	 * Initializes the world.
 	 * @param domain the SGDomain the world will use
-	 * @param jam the joint action model that specifies the transition dynamics
 	 * @param jr the joint reward function
 	 * @param tf the terminal function
-	 * @param sg a state generator for generating initial states of a game
+	 * @param initialState the initial state of the world every time a new game starts
 	 */
-	@Deprecated
-	public World(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
-		this.init(domain, jam, jr, tf, sg, new NullAbstraction());
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, State initialState){
+		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantSGStateGenerator(initialState), new NullAbstraction());
 	}
+
 
 	/**
 	 * Initializes the world.
@@ -80,22 +79,7 @@ public class World {
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
 		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction());
 	}
-	
-	/**
-	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
-	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
-	 * unnecessary. Instead use the constructor {@link #World(SGDomain, JointReward, burlap.oomdp.core.TerminalFunction, SGStateGenerator, burlap.oomdp.auxiliary.StateAbstraction)}
-	 * @param domain the SGDomain the world will use
-	 * @param jam the joint action model that specifies the transition dynamics
-	 * @param jr the joint reward function
-	 * @param tf the terminal function
-	 * @param sg a state generator for generating initial states of a game
-	 * @param abstractionForAgents the abstract state representation that agents will be provided
-	 */
-	@Deprecated
-	public World(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
-		this.init(domain, jam, jr, tf, sg, abstractionForAgents);
-	}
+
 
 	/**
 	 * Initializes the world
@@ -235,6 +219,10 @@ public class World {
 		currentState = initialStateGenerator.generateState(agents);
 		this.currentGameRecord = new GameAnalysis(currentState);
 		this.isRecordingGame = true;
+
+		for(WorldObserver wob : this.worldObservers){
+			wob.gameStarting(this.currentState);
+		}
 		
 		while(!tf.isTerminal(currentState)){
 			this.runStage();
@@ -242,6 +230,10 @@ public class World {
 		
 		for(SGAgent a : agents){
 			a.gameTerminated();
+		}
+
+		for(WorldObserver wob : this.worldObservers){
+			wob.gameEnding(this.currentState);
 		}
 		
 		DPrint.cl(debugId, currentState.getCompleteStateDescription());
@@ -266,6 +258,10 @@ public class World {
 		this.currentGameRecord = new GameAnalysis(currentState);
 		this.isRecordingGame = true;
 		int t = 0;
+
+		for(WorldObserver wob : this.worldObservers){
+			wob.gameStarting(this.currentState);
+		}
 		
 		while(!tf.isTerminal(currentState) && t < maxStages){
 			this.runStage();
@@ -274,6 +270,10 @@ public class World {
 		
 		for(SGAgent a : agents){
 			a.gameTerminated();
+		}
+
+		for(WorldObserver wob : this.worldObservers){
+			wob.gameEnding(this.currentState);
 		}
 		
 		DPrint.cl(debugId, currentState.getCompleteStateDescription());

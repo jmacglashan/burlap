@@ -7,6 +7,7 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
@@ -65,10 +66,10 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	 */
 	protected Map <HashableState, HashableState>					mapToStateIndex;
 	
-	/**
-	 * Indicates whether the action set for this valueFunction includes parametrized actions
-	 */
-	protected boolean												containsParameterizedActions;
+//	/**
+//	 * Indicates whether the action set for this valueFunction includes object-parametrized actions that are object identifier independent
+//	 */
+//	protected boolean												containsParameterizedActions;
 	
 	
 	/**
@@ -93,7 +94,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 		
 		mapToStateIndex = new HashMap<HashableState, HashableState>();
 		
-		containsParameterizedActions = false;
+		//containsParameterizedActions = false;
 		List <Action> actions = domain.getActions();
 		this.actions = new ArrayList<Action>(actions.size());
 		for(Action a : actions){
@@ -107,9 +108,12 @@ public abstract class MDPSolver implements MDPSolverInterface{
 					this.rf = new OptionEvaluatingRF(this.rf);
 				}
 			}
-			if(a.getParameterClasses().length > 0){
-				containsParameterizedActions = true;
-			}
+//			if(a.isParameterized()){
+//				containsParameterizedActions = true;
+//			}
+//			if(a.getParameterClasses().length > 0){
+//				containsParameterizedActions = true;
+//			}
 		}
 		
 	}
@@ -128,9 +132,12 @@ public abstract class MDPSolver implements MDPSolverInterface{
 					this.rf = new OptionEvaluatingRF(this.rf);
 				}
 			}
-			if(a.getParameterClasses().length > 0){
-				this.containsParameterizedActions = true;
-			}
+//			if(a.isParameterized()){
+//				containsParameterizedActions = true;
+//			}
+//			if(a.getParameterClasses().length > 0){
+//				this.containsParameterizedActions = true;
+//			}
 		}
 		
 	}
@@ -234,8 +241,9 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	}
 
 	/**
-	 * Takes a source parametrized GroundedAction and a matching between object instances of two different states and returns a GroudnedAction
-	 * with parameters using the matched parameters. This method is useful a stored state and action pair in the valueFunction data structure has different
+	 * Takes a source GroundedAction and a matching between object instances of two different states and returns a GroundedAction
+	 * with parameters using the matched parameters if the GroundedAction is an instance of {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}.
+	 * This method is useful a stored state and action pair in the valueFunction data structure has different
 	 * object name identifiers than a query state that is otherwise identical. The matching is from the state in which the source action is applied
 	 * to some target state that is not provided to this method.
 	 * @param a the source action that needs to be translated
@@ -243,11 +251,19 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	 * @return and new GroundedAction with object parametrization that follow from the matching
 	 */
 	protected GroundedAction translateAction(GroundedAction a, Map <String,String> matching){
-		String [] newParams = new String[a.params.length];
-		for(int i = 0; i < a.params.length; i++){
-			newParams[i] = matching.get(a.params[i]);
+		if(!(a instanceof AbstractObjectParameterizedGroundedAction)){
+			return a;
 		}
-		return new GroundedAction(a.action, newParams);
+
+		GroundedAction nga = (GroundedAction)a.copy();
+		String [] params = ((AbstractObjectParameterizedGroundedAction)a).getObjectParameters();
+
+		String [] newParams = new String[params.length];
+		for(int i = 0; i < params.length; i++){
+			newParams[i] = matching.get(params[i]);
+		}
+		((AbstractObjectParameterizedGroundedAction)nga).setObjectParameters(newParams);
+		return nga;
 	}
 	
 	/**

@@ -64,7 +64,7 @@ public class VisualExplorer extends JFrame{
 
 	protected Environment									env;
 	protected Domain										domain;
-	protected Map <String, String>							keyActionMap;
+	protected Map <String, GroundedAction>					keyActionMap;
 	protected Map <String, SpecialExplorerAction>			keySpecialMap;
 	
 	protected Visualizer 									painter;
@@ -133,7 +133,7 @@ public class VisualExplorer extends JFrame{
 		this.domain = domain;
 		this.env = env;
 		this.painter = painter;
-		this.keyActionMap = new HashMap <String, String>();
+		this.keyActionMap = new HashMap <String, GroundedAction>();
 		this.keySpecialMap = new HashMap <String, SpecialExplorerAction>();
 		
 		StateResetSpecialAction reset = new StateResetSpecialAction(this.env);
@@ -157,14 +157,34 @@ public class VisualExplorer extends JFrame{
 	public StateResetSpecialAction getResetSpecialAction(){
 		return (StateResetSpecialAction)keySpecialMap.get("`");
 	}
-	
-	
+
+
+
+	/**
+	 * Specifies a string representation of an action to execute when the specified key is pressed.
+	 * The string representation should have the first word be the action name, with spaces separating
+	 * the parameters of the string representation of each parameter value.
+	 * @param key the key that is pressed by the user
+	 * @param actionStringRep the {@link burlap.oomdp.singleagent.GroundedAction} to take when the key is pressed
+	 */
+	public void addKeyAction(String key, String actionStringRep){
+		GroundedAction ga = this.getGroundedActionFromStringComps(actionStringRep.split(" "));
+		if(ga == null){
+			System.out.println("Could not parse GroundedAction string representation of " + actionStringRep + ".\n" +
+					"It is not being assigned to VisualExplorer key " + key + ".");
+		}
+		else {
+			this.keyActionMap.put(key, ga);
+		}
+	}
+
+
 	/**
 	 * Specifies which action to execute for a given key press
 	 * @param key the key that is pressed by the user
-	 * @param action the action to take when the key is pressed
+	 * @param action the {@link burlap.oomdp.singleagent.GroundedAction} to take when the key is pressed
 	 */
-	public void addKeyAction(String key, String action){
+	public void addKeyAction(String key, GroundedAction action){
 		keyActionMap.put(key, action);
 	}
 	
@@ -627,13 +647,10 @@ public class VisualExplorer extends JFrame{
 		String key = String.valueOf(e.getKeyChar());
 
 		//otherwise this could be an action, see if there is an action mapping
-		String mappedAction = keyActionMap.get(key);
+		GroundedAction mappedAction = keyActionMap.get(key);
 		if(mappedAction != null){
-			
-			//then we have a action for this key
-			//split the string up into components
-			String [] comps = mappedAction.split(" ");
-			this.executeAction(comps);
+
+			this.executeAction(mappedAction);
 			
 		}
 		else{
@@ -681,26 +698,68 @@ public class VisualExplorer extends JFrame{
 			this.updateState(env.getCurrentObservation());
 		}
 		else{
-			GroundedAction ga = new GroundedAction(action, params);
-			if(ga.action.applicableInState(env.getCurrentObservation(), params)){
+			GroundedAction ga = action.getAssociatedGroundedAction();
+			ga.initParamsWithStringRep(params);
+			executeAction(ga);
 
-				EnvironmentOutcome eo = ga.executeIn(env);
-				if(this.currentEpisode != null){
-					this.currentEpisode.recordTransitionTo(ga, eo.op, eo.r);
-				}
+		}
+	}
 
-				this.lastReward = eo.r;
+	/**
+	 * Gets the {@link burlap.oomdp.singleagent.GroundedAction} described by the
+	 * String components where the first component is the action name and the rest
+	 * are the string representations of the parameters.
+	 * @param comps the string components that define the {@link burlap.oomdp.singleagent.GroundedAction}
+	 * @return the associated {@link burlap.oomdp.singleagent.GroundedAction} or null if it cannot be constructed.
+	 */
+	protected GroundedAction getGroundedActionFromStringComps(String [] comps){
+		String actionName = comps[0];
 
-
-				numSteps++;
-				this.updateState(this.env.getCurrentObservation());
+		//construct parameter list as all that remains
+		String params[];
+		if(comps.length > 1){
+			params = new String[comps.length-1];
+			for(int i = 1; i < comps.length; i++){
+				params[i-1] = comps[i];
 			}
-			else{
-				this.warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
-				System.out.println(warningMessage);
-				this.updateState(this.env.getCurrentObservation());
+		}
+		else{
+			params = new String[0];
+		}
+
+		Action action = domain.getAction(actionName);
+		if(action == null){
+			return null;
+		}
+		GroundedAction ga = action.getAssociatedGroundedAction();
+		ga.initParamsWithStringRep(params);
+		return ga;
+	}
+
+
+	/**
+	 * Executes the provided {@link burlap.oomdp.singleagent.GroundedAction} in the explorer's environment and records
+	 * the result if episodes are being recorded.
+	 * @param ga the {@link burlap.oomdp.singleagent.GroundedAction} to execute.
+	 */
+	protected void executeAction(GroundedAction ga){
+		if(ga.applicableInState(env.getCurrentObservation())){
+
+			EnvironmentOutcome eo = ga.executeIn(env);
+			if(this.currentEpisode != null){
+				this.currentEpisode.recordTransitionTo(ga, eo.op, eo.r);
 			}
 
+			this.lastReward = eo.r;
+
+
+			numSteps++;
+			this.updateState(this.env.getCurrentObservation());
+		}
+		else{
+			this.warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
+			System.out.println(warningMessage);
+			this.updateState(this.env.getCurrentObservation());
 		}
 	}
 

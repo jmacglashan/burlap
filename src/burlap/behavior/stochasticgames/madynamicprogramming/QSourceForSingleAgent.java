@@ -69,9 +69,9 @@ public interface QSourceForSingleAgent {
 			}
 			
 			
-			//we didn't find a joint action match that is sotred, but 
+			//we didn't find a joint action match that is sorted, but
 			//first make sure it's not an object identifier difference between states that is causing a failure of matching
-			if(ja.isParameterized() && !ja.actionDomainIsObjectIdentifierDependent()){
+			if(ja.isParameterized()){
 				//is there a matching joint action after we translate?
 				for(JAQValue sq : jaQS.values()){
 					JointAction translated = (JointAction)ja.translateParameters(s, sq.s);

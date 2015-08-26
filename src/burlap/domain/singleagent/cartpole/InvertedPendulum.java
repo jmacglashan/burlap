@@ -13,10 +13,7 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -263,7 +260,7 @@ public class InvertedPendulum implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ForceAction extends Action{
+	public class ForceAction extends Action implements FullActionModel{
 
 		/**
 		 * The base noise to which noise will be added.
@@ -283,13 +280,13 @@ public class InvertedPendulum implements DomainGenerator {
 		 * @param physParams the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.IPPhysicsParams} object specifying the physics to use for movement
 		 */
 		public ForceAction(String name, Domain domain, double force, IPPhysicsParams physParams){
-			super(name, domain, "");
+			super(name, domain);
 			this.baseForce = force;
 			this.physParams = physParams;
 		}
 		
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s,  GroundedAction groundedAction) {
 			
 			double roll = RandomFactory.getMapped(0).nextDouble() * (2 * physParams.actionNoise) - physParams.actionNoise;
 			double force = this.baseForce + roll;
@@ -298,11 +295,11 @@ public class InvertedPendulum implements DomainGenerator {
 		}
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
+		public List<TransitionProbability> getTransitions(State s,  GroundedAction groundedAction){
 			if(this.physParams.actionNoise != 0.) {
 				throw new RuntimeException("Transition Probabilities for the Inverted Pendulum with continuous action noise cannot be enumerated.");
 			}
-			return this.deterministicTransition(s, params);
+			return this.deterministicTransition(s, groundedAction);
 		}
 		
 		

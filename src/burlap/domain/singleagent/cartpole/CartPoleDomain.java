@@ -12,10 +12,7 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 
 
@@ -612,7 +609,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class MovementAction extends Action{
+	protected static class MovementAction extends Action implements FullActionModel{
 
 		CPPhysicsParams physParams;
 		
@@ -629,13 +626,13 @@ public class CartPoleDomain implements DomainGenerator {
 		 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 		 */
 		public MovementAction(String name, Domain domain, double dir, CPPhysicsParams physParams){
-			super(name, domain, "");
+			super(name, domain);
 			this.dir = dir;
 			this.physParams = physParams;
 		}
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			if(physParams.useCorrectModel){
 				return CartPoleDomain.moveCorrectModel(s, this.dir, this.physParams);
 			}
@@ -644,8 +641,8 @@ public class CartPoleDomain implements DomainGenerator {
 
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s,  GroundedAction groundedAction){
+			return this.deterministicTransition(s, groundedAction);
 		}
 		
 		

@@ -11,6 +11,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
 
 
@@ -69,8 +70,9 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 			}
 		}
 		int selected = rand.nextInt(maxActions.size());
-		//return translated action parameters if the action is parameterized with objects in a object identifier indepdent domain
-		return maxActions.get(selected).a.translateParameters(maxActions.get(selected).s, s);
+		//return translated action parameters if the action is parameterized with objects in a object identifier independent domain
+		AbstractGroundedAction srcA = maxActions.get(selected).a;
+		return AbstractObjectParameterizedGroundedAction.Helper.translateParameters(srcA, maxActions.get(selected).s, s);
 	}
 
 	@Override
@@ -97,7 +99,7 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 			if(q.q == maxQ){
 				p = uniformMax;
 			}
-			ActionProb ap = new ActionProb(q.a.translateParameters(q.s, s), p);
+			ActionProb ap = new ActionProb(AbstractObjectParameterizedGroundedAction.Helper.translateParameters(q.a, q.s, s), p);
 			res.add(ap);
 		}
 		

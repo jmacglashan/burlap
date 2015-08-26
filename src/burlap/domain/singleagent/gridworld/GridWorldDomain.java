@@ -6,7 +6,6 @@ import java.util.Random;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
-import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
@@ -20,6 +19,8 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
@@ -709,7 +710,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class MovementAction extends Action{
+	public class MovementAction extends Action implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go
@@ -735,15 +736,14 @@ public class GridWorldDomain implements DomainGenerator {
 		 * @param map the map of the world
 		 */
 		public MovementAction(String name, Domain domain, double [] directions, int [][] map){
-			super(name, domain, "");
+			super(name, domain);
 			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
 			this.map = map;
 		}
-		
+
 		@Override
-		protected State performActionHelper(State st, String[] params) {
-			
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			double roll = rand.nextDouble();
 			double curSum = 0.;
 			int dir = 0;
@@ -754,26 +754,25 @@ public class GridWorldDomain implements DomainGenerator {
 					break;
 				}
 			}
-			
+
 			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(dir);
-			GridWorldDomain.this.move(st, dcomps[0], dcomps[1], this.map);
-			
-			return st;
+			GridWorldDomain.this.move(s, dcomps[0], dcomps[1], this.map);
+
+			return s;
 		}
-		
+
 		@Override
-		public List<TransitionProbability> getTransitions(State st, String [] params){
-			
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
 			List <TransitionProbability> transitions = new ArrayList<TransitionProbability>();
 			for(int i = 0; i < directionProbs.length; i++){
 				double p = directionProbs[i];
 				if(p == 0.){
 					continue; //cannot transition in this direction
 				}
-				State ns = st.copy();
+				State ns = s.copy();
 				int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(i);
 				GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
-				
+
 				//make sure this direction doesn't actually stay in the same place and replicate another no-op
 				boolean isNew = true;
 				for(TransitionProbability tp : transitions){
@@ -783,20 +782,18 @@ public class GridWorldDomain implements DomainGenerator {
 						break;
 					}
 				}
-				
+
 				if(isNew){
 					TransitionProbability tp = new TransitionProbability(ns, p);
 					transitions.add(tp);
 				}
-			
-				
+
+
 			}
-			
-			
+
+
 			return transitions;
 		}
-		
-		
 		
 	}
 	

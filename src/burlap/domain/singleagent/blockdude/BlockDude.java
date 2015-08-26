@@ -7,6 +7,8 @@ import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -682,7 +684,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * A class for performing a horizontal movement either east or west.
 	 */
-	public class MoveAction extends Action{
+	public class MoveAction extends Action implements FullActionModel{
 
 		protected int dir;
 		protected boolean useSemiDeep;
@@ -695,7 +697,7 @@ public class BlockDude implements DomainGenerator{
 		 * @param dir the direction of movement: +1 for east; -1 for west.
 		 */
 		public MoveAction(String name, Domain domain, int dir){
-			super(name, domain, "");
+			super(name, domain);
 			this.dir = dir;
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
@@ -703,7 +705,7 @@ public class BlockDude implements DomainGenerator{
 
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
 			if(useSemiDeep && s instanceof MutableState){
@@ -726,41 +728,42 @@ public class BlockDude implements DomainGenerator{
 
 				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			moveHorizontally(s, dir, maxx);
 			return s;
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
+			return deterministicTransition(s, groundedAction);
 		}
+
 	}
 
 
 	/**
 	 * And action class for performing an up movement action.
 	 */
-	public class MoveUpAction extends Action{
+	public class MoveUpAction extends Action implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
 		public MoveUpAction(Domain domain){
-			super(ACTIONUP, domain, "");
+			super(ACTIONUP, domain);
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
 		}
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
 			if(useSemiDeep && s instanceof MutableState){
@@ -783,41 +786,43 @@ public class BlockDude implements DomainGenerator{
 
 				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
+
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			moveUp(s, maxx);
 			return s;
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
+			return deterministicTransition(s, groundedAction);
 		}
+
 	}
 
 
 	/**
 	 * An action class for performing a pickup action.
 	 */
-	public class PickupAction extends Action{
+	public class PickupAction extends Action implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
 		public PickupAction(Domain domain){
-			super(ACTIONPICKUP, domain, "");
+			super(ACTIONPICKUP, domain);
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
 		}
 
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
 			if(useSemiDeep && s instanceof MutableState){
@@ -845,21 +850,21 @@ public class BlockDude implements DomainGenerator{
 
 				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			pickupBlock(s, maxx);
 			return s;
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
+			return deterministicTransition(s, groundedAction);
 		}
 	}
 
@@ -867,20 +872,20 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * An action class for performing a put down action.
 	 */
-	public class PutdownAction extends Action{
+	public class PutdownAction extends Action implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
 		public PutdownAction(Domain domain){
-			super(ACTIONPUTDOWN, domain, "");
+			super(ACTIONPUTDOWN, domain);
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
 		}
 
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
 			if(useSemiDeep && s instanceof MutableState){
@@ -903,21 +908,21 @@ public class BlockDude implements DomainGenerator{
 
 				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			putdownBlock(s, maxx);
 			return s;
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
+			return deterministicTransition(s, groundedAction);
 		}
 	}
 

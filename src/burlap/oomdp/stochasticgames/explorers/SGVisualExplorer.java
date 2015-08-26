@@ -17,6 +17,8 @@ import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
 import burlap.oomdp.stochasticgames.*;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.oomdp.visualizer.Visualizer;
 
 
@@ -43,7 +45,7 @@ public class SGVisualExplorer extends JFrame {
 	
 	private SGDomain								domain;
 	private JointActionModel						actionModel;
-	private Map <String, String>					keyActionMap;
+	private Map <String, GroundedSGAgentAction>		keyActionMap;
 	private Map <String, SpecialExplorerAction>		keySpecialMap;
 	State											baseState;
 	State											curState;
@@ -129,7 +131,7 @@ public class SGVisualExplorer extends JFrame {
 		this.baseState = baseState;
 		this.curState = baseState.copy();
 		this.painter = painter;
-		this.keyActionMap = new HashMap <String, String>();
+		this.keyActionMap = new HashMap <String, GroundedSGAgentAction>();
 		this.keySpecialMap = new HashMap <String, SpecialExplorerAction>();
 
 		HardStateResetSpecialAction reset = new HardStateResetSpecialAction(this.baseState);
@@ -180,6 +182,25 @@ public class SGVisualExplorer extends JFrame {
 	public HardStateResetSpecialAction getResetSpecialAction(){
 		return (HardStateResetSpecialAction)keySpecialMap.get("`");
 	}
+
+	/**
+	 * Specifies the action to set for a given key press. Actions should be formatted to include
+	 * the agent name as follows: "agentName::actionName" This means
+	 * that different key presses will have to specified for different agents.
+	 * @param key the key that will cause the action to be set
+	 * @param actionStringRep the action to set when the specified key is pressed.
+	 */
+	public void addKeyAction(String key, String actionStringRep){
+		GroundedSGAgentAction action = this.parseIntoSingleActions(actionStringRep);
+		if(action != null){
+			keyActionMap.put(key, action);
+		}
+		else{
+			System.out.println("Could not parse action string representation " + actionStringRep + ". SGVisualExplorer will not add a mapping to it from key " + key);
+		}
+
+	}
+
 	
 	/**
 	 * Specifies the action to set for a given key press. Actions should be formatted to include
@@ -188,7 +209,7 @@ public class SGVisualExplorer extends JFrame {
 	 * @param key the key that will cause the action to be set
 	 * @param action the action to set when the specified key is pressed.
 	 */
-	public void addKeyAction(String key, String action){
+	public void addKeyAction(String key, GroundedSGAgentAction action){
 		keyActionMap.put(key, action);
 	}
 	
@@ -369,8 +390,9 @@ public class SGVisualExplorer extends JFrame {
 							for(int i = 2; i < comps.length; i++) {
 								params[i - 2] = comps[i];
 							}
-							GroundedSGAgentAction gsa = new GroundedSGAgentAction(agentAction[0], sa, params);
-							if(sa.applicableInState(curState, agentAction[0], params)){
+							GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(agentAction[0]);
+							gsa.initParamsWithStringRep(params);
+							if(sa.applicableInState(curState, gsa)){
 								SGVisualExplorer.this.nextAction.addAction(gsa);
 								SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
 							}
@@ -495,18 +517,13 @@ public class SGVisualExplorer extends JFrame {
 		
 
 		//otherwise this could be an action, see if there is an action mapping
-		String mappedAction = keyActionMap.get(key);
-		if(mappedAction != null){
-
-			GroundedSGAgentAction toAdd = this.parseIntoSingleActions(mappedAction);
-			if(toAdd != null) {
-				nextAction.addAction(toAdd);
-				System.out.println(nextAction.toString());
-			}
+		GroundedSGAgentAction toAdd = keyActionMap.get(key);
+		if(toAdd != null) {
+			nextAction.addAction(toAdd);
+			System.out.println(nextAction.toString());
 			this.stateConsole.setText(this.getConsoleText(this.curState));
-
-			
 		}
+
 		else{
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
@@ -552,11 +569,11 @@ public class SGVisualExplorer extends JFrame {
 
 
 	/**
-	 * Parses a string into a {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction}. Expects format:
+	 * Parses a string into a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}. Expects format:
 	 * "agentName:actionName param1 parm2 ... paramn" If there is no SingleAction by that name or
 	 * the action and parameters are not applicable in the current state, null is returned.
 	 * @param str string rep of a grounding action in the form  "agentName:actionName param1 parm2 ... paramn"
-	 * @return a {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction}
+	 * @return a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
 	 */
 	protected GroundedSGAgentAction parseIntoSingleActions(String str){
 		
@@ -576,8 +593,9 @@ public class SGVisualExplorer extends JFrame {
 			warningMessage = "Unknown action: " + singleActionName + "; nothing changed";
 			return null;
 		}
-		GroundedSGAgentAction gsa = new GroundedSGAgentAction(aname, sa, params);
-		if(!sa.applicableInState(curState, aname, params)){
+		GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(aname);
+		gsa.initParamsWithStringRep(params);
+		if(!sa.applicableInState(curState, gsa)){
 			warningMessage = gsa.toString() + " is not applicable in the current state; nothing changed";
 			return null;
 		}

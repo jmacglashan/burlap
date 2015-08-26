@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgames.agents.naiveq.history;
 
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 
 /**
  * An interface that can turn a grounded action into an integer value

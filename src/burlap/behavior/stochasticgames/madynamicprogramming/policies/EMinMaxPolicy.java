@@ -13,9 +13,9 @@ import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.behavior.stochasticgames.solvers.MinMaxSolver;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
@@ -102,8 +102,8 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(this.targetAgentQName);
 		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
 		
-		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllPossibleGroundedSingleActions(s, this.targetAgentQName, this.agentsInJointPolicy.get(this.targetAgentQName).actions);
-		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllPossibleGroundedSingleActions(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
+		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, this.targetAgentQName, this.agentsInJointPolicy.get(this.targetAgentQName).actions);
+		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
 		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		

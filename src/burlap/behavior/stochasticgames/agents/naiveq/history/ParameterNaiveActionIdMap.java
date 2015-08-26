@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
  * An action to int map that takes the list of possible action names in a domain and assigns and int value to them.
- * This method will not assign unique values to actions with different parameters.
+ * This method will not manage object identifier independence.
  * @author James MacGlashan
  *
  */
@@ -67,7 +67,7 @@ public class ParameterNaiveActionIdMap implements ActionIdMap {
 			int sid = map.get(key);
 			if(sid == id){
 				//found it
-				GroundedSGAgentAction gsa = new GroundedSGAgentAction("", domain.getSingleAction(key), "");
+				GroundedSGAgentAction gsa = new GroundedSGAgentAction("", domain.getSingleAction(key));
 				return gsa;
 			}
 		}

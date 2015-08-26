@@ -10,9 +10,9 @@ import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.behavior.stochasticgames.solvers.MinMaxSolver;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
@@ -43,8 +43,8 @@ public class MinMaxQ implements SGBackupOperator {
 		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(forAgent);
 		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
 		
-		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllPossibleGroundedSingleActions(s, forAgent, agentDefinitions.get(forAgent).actions);
-		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllPossibleGroundedSingleActions(s, otherAgentName, agentDefinitions.get(otherAgentName).actions);
+		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, forAgent, agentDefinitions.get(forAgent).actions);
+		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, agentDefinitions.get(otherAgentName).actions);
 		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		

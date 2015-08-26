@@ -12,6 +12,7 @@ import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.options.support.DirectOptionTerminateMapper;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.oomdp.auxiliary.StateMapping;
+import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.auxiliary.common.NullTermination;
@@ -22,7 +23,6 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.common.NullAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
@@ -56,9 +56,9 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * As a result, the transition dynamics computation will stop searching for states at given
  * horizons that are less than some small probability of occurring (by default set to
  * 0.001). This threshold hold may be modified. However, if these transition dynamics can be specified
- * a priori, it is recommended that the {@link #getTransitions(State, String [])} method is overridden
+ * a priori, it is recommended that the {@link #getTransitions(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is overridden
  * and specified by hand rather than requiring this class to have to enumerate the results. Finally,
- * note that the {@link #getTransitions(State, String [])} returns {@link burlap.oomdp.core.TransitionProbability} 
+ * note that the {@link #getTransitions(State, burlap.oomdp.singleagent.GroundedAction)} returns {@link burlap.oomdp.core.TransitionProbability}
  * elements, where each {@link burlap.oomdp.core.TransitionProbability} holds the probability of transitioning to a state discounted
  * by the the expected length of time. That is, the probability value in each {@link burlap.oomdp.core.TransitionProbability} is
  * <br/> 
@@ -72,17 +72,9 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * @author James MacGlashan
  *
  */
-public abstract class Option extends Action {
+public abstract class Option extends Action implements FullActionModel{
 
-	/*
-	 * Note for further development: will the reward tracker work for 3-level hierarchical options with discounting?
-	 * I think not; they will only work if the one step hierarchical action selection
-	 * only returns primitives, in which case I will have to implement
-	 * that for any hierarchical subclasses 
-	 * 
-	 */
-	
-	
+
 	/**
 	 * Random object for following stochastic option policies
 	 */
@@ -210,29 +202,29 @@ public abstract class Option extends Action {
 	/**
 	 * Returns the probability that this option (executed with the given parameters) will terminate in the given state
 	 * @param s the state to test for termination
-	 * @param params any parameters that were applied to this option when it was initiated
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return the probability that this option (executed with the given parameters) will terminate in the given state
 	 */
-	public abstract double probabilityOfTermination(State s, String [] params);
+	public abstract double probabilityOfTermination(State s, GroundedAction groundedAction);
 	
 	/**
-	 * This method is always called when an option is initated and begins execution. Specifically, it is called from the {@link #performActionHelper(burlap.oomdp.core.states.State, String[])}
+	 * This method is always called when an option is initiated and begins execution. Specifically, it is called from the {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
 	 * For Markov options, this method probably does not need to do anything, but for non-Markov options, like Macro actions, it may need
 	 * to initialize some structures for determining termination and action selection.
 	 * @param s the state in which the option was initiated
-	 * @param params the parameters that were passed to the option for execution
+	 * @param groundedAction the parameters in which this option will be initiated
 	 */
-	public abstract void initiateInStateHelper(State s, String [] params);
+	public abstract void initiateInStateHelper(State s, GroundedAction groundedAction);
 	
 	
 	/**
 	 * This method causes the option to select a single step in the given state, when the option was initiated with the provided parameters.
-	 * This method will be called by the {@link #performActionHelper(burlap.oomdp.core.states.State, String[])}  method until it is determined that the option terminates.
+	 * This method will be called by the {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}  method until it is determined that the option terminates.
 	 * @param s the state in which an action should be selected.
-	 * @param params the parameters that were passed to the option when it was initiated
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return the action the option has selected to take in State <code>s</code>
 	 */
-	public abstract GroundedAction oneStepActionSelection(State s, String [] params);
+	public abstract GroundedAction oneStepActionSelection(State s, GroundedAction groundedAction);
 	
 	
 	/**
@@ -240,10 +232,10 @@ public abstract class Option extends Action {
 	 * Note that if this is a non-Markov option, the returned distribution should be with respect to the state in which the option was
 	 * executed and any previous actions it took that influence behavior.
 	 * @param s the state for which this option's policy distribution should be returned
-	 * @param params the parameters that were passed to the option when it was initiated
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return this options policy distribution for the given state.
 	 */
-	public abstract List<ActionProb> getActionDistributionForState(State s, String [] params);
+	public abstract List<ActionProb> getActionDistributionForState(State s, GroundedAction groundedAction);
 	
 	
 	/**
@@ -254,42 +246,18 @@ public abstract class Option extends Action {
 		this.init();
 	}
 	
-	
-	/**
-	 * Initializes.
-	 * @param name the name of the option (should be unique from other options and actions a planning/learning algorithm can use)
-	 * @param domain a domain with which this option is associated; note that this option will *not* be added to domain's list of actions like a normal action.
-	 * @param parameterClasses the object classes of required parameters for the option in a comma delimited form.
-	 */
-	public Option(String name, Domain domain, String parameterClasses) {
-		super(name, domain, parameterClasses);
-		this.init();
-	}
 
 
 	/**
 	 * Initializes.
 	 * @param name the name of the option (should be unique from other options and actions a planning/learning algorithm can use)
 	 * @param domain a domain with which this option is associated; note that this option will *not* be added to domain's list of actions like a normal action.
-	 * @param parameterClasses the object classes of required parameters for the option
 	 */
-	public Option(String name, Domain domain, String [] parameterClasses){
-		super(name, domain, parameterClasses);
-		this.init();
+	public Option(String name, Domain domain){
+		this.name = name;
+		this.domain = domain;
 	}
-	
-	
-	/**
-	 * Initializes.
-	 * @param name the name of the option (should be unique from other options and actions a planning/learning algorithm can use)
-	 * @param domain a domain with which this option is associated; note that this option will *not* be added to domain's list of actions like a normal action.
-	 * @param parameterClasses the object classes of required parameters for the option
-	 * @param parameterOrderGroups the parameter order group assignments.
-	 */
-	public Option(String name, Domain domain, String [] parameterClasses, String [] parameterOrderGroups){
-		super(name, domain, parameterClasses, parameterOrderGroups);
-		this.init();
-	}
+
 	
 	private void init(){
 		rand = new Random();
@@ -429,20 +397,7 @@ public abstract class Option extends Action {
 		this.rf = rf;
 		this.discountFactor = discount;
 	}
-	
-	
-	/**
-	 * Overrides action superclass init because options will not be added to the associated domains list of actions.
-	 */
-	@Override
-	public void init(String name, Domain domain, String [] parameterClasses, String [] replacedClassNames){
-		
-		this.name = name;
-		this.domain = domain;
-		this.parameterClasses = parameterClasses;
-		this.parameterOrderGroup = replacedClassNames;
-		
-	}
+
 	
 	
 	/**
@@ -471,22 +426,22 @@ public abstract class Option extends Action {
 	
 	/**
 	 * Tells the option that it is being initiated in the given state with the given parameters. Will set auxiliary data such as the cumulative reward
-	 * received in the last execution to 0 since the option is about to be executed again. The {@link #initiateInStateHelper(State, String[])}
+	 * received in the last execution to 0 since the option is about to be executed again. The {@link #initiateInStateHelper(State, burlap.oomdp.singleagent.GroundedAction)}
 	 * method will be called before exiting.
 	 * @param s the state in which the option is being initiated.
-	 * @param params the parameters passed to the option 
+	 * @param groundedAction the parameters in which this option was initiated
 	 */
-	public void initiateInState(State s, String [] params){
+	public void initiateInState(State s, GroundedAction groundedAction){
 		lastCumulativeReward = 0.;
 		cumulativeDiscount = 1.;
 		lastNumSteps = 0;
 		lastOptionExecutionResults = new EpisodeAnalysis(s);
-		this.initiateInStateHelper(s, params);
+		this.initiateInStateHelper(s, groundedAction);
 	}
 	
 	
 	@Override
-	protected State performActionHelper(State st, String[] params){
+	protected State performActionHelper(State st, GroundedAction groundedAction){
 		
 		if(terminateMapper != null){
 			State ns = terminateMapper.generateOptionTerminalState(st);
@@ -497,11 +452,11 @@ public abstract class Option extends Action {
 		
 		State curState = st;
 		
-		this.initiateInState(curState, params);
+		this.initiateInState(curState, groundedAction);
 		
 		do{
-			curState = this.oneStep(curState, params);
-		}while(this.continueFromState(curState, params) && !externalTerminalFunction.isTerminal(curState));
+			curState = this.oneStep(curState, groundedAction);
+		}while(this.continueFromState(curState, groundedAction) && !externalTerminalFunction.isTerminal(curState));
 		
 		
 		
@@ -510,16 +465,16 @@ public abstract class Option extends Action {
 
 
 	@Override
-	public EnvironmentOutcome performInEnvironment(Environment env, String[] params) {
+	public EnvironmentOutcome performInEnvironment(Environment env, GroundedAction groundedActions) {
 
 		State initialState = env.getCurrentObservation();
-		this.initiateInState(initialState, params);
+		this.initiateInState(initialState, groundedActions);
 		do{
-			this.oneStep(env, params);
-		}while(this.continueFromState(env.getCurrentObservation(), params) && !env.isInTerminalState());
+			this.oneStep(env, groundedActions);
+		}while(this.continueFromState(env.getCurrentObservation(), groundedActions) && !env.isInTerminalState());
 
 		EnvironmentOptionOutcome eoo = new EnvironmentOptionOutcome(initialState,
-																	new GroundedAction(this, params),
+																	new GroundedAction(this),
 																	env.getCurrentObservation(),
 																	this.lastCumulativeReward,
 																	env.isInTerminalState(),
@@ -530,14 +485,14 @@ public abstract class Option extends Action {
 	}
 
 	/**
-	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(burlap.oomdp.core.states.State, String[])}
+	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
 	 * method was called previously for the state in which this option was initiated.
 	 * @param s the state in which a single step of the option is to be taken.
-	 * @param params the parameters that were passed to the option at initiation
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return the resulting state from a single step of the option being performed.
 	 */
-	public State oneStep(State s, String [] params){
-		GroundedAction ga = this.oneStepActionSelection(s, params);
+	public State oneStep(State s, GroundedAction groundedAction){
+		GroundedAction ga = this.oneStepActionSelection(s, groundedAction);
 		State sprime = ga.executeIn(s);
 		lastNumSteps++;
 		double r = 0.;
@@ -550,8 +505,7 @@ public abstract class Option extends Action {
 		if(shouldRecordResults){
 			GroundedAction recordAction = ga;
 			if(shouldAnnotateExecution){
-				NullAction annotatedPrimitive = new NullAction(this.name + "(" + (lastNumSteps-1) + ")-" + ga.action.getName());
-				recordAction = new GroundedAction(annotatedPrimitive, ga.params);
+				recordAction = new Policy.GroundedAnnotatedAction(groundedAction.toString() + "(" + (lastNumSteps-1) + ")", ga);
 			}
 			lastOptionExecutionResults.recordTransitionTo(recordAction, sprime, r);
 		}
@@ -564,15 +518,15 @@ public abstract class Option extends Action {
 
 	/**
 	 * Performs one step of execution of the option in the provided {@link burlap.oomdp.singleagent.environment.Environment}.
-	 * This method assuems that the {@link #initiateInState(burlap.oomdp.core.states.State, String[])} method
+	 * This method assuems that the {@link #initiateInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method
 	 * was called previously for the state in which this option was initiated.
 	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this option is to be applied
-	 * @param params the parameters that were passed to the option at initiation
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return the {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} of the one step of interaction.
 	 */
-	public EnvironmentOutcome oneStep(Environment env, String [] params){
+	public EnvironmentOutcome oneStep(Environment env, GroundedAction groundedAction){
 
-		GroundedAction ga = this.oneStepActionSelection(env.getCurrentObservation(), params);
+		GroundedAction ga = this.oneStepActionSelection(env.getCurrentObservation(), groundedAction);
 		EnvironmentOutcome eo = ga.executeIn(env);
 		if(eo instanceof EnvironmentOptionOutcome){
 			EnvironmentOptionOutcome eoo = (EnvironmentOptionOutcome)eo;
@@ -589,8 +543,7 @@ public abstract class Option extends Action {
 		if(shouldRecordResults){
 			GroundedAction recordAction = ga;
 			if(shouldAnnotateExecution){
-				NullAction annotatedPrimitive = new NullAction(this.name + "(" + (lastNumSteps-1) + ")-" + ga.action.getName());
-				recordAction = new GroundedAction(annotatedPrimitive, ga.params);
+				recordAction = new Policy.GroundedAnnotatedAction(groundedAction.toString() + "(" + (lastNumSteps-1) + ")", ga);
 			}
 			lastOptionExecutionResults.recordTransitionTo(recordAction, eo.op, eo.r);
 		}
@@ -605,11 +558,11 @@ public abstract class Option extends Action {
 	 * This method will use this option's termination probability, roll the dice, and
 	 * return whether the option should continue or terminate.
 	 * @param s the state to check against
-	 * @param params the parameters that were passed to the option at initiation
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return true if this option should continuing executing in s; false if it should terminate.
 	 */
-	public boolean continueFromState(State s, String [] params){
-		double pt = this.probabilityOfTermination(s, params);
+	public boolean continueFromState(State s, GroundedAction groundedAction){
+		double pt = this.probabilityOfTermination(s, groundedAction);
 		
 		//deterministic case needs no random roll
 		if(pt == 1.){
@@ -634,22 +587,22 @@ public abstract class Option extends Action {
 	/**
 	 * Returns the expected reward to be received from initiating this option from state s.
 	 * @param s the state in which the option is initiated
-	 * @param params the parameters that were passed to the option at initiation
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return the expected reward to be received from initiating this option from state s.
 	 */
-	public double getExpectedRewards(State s, String [] params){
+	public double getExpectedRewards(State s, GroundedAction groundedAction){
 		HashableState sh = this.expectationStateHashingFactory.hashState(s);
 		Double result = this.cachedExpectedRewards.get(sh);
 		if(result != null){
 			return result;
 		}
-		this.getTransitions(s, params);
+		this.getTransitions(s, groundedAction);
 		return this.cachedExpectedRewards.get(sh);
 	}
 	
 	
 	@Override
-	public List<TransitionProbability> getTransitions(State st, String [] params){
+	public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction){
 		
 		HashableState sh = this.expectationStateHashingFactory.hashState(st);
 		
@@ -658,9 +611,9 @@ public abstract class Option extends Action {
 			return result;
 		}
 		
-		this.initiateInState(st, params);
+		this.initiateInState(st, groundedAction);
 		
-		ExpectationSearchNode esn = new ExpectationSearchNode(st, params);
+		ExpectationSearchNode esn = new ExpectationSearchNode(st, groundedAction);
 		Map <HashableState, Double> possibleTerminations = new HashMap<HashableState, Double>();
 		double [] expectedReturn = new double[]{0.};
 		this.iterateExpectationScan(esn, 1., possibleTerminations, expectedReturn);
@@ -698,7 +651,7 @@ public abstract class Option extends Action {
 		
 		double probTerm = 0.0; //can never terminate in initiation state
 		if(src.nSteps > 0){
-			probTerm = this.probabilityOfTermination(src.s, src.optionParams);
+			probTerm = this.probabilityOfTermination(src.s, src.groundedAction);
 		}
 		
 		double probContinue = 1.-probTerm;
@@ -715,11 +668,11 @@ public abstract class Option extends Action {
 		if(probContinue > 0.){
 			
 			//handle option policy selection
-			List <ActionProb> actionSelction = this.getActionDistributionForState(src.s, src.optionParams);
+			List <ActionProb> actionSelction = this.getActionDistributionForState(src.s, src.groundedAction);
 			for(ActionProb ap : actionSelction){
 				
 				//now get possible outcomes of each action
-				List <TransitionProbability> transitions = ((GroundedAction)ap.ga).action.getTransitions(src.s, src.optionParams);
+				List <TransitionProbability> transitions = ((GroundedAction)ap.ga).getTransitions(src.s);
 				for(TransitionProbability tp : transitions){
 					double totalTransP = ap.pSelection * tp.p;
 					double r = stackedDiscount * this.rf.reward(src.s, (GroundedAction)ap.ga, tp.s);
@@ -757,14 +710,14 @@ public abstract class Option extends Action {
 	
 	/**
 	 * This method creates a deterministic action selection probability distribution where the deterministic action
-	 * to be selected with probability 1 is the one returned by the method {@link #getDeterministicPolicy(State, String[])}.
+	 * to be selected with probability 1 is the one returned by the method {@link #getDeterministicPolicy(State, burlap.oomdp.singleagent.GroundedAction)}.
 	 * This method is helpful for quickly defining the action selection distribution for deterministic option policies.
 	 * @param s the state for which the action selection distribution should be returned.
-	 * @param params the parameters that were passed to the option at initiation
+	 * @param groundedAction the parameters in which this option was initiated
 	 * @return a deterministic action selection distribution.
 	 */
-	protected List <ActionProb> getDeterministicPolicy(State s, String [] params){
-		GroundedAction ga = this.oneStepActionSelection(s, params);
+	protected List <ActionProb> getDeterministicPolicy(State s, GroundedAction groundedAction){
+		GroundedAction ga = this.oneStepActionSelection(s, groundedAction);
 		ActionProb ap = new ActionProb(ga, 1.);
 		List <ActionProb> aps = new ArrayList<Policy.ActionProb>();
 		aps.add(ap);
@@ -792,7 +745,7 @@ public abstract class Option extends Action {
 		/**
 		 * The option parameters that were passed to the option upon initiation.
 		 */
-		public String [] optionParams;
+		public GroundedAction groundedAction;
 		
 		
 		/**
@@ -816,11 +769,11 @@ public abstract class Option extends Action {
 		 * Initializes with the probability set to 1, the number of steps 0, and the cumulative discounted reward 0. This constructor
 		 * is useful for the initial root node of the option path expansion
 		 * @param s the state this search node wraps
-		 * @param optionParams The option parameters that were passed to the option upon initiation.
+		 * @param groundedAction the parameters in which this option was initiated
 		 */
-		public ExpectationSearchNode(State s, String [] optionParams){
+		public ExpectationSearchNode(State s, GroundedAction groundedAction){
 			this.s = s;
-			this.optionParams = optionParams;
+			this.groundedAction = groundedAction;
 			this.probability = 1.;
 			this.cumulativeDiscountedReward = 0.;
 			this.nSteps = 0;
@@ -838,7 +791,7 @@ public abstract class Option extends Action {
 		public ExpectationSearchNode(ExpectationSearchNode src, State s, double transProb, double discountedR){
 		
 			this.s = s;
-			this.optionParams = src.optionParams;
+			this.groundedAction = src.groundedAction;
 			this.probability = src.probability*transProb;
 			this.cumulativeDiscountedReward = src.cumulativeDiscountedReward + discountedR;
 			this.nSteps = src.nSteps+1;

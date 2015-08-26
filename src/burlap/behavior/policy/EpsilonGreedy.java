@@ -11,6 +11,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
 
 
@@ -87,7 +88,8 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 		double roll = rand.nextDouble();
 		if(roll <= epsilon){
 			int selected = rand.nextInt(qValues.size());
-			return qValues.get(selected).a.translateParameters(qValues.get(selected).s, s);
+			AbstractGroundedAction ga = qValues.get(selected).a;
+			return AbstractObjectParameterizedGroundedAction.Helper.translateParameters(ga, qValues.get(selected).s, s);
 		}
 		
 		
@@ -107,7 +109,8 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 		}
 		int selected = rand.nextInt(maxActions.size());
 		//return translated action parameters if the action is parameterized with objects in a object identifier indepdent domain
-		return maxActions.get(selected).a.translateParameters(maxActions.get(selected).s, s);
+		AbstractGroundedAction ga =  maxActions.get(selected).a;
+		return AbstractObjectParameterizedGroundedAction.Helper.translateParameters(ga, maxActions.get(selected).s, s);
 	}
 
 	@Override
@@ -126,7 +129,8 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 			else if(q.q == maxQ){
 				nMax++;
 			}
-			ActionProb ap = new ActionProb(q.a.translateParameters(q.s, s), this.epsilon*(1. / qValues.size()));
+			AbstractGroundedAction ta = AbstractObjectParameterizedGroundedAction.Helper.translateParameters(q.a, q.s, s);
+			ActionProb ap = new ActionProb(ta, this.epsilon*(1. / qValues.size()));
 			dist.add(ap);
 		}
 		for(int i = 0; i < dist.size(); i++){

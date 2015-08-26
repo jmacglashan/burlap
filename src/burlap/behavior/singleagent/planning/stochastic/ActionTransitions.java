@@ -43,7 +43,7 @@ public class ActionTransitions {
 	 */
 	public ActionTransitions(State s, GroundedAction ga, HashableStateFactory hashingFactory){
 		this.ga = ga;
-		this.transitions = this.getHashedTransitions(ga.action.getTransitions(s, ga.params), hashingFactory);
+		this.transitions = this.getHashedTransitions(ga.getTransitions(s), hashingFactory);
 	}
 	
 	

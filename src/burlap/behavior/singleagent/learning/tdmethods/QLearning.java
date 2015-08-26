@@ -21,6 +21,7 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
@@ -396,11 +397,14 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 */
 	protected QValue getQ(HashableState s, GroundedAction a) {
 		QLearningStateNode node = this.getStateNode(s);
-		
-		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
-			Map<String, String> matching = s.s.getObjectMatchingTo(node.s.s, false);
-			a = this.translateAction(a, matching);
-		}
+
+		a = (GroundedAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(a, s.s, node.s.s);
+
+		//legacy method
+//		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
+//			Map<String, String> matching = s.s.getObjectMatchingTo(node.s.s, false);
+//			a = this.translateAction(a, matching);
+//		}
 		
 		for(QValue qv : node.qEntry){
 			if(qv.a.equals(a)){

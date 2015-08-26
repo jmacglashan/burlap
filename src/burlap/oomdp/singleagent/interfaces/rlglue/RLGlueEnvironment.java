@@ -25,10 +25,10 @@ import burlap.oomdp.singleagent.RewardFunction;
 
 
 /**
- * This class can be used to take a BURLAP domain and task and turn it into an RLGlue environment with which other RLGlue agents
+ * This class can be used to take a BURLAP domain and task with discrete actions and turn it into an RLGlue environment with which other RLGlue agents
  * can interact. Because of the nature of RLGlue there are a few limitations: 
  * <br/>
- * (1) each state must have the same number of objects of each class as any other state in the environment;<br/>
+ * (1) the same actions available in one state must be available everywhere<br/>
  * (2) the environment cannot represent object identifier invariance and will fill in RLGlue feature vectors by object class and in the order the objects appear for each class;<br/>
  * (3) while single target relational domains can be used, multi-target relational domains cannot.
  * <p/>
@@ -99,7 +99,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	/**
 	 * A mapping from action index identiifers (that RLGlue wille use) to BURLAP actions and their parameterizations specified as the index of objects in a state.
 	 */
-	protected Map<Integer, ActionIndexParameterization> actionMap = new HashMap<Integer, RLGlueEnvironment.ActionIndexParameterization>();
+	protected Map<Integer, GroundedAction> actionMap = new HashMap<Integer, GroundedAction>();
 	
 	/**
 	 * The number of RLGlue discrete attributes that will be used
@@ -151,11 +151,10 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		State exampleState = this.stateGenerator.generateState();
 		int actionInd = 0;
 		for(burlap.oomdp.singleagent.Action a : this.domain.getActions()){
-			//List<GroundedAction> gas = exampleState.getAllGroundedActionsFor(a);
 			List<GroundedAction> gas = a.getAllApplicableGroundedActions(exampleState);
 			for(GroundedAction ga : gas){
-				ActionIndexParameterization ap = new ActionIndexParameterization(ga, exampleState);
-				this.actionMap.put(actionInd, ap);
+				//ActionIndexParameterization ap = new ActionIndexParameterization(ga, exampleState);
+				this.actionMap.put(actionInd, ga);
 				actionInd++;
 			}
 		}
@@ -270,7 +269,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 
 	@Override
 	public Reward_observation_terminal env_step(Action arg0) {
-		GroundedAction burlapAction = this.actionMap.get(arg0.getInt(0)).generateGroundedActionForState(this.curState);
+		GroundedAction burlapAction = this.actionMap.get(arg0.getInt(0));
 		State nextState = burlapAction.executeIn(this.curState);
 		Observation o = this.convertIntoObservation(nextState);
 		double r = this.rf.reward(curState, burlapAction, nextState);
@@ -339,56 +338,6 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		
 		throw new RuntimeException("Could not find object " + obName);
 	}
-	
-	
-	
-	/**
-	 * A class that represents an action parameterization in terms of the object index in a state, rather than object name.
-	 * @author James MacGlashan
-	 *
-	 */
-	protected class ActionIndexParameterization{
-		
-		/**
-		 * The BURLAP action
-		 */
-		public burlap.oomdp.singleagent.Action action;
-		
-		/**
-		 * The parameters of the action specified as indecies into a state
-		 */
-		public int [] params;
-		
-		
-		/**
-		 * Constructs from a grounded action
-		 * @param ga the grounded action to convert
-		 * @param srcState the source state from which the grounded action was generated
-		 */
-		public ActionIndexParameterization(GroundedAction ga, State srcState){
-			this.action = ga.action;
-			this.params = new int[ga.params.length];
-			for(int i = 0; i < ga.params.length; i++){
-				this.params[i] = RLGlueEnvironment.this.objectIndex(srcState, ga.params[i]);
-			}
-		}
-		
-		
-		/**
-		 * Returns a grounded action for a given state by finding the object instance names for the objects in the positions of this objects
-		 * parameter indcies.
-		 * @param s the state for which a grounded action should be returned
-		 * @return a grounded action.
-		 */
-		public GroundedAction generateGroundedActionForState(State s){
-			List<ObjectInstance> allObjects = s.getAllObjects();
-			String [] gaParams = new String[this.params.length];
-			for(int i = 0; i < gaParams.length; i++){
-				gaParams[i] = allObjects.get(this.params[i]).getName();
-			}
-			return new GroundedAction(this.action, gaParams);
-		}
-		
-	}
+
 
 }

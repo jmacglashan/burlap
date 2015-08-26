@@ -37,8 +37,6 @@ public class PolicyDefinedSubgoalOption extends Option {
 		this.policy = p;
 		this.subgoalTest = sg;
 		this.name = name;
-		this.parameterClasses = new String[0];
-		this.parameterOrderGroup = new String[0];
 	}
 	
 	@Override
@@ -57,7 +55,7 @@ public class PolicyDefinedSubgoalOption extends Option {
 	}
 
 	@Override
-	public double probabilityOfTermination(State s, String[] params) {
+	public double probabilityOfTermination(State s, GroundedAction groundedAction) {
 		State ms = this.map(s);
 		if(subgoalTest.satisfies(ms) || !this.policy.isDefinedFor(ms)){
 			return 1.;
@@ -66,23 +64,23 @@ public class PolicyDefinedSubgoalOption extends Option {
 	}
 
 	@Override
-	public boolean applicableInState(State st, String [] params){
+	public boolean applicableInState(State st, GroundedAction groundedAction){
 		return policy.getAction(this.map(st)) != null;
 	}
 	
 	
 	@Override
-	public void initiateInStateHelper(State s, String[] params) {
+	public void initiateInStateHelper(State s, GroundedAction groundedAction) {
 		//no bookkeeping
 	}
 
 	@Override
-	public GroundedAction oneStepActionSelection(State s, String[] params) {
+	public GroundedAction oneStepActionSelection(State s, GroundedAction groundedAction) {
 		return (GroundedAction)policy.getAction(this.map(s));
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s, String[] params) {
+	public List<ActionProb> getActionDistributionForState(State s, GroundedAction groundedAction) {
 		return policy.getActionDistributionForState(this.map(s));
 	}
 

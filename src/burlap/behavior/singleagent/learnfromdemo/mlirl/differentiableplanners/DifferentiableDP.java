@@ -187,7 +187,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 			gradient[i] = 0.;
 		}
 
-		List<TransitionProbability> tps = ga.action.getTransitions(s, ga.params);
+		List<TransitionProbability> tps = ga.getTransitions(s);
 		for(TransitionProbability tp : tps){
 			double [] valueGradient = this.getValueGradient(tp.s);
 			double [] rewardGradient = ((DifferentiableRF)this.rf).getGradient(s, ga, tp.s);

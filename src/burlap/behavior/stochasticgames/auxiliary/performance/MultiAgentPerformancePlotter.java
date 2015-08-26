@@ -437,8 +437,14 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	public void toggleDataCollection(boolean collectData){
 		this.collectData = collectData;
 	}
-	
-	
+
+
+	@Override
+	public void gameStarting(State s) {
+		//do nothing
+	}
+
+
 	@Override
 	synchronized public void observe(State s, JointAction ja, Map<String, Double> reward,
 			State sp) {
@@ -478,6 +484,11 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		}
 		
 		
+	}
+
+	@Override
+	public void gameEnding(State s) {
+		//do nothing
 	}
 	
 	/**

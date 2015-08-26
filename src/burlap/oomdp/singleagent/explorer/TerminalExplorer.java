@@ -206,8 +206,9 @@ public class TerminalExplorer {
 						System.out.println("Unknown action: " + actionName + "; nothing changed");
 					}
 					else{
-						GroundedAction ga = new GroundedAction(action, params);
-						if(action.applicableInState(this.env.getCurrentObservation(), params)) {
+						GroundedAction ga = action.getAssociatedGroundedAction();
+						ga.initParamsWithStringRep(params);
+						if(action.applicableInState(this.env.getCurrentObservation(), ga)) {
 							ga.executeIn(this.env);
 						}
 						else{

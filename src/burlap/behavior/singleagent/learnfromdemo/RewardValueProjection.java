@@ -23,7 +23,7 @@ import java.util.List;
  * It is useful for analyzing learned reward function through IRL, for example, for passing a learned reward function
  * to a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} to visualize what
  * was learned. This class returns values based one of four possible reward projection types
- * ({@link burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType)}:<br/>
+ * ({@link burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType}):<br/>
  * SOURCESTATE: when the reward function only depends on the source state<br/>
  * DESTINATIONSTATE: when the reward function only depends on the destination state (the state to which the agent transitions)<br/>
  * STATEACTION: when the reward function only depends on the state-action pair<br/>

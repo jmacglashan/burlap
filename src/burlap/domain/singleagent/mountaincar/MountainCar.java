@@ -13,6 +13,8 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -272,7 +274,7 @@ public class MountainCar implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	class MovementAction extends Action{
+	class MovementAction extends Action implements FullActionModel{
 
 		int dir;
 		MCPhysicsParams physParms;
@@ -284,19 +286,19 @@ public class MountainCar implements DomainGenerator {
 		 * @param dir the direction of acceleration; +1 for forward acceleration, -1 for backwards acceleration, 0 for no acceleration (coast).
 		 */
 		public MovementAction(String name, Domain domain, int dir, MCPhysicsParams physParms){
-			super(name, domain, "");
+			super(name, domain);
 			this.dir = dir;
 			this.physParms = physParms;
 		}
 		
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			return MountainCar.move(s, dir, this.physParms);
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+			return this.deterministicTransition(s, groundedAction);
 		}
 
 		public MCPhysicsParams getPhysParms() {

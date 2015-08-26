@@ -225,7 +225,8 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 			
 			//update action to real world action
 			Action realWorldAction = this.domain.getAction(q.a.actionName());
-			GroundedAction nga = new GroundedAction(realWorldAction, q.a.params);
+			GroundedAction nga = (GroundedAction)q.a.copy();
+			nga.action = realWorldAction;
 			q.a = nga;
 			
 		}
@@ -245,7 +246,8 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		
 		//update action to real world action
 		Action realWorldAction = this.domain.getAction(q.a.actionName());
-		GroundedAction nga = new GroundedAction(realWorldAction, q.a.params);
+		GroundedAction nga = (GroundedAction)q.a.copy();
+		nga.action = realWorldAction;
 		q.a = nga;
 		return q;
 	}

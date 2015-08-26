@@ -6,9 +6,9 @@ import java.util.Map;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
@@ -27,7 +27,7 @@ public class RandomSGAgent extends SGAgent {
 	@Override
 	public GroundedSGAgentAction getAction(State s) {
 		
-		List<GroundedSGAgentAction> gsas = SGAgentAction.getAllPossibleGroundedSingleActions(s, this.worldAgentName, this.agentType.actions);
+		List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, this.worldAgentName, this.agentType.actions);
 		
 		int r = RandomFactory.getMapped(0).nextInt(gsas.size());
 		GroundedSGAgentAction gsa = gsas.get(r);

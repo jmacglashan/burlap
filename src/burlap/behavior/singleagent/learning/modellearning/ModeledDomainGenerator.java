@@ -1,20 +1,15 @@
 package burlap.behavior.singleagent.learning.modellearning;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
+
+import java.util.List;
 
 
 
@@ -86,7 +81,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ModeledAction extends Action{
+	public class ModeledAction extends Action implements FullActionModel{
 		
 		/**
 		 * The source action this action models
@@ -105,29 +100,53 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		 * @param model the model specifying transition dynamics
 		 */
 		public ModeledAction(Domain modelDomain, Action sourceAction, Model model){
-			super(sourceAction.getName(), modelDomain, sourceAction.getParameterClasses(), sourceAction.getParameterOrderGroups());
+			super(sourceAction.getName(), modelDomain);
 			this.sourceAction = sourceAction;
 			this.model = model;
 
 		}
 		
 		@Override
-		public boolean applicableInState(State s, String [] params){
-			return this.sourceAction.applicableInState(s, params);
+		public boolean applicableInState(State s, GroundedAction groundedAction){
+			return this.sourceAction.applicableInState(s, groundedAction);
 		}
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
-			return this.model.sampleModel(s, new GroundedAction(sourceAction, params));
+		public boolean isPrimitive() {
+			return sourceAction.isPrimitive();
+		}
+
+		@Override
+		public boolean isParameterized() {
+			return sourceAction.isParameterized();
+		}
+
+		@Override
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
+			return this.model.sampleModel(s, groundedAction);
 		}
 		
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.model.getTransitionProbabilities(s, new GroundedAction(sourceAction, params));
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+			return this.model.getTransitionProbabilities(s, groundedAction);
 		}
-		
-		
+
+		@Override
+		public GroundedAction getAssociatedGroundedAction() {
+			GroundedAction swappedPointer = sourceAction.getAssociatedGroundedAction();
+			swappedPointer.action = this;
+			return swappedPointer;
+		}
+
+		@Override
+		public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+			List <GroundedAction> actionList = sourceAction.getAllApplicableGroundedActions(s);
+			for(GroundedAction ga : actionList){
+				ga.action = this;
+			}
+			return actionList;
+		}
 	}
 
 	

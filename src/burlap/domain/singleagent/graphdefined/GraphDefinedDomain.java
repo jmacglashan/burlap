@@ -19,6 +19,8 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 
@@ -463,7 +465,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class GraphAction extends Action{
+	public static class GraphAction extends Action implements FullActionModel{
 
 		/**
 		 * Random object for sampling the stochastic graph transitions
@@ -488,7 +490,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 * @param aId the action identifier number
 		 */
 		public GraphAction(Domain domain, int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbibility>>> transitionDynamics){
-			super(BASEACTIONNAME+aId, domain, "");
+			super(BASEACTIONNAME+aId, domain);
 			this.aId = aId;
 			rand = RandomFactory.getMapped(0);
 			this.transitionDynamics = transitionDynamics;
@@ -496,7 +498,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		
 		@Override
-		public boolean applicableInState(State st, String [] params){
+		public boolean applicableInState(State st, GroundedAction groundedAction){
 			
 			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
 			int n = o.getIntValForAttribute(ATTNODE);
@@ -515,7 +517,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 			
 			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
 			int n = o.getIntValForAttribute(ATTNODE);
@@ -541,7 +543,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State st, String [] params){
+		public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction){
 			
 			List <TransitionProbability> result = new ArrayList<TransitionProbability>();
 			

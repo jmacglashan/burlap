@@ -5,6 +5,8 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.stochasticgames.*;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -285,8 +287,9 @@ public class SGTerminalExplorer {
 						System.out.println("Unknown action: " + actionName);
 					}
 					else{
-						GroundedSGAgentAction gsa = new GroundedSGAgentAction(agentName, sa, params);
-						if(sa.applicableInState(s, agentName, params)){
+						GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(agentName);
+						gsa.initParamsWithStringRep(params);
+						if(sa.applicableInState(s, gsa)){
 							System.out.println("Setting action: " + agentName + "::" + actionName);
 							curJointAction.addAction(gsa);
 						}

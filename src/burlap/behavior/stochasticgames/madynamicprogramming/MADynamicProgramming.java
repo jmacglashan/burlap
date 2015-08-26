@@ -98,7 +98,6 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * Initializes all the main datstructres of the value function valueFunction
 	 * @param domain the domain in which to perform planning
 	 * @param agentDefinitions the definitions of the agents involved in the planning problem.
-	 * @param jointActionModel the joint action model
 	 * @param jointReward the joint reward function
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount factor
@@ -106,11 +105,11 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * @param vInit the value function initialization function to use
 	 * @param backupOperator the solution concept backup operator to use.
 	 */
-	public void initMAVF(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointActionModel jointActionModel, JointReward jointReward, TerminalFunction terminalFunction,
+	public void initMAVF(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointReward jointReward, TerminalFunction terminalFunction,
 			double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
 	
 		this.domain = domain;
-		this.jointActionModel = jointActionModel;
+		this.jointActionModel = domain.getJointActionModel();
 		this.jointReward = jointReward;
 		this.terminalFunction = terminalFunction;
 		this.discount = discount;

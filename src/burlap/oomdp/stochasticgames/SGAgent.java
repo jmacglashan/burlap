@@ -3,6 +3,7 @@ package burlap.oomdp.stochasticgames;
 import java.util.Map;
 
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 
 
 /**

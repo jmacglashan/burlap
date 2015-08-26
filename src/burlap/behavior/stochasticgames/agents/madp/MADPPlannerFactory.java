@@ -225,7 +225,7 @@ public interface MADPPlannerFactory {
 		
 		@Override
 		public MADynamicProgramming getPlannerInstance() {
-			return new MAValueIteration(domain, agentDefinitions, jointActionModel, jointReward, terminalFunction, discount, hashingFactory, qInit, backupOperator, maxDelta, maxIterations);
+			return new MAValueIteration(domain, agentDefinitions, jointReward, terminalFunction, discount, hashingFactory, qInit, backupOperator, maxDelta, maxIterations);
 		}
 		
 		

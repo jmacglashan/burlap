@@ -12,9 +12,9 @@ import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
@@ -101,8 +101,8 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(targetAgentName);
 		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
 		
-		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllPossibleGroundedSingleActions(s, targetAgentName, this.agentsInJointPolicy.get(targetAgentName).actions);
-		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllPossibleGroundedSingleActions(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
+		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, targetAgentName, this.agentsInJointPolicy.get(targetAgentName).actions);
+		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
 		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		double [][] payout2 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];

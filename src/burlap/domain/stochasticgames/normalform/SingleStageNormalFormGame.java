@@ -20,13 +20,13 @@ import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.SGStateGenerator;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.oomdp.stochasticgames.World;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.oomdp.stochasticgames.common.StaticRepeatedGameActionModel;
@@ -699,9 +699,9 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 
 		@Override
-		public boolean applicableInState(State s, String actingAgent, String[] params) {
+		public boolean applicableInState(State s, GroundedSGAgentAction gsa) {
 			
-			ObjectInstance a = s.getObject(actingAgent);
+			ObjectInstance a = s.getObject(gsa.actingAgent);
 			int pn = a.getIntValForAttribute(ATTPN);
 			
 			if(this.actionNameToIndex[pn].containsKey(this.actionName)){

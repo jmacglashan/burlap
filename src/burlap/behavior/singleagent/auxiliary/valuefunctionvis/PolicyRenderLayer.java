@@ -44,7 +44,7 @@ public class PolicyRenderLayer implements RenderLayer{
 	 * Sets the states to visualize
 	 * @param stateValuesToVisualize the state to visualize
 	 */
-	public void setStateValuesToVisualize(Collection<State> stateValuesToVisualize) {
+	public void setStatesToVisualize(Collection<State> stateValuesToVisualize) {
 		this.statesToVisualize = stateValuesToVisualize;
 	}
 	

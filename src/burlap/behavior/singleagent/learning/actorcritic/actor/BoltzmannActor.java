@@ -82,7 +82,7 @@ public class BoltzmannActor extends Actor {
 		
 		
 		for(Action a : actions){
-			if(a.getParameterClasses().length > 0){
+			if(a.isParameterized()){
 				containsParameterizedActions = true;
 				break;
 			}
@@ -120,7 +120,7 @@ public class BoltzmannActor extends Actor {
 		
 		if(!actions.contains(a)){
 			this.actions.add(a);
-			if(a.getParameterClasses().length > 0){
+			if(a.isParameterized()){
 				containsParameterizedActions = true;
 			}
 		}
@@ -150,22 +150,21 @@ public class BoltzmannActor extends Actor {
 			ActionPreference ap = node.preferences.get(i);
 			probs.add(new ActionProb(ap.ga, probsArray[i]));
 		}
+
+
+
 		
 		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
 			//then convert back to this states space
 			Map <String, String> matching = node.sh.s.getObjectMatchingTo(s, false);
-			
+
 			List <ActionProb> translated = new ArrayList<ActionProb>(probs.size());
+
 			for(ActionProb ap : probs){
-				if(ap.ga.params.length == 0 || !ap.ga.parametersAreObjects()){
-					translated.add(ap);
-				}
-				else{
-					ActionProb tap = new ActionProb(this.translateAction((GroundedAction)ap.ga, matching), ap.pSelection);
-					translated.add(tap);
-				}
+				ActionProb tap = new ActionProb(((GroundedAction)ap.ga).translateParameters(node.sh.s, s), ap.pSelection);
+				translated.add(tap);
 			}
-			
+
 			return translated;
 			
 		}
@@ -226,11 +225,7 @@ public class BoltzmannActor extends Actor {
 	 */
 	protected ActionPreference getMatchingPreference(HashableState sh, GroundedAction ga, PolicyNode node){
 		
-		GroundedAction translatedAction = ga;
-		if(ga.params.length > 0  && !this.domain.isObjectIdentifierDependent() && ga.parametersAreObjects()){
-			Map <String, String> matching = sh.s.getObjectMatchingTo(node.sh.s, false);
-			translatedAction = this.translateAction(ga, matching);
-		}
+		GroundedAction translatedAction = ga.translateParameters(sh.s, node.sh.s);
 		
 		for(ActionPreference p : node.preferences){
 			if(p.ga.equals(translatedAction)){
@@ -241,21 +236,7 @@ public class BoltzmannActor extends Actor {
 		return null;
 	}
 	
-	
-	/**
-	 * Takes a parameterized GroundedAction and returns an action with its parameters shifting according to a provided object matching from the state in
-	 * which the action was applied and some other state's object name identifiers.
-	 * @param a the source action
-	 * @param matching a matching from objects in the state in which the source action was applied to corresponding objects in some other state's object name identifiers
-	 * @return a GroundedAction whose parameters are translated from the input GroundedAction, to the corresponding object identifiers specified by a matching.
-	 */
-	protected GroundedAction translateAction(GroundedAction a, Map <String,String> matching){
-		String [] newParams = new String[a.params.length];
-		for(int i = 0; i < a.params.length; i++){
-			newParams[i] = matching.get(a.params[i]);
-		}
-		return new GroundedAction(a.action, newParams);
-	}
+
 	
 	
 	

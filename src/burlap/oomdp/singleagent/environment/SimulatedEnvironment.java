@@ -9,7 +9,7 @@ import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
- * An {@link burlap.oomdp.singleagent.environment.Environment} that simulates interactions using the {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, String[])}
+ * An {@link burlap.oomdp.singleagent.environment.Environment} that simulates interactions using the {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
  * method of the the {@link burlap.oomdp.core.Domain} provided to this Environment. The rewards and terminal states are similarly tracked using a
  * provided {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}. Initial states of the environment
  * are defined using a {@link burlap.oomdp.auxiliary.StateGenerator}. If no {@link burlap.oomdp.auxiliary.StateGenerator} is specified,

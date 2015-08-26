@@ -160,7 +160,7 @@ public class TabularModel extends Model {
 
 			for(StateActionNode san : sn.actionNodes.values()){
 				if(san.nTries < this.nConfident){
-					GroundedAction ta = (GroundedAction)san.ga.translateParameters(sn.sh.s, s);
+					GroundedAction ta = san.ga.translateParameters(sn.sh.s, s);
 					unmodeled.add(ta);
 				}
 			}

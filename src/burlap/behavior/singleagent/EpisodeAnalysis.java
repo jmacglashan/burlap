@@ -463,7 +463,10 @@ public class EpisodeAnalysis {
 			for(State s : stateSequence) {
 				this.representers.put(s.getClass(), new StateYamlRepresent());
 			}
-			this.representers.put(GroundedAction.class, new ActionYamlRepresent());
+			for(GroundedAction ga : actionSequence){
+				this.representers.put(ga.getClass(), new ActionYamlRepresent());
+			}
+
 		}
 
 		private class StateYamlRepresent implements Represent{
@@ -481,7 +484,7 @@ public class EpisodeAnalysis {
 		private class ActionYamlRepresent implements Represent{
 			@Override
 			public Node representData(Object o) {
-				return representScalar(new Tag("!action"), getSpaceDelimGAString((GroundedAction)o));
+				return representScalar(new Tag("!action"), o.toString());
 			}
 		}
 	}
@@ -533,7 +536,7 @@ public class EpisodeAnalysis {
 			@Override
 			public Object construct(Node node) {
 				String val = (String) constructScalar((ScalarNode)node);
-				GroundedAction ga = getGAFromSpaceDelimGASTring(domain, val);
+				GroundedAction ga = getGAFromSpaceDelimGAString(domain, val);
 				return ga;
 			}
 		}
@@ -631,7 +634,7 @@ public class EpisodeAnalysis {
 			State s = sp.stringToState(parts[0]);
 			if(i < elComps.length-1){
 				String [] ars = parts[1].split("\n");
-				ea.recordTransitionTo(getGAFromSpaceDelimGASTring(d, ars[0]), s, Double.parseDouble(ars[1]));
+				ea.recordTransitionTo(getGAFromSpaceDelimGAString(d, ars[0]), s, Double.parseDouble(ars[1]));
 			}
 			else{
 				ea.addState(s);
@@ -643,31 +646,35 @@ public class EpisodeAnalysis {
 	}
 	
 	
-	private static GroundedAction getGAFromSpaceDelimGASTring(Domain d, String str){
-		
-		String [] scomps = str.split(" ");
-		Action a = d.getAction(scomps[0]);
-		if(a == null){
-			//the domain does not have a reference, so create a null action in its place
-			a = new NullAction(scomps[0]);
+	private static GroundedAction getGAFromSpaceDelimGAString(Domain d, String str){
+
+		//handle option annotated grounded actions
+		if(str.startsWith("*")){
+			String [] annotatedParts = str.split("--");
+			GroundedAction primitivePart = getGAFromSpaceDelimGAString(d, annotatedParts[1]);
+			String annotation = annotatedParts[0].substring(1);
+			Policy.GroundedAnnotatedAction ga = new Policy.GroundedAnnotatedAction(annotation, primitivePart);
+			return ga;
 		}
-		String [] params = new String[scomps.length-1];
-		for(int i = 1; i < scomps.length; i++){
-			params[i-1] = scomps[i];
+		else {
+
+			String[] scomps = str.split(" ");
+			Action a = d.getAction(scomps[0]);
+			if(a == null) {
+				//the domain does not have a reference, so create a null action in its place
+				a = new NullAction(scomps[0]);
+			}
+			String[] params = new String[scomps.length - 1];
+			for(int i = 1; i < scomps.length; i++) {
+				params[i - 1] = scomps[i];
+			}
+
+			GroundedAction ga = a.getAssociatedGroundedAction();
+			ga.initParamsWithStringRep(params);
+			return ga;
 		}
-		
-		return new GroundedAction(a, params);
 	}
-	
-	private static String getSpaceDelimGAString(GroundedAction ga){
-		StringBuffer sbuf = new StringBuffer(30);
-		sbuf.append(ga.action.getName());
-		for(int i = 0; i < ga.params.length; i++){
-			sbuf.append(" ").append(ga.params[i]);
-		}
-		
-		return sbuf.toString();
-	}
+
 
 
 	public static void main(String[] args) {

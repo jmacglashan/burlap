@@ -4,24 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
- * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning, the
- * {@link burlap.oomdp.statehashing.NameDependentHashableStateFactory} should be used.
+ * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning,
+ * the {@link burlap.oomdp.statehashing.HashableStateFactory} should be object identifier dependent. For example, if using a
+ * {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
  * @author James MacGlashan
  *
  */
@@ -225,14 +221,16 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class StackAction extends Action{
+	public class StackAction extends ObjectParameterizedAction implements FullActionModel{
 
 		public StackAction(String name, Domain domain){
 			super(name, domain, new String[]{CLASSBLOCK, CLASSBLOCK});
 		}
 		
 		@Override
-		public boolean applicableInState(State st, String [] params){
+		public boolean applicableInState(State st, GroundedAction groundedAction){
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
 			//blocks must be clear
 			
@@ -252,8 +250,10 @@ public class BlocksWorld implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State st, String[] params) {
-		
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+
 			ObjectInstance src = st.getObject(params[0]);
 			ObjectInstance target = st.getObject(params[1]);
 			
@@ -273,11 +273,14 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+			return this.deterministicTransition(s, groundedAction);
 		}
-		
-		
+
+		@Override
+		public boolean parametersAreObjectIdentifierIndependent() {
+			return false;
+		}
 	}
 	
 	
@@ -287,13 +290,15 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class UnstackAction extends Action{
+	public class UnstackAction extends ObjectParameterizedAction implements FullActionModel{
 		
 		public UnstackAction(String name, Domain domain){
 			super(name, domain, new String[]{CLASSBLOCK});
 		}
 		
-		public boolean applicableInState(State st, String [] params){
+		public boolean applicableInState(State st, GroundedAction groundedAction){
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
 			//block must be clear
 			
@@ -310,8 +315,10 @@ public class BlocksWorld implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State st, String[] params) {
-		
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+
 			ObjectInstance src = st.getObject(params[0]);
 			
 			String srcOnName = src.getStringValForAttribute(ATTONBLOCK);
@@ -328,10 +335,14 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+			return this.deterministicTransition(s, groundedAction);
 		}
-		
+
+		@Override
+		public boolean parametersAreObjectIdentifierIndependent() {
+			return false;
+		}
 	}
 	
 	

@@ -74,7 +74,9 @@ public class DomainMappedPolicy extends Policy {
 	 * @return a GroundedAction whose action reference belongs to the Action with the same name in this object's {@link #targetDomain} object
 	 */
 	protected AbstractGroundedAction mapAction(AbstractGroundedAction ga){
-		return new GroundedAction(targetDomain.getAction(ga.actionName()), ga.params);
+		GroundedAction mapped = (GroundedAction)ga.copy();
+		mapped.action = targetDomain.getAction(ga.actionName());
+		return mapped;
 	}
 
 }

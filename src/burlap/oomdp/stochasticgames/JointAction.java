@@ -7,19 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
  * This class specifies which action each agent took in a world. The class is backed by a Map from
- * agent names to the {@link GroundedSGAgentAction} taken by that respective agent.
- * The {@link GroundedSGAgentAction} objects of this class can also
+ * agent names to the {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} taken by that respective agent.
+ * The {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} objects of this class can also
  * be iterated over.
  * @author James MacGlashan
  *
  */
-public class JointAction extends AbstractGroundedAction implements Iterable<GroundedSGAgentAction>{
+public class JointAction implements AbstractGroundedAction, Iterable<GroundedSGAgentAction>{
 
 	public Map <String, GroundedSGAgentAction>		actions;
 	
@@ -205,45 +208,32 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 
 
 
-	@Override
-	public boolean isExecutable() {
-		return false;
-	}
 
-
-
-	@Override
-	public State executeIn(State s) {
-		throw new RuntimeException("Joint action cannnot be directly executed; apply it with a joint action model instead.");
-	}
-
-
-
-	@Override
-	public boolean actionDomainIsObjectIdentifierDependent() {
-		for(GroundedSGAgentAction gsa : this.actions.values()){
-			return gsa.action.domain.isObjectIdentifierDependent();
-		}
-		return false;
-	}
-
-
-	@Override
 	public AbstractGroundedAction translateParameters(State sourceState, State targetState){
-		
-		if(this.actionDomainIsObjectIdentifierDependent()){
+
+		boolean foundIndependent = false;
+		for(GroundedSGAgentAction aa : this.actions.values()){
+			if(aa instanceof AbstractObjectParameterizedGroundedAction &&
+					((AbstractObjectParameterizedGroundedAction)aa).actionDomainIsObjectIdentifierIndependent()){
+
+				foundIndependent = true;
+				break;
+			}
+		}
+		if(!foundIndependent){
 			return this;
 		}
-		
+
+
 		JointAction nja = new JointAction();
-		
+
 		for(GroundedSGAgentAction gsa : this.actions.values()){
-			GroundedSGAgentAction ngsa = (GroundedSGAgentAction) gsa.translateParameters(sourceState, targetState);
+			GroundedSGAgentAction ngsa = (GroundedSGAgentAction) AbstractObjectParameterizedGroundedAction.Helper.translateParameters(gsa, sourceState, targetState);
 			nja.addAction(ngsa);
 		}
-		
+
 		return nja;
-		
+
 	}
 	
 	@Override
@@ -264,7 +254,7 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 		//get all possible individual choices
 		List<List<GroundedSGAgentAction>> individualActionChoices = new ArrayList<List<GroundedSGAgentAction>>(agents.size());
 		for(SGAgent agent : agents){
-			List<GroundedSGAgentAction> gsas = SGAgentAction.getAllPossibleGroundedSingleActions(s, agent.worldAgentName, agent.agentType.actions);
+			List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, agent.worldAgentName, agent.agentType.actions);
 			individualActionChoices.add(gsas);
 		}
 	
@@ -286,7 +276,7 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 		//get all possible individual choices
 		List<List<GroundedSGAgentAction>> individualActionChoices = new ArrayList<List<GroundedSGAgentAction>>(agents.size());
 		for(Map.Entry<String, SGAgentType> e : agents.entrySet()){
-			List<GroundedSGAgentAction> gsas = SGAgentAction.getAllPossibleGroundedSingleActions(s, e.getKey(), e.getValue().actions);
+			List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, e.getKey(), e.getValue().actions);
 			individualActionChoices.add(gsas);
 		}
 		
@@ -323,18 +313,20 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	}
 
 
-
 	@Override
-	public boolean parametersAreObjects() {
-		return false;
+	public void initParamsWithStringRep(String[] params) {
+		throw new UnsupportedOperationException();
 	}
 
-
-
-	
-
-	
-	
-	
+	@Override
+	public String[] getParametersAsString() {
+		String [] vals = new String[this.actions.size()];
+		int i = 0;
+		for(Map.Entry<String,GroundedSGAgentAction> e : this.actions.entrySet()){
+			vals[i] = e.toString();
+			i++;
+		}
+		return vals;
+	}
 }
 

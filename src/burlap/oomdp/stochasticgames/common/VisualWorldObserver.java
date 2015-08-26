@@ -118,15 +118,30 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 		pack();
 		setVisible(true);
 	}
-	
+
+	@Override
+	public void gameStarting(State s) {
+		this.updateAndWait(s);
+	}
+
 
 	@Override
 	public void observe(State s, JointAction ja, Map<String, Double> reward, State sp) {
 		
-		this.painter.updateState(sp);
-		this.updatePropTextArea(sp);
+		this.updateAndWait(sp);
+
+	}
+
+	@Override
+	public void gameEnding(State s) {
+		//do nothing
+	}
+
+	protected void updateAndWait(State s){
+		this.painter.updateState(s);
+		this.updatePropTextArea(s);
 		Thread waitThread = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -136,15 +151,14 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 				}
 			}
 		});
-		
+
 		waitThread.start();
-		
+
 		try {
 			waitThread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
 	}
 	
 	

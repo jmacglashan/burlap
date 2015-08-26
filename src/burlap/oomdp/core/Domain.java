@@ -5,12 +5,20 @@ import java.util.*;
 
 import burlap.debugtools.DPrint;
 import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
- * This is the base class for an OO-MDP/OO-SG domain. It includes data members for the set of attributes, object classes
- * and propositional functions of the domain.
+ * This is the base class for a problem domain. A problem domain consists of its state variables, as defined with an
+ * OO-MDP ({@link burlap.oomdp.core.Attribute}s, {@link burlap.oomdp.core.ObjectClass}s, and {@link burlap.oomdp.core.PropositionalFunction}s),
+ * and the physics of the world, which are typically specified with some set of action definitions. For single-agent
+ * domains, the physics and actions are defined with the {@link burlap.oomdp.singleagent.Action} object and for
+ * multi-agent stochastic games, they are defined with {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} and a
+ * {@link burlap.oomdp.stochasticgames.JointActionModel}. See the respective single-agent {@link burlap.oomdp.singleagent.SADomain}
+ * and stochastic games {@link burlap.oomdp.stochasticgames.SGDomain} subclasses for more information on their definitions.
+ * <br/><br/>
+ * Note that a {@link burlap.oomdp.core.Domain} does *not* include task information, which will be defined separately with
+ * a {@link burlap.oomdp.singleagent.RewardFunction} or {@link burlap.oomdp.stochasticgames.JointReward}, and a {@link burlap.oomdp.core.TerminalFunction}.
  * @author James MacGlashan
  */
 public abstract class Domain {
@@ -151,11 +159,11 @@ public abstract class Domain {
 	public abstract void addAction(Action act);
 	
 	/**
-	 * Add a {@link burlap.oomdp.stochasticgames.SGAgentAction} that can be executed by an agent in the game.
-	 * The set of {@link burlap.oomdp.stochasticgames.SGAgentAction}s defines the set of joint actions in the stochastic domain (as the cross product).
+	 * Add a {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} that can be executed by an agent in the game.
+	 * The set of {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}s defines the set of joint actions in the stochastic domain (as the cross product).
 	 * This method will throw a runtime exception if this domain is not an instance of the stochastic
 	 * game domain ({@link burlap.oomdp.stochasticgames.SGDomain}). The action will not be added if this domain already has a instance with the same name.
-	 * @param sa the {@link burlap.oomdp.stochasticgames.SGAgentAction} that can be executed by an agent in the game.
+	 * @param sa the {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} that can be executed by an agent in the game.
 	 */
 	public abstract void addSGAgentAction(SGAgentAction sa);
 	

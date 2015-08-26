@@ -19,7 +19,7 @@ import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.common.UniversalSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.UniversalSGAgentAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -334,29 +334,29 @@ public class GridGame implements DomainGenerator {
 		SGDomain domain = new SGDomain();
 		
 		
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.DISC);
-		xatt.setDiscValuesForRange(0, maxDim, 1);
+		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.INT);
+		xatt.setLims(0, maxDim);
 		
-		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.DISC);
-		yatt.setDiscValuesForRange(0, maxDim, 1);
+		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.INT);
+		yatt.setLims(0, maxDim);
 		
-		Attribute e1att = new Attribute(domain, ATTE1, Attribute.AttributeType.DISC);
-		e1att.setDiscValuesForRange(0, maxDim, 1);
+		Attribute e1att = new Attribute(domain, ATTE1, Attribute.AttributeType.INT);
+		e1att.setLims(0, maxDim);
 		
-		Attribute e2att = new Attribute(domain, ATTE2, Attribute.AttributeType.DISC);
-		e2att.setDiscValuesForRange(0, maxDim, 1);
+		Attribute e2att = new Attribute(domain, ATTE2, Attribute.AttributeType.INT);
+		e2att.setLims(0, maxDim);
 		
-		Attribute patt = new Attribute(domain, ATTP, Attribute.AttributeType.DISC);
-		patt.setDiscValuesForRange(0, maxDim, 1);
+		Attribute patt = new Attribute(domain, ATTP, Attribute.AttributeType.INT);
+		patt.setLims(0, maxDim);
 		
-		Attribute pnatt = new Attribute(domain, ATTPN, Attribute.AttributeType.DISC);
-		pnatt.setDiscValuesForRange(0, maxPlyrs, 1);
+		Attribute pnatt = new Attribute(domain, ATTPN, Attribute.AttributeType.INT);
+		patt.setLims(0, maxPlyrs);
 		
-		Attribute gtatt = new Attribute(domain, ATTGT, Attribute.AttributeType.DISC);
-		gtatt.setDiscValuesForRange(0, maxGT, 1);
+		Attribute gtatt = new Attribute(domain, ATTGT, Attribute.AttributeType.INT);
+		gtatt.setLims(0, maxGT);
 		
-		Attribute wtatt = new Attribute(domain, ATTWT, Attribute.AttributeType.DISC);
-		wtatt.setDiscValuesForRange(0, maxWT, 1);
+		Attribute wtatt = new Attribute(domain, ATTWT, Attribute.AttributeType.INT);
+		wtatt.setLims(0, maxWT);
 		
 		
 		

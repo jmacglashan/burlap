@@ -12,6 +12,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.auxiliary.StateAbstraction;
@@ -19,10 +20,10 @@ import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 /**
  * A Tabular Q-learning [1] algorithm for stochastic games formalisms. This algorithm ignores the actions of other agents and treats the outcomes
@@ -255,18 +256,25 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @return an action with its object parameters mapped according to the state object matching.
 	 */
 	protected GroundedSGAgentAction translateAction(GroundedSGAgentAction a, Map <String,String> matching){
-		String [] newParams = new String[a.params.length];
-		for(int i = 0; i < a.params.length; i++){
-			newParams[i] = matching.get(a.params[i]);
+		if(!(a instanceof AbstractObjectParameterizedGroundedAction)){
+			return a;
 		}
-		return new GroundedSGAgentAction(worldAgentName, a.action, newParams);
+		String [] params = ((AbstractObjectParameterizedGroundedAction) a).getObjectParameters();
+		String [] newParams = new String[params.length];
+		for(int i = 0; i < params.length; i++){
+			newParams[i] = matching.get(params[i]);
+		}
+		AbstractObjectParameterizedGroundedAction result = (AbstractObjectParameterizedGroundedAction)a.copy();
+		result.setObjectParameters(newParams);
+
+		return (GroundedSGAgentAction)result;
 	}
 
 
 	@Override
 	public List<QValue> getQs(State s) {
 		
-		List<GroundedSGAgentAction> gsas = SGAgentAction.getAllPossibleGroundedSingleActions(s, worldAgentName, agentType.actions);
+		List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, worldAgentName, agentType.actions);
 		
 		HashableState shq = this.stateHash(s);
 		
@@ -291,7 +299,8 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		Map <String, String> matching = null;
 		for(GroundedSGAgentAction gsa :gsas){
 			GroundedSGAgentAction transgsa = gsa;
-			if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent() && gsa.parametersAreObjects()){
+
+			if(gsa instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
 				if(matching == null){
 					matching = shq.s.getObjectMatchingTo(storedRep, false);
 				}
@@ -350,7 +359,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			return q;
 		}
 		
-		if(gsa.isParameterized() && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
+		if(gsa instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
 			//then we'll need to translate this action to match the internal state representation
 			Map <String, String> matching = shq.s.getObjectMatchingTo(storedRep, false);
 			gsa = this.translateAction(gsa, matching);

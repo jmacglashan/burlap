@@ -2,11 +2,12 @@ package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 
@@ -80,7 +81,12 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 	@Override
 	public void gameStarting() {
-		//nothing to do
+		//set up our domain's agent name
+		for(Action a : this.domain.getActions()){
+			if(a instanceof SGToSADomain.SAActionWrapper){
+				((SGToSADomain.SAActionWrapper) a).agentName = this.getAgentName();
+			}
+		}
 	}
 
 	@Override
@@ -157,7 +163,8 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 		State prevState = this.currentState;
 		synchronized(this.nextAction){
-			GroundedSGAgentAction gsa = new GroundedSGAgentAction(this.getAgentName(), this.domain.getSingleAction(ga.actionName()),ga.params);
+			GroundedSGAgentAction gsa = ((SGToSADomain.GroundedSAAActionWrapper)ga).wrappedSGAction;
+			gsa.actingAgent = this.getAgentName();
 			this.nextAction.val = gsa;
 			this.nextAction.notifyAll();
 		}
@@ -196,7 +203,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 
 	/**
-	 *  A wrapper that maintains a reference to a {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction} or null.
+	 *  A wrapper that maintains a reference to a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} or null.
 	 */
 	protected static class ActionReference{
 		protected GroundedSGAgentAction val;

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.stochasticgames.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 

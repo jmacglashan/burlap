@@ -329,7 +329,7 @@ public class GameSequenceVisualizer extends JFrame {
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directGames == null) {
-					curGA = GameAnalysis.parseGame(domain, episodeFiles.get(ind));
+					curGA = GameAnalysis.parseFileIntoGA(episodeFiles.get(ind), domain);
 				}
 				else{
 					curGA = this.directGames.get(ind);

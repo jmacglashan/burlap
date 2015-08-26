@@ -91,6 +91,10 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 		return new SimpleHashableState(s);
 	}
 
+	@Override
+	public boolean objectIdentiferIndependent() {
+		return this.identifierIndependent;
+	}
 
 	/**
 	 * Computes the hash code for the input state.

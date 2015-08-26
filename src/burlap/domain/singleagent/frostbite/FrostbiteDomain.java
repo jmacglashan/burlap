@@ -8,6 +8,8 @@ import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -590,7 +592,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	/**
 	 * An action class for moving the agent.
 	 */
-	public class MovementAction extends Action {
+	public class MovementAction extends Action implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go
@@ -611,13 +613,13 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * @param directions the probability for each direction (index 0,1,2,3 corresponds to north,south,east,west, respectively).
 		 */
 		public MovementAction(String name, Domain domain, double[] directions) {
-			super(name, domain, "");
+			super(name, domain);
 			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
 		}
 
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 
 			double roll = rand.nextDouble();
 			double curSum = 0.;
@@ -637,7 +639,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State st, String[] params) {
+		public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction) {
 
 			List<TransitionProbability> transitions = new ArrayList<TransitionProbability>();
 			for (int i = 0; i < directionProbs.length; i++) {
@@ -672,7 +674,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 	}
 
-	public class ActionIdle extends Action {
+	public class ActionIdle extends Action implements FullActionModel{
 
 		/**
 		 * Initializes the idle action.
@@ -681,19 +683,19 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * @param domain the domain of the action.
 		 */
 		public ActionIdle(String name, Domain domain) {
-			super(name, domain, "");
+			super(name, domain);
 		}
 
 
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 			FrostbiteDomain.this.move(st, 0, 0);
 			return st;
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return this.deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
+			return this.deterministicTransition(s, groundedAction);
 		}
 	}
 

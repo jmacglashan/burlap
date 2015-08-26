@@ -12,6 +12,17 @@ import burlap.oomdp.core.states.State;
  */
 public interface HashableStateFactory {
 
-	public HashableState hashState(State s);
+	/**
+	 * Turns {@link burlap.oomdp.core.states.State} s into a {@link burlap.oomdp.statehashing.HashableState}
+	 * @param s the input {@link burlap.oomdp.core.states.State} to transform.
+	 * @return a {@link burlap.oomdp.statehashing.HashableState}.
+	 */
+	HashableState hashState(State s);
+
+	/**
+	 * Returns true if the {@link burlap.oomdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
+	 * @return true if the {@link burlap.oomdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
+	 */
+	boolean objectIdentiferIndependent();
 	
 }

@@ -12,20 +12,18 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.stochasticgames.agents.RandomSGAgent;
 import burlap.debugtools.DPrint;
-import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
 import burlap.domain.stochasticgames.gridgame.GridGame;
-import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.stateserialization.SerializableState;
 import burlap.oomdp.stateserialization.SerializableStateFactory;
 import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
 import burlap.oomdp.stochasticgames.*;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
@@ -436,7 +434,7 @@ public class GameAnalysis {
 			System.out.println(E);
 		}
 
-		return parseGame(domain, path);
+		return parseGame(domain, fcont);
 	}
 
 
@@ -549,7 +547,8 @@ public class GameAnalysis {
 				actionParams[i-1] = actionElements[i];
 			}
 			SGAgentAction sa = domain.getSingleAction(actionName);
-			GroundedSGAgentAction gsa = new GroundedSGAgentAction(agentName, sa, actionParams);
+			GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(agentName);
+			gsa.initParamsWithStringRep(actionParams);
 			ja.addAction(gsa);
 		}
 		

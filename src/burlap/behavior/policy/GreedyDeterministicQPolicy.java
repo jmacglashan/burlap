@@ -9,6 +9,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
@@ -56,7 +57,7 @@ public class GreedyDeterministicQPolicy extends Policy implements SolverDerivedP
 			}
 		}
 		
-		return maxQ.a.translateParameters(maxQ.s, s);
+		return ((GroundedAction)maxQ.a).translateParameters(maxQ.s, s);
 	}
 
 	@Override

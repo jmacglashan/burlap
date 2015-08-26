@@ -248,9 +248,9 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			qvs = this.rootLevelQValues.get(sh);
 		}
 
-		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
+		if(a instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)a).actionDomainIsObjectIdentifierIndependent()){
 			HashableState storedSh = this.mapToStateIndex.get(sh);
-			a = a.translateParameters(s, storedSh.s);
+			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
 		}
 
 		for(QValue qv : qvs.qs){
@@ -287,9 +287,9 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			qvs = this.rootLevelQValues.get(sh);
 		}
 
-		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
+		if(a instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)a).actionDomainIsObjectIdentifierIndependent()){
 			HashableState storedSh = this.mapToStateIndex.get(sh);
-			a = (GroundedAction)a.translateParameters(s, storedSh.s);
+			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
 		}
 
 		for(QGradientTuple qg : qvs.qGrads){
@@ -500,7 +500,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			double [] qGradient = new double[dim];
 
 			double sum = 0.;
-			List<TransitionProbability> tps = ga.action.getTransitions(this.sh.s, ga.params);
+			List<TransitionProbability> tps = ga.getTransitions(sh.s);
 			for(TransitionProbability tp : tps){
 
 				State ns = tp.s;

@@ -8,11 +8,11 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.common.NullAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
@@ -81,8 +81,8 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * Note that this method requires that the returned {@link burlap.oomdp.core.AbstractGroundedAction} instances are
  * able to be executed using the action's defined transition dynamics. For single agent domains in which the actions
  * are {@link burlap.oomdp.singleagent.GroundedAction} instances, this will work as long as the corresponding
- * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, String[])} method is implemented. If this
- * policy defines the policy for an agent in a stochastic game, returning {@link burlap.oomdp.stochasticgames.GroundedSGAgentAction} instances
+ * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is implemented. If this
+ * policy defines the policy for an agent in a stochastic game, returning {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} instances
  * for the action, then the policy cannot be rolled out since the outcome state would depend on the action selection of
  * other agents.
  * <br/><br/>
@@ -422,19 +422,18 @@ public abstract class Policy {
 			//then we need to decompose the option
 			State cur = env.getCurrentObservation();
 			Option o = (Option)ga.action;
-			o.initiateInState(cur, ga.params);
+			o.initiateInState(cur, ga);
 			int ns = 0;
 			do{
 				//do step of option
-				GroundedAction cga = o.oneStepActionSelection(cur, ga.params);
+				GroundedAction cga = o.oneStepActionSelection(cur, ga);
 				EnvironmentOutcome eo = cga.executeIn(env);
 				State next = eo.op;
 				double r = eo.r;
 
 				if(annotateOptionDecomposition){
 					//setup a null action to record the option and primitive action taken
-					NullAction annotatedPrimitive = new NullAction(o.getName() + "(" + ns + ")-" + cga.action.getName());
-					GroundedAction annotatedPrimitiveGA = new GroundedAction(annotatedPrimitive, cga.params);
+					GroundedAction annotatedPrimitiveGA = new GroundedAnnotatedAction(ga.toString() + "(" + ns + ")", cga);
 
 					//record it
 					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
@@ -446,7 +445,7 @@ public abstract class Policy {
 
 				cur = env.getCurrentObservation();
 				ns++;
-			}while(o.continueFromState(cur, ga.params));
+			}while(o.continueFromState(cur, ga));
 		}
 
 	}
@@ -490,18 +489,17 @@ public abstract class Policy {
 		else{
 			//then we need to decompose the option
 			Option o = (Option)ga.action;
-			o.initiateInState(cur, ga.params);
+			o.initiateInState(cur, ga);
 			int ns = 0;
 			do{
 				//do step of option
-				GroundedAction cga = o.oneStepActionSelection(cur, ga.params);
+				GroundedAction cga = o.oneStepActionSelection(cur, ga);
 				next = cga.executeIn(cur);
 				double r = rf.reward(cur, cga, next);
 				
 				if(annotateOptionDecomposition){
 					//setup a null action to record the option and primitive action taken
-					NullAction annotatedPrimitive = new NullAction(o.getName() + "(" + ns + ")-" + cga.action.getName());
-					GroundedAction annotatedPrimitiveGA = new GroundedAction(annotatedPrimitive, cga.params);
+					GroundedAction annotatedPrimitiveGA = new GroundedAnnotatedAction(ga.toString() + "(" + ns + ")", cga);
 					
 					//record it
 					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
@@ -515,7 +513,7 @@ public abstract class Policy {
 				ns++;
 				
 				
-			}while(o.continueFromState(cur, ga.params));
+			}while(o.continueFromState(cur, ga));
 			
 		}
 		
@@ -554,7 +552,113 @@ public abstract class Policy {
 		}
 		
 	}
-	
+
+
+	/**
+	 * A class for annotating an action selection, specified with a {@link burlap.oomdp.singleagent.GroundedAction}, with a string.
+	 * The resulting {@link #toString()} method will produce a string of the following form:<br/>
+	 * "*annotation--action.toString()" where annotation is the user input annotation and action.toString()
+	 * is the result from the input {@link burlap.oomdp.singleagent.GroundedAction} that is being annotated. The
+	 * leading * character indicates to {@link burlap.oomdp.singleagent.GroundedAction} serializers (such as
+	 * the {@link burlap.behavior.singleagent.EpisodeAnalysis} serialization) that this {@link burlap.oomdp.singleagent.GroundedAction}
+	 * is an {@link burlap.behavior.policy.Policy.GroundedAnnotatedAction}.
+	 * <br/><br/>
+	 * All other {@link burlap.oomdp.singleagent.GroundedAction} methods are delegated to the inputted
+	 * {@link burlap.oomdp.singleagent.GroundedAction}.
+	 */
+	public static class GroundedAnnotatedAction extends GroundedAction{
+
+		/**
+		 * The string annotation to return in the {@link #toString()} method.
+		 */
+		public String annotation;
+
+		/**
+		 * The {@link burlap.oomdp.singleagent.GroundedAction} delegate to be annotated that handles all
+		 * methods except the {@link #toString()} method.
+		 */
+		public GroundedAction delegate;
+
+
+		/**
+		 * Initializes.
+		 * @param annotation the String annotation to be returned by the {@link #toString()} method.
+		 * @param delegate the {@link burlap.oomdp.singleagent.GroundedAction} delegate to be annotated.
+		 */
+		public GroundedAnnotatedAction(String annotation, GroundedAction delegate) {
+			super(delegate.action);
+			this.annotation = annotation;
+			this.delegate = delegate;
+		}
+
+		@Override
+		public String actionName() {
+			return delegate.actionName();
+		}
+
+		@Override
+		public boolean isParameterized() {
+			return delegate.isParameterized();
+		}
+
+		@Override
+		public void initParamsWithStringRep(String[] params) {
+			delegate.initParamsWithStringRep(params);
+		}
+
+		@Override
+		public String[] getParametersAsString() {
+			return delegate.getParametersAsString();
+		}
+
+		@Override
+		public String toString() {
+			return "*" + this.annotation + "--" + this.delegate.toString();
+		}
+
+		@Override
+		public boolean applicableInState(State s) {
+			return delegate.applicableInState(s);
+		}
+
+		@Override
+		public AbstractGroundedAction copy() {
+			GroundedAction selCopy = (GroundedAction)this.delegate.copy();
+			return new GroundedAnnotatedAction(this.annotation, selCopy);
+		}
+
+		@Override
+		public EnvironmentOutcome executeIn(Environment env) {
+			return delegate.executeIn(env);
+		}
+
+		@Override
+		public State executeIn(State s) {
+			return delegate.executeIn(s);
+		}
+
+		@Override
+		public List<TransitionProbability> getTransitions(State s) {
+			return delegate.getTransitions(s);
+		}
+
+		@Override
+		public GroundedAction translateParameters(State source, State target) {
+			GroundedAction transSel = delegate.translateParameters(source, target);
+			return new GroundedAnnotatedAction(this.annotation, transSel);
+		}
+
+		@Override
+		public int hashCode() {
+			return delegate.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return delegate.equals(other);
+		}
+	}
+
 	
 	/**
 	 * RuntimeException to be thrown when a Policy is queried for a state in which the policy is undefined.

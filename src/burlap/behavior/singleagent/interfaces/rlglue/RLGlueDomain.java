@@ -7,6 +7,7 @@ import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpec;
 import org.rlcommunity.rlglue.codec.taskspec.ranges.DoubleRange;
@@ -19,8 +20,8 @@ import org.rlcommunity.rlglue.codec.types.Observation;
  * Real (double) attributes. The domain can only support RLGlue problems that have discrete actions. The created BURLAP
  * {@link burlap.oomdp.singleagent.Action} objects that correspond to the RLGlue actions cannot be applied to states since
  * RLGlue does not provide action transition dynamics; as a consequence a runtime exception will be thrown is the action
- * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, String[])} method is called. Instead,
- * only the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, String[])}
+ * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is called. Instead,
+ * only the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, burlap.oomdp.singleagent.GroundedAction)}
  * method may be used to use an action.
  * @author James MacGlashan.
  */
@@ -146,7 +147,7 @@ public class RLGlueDomain implements DomainGenerator {
 		 * @param ind the RLGlue int identifier of the action
 		 */
 		public RLGlueActionSpecification(Domain domain, int ind) {
-			super(""+ind, domain, "");
+			super(""+ind, domain);
 			this.ind = ind;
 		}
 
@@ -161,7 +162,7 @@ public class RLGlueDomain implements DomainGenerator {
 
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction ga) {
 			throw new RuntimeException("RLGlue Actions cannot be applied to arbitrary states; they can only be performed in an Environment.");
 		}
 	}

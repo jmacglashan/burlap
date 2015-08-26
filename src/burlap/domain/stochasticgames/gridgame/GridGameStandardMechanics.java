@@ -14,7 +14,7 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.stochasticgames.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
 

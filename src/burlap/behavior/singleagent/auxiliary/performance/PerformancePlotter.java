@@ -225,7 +225,6 @@ public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 	/**
 	 * Initializes a performance plotter.
 	 * @param firstAgentName the name of the first agent whose performance will be measured.
-	 * @param rf the reward function used to meausure performance
 	 * @param chartWidth the width of each chart/plot
 	 * @param chartHeight the height of each chart//plot
 	 * @param columns the number of columns of the plots displayed. Plots are filled in columns first, then move down the next row.
