@@ -92,7 +92,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	}
 
 	@Override
-	public boolean objectIdentiferIndependent() {
+	public boolean objectIdentifierIndependent() {
 		return this.identifierIndependent;
 	}
 
