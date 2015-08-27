@@ -132,6 +132,7 @@ public class TerminalExplorer {
 				"    #clearRelations sourceObject relationalAttribute\n" +
 				"    #reset\n" +
 				"    #pollState\n" +
+				"    #lsActions\n" +
 				"    #quit\n\n");
 
 
@@ -288,6 +289,14 @@ public class TerminalExplorer {
 					ns.removeObject(comps[1]);
 				}
 			} else if(comps[0].equals("pollState")){
+				return null;
+			}
+			else if(comps[0].equals("lsActions")){
+				List<GroundedAction> actions = Action.getAllApplicableGroundedActionsFromActionList(this.domain.getActions(), curState);
+				System.out.println("Applicable actions:");
+				for(GroundedAction ga : actions){
+					System.out.println(ga.toString());
+				}
 				return null;
 			}
 		}
