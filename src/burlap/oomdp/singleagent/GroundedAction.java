@@ -33,12 +33,10 @@ import java.util.List;
  * <br/><br/>
  * When you subclass {@link burlap.oomdp.singleagent.GroundedAction} to provide parameter information, you should override
  * the following methods:<br/>
- * {@link #isParameterized()}<br/>
  * {@link #copy()}<br/>
  * {@link #initParamsWithStringRep(String[])}<br/>
  * {@link #getParametersAsString()}<br/>
- * The {@link #isParameterized()} method should be overridden to return true if your subclass is parameterized. The
- * {@link #copy()} method should be override to return a new instance of your subclass with all parameter assignment information
+ * The {@link #copy()} method should be override to return a new instance of your subclass with all parameter assignment information
  * copied over. The {@link #initParamsWithStringRep(String[])} should be overridden to allow a String array specification
  * of parameters to be provided to initialize them. Overriding this method is not critical, but is useful for serialization purposes.
  * The {@link #getParametersAsString()} similarly should returns a String array representing the String value of each parameter.
@@ -89,7 +87,7 @@ public class GroundedAction implements AbstractGroundedAction{
 
 	@Override
 	public boolean isParameterized() {
-		return false;
+		return this.action.isParameterized();
 	}
 
 	@Override

@@ -73,9 +73,10 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * <b>Parameters</b><br/>
  * By default, {@link burlap.oomdp.singleagent.Action} are assumed to have no parameters. However, if you would like to
  * define a parameterized action, you should override the<br/>
- * {@link #getAssociatedGroundedAction()} and<br/>
+ * {@link #isParameterized()} <br/>
+ * {@link #getAssociatedGroundedAction()} and <br/>
  * {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)} <br/>
- * methods. As noted previously, an {@link burlap.oomdp.singleagent.GroundedAction} implementation
+ * methods. First, the {@link #isParameterized()} method should be overriden and set to return true instead of false. As noted previously, an {@link burlap.oomdp.singleagent.GroundedAction} implementation
  * stores a set of parameter assignments that need to be provided to apply your parameterized {@link burlap.oomdp.singleagent.Action}.
  * For custom parameterizations, you will need to subclass {@link burlap.oomdp.singleagent.GroundedAction} to include data
  * members for parameter assignments. The {@link #getAssociatedGroundedAction()} should return an instance of your custom
