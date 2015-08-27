@@ -13,10 +13,13 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 
 /**
  * An {@link burlap.oomdp.singleagent.environment.Environment} specifically for simulating interaction with a POMDP
- * environments ({@link burlap.oomdp.singleagent.pomdp.PODomain}). In this case, the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)}
+ * environments ({@link burlap.oomdp.singleagent.pomdp.PODomain}). In this case, the {@link #getCurrentObservation()}
+ * returns the last observation made from the {@link burlap.oomdp.singleagent.environment.Environment}, not the hidden
+ * state, and the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)}
  * method does not return {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} objects that contain the full state
  * of the environment, but an observation drawn from the POMDP {@link burlap.oomdp.singleagent.pomdp.ObservationFunction} following
- * the execution of the action.
+ * the execution of the action. If you would like to access the true hidden state of the environment, use the
+ * {@link #getCurrentHiddenState()} method.
  */
 public class SimulatedPOEnvironment extends SimulatedEnvironment {
 
@@ -63,6 +66,19 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	}
 
 
+	@Override
+	public State getCurrentObservation() {
+		return this.curObservation;
+	}
+
+
+	/**
+	 * Returns the current hidden state of this {@link burlap.oomdp.singleagent.environment.Environment}.
+	 * @return
+	 */
+	public State getCurrentHiddenState(){
+		return this.curState;
+	}
 
 	@Override
 	public EnvironmentOutcome executeAction(GroundedAction ga) {
