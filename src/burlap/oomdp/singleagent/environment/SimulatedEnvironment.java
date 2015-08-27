@@ -28,7 +28,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * terminal states with the {@link #setAllowActionFromTerminalStates(boolean)} method.
  * @author James MacGlashan.
  */
-public class SimulatedEnvironment implements Environment, StateSettableEnvironment{
+public class SimulatedEnvironment implements StateSettableEnvironment{
 
 	/**
 	 * The domain of this environment
@@ -166,7 +166,7 @@ public class SimulatedEnvironment implements Environment, StateSettableEnvironme
 			this.lastReward = 0.;
 		}
 
-		EnvironmentOutcome eo = new EnvironmentOutcome(this.curState.copy(), ga, nextState.copy(), this.lastReward, this.tf.isTerminal(nextState));
+		EnvironmentOutcome eo = new EnvironmentOutcome(this.curState.copy(), simGA, nextState.copy(), this.lastReward, this.tf.isTerminal(nextState));
 
 		this.curState = nextState;
 
