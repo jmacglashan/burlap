@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
+import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
+import burlap.behavior.singleagent.pomdp.qmdp.QMDP;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
+import burlap.oomdp.auxiliary.StateGenerator;
+import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.core.*;
 import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
@@ -21,8 +24,13 @@ import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullAction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
+import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.pomdp.ObservationFunction;
 import burlap.oomdp.singleagent.pomdp.PODomain;
+import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
 
@@ -211,6 +219,33 @@ public class TigerDomain implements DomainGenerator {
 		o.setValue(ATTTIGERDOOR, VALRIGHT);
 		s.addObject(o);
 		return s;
+	}
+
+	/**
+	 * Returns a {@link burlap.oomdp.auxiliary.StateGenerator} that 50% of the time generates an hidden tiger state with the tiger on the
+	 * left side, and 50% time on the right.
+	 * @param domain the Tiger domain object
+	 * @return a {@link burlap.oomdp.auxiliary.StateGenerator}
+	 */
+	public static StateGenerator randomSideStateGenerator(final PODomain domain){
+		return randomSideStateGenerator(domain, 0.5);
+	}
+
+	/**
+	 * Returns a {@link burlap.oomdp.auxiliary.StateGenerator} that some of the of the time generates an hidden tiger state with the tiger on the
+	 * left side, and others on the right. Probability of left side is specified with the argument probLeft
+	 * @param domain the Tiger domain object
+	 * @param probLeft the probability that a state with the tiger on the left side will be generated
+	 * @return a {@link burlap.oomdp.auxiliary.StateGenerator}
+	 */
+	public static StateGenerator randomSideStateGenerator(final PODomain domain, final double probLeft){
+		return new StateGenerator() {
+			@Override
+			public State generateState() {
+				double roll = RandomFactory.getMapped(0).nextDouble();
+				return roll < probLeft ? tigerLeftState(domain) : tigerRightState(domain);
+			}
+		};
 	}
 
 
@@ -514,66 +549,39 @@ public class TigerDomain implements DomainGenerator {
 		
 		
 	}
-	
-	
-	
+
+
+	/**
+	 * Main method for interacting with the tiger domain via a {@link burlap.oomdp.singleagent.explorer.TerminalExplorer}.
+	 * By default, the TerminalExplorer interacts with the partially observable environment ({@link burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment}),
+	 * which means you only get to see the observations that the agent would. However, if you set the first command-line argument
+	 * to be "h", then the explorer will explorer the underlying fully observable MDP states.
+	 * @param args either empty or ["h"]; provide "h" to explorer the underlying fully observable tiger MDP.
+	 */
 	public static void main(String [] args){
 
 
+		TigerDomain dgen = new TigerDomain(false);
+		PODomain domain = (PODomain)dgen.generateDomain();
+
+		RewardFunction rf = new TigerRF();
+		TerminalFunction tf = new NullTermination();
+		StateGenerator tigerGenerator = TigerDomain.randomSideStateGenerator(domain, 0.5);
+
+		Environment observableEnv = new SimulatedEnvironment(domain, rf, tf, tigerGenerator);
+		Environment poEnv = new SimulatedPOEnvironment(domain, rf, tf, tigerGenerator);
+
+		Environment envTouse = poEnv;
+		if(args.length > 0){
+			if(args[0].equals("h")){
+				envTouse = observableEnv;
+			}
+		}
+
+		TerminalExplorer exp = new TerminalExplorer(domain, envTouse);
+		exp.explore();
 
 
-//		TigerDomain dgen = new TigerDomain(false);
-//		PODomain domain = (PODomain)dgen.generateDomain();
-//
-//		RewardFunction rf = new TigerRF();
-//		TerminalFunction tf = new NullTermination();
-//		BeliefSarsa sarsa = new BeliefSarsa(domain, rf, 0.99, 20, 1, false, 10., 0.1, 0.5, 10000);
-//		BeliefState bs = TigerDomain.getInitialBeliefState(domain);
-//
-//		System.out.println("Begining sarsa planning.");
-//		sarsa.planFromState(bs);
-//		System.out.println("End sarsa planning.");
-//
-//		Policy p = new GreedyQPolicy(sarsa);
-//
-//		POEnvironment env = new POEnvironment(domain, rf, tf);
-//		env.setCurPOMPDStateTo(bs.sampleStateFromBelief());
-//
-//		BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, env, p);
-//		agent.setEnvironment(env);
-//		agent.setBeliefState(bs);
-//		EpisodeAnalysis ea = agent.actUntilTerminalOrMaxSteps(20);
-//
-//		for(int i = 0; i < ea.numTimeSteps()-1; i++){
-//			if(i > 0) {
-//				String tval = ea.getState(i).getFirstObjectOfClass(CLASSOBSERVATION).getStringValForAttribute(ATTOBSERVATION);
-//				System.out.println(tval + ": " + ea.getAction(i).toString() + "; " + ea.getReward(i + 1));
-//			}
-//			else{
-//				System.out.println(ea.getAction(i).toString() + "; " + ea.getReward(i+1));
-//			}
-//		}
-//
-//		QMDP qmdp = new QMDP(domain, rf, tf, 0.99, new DiscreteStateHashFactory(), 0.01, 200);
-//		System.out.println("Beginning QMDP Planning.");
-//		qmdp.planFromState(bs);
-//		System.out.println("Ending QMDP Planning.");
-//		Policy qp = new GreedyQPolicy(qmdp);
-//
-//		BeliefPolicyAgent qagent = new BeliefPolicyAgent(domain, env, qp);
-//		qagent.setEnvironment(env);
-//		qagent.setBeliefState(bs);
-//		ea = qagent.actUntilTerminalOrMaxSteps(20);
-//
-//		for(int i = 0; i < ea.numTimeSteps()-1; i++){
-//			if(i > 0) {
-//				String tval = ea.getState(i).getFirstObjectOfClass(CLASSOBSERVATION).getStringValForAttribute(ATTOBSERVATION);
-//				System.out.println(tval + ": " + ea.getAction(i).toString() + "; " + ea.getReward(i + 1));
-//			}
-//			else{
-//				System.out.println(ea.getAction(i).toString() + "; " + ea.getReward(i+1));
-//			}
-//		}
 		
 		
 	}
