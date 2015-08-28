@@ -107,7 +107,16 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 	public void setFrameDelay(long delay){
 		this.actionRenderDelay = delay;
 	}
-	
+
+
+	public Visualizer getPainter() {
+		return painter;
+	}
+
+	public void setPainter(Visualizer painter) {
+		this.painter = painter;
+	}
+
 	/**
 	 * Initializes the visual explorer GUI and presents it to the user.
 	 */
