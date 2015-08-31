@@ -66,7 +66,9 @@ public class FVToFeatureDatabase implements FeatureDatabase {
 		double [] vec = this.fvGen.generateFeatureVectorFrom(s);
 		List<StateFeature> sfs = new ArrayList<StateFeature>(vec.length);
 		for(int i = 0; i < vec.length; i++){
-			sfs.add(new StateFeature(i, vec[i]));
+			if(vec[i] != 0.) {
+				sfs.add(new StateFeature(i, vec[i]));
+			}
 		}
 
 		return sfs;
@@ -81,7 +83,9 @@ public class FVToFeatureDatabase implements FeatureDatabase {
 			List<StateFeature> sfs = new ArrayList<StateFeature>(vec.length);
 			int offset = this.getActionMultiplier(ga)*dim;
 			for(int i = 0; i < vec.length; i++){
-				sfs.add(new StateFeature(offset+i, vec[i]));
+				if(vec[i] != 0.) {
+					sfs.add(new StateFeature(offset + i, vec[i]));
+				}
 			}
 			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga, sfs);
 			afqs.add(afq);
