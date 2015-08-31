@@ -7,6 +7,7 @@ public class SelfishRewardCalculator extends OtherRegardingRewardCalculator{
 		this.fnType = "Selfish";
 	}
 
+	
 	@Override
 	public double getReward(double myReward, double otherReward) {
 		return super.getReward(myReward, otherReward);

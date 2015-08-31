@@ -1,8 +1,11 @@
 package burlap.behavior.stochasticgame.saconversion;
 
+import java.util.Map;
+
 public abstract class RewardCalculator{
 
 	protected String fnType;
+	protected String agentName;
 
 	public RewardCalculator(String fnType) {
 		this.fnType = fnType;
@@ -16,5 +19,11 @@ public abstract class RewardCalculator{
 	public String toString(){
 		return this.fnType;
 	}
+	
+	public String getAgentName(){
+		return this.agentName;
+	}
+
+	public abstract double getReward(String agentNameIn,Map<String, Double> realRewards);
 	
 }

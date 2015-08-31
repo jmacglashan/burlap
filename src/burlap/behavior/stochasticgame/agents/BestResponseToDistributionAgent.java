@@ -37,6 +37,7 @@ public abstract class BestResponseToDistributionAgent extends Agent {
 
 	protected boolean isFirstDay;
 	protected RewardCalculator rewardCalc;
+	
 
 	protected static double  TAU = 2.0;
 	private static double MAX_DIFF = 0.01, GAMMA = 0.99, MAX_DELTA = 0.001;
