@@ -114,7 +114,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	 */
 	public State getSourceDomainState(State s){
 		int id = this.getStateId(s);
-		return this.enumerator.getStateForEnumertionId(id);
+		return this.enumerator.getStateForEnumerationId(id);
 	}
 	
 	/**

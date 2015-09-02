@@ -110,11 +110,9 @@ public class BlocksWorld implements DomainGenerator {
 		
 		Attribute attonblock = new Attribute(domain, ATTONBLOCK, Attribute.AttributeType.RELATIONAL);
 		
-		Attribute attontable = new Attribute(domain, ATTONTABLE, Attribute.AttributeType.DISC);
-		attontable.setDiscValuesForRange(0, 1, 1); //binary
+		Attribute attontable = new Attribute(domain, ATTONTABLE, Attribute.AttributeType.BOOLEAN);
 		
-		Attribute attclear = new Attribute(domain, ATTCLEAR, Attribute.AttributeType.DISC);
-		attclear.setDiscValuesForRange(0, 1, 1); //binary
+		Attribute attclear = new Attribute(domain, ATTCLEAR, Attribute.AttributeType.BOOLEAN);
 		
 		Attribute attcolor = new Attribute(domain, ATTCOLOR, Attribute.AttributeType.DISC);
 		attcolor.setDiscValues(colNames);

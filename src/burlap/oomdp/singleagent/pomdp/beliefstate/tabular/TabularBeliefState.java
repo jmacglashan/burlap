@@ -133,7 +133,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 		for(Map.Entry<Integer, Double> e : this.beliefValues.entrySet()){
 			sumProb += e.getValue();
 			if(r < sumProb){
-				return this.stateEnumerator.getStateForEnumertionId(e.getKey());
+				return this.stateEnumerator.getStateForEnumerationId(e.getKey());
 			}
 		}
 
@@ -151,7 +151,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 			double transitionSum = 0.;
 			for(Map.Entry<Integer, Double> srcStateEntry : this.beliefValues.entrySet()){
 				double srcB = srcStateEntry.getValue();
-				State srcState = this.stateEnumerator.getStateForEnumertionId(srcStateEntry.getKey());
+				State srcState = this.stateEnumerator.getStateForEnumerationId(srcStateEntry.getKey());
 				double tp = this.getTransitionProb(srcState, ga, ns);
 				transitionSum += srcB * tp;
 			}
@@ -196,7 +196,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	 * @return the corresponding MDP state, defined by a {@link burlap.oomdp.core.states.State}, for the provided unique identifier.
 	 */
 	public State stateForId(int id){
-		return this.stateEnumerator.getStateForEnumertionId(id);
+		return this.stateEnumerator.getStateForEnumerationId(id);
 	}
 
 

@@ -104,7 +104,7 @@ public class StateEnumerator {
 	 * @param id the enumeration id
 	 * @return the state associated with the given enumeration id.
 	 */
-	public State getStateForEnumertionId(int id){
+	public State getStateForEnumerationId(int id){
 		State s = this.reverseEnumerate.get(id);
 		if(s == null){
 			throw new RuntimeException("There is no state stored with the enumeration id: " + id);
