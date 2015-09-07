@@ -88,7 +88,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 			throw new RuntimeException("QMDP cannot plan from all states because the StateEnumerator for the POMDP domain was never specified.");
 		}
 		for(int i = 0; i < senum.numStatesEnumerated(); i++){
-			State s = senum.getStateForEnumertionId(i);
+			State s = senum.getStateForEnumerationId(i);
 			planner.planFromState(s);
 		}
 	}

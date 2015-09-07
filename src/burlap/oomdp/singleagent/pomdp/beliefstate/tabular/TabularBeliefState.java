@@ -27,7 +27,7 @@ import java.util.*;
  * belief is created with its belief attribute set to the dense (non-sparse) belief vector that this BeliefState represents.
  * <br/>
  * If using a BeliefMDP solver with a {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState},
- * it is recommended that you use {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefStateHashFactory}
+ * it is recommended that you use {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory}
  * which will compute hash codes and perform state equality checks with the sparse Map representation
  * (rather than the dense OO-MDP representation)
  * @author James MacGlashan.
@@ -236,11 +236,11 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 
 
 	/**
-	 * Returns the probability that the underlying MDP will transition from state s to sp when taking actiong a in state s.
+	 * Returns the probability that the underlying MDP will transition from state s to sp when taking action a in state s.
 	 * @param s the previous MDP state defined by a {@link burlap.oomdp.core.states.State}
 	 * @param ga the taken action defined by a {@link burlap.oomdp.singleagent.GroundedAction}
 	 * @param sp The next MDP state observed defined by a {@link burlap.oomdp.core.states.State}.
-	 * @return
+	 * @return the probability that the underlying MDP will transition from state s to sp when taking action a in state s.
 	 */
 	protected double getTransitionProb(State s, GroundedAction ga, State sp){
 		List<TransitionProbability> tps = ga.getTransitions(s);

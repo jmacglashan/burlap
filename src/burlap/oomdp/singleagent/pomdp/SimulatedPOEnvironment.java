@@ -74,7 +74,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 
 	/**
 	 * Returns the current hidden state of this {@link burlap.oomdp.singleagent.environment.Environment}.
-	 * @return
+	 * @return a {@link burlap.oomdp.core.states.State} representing the current hidden state of the environment.
 	 */
 	public State getCurrentHiddenState(){
 		return this.curState;
