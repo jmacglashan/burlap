@@ -364,7 +364,19 @@ public class SGNaiveQLAgent extends Agent implements QComputablePlanner{
 		return qe;
 		
 	}
-	
+
+
+	public Map<StateHashTuple, List<QValue>> getQMapCopy() {
+		Map<StateHashTuple, List<QValue>> qMapCopy = new HashMap<StateHashTuple, List<QValue>>(); 
+		for (StateHashTuple sht : qMap.keySet()){
+			List<QValue> listCopy = new ArrayList<QValue>();
+			for (QValue qVal : qMap.get(sht)){
+				listCopy.add(new QValue(qVal));
+			}
+			qMapCopy.put(sht, listCopy);
+		}
+		return qMapCopy;
+	}	
 	
 
 }
