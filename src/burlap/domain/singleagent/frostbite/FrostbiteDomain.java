@@ -11,6 +11,7 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -592,7 +593,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	/**
 	 * An action class for moving the agent.
 	 */
-	public class MovementAction extends Action implements FullActionModel{
+	public class MovementAction extends SimpleAction implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go
@@ -674,7 +675,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 	}
 
-	public class ActionIdle extends Action implements FullActionModel{
+	public class ActionIdle extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		/**
 		 * Initializes the idle action.
@@ -693,10 +694,6 @@ public class FrostbiteDomain implements DomainGenerator{
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
-			return this.deterministicTransition(s, groundedAction);
-		}
 	}
 
 	public class OnPlatformPF extends PropositionalFunction {

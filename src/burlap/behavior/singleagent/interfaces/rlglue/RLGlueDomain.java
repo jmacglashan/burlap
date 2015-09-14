@@ -9,6 +9,7 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpec;
 import org.rlcommunity.rlglue.codec.taskspec.ranges.DoubleRange;
 import org.rlcommunity.rlglue.codec.taskspec.ranges.IntRange;
@@ -134,7 +135,7 @@ public class RLGlueDomain implements DomainGenerator {
 	/**
 	 * A BURLAP {@link burlap.oomdp.singleagent.Action} that corresponds to an RLGlue action that is defined by a single int value.
 	 */
-	public static class RLGlueActionSpecification extends Action{
+	public static class RLGlueActionSpecification extends SimpleAction{
 
 		/**
 		 * The RLGlue action index

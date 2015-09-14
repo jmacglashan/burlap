@@ -622,7 +622,7 @@ public abstract class Policy {
 		}
 
 		@Override
-		public AbstractGroundedAction copy() {
+		public GroundedAction copy() {
 			GroundedAction selCopy = (GroundedAction)this.delegate.copy();
 			return new GroundedAnnotatedAction(this.annotation, selCopy);
 		}

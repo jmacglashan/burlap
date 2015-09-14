@@ -279,6 +279,12 @@ public class BlocksWorld implements DomainGenerator {
 		public boolean parametersAreObjectIdentifierIndependent() {
 			return false;
 		}
+
+		@Override
+		public boolean isPrimitive() {
+			return true;
+		}
+
 	}
 	
 	
@@ -340,6 +346,11 @@ public class BlocksWorld implements DomainGenerator {
 		@Override
 		public boolean parametersAreObjectIdentifierIndependent() {
 			return false;
+		}
+
+		@Override
+		public boolean isPrimitive() {
+			return true;
 		}
 	}
 	

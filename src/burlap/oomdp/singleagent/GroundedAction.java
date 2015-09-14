@@ -10,7 +10,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import java.util.List;
 
 /**
- * A {@link burlap.oomdp.singleagent.GroundedAction} is a high-level implementation of a {@link burlap.oomdp.core.AbstractGroundedAction}
+ * A {@link burlap.oomdp.singleagent.GroundedAction} is a high-level abstract class implementation of a {@link burlap.oomdp.core.AbstractGroundedAction}
  * that is closely associated with single-agent {@link burlap.oomdp.singleagent.Action} definitions. The role of
  * a {@link burlap.oomdp.singleagent.GroundedAction} is to provide a reference to its corresponding {@link burlap.oomdp.singleagent.Action}
  * definition and also provide parameter assignments with which its {@link burlap.oomdp.singleagent.Action} should be applied.
@@ -20,28 +20,19 @@ import java.util.List;
  * the {@link burlap.oomdp.singleagent.Action} class documentation for more information on implementing parameterized
  * {@link burlap.oomdp.singleagent.Action} definitions.
  * <br/><br/>
- * This high-level class can be used directly, without subclassing, for any parameter-less {@link burlap.oomdp.singleagent.Action} definitions
- * and should be subclassed for any parameterized {@link burlap.oomdp.singleagent.Action} definitions (with the
- * subclass instances returned by the associated {@link burlap.oomdp.singleagent.Action#getAllApplicableGroundedActions(burlap.oomdp.core.states.State)}
- * and {@link Action#getAssociatedGroundedAction()} method). The {@link burlap.oomdp.singleagent.GroundedAction} subclass can store the
- * parameter assignment data any way you like.
- * <br/><br/>
- * If you plan on
- * making an {@link burlap.oomdp.singleagent.Action} definition with OO-MDP object parameters, you can use the existing
- * {@link burlap.oomdp.singleagent.ObjectParameterizedAction}, which is associated with the {@link burlap.oomdp.singleagent.GroundedAction}
- * subclass {@link burlap.oomdp.singleagent.ObjectParameterizedAction.ObjectParameterizedGroundedAction}.
- * <br/><br/>
- * When you subclass {@link burlap.oomdp.singleagent.GroundedAction} to provide parameter information, you should override
- * the following methods:<br/>
+ * Implementing this class requires implementing three methods from {@link burlap.oomdp.core.AbstractGroundedAction}
+ * that are not implemented by {@link burlap.oomdp.singleagent.GroundedAction}:<br/>
  * {@link #copy()}<br/>
- * {@link #initParamsWithStringRep(String[])}<br/>
- * {@link #getParametersAsString()}<br/>
- * The {@link #copy()} method should be override to return a new instance of your subclass with all parameter assignment information
- * copied over. The {@link #initParamsWithStringRep(String[])} should be overridden to allow a String array specification
- * of parameters to be provided to initialize them. Overriding this method is not critical, but is useful for serialization purposes.
- * The {@link #getParametersAsString()} similarly should returns a String array representing the String value of each parameter.
- * As with the {@link #initParamsWithStringRep(String[])} method, overriding {@link #getParametersAsString()} is not critical,
- * but is useful for serialization and similar processes.
+ * {@link #initParamsWithStringRep(String[])} and<br/>
+ * {@link #getParametersAsString()}.<br/>
+ * If the {@link burlap.oomdp.singleagent.Action} with which the {@link burlap.oomdp.singleagent.GroundedAction} is associated
+ * is not parameterized, then you can return the concrete class {@link burlap.oomdp.singleagent.common.SimpleGroundedAction}.
+ * Otherwise, you will need to make your own subclass of {@link burlap.oomdp.singleagent.GroundedAction} and implement those methods.
+ * Note that you can have your implementation store the parameter information anyway you like as long the {@link #copy()} method
+ * creates a version instance of your {@link burlap.oomdp.singleagent.GroundedAction} implementation that copies over
+ * the parameter information. Additionally, for full support with all BURLAP tools, it should be possible to initialize
+ * the parameters with a String array using the {@link #initParamsWithStringRep(String[])} and get a String array representation
+ * of them with the {@link #getParametersAsString()}.
  * <br/><br/>
  * In addition to specifying parameter assignment information for a {@link burlap.oomdp.singleagent.Action} definition,
  * this class also provides a number of useful shortcut methods for evaluating the {@link burlap.oomdp.singleagent.GroundedAction}.
@@ -59,7 +50,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class GroundedAction implements AbstractGroundedAction{
+public abstract class GroundedAction implements AbstractGroundedAction{
 
 	/**
 	 * The action object for this grounded action
@@ -91,18 +82,20 @@ public class GroundedAction implements AbstractGroundedAction{
 	}
 
 	@Override
-	public void initParamsWithStringRep(String[] params) {
-		//nothing to do
-	}
-
-	@Override
-	public String[] getParametersAsString() {
-		return new String[0];
-	}
-
-	@Override
 	public String toString(){
-		return this.actionName();
+		String [] strParams = this.getParametersAsString();
+		if(strParams == null || strParams.length == 0) {
+			return this.actionName();
+		}
+		else{
+			StringBuilder builder = new StringBuilder();
+			builder.append(this.actionName());
+			for(String param : strParams){
+				builder.append(" ").append(param);
+			}
+			String rep = builder.toString();
+			return rep;
+		}
 	}
 
 	public boolean applicableInState(State s){
@@ -110,10 +103,7 @@ public class GroundedAction implements AbstractGroundedAction{
 	}
 
 	@Override
-	public AbstractGroundedAction copy() {
-
-		return new GroundedAction(action);
-	}
+	public abstract GroundedAction copy();
 
 
 	/**

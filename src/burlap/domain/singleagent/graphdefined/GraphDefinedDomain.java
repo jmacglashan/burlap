@@ -22,6 +22,7 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 
 
@@ -465,7 +466,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class GraphAction extends Action implements FullActionModel{
+	public static class GraphAction extends SimpleAction implements FullActionModel{
 
 		/**
 		 * Random object for sampling the stochastic graph transitions
@@ -568,6 +569,8 @@ public class GraphDefinedDomain implements DomainGenerator {
 			return result;
 			
 		}
+
+
 
 		public Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> getTransitionDynamics() {
 			return transitionDynamics;

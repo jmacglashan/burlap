@@ -206,7 +206,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 
 		@Override
 		public List<GroundedAction> getAllApplicableGroundedActions(State s) {
-			List<GroundedAction> sourceSet =  super.getAllApplicableGroundedActions(s);
+			List<GroundedAction> sourceSet =  srcAction.getAllApplicableGroundedActions(s);
 			//adjust pointer to this action wrapper
 			for(GroundedAction ga : sourceSet){
 				ga.action = this;

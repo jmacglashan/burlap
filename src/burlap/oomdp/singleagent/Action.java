@@ -27,25 +27,23 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * specified in a constructor;
  * for example, {@link #Action(String, burlap.oomdp.core.Domain)}.
  * <br/><br/>
- * <b>Important Methods</b><br/>
- * The most important methods to take note of are
- * {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)},
- * {@link #applicableInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}, and
- * {@link #performInEnvironment(burlap.oomdp.singleagent.environment.Environment, burlap.oomdp.singleagent.GroundedAction)}. <br/>
- * <br/>
- * The first thing to note about these methods is that a {@link burlap.oomdp.singleagent.GroundedAction} is always provided
+ * Defining an action requires implementing the following abstract methods.<br/>
+ * {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)},<br/>
+ * {@link #applicableInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)},<br/>
+ * {@link #isPrimitive},<br/>
+ * {@link #isParameterized()} <br/>
+ * {@link #getAssociatedGroundedAction()} and <br/>
+ * {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)}. <br/><br/>
+ * The first thing to note about many of these methods is that a {@link burlap.oomdp.singleagent.GroundedAction} is provided
  * as a method argument. The provided {@link burlap.oomdp.singleagent.GroundedAction} is how an {@link burlap.oomdp.singleagent.Action}
- * implementation is told with which parameters it is being applied. By default, an {@link burlap.oomdp.singleagent.Action}
- * is considered parameter-less (see below for more information on making parameterized {@link burlap.oomdp.singleagent.Action}
- * implementations), in which case the top-level {@link burlap.oomdp.singleagent.GroundedAction} which does not include parameter assignment
- * information will be provided and can be ignored by these methods.
+ * implementation is told with which parameters it is being applied. If your action is is not parameterized, then this method argument
+ * can be ignored.
  * <br/><br/>
- * Of these methods, only {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
- * is required to be overridden and implemented by the concrete subclass of {@link burlap.oomdp.singleagent.Action}.
- * This method should have the affect of sampling an transition from applying this {@link Action} in the input {@link State}
- * and returning the sampled outcome. This method is always called indirectly by the {@link #performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
- * method, which first makes a copy of the input state before passing it {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}.
- * Therefore, you can directly modify the input state and return it if that is easiest.  This method will be used by planning
+ * The {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method should have the affect of sampling a transition from applying this {@link Action} in the input {@link State}
+ * with the specified parameters and returning the sampled outcome. This method is always called indirectly by the {@link #performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
+ * method, which first makes a copy of the input state to be passed to {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}.
+ * Therefore, you can directly modify the input state of {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} and return it if that is easiest.
+ * This method will be used by planning
  * algorithms that use sampled transitions instead of enumerating the full transition dynamics or by deterministic planning
  * algorithms where there is not expected to ever be more than on possible outcome of an action. In general this method should always
  * be implemented. However, in some rare cases, it may not even be possible to define a model that can sample transitions
@@ -55,50 +53,48 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * which should know how to execute it (for example, by telling a robot to execute the action in the real world).
  * <br/>
  * <br/>
- * Overriding the {@link #applicableInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is how preconditions can be specified.
+ * Implementing the {@link #applicableInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is how preconditions can be specified.
  * If you do not override this method, then the default behavior is that the action will have no preconditions and can be applied
  * in any state. This method takes as input a {@link burlap.oomdp.core.states.State} and the parameters for this action (if any),
  * and returns true if the action can be applied in that state and false otherwise.
- * <br/>
- * The {@link #performInEnvironment(burlap.oomdp.singleagent.environment.Environment, burlap.oomdp.singleagent.GroundedAction)} method does not
- * need to be overridden for the vast majority of cases (one exception is hierarchical actions like the {@link burlap.behavior.singleagent.options.Option} class, which
- * overrides it to have a sequence of primitive actions applied in the environment).
- * This method allows an action to be executed in an {@link burlap.oomdp.singleagent.environment.Environment} in which the
- * outcomes may be different than this {@link burlap.oomdp.singleagent.Action}'s model of the world specifies (as defined
- * by the {@link #performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} or {@link burlap.oomdp.singleagent.FullActionModel#getTransitions(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} methods).
- * Typically, {@link burlap.behavior.singleagent.learning.LearningAgent}'s will execute actions in the {@link burlap.oomdp.singleagent.environment.Environment}
- * from which they're learning using this method.
- *
- * <br/<br/>
- * <b>Parameters</b><br/>
- * By default, {@link burlap.oomdp.singleagent.Action} are assumed to have no parameters. However, if you would like to
- * define a parameterized action, you should override the<br/>
- * {@link #isParameterized()} <br/>
- * {@link #getAssociatedGroundedAction()} and <br/>
- * {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)} <br/>
- * methods. First, the {@link #isParameterized()} method should be overriden and set to return true instead of false. As noted previously, an {@link burlap.oomdp.singleagent.GroundedAction} implementation
+ * <br/><br/>
+ * The {@link #isPrimitive()} method should usually return true and should only return false for special hierarchical actions like an {@link burlap.behavior.singleagent.options.Option}.
+ * <br/><br/>
+ * The other three methods are important for parameterized actions. If your action is not parameterized, consider subclassing {@link burlap.oomdp.singleagent.common.SimpleAction},
+ * which is useful for defining non-parameterized primitive actions without preconditions, because it implements every abstract method except {@link #performActionHelper(burlap.oomdp.core.states.State, GroundedAction)}.
+ * Otherwise these methods will need to be implemented to define the parameterization of your action.
+ * <br/><br/>
+ * If your action is parameterized, first, the {@link #isParameterized()} method should be overriden and set to return true. Next, as noted previously, an {@link burlap.oomdp.singleagent.GroundedAction} implementation
  * stores a set of parameter assignments that need to be provided to apply your parameterized {@link burlap.oomdp.singleagent.Action}.
- * For custom parameterizations, you will need to subclass {@link burlap.oomdp.singleagent.GroundedAction} to include data
- * members for parameter assignments. The {@link #getAssociatedGroundedAction()} should return an instance of your custom
+ * Therefore, for custom parameterizations, you will need to subclass {@link burlap.oomdp.singleagent.GroundedAction} to include data
+ * members for parameter assignments and the {@link #getAssociatedGroundedAction()} should return an instance of your custom
  * {@link burlap.oomdp.singleagent.GroundedAction} with its {@link burlap.oomdp.singleagent.GroundedAction#action} datamember
  * pointing to this {@link burlap.oomdp.singleagent.Action}. The parameter assignments in the returned {@link burlap.oomdp.singleagent.GroundedAction}
  * do not need to be specified; this method serves as a means for simply generating an instance of the associated {@link burlap.oomdp.singleagent.GroundedAction}.
  * <br/><br/>
  * The {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)} method should return a list of {@link burlap.oomdp.singleagent.GroundedAction}
- * instances, each with a different parameter assignments possible in the input {@link burlap.oomdp.core.states.State}. Furthermore,
+ * instances that cover the space of all possible parameterizations of the action for in the input {@link burlap.oomdp.core.states.State}. However,
  * the returned list should only include {@link burlap.oomdp.singleagent.GroundedAction} instances that satisfy the
- * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedAction)} method.
+ * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedAction)} method. Do *NOT* include {@link burlap.oomdp.singleagent.GroundedAction} objects
+ * that are not applicable in the input list.
  * <br/><br/>
- * Overriding these two methods and having them return a custom {@link burlap.oomdp.singleagent.GroundedAction} subclass
- * is all that is required to implement a parameterized {@link burlap.oomdp.singleagent.Action} and by allowing you to
- * define your own subclass of {@link burlap.oomdp.singleagent.GroundedAction}, you can have any kind of {@link burlap.oomdp.singleagent.Action}
- * parametrization that you'd like.
- * <br/><br/>
- * A common form of {@link burlap.oomdp.singleagent.Action} parameterization is an action that operates on OO-MDP
+ * By allowing you to
+ * define your own subclass of {@link burlap.oomdp.singleagent.GroundedAction} that is returned by these methods, you can have any kind of {@link burlap.oomdp.singleagent.Action}
+ * parametrization that you'd like. That said, A common form of {@link burlap.oomdp.singleagent.Action} parameterization is an action that operates on OO-MDP
  * {@link burlap.oomdp.core.objects.ObjectInstance} references in a state (for example, stacking on block on another
- * in {@link burlap.domain.singleagent.blocksworld.BlocksWorld}. If you would like to have a OO-MDP object parameterization,
- * rather than define your own subclass, you should subclass the {@link burlap.oomdp.singleagent.ObjectParameterizedAction}
+ * in {@link burlap.domain.singleagent.blocksworld.BlocksWorld}. Therefore, if you would like to have a OO-MDP object parameterization,
+ * rather than define your own subclass, you should consider subclassing the {@link burlap.oomdp.singleagent.ObjectParameterizedAction}
  * class. See it's documentation for more details.
+ * <br/><br/>
+ *
+ * Also of note is the the {@link #performInEnvironment(burlap.oomdp.singleagent.environment.Environment, burlap.oomdp.singleagent.GroundedAction)} method.
+ * This method handles having an action executed in some {@link burlap.oomdp.singleagent.environment.Environment} rather than simulated.
+ * In general, this method does not
+ * need to be overridden for the vast majority of cases (one exception is hierarchical actions like the {@link burlap.behavior.singleagent.options.Option} class, which
+ * overrides it to have a sequence of primitive actions applied in the environment).
+ * Typically, {@link burlap.behavior.singleagent.learning.LearningAgent}'s will execute actions in the {@link burlap.oomdp.singleagent.environment.Environment}
+ * from which they're learning using this method.
+ *
  *
  *
  * @author James MacGlashan
@@ -180,10 +176,7 @@ public abstract class Action{
 	 * @param groundedAction the {@link burlap.oomdp.singleagent.GroundedAction} specifying the parameters to use
 	 * @return whether this action can be performed on the given state with the given parameters
 	 */
-	public boolean applicableInState(State s, GroundedAction groundedAction){
-
-		return true; 
-	}
+	public abstract boolean applicableInState(State s, GroundedAction groundedAction);
 	
 
 
@@ -230,18 +223,14 @@ public abstract class Action{
 	 * is defined to be an action that always takes one time step.
 	 * @return true if the action is primitive; false otherwise.
 	 */
-	public boolean isPrimitive(){
-		return true;
-	}
+	public abstract boolean isPrimitive();
 
 
 	/**
 	 * Returns true if this action is parameterized; false otherwise.
 	 * @return true if this {@link burlap.oomdp.singleagent.Action} is parameterized; false if it is not.
 	 */
-	public boolean isParameterized(){
-		return false;
-	}
+	public abstract boolean isParameterized();
 
 
 
@@ -269,9 +258,8 @@ public abstract class Action{
 	 * but does not have any parameters--if any--set.
 	 * @return a {@link burlap.oomdp.singleagent.GroundedAction} instance.
 	 */
-	public GroundedAction getAssociatedGroundedAction(){
-		return new GroundedAction(this);
-	}
+	public abstract GroundedAction getAssociatedGroundedAction();
+
 
 
 	/**
@@ -284,12 +272,7 @@ public abstract class Action{
 	 * @param s the {@link State} in which all applicable grounded actions of this {@link Action} object should be returned.
 	 * @return a list of all applicable {@link GroundedAction}s of this {@link Action} object in in the given {@link State}
 	 */
-	public List<GroundedAction> getAllApplicableGroundedActions(State s){
-
-		GroundedAction ga = new GroundedAction(this);
-		return this.applicableInState(s, ga) ? Arrays.asList(ga) : new ArrayList<GroundedAction>(0);
-	
-	}
+	public abstract List<GroundedAction> getAllApplicableGroundedActions(State s);
 	
 	
 	/**

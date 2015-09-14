@@ -1,11 +1,13 @@
 package burlap.behavior.singleagent.options;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.common.SimpleGroundedAction;
 
 
 /**
@@ -26,9 +28,28 @@ public class MacroAction extends Option {
 	 * it will start at index 0.
 	 */
 	protected int								curIndex;
-	
-	
-	
+
+	@Override
+	public boolean applicableInState(State s, GroundedAction groundedAction) {
+		return this.actionSequence.get(0).applicableInState(s);
+	}
+
+	@Override
+	public boolean isParameterized() {
+		return false;
+	}
+
+	@Override
+	public GroundedAction getAssociatedGroundedAction() {
+		return new SimpleGroundedAction(this);
+	}
+
+	@Override
+	public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+		GroundedAction ga = new SimpleGroundedAction(this);
+		return this.applicableInState(s, ga) ? Arrays.asList(ga) : new ArrayList<GroundedAction>(0);
+	}
+
 	/**
 	 * Instantiates a macro action with a given name and action sequence. The name of the macro action
 	 * should be unique from any other action name.

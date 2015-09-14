@@ -147,6 +147,10 @@ public class SGToSADomain implements DomainGenerator {
 			return gas;
 		}
 
+		@Override
+		public boolean isPrimitive() {
+			return true;
+		}
 	}
 
 	public static class GroundedSAAActionWrapper extends GroundedAction{
@@ -189,6 +193,11 @@ public class SGToSADomain implements DomainGenerator {
 		public boolean equals(Object other) {
 			return super.equals(other);
 		}
+
+		@Override
+		public GroundedAction copy() {
+			return new GroundedSAAActionWrapper(this.action, this.wrappedSGAction);
+		}
 	}
 
 	public static class GroundedSObParamedAAActionWrapper extends GroundedSAAActionWrapper implements AbstractObjectParameterizedGroundedAction{
@@ -210,6 +219,11 @@ public class SGToSADomain implements DomainGenerator {
 		@Override
 		public boolean actionDomainIsObjectIdentifierIndependent() {
 			return ((AbstractObjectParameterizedGroundedAction)this.wrappedSGAction).actionDomainIsObjectIdentifierIndependent();
+		}
+
+		@Override
+		public GroundedAction copy() {
+			return new GroundedSObParamedAAActionWrapper(this.action, this.wrappedSGAction);
 		}
 	}
 

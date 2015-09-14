@@ -10,6 +10,7 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -684,7 +685,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * A class for performing a horizontal movement either east or west.
 	 */
-	public class MoveAction extends Action implements FullActionModel{
+	public class MoveAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected int dir;
 		protected boolean useSemiDeep;
@@ -740,10 +741,6 @@ public class BlockDude implements DomainGenerator{
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
-			return deterministicTransition(s, groundedAction);
-		}
 
 	}
 
@@ -751,7 +748,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * And action class for performing an up movement action.
 	 */
-	public class MoveUpAction extends Action implements FullActionModel{
+	public class MoveUpAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
@@ -798,10 +795,6 @@ public class BlockDude implements DomainGenerator{
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
-			return deterministicTransition(s, groundedAction);
-		}
 
 	}
 
@@ -809,7 +802,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * An action class for performing a pickup action.
 	 */
-	public class PickupAction extends Action implements FullActionModel{
+	public class PickupAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
@@ -862,17 +855,13 @@ public class BlockDude implements DomainGenerator{
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
-			return deterministicTransition(s, groundedAction);
-		}
 	}
 
 
 	/**
 	 * An action class for performing a put down action.
 	 */
-	public class PutdownAction extends Action implements FullActionModel{
+	public class PutdownAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
@@ -920,10 +909,6 @@ public class BlockDude implements DomainGenerator{
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
-			return deterministicTransition(s, groundedAction);
-		}
 	}
 
 

@@ -156,7 +156,12 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			
 			return nbs;
 		}
-		
+
+		@Override
+		public boolean isPrimitive() {
+			return this.pomdpAction.isPrimitive();
+		}
+
 		@Override
 		public List<TransitionProbability> getTransitions(State s, GroundedAction ga){
 
@@ -296,7 +301,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		}
 
 		@Override
-		public AbstractGroundedAction copy() {
+		public GroundedAction copy() {
 			return new GroundedBeliefAction(this.action, (GroundedAction)pomdpAction.copy());
 		}
 	}
@@ -315,7 +320,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 
 
 		@Override
-		public AbstractGroundedAction copy() {
+		public GroundedAction copy() {
 			return new ObjectParameterizedGroundedBeliefAction(this.action, (GroundedAction)pomdpAction.copy());
 		}
 

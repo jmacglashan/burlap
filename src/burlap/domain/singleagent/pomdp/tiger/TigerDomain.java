@@ -24,6 +24,7 @@ import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullAction;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
@@ -265,7 +266,7 @@ public class TigerDomain implements DomainGenerator {
 	 * Specifies an action for opening a door. When a door is opened, then the agent automatically faces a new pair of doors.
 	 * With the tiger's position randomly specified
 	 */
-	public class OpenAction extends Action implements FullActionModel{
+	public class OpenAction extends SimpleAction implements FullActionModel{
 
 		public OpenAction(String actionName, Domain domain){
 			super(actionName, domain);

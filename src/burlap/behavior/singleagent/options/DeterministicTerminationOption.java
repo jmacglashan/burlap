@@ -1,5 +1,7 @@
 package burlap.behavior.singleagent.options;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.management.RuntimeErrorException;
@@ -12,8 +14,7 @@ import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
-
-
+import burlap.oomdp.singleagent.common.SimpleGroundedAction;
 
 
 /**
@@ -126,9 +127,23 @@ public class DeterministicTerminationOption extends Option {
 		this.policy = (Policy)p;
 		
 	}
-	
-	
-	
+
+	@Override
+	public boolean isParameterized() {
+		return false;
+	}
+
+	@Override
+	public GroundedAction getAssociatedGroundedAction() {
+		return new SimpleGroundedAction(this);
+	}
+
+	@Override
+	public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+		GroundedAction ga = new SimpleGroundedAction(this);
+		return this.applicableInState(s, ga) ? Arrays.asList(ga) : new ArrayList<GroundedAction>(0);
+	}
+
 	/**
 	 * Returns the object defining the initiation states.
 	 * @return the object defining the initiation states.

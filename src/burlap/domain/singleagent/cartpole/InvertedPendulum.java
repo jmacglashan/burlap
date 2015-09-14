@@ -14,6 +14,7 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.*;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -260,7 +261,7 @@ public class InvertedPendulum implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ForceAction extends Action implements FullActionModel{
+	public class ForceAction extends SimpleAction implements FullActionModel{
 
 		/**
 		 * The base noise to which noise will be added.

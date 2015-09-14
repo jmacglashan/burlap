@@ -1,5 +1,7 @@
 package burlap.behavior.singleagent.options;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import burlap.behavior.policy.Policy;
@@ -7,10 +9,7 @@ import burlap.behavior.policy.Policy.ActionProb;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
-
-
-
-
+import burlap.oomdp.singleagent.common.SimpleGroundedAction;
 
 
 /**
@@ -38,7 +37,24 @@ public class PolicyDefinedSubgoalOption extends Option {
 		this.subgoalTest = sg;
 		this.name = name;
 	}
-	
+
+
+	@Override
+	public boolean isParameterized() {
+		return false;
+	}
+
+	@Override
+	public GroundedAction getAssociatedGroundedAction() {
+		return new SimpleGroundedAction(this);
+	}
+
+	@Override
+	public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+		GroundedAction ga = new SimpleGroundedAction(this);
+		return this.applicableInState(s, ga) ? Arrays.asList(ga) : new ArrayList<GroundedAction>(0);
+	}
+
 	@Override
 	public boolean isMarkov() {
 		return true;

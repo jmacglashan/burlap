@@ -17,6 +17,7 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -894,7 +895,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionTurn extends Action implements FullActionModel{
+	public class ActionTurn extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		LLPhysicsParams physParams;
 		double dir;
@@ -920,10 +921,6 @@ public class LunarLanderDomain implements DomainGenerator {
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
-			return this.deterministicTransition(s, groundedAction);
-		}
 
 		public LLPhysicsParams getPhysParams() {
 			return physParams;
@@ -941,7 +938,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionIdle extends Action implements FullActionModel{
+	public class ActionIdle extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		LLPhysicsParams physParams;
 		
@@ -962,10 +959,6 @@ public class LunarLanderDomain implements DomainGenerator {
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
-			return this.deterministicTransition(s, groundedAction);
-		}
 
 		public LLPhysicsParams getPhysParams() {
 			return physParams;
@@ -983,7 +976,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionThrust extends Action implements FullActionModel{
+	public class ActionThrust extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected double thrustValue;
 		LLPhysicsParams physParams;
@@ -1008,10 +1001,6 @@ public class LunarLanderDomain implements DomainGenerator {
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
-			return this.deterministicTransition(s, groundedAction);
-		}
 
 		public double getThrustValue() {
 			return thrustValue;

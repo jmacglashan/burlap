@@ -17,7 +17,7 @@ import java.util.List;
  * or if a domain needs a no-op action
  * 
  */
-public class NullAction extends Action implements FullActionModel {
+public class NullAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel {
 
 	
 	public NullAction(String name){
@@ -35,8 +35,4 @@ public class NullAction extends Action implements FullActionModel {
 		return st;
 	}
 
-	@Override
-	public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
-		return this.deterministicTransition(s, groundedAction);
-	}
 }

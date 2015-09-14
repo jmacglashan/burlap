@@ -1,7 +1,5 @@
 package burlap.domain.singleagent.mountaincar;
 
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
@@ -9,13 +7,12 @@ import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -274,10 +271,10 @@ public class MountainCar implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	class MovementAction extends Action implements FullActionModel{
+	class MovementAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		int dir;
-		MCPhysicsParams physParms;
+		MCPhysicsParams physParams;
 		
 		/**
 		 * Initializes with the given name, domain, and direction of acceleration.
@@ -285,28 +282,24 @@ public class MountainCar implements DomainGenerator {
 		 * @param domain the domain of this action
 		 * @param dir the direction of acceleration; +1 for forward acceleration, -1 for backwards acceleration, 0 for no acceleration (coast).
 		 */
-		public MovementAction(String name, Domain domain, int dir, MCPhysicsParams physParms){
+		public MovementAction(String name, Domain domain, int dir, MCPhysicsParams physParams){
 			super(name, domain);
 			this.dir = dir;
-			this.physParms = physParms;
+			this.physParams = physParams;
 		}
 		
 		@Override
 		protected State performActionHelper(State s, GroundedAction groundedAction) {
-			return MountainCar.move(s, dir, this.physParms);
+			return MountainCar.move(s, dir, this.physParams);
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
-			return this.deterministicTransition(s, groundedAction);
+
+		public MCPhysicsParams getPhysParams() {
+			return physParams;
 		}
 
-		public MCPhysicsParams getPhysParms() {
-			return physParms;
-		}
-
-		public void setPhysParms(MCPhysicsParams physParms) {
-			this.physParms = physParms;
+		public void setPhysParams(MCPhysicsParams physParams) {
+			this.physParams = physParams;
 		}
 
 		public int getDir() {

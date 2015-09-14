@@ -13,6 +13,7 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.*;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 
 
@@ -609,7 +610,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class MovementAction extends Action implements FullActionModel{
+	protected static class MovementAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		CPPhysicsParams physParams;
 		
@@ -640,10 +641,6 @@ public class CartPoleDomain implements DomainGenerator {
 		}
 
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s,  GroundedAction groundedAction){
-			return this.deterministicTransition(s, groundedAction);
-		}
 		
 		
 	}

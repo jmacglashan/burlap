@@ -474,7 +474,7 @@ public abstract class Option extends Action implements FullActionModel{
 		}while(this.continueFromState(env.getCurrentObservation(), groundedActions) && !env.isInTerminalState());
 
 		EnvironmentOptionOutcome eoo = new EnvironmentOptionOutcome(initialState,
-																	new GroundedAction(this),
+																	groundedActions.copy(),
 																	env.getCurrentObservation(),
 																	this.lastCumulativeReward,
 																	env.isInTerminalState(),

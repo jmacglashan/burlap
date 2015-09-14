@@ -22,6 +22,7 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -710,7 +711,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class MovementAction extends Action implements FullActionModel{
+	public class MovementAction extends SimpleAction implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go

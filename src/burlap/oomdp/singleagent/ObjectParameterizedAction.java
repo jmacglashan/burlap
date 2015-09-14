@@ -4,6 +4,7 @@ import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.common.SimpleGroundedAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +105,11 @@ public abstract class ObjectParameterizedAction extends Action {
 	public abstract boolean parametersAreObjectIdentifierIndependent();
 
 	@Override
+	public boolean isParameterized() {
+		return true;
+	}
+
+	@Override
 	public GroundedAction getAssociatedGroundedAction() {
 		return new ObjectParameterizedGroundedAction(this);
 	}
@@ -116,9 +122,9 @@ public abstract class ObjectParameterizedAction extends Action {
 
 		if(this.parameterClasses.length == 0){
 			//parameterless action for some reason...
-			GroundedAction ga = new GroundedAction(this);
+			GroundedAction ga = new SimpleGroundedAction(this);
 			if(this.applicableInState(s, ga)){
-				res.add(new GroundedAction(this));
+				res.add(new SimpleGroundedAction(this));
 			}
 			return res; //no parameters to ground
 		}
@@ -161,11 +167,6 @@ public abstract class ObjectParameterizedAction extends Action {
 		@Override
 		public String[] getObjectParameters() {
 			return params;
-		}
-
-		@Override
-		public boolean isParameterized() {
-			return true;
 		}
 
 		@Override
@@ -236,7 +237,7 @@ public abstract class ObjectParameterizedAction extends Action {
 		}
 
 		@Override
-		public AbstractGroundedAction copy() {
+		public GroundedAction copy() {
 			return new ObjectParameterizedGroundedAction(this.action, params.clone());
 		}
 	}
