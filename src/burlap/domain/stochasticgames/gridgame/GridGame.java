@@ -19,7 +19,7 @@ import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.agentactions.UniversalSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -383,11 +383,11 @@ public class GridGame implements DomainGenerator {
 		vertWall.addAttribute(wtatt);
 		
 		
-		new UniversalSGAgentAction(domain, ACTIONNORTH);
-		new UniversalSGAgentAction(domain, ACTIONSOUTH);
-		new UniversalSGAgentAction(domain, ACTIONEAST);
-		new UniversalSGAgentAction(domain, ACTIONWEST);
-		new UniversalSGAgentAction(domain, ACTIONNOOP);
+		new SimpleSGAgentAction(domain, ACTIONNORTH);
+		new SimpleSGAgentAction(domain, ACTIONSOUTH);
+		new SimpleSGAgentAction(domain, ACTIONEAST);
+		new SimpleSGAgentAction(domain, ACTIONWEST);
+		new SimpleSGAgentAction(domain, ACTIONNOOP);
 		
 		
 		new AgentInUGoal(PFINUGOAL, domain);

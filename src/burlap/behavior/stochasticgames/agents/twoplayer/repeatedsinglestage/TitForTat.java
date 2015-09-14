@@ -9,6 +9,7 @@ import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
 
 
 /**
@@ -91,9 +92,9 @@ public class TitForTat extends SGAgent {
 	@Override
 	public GroundedSGAgentAction getAction(State s) {
 		if(lastOpponentMove.actionName.equals(opponentCoop.actionName)){
-			return new GroundedSGAgentAction(this.worldAgentName, myCoop);
+			return new SimpleGroundedSGAgentAction(this.worldAgentName, myCoop);
 		}
-		return new GroundedSGAgentAction(this.worldAgentName, myDefect);
+		return new SimpleGroundedSGAgentAction(this.worldAgentName, myDefect);
 	}
 
 	@Override

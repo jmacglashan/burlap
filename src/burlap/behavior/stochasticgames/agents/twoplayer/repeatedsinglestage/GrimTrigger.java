@@ -9,6 +9,7 @@ import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
 
 
 /**
@@ -77,9 +78,9 @@ public class GrimTrigger extends SGAgent {
 	@Override
 	public GroundedSGAgentAction getAction(State s) {
 		if(this.grimTrigger){
-			return new GroundedSGAgentAction(this.worldAgentName, myDefect);
+			return new SimpleGroundedSGAgentAction(this.worldAgentName, myDefect);
 		}
-		return new GroundedSGAgentAction(this.worldAgentName, myCoop);
+		return new SimpleGroundedSGAgentAction(this.worldAgentName, myCoop);
 	}
 
 	@Override

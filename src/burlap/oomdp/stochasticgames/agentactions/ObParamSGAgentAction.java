@@ -91,7 +91,7 @@ public abstract class ObParamSGAgentAction extends SGAgentAction {
 		List <GroundedSGAgentAction> res = new ArrayList<GroundedSGAgentAction>();
 
 		if(this.parameterTypes.length == 0){
-			GroundedSGAgentAction gsa = new GroundedSGAgentAction(actingAgent, this);
+			GroundedSGAgentAction gsa = new SimpleGroundedSGAgentAction(actingAgent, this);
 			if(this.applicableInState(s, gsa)){
 				res.add(gsa);
 			}
@@ -155,7 +155,7 @@ public abstract class ObParamSGAgentAction extends SGAgentAction {
 		}
 
 		@Override
-		public AbstractGroundedAction copy() {
+		public GroundedSGAgentAction copy() {
 			return new GroundedObParamSGAgentAction(this.actingAgent, this.action, this.params.clone());
 		}
 

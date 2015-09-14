@@ -7,6 +7,7 @@ import java.util.Map;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
 
 
 /**
@@ -67,7 +68,7 @@ public class ParameterNaiveActionIdMap implements ActionIdMap {
 			int sid = map.get(key);
 			if(sid == id){
 				//found it
-				GroundedSGAgentAction gsa = new GroundedSGAgentAction("", domain.getSingleAction(key));
+				GroundedSGAgentAction gsa = new SimpleGroundedSGAgentAction("", domain.getSingleAction(key));
 				return gsa;
 			}
 		}

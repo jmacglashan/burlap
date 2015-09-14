@@ -28,6 +28,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.SGStateGenerator;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.oomdp.stochasticgames.World;
+import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.oomdp.stochasticgames.common.StaticRepeatedGameActionModel;
 import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
@@ -689,7 +690,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class NFGAgentAction extends SGAgentAction {
+	protected static class NFGAgentAction extends SimpleSGAgentAction {
 
 		ActionNameMap [] actionNameToIndex;
 
