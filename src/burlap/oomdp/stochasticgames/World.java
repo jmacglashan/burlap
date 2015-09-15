@@ -382,12 +382,9 @@ public class World {
 		
 		// clean up threading
 		
-		DPrint.cl(debugId, currentState.getCompleteStateDescription());
-		
 		this.isRecordingGame = false;
 		
 		return this.currentGameRecord;
-		
 	}
 	
 	public void stopGame() {
@@ -497,7 +494,7 @@ public class World {
 		this.lastJointAction = ja;
 		
 		
-		DPrint.cl(debugId, ja.toString());
+		DPrint.cl(debugId, "Agents take joint action " + ja.toString());
 		
 		
 		//now that we have the joint action, perform it
@@ -505,7 +502,7 @@ public class World {
 		//State abstractedPrime = this.abstractionForAgents.abstraction(sp);
 		Map<String, Double> jointReward = jointRewardModel.reward(currentState, ja, sp);
 		
-		DPrint.cl(debugId, jointReward.toString());
+		DPrint.cl(debugId, "Agents receive joint reward " + jointReward.toString());
 		
 		//index reward
 		for(String aname : jointReward.keySet()){
