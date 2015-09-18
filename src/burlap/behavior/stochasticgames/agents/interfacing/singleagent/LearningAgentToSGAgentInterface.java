@@ -1,15 +1,15 @@
 package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
-import burlap.oomdp.stochasticgames.SGAgent;
+import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
 
 import java.util.Map;
 
@@ -78,15 +78,27 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 		this.learningAgent = learningAgent;
 	}
 
+	@Override
+	public void joinWorld(World w, SGAgentType as) {
+		super.joinWorld(w, as);
+
+		if(this.learningAgent instanceof MDPSolver){
+			SGToSADomain dgen = new SGToSADomain(this.domain, as);
+			Domain saDomain = dgen.generateDomain();
+			for(Action a : saDomain.getActions()){
+				if(a instanceof SGToSADomain.SAActionWrapper){
+					((SGToSADomain.SAActionWrapper) a).agentName = this.getAgentName();
+				}
+			}
+
+			((MDPSolver) this.learningAgent).setDomain(saDomain);
+
+		}
+	}
 
 	@Override
 	public void gameStarting() {
-		//set up our domain's agent name
-		for(Action a : this.domain.getActions()){
-			if(a instanceof SGToSADomain.SAActionWrapper){
-				((SGToSADomain.SAActionWrapper) a).agentName = this.getAgentName();
-			}
-		}
+		//do nothing
 	}
 
 	@Override
