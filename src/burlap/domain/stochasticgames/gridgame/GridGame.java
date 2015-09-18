@@ -425,7 +425,24 @@ public class GridGame implements DomainGenerator {
 		
 		return s;
 	}
-	
+
+
+	/**
+	 * Returns the initial state for a simple game in which both players can win without interfering with one another.
+	 * @param d the grid games domain object
+	 * @return the simple game initial state
+	 */
+	public static State getSimpleGameInitialState(Domain d){
+		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 3, 3);
+
+		GridGame.setAgent(s, 0, 0, 0, 0);
+		GridGame.setAgent(s, 1, 2, 0, 1);
+
+		GridGame.setGoal(s, 0, 0, 2, 1);
+		GridGame.setGoal(s, 1, 2, 2, 2);
+
+		return s;
+	}
 	
 	
 	/**
