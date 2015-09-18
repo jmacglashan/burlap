@@ -21,8 +21,9 @@ import java.util.Map;
  * class's {@link burlap.oomdp.singleagent.environment.Environment} methods.
  * <br/><br/>
  * When constructing a {@link burlap.behavior.singleagent.learning.LearningAgent} to use with this class, you should
- * set its {@link burlap.oomdp.core.Domain} to a {@link burlap.oomdp.core.Domain} generated from the {@link burlap.behavior.stochasticgames.agents.interfacing.singleagent.SGToSADomain},
- * which takes as input the standard {@link burlap.oomdp.stochasticgames.SGDomain}.
+ * set its {@link burlap.oomdp.core.Domain} to null. Then, when this class joins a world through the {@link #joinWorld(burlap.oomdp.stochasticgames.World, burlap.oomdp.stochasticgames.SGAgentType)}
+ * method, it will automatically use the {@link burlap.behavior.stochasticgames.agents.interfacing.singleagent.SGToSADomain} to create a {@link burlap.oomdp.singleagent.SADomain}
+ * and will then set then {@link burlap.behavior.singleagent.learning.LearningAgent} to use it.
  * @author James MacGlashan.
  */
 public class LearningAgentToSGAgentInterface extends SGAgent implements Environment {
