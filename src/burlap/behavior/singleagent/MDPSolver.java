@@ -85,36 +85,15 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	
 	@Override
 	public void solverInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory){
-		
-		this.domain = domain;
+
 		this.rf = rf;
 		this.tf = tf;
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
 		
 		mapToStateIndex = new HashMap<HashableState, HashableState>();
-		
-		//containsParameterizedActions = false;
-		List <Action> actions = domain.getActions();
-		this.actions = new ArrayList<Action>(actions.size());
-		for(Action a : actions){
-			this.actions.add(a);
-			if(a instanceof Option){
-				Option o = (Option)a;
-				o.keepTrackOfRewardWith(rf, gamma);
-				o.setExernalTermination(tf);
-				o.setExpectationHashingFactory(hashingFactory);
-				if(!(this.rf instanceof OptionEvaluatingRF)){
-					this.rf = new OptionEvaluatingRF(this.rf);
-				}
-			}
-//			if(a.isParameterized()){
-//				containsParameterizedActions = true;
-//			}
-//			if(a.getParameterClasses().length > 0){
-//				containsParameterizedActions = true;
-//			}
-		}
+
+		this.setDomain(domain);
 		
 	}
 	
@@ -219,9 +198,29 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	@Override
 	public void setDomain(Domain domain) {
 		this.domain = domain;
-		this.actions.clear();
-		for(Action a : domain.getActions()){
-			this.actions.add(a);
+		if(this.domain != null) {
+
+			if(this.actions != null) {
+				this.actions.clear();
+			}
+			else{
+				this.actions = new ArrayList<Action>(domain.getActions().size());
+			}
+
+			List<Action> actions = domain.getActions();
+			this.actions = new ArrayList<Action>(actions.size());
+			for(Action a : actions) {
+				this.actions.add(a);
+				if(a instanceof Option) {
+					Option o = (Option) a;
+					o.keepTrackOfRewardWith(rf, gamma);
+					o.setExernalTermination(tf);
+					o.setExpectationHashingFactory(hashingFactory);
+					if(!(this.rf instanceof OptionEvaluatingRF)) {
+						this.rf = new OptionEvaluatingRF(this.rf);
+					}
+				}
+			}
 		}
 	}
 
