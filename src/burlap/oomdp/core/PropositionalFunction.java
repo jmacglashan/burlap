@@ -228,17 +228,7 @@ public abstract class PropositionalFunction {
 	public final String getClassName(){
 		return pfClass;
 	}
-	
-	/**
-	 * Returns whether the propositional function is true for the given state with the given parameters
-	 * params is expected to be comma delimited with no spaces between parameters.
-	 * @param s the state that is being checked
-	 * @param params the parameters being passed in to the propositional function
-	 * @return whether the propositional function is true
-	 */
-	public final boolean isTrue(State s, String params){
-		return isTrue(s, params.split(","));
-	}
+
 	
 	/**
 	 * Returns whether the propositional function is true for the given state with the given parameters
@@ -247,7 +237,7 @@ public abstract class PropositionalFunction {
 	 * @param params the parameters being passed in to the propositional function
 	 * @return whether the propositional function is true
 	 */
-	public abstract boolean isTrue(State s, String [] params);
+	public abstract boolean isTrue(State s, String... params);
 	
 	
 	

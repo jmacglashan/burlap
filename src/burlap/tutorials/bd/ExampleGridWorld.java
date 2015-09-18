@@ -9,7 +9,6 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
-import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
@@ -250,7 +249,7 @@ public class ExampleGridWorld implements DomainGenerator{
 		}
 
 		@Override
-		public boolean isTrue(State s, String[] params) {
+		public boolean isTrue(State s, String... params) {
 			ObjectInstance agent = s.getObject(params[0]);
 			ObjectInstance location = s.getObject(params[1]);
 

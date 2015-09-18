@@ -368,7 +368,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			ObjectInstance target = st.getObject(params[1]);
 			if(src.getStringValForAttribute(ATTONBLOCK).equals(target.getName())){
@@ -392,7 +392,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			if(src.getIntValForAttribute(ATTONTABLE) == 1){
 				return true;
@@ -415,7 +415,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			if(src.getIntValForAttribute(ATTCLEAR) == 1){
 				return true;
@@ -439,7 +439,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			if(src.getStringValForAttribute(ATTCOLOR).equals(this.name)){
 				return true;

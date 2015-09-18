@@ -7,7 +7,6 @@ import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -709,7 +708,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance platform = st.getObject(params[1]);
@@ -742,7 +741,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance platform = st.getObject(params[0]);
 			return platform.getBooleanValForAttribute(ACTIVATEDATTNAME);
 		}
@@ -761,7 +760,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 
 			ObjectInstance agent = st.getObject(params[0]);
 			int ah = agent.getIntValForAttribute(HEIGHTATTNAME);
@@ -791,7 +790,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance agent = st.getObject(params[0]);
 
 			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
@@ -811,7 +810,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance igloo = st.getObject(params[0]);
 
 			int building = igloo.getIntValForAttribute(BUILDINGATTNAME);

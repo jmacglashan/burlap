@@ -18,7 +18,6 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -819,7 +818,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance location = st.getObject(params[1]);
@@ -876,7 +875,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			

@@ -690,7 +690,7 @@ public class GridGame implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State s, String[] params) {
+		public boolean isTrue(State s, String... params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
 			int ax = agent.getIntValForAttribute(ATTX);
@@ -740,7 +740,7 @@ public class GridGame implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State s, String[] params) {
+		public boolean isTrue(State s, String... params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
 			int ax = agent.getIntValForAttribute(ATTX);
