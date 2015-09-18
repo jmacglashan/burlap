@@ -136,6 +136,7 @@
     <!-- joptimizer-3.2.0.jar -->
     <!-- LPSOLVESolverPack.jar -->
     <!-- SCPSolver.jar -->
+    <!-- weka.jar -->
     <dependency>
       <groupId>RLGlue</groupId>
       <artifactId>JavaRLGlueCodec</artifactId>
@@ -158,6 +159,14 @@
       <version>1.0</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/SCPSolver.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>Weka</groupId>
+      <artifactId>Weka</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/weka.jar</systemPath>
     </dependency>
 
   </dependencies>
