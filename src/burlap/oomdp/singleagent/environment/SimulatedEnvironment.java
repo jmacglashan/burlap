@@ -28,7 +28,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * terminal states with the {@link #setAllowActionFromTerminalStates(boolean)} method.
  * @author James MacGlashan.
  */
-public class SimulatedEnvironment implements StateSettableEnvironment{
+public class SimulatedEnvironment implements StateSettableEnvironment, TaskSettableEnvironment{
 
 	/**
 	 * The domain of this environment
