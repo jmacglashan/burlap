@@ -63,7 +63,7 @@ public abstract class OOMDPPlanner {
 	protected Map <StateHashTuple, StateHashTuple>					mapToStateIndex;
 	
 	/**
-	 * Indicates whether the action set for this planner includes parameterized actions
+	 * Indicates whether the action set for this planner includes parametrized actions
 	 */
 	protected boolean												containsParameterizedActions;
 	
@@ -261,8 +261,34 @@ public abstract class OOMDPPlanner {
 	public void toggleDebugPrinting(boolean toggle){
 		DPrint.toggleCode(debugCode, toggle);
 	}
-	
-	
+
+
+	/**
+	 * Sets the domain of this planner. NOTE: this will also reset the actions this planner uses to the actions of the
+	 * provided domain. If you have previously added non-domain referenced actiosn through the {@link #addNonDomainReferencedAction(burlap.oomdp.singleagent.Action)}
+	 * method, you will have to do so again.
+	 * @param domain the domain this planner should use.
+	 */
+	public void setDomain(Domain domain) {
+		this.domain = domain;
+		this.actions.clear();
+		for(Action a : domain.getActions()){
+			this.actions.add(a);
+		}
+	}
+
+	public Domain getDomain() {
+		return domain;
+	}
+
+	public RewardFunction getRf() {
+		return rf;
+	}
+
+	public TerminalFunction getTf() {
+		return tf;
+	}
+
 	/**
 	 * Takes a source parameterized GroundedAction and a matching between object instances of two different states and returns a GroudnedAction
 	 * with parameters using the matched parameters. This method is useful a stored state and action pair in the planner data structure has different

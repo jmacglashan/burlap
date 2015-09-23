@@ -34,7 +34,7 @@ import burlap.oomdp.visualizer.Visualizer;
  * two object classes: an agent class and a location class, each of which is defined by
  * and x and y position. Locations also have an attribute defining which type of location it is.
  * The number of
- * possible types can be set using the {@link #setNumberOfLocationTypes(int)} mutator.
+ * possible types can be set using the {@link #setNumberOfLocationTypes(int)} method.
  * Setting location types may be useful if terminating "pits" and goal locations exist in the world
  * <br/> 
  * Walls are not considered objects. Instead walls are
@@ -44,6 +44,10 @@ import burlap.oomdp.visualizer.Visualizer;
  * for each cell is specified by a 2D int matrix provided to the constructor. Cells in the matrix with a 0 are clear of any walls
  * and obstacle; 1s indicate a full cell obstacle; 2s a 1D north wall; 3s a 1D east wall; and 4s indicate that the cell has both
  * a 1D north wall and 1D east wall.
+ * <br/>
+ * Note that if you change the stochastic transition dynamics or the map of the domain generator *after* generating
+ * a domain with {@link #generateDomain()}, the previously generated domain will use the settings prior to its
+ * generation. To use the new settings, you will need to generate a new domain object.
  * <br/>
  * There are five propositional functions
  * supported: atLocation(agent, location), wallToNorth(agent), wallToSouth(agent),
@@ -420,11 +424,17 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 	/**
-	 * Returns a copy of the map being used for the domain
-	 * @return a copy of the map being used in the domain
+	 * Returns a deep copy of the map being used for the domain
+	 * @return a deep copy of the map being used in the domain
 	 */
 	public int [][] getMap(){
-		return this.map.clone();
+		int [][] cmap = new int[this.map.length][this.map[0].length];
+		for(int i = 0; i < this.map.length; i++){
+			for(int j = 0; j < this.map[0].length; j++){
+				cmap[i][j] = this.map[i][j];
+			}
+		}
+		return cmap;
 	}
 	
 
@@ -470,11 +480,13 @@ public class GridWorldDomain implements DomainGenerator {
 		locationClass.addAttribute(xatt);
 		locationClass.addAttribute(yatt);
 		locationClass.addAttribute(ltatt);
-		
-		new MovementAction(ACTIONNORTH, domain, this.transitionDynamics[0]);
-		new MovementAction(ACTIONSOUTH, domain, this.transitionDynamics[1]);
-		new MovementAction(ACTIONEAST, domain, this.transitionDynamics[2]);
-		new MovementAction(ACTIONWEST, domain, this.transitionDynamics[3]);
+
+		int [][] cmap = this.getMap();
+
+		new MovementAction(ACTIONNORTH, domain, this.transitionDynamics[0], cmap);
+		new MovementAction(ACTIONSOUTH, domain, this.transitionDynamics[1], cmap);
+		new MovementAction(ACTIONEAST, domain, this.transitionDynamics[2], cmap);
+		new MovementAction(ACTIONWEST, domain, this.transitionDynamics[3], cmap);
 		
 		
 		new AtLocationPF(PFATLOCATION, domain, new String[]{CLASSAGENT, CLASSLOCATION});
@@ -568,7 +580,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the agent
 	 */
 	public static void setAgent(State s, int x, int y){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance o = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -582,7 +594,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSLOCATION).get(i);
+		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -598,7 +610,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param locType the location type of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y, int locType){
-		ObjectInstance o = s.getObjectsOfTrueClass(CLASSLOCATION).get(i);
+		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -634,9 +646,9 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param xd the attempted new X position of the agent
 	 * @param yd the attempted new Y position of the agent
 	 */
-	protected void move(State s, int xd, int yd){
+	protected void move(State s, int xd, int yd, int [][] map){
 		
-		ObjectInstance agent = s.getObjectsOfTrueClass(CLASSAGENT).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		int ax = agent.getIntValForAttribute(ATTX);
 		int ay = agent.getIntValForAttribute(ATTY);
 		
@@ -644,9 +656,9 @@ public class GridWorldDomain implements DomainGenerator {
 		int ny = ay+yd;
 		
 		//hit wall, so do not change position
-		if(nx < 0 || nx >= this.width || ny < 0 || ny >= this.height || this.map[nx][ny] == 1 ||
-				(xd > 0 && (this.map[ax][ay] == 3 || this.map[ax][ay] == 4)) || (xd < 0 && (this.map[nx][ny] == 3 || this.map[nx][ny] == 4)) ||
-				(yd > 0 && (this.map[ax][ay] == 2 || this.map[ax][ay] == 4)) || (yd < 0 && (this.map[nx][ny] == 2 || this.map[nx][ny] == 4)) ){
+		if(nx < 0 || nx >= map.length || ny < 0 || ny >= map[0].length || map[nx][ny] == 1 ||
+				(xd > 0 && (map[ax][ay] == 3 || map[ax][ay] == 4)) || (xd < 0 && (map[nx][ny] == 3 || map[nx][ny] == 4)) ||
+				(yd > 0 && (map[ax][ay] == 2 || map[ax][ay] == 4)) || (yd < 0 && (map[nx][ny] == 2 || map[nx][ny] == 4)) ){
 			nx = ax;
 			ny = ay;
 		}
@@ -705,6 +717,11 @@ public class GridWorldDomain implements DomainGenerator {
 		 * Random object for sampling distribution
 		 */
 		protected Random rand;
+
+		/**
+		 * The map of the world
+		 */
+		protected int [][] map;
 		
 		
 		/**
@@ -712,11 +729,13 @@ public class GridWorldDomain implements DomainGenerator {
 		 * @param name name of the action
 		 * @param domain the domain of the action
 		 * @param directions the probability for each direction (index 0,1,2,3 corresponds to north,south,east,west, respectively).
+		 * @param map the map of the world
 		 */
-		public MovementAction(String name, Domain domain, double [] directions){
+		public MovementAction(String name, Domain domain, double [] directions, int [][] map){
 			super(name, domain, "");
-			this.directionProbs = directions;
+			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
+			this.map = map;
 		}
 		
 		@Override
@@ -734,7 +753,7 @@ public class GridWorldDomain implements DomainGenerator {
 			}
 			
 			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(dir);
-			GridWorldDomain.this.move(st, dcomps[0], dcomps[1]);
+			GridWorldDomain.this.move(st, dcomps[0], dcomps[1], this.map);
 			
 			return st;
 		}
@@ -750,7 +769,7 @@ public class GridWorldDomain implements DomainGenerator {
 				}
 				State ns = st.copy();
 				int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(i);
-				GridWorldDomain.this.move(ns, dcomps[0], dcomps[1]);
+				GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
 				
 				//make sure this direction doesn't actually stay in the same place and replicate another no-op
 				boolean isNew = true;
@@ -892,9 +911,10 @@ public class GridWorldDomain implements DomainGenerator {
 		GridWorldDomain gwdg = new GridWorldDomain(11, 11);
 		gwdg.setMapToFourRooms();
 		//gwdg.setProbSucceedTransitionDynamics(0.75);
-		
+
 		Domain d = gwdg.generateDomain();
-		
+
+
 		State s = getOneAgentOneLocationState(d);
 		setAgent(s, 0, 0);
 		setLocation(s, 0, 10, 10, 0);

@@ -8,13 +8,15 @@ import java.awt.geom.Rectangle2D;
 import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
+import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.Visualizer;
 
 
 
 /**
- * Class for creating a 2D visualizer for the lunar lander domain. The agent is rendered as a red rectangle, obstacles as black rectangles,
- * and the goal landing pad a blue rectangle. The agent's rectangle will be rotated according to the agent/landers orientation.
+ * Class for creating a 2D visualizer for a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} {@link burlap.oomdp.core.Domain}.
+ * The agent is rendered as a red rectangle, obstacles as black rectangles,
+ * and the goal landing pad a blue rectangle. The agent's rectangle will be rotated according to the agent/ship's orientation.
  * @author James MacGlashan
  *
  */
@@ -22,20 +24,45 @@ public class LLVisualizer {
 
 
 	/**
-	 * Returns a visualizer for a lunar lander domain.
+	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} using
+	 * the generator's current version of the physics parameters for defining
+	 * the visualized movement space size and rotation degrees.
 	 * @param lld the specific lunar lander domain generator to visualize
-	 * @return a visualizer for a lunar lander domain.
+	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
 	 */
 	public static Visualizer getVisualizer(LunarLanderDomain lld){
 		
-		Visualizer v = new Visualizer();
-		
-		
-		v.addObjectClassPainter(LunarLanderDomain.AGENTCLASS, new AgentPainter(lld));
-		v.addObjectClassPainter(LunarLanderDomain.OBSTACLECLASS, new ObstaclePainter(lld));
-		v.addObjectClassPainter(LunarLanderDomain.PADCLASS, new PadPainter(lld));
-		
+		Visualizer v = new Visualizer(getStateRenderLayer(lld.getPhysParams()));
 		return v;
+	}
+
+	/**
+	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} a the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 * using the provided {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} to define the
+	 * visualized movement space and rotation degrees.
+	 * @param physParams the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} specifying the visualized movement space of the domain and the rotation degrees
+	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 */
+	public static Visualizer getVisualizer(LunarLanderDomain.LLPhysicsParams physParams){
+		Visualizer v = new Visualizer(getStateRenderLayer(physParams));
+		return v;
+	}
+
+	/**
+	 * Returns a {@link burlap.oomdp.visualizer.StateRenderLayer} a the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 * using the provided {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} to define the
+	 * visualized movement space and rotation degrees.
+	 * @param physParams the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} specifying the visualized movement space of the domain and the rotation degrees
+	 * @return a {@link burlap.oomdp.visualizer.StateRenderLayer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 */
+	public static StateRenderLayer getStateRenderLayer(LunarLanderDomain.LLPhysicsParams physParams){
+		StateRenderLayer slr = new StateRenderLayer();
+
+		slr.addObjectClassPainter(LunarLanderDomain.AGENTCLASS, new AgentPainter(physParams));
+		slr.addObjectClassPainter(LunarLanderDomain.OBSTACLECLASS, new ObstaclePainter(physParams));
+		slr.addObjectClassPainter(LunarLanderDomain.PADCLASS, new PadPainter(physParams));
+
+		return slr;
 	}
 	
 	
@@ -46,9 +73,9 @@ public class LLVisualizer {
 	 */
 	public static class AgentPainter implements ObjectPainter{
 
-		protected LunarLanderDomain lld;
+		protected LunarLanderDomain.LLPhysicsParams lld;
 		
-		public AgentPainter(LunarLanderDomain lld) {
+		public AgentPainter(LunarLanderDomain.LLPhysicsParams lld) {
 			this.lld = lld;
 		}
 
@@ -148,9 +175,9 @@ public class LLVisualizer {
 	 */
 	public static class ObstaclePainter implements ObjectPainter{
 
-		protected LunarLanderDomain lld;
+		protected LunarLanderDomain.LLPhysicsParams lld;
 		
-		public ObstaclePainter(LunarLanderDomain lld) {
+		public ObstaclePainter(LunarLanderDomain.LLPhysicsParams lld) {
 			this.lld = lld;
 		}
 
@@ -200,9 +227,9 @@ public class LLVisualizer {
 	 */
 	public static class PadPainter implements ObjectPainter{
 
-		protected LunarLanderDomain lld;
+		protected LunarLanderDomain.LLPhysicsParams lld;
 		
-		public PadPainter(LunarLanderDomain lld) {
+		public PadPainter(LunarLanderDomain.LLPhysicsParams lld) {
 			this.lld = lld;
 		}
 
