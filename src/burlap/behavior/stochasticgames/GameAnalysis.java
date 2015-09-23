@@ -535,7 +535,9 @@ public class GameAnalysis {
 	private static JointAction parseStringIntoJointAction(String str, SGDomain domain){
 		
 		JointAction ja = new JointAction();
-		
+		if (str.isEmpty()) {
+			return ja;
+		}
 		String [] agentWiseComps = str.split(";");
 		for(String aa : agentWiseComps){
 			String [] agentActionComps = aa.split(":");

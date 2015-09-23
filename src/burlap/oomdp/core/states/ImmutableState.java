@@ -21,8 +21,8 @@ import com.google.common.collect.Lists;
 
 /**
  * An immutable state cannot be changed (nor subclassed). It is particularly useful when memory management is crucial, as
- * copies are only created when actual changes are applied to an ImmutableState (copy on write). Performance will not be 
- * affected dramatically if they use a StateBuilder object to keep track of desired state changes.
+ * copies are only created when actual changes are applied to an ImmutableState (copy on write). It is recommended to use a StateBuilder 
+ * when needing to apply many changes so as not to create many copies.
  * @author James MacGlashan
  *
  */

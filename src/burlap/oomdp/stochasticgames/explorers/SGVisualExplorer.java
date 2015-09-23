@@ -43,7 +43,7 @@ public class SGVisualExplorer extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private SGDomain								domain;
+	protected SGDomain								domain;
 	private JointActionModel						actionModel;
 	private Map <String, GroundedSGAgentAction>		keyActionMap;
 	private Map <String, SpecialExplorerAction>		keySpecialMap;
@@ -213,6 +213,9 @@ public class SGVisualExplorer extends JFrame {
 		keyActionMap.put(key, action);
 	}
 	
+	public String getKeyAction(String key) {
+		return this.keyActionMap.get(key).actionName();
+	}
 	
 	/**
 	 * Adds a special non-domain action to modify the state when a key is pressed
@@ -511,7 +514,7 @@ public class SGVisualExplorer extends JFrame {
 		return sb.toString();
 	}
 	
-	private void handleKeyPressed(KeyEvent e){
+	protected void handleKeyPressed(KeyEvent e){
 		
 		String key = String.valueOf(e.getKeyChar());
 		
@@ -546,16 +549,11 @@ public class SGVisualExplorer extends JFrame {
 
 
 		//now paint the screen with the new state
-
-		//System.out.println(curState_.getStateDescription());
-		//System.out.println("-------------------------------------------");
+		this.updateState(this.curState);
 		
 		
 	}
 	
-	
-
-
 	protected void executeAction(){
 		State nextState = actionModel.performJointAction(curState, nextAction);
 		if(this.rewardFunction != null){
@@ -621,10 +619,12 @@ public class SGVisualExplorer extends JFrame {
 			}
 		}
 		
-
-		propViewer.setText(buf.toString());
+		this.printText(buf.toString());
 		
-		
+	}
+	
+	public void printText(String text) {
+		this.propViewer.setText(text);
 	}
 
 }

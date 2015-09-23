@@ -1,9 +1,12 @@
 package burlap.oomdp.stochasticgames;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.behavior.stochasticgames.JointPolicy;
@@ -11,9 +14,16 @@ import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
+import burlap.oomdp.stochasticgames.Callables.GameStartingCallable;
+import burlap.oomdp.stochasticgames.Callables.GetActionCallable;
+import burlap.oomdp.stochasticgames.Callables.ObserveOutcomeCallable;
+import burlap.parallel.Parallel;
+import burlap.parallel.Parallel.ForEachCallable;
 
 
 /**
@@ -34,6 +44,7 @@ public class World {
 	protected Map<SGAgentType, List<SGAgent>>		agentsByType;
 	protected HashedAggregator<String>			agentCumulativeReward;
 	protected Map<String, SGAgentType>			agentDefinitions;
+	protected int								maxAgentsCanJoin;
 	
 	protected JointActionModel 					worldModel;
 	protected JointReward						jointRewardModel;
@@ -54,8 +65,10 @@ public class World {
 	
 	protected int								debugId;
 
-
-
+	protected double							threadTimeout;
+	protected String							worldDescription;
+	private boolean								isOk;
+	private ReentrantLock					isOkLock;
 
 	/**
 	 * Initializes the world.
@@ -65,7 +78,7 @@ public class World {
 	 * @param initialState the initial state of the world every time a new game starts
 	 */
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, State initialState){
-		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantSGStateGenerator(initialState), new NullAbstraction());
+		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantSGStateGenerator(initialState), new NullAbstraction(), -1);
 	}
 
 
@@ -77,9 +90,19 @@ public class World {
 	 * @param sg a state generator for generating initial states of a game
 	 */
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
-		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction());
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction(), -1);
 	}
-
+	
+	/**
+	 * Initializes the world.
+	 * @param domain the SGDomain the world will use
+	 * @param jr the joint reward function
+	 * @param tf the terminal function
+	 * @param sg a state generator for generating initial states of a game
+	 */
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, int maxAgentsCanJoin){
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction(), maxAgentsCanJoin);
+	}
 
 	/**
 	 * Initializes the world
@@ -90,12 +113,26 @@ public class World {
 	 * @param abstractionForAgents the abstract state representation that agents will be provided
 	 */
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
-		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents);
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents, -1);
 	}
 	
-	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
+	/**
+	 * Initializes the world
+	 * @param domain the SGDomain the world will use
+	 * @param jr the joint reward function
+	 * @param tf the terminal function
+	 * @param sg a state generator for generating initial states of a game
+	 * @param abstractionForAgents the abstract state representation that agents will be provided
+	 */
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents, int maxAgentsCanJoin){
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents, maxAgentsCanJoin);
+	}
+	
+	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents, int maxAgentsCanJoin){
 		this.domain = domain;
 		this.worldModel = jam;
+		this.maxAgentsCanJoin = maxAgentsCanJoin;
+		
 		this.jointRewardModel = jr;
 		this.tf = tf;
 		this.initialStateGenerator = sg;
@@ -110,6 +147,15 @@ public class World {
 		worldObservers = new ArrayList<WorldObserver>();
 		
 		debugId = 284673923;
+		this.threadTimeout = Parallel.NO_TIME_LIMIT;
+		this.isOkLock = new ReentrantLock();
+		this.isOk = true;
+	}
+	
+	public World copy() {
+		World copy = new World(this.domain, this.jointRewardModel, this.tf, this.initialStateGenerator, this.abstractionForAgents, this.maxAgentsCanJoin);
+		copy.setDescription(this.worldDescription);
+		return copy;
 	}
 	
 	
@@ -128,6 +174,21 @@ public class World {
 	 */
 	public void setDebugId(int id){
 		debugId = id;
+	}
+	
+	public int getMaximumAgentsCanJoin() {
+		return this.maxAgentsCanJoin;
+	}
+	
+	/**
+	 * Sets the timeout for threads that call an agent's getAction methods. -1.0 is currently no time limit
+	 * @param timeout
+	 */
+	public void setThreadTimeout(double timeout) {
+		if (timeout < 0) {
+			this.threadTimeout = Parallel.NO_TIME_LIMIT;
+		}
+		this.threadTimeout = timeout;
 	}
 	
 	
@@ -159,6 +220,9 @@ public class World {
 		
 	}
 	
+	public SGDomain getDomain() {
+		return this.domain;
+	}
 	
 	/**
 	 * Returns the current world state
@@ -173,6 +237,25 @@ public class World {
 	 */
 	public void generateNewCurrentState(){
 		currentState = initialStateGenerator.generateState(agents);
+	}
+	
+	/**
+	 * Generates an example starting state;
+	 * @return
+	 */
+	public State startingState() {
+		State startingState = this.initialStateGenerator.generateState(this.agents);
+		StringBuilder builder  = new StringBuilder();
+		for (ObjectInstance object : startingState.getAllObjects()) {
+			for (String attribute : object.unsetAttributes()) {
+				builder.append(object.getName()).append(" - ").append(attribute).append("\n");
+			}
+		}
+		if (builder.length() > 0) {
+			throw new RuntimeException("The state generator for world " + this.toString() +  " passes incomplete states. The following attributes are unset: \n" + builder.toString());
+		}
+		
+		return this.abstractionForAgents.abstraction(startingState);
 	}
 	
 	/**
@@ -206,42 +289,27 @@ public class World {
 		this.worldObservers.clear();
 	}
 	
+	private void setOk(boolean value) {
+		this.isOkLock.lock();
+		this.isOk = value;
+		this.isOkLock.unlock();
+	}
+	
+	public boolean isOk() {
+		this.isOkLock.lock();
+		boolean value = this.isOk;
+		this.isOkLock.unlock();
+		return value;
+	}
+	
 	
 	/**
 	 * Runs a game until a terminal state is hit.
 	 */
 	public GameAnalysis runGame(){
-		
-		for(SGAgent a : agents){
-			a.gameStarting();
-		}
-		
-		currentState = initialStateGenerator.generateState(agents);
-		this.currentGameRecord = new GameAnalysis(currentState);
-		this.isRecordingGame = true;
 
-		for(WorldObserver wob : this.worldObservers){
-			wob.gameStarting(this.currentState);
-		}
-		
-		while(!tf.isTerminal(currentState)){
-			this.runStage();
-		}
-		
-		for(SGAgent a : agents){
-			a.gameTerminated();
-		}
+		return this.runGame(-1);
 
-		for(WorldObserver wob : this.worldObservers){
-			wob.gameEnding(this.currentState);
-		}
-		
-		DPrint.cl(debugId, currentState.getCompleteStateDescription());
-		
-		this.isRecordingGame = false;
-		
-		return this.currentGameRecord;
-		
 	}
 	
 	/**
@@ -249,12 +317,12 @@ public class World {
 	 * @param maxStages the maximum number of stages to play in the game before its forced to end.
 	 */
 	public GameAnalysis runGame(int maxStages){
-		
-		for(SGAgent a : agents){
-			a.gameStarting();
-		}
-		
+		this.setOk(true);
 		currentState = initialStateGenerator.generateState(agents);
+		
+		ForEachCallable<SGAgent, Boolean> gameStarting = new GameStartingCallable(currentState, this.abstractionForAgents);
+		Parallel.ForEach(agents, gameStarting);
+		
 		this.currentGameRecord = new GameAnalysis(currentState);
 		this.isRecordingGame = true;
 		int t = 0;
@@ -263,12 +331,13 @@ public class World {
 			wob.gameStarting(this.currentState);
 		}
 		
-		while(!tf.isTerminal(currentState) && t < maxStages){
+		while(!tf.isTerminal(currentState) && (maxStages < 0 || t < maxStages) && this.isOk){
 			this.runStage();
 			t++;
 		}
 		
 		for(SGAgent a : agents){
+		// call to agents needs to be threaded, and timed out
 			a.gameTerminated();
 		}
 
@@ -276,12 +345,16 @@ public class World {
 			wob.gameEnding(this.currentState);
 		}
 		
+		// clean up threading
 		DPrint.cl(debugId, currentState.getCompleteStateDescription());
-		
+
 		this.isRecordingGame = false;
 		
 		return this.currentGameRecord;
-		
+	}
+	
+	public void stopGame() {
+		this.setOk(false);
 	}
 	
 	/**
@@ -335,29 +408,67 @@ public class World {
 	 * Runs a single stage of this game.
 	 */
 	public void runStage(){
+		if (this.currentState == null) {
+			throw new RuntimeException("The current state has not been set.");
+		}
 		if(tf.isTerminal(currentState)){
 			return ; //cannot continue this game
 		}
 		
-		
-		
 		JointAction ja = new JointAction();
 		State abstractedCurrent = abstractionForAgents.abstraction(currentState);
-		for(SGAgent a : agents){
-			ja.addAction(a.getAction(abstractedCurrent));
+		
+		// Call to agents needs to be threaded, and timed out
+		ForEachCallable<List<SGAgent>, List<GroundedSGAgentAction>> getActionCallable = new GetActionCallable(abstractedCurrent);
+		
+		// Agents that can threaded independently of any others should have their own list
+		List<List<SGAgent>> agentsByThread = new ArrayList<List<SGAgent>>();
+		
+		// All agents that share a common library, or for some reason can't be run on a different thread as another must go in this list
+		List<SGAgent> singleThreadedAgents = new ArrayList<SGAgent>();
+		
+		// Check all agents for their parallizability
+		for (SGAgent agent : agents) {
+			if (agent.canBeThreaded()) {
+				agentsByThread.add(Arrays.asList(agent));
+			} else {
+				singleThreadedAgents.add(agent);
+			}
 		}
+		// Randomize order so if not all agents can run in the alloted time, it's at least different each run
+		Collections.shuffle(singleThreadedAgents);
+		agentsByThread.add(singleThreadedAgents);
+		
+		// Run agents on separate threads if possible
+		List<List<GroundedSGAgentAction>> allActions = Parallel.ForEach(agentsByThread, getActionCallable, this.threadTimeout);
+		
+		
+		for (List<GroundedSGAgentAction> actions : allActions) {
+			if (actions == null) {
+				continue;
+			}
+			for (GroundedSGAgentAction action : actions) {
+				if (action != null) {
+					ja.addAction(action);
+				}
+			}
+		}
+		
+		/*for(Agent a : agents){
+			ja.addAction(a.getAction(abstractedCurrent));
+		}*/
 		this.lastJointAction = ja;
 		
 		
-		DPrint.cl(debugId, ja.toString());
+		DPrint.cl(debugId, "Agents take joint action " + ja.toString());
 		
 		
 		//now that we have the joint action, perform it
 		State sp = worldModel.performJointAction(currentState, ja);
-		State abstractedPrime = this.abstractionForAgents.abstraction(sp);
+		//State abstractedPrime = this.abstractionForAgents.abstraction(sp);
 		Map<String, Double> jointReward = jointRewardModel.reward(currentState, ja, sp);
 		
-		DPrint.cl(debugId, jointReward.toString());
+		DPrint.cl(debugId, "Agents receive joint reward " + jointReward.toString());
 		
 		//index reward
 		for(String aname : jointReward.keySet()){
@@ -365,11 +476,14 @@ public class World {
 			agentCumulativeReward.add(aname, r);
 		}
 		
+		// This needs to be threaded, and timed out
 		//tell all the agents about it
-		for(SGAgent a : agents){
-			a.observeOutcome(abstractedCurrent, ja, jointReward, abstractedPrime, tf.isTerminal(sp));
-		}
+
+		ForEachCallable<SGAgent, Boolean> callable = 
+				new ObserveOutcomeCallable(currentState, ja, jointReward, sp, this.abstractionForAgents, tf.isTerminal(sp));
+		Parallel.ForEach(agents, callable);
 		
+		// Maybe need to be threaded, and timed out.
 		//tell observers
 		for(WorldObserver o : this.worldObservers){
 			o.observe(currentState, ja, jointReward, sp);
@@ -384,7 +498,6 @@ public class World {
 		}
 		
 	}
-	
 	
 	/**
 	 * Runs a single stage following a joint policy for the current world state
@@ -530,5 +643,13 @@ public class World {
 		
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return (this.worldDescription == null) ? "" : this.worldDescription;
+	}
 
+	public void setDescription(String description) {
+		this.worldDescription = description;
+	}
 }

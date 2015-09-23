@@ -9,15 +9,16 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.stochasticgames.SGAgentType;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
+import burlap.oomdp.stochasticgames.SGAgent;
+import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
@@ -331,6 +332,14 @@ public class GridGame implements DomainGenerator {
 	@Override
 	public Domain generateDomain() {
 		
+		SGDomain domain = (SGDomain)generateDomainWithoutNoops();
+		new SimpleSGAgentAction(domain, ACTIONNOOP);
+		return domain;
+	}
+
+	
+	public Domain generateDomainWithoutNoops() {
+		
 		SGDomain domain = new SGDomain();
 		
 		
@@ -387,7 +396,6 @@ public class GridGame implements DomainGenerator {
 		new SimpleSGAgentAction(domain, ACTIONSOUTH);
 		new SimpleSGAgentAction(domain, ACTIONEAST);
 		new SimpleSGAgentAction(domain, ACTIONWEST);
-		new SimpleSGAgentAction(domain, ACTIONNOOP);
 		
 		
 		new AgentInUGoal(PFINUGOAL, domain);
@@ -397,7 +405,6 @@ public class GridGame implements DomainGenerator {
 		
 		return domain;
 	}
-
 	
 	
 	/**
@@ -415,6 +422,9 @@ public class GridGame implements DomainGenerator {
 	public static State getCleanState(Domain d, int na, int ng, int nhw, int nvw, int width, int height){
 		
 		State s = new MutableState();
+		if (nhw < 2 || nvw < 2) {
+			throw new RuntimeException("There must be at least two horizontal walls and two vertical walls");
+		}
 		addNObjects(d, s, CLASSGOAL, ng);
 		addNObjects(d, s, CLASSAGENT, na);
 		addNObjects(d, s, CLASSDIMHWALL, nhw);
@@ -425,7 +435,6 @@ public class GridGame implements DomainGenerator {
 		
 		return s;
 	}
-
 
 	/**
 	 * Returns the initial state for a simple game in which both players can win without interfering with one another.
@@ -441,6 +450,39 @@ public class GridGame implements DomainGenerator {
 		GridGame.setGoal(s, 0, 0, 2, 1);
 		GridGame.setGoal(s, 1, 2, 2, 2);
 
+		return s;
+	}
+	
+	/**
+	 * Returns a state with with the specified number of objects for each object class and with the specified boundary of
+	 * the playing area. The number of walls *MUST* include the world boundary walls; that is, there must be at least 2 horizontal walls and 2 vertical walls.
+	 * The agent objects added to the state will match at least the names of the agents provided
+	 * @param d the domain object of the grid world
+	 * @param agents, the list of agents participating in the world
+	 * @param na the number of agents/players. If this is greater than the number of agents, default names are generated. If it is less, an exception is thrown
+	 * @param ng the number of goal objects
+	 * @param nhw the number of horizontal walls
+	 * @param nvw the number of vertical walls
+	 * @param width the width of the playing area
+	 * @param height the height of the playing area
+	 * @return A state with the specified number of objects
+	 */
+	public static State getCleanState(Domain d, List<SGAgent> agents, int na, int ng, int nhw, int nvw, int width, int height) {
+		if (nhw < 2 || nvw < 2) {
+			throw new RuntimeException("There must be at least two horizontal walls and two vertical walls");
+		}
+		if (na < agents.size()) {
+			throw new RuntimeException("The number of agents must be at least the size of the agents collection");
+		}
+		State s = new MutableState();
+		addNObjects(d, s, CLASSGOAL, ng);
+		addAgents(d, s, CLASSAGENT, agents, na);
+		addNObjects(d, s, CLASSDIMHWALL, nhw);
+		addNObjects(d, s, CLASSDIMVWALL, nvw);
+		
+		setBoundaryWalls(s, width, height);
+		
+		
 		return s;
 	}
 	
@@ -553,6 +595,24 @@ public class GridGame implements DomainGenerator {
 		}
 	}
 	
+	/**
+	 * Adds objects for each agent, with the specific class. If the number of agents requested is greater than
+	 * the number of agents provided, then a generic name is assigned to the the remaining agent ObjectInstances
+	 * @param d the domain of the object classes
+	 * @param s the state to which the specified class should be added
+	 * @param className the name of the object class for which to create object instances
+	 * @param agents the list of agents which are to be added
+	 */
+	protected static void addAgents(Domain d, State s, String className, List<SGAgent> agents, int numAgents){
+		for (SGAgent agent : agents) {
+			ObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), agent.getAgentName());
+			s.addObject(o);
+		}
+		for (int i = agents.size(); i < numAgents; i++) {
+			ObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), className + i);
+			s.addObject(o);
+		}
+	}
 	
 	/**
 	 * Sets an agent's attribute values
@@ -634,8 +694,8 @@ public class GridGame implements DomainGenerator {
 	 * @param s the state in which the wall exits
 	 * @param i indicates the ith vertical wall instance whose values should be set
 	 * @param p the x position of the vertical wall
-	 * @param e1 the bottom end point of the wall
-	 * @param e2 the top end point of the wall
+	 * @param e1 the grid square whose bottom end points begin the wall
+	 * @param e2 the grid square whose top end points end the wall
 	 * @param wt the type of the wall
 	 */
 	public static void setVerticalWall(State s, int i, int p, int e1, int e2, int wt){
@@ -649,8 +709,8 @@ public class GridGame implements DomainGenerator {
 	 * @param s the state in which the wall exits
 	 * @param i indicates the ith horizontal wall instance whose values should be set
 	 * @param p the y position of the vertical wall
-	 * @param e1 the left end point of the wall
-	 * @param e2 the right end point of the wall
+	 * @param e1 the grid square whose left end point begins the wall
+	 * @param e2 the grid square whose right end point ends the wall
 	 * @param wt the type of the wall (0 is solid, 1 is semi)
 	 */
 	public static void setHorizontalWall(State s, int i, int p, int e1, int e2, int wt){
@@ -900,7 +960,7 @@ public class GridGame implements DomainGenerator {
 			if(this.noopIncursCost){
 				return this.stepCost;
 			}
-			else if(ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
+			else if(ja.action(aname) == null || ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
 				return 0.;
 			}
 			return this.stepCost;

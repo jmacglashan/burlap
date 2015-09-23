@@ -379,7 +379,19 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		return qe;
 		
 	}
-	
+
+
+	public Map<HashableState, List<QValue>> getQMapCopy() {
+		Map<HashableState, List<QValue>> qMapCopy = new HashMap<HashableState, List<QValue>>(); 
+		for (HashableState sht : qMap.keySet()){
+			List<QValue> listCopy = new ArrayList<QValue>();
+			for (QValue qVal : qMap.get(sht)){
+				listCopy.add(new QValue(qVal));
+			}
+			qMapCopy.put(sht, listCopy);
+		}
+		return qMapCopy;
+	}	
 	
 
 }

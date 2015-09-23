@@ -2,6 +2,7 @@ package burlap.oomdp.auxiliary.common;
 
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.SGAgent;
 
 
 /**
@@ -13,6 +14,11 @@ public class NullAbstraction implements StateAbstraction {
 
 	@Override
 	public State abstraction(State s) {
+		return s.copy();
+	}
+
+	@Override
+	public State abstraction(State s, SGAgent a) {
 		return s.copy();
 	}
 
