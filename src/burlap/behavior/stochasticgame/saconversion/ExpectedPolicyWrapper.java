@@ -30,6 +30,10 @@ public class ExpectedPolicyWrapper extends Policy {
 	@Override
 	public AbstractGroundedAction getAction(State s) {
 		List<ActionProb> expectedPolicy = getActionDistributionForState(s);
+		for (ActionProb ap : expectedPolicy){
+			System.out.print( ap.ga +","+ap.pSelection+ " ; ");
+		}
+		System.out.println();
 		Random rand = new Random();
 		double draw = rand.nextDouble();
 		double total = 0.0;

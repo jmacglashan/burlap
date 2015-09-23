@@ -88,8 +88,8 @@ public class AlphanumericSorting implements Comparator {
 	 * Otherwise returns the input string.
 	 *
 	 *
-	 * @param string
-	 * @return
+	 * @param string the input string from which zero padding will be removed
+	 * @return String without zero padding
 	 */
 	private String removePadding(String string) {
 		String result="";

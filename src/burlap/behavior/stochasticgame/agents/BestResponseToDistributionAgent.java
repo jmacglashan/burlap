@@ -1,239 +1,65 @@
-/**
- * 
- */
 package burlap.behavior.stochasticgame.agents;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.ValueFunctionInitialization;
 import burlap.behavior.singleagent.planning.OOMDPPlanner;
 import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
-import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.behavior.singleagent.planning.stochastic.rtdp.BoundedRTDP;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.stochasticgame.GameAnalysis;
-import burlap.behavior.stochasticgame.GameSequenceVisualizer;
-import burlap.behavior.stochasticgame.saconversion.ConversionGenerator;
-import burlap.behavior.stochasticgame.saconversion.ExpectedPolicyWrapper;
-import burlap.behavior.stochasticgame.saconversion.JointRewardFunctionWrapper;
-import burlap.behavior.stochasticgame.saconversion.RandomSingleAgentPolicy;
-import burlap.domain.singleagent.gridworld.GridWorldStateParser;
-import burlap.domain.stochasticgames.gridgame.GGVisualizer;
-import burlap.domain.stochasticgames.gridgame.GridGame;
-import burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics;
-import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.behavior.stochasticgame.saconversion.MinDistValueFunctionInitialization;
+import burlap.behavior.stochasticgame.saconversion.RTDPGreedyQPolicy;
+import burlap.behavior.stochasticgame.saconversion.RewardCalculator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.stochasticgames.Agent;
-import burlap.oomdp.stochasticgames.AgentType;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
 import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SGStateGenerator;
-import burlap.oomdp.stochasticgames.SingleAction;
-import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
-import burlap.oomdp.visualizer.Visualizer;
 
-/**
- * 
- * This agent takes in a set of opponent agent policies and a distribution over those 
- * opponent agents and returns a best response policy that assumes a different 
- * opponent is chosen, from the given distribution, at each step.
- * 
- * This agent assumes there is a cognitive hierarchy of agents it is 
- * playing against. For more information, see [Wunder, Littman and Stone, 2009]
- * 
- * @author Betsy Hilliard (betsy@cs.brown.edu)
- *
- */
-public class BestResponseToDistributionAgent extends Agent {
+public abstract class BestResponseToDistributionAgent extends Agent {
 
-	private boolean isFirstDay = false;
-	private boolean CHOOSE = false;
+	protected StateHashFactory hashFactory;
+	protected double goalReward;
 
-	protected SADomain singleAgentDomain;
-	protected Map<String, Policy> otherAgentPolicies;
-	protected Map<String, Map<Integer,Policy>> allOtherAgentPolicies;
-	protected Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies;
+	protected OOMDPPlanner planner;
+	protected Policy policy;
+	protected Map<String, Map<Integer, Policy>> allOtherAgentPolicies;
+	protected Map<String, Map<Integer, Double>> distributionOverAllOtherAgentPolicies;
 
-	protected OOMDPPlanner planner = null;
-	/**
-	 * The policy this agent follows
-	 */
-	protected Policy									policy;
+	protected boolean runValueIteration;
+	protected int numLevels;
 
-	protected StateHashFactory							hashFactory;
+	protected boolean isFirstDay;
+	protected RewardCalculator rewardCalc;
+	
 
-
-	/**
-	 * The Agent class is
-	 */
-	public BestResponseToDistributionAgent(SGDomain domain, Map<String, Map<Integer,Policy>> allOtherAgentPolicies, 
-			Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies, StateHashFactory hashFactory) {
-
-		this.allOtherAgentPolicies = allOtherAgentPolicies;
-		this.distributionOverAllOtherAgentPolicies = distributionOverAllOtherAgentPolicies;
-		this.hashFactory = hashFactory;
-		this.domain = domain;
-		if(CHOOSE){
-			otherAgentPolicies = chooseOtherAgentPolicies();
-		}else{
-			otherAgentPolicies = constructOtherAgentPolicies();
-		}
-
-	}
-
-	public BestResponseToDistributionAgent(SGDomain domain, StateHashFactory hashFactory) {
-		this.hashFactory = hashFactory;
-		this.domain = domain;
-
-	}
-
-	public void setOtherAgentPolicyMap(Map<String, Map<Integer,Policy>> allOtherAgentPolicies, 
-			Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies){
-
-		this.allOtherAgentPolicies = allOtherAgentPolicies;
-		this.distributionOverAllOtherAgentPolicies = distributionOverAllOtherAgentPolicies;
-
-		if(CHOOSE){
-			otherAgentPolicies = chooseOtherAgentPolicies();
-		}else{
-			otherAgentPolicies = constructOtherAgentPolicies();
-		}
-
-	}
-
+	protected static double  TAU = 2.0;
+	private static double MAX_DIFF = 0.01, GAMMA = 0.99, MAX_DELTA = 0.001;
+	private static int MAX_ROLLOUTS = 200, MAX_ROLLOUT_DEPTH = 50,
+			MAX_ITERATIONS = 1000000;
 
 	/*
-	 * this picks based on the distribution
+	 * (non-Javadoc)
 	 * 
-	 * TODO: combine the policies based on the distribution
-	 */
-	private Map<String, Policy> chooseOtherAgentPolicies() {
-		Random rand = new Random();
-
-		Map<String,Policy> policyMap = new HashMap<String,Policy>();
-		for(String otherAgentName : allOtherAgentPolicies.keySet()){
-			double draw = rand.nextDouble();
-			double total = 0.0;
-			Integer levelChosen = null;
-			for(Integer level: distributionOverAllOtherAgentPolicies.get(otherAgentName).keySet()){
-				if(distributionOverAllOtherAgentPolicies.get(otherAgentName).get(level)+total>draw && levelChosen==null){
-					levelChosen = level;
-				}else{
-					total = total+distributionOverAllOtherAgentPolicies.get(otherAgentName).get(level);
-				}
-			}
-
-			policyMap.put(otherAgentName,allOtherAgentPolicies.get(otherAgentName).get(levelChosen));
-		}
-		return policyMap;
-	}
-	/*
-	 * this combines the policies into one per 
-	 * other agent based on the distribution
-	 * 
-	 * TODO: combine the policies based on the distribution
-	 */
-	private Map<String, Policy> constructOtherAgentPolicies() {
-
-
-		Map<String,Policy> policyMap = new HashMap<String,Policy>();
-		for(String otherAgentName : allOtherAgentPolicies.keySet()){
-			System.out.println("Other Agent Name: "+otherAgentName);
-			Policy newPolicy = new ExpectedPolicyWrapper(allOtherAgentPolicies.get(otherAgentName),
-					distributionOverAllOtherAgentPolicies.get(otherAgentName));
-
-			policyMap.put(otherAgentName, newPolicy);
-		}
-		return policyMap;
-	}
-
-	/* (non-Javadoc)
 	 * @see burlap.oomdp.stochasticgames.Agent#gameStarting()
 	 */
 	@Override
 	public void gameStarting() {
 
-		//set flag here so when given first state can plan
+		// set flag here so when given first state can plan
 		isFirstDay = true;
 
 	}
 
-	/* (non-Javadoc)
-	 * @see burlap.oomdp.stochasticgames.Agent#getAction(burlap.oomdp.core.State)
-	 */
-	@Override
-	public GroundedSingleAction getAction(State s) {
-
-
-		if(isFirstDay){
-			//plan and create policy
-
-			ConversionGenerator generator = new ConversionGenerator(domain, world.getActionModel(), 
-					agentType, worldAgentName, otherAgentPolicies, hashFactory);
-
-			singleAgentDomain = (SADomain) generator.generateDomain();
-
-			//List<TransitionProbability> tps = singleAgentDomain.getAction(GridGame.ACTIONNORTH).getTransitions(s, "");
-
-			//System.out.println("Size tps: "+tps.size());
-
-			//System.exit(0);
-
-			RewardFunction rf = new JointRewardFunctionWrapper(world.getRewardModel(), getAgentName(), domain, 
-					otherAgentPolicies, world.getActionModel(), domain.getSingleActions());
-
-			policy = valueIteration("/Users/betsy/research/cognitive_hierarchy/testOut.txt", rf, singleAgentDomain);
-			//reset isFirstDay
-			isFirstDay = false;
-		}
-		//change single action to multi agent action
-		//return from policy generated at beginning
-
-		//GroundedAction to GroundedSingleAction
-		AbstractGroundedAction ga = policy.getAction(s);
-
-		List<GroundedSingleAction> gsas = domain.getSingleAction(ga.actionName()).getAllGroundedActionsFor(s, worldAgentName);
-		Random rand = new Random();
-		GroundedSingleAction gsa = gsas.get(rand.nextInt(gsas.size()));
-		return gsa;
-
-
-	}
-
-	public Policy getPolicy(){
-		return policy;
-	}
-
-	/* (non-Javadoc)
-	 * @see burlap.oomdp.stochasticgames.Agent#observeOutcome(burlap.oomdp.core.State, burlap.oomdp.stochasticgames.JointAction, java.util.Map, burlap.oomdp.core.State, boolean)
-	 */
-	@Override
-	public void observeOutcome(State s, JointAction jointAction,
-			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
-
-
-		/*
-		 * may not need to do anything here because we don't update the agent while
-		 * the agent is playing
-		 */
-
-
-	}
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see burlap.oomdp.stochasticgames.Agent#gameTerminated()
 	 */
 	@Override
@@ -242,140 +68,131 @@ public class BestResponseToDistributionAgent extends Agent {
 
 	}
 
-	public Policy valueIteration(String outputPath, RewardFunction rf, Domain saDomain){
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * burlap.oomdp.stochasticgames.Agent#observeOutcome(burlap.oomdp.core.State
+	 * , burlap.oomdp.stochasticgames.JointAction, java.util.Map,
+	 * burlap.oomdp.core.State, boolean)
+	 */
+	@Override
+	public void observeOutcome(State s, JointAction jointAction,
+			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 
-		if(!outputPath.endsWith("/")){
-			outputPath = outputPath + "/";
+		/*
+		 * may not need to do anything here because we don't update the agent
+		 * while the agent is playing
+		 */
+
+	}
+
+	public BestResponseToDistributionAgent(SGDomain domain, StateHashFactory hashFactory,
+			double goalReward, boolean runValueIteration, RewardCalculator rewardCalc) {
+		this.domain = domain;
+		this.hashFactory = hashFactory;
+		this.goalReward = goalReward;
+		this.runValueIteration = runValueIteration;
+		this.rewardCalc = rewardCalc;
+		
+		this.distributionOverAllOtherAgentPolicies = new HashMap<String, Map<Integer, Double>>();
+
+	}
+
+	/**
+	 * Takes as input the map we create and sets the map for this agent
+	 * 
+	 * @param allOtherAgentPolicies
+	 */
+	public void setOtherAgentDetails(
+			Map<String, Map<Integer, Policy>> allOtherAgentPolicies,
+			int numLevels) {
+
+		this.allOtherAgentPolicies = allOtherAgentPolicies;
+		this.numLevels = numLevels;
+	}
+
+	protected Policy plan(SADomain singleAgentDomain, RewardFunction rf) {
+		Policy newPolicy;
+		if (runValueIteration) {
+			newPolicy = valueIteration(
+					"/Users/betsy/research/cognitive_hierarchy/testOut.txt",
+					rf, singleAgentDomain, GAMMA, MAX_DELTA, MAX_ITERATIONS);
+		} else {
+			newPolicy = boundedRTDP(singleAgentDomain, domain,
+					this.getAgentName(), rf, GAMMA, goalReward);
 		}
+		return newPolicy;
+	}
 
+	public Policy boundedRTDP(Domain saDomain, Domain ggDomain,
+			String agentName, RewardFunction rf, double gamma, double goalReward) {
 
-		if(planner ==null){
-			System.out.println("creating planner");
-			planner = new ValueIteration(saDomain, rf, world.getTF(), 0.99, hashFactory, 0.001,100);
-		}
+		ValueFunctionInitialization lowerVInit = new ValueFunctionInitialization.ConstantValueFunctionInitialization(
+				-1.0 / (1.0 - gamma));
+		ValueFunctionInitialization upperVInit = new MinDistValueFunctionInitialization(
+				ggDomain, agentName, goalReward);
 
-		System.out.println("VI starting");
+		BoundedRTDP brtdp = new BoundedRTDP(saDomain, rf, world.getTF(), gamma,
+				hashFactory, lowerVInit, upperVInit, MAX_DIFF, MAX_ROLLOUTS);
+		brtdp.setMaxRolloutDepth(MAX_ROLLOUT_DEPTH);
+		planner = brtdp;
 		planner.planFromState(world.getCurrentWorldState());
-		System.out.println("VI done planning");
 
-		//create a Q-greedy policy from the planner
-		Policy p = new GreedyQPolicy((QComputablePlanner)planner);
+		Policy p = new RTDPGreedyQPolicy((QComputablePlanner) planner);
 
-		GridWorldStateParser gwsp = new GridWorldStateParser(saDomain);
-		//record the plan results to a file
-		//System.out.println("Before eval");
-		//System.out.println(p.evaluateBehavior(world.getCurrentWorldState(), rf, world.getTF(), 100).getActionSequenceString("\n")); //writeToFile(outputPath + "planResult", gwsp);
-		
-		System.out.println("P returning");
-		
 		return p;
 	}
 
-	public static void main(String[] args){
-		GridGame gg = new GridGame();
+	public Policy valueIteration(String outputPath, RewardFunction rf,
+			Domain saDomain, double gamma, double maxDelta, int maxIterations) {
 
-		Agent oponent = new RandomAgent();
-		Policy previousPolicy =null;
+		if (!outputPath.endsWith("/")) {
+			outputPath = outputPath + "/";
+		}
 
-		List<GameAnalysis> gas = new ArrayList<GameAnalysis>();
-		SGDomain d = (SGDomain)gg.generateDomain();
+		planner = new ValueIteration(saDomain, rf, world.getTF(), gamma,
+				hashFactory, maxDelta, maxIterations);
 
-		Map<String,Map<Integer, Policy>> brAgentPolicies = new HashMap<String,Map<Integer, Policy>>();
-		boolean OTHERFIRST = false; //true;
-		
-		//for(int anum=0;anum<=1;anum++){
-			
+		planner.planFromState(world.getCurrentWorldState());
 
-			for(int k = 0;k<=1;k++){
-				System.out.println("LEVEL: "+k);
+		// create a Q-greedy policy from the planner
+		Policy p = new GreedyQPolicy((QComputablePlanner) planner);
 
+		return p;
+	}
 
-				//AgentType at = new AgentType(oponent.getAgentName(), d.getActions());
+	public Policy getPolicy() {
+		return policy;
+	}
 
-				//State s = GridGame.getCorrdinationGameInitialState(d);
-				State s = GridGame.getTurkeyInitialState(d);
-				//State s = GridGame.getPrisonersDilemmaInitialState(d);
+	public static Map<Integer, Double> getNormalizedDistribution(double tau,
+			int maxLevel) {
+		HashMap<Integer, Double> distribution = new HashMap<Integer, Double>();
+		double facSoFar = 1;
+		double weightSum = 0.0;
+		for (int lev = 0; lev <= maxLevel; lev++) {
+			// the distribution should be based on lev and maxLevel and
+			// parameter
 
-				//System.out.println(s.getCompleteStateDescription());
-
-				JointActionModel jam = new GridGameStandardMechanics(d);
-				d.setJointActionModel(jam);
-
-				JointReward jr = new GridGame.GGJointRewardFunction(d, -1, 100.0, 100.0, false);
-				TerminalFunction tf = new GridGame.GGTerminalFunction(d);
-				SGStateGenerator sg = new ConstantSGStateGenerator(s);
-
-				World gameWorld = new World(d, jr, tf, sg);
-
-
-				StateHashFactory hashFactory = new DiscreteStateHashFactory();
-				BestResponseToDistributionAgent brAgent = new BestResponseToDistributionAgent(d, hashFactory);
-
-				if(OTHERFIRST){
-					//oponent.joinWorld(gameWorld, oponent.getAgentType());
-					oponent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
-					brAgent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
-				}else{
-					brAgent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
-
-					//oponent.joinWorld(gameWorld, oponent.getAgentType());
-					oponent.joinWorld(gameWorld, new AgentType(GridGame.CLASSAGENT, d.getObjectClass(GridGame.CLASSAGENT), d.getSingleActions()));
-				}
-
-				//construct the other agent policies
-
-				Map<String, Map<Integer,Policy>> allOtherAgentPolicies = new HashMap<String, Map<Integer,Policy>>();
-				HashMap<Integer, Policy> levelMap = new HashMap<Integer, Policy>();
-
-				List<SingleAction> actions = d.getSingleActions();
-
-				Policy lowerPolicy;
-				if(k==0){
-					lowerPolicy = new RandomSingleAgentPolicy(oponent.getAgentName(), actions);
-
-				}else{
-					lowerPolicy = previousPolicy;
-				}
-				HashMap<Integer,Policy> agentPolicies = new HashMap<Integer,Policy>();
-				agentPolicies.put(k, lowerPolicy);
-				brAgentPolicies.put(oponent.getAgentName(), agentPolicies);
-
-				levelMap.put(k, lowerPolicy);
-				String oponentName = oponent.getAgentName();
-				allOtherAgentPolicies.put(oponentName, levelMap);
-
-
-				Map<String, Map<Integer,Double>> distributionOverAllOtherAgentPolicies  = new HashMap<String, Map<Integer,Double>>();
-				HashMap<Integer,Double> distribution = new HashMap<Integer,Double>();
-				distribution.put(k, 1.0);
-				distributionOverAllOtherAgentPolicies.put(oponent.getAgentName(),distribution);
-
-				brAgent.setOtherAgentPolicyMap(allOtherAgentPolicies, distributionOverAllOtherAgentPolicies);
-
-				//gameWorld.addWorldObserver(ob);
-				System.out.println("running game");
-				GameAnalysis ga = gameWorld.runGame();
-				gas.add(ga);
-
-				System.out.println("Level: "+k+" BR Agent Name: "+brAgent.getAgentName());
-
-				oponent = brAgent;
-				previousPolicy = brAgent.policy;
-				OTHERFIRST = !OTHERFIRST;
-
+			if (lev > 0) {
+				facSoFar *= lev;
 			}
-			//OTHERFIRST=false;
-		//}
 
-		Visualizer v = GGVisualizer.getVisualizer(6, 6);
-		
-		GameSequenceVisualizer gsv = new GameSequenceVisualizer(v,d,gas);
-		
+			double f_k = (Math.pow(Math.E, tau * -1) * Math.pow(tau, lev))
+					/ facSoFar;
+			weightSum += f_k;
+			distribution.put(lev, f_k);
+		}
 
-		//System.out.println("Reward l1: "+gameWorld.getCumulativeRewardForAgent(brAgent.getAgentName()));
-		//System.out.println("Reward l0: "+gameWorld.getCumulativeRewardForAgent(oponent.getAgentName()));
-		//System.out.println("game finished");
+		for (Integer key : distribution.keySet()) {
+			// Normalize distribution
+			distribution.put(key, distribution.get(key) / weightSum);
+			System.out.println("Normalized Dist: " + key + " weight: "
+					+ distribution.get(key));
+		}
 
+		return distribution;
 	}
 
 }

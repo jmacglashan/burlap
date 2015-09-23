@@ -29,7 +29,7 @@ import burlap.oomdp.stochasticgames.World;
 
 /**
  * A class for performing multi-agent Q-learning in which different Q-value backup operators can be provided to enable the learning
- * of different soution concepts. Multi-agent Q-learning differs from single agent Q-learning in that Q-values are associated
+ * of different solution concepts. Multi-agent Q-learning differs from single agent Q-learning in that Q-values are associated
  * with joint actions, rather than actions, and in that a different Q-value is stored for each agent in the game.
  * <p/>
  * In this class, each agent stores its own Q-value and an object that provides a source for the Q-values of other agents. This allows
@@ -44,7 +44,7 @@ import burlap.oomdp.stochasticgames.World;
  * that the Q-values are all updated after the next Q-value has been determined for each agent.
  * <p/>
  * In general the learning policy followed by this agent should reflect the needs of the solution concept being learned. For instance,
- * CoCo-Q should use some variant of a maximum wellfare joint policy.
+ * CoCo-Q should use some variant of a maximum welfare joint policy.
  * <p/>
  * The learning policy and its underlining joint policy will automatically be told that this agent is its target agent, the agent definitions
  * in the world, and that this agent is the Q-source provider of the joint policy {@link MAQSourcePolicy}. If the set joint policy

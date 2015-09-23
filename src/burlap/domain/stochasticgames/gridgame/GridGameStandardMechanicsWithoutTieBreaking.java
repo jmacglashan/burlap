@@ -16,11 +16,12 @@ public class GridGameStandardMechanicsWithoutTieBreaking extends GridGameStandar
 		super(d, semiWallProb);
 	}
 
+	/**
+	 * Overrides Standard mechanics by allowing no agent to win when in collision
+	 */
 	@Override
-	protected Map <Integer, Integer> getWinningAgentMovements(Map <Integer, List <Integer>> collissionSets){
-		
+	protected Map <Integer, Integer> getWinningAgentMovements(Map <Integer, List <Integer>> collissionSets) {
 		return new HashMap<Integer, Integer>();
-			
 	}
 	
 }

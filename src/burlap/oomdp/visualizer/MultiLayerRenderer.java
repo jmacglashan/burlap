@@ -96,7 +96,15 @@ public class MultiLayerRenderer extends Canvas {
 	public void setBGColor(Color col){
 		this.bgColor = col;
 	}
-	
+
+	/**
+	 * Returns the background color of the renderer
+	 * @return the background color of the renderer
+	 */
+	public Color getBgColor() {
+		return bgColor;
+	}
+
 	@Override
 	public void paint(Graphics g){
 		

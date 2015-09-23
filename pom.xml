@@ -1,0 +1,231 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>edu.brown.cs.burlap</groupId>
+  <artifactId>burlap</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>BURLAP</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>colt</groupId>
+      <artifactId>colt</artifactId>
+      <version>1.2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.commons</groupId>
+      <artifactId>beanutils</artifactId>
+      <version>1.6.1-20070314</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>2.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
+      <version>3.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.csparsej</groupId>
+      <artifactId>csparsej</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.efficient-java-matrix-library</groupId>
+      <artifactId>ejml</artifactId>
+      <version>0.25</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>1.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jcommon</artifactId>
+      <version>1.0.21</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.0.17</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.github.vincentk</groupId>
+      <artifactId>joptimizer</artifactId>
+      <version>3.3.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.13</version>
+    </dependency>
+
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.0.b2</version>
+    </dependency>
+
+    <!-- Add local path for these dependencies -->
+    <!-- JavaRLGlueCodec.jar -->
+    <!-- joptimizer-3.2.0.jar -->
+    <!-- LPSOLVESolverPack.jar -->
+    <!-- SCPSolver.jar -->
+    <!-- weka.jar -->
+    <dependency>
+      <groupId>RLGlue</groupId>
+      <artifactId>JavaRLGlueCodec</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/JavaRLGlueCodec.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>LPSOLVESolverPack</groupId>
+      <artifactId>LPSOLVESolverPack</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/LPSOLVESolverPack.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>SCPSolver</groupId>
+      <artifactId>SCPSolver</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/SCPSolver.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>Weka</groupId>
+      <artifactId>Weka</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/weka.jar</systemPath>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/</source>
+	      </sources>
+	    </configuration>
+	  </execution>
+	</executions>
+      </plugin>
+
+      <plugin>
+  	<groupId>org.apache.maven.plugins</groupId>
+  	<artifactId>maven-compiler-plugin</artifactId>
+  	<version>3.0</version>
+  	<configuration>
+  	  <source>1.6</source>
+  	  <target>1.6</target>
+  	</configuration>
+      </plugin>
+      <plugin>
+  	<groupId>org.apache.maven.plugins</groupId>
+  	<artifactId>maven-assembly-plugin</artifactId>
+  	<version>2.2-beta-4</version>
+  	<configuration>
+  	  <descriptorRefs>
+  	    <descriptorRef>jar-with-dependencies</descriptorRef>
+  	  </descriptorRefs>
+  	  <archive>
+  	    <manifest>
+  	      <mainClass>burlap.domain.singleagent.mountaincar.MountainCar</mainClass>
+  	    </manifest>
+  	  </archive>
+  	</configuration>
+  	<executions>
+  	  <execution>
+  	    <phase>package</phase>
+  	    <goals>
+  	      <goal>single</goal>
+  	    </goals>
+  	  </execution>
+  	</executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

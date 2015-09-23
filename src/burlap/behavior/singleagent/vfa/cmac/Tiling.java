@@ -118,7 +118,7 @@ public class Tiling {
 			this.hashCode = 1;
 			
 			for(String className : Tiling.this.classOrder){
-				List<ObjectInstance> objectsOfClass = s.getObjectsOfTrueClass(className);
+				List<ObjectInstance> objectsOfClass = s.getObjectsOfClass(className);
 				List <ObjectTile> objectTiles = new ArrayList<Tiling.ObjectTile>(objectsOfClass.size());
 				for(ObjectInstance o : objectsOfClass){
 					ObjectTile ot = new ObjectTile(o);

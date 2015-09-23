@@ -381,7 +381,8 @@ public class World {
 		}
 		
 		// clean up threading
-		
+		DPrint.cl(debugId, currentState.getCompleteStateDescription());
+
 		this.isRecordingGame = false;
 		
 		return this.currentGameRecord;
@@ -487,7 +488,7 @@ public class World {
 				}
 			}
 		}
-			
+		
 		/*for(Agent a : agents){
 			ja.addAction(a.getAction(abstractedCurrent));
 		}*/

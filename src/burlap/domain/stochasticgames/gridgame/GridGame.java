@@ -394,6 +394,75 @@ public class GridGame implements DomainGenerator {
 	}
 
 	
+	public Domain generateDomainWithoutNoops() {
+		
+		SGDomain domain = new SGDomain();
+		
+		
+		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.DISC);
+		xatt.setDiscValuesForRange(0, maxDim, 1);
+		
+		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.DISC);
+		yatt.setDiscValuesForRange(0, maxDim, 1);
+		
+		Attribute e1att = new Attribute(domain, ATTE1, Attribute.AttributeType.DISC);
+		e1att.setDiscValuesForRange(0, maxDim, 1);
+		
+		Attribute e2att = new Attribute(domain, ATTE2, Attribute.AttributeType.DISC);
+		e2att.setDiscValuesForRange(0, maxDim, 1);
+		
+		Attribute patt = new Attribute(domain, ATTP, Attribute.AttributeType.DISC);
+		patt.setDiscValuesForRange(0, maxDim, 1);
+		
+		Attribute pnatt = new Attribute(domain, ATTPN, Attribute.AttributeType.DISC);
+		pnatt.setDiscValuesForRange(0, maxPlyrs, 1);
+		
+		Attribute gtatt = new Attribute(domain, ATTGT, Attribute.AttributeType.DISC);
+		gtatt.setDiscValuesForRange(0, maxGT, 1);
+		
+		Attribute wtatt = new Attribute(domain, ATTWT, Attribute.AttributeType.DISC);
+		wtatt.setDiscValuesForRange(0, maxWT, 1);
+		
+		
+		
+		ObjectClass agentClass = new ObjectClass(domain, CLASSAGENT);
+		agentClass.addAttribute(xatt);
+		agentClass.addAttribute(yatt);
+		agentClass.addAttribute(pnatt);
+		
+		ObjectClass goalClass = new ObjectClass(domain, CLASSGOAL);
+		goalClass.addAttribute(xatt);
+		goalClass.addAttribute(yatt);
+		goalClass.addAttribute(gtatt);
+		
+		ObjectClass horWall = new ObjectClass(domain, CLASSDIMHWALL);
+		horWall.addAttribute(e1att);
+		horWall.addAttribute(e2att);
+		horWall.addAttribute(patt);
+		horWall.addAttribute(wtatt);
+		
+		ObjectClass vertWall = new ObjectClass(domain, CLASSDIMVWALL);
+		vertWall.addAttribute(e1att);
+		vertWall.addAttribute(e2att);
+		vertWall.addAttribute(patt);
+		vertWall.addAttribute(wtatt);
+		
+		
+		new UniversalSingleAction(domain, ACTIONNORTH);
+		new UniversalSingleAction(domain, ACTIONSOUTH);
+		new UniversalSingleAction(domain, ACTIONEAST);
+		new UniversalSingleAction(domain, ACTIONWEST);
+		
+		
+		
+		new AgentInUGoal(PFINUGOAL, domain);
+		new AgentInPGoal(PFINPGOAL, domain);
+
+		domain.setJointActionModel(new GridGameStandardMechanics(domain, this.semiWallProb));
+		
+		return domain;
+	}
+	
 	
 	/**
 	 * Returns a state with with the specified number of objects for each object class and with the specified boundary of

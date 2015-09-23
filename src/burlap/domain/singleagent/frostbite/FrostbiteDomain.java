@@ -13,7 +13,17 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * A simplified version of the classic Atari Frostbite domain.
+ * A simplified version of the classic Atari Frostbite domain. In this game, the agent must jump between different
+ * ice blocks. Each time the agent jumps on an ice block, it adds a layer to an igloo that is being built and "activates"
+ * all ice blocks on the same row. Jumping on an activated ice block does not ad a layer to the igloo. Once all rows
+ * of ice blocks are activated, they reset and can be activated by jumping on them again. Once the igloo is built,
+ * the agent can go to it to win the game. If the agent jumps or walks into the water, the game is over.
+ * <br/>
+ * <br/>
+ * If you run the main method of this class, it will launch of a visual explorer that you can play. They keys
+ * w,s,a,d,x correspond to the actions jump north, jump south, move west, move east, do nothing. If you win or lose
+ * the visual explorer will automatically terminate. If you want it to keep running, you can set this class' public static
+ * {@link #visualizingDomain} data member to false.
  *
  * @author Phillipe Morere
  */
@@ -22,23 +32,29 @@ public class FrostbiteDomain implements DomainGenerator{
 	/**
 	 * Constant for the name of the x position attribute.
 	 */
-	public static final String XATTNAME = "xAtt";
+	public static final String XATTNAME = "x";
 	/**
 	 * Constant for the name of the y position attribute.
 	 */
-	public static final String YATTNAME = "yAtt";
+	public static final String YATTNAME = "y";
+
+	/**
+	 * Attribute name for height
+	 */
+	public static final String HEIGHTATTNAME = "height";
+
 	/**
 	 * Constant for the name of the size of a frozen platform
 	 */
-	public static final String SIZEATTNAME = "sizeAtt";
+	public static final String SIZEATTNAME = "size";
 	/**
 	 * Constant for the name of the building step of the igloo
 	 */
-	public static final String BUILDINGATTNAME = "buildingAtt";
+	public static final String BUILDINGATTNAME = "building";
 	/**
 	 * Constant for the name of the activated status of a platform
 	 */
-	public static final String ACTIVATEDATTNAME = "activatedAtt";
+	public static final String ACTIVATEDATTNAME = "activated";
 
 	/**
 	 * Constant for the name of the agent OO-MDP class
@@ -98,6 +114,8 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * Constant to adjust the scale of the game
 	 */
 	private static final int SCALE = 5;
+
+
 	/**
 	 * Game parameters
 	 */
@@ -115,6 +133,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	private static int spaceBetweenPlatforms = 26 * SCALE;
 	private static boolean visualizingDomain = false;
 	protected int buildingStepsToWin = 16;
+
 	/**
 	 * Matrix specifying the transition dynamics in terms of movement directions. The first index
 	 * indicates the action direction attempted (ordered north, south, east, west) the second index
@@ -125,8 +144,6 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * there is a wall to the east, then with 0.2 probability, the agent will stay in place.
 	 */
 	protected double[][] transitionDynamics;
-	private int leftToJump = 0;
-	private int platformSpeedOnAgent = 0;
 
 	public FrostbiteDomain() {
 		setDeterministicTransitionDynamics();
@@ -158,17 +175,34 @@ public class FrostbiteDomain implements DomainGenerator{
 	}
 
 	/**
-	 * Sets the agent s position
+	 * Sets the agent s position, with a height of 0 (on the ground)
 	 *
 	 * @param s the state in which to set the agent
 	 * @param x the x position of the agent
 	 * @param y the y position of the agent
 	 */
-	public static void setAgent(State s, double x, double y) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
+	public static void setAgent(State s, int x, int y) {
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 
 		agent.setValue(XATTNAME, x);
 		agent.setValue(YATTNAME, y);
+		agent.setValue(HEIGHTATTNAME, 0);
+	}
+
+	/**
+	 * Sets the agent s position and height
+	 *
+	 * @param s the state in which to set the agent
+	 * @param x the x position of the agent
+	 * @param y the y position of the agent
+	 * @param h the height of the agent (0 is ground)
+	 */
+	public static void setAgent(State s, int x, int y, int h) {
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+
+		agent.setValue(XATTNAME, x);
+		agent.setValue(YATTNAME, y);
+		agent.setValue(HEIGHTATTNAME, h);
 	}
 
 	/**
@@ -178,7 +212,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param building igloo building status
 	 */
 	public static void setIgloo(State s, int building) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(IGLOOCLASS).get(0);
+		ObjectInstance agent = s.getObjectsOfClass(IGLOOCLASS).get(0);
 
 		agent.setValue(BUILDINGATTNAME, building);
 	}
@@ -193,8 +227,8 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param ss              the platform size
 	 * @param activatedStatus the platform status
 	 */
-	public static void setPlatform(State s, int i, double x, double y, double ss, boolean activatedStatus) {
-		ObjectInstance platform = s.getObjectsOfTrueClass(PLATFORMCLASS).get(i);
+	public static void setPlatform(State s, int i, int x, int y, int ss, boolean activatedStatus) {
+		ObjectInstance platform = s.getObjectsOfClass(PLATFORMCLASS).get(i);
 
 		platform.setValue(XATTNAME, x);
 		platform.setValue(YATTNAME, y);
@@ -222,7 +256,8 @@ public class FrostbiteDomain implements DomainGenerator{
 	}
 
 	/**
-	 * Creates a state with one agent, one igloo, and 4 rows of 4 platforms.
+	 * Creates a state with one agent, one igloo, and 4 rows of 4 platforms. The object values are uninitialised and will
+	 * have to be set manually or with methods like {@link #setAgent(burlap.oomdp.core.State, int, int)}.
 	 *
 	 * @param domain the domain of the state to generate
 	 * @return a state object
@@ -286,6 +321,9 @@ public class FrostbiteDomain implements DomainGenerator{
 		Attribute yatt = new Attribute(domain, YATTNAME, Attribute.AttributeType.INT);
 		yatt.setLims(0, gameHeight);
 
+		Attribute hatt = new Attribute(domain, HEIGHTATTNAME, Attribute.AttributeType.INT);
+		hatt.setLims(-83, 83);
+
 		Attribute satt = new Attribute(domain, SIZEATTNAME, Attribute.AttributeType.INT);
 		satt.setLims(0, gameWidth);
 
@@ -298,6 +336,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		ObjectClass agentclass = new ObjectClass(domain, AGENTCLASS);
 		agentclass.addAttribute(xatt);
 		agentclass.addAttribute(yatt);
+		agentclass.addAttribute(hatt);
 
 		ObjectClass platformclass = new ObjectClass(domain, PLATFORMCLASS);
 		platformclass.addAttribute(xatt);
@@ -359,6 +398,8 @@ public class FrostbiteDomain implements DomainGenerator{
 		return result;
 	}
 
+	int moveStep = 0;
+
 	/**
 	 * Attempts to move the agent into the given position, taking into account platforms and screen borders
 	 *
@@ -368,15 +409,19 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	protected void move(State s, int xd, int yd) {
 
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
-		int ax = agent.getDiscValForAttribute(XATTNAME);
-		int ay = agent.getDiscValForAttribute(YATTNAME);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		int ax = agent.getIntValForAttribute(XATTNAME);
+		int ay = agent.getIntValForAttribute(YATTNAME);
+		int leftToJump = agent.getIntValForAttribute(HEIGHTATTNAME);
 
 		int nx = ax + xd * stepSize;
 		int ny = ay;
 
+		boolean inAir = leftToJump != 0;
+		int platformSpeedOnAgent = this.getLandedPlatformSpeed(s);
+
 		// Is a jump triggered while player is on the ground?
-		if (leftToJump <= 0 && yd != 0) {
+		if (leftToJump == 0 && yd != 0) {
 			// Player can only jump when on a platform (except last line), or when hitting down on the top part
 			if ((platformSpeedOnAgent != 0 && ay + yd * jumpSize < gameHeight - agentSize) || (platformSpeedOnAgent == 0 && yd > 0)) {
 				leftToJump = yd * jumpSize;
@@ -407,20 +452,28 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		agent.setValue(XATTNAME, nx);
 		agent.setValue(YATTNAME, ny);
+		agent.setValue(HEIGHTATTNAME, leftToJump);
 
-		update(s);
+		boolean justLanded = false;
+		if(inAir && leftToJump == 0){
+			justLanded = true;
+		}
+
+		update(s, leftToJump, justLanded, platformSpeedOnAgent);
+
+		moveStep++;
 	}
 
 	/**
 	 * Executes update step on state. Handles everything that is not player specific.
 	 * @param s the state to apply the update step on
 	 */
-	private void update(State s) {
+	private void update(State s, int leftToJump, boolean justLanded, int platformSpeedOnAgent) {
 		// Move the platforms
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
+		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			int directionL = ((i / numberPlatformCol) % 2 == 0) ? 1 : -1;
-			int x = platforms.get(i).getDiscValForAttribute(XATTNAME) + directionL * platformSpeed;
+			int x = platforms.get(i).getIntValForAttribute(XATTNAME) + directionL * platformSpeed;
 			if (x < 0)
 				x += gameWidth;
 			platforms.get(i).setValue(XATTNAME, x % gameWidth);
@@ -429,17 +482,16 @@ public class FrostbiteDomain implements DomainGenerator{
 		// Player landed
 		if (leftToJump == 0) {
 			// Just landed: Potentially activate some platforms
-			if (platformSpeedOnAgent == 0)
+			if (justLanded)
 				activatePlatforms(s);
 
-			platformSpeedOnAgent = getLandedPlatformSpeed(s);
 
 			// Termination conditions (only used to test the domain)
 			if (visualizingDomain) {
-				ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
-				int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
-				ObjectInstance igloo = s.getObjectsOfTrueClass(IGLOOCLASS).get(0);
-				int building = igloo.getDiscValForAttribute(BUILDINGATTNAME);
+				ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+				int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
+				ObjectInstance igloo = s.getObjectsOfClass(IGLOOCLASS).get(0);
+				int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
 				if (platformSpeedOnAgent == 0 && ay > gameIceHeight) {
 					System.out.println("Game over.");
 					System.exit(0);
@@ -463,18 +515,18 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param s State on which to activate the platforms
 	 */
 	private void activatePlatforms(State s) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
-		int ax = agent.getDiscValForAttribute(XATTNAME) + agentSize / 2;
-		int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
+		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
+		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
 			if (!platform.getBooleanValue(ACTIVATEDATTNAME))
-				if (pointInPlatform(ax, ay, platform.getDiscValForAttribute(XATTNAME), platform.getDiscValForAttribute(YATTNAME), platform.getDiscValForAttribute(SIZEATTNAME))) {
+				if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME))) {
 					for (int j = numberPlatformCol * (i / numberPlatformCol); j < numberPlatformCol * (1 + i / numberPlatformCol); j++)
 						platforms.get(j).setValue(ACTIVATEDATTNAME, true);
 					ObjectInstance igloo = s.getFirstObjectOfClass(IGLOOCLASS);
-					igloo.setValue(BUILDINGATTNAME, igloo.getDiscValForAttribute(BUILDINGATTNAME) + 1);
+					igloo.setValue(BUILDINGATTNAME, igloo.getIntValForAttribute(BUILDINGATTNAME) + 1);
 					break;
 				}
 		}
@@ -486,13 +538,13 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @return 0 if the player is not on a platform. Otherwise returns the platform speed of the platform the player is on.
 	 */
 	private int getLandedPlatformSpeed(State s) {
-		ObjectInstance agent = s.getObjectsOfTrueClass(AGENTCLASS).get(0);
-		int ax = agent.getDiscValForAttribute(XATTNAME) + agentSize / 2;
-		int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
-		List<ObjectInstance> platforms = s.getObjectsOfTrueClass(PLATFORMCLASS);
+		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
+		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
+		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
-			if (pointInPlatform(ax, ay, platform.getDiscValForAttribute(XATTNAME), platform.getDiscValForAttribute(YATTNAME), platform.getDiscValForAttribute(SIZEATTNAME)))
+			if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME)))
 				return ((i / numberPlatformCol) % 2 == 0) ? platformSpeed : -platformSpeed;
 		}
 		return 0;
@@ -555,7 +607,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		 */
 		public MovementAction(String name, Domain domain, double[] directions) {
 			super(name, domain, "");
-			this.directionProbs = directions;
+			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
 		}
 
@@ -654,18 +706,21 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		@Override
 		public boolean isTrue(State st, String[] params) {
-			if (leftToJump != 0)
-				return false;
 
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance platform = st.getObject(params[1]);
 
-			int x = platform.getDiscValForAttribute(XATTNAME);
-			int y = platform.getDiscValForAttribute(YATTNAME);
-			int s = platform.getDiscValForAttribute(SIZEATTNAME);
+			int x = platform.getIntValForAttribute(XATTNAME);
+			int y = platform.getIntValForAttribute(YATTNAME);
+			int s = platform.getIntValForAttribute(SIZEATTNAME);
 
-			int ax = agent.getDiscValForAttribute(XATTNAME) + agentSize / 2;
-			int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+			int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
+			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
+			int ah = agent.getIntValForAttribute(HEIGHTATTNAME);
+
+			if(ah != 0){
+				return false;
+			}
 
 			return pointInPlatform(ax, ay, x, y, s);
 		}
@@ -703,16 +758,18 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		@Override
 		public boolean isTrue(State st, String[] params) {
-			if (leftToJump != 0)
-				return false;
 
 			ObjectInstance agent = st.getObject(params[0]);
+			int ah = agent.getIntValForAttribute(HEIGHTATTNAME);
+
+			if (ah != 0)
+				return false;
 
 			// Agent is on a platform
 			if (getLandedPlatformSpeed(st) != 0)
 				return false;
 
-			int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 			return ay >= gameIceHeight;
 		}
 	}
@@ -733,7 +790,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		public boolean isTrue(State st, String[] params) {
 			ObjectInstance agent = st.getObject(params[0]);
 
-			int ay = agent.getDiscValForAttribute(YATTNAME) + agentSize / 2;
+			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 			return ay < gameIceHeight;
 		}
 	}
@@ -753,7 +810,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		public boolean isTrue(State st, String[] params) {
 			ObjectInstance igloo = st.getObject(params[0]);
 
-			int building = igloo.getDiscValForAttribute(BUILDINGATTNAME);
+			int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
 			return building >= buildingStepsToWin;
 		}
 	}

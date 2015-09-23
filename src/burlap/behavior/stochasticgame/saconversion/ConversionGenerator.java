@@ -14,11 +14,12 @@ import burlap.oomdp.stochasticgames.SingleAction;
 
 /**
  * convert a SGDomain to an SADomain
+ * 
  * @author Betsy Hilliard betsy@cs.brown.edu
  *
  */
 
-public class ConversionGenerator implements DomainGenerator{
+public class ConversionGenerator implements DomainGenerator {
 
 	protected SGDomain sgDomain;
 	protected JointActionModel jaModel;
@@ -27,9 +28,9 @@ public class ConversionGenerator implements DomainGenerator{
 	protected Map<String, Policy> otherAgentPolicies;
 	StateHashFactory hashFactory;
 
-
-	public ConversionGenerator(SGDomain sgDomain, JointActionModel jaModel, AgentType agentType, String agentName, 
-			Map<String, Policy> otherAgentPolicies, StateHashFactory hashFactory){
+	public ConversionGenerator(SGDomain sgDomain, JointActionModel jaModel,
+			AgentType agentType, String agentName,
+			Map<String, Policy> otherAgentPolicies, StateHashFactory hashFactory) {
 
 		this.sgDomain = sgDomain;
 		this.jaModel = jaModel;
@@ -44,15 +45,17 @@ public class ConversionGenerator implements DomainGenerator{
 	public Domain generateDomain() {
 
 		SADomain newDomain = new SADomain();
-		System.out.println("sgDomain: "+sgDomain);
-		for(SingleAction a : agentType.actions){
+		// System.out.println("sgDomain: "+sgDomain);
+		for (SingleAction a : agentType.actions) {
 
-			new SGActionWrapper(a, jaModel, agentName, otherAgentPolicies, newDomain, hashFactory, agentType.actions);
+			new SGActionWrapper(a, jaModel, agentName, otherAgentPolicies,
+					newDomain, hashFactory, agentType.actions, sgDomain);
+//			new SGActionWrapper(a, jaModel, agentName, otherAgentPolicies,
+//					newDomain, hashFactory, agentType.actions);
 
 		}
 
 		return newDomain;
 	}
-
 
 }
