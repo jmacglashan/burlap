@@ -1,9 +1,11 @@
 package burlap.oomdp.singleagent.common;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.List;
 
@@ -15,35 +17,22 @@ import java.util.List;
  * or if a domain needs a no-op action
  * 
  */
-public class NullAction extends Action {
+public class NullAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel {
 
 	
 	public NullAction(String name){
 		this.name = name;
-		this.parameterClasses = new String[0];
-		this.parameterOrderGroup = new String[0];
 		this.domain = null;
 	}
 	
-	public NullAction(String name, Domain domain, String parameterClasses){
-		super(name, domain, parameterClasses);
+	public NullAction(String name, Domain domain){
+		super(name, domain);
 	}
-	
-	public NullAction(String name, Domain domain, String [] parameterClasses){
-		super(name, domain, parameterClasses);
-	}
-	
-	public NullAction(String name, Domain domain, String [] parameterClasses, String [] replacedClassName){
-		super(name, domain, parameterClasses, replacedClassName);
-	}
+
 	
 	@Override
-	protected State performActionHelper(State st, String[] params) {
+	protected State performActionHelper(State st, GroundedAction groundedAction) {
 		return st;
 	}
 
-	@Override
-	public List<TransitionProbability> getTransitions(State s, String[] params) {
-		return this.deterministicTransition(s, params);
-	}
 }

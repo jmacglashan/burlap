@@ -15,8 +15,9 @@ import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.cmac.Tiling.StateTile;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.debugtools.RandomFactory;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
@@ -351,8 +352,8 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		 * @param featureId the feature idenitifer to assign to the state-action pair.
 		 */
 		public void addActionFeatureFromQuery(StateTile queryTile, GroundedAction queryAction, int featureId){
-			if(queryAction.params.length > 0){
-				throw new RuntimeErrorException(new Error("CMAC currently does not supported paramaterized Actions. Support will be added in a later version"));
+			if(queryAction instanceof AbstractObjectParameterizedGroundedAction){
+				throw new RuntimeErrorException(new Error("CMAC currently does not supported AbstractObjectParameterizedGroundedActions."));
 			}
 			
 			this.storedActionFeatures.add(new StoredActionFeature(queryAction, featureId));
@@ -368,12 +369,12 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		 * @return the action feature associated with the state-action pair.
 		 */
 		public StoredActionFeature getStoredActionFeatureFor(StateTile queryTile, GroundedAction queryAction){
-			if(queryAction.params.length > 0){
-				throw new RuntimeErrorException(new Error("CMAC currently does not supported paramaterized Actions. Support will be added in a later version"));
+			if(queryAction instanceof AbstractObjectParameterizedGroundedAction){
+				throw new RuntimeErrorException(new Error("CMAC currently does not supported AbstractObjectParameterizedGroundedActions."));
 			}
 			
 			for(StoredActionFeature saf : this.storedActionFeatures){
-				if(saf.srcGA.action.getName().equals(queryAction.action.getName())){
+				if(saf.srcGA.equals(queryAction)){
 					return saf;
 				}
 			}

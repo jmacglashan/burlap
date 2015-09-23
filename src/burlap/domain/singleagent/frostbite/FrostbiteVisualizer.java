@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StaticPainter;
 import burlap.oomdp.visualizer.Visualizer;
@@ -62,7 +62,7 @@ public class FrostbiteVisualizer {
 			int x = ob.getIntValForAttribute(FrostbiteDomain.XATTNAME);
 			int y = ob.getIntValForAttribute(FrostbiteDomain.YATTNAME);
 			int size = ob.getIntValForAttribute(FrostbiteDomain.SIZEATTNAME);
-			boolean activated = ob.getBooleanValue(FrostbiteDomain.ACTIVATEDATTNAME);
+			boolean activated = ob.getBooleanValForAttribute(FrostbiteDomain.ACTIVATEDATTNAME);
 			if (activated)
 				g2.setColor(activatedPlatformColor);
 			else

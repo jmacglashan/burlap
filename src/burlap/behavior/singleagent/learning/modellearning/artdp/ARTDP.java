@@ -4,41 +4,41 @@ import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
-import burlap.behavior.singleagent.planning.commonpolicies.BoltzmannQPolicy;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.policy.BoltzmannQPolicy;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
- * This class provides an implementation of Adapative Realtime Dynamic Programming [1]. By default, a tabular model will be used and a boltzmann distribution with
+ * This class provides an implementation of Adaptive Realtime Dynamic Programming [1]. By default, a tabular model will be used and a boltzmann distribution with
  * a temperature of 0.1 will be used. A different model can be provided in the constructor as well as the value function initialization used. The policy
- * followed may be set with a mutator ({@link #setPolicy(PlannerDerivedPolicy)}). The Q-value assigned to state-action pairs for entirely untried
- * transitions is reproted as that returned by the value function initializer provided. In general, value function initialization should always be optimistic.
+ * followed may be set with a setter ({@link #setPolicy(burlap.behavior.policy.SolverDerivedPolicy)}). The Q-value assigned to state-action pairs for entirely untried
+ * transitions is reported as that returned by the value function initializer provided. In general, value function initialization should always be optimistic.
  * 
  * 
- * 1.Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
+ * 1. Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
  * 
  * @author James MacGlashan
  *
  */
-public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAgent {
+public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 	/**
 	 * The model of the world that is being learned.
@@ -46,9 +46,9 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 	protected Model								model;
 	
 	/**
-	 * The planner used on the modeled world to update the value function
+	 * The valueFunction used on the modeled world to update the value function
 	 */
-	protected ValueFunctionPlanner				modelPlanner;
+	protected DynamicProgramming 				modelPlanner;
 	
 	/**
 	 * the policy to follow
@@ -78,21 +78,21 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 	/**
 	 * Initializes using a tabular model of the world and a Boltzmann policy with a fixed temperature of 0.1. 
 	 * @param domain the domain
-	 * @param rf the reward function
-	 * @param tf the termianl function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit){
+	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, double vInit){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
-		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
+		this.modelPlanner = new DynamicProgramming();
+		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
+		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
 		
@@ -102,21 +102,21 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 	/**
 	 * Initializes using a tabular model of the world and a Boltzmann policy with a fixed temperature of 0.1. 
 	 * @param domain the domain
-	 * @param rf the reward function
-	 * @param tf the termianl function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit){
+	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
-		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
+		this.modelPlanner = new DynamicProgramming();
+		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
+		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
 		
@@ -126,76 +126,79 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 	/**
 	 * Initializes using the provided model algorithm and a Boltzmann policy with a fixed temperature of 0.1. 
 	 * @param domain the domain
-	 * @param rf the reward function
-	 * @param tf the termianl function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param model the model algorithm to use
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
+	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		
 		this.model = model;
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
-		this.modelPlanner = new ARTDPPlanner(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory, vInit);
+		this.modelPlanner = new DynamicProgramming();
+		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
+		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
 		
 	}
+
 	
 	/**
-	 * Sets the policy to the provided one. Should be a policy that operates on a {@link QComputablePlanner}. Will automatically set its
+	 * Sets the policy to the provided one. Should be a policy that operates on a {@link burlap.behavior.valuefunction.QFunction}. Will automatically set its
 	 * Q-source to this object.
 	 * @param policy the policy to use.
 	 */
-	public void setPolicy(PlannerDerivedPolicy policy){
+	public void setPolicy(SolverDerivedPolicy policy){
 		this.policy = (Policy)policy;
-		policy.setPlanner(this);
+		policy.setSolver(this);
 		
 	}
-	
-	
+
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
-		return this.runLearningEpisodeFrom(initialState, this.maxNumSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+		State initialState = env.getCurrentObservation();
+
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
-		
+
 		State curState = initialState;
 		int steps = 0;
-		while(!this.tf.isTerminal(curState) && steps < maxSteps){
+		while(!env.isInTerminalState() && (steps < maxSteps || maxSteps == -1)){
 			GroundedAction ga = (GroundedAction)policy.getAction(curState);
-			State nextState = ga.executeIn(curState);
-			double r = this.rf.reward(curState, ga, nextState);
-			
-			ea.recordTransitionTo(ga, nextState, r);
-			
-			this.model.updateModel(curState, ga, nextState, r, this.tf.isTerminal(nextState));
-			
-			this.modelPlanner.performBellmanUpdateOn(curState);
-			
-			curState = nextState;
+			EnvironmentOutcome eo = ga.executeIn(env);
+
+
+			ea.recordTransitionTo(ga, eo.op, eo.r);
+
+			this.model.updateModel(eo);
+
+			this.modelPlanner.performBellmanUpdateOn(eo.o);
+
+			curState = env.getCurrentObservation();
 			steps++;
-			
+
 		}
-		
+
 		return ea;
 	}
 
-	@Override
+
+
 	public EpisodeAnalysis getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
-	@Override
 	public void setNumEpisodesToStore(int numEps) {
 		if(numEps > 0){
 			numEpisodesToStore = numEps;
@@ -205,15 +208,10 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 		}
 	}
 
-	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return episodeHistory;
 	}
 
-	@Override
-	public void planFromState(State initialState) {
-		throw new RuntimeException("Model learning algorithms should not be used as planning algorithms.");
-	}
 	
 	@Override
 	public List<QValue> getQs(State s) {
@@ -227,7 +225,8 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 			
 			//update action to real world action
 			Action realWorldAction = this.domain.getAction(q.a.actionName());
-			GroundedAction nga = new GroundedAction(realWorldAction, q.a.params);
+			GroundedAction nga = (GroundedAction)q.a.copy();
+			nga.action = realWorldAction;
 			q.a = nga;
 			
 		}
@@ -247,70 +246,24 @@ public class ARTDP extends OOMDPPlanner implements QComputablePlanner,LearningAg
 		
 		//update action to real world action
 		Action realWorldAction = this.domain.getAction(q.a.actionName());
-		GroundedAction nga = new GroundedAction(realWorldAction, q.a.params);
+		GroundedAction nga = (GroundedAction)q.a.copy();
+		nga.action = realWorldAction;
 		q.a = nga;
 		return q;
 	}
+
+
+	@Override
+	public double value(State s) {
+		return this.modelPlanner.value(s);
+	}
 	
-	
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.model.resetModel();
-		this.modelPlanner.resetPlannerResults();
+		this.modelPlanner.resetSolver();
 		this.episodeHistory.clear();
 	}
-	
-	
-	/**
-	 * The value funciton planner that operates on the modeled world.
-	 * @author James MacGlashan
-	 *
-	 */
-	protected class ARTDPPlanner extends ValueFunctionPlanner{
 
-		/**
-		 * Initializes
-		 * @param domain the modeled domain
-		 * @param rf the modeled reward function
-		 * @param tf the modeled terminal function
-		 * @param gamma the discount factor
-		 * @param hashingFactory the hashing factory
-		 * @param vInit the constant value function initialization to use
-		 */
-		public ARTDPPlanner(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit){
-			this(domain, rf, tf, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit));
-		}
-		
-		
-		/**
-		 * Initializes
-		 * @param domain the modeled domain
-		 * @param rf the modeled reward function
-		 * @param tf the modeled terminal function
-		 * @param gamma the discount factor
-		 * @param hashingFactory the hashing factory
-		 * @param vInit the value function initialization to use
-		 */
-		public ARTDPPlanner(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit){
-			VFPInit(domain, rf, tf, gamma, hashingFactory);
-			
-			//don't cache transition dynamics because our leanred model keeps changing!
-			this.useCachedTransitions = false;
-			
-			this.valueInitializer = vInit;
-		}
-		
-		@Override
-		public void planFromState(State initialState) {
-			throw new UnsupportedOperationException("This method should not be called for the inner ARTDP planner");
-		}
-		
-		
-		
-	}
-
-
-
-	
 	
 
 }

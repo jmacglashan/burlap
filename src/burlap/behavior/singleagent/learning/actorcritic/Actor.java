@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning.actorcritic;
 
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.oomdp.singleagent.Action;
 
 

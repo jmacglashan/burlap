@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -71,7 +71,7 @@ public class BlocksWorldVisualizer {
 		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
 				float cWidth, float cHeight) {
 			
-			List <ObjectInstance> objects = s.getObservableObjects();
+			List <ObjectInstance> objects = s.getAllObjects();
 			List <String> obNames = new ArrayList<String>(objects.size());
 			for(ObjectInstance o : objects){
 				obNames.add(o.getName());

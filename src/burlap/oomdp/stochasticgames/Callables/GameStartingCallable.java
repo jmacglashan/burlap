@@ -1,8 +1,8 @@
 package burlap.oomdp.stochasticgames.Callables;
 
 import burlap.oomdp.auxiliary.StateAbstraction;
-import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.parallel.Parallel.ForEachCallable;
 
 /**
@@ -10,7 +10,7 @@ import burlap.parallel.Parallel.ForEachCallable;
  * @author brawner
  *
  */
-public class GameStartingCallable extends ForEachCallable<Agent, Boolean> {
+public class GameStartingCallable extends ForEachCallable<SGAgent, Boolean> {
 	// call to agents need to be threaded, and timed out
 	private final State state;
 	private final StateAbstraction abstraction;
@@ -21,14 +21,14 @@ public class GameStartingCallable extends ForEachCallable<Agent, Boolean> {
 	}		
 	
 	@Override
-	public Boolean perform(Agent current) {
+	public Boolean perform(SGAgent current) {
 		State abstracted = this.abstraction.abstraction(this.state, current);
 		current.gameStarting(abstracted);
 		return true;
 	}
 
 	@Override
-	public ForEachCallable<Agent, Boolean> copy() {
+	public ForEachCallable<SGAgent, Boolean> copy() {
 		return new GameStartingCallable(this.state, this.abstraction);
 	}
 				

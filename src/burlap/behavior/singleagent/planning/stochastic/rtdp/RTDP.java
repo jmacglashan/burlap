@@ -4,15 +4,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
-import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -37,7 +38,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class RTDP extends ValueFunctionPlanner {
+public class RTDP extends DynamicProgramming implements Planner{
 
 	
 	/**
@@ -82,7 +83,7 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	
 	/**
-	 * Initializes the planner. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
+	 * Initializes the valueFunction. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
 	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
 	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
@@ -96,9 +97,9 @@ public class RTDP extends ValueFunctionPlanner {
 	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
-	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth){
+	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth){
 		
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.numRollouts = numRollouts;
 		this.maxDelta = maxDelta;
@@ -113,7 +114,7 @@ public class RTDP extends ValueFunctionPlanner {
 	
 	
 	/**
-	 * Initializes the planner. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
+	 * Initializes the valueFunction. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
 	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
 	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
@@ -127,9 +128,9 @@ public class RTDP extends ValueFunctionPlanner {
 	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
-	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
+	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
 		
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.numRollouts = numRollouts;
 		this.maxDelta = maxDelta;
@@ -200,9 +201,15 @@ public class RTDP extends ValueFunctionPlanner {
 	public int getNumberOfBellmanUpdates(){
 		return this.numberOfBellmanUpdates;
 	}
-	
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		
 		if(!useBatch){
 			this.normalRTDP(initialState);
@@ -210,6 +217,8 @@ public class RTDP extends ValueFunctionPlanner {
 		else{
 			this.batchRTDP(initialState);
 		}
+
+		return new GreedyQPolicy(this);
 
 	}
 	
@@ -231,7 +240,7 @@ public class RTDP extends ValueFunctionPlanner {
 			double delta = 0;
 			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
 				
-				StateHashTuple sh = this.hashingFactory.hashState(curState);
+				HashableState sh = this.hashingFactory.hashState(curState);
 				
 				//select an action
 				GroundedAction ga = (GroundedAction)this.rollOutPolicy.getAction(curState);
@@ -279,7 +288,7 @@ public class RTDP extends ValueFunctionPlanner {
 		for(int i = 0; i < numRollouts; i++){
 			
 			EpisodeAnalysis ea = this.rollOutPolicy.evaluateBehavior(initialState, rf, tf, maxDepth);
-			LinkedList <StateHashTuple> orderedStates = new LinkedList<StateHashTuple>();
+			LinkedList <HashableState> orderedStates = new LinkedList<HashableState>();
 			for(State s : ea.stateSequence){
 				orderedStates.addFirst(this.stateHash(s));
 			}
@@ -308,10 +317,10 @@ public class RTDP extends ValueFunctionPlanner {
 	 * @param states the ordered list of states on which to perform Bellamn updates.
 	 * @return the maximum change in the value function for the given states
 	 */
-	protected double performOrderedBellmanUpdates(List <StateHashTuple> states){
+	protected double performOrderedBellmanUpdates(List <HashableState> states){
 		
 		double delta = 0.;
-		for(StateHashTuple sh : states){
+		for(HashableState sh : states){
 			
 			double v = this.value(sh);
 			

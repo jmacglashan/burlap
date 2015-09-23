@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.vfa;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 /**
  * Many functions approximation techniques require a fixed feature vector to work and in many cases, using abstract features from

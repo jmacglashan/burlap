@@ -10,7 +10,8 @@ import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
@@ -46,7 +47,7 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	 * A map for returning a multiplier to the number of RBF state features for each action. Effectively
 	 * this ensures a unique feature ID for each RBF for each action.
 	 */
-	protected Map<String, Integer> actionFeatureMultiplier = new HashMap<String, Integer>();
+	protected Map<GroundedAction, Integer> actionFeatureMultiplier = new HashMap<GroundedAction, Integer>();
 	
 	/**
 	 * The next action RBF size multiplier to use for the next newly seen action.
@@ -163,13 +164,13 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	 */
 	protected int getActionMultiplier(GroundedAction ga){
 		
-		if(ga.isParameterized() && ga.action.parametersAreObjects()){
-			throw new RuntimeException("RBF Feature Database does not support actions with OO-MDP object parameterizations.");
+		if(ga instanceof AbstractObjectParameterizedGroundedAction){
+			throw new RuntimeException("RBF Feature Database does not support actions with AbstractObjectParameterizedGroundedActions.");
 		}
 		
-		Integer stored = this.actionFeatureMultiplier.get(ga.toString());
+		Integer stored = this.actionFeatureMultiplier.get(ga);
 		if(stored == null){
-			this.actionFeatureMultiplier.put(ga.toString(), this.nextActionMultiplier);
+			this.actionFeatureMultiplier.put(ga, this.nextActionMultiplier);
 			stored = this.nextActionMultiplier;
 			this.nextActionMultiplier++;
 		}

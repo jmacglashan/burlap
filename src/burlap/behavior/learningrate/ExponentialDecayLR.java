@@ -3,10 +3,10 @@ package burlap.behavior.learningrate;
 import java.util.HashMap;
 import java.util.Map;
 
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 
 /**
@@ -46,7 +46,7 @@ public class ExponentialDecayLR implements LearningRate {
 	/**
 	 * The state dependent or state-action dependent learning rates
 	 */
-	protected Map<StateHashTuple, StateWiseLearningRate> stateWiseMap;
+	protected Map<HashableState, StateWiseLearningRate> stateWiseMap;
 	
 	/**
 	 * The state feature dependent or state feature-action dependent learning rates
@@ -67,7 +67,7 @@ public class ExponentialDecayLR implements LearningRate {
 	/**
 	 * How to hash and perform equality checks of states
 	 */
-	protected StateHashFactory hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	
 	/**
@@ -119,7 +119,7 @@ public class ExponentialDecayLR implements LearningRate {
 	 * @param hashingFactory how to hash and compare states
 	 * @param useSeparateLRPerStateAction whether to have an independent learning rate for each state-action pair, rather than just each state
 	 */
-	public ExponentialDecayLR(double initialLearningRate, double decayRate, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
+	public ExponentialDecayLR(double initialLearningRate, double decayRate, HashableStateFactory hashingFactory, boolean useSeparateLRPerStateAction){
 		if(decayRate > 1 || decayRate < 0){
 			throw new RuntimeException("Decay rate must be <= 1 and >= 0");
 		}
@@ -129,7 +129,7 @@ public class ExponentialDecayLR implements LearningRate {
 		this.useStateWise = true;
 		this.useStateActionWise = useSeparateLRPerStateAction;
 		this.hashingFactory = hashingFactory;
-		this.stateWiseMap = new HashMap<StateHashTuple, ExponentialDecayLR.StateWiseLearningRate>();
+		this.stateWiseMap = new HashMap<HashableState, ExponentialDecayLR.StateWiseLearningRate>();
 		this.featureWiseMap = new HashMap<Integer, ExponentialDecayLR.StateWiseLearningRate>();
 		
 	}
@@ -144,7 +144,7 @@ public class ExponentialDecayLR implements LearningRate {
 	 * @param hashingFactory how to hash and compare states
 	 * @param useSeparateLRPerStateAction whether to have an independent learning rate for each state-action pair, rather than just each state
 	 */
-	public ExponentialDecayLR(double initialLearningRate, double decayRate, double minimumLearningRate, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
+	public ExponentialDecayLR(double initialLearningRate, double decayRate, double minimumLearningRate, HashableStateFactory hashingFactory, boolean useSeparateLRPerStateAction){
 		if(decayRate > 1 || decayRate < 0){
 			throw new RuntimeException("Decay rate must be <= 1 and >= 0");
 		}
@@ -155,7 +155,7 @@ public class ExponentialDecayLR implements LearningRate {
 		this.useStateWise = true;
 		this.useStateActionWise = useSeparateLRPerStateAction;
 		this.hashingFactory = hashingFactory;
-		this.stateWiseMap = new HashMap<StateHashTuple, ExponentialDecayLR.StateWiseLearningRate>();
+		this.stateWiseMap = new HashMap<HashableState, ExponentialDecayLR.StateWiseLearningRate>();
 		this.featureWiseMap = new HashMap<Integer, ExponentialDecayLR.StateWiseLearningRate>();
 		
 	}
@@ -273,7 +273,7 @@ public class ExponentialDecayLR implements LearningRate {
 	 * @return the learning rate data structure for the given state
 	 */
 	protected StateWiseLearningRate getStateWiseLearningRate(State s){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		StateWiseLearningRate slr = this.stateWiseMap.get(sh);
 		if(slr == null){
 			slr = new StateWiseLearningRate();

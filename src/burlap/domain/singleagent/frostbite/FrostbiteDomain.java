@@ -3,8 +3,14 @@ package burlap.domain.singleagent.frostbite;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
-import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -245,7 +251,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	private static void setPlatformRow(Domain d, State s, int row) {
 		for (int i = 0; i < numberPlatformCol; i++) {
-			ObjectInstance platform = new ObjectInstance(d.getObjectClass(PLATFORMCLASS), PLATFORMCLASS + (i + row * numberPlatformCol));
+			ObjectInstance platform = new MutableObjectInstance(d.getObjectClass(PLATFORMCLASS), PLATFORMCLASS + (i + row * numberPlatformCol));
 			s.addObject(platform);
 
 			platform.setValue(XATTNAME, spaceBetweenPlatforms * i + ((row % 2 == 0) ? 0 : gameWidth / 3));
@@ -257,18 +263,18 @@ public class FrostbiteDomain implements DomainGenerator{
 
 	/**
 	 * Creates a state with one agent, one igloo, and 4 rows of 4 platforms. The object values are uninitialised and will
-	 * have to be set manually or with methods like {@link #setAgent(burlap.oomdp.core.State, int, int)}.
+	 * have to be set manually or with methods like {@link #setAgent(burlap.oomdp.core.states.State, int, int)}.
 	 *
 	 * @param domain the domain of the state to generate
 	 * @return a state object
 	 */
 	public static State getCleanState(Domain domain) {
 
-		State s = new State();
+		State s = new MutableState();
 
-		ObjectInstance agent = new ObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
+		ObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
 		s.addObject(agent);
-		ObjectInstance igloo = new ObjectInstance(domain.getObjectClass(IGLOOCLASS), IGLOOCLASS + "0");
+		ObjectInstance igloo = new MutableObjectInstance(domain.getObjectClass(IGLOOCLASS), IGLOOCLASS + "0");
 		s.addObject(igloo);
 
 		for (int i = 0; i < numberPlatformRow; i++)
@@ -504,7 +510,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		// If all platforms are active, deactivate them
 		for (int i = 0; i < platforms.size(); i++)
-			if (!platforms.get(i).getBooleanValue(ACTIVATEDATTNAME))
+			if (!platforms.get(i).getBooleanValForAttribute(ACTIVATEDATTNAME))
 				return;
 		for (int i = 0; i < platforms.size(); i++)
 			platforms.get(i).setValue(ACTIVATEDATTNAME, false);
@@ -521,7 +527,8 @@ public class FrostbiteDomain implements DomainGenerator{
 		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
-			if (!platform.getBooleanValue(ACTIVATEDATTNAME))
+			if (!platform.getBooleanValForAttribute(ACTIVATEDATTNAME))
+
 				if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME))) {
 					for (int j = numberPlatformCol * (i / numberPlatformCol); j < numberPlatformCol * (1 + i / numberPlatformCol); j++)
 						platforms.get(j).setValue(ACTIVATEDATTNAME, true);
@@ -585,7 +592,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	/**
 	 * An action class for moving the agent.
 	 */
-	public class MovementAction extends Action {
+	public class MovementAction extends SimpleAction implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go
@@ -606,13 +613,13 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * @param directions the probability for each direction (index 0,1,2,3 corresponds to north,south,east,west, respectively).
 		 */
 		public MovementAction(String name, Domain domain, double[] directions) {
-			super(name, domain, "");
+			super(name, domain);
 			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
 		}
 
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 
 			double roll = rand.nextDouble();
 			double curSum = 0.;
@@ -632,7 +639,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State st, String[] params) {
+		public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction) {
 
 			List<TransitionProbability> transitions = new ArrayList<TransitionProbability>();
 			for (int i = 0; i < directionProbs.length; i++) {
@@ -667,7 +674,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 	}
 
-	public class ActionIdle extends Action {
+	public class ActionIdle extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		/**
 		 * Initializes the idle action.
@@ -676,20 +683,16 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * @param domain the domain of the action.
 		 */
 		public ActionIdle(String name, Domain domain) {
-			super(name, domain, "");
+			super(name, domain);
 		}
 
 
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 			FrostbiteDomain.this.move(st, 0, 0);
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return this.deterministicTransition(s, params);
-		}
 	}
 
 	public class OnPlatformPF extends PropositionalFunction {
@@ -705,7 +708,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance platform = st.getObject(params[1]);
@@ -738,9 +741,9 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance platform = st.getObject(params[0]);
-			return platform.getBooleanValue(ACTIVATEDATTNAME);
+			return platform.getBooleanValForAttribute(ACTIVATEDATTNAME);
 		}
 	}
 
@@ -757,7 +760,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 
 			ObjectInstance agent = st.getObject(params[0]);
 			int ah = agent.getIntValForAttribute(HEIGHTATTNAME);
@@ -787,7 +790,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance agent = st.getObject(params[0]);
 
 			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
@@ -807,7 +810,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance igloo = st.getObject(params[0]);
 
 			int building = igloo.getIntValForAttribute(BUILDINGATTNAME);

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -15,12 +14,12 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class IntValue extends Value {
+public class IntValue extends OOMDPValue implements Value {
 
 	/**
 	 * The int value
 	 */
-	protected int			intVal = 0;
+	protected final int			intVal;
 	
 	
 	/**
@@ -29,6 +28,7 @@ public class IntValue extends Value {
 	 */
 	public IntValue(Attribute attribute) {
 		super(attribute);
+		this.intVal = 0;
 	}
 	
 	
@@ -36,9 +36,14 @@ public class IntValue extends Value {
 	 * Initializes from an existing IntUnBound value.
 	 * @param v the value to copy
 	 */
-	public IntValue(Value v) {
+	public IntValue(IntValue v) {
 		super(v);
 		this.intVal = ((IntValue)v).intVal;
+	}
+	
+	public IntValue(Attribute attribute, int intVal) {
+		super(attribute);
+		this.intVal = intVal;
 	}
 
 	@Override
@@ -52,49 +57,23 @@ public class IntValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v) {
-		this.intVal = v;
+	public Value setValue(int v) {
+		return new IntValue(this.attribute, v);
 	}
 
 	@Override
-	public void setValue(double v) {
-		this.intVal = (int)v;
+	public Value setValue(double v) {
+		return new IntValue(this.attribute, (int)v);
 	}
 
 	@Override
-	public void setValue(String v) {
-		this.intVal = Integer.parseInt(v);
+	public Value setValue(String v) {
+		return new IntValue(this.attribute, Integer.parseInt(v));
 	}
 	
 	@Override
-	public void setValue(boolean v) {
-		if(v){
-			this.intVal = 1;
-		}
-		else{
-			this.intVal = 0;
-		}
-	}
-
-	@Override
-	public void addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is Int, cannot add relational target");
-	}
-	
-	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is Int, cannot add relational targets");
-	}
-	
-
-	@Override
-	public void clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is Int, cannot clear relational targets");
-	}
-
-	@Override
-	public void removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is Int, cannot remove relational target");
+	public Value setValue(boolean v) {
+		return new IntValue(this.attribute, (v) ? 1 : 0);
 	}
 
 	@Override
@@ -103,18 +82,8 @@ public class IntValue extends Value {
 	}
 
 	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is Int, cannot return real value");
-	}
-
-	@Override
-	public String getStringVal() {
-		return "" + this.intVal;
-	}
-
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is Int, cannot return relational values");
+	public StringBuilder buildStringVal(StringBuilder builder) {
+		return builder.append(this.intVal);
 	}
 
 	@Override
@@ -144,28 +113,4 @@ public class IntValue extends Value {
 	public boolean getBooleanValue() {
 		return this.intVal != 0;
 	}
-	
-	@Override
-	public void setValue(int[] intArray) {
-		throw new UnsupportedOperationException("Value is int; cannot be set to an int array.");
-	}
-
-
-	@Override
-	public void setValue(double[] doubleArray) {
-		throw new UnsupportedOperationException("Value is int; cannot be set to a double array.");
-	}
-
-
-	@Override
-	public int[] getIntArray() {
-		throw new UnsupportedOperationException("Value is int; cannot return an int array.");
-	}
-
-
-	@Override
-	public double[] getDoubleArray() {
-		throw new UnsupportedOperationException("Value is int; cannot return a double array.");
-	}
-
 }

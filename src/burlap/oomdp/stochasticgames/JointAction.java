@@ -7,43 +7,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
  * This class specifies which action each agent took in a world. The class is backed by a Map from
- * agent names to the {@link GroundedSingleAction} taken by that respective agent. 
- * The {@link GroundedSingleAction} objects of this class can also
+ * agent names to the {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} taken by that respective agent.
+ * The {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} objects of this class can also
  * be iterated over.
  * @author James MacGlashan
  *
  */
-public class JointAction extends AbstractGroundedAction implements Iterable<GroundedSingleAction>{
+public class JointAction implements AbstractGroundedAction, Iterable<GroundedSGAgentAction>{
 
-	public Map <String, GroundedSingleAction>		actions;
+	public Map <String, GroundedSGAgentAction>		actions;
 	
 	public JointAction(){
-		actions = new TreeMap<String, GroundedSingleAction>();
+		actions = new TreeMap<String, GroundedSGAgentAction>();
 	}
 	
 	
 	
 	/**
-	 * Adds all {@link GroundedSingleAction} objects in a list to this joint action.
+	 * Adds all {@link GroundedSGAgentAction} objects in a list to this joint action.
 	 * @param actions the actions to add to this joint action.
 	 */
-	public JointAction(List <GroundedSingleAction> actions){
-		for(GroundedSingleAction gsa : actions){
+	public JointAction(List <GroundedSGAgentAction> actions){
+		for(GroundedSGAgentAction gsa : actions){
 			this.addAction(gsa);
 		}
 	}
 	
 	/**
-	 * Adds a single {@link GroundedSingleAction} object to this joint aciton
+	 * Adds a single {@link GroundedSGAgentAction} object to this joint aciton
 	 * @param action the action to add
 	 */
-	public void addAction(GroundedSingleAction action){
+	public void addAction(GroundedSGAgentAction action){
 		actions.put(action.actingAgent, action);
 	}
 	
@@ -60,8 +63,8 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	 * list does not modify the structure of this joint action.
 	 * @return a list of the actions in this joint action
 	 */
-	public List <GroundedSingleAction> getActionList(){
-		return new ArrayList<GroundedSingleAction>(actions.values());
+	public List <GroundedSGAgentAction> getActionList(){
+		return new ArrayList<GroundedSGAgentAction>(actions.values());
 	}
 	
 	
@@ -70,7 +73,7 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	 * @param agentName the name of the agent whose taken action is to be returned.
 	 * @return the action taken by the agent with the given name
 	 */
-	public GroundedSingleAction action(String agentName){
+	public GroundedSGAgentAction action(String agentName){
 		return actions.get(agentName);
 	}
 	
@@ -82,8 +85,8 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	public List <String> getAgentNames(){
 		List <String> anames = new ArrayList<String>(actions.size());
 		
-		List <GroundedSingleAction> gsas = this.getActionList();
-		for(GroundedSingleAction gsa : gsas){
+		List <GroundedSGAgentAction> gsas = this.getActionList();
+		for(GroundedSGAgentAction gsa : gsas){
 			anames.add(gsa.actingAgent);
 		}
 		
@@ -100,7 +103,7 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	 */
 	public String noParametersActionDescription(){
 		StringBuffer buf = new StringBuffer(100);
-		List <GroundedSingleAction> gsas = this.getActionList();
+		List <GroundedSGAgentAction> gsas = this.getActionList();
 		for(int i = 0; i < gsas.size(); i++){
 			if(i > 0){
 				buf.append(';');
@@ -114,7 +117,7 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	@Override
 	public String toString(){
 		StringBuffer buf = new StringBuffer(100);
-		List <GroundedSingleAction> gsas = this.getActionList();
+		List <GroundedSGAgentAction> gsas = this.getActionList();
 		for(int i = 0; i < gsas.size(); i++){
 			if(i > 0){
 				buf.append(';');
@@ -133,10 +136,10 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	
 
 	@Override
-	public Iterator<GroundedSingleAction> iterator() {
-		return new Iterator<GroundedSingleAction>() {
+	public Iterator<GroundedSGAgentAction> iterator() {
+		return new Iterator<GroundedSGAgentAction>() {
 			
-			List <GroundedSingleAction> gsas = getActionList();
+			List <GroundedSGAgentAction> gsas = getActionList();
 			int i = 0;
 
 			@Override
@@ -145,7 +148,7 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 			}
 
 			@Override
-			public GroundedSingleAction next() {
+			public GroundedSGAgentAction next() {
 				return gsas.get(i++);
 			}
 
@@ -162,8 +165,8 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 
 	public JointAction copy() {
 		JointAction ja = new JointAction();
-		for(GroundedSingleAction gsa : this.actions.values()){
-			ja.addAction((GroundedSingleAction)gsa.copy());
+		for(GroundedSGAgentAction gsa : this.actions.values()){
+			ja.addAction((GroundedSGAgentAction)gsa.copy());
 		}
 		return ja;
 	}
@@ -181,12 +184,12 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 			return false;
 		}
 		
-		Iterator<Map.Entry<String, GroundedSingleAction>> taIter = this.actions.entrySet().iterator();
-		Iterator<Map.Entry<String, GroundedSingleAction>> oaIter = oja.actions.entrySet().iterator();
+		Iterator<Map.Entry<String, GroundedSGAgentAction>> taIter = this.actions.entrySet().iterator();
+		Iterator<Map.Entry<String, GroundedSGAgentAction>> oaIter = oja.actions.entrySet().iterator();
 		
 		while(taIter.hasNext()){
-			Map.Entry<String, GroundedSingleAction> tae = taIter.next();
-			Map.Entry<String, GroundedSingleAction> oae = oaIter.next();
+			Map.Entry<String, GroundedSGAgentAction> tae = taIter.next();
+			Map.Entry<String, GroundedSGAgentAction> oae = oaIter.next();
 			
 			if(!tae.getValue().equals(oae.getValue())){
 				return false;
@@ -205,50 +208,37 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 
 
 
-	@Override
-	public boolean isExecutable() {
-		return false;
-	}
 
-
-
-	@Override
-	public State executeIn(State s) {
-		throw new RuntimeException("Joint action cannnot be directly executed; apply it with a joint action model instead.");
-	}
-
-
-
-	@Override
-	public boolean actionDomainIsObjectIdentifierDependent() {
-		for(GroundedSingleAction gsa : this.actions.values()){
-			return gsa.action.domain.isObjectIdentifierDependent();
-		}
-		return false;
-	}
-
-
-	@Override
 	public AbstractGroundedAction translateParameters(State sourceState, State targetState){
-		
-		if(this.actionDomainIsObjectIdentifierDependent()){
+
+		boolean foundIndependent = false;
+		for(GroundedSGAgentAction aa : this.actions.values()){
+			if(aa instanceof AbstractObjectParameterizedGroundedAction &&
+					((AbstractObjectParameterizedGroundedAction)aa).actionDomainIsObjectIdentifierIndependent()){
+
+				foundIndependent = true;
+				break;
+			}
+		}
+		if(!foundIndependent){
 			return this;
 		}
-		
+
+
 		JointAction nja = new JointAction();
-		
-		for(GroundedSingleAction gsa : this.actions.values()){
-			GroundedSingleAction ngsa = (GroundedSingleAction) gsa.translateParameters(sourceState, targetState);
+
+		for(GroundedSGAgentAction gsa : this.actions.values()){
+			GroundedSGAgentAction ngsa = (GroundedSGAgentAction) AbstractObjectParameterizedGroundedAction.Helper.translateParameters(gsa, sourceState, targetState);
 			nja.addAction(ngsa);
 		}
-		
+
 		return nja;
-		
+
 	}
 	
 	@Override
 	public boolean isParameterized(){
-		for(GroundedSingleAction gsa : this.actions.values()){
+		for(GroundedSGAgentAction gsa : this.actions.values()){
 			if(gsa.isParameterized()){
 				return true;
 			}
@@ -258,20 +248,20 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	}
 	
 	
-	public static List<JointAction> getAllJointActions(State s, List<Agent> agents){
+	public static List<JointAction> getAllJointActions(State s, List<SGAgent> agents){
 		
 		
 		//get all possible individual choices
-		List<List<GroundedSingleAction>> individualActionChoices = new ArrayList<List<GroundedSingleAction>>(agents.size());
-		for(Agent agent : agents){
-			List<GroundedSingleAction> gsas = SingleAction.getAllPossibleGroundedSingleActions(s, agent.worldAgentName, agent.agentType.actions);
+		List<List<GroundedSGAgentAction>> individualActionChoices = new ArrayList<List<GroundedSGAgentAction>>(agents.size());
+		for(SGAgent agent : agents){
+			List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, agent.worldAgentName, agent.agentType.actions);
 			individualActionChoices.add(gsas);
 		}
 	
 		
 		//get all joint actions from all combinations of individual actions
 		List<JointAction> allJointActions = new LinkedList<JointAction>();
-		allJointActionsHelper(individualActionChoices, 0, new LinkedList<GroundedSingleAction>(), allJointActions);
+		allJointActionsHelper(individualActionChoices, 0, new LinkedList<GroundedSGAgentAction>(), allJointActions);
 		
 		
 		return allJointActions;
@@ -280,20 +270,20 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	
 	
 	
-	public static List<JointAction> getAllJointActions(State s, Map<String, AgentType> agents){
+	public static List<JointAction> getAllJointActions(State s, Map<String, SGAgentType> agents){
 		
 		
 		//get all possible individual choices
-		List<List<GroundedSingleAction>> individualActionChoices = new ArrayList<List<GroundedSingleAction>>(agents.size());
-		for(Map.Entry<String, AgentType> e : agents.entrySet()){
-			List<GroundedSingleAction> gsas = SingleAction.getAllPossibleGroundedSingleActions(s, e.getKey(), e.getValue().actions);
+		List<List<GroundedSGAgentAction>> individualActionChoices = new ArrayList<List<GroundedSGAgentAction>>(agents.size());
+		for(Map.Entry<String, SGAgentType> e : agents.entrySet()){
+			List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, e.getKey(), e.getValue().actions);
 			individualActionChoices.add(gsas);
 		}
 		
 		
 		//get all joint actions from all combinations of individual actions
 		List<JointAction> allJointActions = new LinkedList<JointAction>();
-		allJointActionsHelper(individualActionChoices, 0, new LinkedList<GroundedSingleAction>(), allJointActions);
+		allJointActionsHelper(individualActionChoices, 0, new LinkedList<GroundedSGAgentAction>(), allJointActions);
 		
 		
 		return allJointActions;
@@ -303,19 +293,19 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	
 	
 	
-	protected static void allJointActionsHelper(List<List<GroundedSingleAction>> individualActionChoices, int i, LinkedList<GroundedSingleAction> currentSelections, List<JointAction> allJointActions){
+	protected static void allJointActionsHelper(List<List<GroundedSGAgentAction>> individualActionChoices, int i, LinkedList<GroundedSGAgentAction> currentSelections, List<JointAction> allJointActions){
 		
 		if(i >= individualActionChoices.size()){ //base case
 			JointAction ja = new JointAction();
-			for(GroundedSingleAction gsa : currentSelections){
+			for(GroundedSGAgentAction gsa : currentSelections){
 				ja.addAction(gsa);
 			}
 			allJointActions.add(ja);
 			return ;
 		}
 		
-		List<GroundedSingleAction> agentsChoices = individualActionChoices.get(i);
-		for(GroundedSingleAction gsa : agentsChoices){
+		List<GroundedSGAgentAction> agentsChoices = individualActionChoices.get(i);
+		for(GroundedSGAgentAction gsa : agentsChoices){
 			currentSelections.push(gsa);
 			allJointActionsHelper(individualActionChoices, i+1, currentSelections, allJointActions);
 			currentSelections.pop();
@@ -323,18 +313,20 @@ public class JointAction extends AbstractGroundedAction implements Iterable<Grou
 	}
 
 
-
 	@Override
-	public boolean parametersAreObjects() {
-		return false;
+	public void initParamsWithStringRep(String[] params) {
+		throw new UnsupportedOperationException();
 	}
 
-
-
-	
-
-	
-	
-	
+	@Override
+	public String[] getParametersAsString() {
+		String [] vals = new String[this.actions.size()];
+		int i = 0;
+		for(Map.Entry<String,GroundedSGAgentAction> e : this.actions.entrySet()){
+			vals[i] = e.toString();
+			i++;
+		}
+		return vals;
+	}
 }
 

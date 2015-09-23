@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.vfa.common;
 
 import burlap.behavior.singleagent.vfa.*;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.Map;
  * state features set to zero, thereby allowing for unique predictions for each action.
  * <br/><br/>
  * Objects of this class are set to use either state value function approximation or Q-value function approximation
- * depending on whether the method {@link #getStateValue(burlap.oomdp.core.State)} or {@link #getStateActionValues(burlap.oomdp.core.State, java.util.List)}
+ * depending on whether the method {@link #getStateValue(burlap.oomdp.core.states.State)} or {@link #getStateActionValues(burlap.oomdp.core.states.State, java.util.List)}
  * is called first. If the former, then it performs state value function approximation; if the latter then Q-value
  * function approximation. Once it has been set for either state or Q-value function approximation, it cannot be used
  * for the other and will throw a runtime exception if it queried for the other kind of function.
@@ -55,8 +55,8 @@ public class LinearFVVFA implements ValueFunctionApproximation{
 
 	/**
 	 * Initializes. This object will be set to perform either state value function approximation or Q-value
-	 * function approximation once a call to either {@link #getStateValue(burlap.oomdp.core.State)} or
-	 * {@link #getStateActionValues(burlap.oomdp.core.State, java.util.List)} is queried. If the former method is called,
+	 * function approximation once a call to either {@link #getStateValue(burlap.oomdp.core.states.State)} or
+	 * {@link #getStateActionValues(burlap.oomdp.core.states.State, java.util.List)} is queried. If the former method is called,
 	 * first, then this object will be tasked with state value function approximation. If the latter
 	 * method is called first, then this object will be tasked with state-action value function approximation.
 	 * @param fvGen The state feature vector generator that produces the features used for either linear state value function approximation or Q-value function approximation.

@@ -1,13 +1,20 @@
 package burlap.domain.singleagent.mountaincar;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
-
-import java.util.List;
 
 
 /**
@@ -221,8 +228,8 @@ public class MountainCar implements DomainGenerator {
 	 * @return a new state with the agent in the bottom of the hill valley not moving.
 	 */
 	public static State getCleanState(Domain domain, MCPhysicsParams physParms){
-		State s = new State();
-		ObjectInstance a = new ObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
+		State s = new MutableState();
+		ObjectInstance a = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
 		s.addObject(a);
 		setAgent(s, -(Math.PI/2) / physParms.cosScale, 0.);
 		return s;
@@ -264,10 +271,10 @@ public class MountainCar implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	class MovementAction extends Action{
+	class MovementAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		int dir;
-		MCPhysicsParams physParms;
+		MCPhysicsParams physParams;
 		
 		/**
 		 * Initializes with the given name, domain, and direction of acceleration.
@@ -275,28 +282,24 @@ public class MountainCar implements DomainGenerator {
 		 * @param domain the domain of this action
 		 * @param dir the direction of acceleration; +1 for forward acceleration, -1 for backwards acceleration, 0 for no acceleration (coast).
 		 */
-		public MovementAction(String name, Domain domain, int dir, MCPhysicsParams physParms){
-			super(name, domain, "");
+		public MovementAction(String name, Domain domain, int dir, MCPhysicsParams physParams){
+			super(name, domain);
 			this.dir = dir;
-			this.physParms = physParms;
+			this.physParams = physParams;
 		}
 		
 		@Override
-		protected State performActionHelper(State s, String[] params) {
-			return MountainCar.move(s, dir, this.physParms);
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
+			return MountainCar.move(s, dir, this.physParams);
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
+
+		public MCPhysicsParams getPhysParams() {
+			return physParams;
 		}
 
-		public MCPhysicsParams getPhysParms() {
-			return physParms;
-		}
-
-		public void setPhysParms(MCPhysicsParams physParms) {
-			this.physParms = physParms;
+		public void setPhysParams(MCPhysicsParams physParams) {
+			this.physParams = physParams;
 		}
 
 		public int getDir() {

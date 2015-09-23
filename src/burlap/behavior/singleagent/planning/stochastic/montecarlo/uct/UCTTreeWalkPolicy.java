@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.singleagent.MDPSolverInterface;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
@@ -25,19 +25,19 @@ import burlap.oomdp.singleagent.GroundedAction;
  * tree. Any state not visited by the greedy path in the UCT tree is excluded from the policy and will result
  * in an error if this policy is queried for such a state.
  *  
- * A more robust policy would cause the planner to be called at each state to build a new tree.
+ * A more robust policy would cause the valueFunction to be called at each state to build a new tree.
  * @author James MacGlashan
  *
  */
-public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
+public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 
 	UCT 									planner;
 	
-	Map<StateHashTuple, GroundedAction> 	policy;
+	Map<HashableState, GroundedAction> 	policy;
 	
 	/**
-	 * Initializes the policy with the UCT planner
-	 * @param planner the UCT planner whose tree should be walked.
+	 * Initializes the policy with the UCT valueFunction
+	 * @param planner the UCT valueFunction whose tree should be walked.
 	 */
 	public UCTTreeWalkPolicy(UCT planner){
 		this.planner = planner;
@@ -45,11 +45,11 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 	
 	@Override
-	public void setPlanner(OOMDPPlanner planner) {
-		if(!(planner instanceof UCT)){
+	public void setSolver(MDPSolverInterface solver) {
+		if(!(solver instanceof UCT)){
 			throw new RuntimeException("Planner must be an instance of UCT");
 		}
-		this.planner = (UCT)planner;
+		this.planner = (UCT) solver;
 		
 	}
 	
@@ -58,7 +58,7 @@ public class UCTTreeWalkPolicy extends Policy implements PlannerDerivedPolicy{
 	 * computes a hash-backed policy for every state visited along the greedy path of the UCT tree.
 	 */
 	public void computePolicyFromTree(){
-		policy = new HashMap<StateHashTuple, GroundedAction>();
+		policy = new HashMap<HashableState, GroundedAction>();
 
 		if(this.planner.getRoot() == null){
 			return ;

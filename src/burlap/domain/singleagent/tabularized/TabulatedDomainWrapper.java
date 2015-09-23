@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 
@@ -20,8 +24,8 @@ import burlap.oomdp.singleagent.SADomain;
 /**
  * In general, it is suggested algorithms be designed to work with either factored state representations or the BURLAP State Hashing. However,
  * some algorithms may be limited to working with states that have explicit enumerated values and with an entire state space already defined. In particular,
- * if you are interfacing with code external to BURLAP this may be required. This domain generator can take any input domain that does not have parameterized
- * actions and turn it into a domain in which states are represented by a single int attribute and are fully enumerated. 
+ * if you are interfacing with code external to BURLAP this may be required. This domain generator can take any input domain and turns it
+ * into a domain in which states are represented by a single int attribute and are fully enumerated.
  * The state space used must be enumerated before calling the {@link #generateDomain()} method and is performed
  * using a BURLAP state enumerator. In particular, seed states must be passed to this object and it will find all reachable states from the seed state
  * and enumerate them.
@@ -62,7 +66,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	 * @param inputDomain the input domain to be wrapped
 	 * @param hashingFactory the hashing factory used to enumerate states from the input domain
 	 */
-	public TabulatedDomainWrapper(Domain inputDomain, StateHashFactory hashingFactory){
+	public TabulatedDomainWrapper(Domain inputDomain, HashableStateFactory hashingFactory){
 		this.inputDomain = inputDomain;
 		this.enumerator = new StateEnumerator(this.inputDomain, hashingFactory);
 	}
@@ -88,9 +92,6 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 		oc.addAttribute(att);
 		
 		for(Action srcAction : this.inputDomain.getActions()){
-			if(srcAction.getParameterClasses().length > 0){
-				throw new RuntimeException("Tabularized domain cannot wrap domains with parameterized actions");
-			}
 			new ActionWrapper(tabDomain, srcAction);
 		}
 		
@@ -113,7 +114,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	 */
 	public State getSourceDomainState(State s){
 		int id = this.getStateId(s);
-		return this.enumerator.getStateForEnumertionId(id);
+		return this.enumerator.getStateForEnumerationId(id);
 	}
 	
 	/**
@@ -123,8 +124,8 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	 */
 	public State getTabularizedState(State s){
 		int id = this.enumerator.getEnumeratedID(s);
-		State ts = new State();
-		ObjectInstance o = new ObjectInstance(this.tabDomain.getObjectClass(CLASSSTATE), "state");
+		State ts = new MutableState();
+		ObjectInstance o = new MutableObjectInstance(this.tabDomain.getObjectClass(CLASSSTATE), "state");
 		o.setValue(ATTSTATE, id);
 		ts.addObject(o);
 		return ts;
@@ -133,12 +134,12 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	
 	/**
 	 * An action wrapper that coverts a tabularized state into the source domain state, perform the corresponding source domain action on it getting the
-	 * resutling source domain state and returns the tabularized version of the resulting source domain state. Also wraps the preconditions and transition
+	 * resulting source domain state and returns the tabularized version of the resulting source domain state. Also wraps the preconditions and transition
 	 * dynamics of the source domain action in similar ways.
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionWrapper extends Action{
+	public class ActionWrapper extends Action implements FullActionModel{
 
 		protected Action srcAction;
 		
@@ -148,20 +149,20 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 		 * @param action the source domain action to be wrapped
 		 */
 		public ActionWrapper(Domain domain, Action action){
-			super(action.getName(), domain, "");
+			super(action.getName(), domain);
 			this.srcAction = action;
 		}
 		
 		@Override
-		public boolean applicableInState(State s, String [] params){
-			return srcAction.applicableInState(TabulatedDomainWrapper.this.getSourceDomainState(s), params);
+		public boolean applicableInState(State s, GroundedAction groundedAction){
+			return srcAction.applicableInState(TabulatedDomainWrapper.this.getSourceDomainState(s), groundedAction);
 		}
 		
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			
 			State srcState = TabulatedDomainWrapper.this.getSourceDomainState(s);
-			State srcNextState = srcAction.performAction(srcState, params);
+			State srcNextState = srcAction.performAction(srcState, groundedAction);
 			State tabState = TabulatedDomainWrapper.this.getTabularizedState(srcNextState);
 			
 			return tabState;
@@ -169,10 +170,14 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 		
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+
+			if(!(srcAction instanceof FullActionModel)){
+				throw new RuntimeException("Cannot return the transitions for " + srcAction.getName() + " because it does not implement FullActionModel");
+			}
+
 			State srcState = TabulatedDomainWrapper.this.getSourceDomainState(s);
-			List<TransitionProbability> srcTPs = this.srcAction.getTransitions(srcState, params);
+			List<TransitionProbability> srcTPs = ((FullActionModel)this.srcAction).getTransitions(srcState, groundedAction);
 			List<TransitionProbability> tabTPs = new ArrayList<TransitionProbability>(srcTPs.size());
 			for(TransitionProbability stp : srcTPs){
 				TransitionProbability ttp = new TransitionProbability(TabulatedDomainWrapper.this.getTabularizedState(stp.s), stp.p);
@@ -181,7 +186,33 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 			
 			return tabTPs;
 		}
-		
+
+		@Override
+		public boolean isPrimitive() {
+			return srcAction.isPrimitive();
+		}
+
+		@Override
+		public boolean isParameterized() {
+			return srcAction.isParameterized();
+		}
+
+		@Override
+		public GroundedAction getAssociatedGroundedAction() {
+			GroundedAction ga = srcAction.getAssociatedGroundedAction();
+			ga.action = this;
+			return ga;
+		}
+
+		@Override
+		public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+			List<GroundedAction> sourceSet =  srcAction.getAllApplicableGroundedActions(s);
+			//adjust pointer to this action wrapper
+			for(GroundedAction ga : sourceSet){
+				ga.action = this;
+			}
+			return sourceSet;
+		}
 	}
 
 }

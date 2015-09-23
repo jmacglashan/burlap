@@ -2,8 +2,14 @@ package burlap.domain.singleagent.blockdude;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
-import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -30,14 +36,14 @@ import java.util.Set;
  * to launch an interactive visualizer for the first level with keys: w, a, d, s, x for
  * the actions up, west, east, pickup, putdown, respectively.
  * <br/><br/>
- * By default this domain's actions will use a {@link State#semiDeepCopy(java.util.Set)} instead of a
- * {@link burlap.oomdp.core.State#copy()}. The semi-deep copy only copies {@link burlap.oomdp.core.ObjectInstance}
+ * By default this domain's actions will use a {@link burlap.oomdp.core.states.MutableState#semiDeepCopy(java.util.Set)} instead of a
+ * {@link burlap.oomdp.core.states.State#copy()}. The semi-deep copy only copies {@link burlap.oomdp.core.objects.ObjectInstance}
  * in the previous state that will have its values modified by the action execution:
  * typically, the agent and a moved block are deep copied, with the un moved block objects and brick objects
  * shallow copied to the new state. This is much more memory efficient, but you should avoid directly modifying
  * any single state outside of state construction to avoid changes to other states that may be in memory that use the
  * same shallow copy. Instead, if you wish to directly modify states, always make a
- * {@link burlap.oomdp.core.State#copy()} first. Alternatively, you can set Actions to always make deep copies
+ * {@link burlap.oomdp.core.states.State#copy()} first. Alternatively, you can set Actions to always make deep copies
  * by setting this class's {@link #useSemiDeep} parameter to false with with the {@link #setUseSemiDeep(boolean)} method.
  *
  * @author James MacGlashan.
@@ -141,7 +147,7 @@ public class BlockDude implements DomainGenerator{
 
 	/**
 	 * Domain parameter specifying whether actions create semi-deep copies of states or fully deep copies of states.
-	 * The default is true. If true, then actions only deep copy {@link burlap.oomdp.core.ObjectInstance} between
+	 * The default is true. If true, then actions only deep copy {@link burlap.oomdp.core.objects.ObjectInstance} between
 	 * states that have their values change from the action execution
 	 * (typically the agent or a specifically moved block). If false,
 	 * then the states are completely deep copied by action execution.
@@ -262,28 +268,28 @@ public class BlockDude implements DomainGenerator{
 	 * Returns an uninitialized state that contains the specified number of block objects. Specifically,
 	 * the state will have one agent object, one exit object, one bricks object (specifying the entire landscape in
 	 * an int array attribute), and nb block objects. Their values will need to be set before being used
-	 * either manually or with methods like {@link #setAgent(burlap.oomdp.core.State, int, int, int, boolean)},
-	 * {@link #setExit(burlap.oomdp.core.State, int, int)}, {@link #setBlock(burlap.oomdp.core.State, int, int, int)},
-	 * and {@link #setBrickMap(burlap.oomdp.core.State, int[][])} or
-	 * {@link #setBrickValue(burlap.oomdp.core.State, int, int, int)}. If you want pre-generated states,
+	 * either manually or with methods like {@link #setAgent(burlap.oomdp.core.states.State, int, int, int, boolean)},
+	 * {@link #setExit(burlap.oomdp.core.states.State, int, int)}, {@link #setBlock(burlap.oomdp.core.states.State, int, int, int)},
+	 * and {@link #setBrickMap(burlap.oomdp.core.states.State, int[][])} or
+	 * {@link #setBrickValue(burlap.oomdp.core.states.State, int, int, int)}. If you want pre-generated states,
 	 * see the {@link burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor}
 	 * @param domain the generated Block Dude domain to which the state will belong
 	 * @param nb the number of blocks to include in the state
-	 * @return a {@link burlap.oomdp.core.State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
+	 * @return a {@link burlap.oomdp.core.states.State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
 	 */
 	public static State getUninitializedState(Domain domain, int nb){
-		State s = new State();
-		ObjectInstance agent = new ObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
+		State s = new MutableState();
+		ObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
 		s.addObject(agent);
 
-		ObjectInstance exit = new ObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0);
+		ObjectInstance exit = new MutableObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0);
 		s.addObject(exit);
 
-		ObjectInstance bricks = new ObjectInstance(domain.getObjectClass(CLASSBRICKS), CLASSBRICKS);
+		ObjectInstance bricks = new MutableObjectInstance(domain.getObjectClass(CLASSBRICKS), CLASSBRICKS);
 		s.addObject(bricks);
 
 		for(int i = 0; i < nb; i++){
-			ObjectInstance block = new ObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i);
+			ObjectInstance block = new MutableObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i);
 			s.addObject(block);
 		}
 
@@ -595,7 +601,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * Moves a carried block to a new position of the agent
 	 * @param s the state to modify
-	 * @param agent the agent {@link burlap.oomdp.core.ObjectInstance}
+	 * @param agent the agent {@link burlap.oomdp.core.objects.ObjectInstance}
 	 * @param ax the previous x position of the agent
 	 * @param ay the previous y position of the agent
 	 * @param nx the new x position of the *agent*
@@ -614,11 +620,11 @@ public class BlockDude implements DomainGenerator{
 
 	/**
 	 * Finds a block object in the {@link State} located at the provided position and returns its
-	 * {@link burlap.oomdp.core.ObjectInstance}. If not block at the location exists, then null is returned.
+	 * {@link burlap.oomdp.core.objects.ObjectInstance}. If not block at the location exists, then null is returned.
 	 * @param s the state to check
 	 * @param x the x position
 	 * @param y the y position
-	 * @return the {@link burlap.oomdp.core.ObjectInstance} for the corresponding block object in the state at the given position or null if one does not exist.
+	 * @return the {@link burlap.oomdp.core.objects.ObjectInstance} for the corresponding block object in the state at the given position or null if one does not exist.
 	 */
 	protected static ObjectInstance getBlockAt(State s, int x, int y){
 
@@ -678,7 +684,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * A class for performing a horizontal movement either east or west.
 	 */
-	public class MoveAction extends Action{
+	public class MoveAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected int dir;
 		protected boolean useSemiDeep;
@@ -691,7 +697,7 @@ public class BlockDude implements DomainGenerator{
 		 * @param dir the direction of movement: +1 for east; -1 for west.
 		 */
 		public MoveAction(String name, Domain domain, int dir){
-			super(name, domain, "");
+			super(name, domain);
 			this.dir = dir;
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
@@ -699,10 +705,10 @@ public class BlockDude implements DomainGenerator{
 
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -720,46 +726,43 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			moveHorizontally(s, dir, maxx);
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
-		}
+
 	}
 
 
 	/**
 	 * And action class for performing an up movement action.
 	 */
-	public class MoveUpAction extends Action{
+	public class MoveUpAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
 		public MoveUpAction(Domain domain){
-			super(ACTIONUP, domain, "");
+			super(ACTIONUP, domain);
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
 		}
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -777,46 +780,44 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
+
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			moveUp(s, maxx);
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
-		}
+
 	}
 
 
 	/**
 	 * An action class for performing a pickup action.
 	 */
-	public class PickupAction extends Action{
+	public class PickupAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
 		public PickupAction(Domain domain){
-			super(ACTIONPICKUP, domain, "");
+			super(ACTIONPICKUP, domain);
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
 		}
 
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -839,47 +840,43 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			pickupBlock(s, maxx);
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
-		}
 	}
 
 
 	/**
 	 * An action class for performing a put down action.
 	 */
-	public class PutdownAction extends Action{
+	public class PutdownAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
 		public PutdownAction(Domain domain){
-			super(ACTIONPUTDOWN, domain, "");
+			super(ACTIONPUTDOWN, domain);
 			this.useSemiDeep = BlockDude.this.useSemiDeep;
 			this.maxx = BlockDude.this.maxx;
 		}
 
 
 		@Override
-		public State performAction(State s, String [] params){
+		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep){
+			if(useSemiDeep && s instanceof MutableState){
 				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
 
 				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
@@ -897,24 +894,20 @@ public class BlockDude implements DomainGenerator{
 
 				}
 
-				State copid = s.semiDeepCopy(deepCopiedObjects);
+				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
 
-				return performActionHelper(copid, params);
+				return performActionHelper(copid, groundedAction);
 			}
-			return super.performAction(s, params);
+			return super.performAction(s, groundedAction);
 		}
 
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			putdownBlock(s, maxx);
 			return s;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String[] params) {
-			return deterministicTransition(s, params);
-		}
 	}
 
 
@@ -930,7 +923,7 @@ public class BlockDude implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance block = st.getObject(params[1]);
@@ -967,7 +960,7 @@ public class BlockDude implements DomainGenerator{
 
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance exit = st.getObject(params[1]);

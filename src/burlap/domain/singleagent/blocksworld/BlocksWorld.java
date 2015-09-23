@@ -5,15 +5,19 @@ import java.util.List;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
- * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning, the
- * {@link burlap.behavior.statehashing.NameDependentStateHashFactory} should be used.
+ * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning,
+ * the {@link burlap.oomdp.statehashing.HashableStateFactory} should be object identifier dependent. For example, if using a
+ * {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
  * @author James MacGlashan
  *
  */
@@ -106,11 +110,9 @@ public class BlocksWorld implements DomainGenerator {
 		
 		Attribute attonblock = new Attribute(domain, ATTONBLOCK, Attribute.AttributeType.RELATIONAL);
 		
-		Attribute attontable = new Attribute(domain, ATTONTABLE, Attribute.AttributeType.DISC);
-		attontable.setDiscValuesForRange(0, 1, 1); //binary
+		Attribute attontable = new Attribute(domain, ATTONTABLE, Attribute.AttributeType.BOOLEAN);
 		
-		Attribute attclear = new Attribute(domain, ATTCLEAR, Attribute.AttributeType.DISC);
-		attclear.setDiscValuesForRange(0, 1, 1); //binary
+		Attribute attclear = new Attribute(domain, ATTCLEAR, Attribute.AttributeType.BOOLEAN);
 		
 		Attribute attcolor = new Attribute(domain, ATTCOLOR, Attribute.AttributeType.DISC);
 		attcolor.setDiscValues(colNames);
@@ -145,10 +147,10 @@ public class BlocksWorld implements DomainGenerator {
 	 * @return a new state with nBlocks block objects
 	 */
 	public static State getNewState(Domain d, int nBlocks){
-		State s = new State();
+		State s = new MutableState();
 		ObjectClass oc = d.getObjectClass(CLASSBLOCK);
 		for(int i = 0; i < nBlocks; i++){
-			ObjectInstance o = new ObjectInstance(oc, CLASSBLOCK+i);
+			ObjectInstance o = new MutableObjectInstance(oc, CLASSBLOCK+i);
 			setBlock(o, "", 1, 1, COLORRED);
 			s.addObject(o);
 		}
@@ -177,7 +179,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @param color the categorical color value (either "red", "green", or "blue")
 	 */
 	public static void setBlock(State s, int blockInd, String onBlock, int onTable, int clear, String color){
-		setBlock(s.getObservableObjectAt(blockInd), onBlock, onTable, clear, color);
+		setBlock(s.getAllObjects().get(blockInd), onBlock, onTable, clear, color);
 	}
 	
 	
@@ -217,14 +219,16 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class StackAction extends Action{
+	public class StackAction extends ObjectParameterizedAction implements FullActionModel{
 
 		public StackAction(String name, Domain domain){
 			super(name, domain, new String[]{CLASSBLOCK, CLASSBLOCK});
 		}
 		
 		@Override
-		public boolean applicableInState(State st, String [] params){
+		public boolean applicableInState(State st, GroundedAction groundedAction){
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
 			//blocks must be clear
 			
@@ -244,8 +248,10 @@ public class BlocksWorld implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State st, String[] params) {
-		
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+
 			ObjectInstance src = st.getObject(params[0]);
 			ObjectInstance target = st.getObject(params[1]);
 			
@@ -265,11 +271,20 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+			return this.deterministicTransition(s, groundedAction);
 		}
-		
-		
+
+		@Override
+		public boolean parametersAreObjectIdentifierIndependent() {
+			return false;
+		}
+
+		@Override
+		public boolean isPrimitive() {
+			return true;
+		}
+
 	}
 	
 	
@@ -279,13 +294,15 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class UnstackAction extends Action{
+	public class UnstackAction extends ObjectParameterizedAction implements FullActionModel{
 		
 		public UnstackAction(String name, Domain domain){
 			super(name, domain, new String[]{CLASSBLOCK});
 		}
 		
-		public boolean applicableInState(State st, String [] params){
+		public boolean applicableInState(State st, GroundedAction groundedAction){
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
 			//block must be clear
 			
@@ -302,8 +319,10 @@ public class BlocksWorld implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State st, String[] params) {
-		
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
+
+			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+
 			ObjectInstance src = st.getObject(params[0]);
 			
 			String srcOnName = src.getStringValForAttribute(ATTONBLOCK);
@@ -320,10 +339,19 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+			return this.deterministicTransition(s, groundedAction);
 		}
-		
+
+		@Override
+		public boolean parametersAreObjectIdentifierIndependent() {
+			return false;
+		}
+
+		@Override
+		public boolean isPrimitive() {
+			return true;
+		}
 	}
 	
 	
@@ -340,7 +368,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			ObjectInstance target = st.getObject(params[1]);
 			if(src.getStringValForAttribute(ATTONBLOCK).equals(target.getName())){
@@ -364,7 +392,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			if(src.getIntValForAttribute(ATTONTABLE) == 1){
 				return true;
@@ -387,7 +415,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			if(src.getIntValForAttribute(ATTCLEAR) == 1){
 				return true;
@@ -411,7 +439,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			ObjectInstance src = st.getObject(params[0]);
 			if(src.getStringValForAttribute(ATTCOLOR).equals(this.name)){
 				return true;
@@ -447,11 +475,11 @@ public class BlocksWorld implements DomainGenerator {
 		
 		if(expMode == 0){
 			
-			TerminalExplorer exp = new TerminalExplorer(domain);
+			TerminalExplorer exp = new TerminalExplorer(domain, s);
 			exp.addActionShortHand("s", ACTIONSTACK);
 			exp.addActionShortHand("u", ACTIONUNSTACK);
 			
-			exp.exploreFromState(s);
+			exp.explore();
 			
 		}
 		else if(expMode == 1){

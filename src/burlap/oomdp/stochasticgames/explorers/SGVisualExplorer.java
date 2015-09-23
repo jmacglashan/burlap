@@ -12,9 +12,13 @@ import java.util.Map;
 import javax.swing.*;
 
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
-import burlap.oomdp.singleagent.explorer.StateResetSpecialAction;
 import burlap.oomdp.stochasticgames.*;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.oomdp.visualizer.Visualizer;
 
 
@@ -41,7 +45,7 @@ public class SGVisualExplorer extends JFrame {
 	
 	protected SGDomain								domain;
 	private JointActionModel						actionModel;
-	private Map <String, String>					keyActionMap;
+	private Map <String, GroundedSGAgentAction>		keyActionMap;
 	private Map <String, SpecialExplorerAction>		keySpecialMap;
 	State											baseState;
 	State											curState;
@@ -69,7 +73,7 @@ public class SGVisualExplorer extends JFrame {
 	/**
 	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
 	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
-	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State)}
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.states.State)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
@@ -96,7 +100,7 @@ public class SGVisualExplorer extends JFrame {
 	/**
 	 * This constructor is deprecated, because {@link burlap.oomdp.stochasticgames.SGDomain} objects are now expected
 	 * to have a {@link burlap.oomdp.stochasticgames.JointActionModel} associated with them, making the constructor parameter for it
-	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.State, int, int)}
+	 * unnecessary. Instead use the constructor {@link #SGVisualExplorer(burlap.oomdp.stochasticgames.SGDomain, burlap.oomdp.visualizer.Visualizer, burlap.oomdp.core.states.State, int, int)}
 	 * @param domain the stochastic game domain to be explored
 	 * @param painter the 2D visualizer for states
 	 * @param baseState the initial state from which to explore
@@ -127,10 +131,10 @@ public class SGVisualExplorer extends JFrame {
 		this.baseState = baseState;
 		this.curState = baseState.copy();
 		this.painter = painter;
-		this.keyActionMap = new HashMap <String, String>();
+		this.keyActionMap = new HashMap <String, GroundedSGAgentAction>();
 		this.keySpecialMap = new HashMap <String, SpecialExplorerAction>();
-		
-		StateResetSpecialAction reset = new StateResetSpecialAction(this.baseState);
+
+		HardStateResetSpecialAction reset = new HardStateResetSpecialAction(this.baseState);
 		this.addSpecialAction("`", reset);
 		
 		this.cWidth = w;
@@ -175,9 +179,28 @@ public class SGVisualExplorer extends JFrame {
 	 * Returns the reset action being used when the reset key ` is pressed
 	 * @return the reset action being used when the reset key ` is pressed
 	 */
-	public StateResetSpecialAction getResetSpecialAction(){
-		return (StateResetSpecialAction)keySpecialMap.get("`");
+	public HardStateResetSpecialAction getResetSpecialAction(){
+		return (HardStateResetSpecialAction)keySpecialMap.get("`");
 	}
+
+	/**
+	 * Specifies the action to set for a given key press. Actions should be formatted to include
+	 * the agent name as follows: "agentName::actionName" This means
+	 * that different key presses will have to specified for different agents.
+	 * @param key the key that will cause the action to be set
+	 * @param actionStringRep the action to set when the specified key is pressed.
+	 */
+	public void addKeyAction(String key, String actionStringRep){
+		GroundedSGAgentAction action = this.parseIntoSingleActions(actionStringRep);
+		if(action != null){
+			keyActionMap.put(key, action);
+		}
+		else{
+			System.out.println("Could not parse action string representation " + actionStringRep + ". SGVisualExplorer will not add a mapping to it from key " + key);
+		}
+
+	}
+
 	
 	/**
 	 * Specifies the action to set for a given key press. Actions should be formatted to include
@@ -186,12 +209,12 @@ public class SGVisualExplorer extends JFrame {
 	 * @param key the key that will cause the action to be set
 	 * @param action the action to set when the specified key is pressed.
 	 */
-	public void addKeyAction(String key, String action){
+	public void addKeyAction(String key, GroundedSGAgentAction action){
 		keyActionMap.put(key, action);
 	}
 	
 	public String getKeyAction(String key) {
-		return this.keyActionMap.get(key);
+		return this.keyActionMap.get(key).actionName();
 	}
 	
 	/**
@@ -346,7 +369,7 @@ public class SGVisualExplorer extends JFrame {
 					}
 					else if(comps[0].equals("add")){
 						if(comps.length == 3){
-							ObjectInstance o = new ObjectInstance(SGVisualExplorer.this.domain.getObjectClass(comps[1]), comps[2]);
+							ObjectInstance o = new MutableObjectInstance(SGVisualExplorer.this.domain.getObjectClass(comps[1]), comps[2]);
 							ns.addObject(o);
 							madeChange = true;
 						}
@@ -359,7 +382,7 @@ public class SGVisualExplorer extends JFrame {
 					}
 					else if(comps[0].equals("setAction")){
 						String [] agentAction = comps[1].split(":");
-						SingleAction sa = domain.getSingleAction(agentAction[1]);
+						SGAgentAction sa = domain.getSingleAction(agentAction[1]);
 						if(sa == null){
 							warningMessage = "Unknown action: " + agentAction[1] + "; nothing changed";
 							SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
@@ -370,8 +393,9 @@ public class SGVisualExplorer extends JFrame {
 							for(int i = 2; i < comps.length; i++) {
 								params[i - 2] = comps[i];
 							}
-							GroundedSingleAction gsa = new GroundedSingleAction(agentAction[0], sa, params);
-							if(sa.isApplicableInState(curState, agentAction[0], params)){
+							GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(agentAction[0]);
+							gsa.initParamsWithStringRep(params);
+							if(sa.applicableInState(curState, gsa)){
 								SGVisualExplorer.this.nextAction.addAction(gsa);
 								SGVisualExplorer.this.stateConsole.setText(SGVisualExplorer.this.getConsoleText(ns));
 							}
@@ -496,25 +520,20 @@ public class SGVisualExplorer extends JFrame {
 		
 
 		//otherwise this could be an action, see if there is an action mapping
-		String mappedAction = keyActionMap.get(key);
-		if(mappedAction != null){
-
-			GroundedSingleAction toAdd = this.parseIntoSingleActions(mappedAction);
-			if(toAdd != null) {
-				nextAction.addAction(toAdd);
-				System.out.println(nextAction.toString());
-			}
+		GroundedSGAgentAction toAdd = keyActionMap.get(key);
+		if(toAdd != null) {
+			nextAction.addAction(toAdd);
+			System.out.println(nextAction.toString());
 			this.stateConsole.setText(this.getConsoleText(this.curState));
-
-			
 		}
+
 		else{
 			
 			SpecialExplorerAction sea = keySpecialMap.get(key);
 			if(sea != null){
 				this.lastRewards = null;
 				curState = sea.applySpecialAction(curState);
-				if(sea instanceof StateResetSpecialAction){
+				if(sea instanceof HardStateResetSpecialAction){
 					System.out.println("Number of steps before reset: " + numSteps);
 					numSteps = 0;
 				}
@@ -548,13 +567,13 @@ public class SGVisualExplorer extends JFrame {
 
 
 	/**
-	 * Parses a string into a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}. Expects format:
+	 * Parses a string into a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}. Expects format:
 	 * "agentName:actionName param1 parm2 ... paramn" If there is no SingleAction by that name or
 	 * the action and parameters are not applicable in the current state, null is returned.
 	 * @param str string rep of a grounding action in the form  "agentName:actionName param1 parm2 ... paramn"
-	 * @return a {@link burlap.oomdp.stochasticgames.GroundedSingleAction}
+	 * @return a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
 	 */
-	protected GroundedSingleAction parseIntoSingleActions(String str){
+	protected GroundedSGAgentAction parseIntoSingleActions(String str){
 		
 		String [] agentActionComps = str.split(":");
 		String aname = agentActionComps[0];
@@ -567,13 +586,14 @@ public class SGVisualExplorer extends JFrame {
 			params[i-1] = actionAndParams[i];
 		}
 		
-		SingleAction sa = domain.getSingleAction(singleActionName);
+		SGAgentAction sa = domain.getSingleAction(singleActionName);
 		if(sa == null){
 			warningMessage = "Unknown action: " + singleActionName + "; nothing changed";
 			return null;
 		}
-		GroundedSingleAction gsa = new GroundedSingleAction(aname, sa, params);
-		if(!sa.isApplicableInState(curState, aname, params)){
+		GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(aname);
+		gsa.initParamsWithStringRep(params);
+		if(!sa.applicableInState(curState, gsa)){
 			warningMessage = gsa.toString() + " is not applicable in the current state; nothing changed";
 			return null;
 		}

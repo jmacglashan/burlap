@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 
 
 /**
@@ -242,7 +242,7 @@ public class Tiling {
 			hashCode = 1;
 			
 			
-			className = o.getTrueClassName();
+			className = o.getClassName();
 			List<AttributeTileSpecification> classSpecs = specification.get(className);
 			for(AttributeTileSpecification ats : classSpecs){
 				String attName = ats.attribute.name;

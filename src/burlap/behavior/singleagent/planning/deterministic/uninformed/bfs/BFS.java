@@ -5,15 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.common.UniformCostRF;
@@ -41,18 +42,27 @@ public class BFS extends DeterministicPlanner {
 	 * @param gc the test for goal states
 	 * @param hashingFactory the state hashing factory to use.
 	 */
-	public BFS(Domain domain, StateConditionTest gc, StateHashFactory hashingFactory){
+	public BFS(Domain domain, StateConditionTest gc, HashableStateFactory hashingFactory){
 		this.deterministicPlannerInit(domain, new UniformCostRF(), new NullTermination(), gc, hashingFactory);
 	}
-	
-	
+
+
+	/**
+	 * Plans and returns a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}. If
+	 * a {@link burlap.oomdp.core.states.State} is not in the solution path of this planner, then
+	 * the {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy} will throw
+	 * a runtime exception. If you want a policy that will dynamically replan for unknown states,
+	 * you should create your own {@link burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy}.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public SDPlannerPolicy planFromState(State initialState) {
 		
-		StateHashTuple sih = this.stateHash(initialState);
+		HashableState sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
-			return ; //no need to plan since this is already solved
+			return new SDPlannerPolicy(this); //no need to plan since this is already solved
 		}
 		
 		
@@ -98,7 +108,7 @@ public class BFS extends DeterministicPlanner {
 			//add children reach from each deterministic action
 			for(GroundedAction ga : gas){
 				State ns = ga.executeIn(s);
-				StateHashTuple nsh = this.stateHash(ns);
+				HashableState nsh = this.stateHash(ns);
 				SearchNode nsn = new SearchNode(nsh, ga, node);
 				
 				if(openedSet.contains(nsn)){
@@ -121,6 +131,8 @@ public class BFS extends DeterministicPlanner {
 
 		
 		DPrint.cl(debugCode,"Num Expanded: " + nexpanded);
+
+		return new SDPlannerPolicy(this);
 		
 	}
 

@@ -1,12 +1,16 @@
 package burlap.oomdp.singleagent.explorer;
 
+import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.common.NullRewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
+import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,7 +20,7 @@ import java.util.Map;
 
 
 /**
- * This class allows you act as the agent by choosing actions to take in specific states. States are
+ * This class allows you act as the agent by choosing actions in an {@link burlap.oomdp.singleagent.environment.Environment}. States are
  * conveyed to the user through a text description in the terminal and the user specifies actions
  * by typing the actions into the terminal. Shorthand names for actions names may be provided. Action
  * parameters are specified by space delineated input. For instance: "stack block0 block1" will cause
@@ -24,63 +28,74 @@ import java.util.Map;
  * causes the state to reset to the initial state provided to the explorer. Other special commands
  * to modify the state can also be given by starting the line with a # symbol. The full syntax structure for modifying
  * states will be printed to the terminal when the explorer is launched.
- * <br/><br/>
- * This class can also be provided a reward function and terminal function through the
- * {@link #setRewardFunction(burlap.oomdp.singleagent.RewardFunction)} and
- * {@link #setTerminalFunctionf(burlap.oomdp.core.TerminalFunction)} methods, which will
- * cause the terminal to print out the reward for transitions and whether the current state
- * is a terminal state.
  * @author James MacGlashan
  *
  */
 public class TerminalExplorer {
 	
 	protected Domain					domain;
+	protected Environment				env;
 	protected Map <String, String>		actionShortHand;
-	protected RewardFunction			rewardFunction;
-	protected TerminalFunction			terminalFunction;
 
 
 	protected GroundedAction			lastAction;
 	
 	/**
-	 * Initializes the explorer with the specified domain
+	 * Initializes the explorer with the specified domain using a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment} with
+	 * a {@link burlap.oomdp.singleagent.common.NullRewardFunction} and {@link burlap.oomdp.auxiliary.common.NullTermination}
 	 * @param domain the domain to explore
+	 * @param baseState the initial {@link burlap.oomdp.core.states.State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
 	 */
-	public TerminalExplorer(Domain domain){
+	public TerminalExplorer(Domain domain, State baseState){
+		this.env = new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), baseState);
 		this.domain = domain;
 		this.setActionShortHand(new HashMap <String, String>());
 	}
 	
 	/**
-	 * Initializes the explorer with the specified domain and short hand names for actions
+	 * Initializes the explorer with the specified domain using a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment} with
+	 * a {@link burlap.oomdp.singleagent.common.NullRewardFunction} and {@link burlap.oomdp.auxiliary.common.NullTermination}
+	 * and short hand names for actions
 	 * @param domain the domain to explore
 	 * @param ash a map from short hand names to full action names. For instance, "s->stack"
+	 * @param baseState the initial {@link burlap.oomdp.core.states.State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
 	 */
-	public TerminalExplorer(Domain domain, Map <String, String> ash){
+	public TerminalExplorer(Domain domain, Map <String, String> ash, State baseState){
+		this.env = new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), baseState);
 		this.domain = domain;
 		this.setActionShortHand(ash);
 	}
 
 
-	public RewardFunction getRewardFunction() {
-		return rewardFunction;
-	}
-
-	public void setRewardFunction(RewardFunction rewardFunction) {
-		this.rewardFunction = rewardFunction;
-	}
-
-	public TerminalFunction getTerminalFunction() {
-		return terminalFunction;
-	}
-
-	public void setTerminalFunctionf(TerminalFunction terminalFunction) {
-		this.terminalFunction = terminalFunction;
+	/**
+	 * Initializes.
+	 * @param domain the {@link burlap.oomdp.core.Domain} to explore
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} with which to interact.
+	 */
+	public TerminalExplorer(Domain domain, Environment env){
+		this.domain = domain;
+		this.env = env;
+		this.setActionShortHand(new HashMap <String, String>());
 	}
 
 	/**
-	 * Sets teh short hand names to use for actions.
+	 * Initializes the explorer with the specified domain using a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment} with
+	 * a {@link burlap.oomdp.singleagent.common.NullRewardFunction} and {@link burlap.oomdp.auxiliary.common.NullTermination}
+	 * and short hand names for actions
+	 * @param domain the domain to explore
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} with which to interact
+	 * @param ash a map from short hand names to full action names. For instance, "s->stack"
+	 */
+	public TerminalExplorer(Domain domain, Environment env, Map <String, String> ash){
+		this.env = env;
+		this.domain = domain;
+		this.setActionShortHand(ash);
+	}
+
+
+
+	/**
+	 * Sets the short hand names to use for actions.
 	 * @param ash a map from short hand names to full action names. For instance, "s->stack"
 	 */
 	public void setActionShortHand(Map <String, String> ash){
@@ -103,10 +118,9 @@ public class TerminalExplorer {
 	
 	
 	/**
-	 * Starts the explorer to run from state s
-	 * @param s the state from which to explore.
+	 * Starts the explorer.
 	 */
-	public void exploreFromState(State s){
+	public void explore(){
 
 
 		System.out.println("Special Command Syntax:\n"+
@@ -116,28 +130,28 @@ public class TerminalExplorer {
 				"    #addRelation sourceObject relationalAttribute targetObject\n" +
 				"    #removeRelation sourceObject relationalAttribute targetObject\n" +
 				"    #clearRelations sourceObject relationalAttribute\n" +
-				"    #reset\n\n");
+				"    #reset\n" +
+				"    #pollState\n" +
+				"    #lsActions\n" +
+				"    #quit\n\n");
 
 
-		State src = s.copy();
-		State oldState = src;
 		String actionPromptDelimiter = "-----------------------------------";
-		
+
+
 		while(true){
 			
-			this.printState(s);
-			if(this.terminalFunction != null){
-				if(this.terminalFunction.isTerminal(s)){
-					System.out.println("State IS terminal");
-				}
-				else{
-					System.out.println("State is NOT terminal");
-				}
+			this.printState(this.env.getCurrentObservation());
+
+			if(this.env.isInTerminalState()){
+				System.out.println("State IS terminal");
 			}
-			if(this.rewardFunction != null && this.lastAction != null){
-				double r = this.rewardFunction.reward(oldState, lastAction, s);
-				System.out.println("Reward: " + r);
+			else{
+				System.out.println("State is NOT terminal");
 			}
+
+			System.out.println("Last Reward: " + this.env.getLastReward());
+
 			
 			System.out.println(actionPromptDelimiter);
 			
@@ -149,17 +163,22 @@ public class TerminalExplorer {
 				line = in.readLine();
 				
 				if(line.equals("#reset")){
-					s = src;
-					this.lastAction = null;
+					this.env.resetEnvironment();
+				}
+				else if(line.equals("#quit")){
+					break;
 				}
 				else if(line.startsWith("#")){
 					//then do console command parsing
 					String command = line.substring(1).trim();
-					State ns = this.parseCommand(s, command);
-					if(ns != null) {
-						this.lastAction = null;
-						s = ns;
+					State ns = this.parseCommand(this.env.getCurrentObservation(), command);
+					if(ns != null && this.env instanceof StateSettableEnvironment){
+						((StateSettableEnvironment) this.env).setCurStateTo(ns);
 					}
+					else if(ns != null){
+						System.out.println("Cannot manually set the environment state because the environment does not implement StateSettableEnvironment");
+					}
+
 				}
 				else{
 					
@@ -188,11 +207,10 @@ public class TerminalExplorer {
 						System.out.println("Unknown action: " + actionName + "; nothing changed");
 					}
 					else{
-						GroundedAction ga = new GroundedAction(action, params);
-						if(action.applicableInState(s, params)) {
-							oldState = s;
-							s = action.performAction(s, params);
-							this.lastAction = ga;
+						GroundedAction ga = action.getAssociatedGroundedAction();
+						ga.initParamsWithStringRep(params);
+						if(action.applicableInState(this.env.getCurrentObservation(), ga)) {
+							ga.executeIn(this.env);
 						}
 						else{
 							System.out.println(ga.toString() + " is not applicable in the current state; nothing changed");
@@ -263,13 +281,23 @@ public class TerminalExplorer {
 				}
 			} else if(comps[0].equals("add")) {
 				if(comps.length == 3) {
-					ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(comps[1]), comps[2]);
+					ObjectInstance o = new MutableObjectInstance(this.domain.getObjectClass(comps[1]), comps[2]);
 					ns.addObject(o);
 				}
 			} else if(comps[0].equals("remove")) {
 				if(comps.length == 2) {
 					ns.removeObject(comps[1]);
 				}
+			} else if(comps[0].equals("pollState")){
+				return null;
+			}
+			else if(comps[0].equals("lsActions")){
+				List<GroundedAction> actions = Action.getAllApplicableGroundedActionsFromActionList(this.domain.getActions(), curState);
+				System.out.println("Applicable actions:");
+				for(GroundedAction ga : actions){
+					System.out.println(ga.toString());
+				}
+				return null;
 			}
 		}
 
@@ -288,7 +316,5 @@ public class TerminalExplorer {
 		
 	}
 
-
-	
 
 }

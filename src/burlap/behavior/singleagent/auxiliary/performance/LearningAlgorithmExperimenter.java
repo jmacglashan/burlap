@@ -7,20 +7,24 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentServer;
 
 
 /**
- * This class is used to simplify the comparison of different learning algorithms. It takes as input a reward function
- * to measure performance, an initial state generator, a number of trials, the length of the trials, and an array of
- * learning agent factories used to generated agent instances and compare their performance. The length of the trials
- * by default is assumed to be in episodes, but it may also be changed to indicate length in total number of steps using
- * the {@link #toggleTrialLengthInterpretation(boolean)} method.
+ * This class is used to simplify the comparison of different learning algorithms. It takes as input a test {@link burlap.oomdp.singleagent.environment.Environment}
+ * in which to perform the experiments,
+ * a number of trials, the length of the trials, and an array of learning agent factories used to generated agent instances and compare their performance.
+ * The {@link burlap.oomdp.singleagent.environment.Environment} may optionally implement the {@link burlap.behavior.singleagent.auxiliary.performance.ExperimentalEnvironment}
+ * interface which will let this class to tell the {@link burlap.oomdp.singleagent.environment.Environment} whenever experiments with a new agent class (defined by
+ * an {@link burlap.behavior.singleagent.learning.LearningAgentFactory} is begun).
+ * The length of the trials by default is assumed to be in episodes, but it may also be changed to indicate length in total number of steps using the 
+ * {@link #toggleTrialLengthInterpretation(boolean)} method.
  * <p/>
- * Performance results are displayed in plots using the {@link PerformancePlotter} class, but visualization may also be
- * disabled with the {@link #toggleVisualPlots(boolean)} method. Results may be saved to csv files after the experiment
- * is complete.
+ * Performance results are displayed in plots using the {@link PerformancePlotter} class, but visualization may also be disabled with the {@link #toggleVisualPlots(boolean)}
+ * method. Results may be saved to csv files after the experiment is complete.
  * <p/>
- * The folow the experimenter is to test an agent for a specified number of trials. At the beginning of each trial, a new agent is generated using the designated
+ * The purpose of the experimenter is to test an agent for a specified number of trials. At the beginning of each trial, a new agent is generated using the designated
  * LearningAgentFactory and is used for the specified trial length. After all trials are complete for an agent, the next agent is tested. Note that immediately before
  * an agent is generated from an agent factory, the performance plotter is temporarily frozen from collecting data until the new agent is returned. This allows
  * agent factories to perform offline learning before returning a new agent in the same domain without affecting the experimenter results.
@@ -34,24 +38,20 @@ import burlap.oomdp.singleagent.SADomain;
  */
 public class LearningAlgorithmExperimenter {
 
+
 	/**
-	 * The domain in which the agents will be tested.
+	 * The test {@link burlap.oomdp.singleagent.environment.Environment} in which experiments will be performed.
 	 */
-	protected SADomain					domain;
-	
-	
+	protected Environment 		testEnvironment;
+
+
 	/**
-	 * The reward function used to evaluate performance
+	 * The {@link burlap.oomdp.singleagent.environment.EnvironmentServer} that wraps the test {@link burlap.oomdp.singleagent.environment.Environment}
+	 * and tells a {@link burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter} about the individual interactions.
 	 */
-	protected RewardFunction			rf;
-	
-	
-	/**
-	 * The state generated used to generate states at the beginning of each episode
-	 */
-	protected StateGenerator			sg;
-	
-	
+	protected EnvironmentServer environmentSever;
+
+
 	/**
 	 * The array of agent factories for the agents to be compared.
 	 */
@@ -59,7 +59,7 @@ public class LearningAlgorithmExperimenter {
 	
 	
 	/**
-	 * The number of trials that each agent is evaluted
+	 * The number of trials that each agent is evaluated
 	 */
 	protected int						nTrials;
 	
@@ -110,6 +110,8 @@ public class LearningAlgorithmExperimenter {
 	 * The debug code used for debug printing. This experimenter will print with the debugger the number of trials completed for each agent.
 	 */
 	public int							debugCode = 63634013;
+
+
 	
 	
 	
@@ -117,22 +119,18 @@ public class LearningAlgorithmExperimenter {
 	 * Initializes.
 	 * The trialLength will be interpreted as the number of episodes, but it can be reinterpreted as a total number of steps per trial using the
 	 * {@link #toggleTrialLengthInterpretation(boolean)}.
-	 * @param domain the domain in which agents will be tested
-	 * @param rf the reward function used to measure performance
-	 * @param sg the state generated used to generate states at the beginning of each episode
+	 * @param testEnvironment the test {@link burlap.oomdp.singleagent.environment.Environment} in which experiments will be performed.
 	 * @param nTrials the number of trials
 	 * @param trialLength the length of the trials (by default in episodes, but can be intereted as maximum step length)
 	 * @param agentFactories factories to generate the agents to be tested.
 	 */
-	public LearningAlgorithmExperimenter(SADomain domain, RewardFunction rf, StateGenerator sg, int nTrials, int trialLength, LearningAgentFactory...agentFactories){
+	public LearningAlgorithmExperimenter(Environment testEnvironment, int nTrials, int trialLength, LearningAgentFactory...agentFactories){
 		
 		if(agentFactories.length == 0){
 			throw new RuntimeException("Zero agent factories provided. At least one must be given for an experiment");
 		}
 		
-		this.domain = domain;
-		this.rf = rf;
-		this.sg = sg;
+		this.testEnvironment = testEnvironment;
 		this.nTrials = nTrials;
 		this.trialLength = trialLength;
 		this.agentFactories = agentFactories;
@@ -156,7 +154,7 @@ public class LearningAlgorithmExperimenter {
 		}
 		
 		this.displayPlots = true;
-		this.plotter = new PerformancePlotter(this.agentFactories[0].getAgentName(), this.rf, chartWidth, chartHeight, columns, maxWindowHeight, trialMode, metrics);
+		this.plotter = new PerformancePlotter(this.agentFactories[0].getAgentName(), chartWidth, chartHeight, columns, maxWindowHeight, trialMode, metrics);
 		this.plotter.setRefreshDelay(this.plotRefresh);
 		this.plotter.setSignificanceForCI(this.plotCISignificance);
 	}
@@ -222,12 +220,13 @@ public class LearningAlgorithmExperimenter {
 				trialMode = TrialMode.MOSTRECENTTTRIALONLY;
 			}
 			
-			this.plotter = new PerformancePlotter(this.agentFactories[0].getAgentName(), rf, 500, 250, 2, 500, trialMode);
+			this.plotter = new PerformancePlotter(this.agentFactories[0].getAgentName(), 500, 250, 2, 500, trialMode);
 				
 		}
 		
 		
-		this.domain.addActionObserverForAllAction(plotter);
+		//this.domain.addActionObserverForAllAction(plotter);
+		this.environmentSever = new EnvironmentServer(this.testEnvironment, plotter);
 		
 		if(this.displayPlots){
 			this.plotter.startGUI();
@@ -238,7 +237,10 @@ public class LearningAlgorithmExperimenter {
 			if(i > 0){
 				this.plotter.startNewAgent(this.agentFactories[i].getAgentName());
 			}
-			
+
+			if(this.testEnvironment instanceof ExperimentalEnvironment){
+				((ExperimentalEnvironment)this.testEnvironment).startNewExperiment();
+			}
 			for(int j = 0; j < this.nTrials; j++){
 				
 				DPrint.cl(this.debugCode, "Beginning " + this.agentFactories[i].getAgentName() + " trial " + (j+1) + "/" + this.nTrials);
@@ -324,8 +326,9 @@ public class LearningAlgorithmExperimenter {
 		this.plotter.startNewTrial();
 		
 		for(int i = 0; i < this.trialLength; i++){
-			agent.runLearningEpisodeFrom(sg.generateState());
+			agent.runLearningEpisode(this.environmentSever);
 			this.plotter.endEpisode();
+			this.environmentSever.resetEnvironment();
 		}
 		
 		this.plotter.endTrial();
@@ -351,9 +354,10 @@ public class LearningAlgorithmExperimenter {
 		
 		int stepsRemaining = this.trialLength;
 		while(stepsRemaining > 0){
-			EpisodeAnalysis ea = agent.runLearningEpisodeFrom(sg.generateState(), stepsRemaining);
+			EpisodeAnalysis ea = agent.runLearningEpisode(this.environmentSever, stepsRemaining);
 			stepsRemaining -= ea.numTimeSteps()-1; //-1  because we want to subtract the number of actions, not the number of states seen
 			this.plotter.endEpisode();
+			this.environmentSever.resetEnvironment();
 		}
 		
 		this.plotter.endTrial();

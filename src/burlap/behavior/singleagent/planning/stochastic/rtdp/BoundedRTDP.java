@@ -6,15 +6,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -52,7 +54,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class BoundedRTDP extends ValueFunctionPlanner {
+public class BoundedRTDP extends DynamicProgramming implements Planner {
 
 	
 	/**
@@ -81,12 +83,12 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	/**
 	 * The lower bound value function
 	 */
-	protected Map<StateHashTuple, Double>		lowerBoundV = new HashMap<StateHashTuple, Double>();
+	protected Map<HashableState, Double>		lowerBoundV = new HashMap<HashableState, Double>();
 	
 	/**
 	 * The upperbound value function
 	 */
-	protected Map<StateHashTuple, Double>		upperBoundV = new HashMap<StateHashTuple, Double>();
+	protected Map<HashableState, Double>		upperBoundV = new HashMap<HashableState, Double>();
 	
 	
 	/**
@@ -119,14 +121,14 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	
 	
 	/**
-	 * Whether the current {@link ValueFunctionPlanner} valueFunction reference points to the lower bound value function or the upper bound value function.
+	 * Whether the current {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} valueFunction reference points to the lower bound value function or the upper bound value function.
 	 * If true, then it points to the lower bound; if false then to the upper bound.
 	 */
 	protected boolean							currentValueFunctionIsLower = false;
 	
 	
 	/**
-	 * Sets what the {@link ValueFunctionPlanner} valueFunction reference points to (the lower bound or upperbound) once a planning rollout is complete.
+	 * Sets what the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} valueFunction reference points to (the lower bound or upperbound) once a planning rollout is complete.
 	 * If true, then it points to the lower bound; if false then the upper bound. Pointing to the lower bound is default and provides any-time planning
 	 * performance.
 	 */
@@ -169,9 +171,9 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	 * @param maxDiff the max permitted difference in value function margin to permit planning termination. This value is also used to prematurely stop a rollout if the next state's margin is under this value.
 	 * @param maxRollouts the maximum number of rollouts permitted before planning is forced to terminate. If set to -1 then there is no limit.
 	 */
-	public BoundedRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, 
+	public BoundedRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory,
 			ValueFunctionInitialization lowerVInit, ValueFunctionInitialization upperVInit, double maxDiff, int maxRollouts){
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		this.lowerVInit = lowerVInit;
 		this.upperVInit = upperVInit;
 		this.maxDiff = maxDiff;
@@ -230,9 +232,17 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	public void setRunRolloutsInRevere(boolean runRolloutsInRevers){
 		this.runRolloutsInReverse = runRolloutsInRevers;
 	}
-	
+
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 	
 		DPrint.cl(this.debugCode, "Beginning Planning.");
 		int nr = 0;
@@ -242,6 +252,8 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 		
 		
 		DPrint.cl(this.debugCode, "Finished planning with a total of " + this.numBellmanUpdates + " backups.");
+
+		return new GreedyQPolicy(this);
 
 	}
 	
@@ -287,9 +299,9 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	 * @return the margin between the lower bound and upper bound value function for the initial state.
 	 */
 	public double runRollout(State s){
-		LinkedList<StateHashTuple> trajectory = new LinkedList<StateHashTuple>();
+		LinkedList<HashableState> trajectory = new LinkedList<HashableState>();
 		
-		StateHashTuple csh = this.hashingFactory.hashState(s);
+		HashableState csh = this.hashingFactory.hashState(s);
 		
 		while(!this.tf.isTerminal(csh.s) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
 			
@@ -329,7 +341,7 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 		//run in reverse
 		if(this.runRolloutsInReverse){
 			while(trajectory.size() > 0){
-				StateHashTuple sh = trajectory.pop();
+				HashableState sh = trajectory.pop();
 				this.setValueFunctionToLowerBound();
 				QValue mxL = this.maxQ(sh.s);
 				this.lowerBoundV.put(sh, mxL.q);
@@ -368,7 +380,7 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	protected StateSelectionAndExpectedGap getNextState(State s, GroundedAction a){
 		
 		if(this.selectionMode == StateSelectionMode.MODELBASED){
-			StateHashTuple nsh =  this.hashingFactory.hashState(a.executeIn(s));
+			HashableState nsh =  this.hashingFactory.hashState(a.executeIn(s));
 			double gap = this.getGap(nsh);
 			return new StateSelectionAndExpectedGap(nsh, gap);
 		}
@@ -391,12 +403,12 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	 */
 	protected StateSelectionAndExpectedGap getNextStateByMaxMargin(State s, GroundedAction a){
 		
-		List<TransitionProbability> tps = a.action.getTransitions(s, a.params);
+		List<TransitionProbability> tps = a.getTransitions(s);
 		double sum = 0.;
 		double maxGap = Double.NEGATIVE_INFINITY;
-		List<StateHashTuple> maxStates = new ArrayList<StateHashTuple>(tps.size());
+		List<HashableState> maxStates = new ArrayList<HashableState>(tps.size());
 		for(TransitionProbability tp : tps){
-			StateHashTuple nsh = this.hashingFactory.hashState(tp.s);
+			HashableState nsh = this.hashingFactory.hashState(tp.s);
 			double gap = this.getGap(nsh);
 			sum += tp.p*gap;
 			if(gap == maxGap){
@@ -425,13 +437,13 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	 */
 	protected StateSelectionAndExpectedGap getNextStateBySampling(State s, GroundedAction a){
 		
-		List<TransitionProbability> tps = a.action.getTransitions(s, a.params);
+		List<TransitionProbability> tps = a.getTransitions(s);
 		double sum = 0.;
 		double [] weightedGap = new double[tps.size()];
-		StateHashTuple[] hashedStates = new StateHashTuple[tps.size()];
+		HashableState[] hashedStates = new HashableState[tps.size()];
 		for(int i = 0; i < tps.size(); i++){
 			TransitionProbability tp = tps.get(i);
-			StateHashTuple nsh = this.hashingFactory.hashState(tp.s);
+			HashableState nsh = this.hashingFactory.hashState(tp.s);
 			hashedStates[i] = nsh;
 			double gap = this.getGap(nsh);
 			weightedGap[i] = tp.p*gap;
@@ -458,7 +470,7 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 	 * @param sh the state whose margin should be returned.
 	 * @return the lower bound and upper bound value function margin/gap for the given state
 	 */
-	protected double getGap(StateHashTuple sh){
+	protected double getGap(HashableState sh){
 		this.setValueFunctionToLowerBound();
 		double l = this.value(sh);
 		this.setValueFunctionToUpperBound();
@@ -508,7 +520,7 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 		/**
 		 * The selected state
 		 */
-		public StateHashTuple sh;
+		public HashableState sh;
 		
 		/**
 		 * The expected margin/gap of the value function from the source transition
@@ -520,7 +532,7 @@ public class BoundedRTDP extends ValueFunctionPlanner {
 		 * @param sh The selected state
 		 * @param expectedGap The expected margin/gap of the value function from the source transition
 		 */
-		public StateSelectionAndExpectedGap(StateHashTuple sh, double expectedGap){
+		public StateSelectionAndExpectedGap(HashableState sh, double expectedGap){
 			this.sh = sh;
 			this.expectedGap = expectedGap;
 		}

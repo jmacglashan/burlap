@@ -4,30 +4,30 @@ import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.modellearning.DomainMappedPolicy;
 import burlap.behavior.singleagent.learning.modellearning.Model;
-import burlap.behavior.singleagent.learning.modellearning.ModelPlanner;
-import burlap.behavior.singleagent.learning.modellearning.ModelPlanner.ModelPlannerGenerator;
+import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
 import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
-import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelPlanner;
+import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelLearningPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.behavior.statehashing.StateHashFactory;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
  * Potential Shaped RMax [1] is a generalization of RMax in which a potential-shaped reward function is used to provide less (but still admissible)
  * optimistic views of unknown state transitions. If no potential function is provided to this class, then it defaults to classic RMax optimism.
  *
- * The default constructor will use value iteration for planning, but you can provide any planner you'd like. Similarly,
+ * The default constructor will use value iteration for planning, but you can provide any valueFunction you'd like. Similarly,
  * the default constructor will use a tabular transition/reward model, but you can also provide your own model learning.
  * See the {@link burlap.behavior.singleagent.learning.modellearning.Model} class for more information on defining your
  * own model.
@@ -37,7 +37,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
+public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 
 	/**
 	 * The model of the world that is being learned.
@@ -45,7 +45,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	protected Model								model;
 	
 	/**
-	 * The modeled domain object containing the modeled actions that a planner will use.
+	 * The modeled domain object containing the modeled actions that a valueFunction will use.
 	 */
 	protected Domain							modeledDomain;
 	
@@ -63,7 +63,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	/**
 	 * The model-adaptive planning algorithm to use
 	 */
-	protected ModelPlanner						modelPlanner;
+	protected ModelLearningPlanner 				modelPlanner;
 	
 	
 	/**
@@ -83,10 +83,8 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	
 	
 	/**
-	 * Initializes for a tabular model, VI planner, and standard RMax paradigm
+	 * Initializes for a tabular model, VI valueFunction, and standard RMax paradigm
 	 * @param domain the real world domain
-	 * @param rf the real world reward function
-	 * @param tf the real world terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory to use for VI and the tabular model
 	 * @param maxReward the maximum possible reward
@@ -94,28 +92,26 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
-	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxReward, int nConfident,
+	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, double maxReward, int nConfident,
 			double maxVIDelta, int maxVIPasses){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		this.model = new TabularModel(domain, hashingFactory, nConfident);
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), new RMaxPotential(maxReward, gamma));
 		
-		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
+		this.modelPlanner = new VIModelLearningPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
 	}
 	
 	
 	/**
-	 * Initializes for a tabular model, VI planner, and potential shaped function.
+	 * Initializes for a tabular model, VI valueFunction, and potential shaped function.
 	 * @param domain the real world domain
-	 * @param rf the real world reward function
-	 * @param tf the real world terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory to use for VI and the tabular model
 	 * @param potential the admissible potential function
@@ -123,47 +119,47 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
-	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, PotentialFunction potential, int nConfident,
+	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, PotentialFunction potential, int nConfident,
 			double maxVIDelta, int maxVIPasses){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		this.model = new TabularModel(domain, hashingFactory, nConfident);
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
 		
-		this.modelPlanner = new VIModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
+		this.modelPlanner = new VIModelLearningPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
 	}
 	
 	
 	/**
-	 * Initializes for a given model, model planner, and potential shaped function.
+	 * Initializes for a given model, model learning planner, and potential shaped function.
 	 * @param domain the real world domain
-	 * @param rf the real world reward function
-	 * @param tf the real world terminal function
-	 * @param gamma the discount factor
 	 * @param hashingFactory a state hashing factory for indexing states
 	 * @param potential the admissible potential function
 	 * @param model the model/model-learning algorithm to use
-	 * @param plannerGenerator a generator for a model planner
+	 * @param plannerGenerator a generator for a model valueFunction
 	 */
-	public PotentialShapedRMax(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, PotentialFunction potential,
-			Model model, ModelPlannerGenerator plannerGenerator){
+	public PotentialShapedRMax(Domain domain, HashableStateFactory hashingFactory, PotentialFunction potential,
+			Model model, ModelLearningPlanner plannerGenerator){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, null, null, gamma, hashingFactory);
 		this.model = model;
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model, true);
+		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		this.modeledDomain = mdg.generateDomain();
 		
 		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
 		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
-		
-		this.modelPlanner = plannerGenerator.getModelPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma);
+
+		this.modelPlanner = plannerGenerator;
+		this.modelPlanner.setDomain(modeledDomain);
+		this.modelPlanner.setRf(modeledRewardFunction);
+		this.modelPlanner.setTf(modeledTerminalFunction);
 		
 	}
 
@@ -189,7 +185,7 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 	 * Returns the planning algorithm used on the model that can be iteratively updated as the model changes.
 	 * @return the planning algorithm used on the model
 	 */
-	public ModelPlanner getModelPlanner() {
+	public ModelLearningPlanner getModelPlanner() {
 		return modelPlanner;
 	}
 
@@ -211,72 +207,70 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		return modeledTerminalFunction;
 	}
 
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState){
-		return this.runLearningEpisodeFrom(initialState, maxNumSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
-	
+
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+		State initialState = env.getCurrentObservation();
+
 		this.modelPlanner.initializePlannerIn(initialState);
-		
+
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
-		
-		//DomainMappedPolicy policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
-		Policy policy = this.createDomainMappedPolicy();
-		
+
+		Policy policy = this.createUnmodeledFavoredPolicy();
+
 		State curState = initialState;
 		int steps = 0;
-		while(!this.tf.isTerminal(curState) && steps < maxSteps){
-			
+		while(!env.isInTerminalState() && (steps < maxSteps || maxSteps == -1)){
+
 			GroundedAction ga = (GroundedAction)policy.getAction(curState);
-			State nextState = ga.executeIn(curState);
-			double r = this.rf.reward(curState, ga, nextState);
-			boolean isTerminal = this.tf.isTerminal(nextState);
+			EnvironmentOutcome eo = ga.executeIn(env);
+			ea.recordTransitionTo(ga, eo.op, eo.r);
 
-			ea.recordTransitionTo(ga, nextState, r);
+			boolean modeledTerminal = this.model.getModelTF().isTerminal(eo.op);
 
-			boolean modeledTerminal = this.model.getModelTF().isTerminal(nextState);
-
-			if(!this.model.transitionIsModeled(curState, ga) || !this.model.stateTransitionsAreModeled(nextState)){
-				this.model.updateModel(curState, ga, nextState, r, isTerminal);
-				if(this.model.transitionIsModeled(curState, ga) || (isTerminal != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(nextState))){
+			if(!this.model.transitionIsModeled(curState, ga) || (!this.model.stateTransitionsAreModeled(eo.op) && !modeledTerminal)){
+				this.model.updateModel(eo);
+				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(eo.op))){
 					this.modelPlanner.modelChanged(curState);
-					//policy = new DomainMappedPolicy(domain, this.modelPlanner.modelPlannedPolicy());
-					policy = this.createDomainMappedPolicy();
+					policy = this.createUnmodeledFavoredPolicy();
 				}
 			}
-			
-			
-			curState = nextState;
-			
+
+
+			curState = env.getCurrentObservation();
+
 			steps++;
 		}
-		
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 		}
 		episodeHistory.offer(ea);
-		
-		
+
+
 		return ea;
+
 	}
 
 
-	protected Policy createDomainMappedPolicy(){
-		return new DomainMappedPolicy(domain, new UnmodeledFavoredPolicy(
+
+	protected Policy createUnmodeledFavoredPolicy(){
+		return new UnmodeledFavoredPolicy(
 				this.modelPlanner.modelPlannedPolicy(),
 				this.model,
-				this.modeledDomain.getActions()));
+				this.modeledDomain.getActions());
 	}
 
-	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
-	@Override
 	public void setNumEpisodesToStore(int numEps) {
 		if(numEps > 0){
 			numEpisodesToStore = numEps;
@@ -286,21 +280,15 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		}
 	}
 
-	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return episodeHistory;
 	}
 
-	@Override
-	public void planFromState(State initialState) {
-		throw new RuntimeException("Model learning algorithms should not be used as planning algorithms.");
-	}
-
 	
 	@Override
-	public void resetPlannerResults(){
+	public void resetSolver(){
 		this.model.resetModel();
-		this.modelPlanner.resetPlanner();
+		this.modelPlanner.resetSolver();
 		this.episodeHistory.clear();
 	}
 	
@@ -329,14 +317,6 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		
 		@Override
 		public boolean isTerminal(State s) {
-
-
-			//RMaxStates are terminal states
-			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
-				return true;
-			}
-
-
 			//states with unmodeled transitions are terminal states; bias will be captured by the potential function
 			if(!PotentialShapedRMax.this.model.stateTransitionsAreModeled(s)){
 				return true;
@@ -380,9 +360,6 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 
 		@Override
 		public double potentialValue(State s) {
-			if(s.getObjectsOfClass(ModeledDomainGenerator.RMAXFICTIOUSSTATENAME).size() > 0){
-				return 0.;
-			}
 			return this.vmax;
 		}
 		
@@ -422,10 +399,6 @@ public class PotentialShapedRMax extends OOMDPPlanner implements LearningAgent{
 		
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
-			if(ModeledDomainGenerator.isRmaxFictitiousState(sprime)){
-				return 0.; //transitions to fictitious state have no value; bias handled by potential up to unknown state
-			}
-
 			double nextStatePotential = 0.;
 			if(!PotentialShapedRMax.this.model.getModelTF().isTerminal(sprime)){
 				nextStatePotential = this.potential.potentialValue(sprime);

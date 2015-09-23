@@ -1,40 +1,37 @@
 package burlap.testing;
 
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
+import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
+import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
+import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
+import burlap.behavior.singleagent.planning.deterministic.uninformed.dfs.DFS;
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.oomdp.auxiliary.common.SinglePFTF;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.common.UniformCostRF;
+import burlap.oomdp.statehashing.SimpleHashableStateFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.planning.StateConditionTest;
-import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
-import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
-import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
-import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
-import burlap.behavior.singleagent.planning.deterministic.uninformed.dfs.DFS;
-import burlap.behavior.statehashing.DiscreteStateHashFactory;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.domain.singleagent.gridworld.GridWorldStateParser;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.common.SinglePFTF;
-import burlap.oomdp.singleagent.common.UniformCostRF;
-
 public class TestPlanning {
 	public static final double delta = 0.000001;
 	GridWorldDomain gw;
 	Domain domain;
-	GridWorldStateParser parser;
 	RewardFunction rf;
 	TerminalFunction tf;
 	StateConditionTest goalCondition;
-	DiscreteStateHashFactory hashingFactory;
+	SimpleHashableStateFactory hashingFactory;
 	@Before
 	public void setup() {
 		this.gw = new GridWorldDomain(11, 11);
@@ -43,9 +40,7 @@ public class TestPlanning {
 		this.rf = new UniformCostRF();
 		this.tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PFATLOCATION));
 		this.goalCondition = new TFGoalCondition(this.tf);
-		this.hashingFactory = new DiscreteStateHashFactory();
-		this.hashingFactory.setAttributesForClass(GridWorldDomain.CLASSAGENT,
-				this.domain.getObjectClass(GridWorldDomain.CLASSAGENT).attributeList);
+		this.hashingFactory = new SimpleHashableStateFactory();
 	}
 	
 	@Test
@@ -87,9 +82,10 @@ public class TestPlanning {
 				
 				String an = GridWorldDomain.CLASSAGENT;
 				String ln = GridWorldDomain.CLASSLOCATION;
-				
-				ObjectInstance agent = s.getObjectsOfClass(an).get(0);
-				ObjectInstance location = s.getObjectsOfClass(ln).get(0);
+
+				ObjectInstance agent = s.getObjectsOfClass(an).get(0); 
+				ObjectInstance location = s.getObjectsOfClass(ln).get(0); 
+
 				
 				//get agent position
 				int ax = agent.getIntValForAttribute(GridWorldDomain.ATTX);

@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 
 
 /**
@@ -70,7 +70,7 @@ public class ConcatenatedObjectFeatureVectorGenerator implements
 		for (String oclassName : this.objectClassOrder) {
 			List<ObjectInstance> obs = s.getObjectsOfClass(oclassName);
 			if(obs.size() > 0){
-				d += obs.get(0).getObjectClass().numObservableAttributes();
+				d += obs.get(0).getObjectClass().numAttributes();
 				objectsToAdd.addAll(obs);
 			}
 		}
@@ -80,10 +80,10 @@ public class ConcatenatedObjectFeatureVectorGenerator implements
 		for(ObjectInstance o : objectsToAdd){
 			double [] ofv;
 			if(!this.normalizeValues){
-				ofv = o.getObservableFeatureVec();
+				ofv = o.getFeatureVec();
 			}
 			else{
-				ofv = o.getNormalizedObservableFeatureVec();
+				ofv = o.getNormalizedFeatureVec();
 			}
 			for(int j = 0; j < ofv.length; j++){
 				featureVector[i] = ofv[j];

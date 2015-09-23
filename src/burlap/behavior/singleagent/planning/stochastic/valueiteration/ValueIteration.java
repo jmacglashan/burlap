@@ -6,14 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.singleagent.planning.ActionTransitions;
-import burlap.behavior.singleagent.planning.HashedTransitionProbability;
-import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
+import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -32,7 +34,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class ValueIteration extends ValueFunctionPlanner{
+public class ValueIteration extends DynamicProgramming implements Planner {
 
 	/**
 	 * When the maximum change in the value function is smaller than this value, VI will terminate.
@@ -64,7 +66,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 	
 	
 	/**
-	 * Initializers the planner.
+	 * Initializers the valueFunction.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
 	 * @param tf the terminal state function
@@ -73,9 +75,9 @@ public class ValueIteration extends ValueFunctionPlanner{
 	 * @param maxDelta when the maximum change in the value function is smaller than this value, VI will terminate.
 	 * @param maxIterations when the number of VI iterations exceeds this value, VI will terminate.
 	 */
-	public ValueIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, double maxDelta, int maxIterations){
+	public ValueIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
 		
-		this.VFPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
 		
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
@@ -84,12 +86,12 @@ public class ValueIteration extends ValueFunctionPlanner{
 	
 	
 	/**
-	 * Calling this method will force the planner to recompute the reachable states when the {@link #planFromState(State)} method is called next.
+	 * Calling this method will force the valueFunction to recompute the reachable states when the {@link #planFromState(State)} method is called next.
 	 * This may be useful if the transition dynamics from the last planning call have changed and if planning needs to be restarted as a result.
 	 */
 	public void recomputeReachableStates(){
 		this.foundReachableStates = false;
-		this.transitionDynamics = new HashMap<StateHashTuple, List<ActionTransitions>>();
+		this.transitionDynamics = new HashMap<HashableState, List<ActionTransitions>>();
 	}
 	
 	
@@ -101,20 +103,27 @@ public class ValueIteration extends ValueFunctionPlanner{
 	public void toggleReachabiltiyTerminalStatePruning(boolean toggle){
 		this.stopReachabilityFromTerminalStates = toggle;
 	}
-	
-	
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState){
+	public GreedyQPolicy planFromState(State initialState){
 		this.initializeOptionsForExpectationComputations();
 		if(this.performReachabilityFrom(initialState) || !this.hasRunVI){
 			this.runVI();
 		}
-			
+
+		return new GreedyQPolicy(this);
 	}
 	
 	@Override
-	public void resetPlannerResults(){
-		super.resetPlannerResults();
+	public void resetSolver(){
+		super.resetSolver();
 		this.foundReachableStates = false;
 		this.hasRunVI = false;
 	}
@@ -131,13 +140,13 @@ public class ValueIteration extends ValueFunctionPlanner{
 			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use the planFromState or performReachabilityFrom method at least once before calling runVI.");
 		}
 		
-		Set <StateHashTuple> states = mapToStateIndex.keySet();
+		Set <HashableState> states = mapToStateIndex.keySet();
 		
 		int i = 0;
 		for(i = 0; i < this.maxIterations; i++){
 			
 			double delta = 0.;
-			for(StateHashTuple sh : states){
+			for(HashableState sh : states){
 				
 				double v = this.value(sh);
 				double maxQ = this.performBellmanUpdateOn(sh);
@@ -168,7 +177,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 		
 		
 		
-		StateHashTuple sih = this.stateHash(si);
+		HashableState sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
 		if(mapToStateIndex.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
@@ -177,14 +186,14 @@ public class ValueIteration extends ValueFunctionPlanner{
 		DPrint.cl(this.debugCode, "Starting reachability analysis");
 		
 		//add to the open list
-		LinkedList <StateHashTuple> openList = new LinkedList<StateHashTuple>();
-		Set <StateHashTuple> openedSet = new HashSet<StateHashTuple>();
+		LinkedList <HashableState> openList = new LinkedList<HashableState>();
+		Set <HashableState> openedSet = new HashSet<HashableState>();
 		openList.offer(sih);
 		openedSet.add(sih);
 		
 		
 		while(openList.size() > 0){
-			StateHashTuple sh = openList.poll();
+			HashableState sh = openList.poll();
 			
 			//skip this if it's already been expanded
 			if(mapToStateIndex.containsKey(sh)){
@@ -203,7 +212,7 @@ public class ValueIteration extends ValueFunctionPlanner{
 			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
 			for(ActionTransitions at : transitions){
 				for(HashedTransitionProbability tp : at.transitions){
-					StateHashTuple tsh = tp.sh;
+					HashableState tsh = tp.sh;
 					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
 						openedSet.add(tsh);
 						openList.offer(tsh);

@@ -107,5 +107,14 @@ public class HashedAggregator <K>{
 	public Map<K, Double> getHashMap(){
 		return this.storage;
 	}
+
+	/**
+	 * Returns true if this object has a value associated with the specified key, false otherwise.
+	 * @param key the key to check
+	 * @return true if this object has a value associated with the specified key, false otherwise.
+	 */
+	public boolean containsKey(K key){
+		return this.storage.containsKey(key);
+	}
 	
 }

@@ -6,14 +6,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.singleagent.planning.ActionTransitions;
-import burlap.behavior.singleagent.planning.HashedTransitionProbability;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
+import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -56,7 +56,7 @@ public class PrioritizedSweeping extends ValueIteration{
 	 * @param maxBackups the maximum number of Bellman backups. If set to -1, then there is no hard limit.
 	 */
 	public PrioritizedSweeping(Domain domain, RewardFunction rf,
-			TerminalFunction tf, double gamma, StateHashFactory hashingFactory,
+			TerminalFunction tf, double gamma, HashableStateFactory hashingFactory,
 			double maxDelta, int maxBackups) {
 		super(domain, rf, tf, gamma, hashingFactory, maxDelta, 0);
 		this.priorityNodes = new HashIndexedHeap<PrioritizedSweeping.BPTRNode>(new BPTRNodeComparator());
@@ -64,13 +64,7 @@ public class PrioritizedSweeping extends ValueIteration{
 	}
 
 
-	@Override
-	public void planFromState(State initialState) {
-		super.planFromState(initialState);
-	}
-	
-	
-	
+
 	@Override
 	public void runVI(){
 		
@@ -113,7 +107,7 @@ public class PrioritizedSweeping extends ValueIteration{
 	@Override
 	public boolean performReachabilityFrom(State si){
 		
-		StateHashTuple sih = this.stateHash(si);
+		HashableState sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
 		if(mapToStateIndex.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
@@ -150,7 +144,7 @@ public class PrioritizedSweeping extends ValueIteration{
 			List <ActionTransitions> transitions = this.getActionsTransitions(node.sh);
 			for(ActionTransitions at : transitions){
 				for(HashedTransitionProbability tp : at.transitions){
-					StateHashTuple tsh = tp.sh;
+					HashableState tsh = tp.sh;
 					BPTRNode tnode = this.getNodeFor(tsh);
 					tnode.addBackTransition(node);
 					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
@@ -179,7 +173,7 @@ public class PrioritizedSweeping extends ValueIteration{
 	 * @param sh the hashed state for which its node should be returned.
 	 * @return a priority back pointer node for the given hased state 
 	 */
-	protected BPTRNode getNodeFor(StateHashTuple sh){
+	protected BPTRNode getNodeFor(HashableState sh){
 		
 		BPTRNode node = new BPTRNode(sh);
 		BPTRNode stored = this.priorityNodes.containsInstance(node);
@@ -202,7 +196,7 @@ public class PrioritizedSweeping extends ValueIteration{
 	 */
 	protected class BPTRNode{
 		
-		public StateHashTuple sh;
+		public HashableState sh;
 		public List<BPTR> backPointers;
 		public double maxSelfTransitionProb = 0.;
 		public double priority = Double.MAX_VALUE;
@@ -211,7 +205,7 @@ public class PrioritizedSweeping extends ValueIteration{
 		 * Creates a back pointer for the given state with no back pointers and a priority of Double.MAX_VALUE (ensures one sweep of the state space to start)
 		 * @param sh the hased state for which this node will correspond
 		 */
-		public BPTRNode(StateHashTuple sh){
+		public BPTRNode(HashableState sh){
 			this.sh = sh;
 			this.backPointers = new LinkedList<PrioritizedSweeping.BPTR>();
 		}
@@ -279,16 +273,16 @@ public class PrioritizedSweeping extends ValueIteration{
 		 * @param backNode the backwards node
 		 * @param forwardState the state to which the back node transitions
 		 */
-		public BPTR(BPTRNode backNode, StateHashTuple forwardState){
+		public BPTR(BPTRNode backNode, HashableState forwardState){
 			this.backNode = backNode;
 			List<GroundedAction> actions = PrioritizedSweeping.this.getAllGroundedActions(backNode.sh.s);
 			double maxProb = 0.;
 			//find action with maximum transition probability
 			for(GroundedAction ga : actions){
 				//search for match
-				List<TransitionProbability> tps = ga.action.getTransitions(backNode.sh.s, ga.params);
+				List<TransitionProbability> tps = ga.getTransitions(backNode.sh.s);
 				for(TransitionProbability tp : tps){
-					StateHashTuple tpsh = PrioritizedSweeping.this.hashingFactory.hashState(tp.s);
+					HashableState tpsh = PrioritizedSweeping.this.hashingFactory.hashState(tp.s);
 					if(tpsh.equals(forwardState)){
 						maxProb = Math.max(maxProb, tp.p);
 						break;

@@ -1,9 +1,12 @@
 package burlap.oomdp.stochasticgames.explorers;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.stochasticgames.*;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -127,8 +130,8 @@ public class SGTerminalExplorer {
 	 */
 	public void setActionShortHand(Map <String, String> ash){
 		this.actionShortHand = ash;
-		List <SingleAction> actionList = domain.getSingleActions();
-		for(SingleAction a : actionList){
+		List <SGAgentAction> actionList = domain.getAgentActions();
+		for(SGAgentAction a : actionList){
 			this.addActionShortHand(a.actionName, a.actionName);
 		}
 	}
@@ -279,13 +282,14 @@ public class SGTerminalExplorer {
 						params = new String[0];
 					}
 					
-					SingleAction sa = this.domain.getSingleAction(actionName);
+					SGAgentAction sa = this.domain.getSingleAction(actionName);
 					if(sa == null){
 						System.out.println("Unknown action: " + actionName);
 					}
 					else{
-						GroundedSingleAction gsa = new GroundedSingleAction(agentName, sa, params);
-						if(sa.isApplicableInState(s, agentName, params)){
+						GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(agentName);
+						gsa.initParamsWithStringRep(params);
+						if(sa.applicableInState(s, gsa)){
 							System.out.println("Setting action: " + agentName + "::" + actionName);
 							curJointAction.addAction(gsa);
 						}
@@ -360,7 +364,7 @@ public class SGTerminalExplorer {
 				}
 			} else if(comps[0].equals("add")) {
 				if(comps.length == 3) {
-					ObjectInstance o = new ObjectInstance(this.domain.getObjectClass(comps[1]), comps[2]);
+					ObjectInstance o = new MutableObjectInstance(this.domain.getObjectClass(comps[1]), comps[2]);
 					ns.addObject(o);
 				}
 			} else if(comps[0].equals("remove")) {

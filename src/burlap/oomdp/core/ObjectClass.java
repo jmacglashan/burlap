@@ -19,7 +19,6 @@ public class ObjectClass {
 	public Map <String, Integer>			attributeIndex;					//map from attribute name to feature vector index
 	public Map <String, Attribute>			attributeMap;					//map from attribute name to the defining attribute
 	public List <Attribute>					attributeList;					//definitions of object attributes
-	public List <Integer>					observableAttributeIndices;		//feature vector index of only attributes that are observable to the world
 	public boolean							hidden;							//whether this is a hidden object class from the agent, but defines the state space
 	
 	
@@ -36,7 +35,6 @@ public class ObjectClass {
 		this.attributeIndex = new HashMap <String, Integer>();
 		this.attributeMap = new HashMap <String, Attribute>();
 		this.attributeList = new ArrayList <Attribute>();
-		this.observableAttributeIndices = new ArrayList <Integer>();
 		this.hidden = false;
 		
 		this.domain.addObjectClass(this);
@@ -58,7 +56,6 @@ public class ObjectClass {
 		this.attributeIndex = new HashMap <String, Integer>();
 		this.attributeMap = new HashMap <String, Attribute>();
 		this.attributeList = new ArrayList <Attribute>();
-		this.observableAttributeIndices = new ArrayList <Integer>();
 		this.hidden = hidden;
 		this.domain.addObjectClass(this);
 		
@@ -97,7 +94,6 @@ public class ObjectClass {
 	public void setAttributes(List <Attribute> atts){
 		
 		attributeList.clear();
-		observableAttributeIndices.clear();
 		attributeMap.clear();
 		attributeIndex.clear();
 		
@@ -124,10 +120,7 @@ public class ObjectClass {
 		attributeList.add(att);
 		attributeMap.put(att.name, att);
 		attributeIndex.put(att.name, ind);
-		
-		if(!att.hidden){
-			observableAttributeIndices.add(ind);
-		}
+
 		
 	}
 	
@@ -172,14 +165,7 @@ public class ObjectClass {
 	public int numAttributes(){
 		return attributeList.size();
 	}
-	
-	/**
-	 * Returns the number of observable attribtues that define this object class.
-	 * @return the number of observable attribtues that define this object class.
-	 */
-	public int numObservableAttributes(){
-		return this.observableAttributeIndices.size();
-	}
+
 	
 	
 	

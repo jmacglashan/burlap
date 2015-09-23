@@ -1,20 +1,15 @@
 package burlap.oomdp.singleagent.common;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jfree.data.ComparableObjectItem;
 
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.Policy.ActionProb;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
 
 /**
  * This class can be used to lazily cache the reward of a source reward
@@ -31,7 +26,7 @@ public class CachedRewardFunction implements RewardFunction {
 	/**
 	 * The hashing factory to use for indexing states
 	 */
-	protected StateHashFactory hashingFactory;
+	protected HashableStateFactory hashingFactory;
 
 	/**
 	 * The cached rewards
@@ -47,12 +42,12 @@ public class CachedRewardFunction implements RewardFunction {
 	 * Initializes
 	 * 
 	 * @param hashingFactory
-	 *            the {@link burlap.behavior.statehashing.StateHashFactory} to
+	 *            the {@link burlap.behavior.statehashing.HashableStateFactory} to
 	 *            use for indexing states
 	 * @param rewardFunction
 	 *            the source reward function that will be lazily cached.
 	 */
-	public CachedRewardFunction(StateHashFactory hashingFactory,
+	public CachedRewardFunction(HashableStateFactory hashingFactory,
 			RewardFunction rewardFunction) {
 		this.hashingFactory = hashingFactory;
 		this.rewardFunction = rewardFunction;
@@ -62,7 +57,7 @@ public class CachedRewardFunction implements RewardFunction {
 	 * Initializes
 	 * 
 	 * @param hashingFactory
-	 *            the {@link burlap.behavior.statehashing.StateHashFactory} to
+	 *            the {@link burlap.behavior.statehashing.HashableStateFactory} to
 	 *            use for indexing states
 	 * @param rewardFunction
 	 *            the source reward function that will be lazily cached.
@@ -70,7 +65,7 @@ public class CachedRewardFunction implements RewardFunction {
 	 *            the initial memory capacity to be set aside for the policy
 	 *            cache
 	 */
-	public CachedRewardFunction(StateHashFactory hashingFactory,
+	public CachedRewardFunction(HashableStateFactory hashingFactory,
 			RewardFunction rewardFunction, int cacheCapacity) {
 		this.hashingFactory = hashingFactory;
 		this.rewardFunction = rewardFunction;
@@ -79,8 +74,8 @@ public class CachedRewardFunction implements RewardFunction {
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
-		StateHashTuple sh = this.hashingFactory.hashState(s);
-		StateHashTuple sprimeh = this.hashingFactory.hashState(sprime);
+		HashableState sh = this.hashingFactory.hashState(s);
+		HashableState sprimeh = this.hashingFactory.hashState(sprime);
 		Transition transition = new Transition(sh, sprimeh, a);
 		Double value = this.rewardValue.get(transition);
 		if (value == null) {
@@ -91,14 +86,14 @@ public class CachedRewardFunction implements RewardFunction {
 	}
 
 	protected class Transition {
-		private final StateHashTuple sh, sprimeh;
+		private final HashableState sh, sprimeh;
 		private final GroundedAction a;
 
-		public StateHashTuple getSh() {
+		public HashableState getSh() {
 			return sh;
 		}
 
-		public StateHashTuple getSprimeh() {
+		public HashableState getSprimeh() {
 			return sprimeh;
 		}
 
@@ -106,7 +101,7 @@ public class CachedRewardFunction implements RewardFunction {
 			return a;
 		}
 
-		public Transition(StateHashTuple sh, StateHashTuple sprimeh,
+		public Transition(HashableState sh, HashableState sprimeh,
 				GroundedAction a) {
 			this.sh = sh;
 			this.sprimeh = sprimeh;

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
@@ -23,12 +24,12 @@ public class SGDomain extends Domain{
 	/**
 	 * The full set of actions that could be taken by any agent.
 	 */
-	protected Set <SingleAction>						singleActions;
+	protected Set <SGAgentAction> agentActions;
 
 	/**
-	 * A map from action names to their corresponding {@link burlap.oomdp.stochasticgames.SingleAction}
+	 * A map from action names to their corresponding {@link SGAgentAction}
 	 */
-	protected Map <String, SingleAction>				singleActionMap;
+	protected Map <String, SGAgentAction>				singleActionMap;
 
 
 	/**
@@ -39,8 +40,8 @@ public class SGDomain extends Domain{
 	public SGDomain() {
 		super();
 		
-		singleActions = new HashSet<SingleAction>();
-		singleActionMap = new HashMap<String, SingleAction>();
+		agentActions = new HashSet<SGAgentAction>();
+		singleActionMap = new HashMap<String, SGAgentAction>();
 	}
 
 
@@ -61,9 +62,9 @@ public class SGDomain extends Domain{
 	}
 
 	@Override
-	public void addSingleAction(SingleAction sa){
+	public void addSGAgentAction(SGAgentAction sa){
 		if(!this.singleActionMap.containsKey(sa.actionName)){
-			singleActions.add(sa);
+			agentActions.add(sa);
 			singleActionMap.put(sa.actionName, sa);
 		}
 	}
@@ -71,13 +72,13 @@ public class SGDomain extends Domain{
 	
 	
 	@Override
-	public List <SingleAction> getSingleActions(){
-		return new ArrayList<SingleAction>(singleActions);
+	public List <SGAgentAction> getAgentActions(){
+		return new ArrayList<SGAgentAction>(agentActions);
 	}
 	
 	
 	@Override
-	public SingleAction getSingleAction(String name){
+	public SGAgentAction getSingleAction(String name){
 		return singleActionMap.get(name);
 	}
 

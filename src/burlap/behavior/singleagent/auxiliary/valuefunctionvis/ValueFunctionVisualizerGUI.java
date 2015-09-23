@@ -11,13 +11,13 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.oomdp.core.State;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.ValueFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
 
 
@@ -83,12 +83,12 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 
 
 	/**
-	 * A method for creating common gridworld-based value function and policy visualization. The value of states
+	 * A method for creating common 2D arrow glyped value function and policy visualization. The value of states
 	 * will be represented by colored cells from red (lowest value) to blue (highest value). North-south-east-west
 	 * actions will be rendered with arrows using {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph}
 	 * objects. The GUI will not be launched by default; call the {@link #initGUI()} on the returned object to start it.
 	 * @param states the states whose value should be rendered.
-	 * @param planner the planner that can return the value function.
+	 * @param valueFunction the valueFunction that can return the state values.
 	 * @param p the policy to render
 	 * @param classWithPositionAtts the class which contains the x-y position information of the state
 	 * @param xAttName the name of the x attribute
@@ -99,7 +99,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param westActionName the name of the west action
 	 * @return a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI}
 	 */
-	public static ValueFunctionVisualizerGUI createGridWorldBasedValueFunctionVisualizerGUI(List <State> states, QComputablePlanner planner, Policy p,
+	public static ValueFunctionVisualizerGUI createGridWorldBasedValueFunctionVisualizerGUI(List <State> states, ValueFunction valueFunction, Policy p,
 																 String classWithPositionAtts, String xAttName, String yAttName,
 																 String northActionName,
 																 String southActionName,
@@ -114,7 +114,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 		PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(classWithPositionAtts, xAttName, yAttName,
 				northActionName, southActionName, eastActionName, westActionName);
 
-		ValueFunctionVisualizerGUI gui = new ValueFunctionVisualizerGUI(states, svp, planner);
+		ValueFunctionVisualizerGUI gui = new ValueFunctionVisualizerGUI(states, svp, valueFunction);
 		gui.setSpp(spp);
 		gui.setPolicy(p);
 		gui.setBgColor(Color.GRAY);
@@ -131,13 +131,13 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * Initializes the visualizer GUI.
 	 * @param states the states whose value should be rendered.
 	 * @param svp the value function state visualizer to use.
-	 * @param planner the planner that can return the value function.
+	 * @param valueFunction the valueFunction that can return the state values.
 	 */
-	public ValueFunctionVisualizerGUI(List <State> states, StateValuePainter svp, QComputablePlanner planner){
+	public ValueFunctionVisualizerGUI(List <State> states, StateValuePainter svp, ValueFunction valueFunction){
 		this.statesToVisualize = states;
 		this.svp = svp;
 		this.visualizer = new MultiLayerRenderer();
-		this.vfLayer = new ValueFunctionRenderLayer(statesToVisualize, svp, planner);
+		this.vfLayer = new ValueFunctionRenderLayer(statesToVisualize, svp, valueFunction);
 		this.pLayer = new PolicyRenderLayer(states, null, null);
 		
 		this.visualizer.addRenderLayer(vfLayer);

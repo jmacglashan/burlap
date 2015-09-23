@@ -1,14 +1,20 @@
 package burlap.domain.singleagent.cartpole;
 
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-
 import java.util.List;
+
+import burlap.oomdp.auxiliary.DomainGenerator;
+import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.singleagent.*;
+import burlap.oomdp.singleagent.common.SimpleAction;
+import burlap.oomdp.singleagent.explorer.VisualExplorer;
 
 
 /**
@@ -237,7 +243,6 @@ public class CartPoleDomain implements DomainGenerator {
 		if(this.physParams.useCorrectModel){
 			normAtt = new Attribute(domain, ATTNORMSGN, Attribute.AttributeType.REAL);
 			normAtt.setLims(-1., 1.);
-			normAtt.hidden = true;
 			
 		}
 		
@@ -327,7 +332,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @return the corresponding initial state object
 	 */
 	public static State getInitialState(Domain domain, double x, double xv, double a, double av){
-		ObjectInstance cartPole = new ObjectInstance(domain.getObjectClass(CLASSCARTPOLE), CLASSCARTPOLE);
+		ObjectInstance cartPole = new MutableObjectInstance(domain.getObjectClass(CLASSCARTPOLE), CLASSCARTPOLE);
 		cartPole.setValue(ATTX, x);
 		cartPole.setValue(ATTV, xv);
 		cartPole.setValue(ATTANGLE, a);
@@ -336,7 +341,7 @@ public class CartPoleDomain implements DomainGenerator {
 			cartPole.setValue(ATTNORMSGN, 1.);
 		}
 		
-		State s = new State();
+		State s = new MutableState();
 		s.addObject(cartPole);
 		
 		return s;
@@ -605,7 +610,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class MovementAction extends Action{
+	protected static class MovementAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		CPPhysicsParams physParams;
 		
@@ -622,13 +627,13 @@ public class CartPoleDomain implements DomainGenerator {
 		 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 		 */
 		public MovementAction(String name, Domain domain, double dir, CPPhysicsParams physParams){
-			super(name, domain, "");
+			super(name, domain);
 			this.dir = dir;
 			this.physParams = physParams;
 		}
 
 		@Override
-		protected State performActionHelper(State s, String[] params) {
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			if(physParams.useCorrectModel){
 				return CartPoleDomain.moveCorrectModel(s, this.dir, this.physParams);
 			}
@@ -636,10 +641,6 @@ public class CartPoleDomain implements DomainGenerator {
 		}
 
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
-		}
 		
 		
 	}

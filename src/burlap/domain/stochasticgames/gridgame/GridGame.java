@@ -9,12 +9,18 @@ import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.stochasticgames.*;
-import burlap.oomdp.stochasticgames.common.UniversalSingleAction;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.JointReward;
+import burlap.oomdp.stochasticgames.SGAgent;
+import burlap.oomdp.stochasticgames.SGAgentType;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -22,7 +28,7 @@ import burlap.oomdp.visualizer.Visualizer;
  * The GridGame domain is much like the GridWorld domain, except for arbitrarily many agents in
  * a stochastic game. Each agent in the world has an OO-MDP object instance of OO-MDP class "agent"
  * which is defined by an x position, a y position, and a player number. Agents can either move north, south, east,
- * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.oomdp.stochasticgames.AgentType}
+ * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.oomdp.stochasticgames.SGAgentType}
  * to use with this game, use the {@link #getStandardGridGameAgentType(burlap.oomdp.core.Domain)} static method.
  * <br/><br/>
  * In this domain, there is also an OO-MDP object class for 1-dimensional walls (both for horizontal
@@ -326,70 +332,8 @@ public class GridGame implements DomainGenerator {
 	@Override
 	public Domain generateDomain() {
 		
-		SGDomain domain = new SGDomain();
-		
-		
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.DISC);
-		xatt.setDiscValuesForRange(0, maxDim, 1);
-		
-		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.DISC);
-		yatt.setDiscValuesForRange(0, maxDim, 1);
-		
-		Attribute e1att = new Attribute(domain, ATTE1, Attribute.AttributeType.DISC);
-		e1att.setDiscValuesForRange(0, maxDim, 1);
-		
-		Attribute e2att = new Attribute(domain, ATTE2, Attribute.AttributeType.DISC);
-		e2att.setDiscValuesForRange(0, maxDim, 1);
-		
-		Attribute patt = new Attribute(domain, ATTP, Attribute.AttributeType.DISC);
-		patt.setDiscValuesForRange(0, maxDim, 1);
-		
-		Attribute pnatt = new Attribute(domain, ATTPN, Attribute.AttributeType.DISC);
-		pnatt.setDiscValuesForRange(0, maxPlyrs, 1);
-		
-		Attribute gtatt = new Attribute(domain, ATTGT, Attribute.AttributeType.DISC);
-		gtatt.setDiscValuesForRange(0, maxGT, 1);
-		
-		Attribute wtatt = new Attribute(domain, ATTWT, Attribute.AttributeType.DISC);
-		wtatt.setDiscValuesForRange(0, maxWT, 1);
-		
-		
-		
-		ObjectClass agentClass = new ObjectClass(domain, CLASSAGENT);
-		agentClass.addAttribute(xatt);
-		agentClass.addAttribute(yatt);
-		agentClass.addAttribute(pnatt);
-		
-		ObjectClass goalClass = new ObjectClass(domain, CLASSGOAL);
-		goalClass.addAttribute(xatt);
-		goalClass.addAttribute(yatt);
-		goalClass.addAttribute(gtatt);
-		
-		ObjectClass horWall = new ObjectClass(domain, CLASSDIMHWALL);
-		horWall.addAttribute(e1att);
-		horWall.addAttribute(e2att);
-		horWall.addAttribute(patt);
-		horWall.addAttribute(wtatt);
-		
-		ObjectClass vertWall = new ObjectClass(domain, CLASSDIMVWALL);
-		vertWall.addAttribute(e1att);
-		vertWall.addAttribute(e2att);
-		vertWall.addAttribute(patt);
-		vertWall.addAttribute(wtatt);
-		
-		
-		new UniversalSingleAction(domain, ACTIONNORTH);
-		new UniversalSingleAction(domain, ACTIONSOUTH);
-		new UniversalSingleAction(domain, ACTIONEAST);
-		new UniversalSingleAction(domain, ACTIONWEST);
-		new UniversalSingleAction(domain, ACTIONNOOP);
-		
-		
-		new AgentInUGoal(PFINUGOAL, domain);
-		new AgentInPGoal(PFINPGOAL, domain);
-
-		domain.setJointActionModel(new GridGameStandardMechanics(domain, this.semiWallProb));
-		
+		SGDomain domain = (SGDomain)generateDomainWithoutNoops();
+		new SimpleSGAgentAction(domain, ACTIONNOOP);
 		return domain;
 	}
 
@@ -399,29 +343,29 @@ public class GridGame implements DomainGenerator {
 		SGDomain domain = new SGDomain();
 		
 		
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.DISC);
-		xatt.setDiscValuesForRange(0, maxDim, 1);
+		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.INT);
+		xatt.setLims(0, maxDim);
 		
-		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.DISC);
-		yatt.setDiscValuesForRange(0, maxDim, 1);
+		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.INT);
+		yatt.setLims(0, maxDim);
 		
-		Attribute e1att = new Attribute(domain, ATTE1, Attribute.AttributeType.DISC);
-		e1att.setDiscValuesForRange(0, maxDim, 1);
+		Attribute e1att = new Attribute(domain, ATTE1, Attribute.AttributeType.INT);
+		e1att.setLims(0, maxDim);
 		
-		Attribute e2att = new Attribute(domain, ATTE2, Attribute.AttributeType.DISC);
-		e2att.setDiscValuesForRange(0, maxDim, 1);
+		Attribute e2att = new Attribute(domain, ATTE2, Attribute.AttributeType.INT);
+		e2att.setLims(0, maxDim);
 		
-		Attribute patt = new Attribute(domain, ATTP, Attribute.AttributeType.DISC);
-		patt.setDiscValuesForRange(0, maxDim, 1);
+		Attribute patt = new Attribute(domain, ATTP, Attribute.AttributeType.INT);
+		patt.setLims(0, maxDim);
 		
-		Attribute pnatt = new Attribute(domain, ATTPN, Attribute.AttributeType.DISC);
-		pnatt.setDiscValuesForRange(0, maxPlyrs, 1);
+		Attribute pnatt = new Attribute(domain, ATTPN, Attribute.AttributeType.INT);
+		patt.setLims(0, maxPlyrs);
 		
-		Attribute gtatt = new Attribute(domain, ATTGT, Attribute.AttributeType.DISC);
-		gtatt.setDiscValuesForRange(0, maxGT, 1);
+		Attribute gtatt = new Attribute(domain, ATTGT, Attribute.AttributeType.INT);
+		gtatt.setLims(0, maxGT);
 		
-		Attribute wtatt = new Attribute(domain, ATTWT, Attribute.AttributeType.DISC);
-		wtatt.setDiscValuesForRange(0, maxWT, 1);
+		Attribute wtatt = new Attribute(domain, ATTWT, Attribute.AttributeType.INT);
+		wtatt.setLims(0, maxWT);
 		
 		
 		
@@ -448,11 +392,10 @@ public class GridGame implements DomainGenerator {
 		vertWall.addAttribute(wtatt);
 		
 		
-		new UniversalSingleAction(domain, ACTIONNORTH);
-		new UniversalSingleAction(domain, ACTIONSOUTH);
-		new UniversalSingleAction(domain, ACTIONEAST);
-		new UniversalSingleAction(domain, ACTIONWEST);
-		
+		new SimpleSGAgentAction(domain, ACTIONNORTH);
+		new SimpleSGAgentAction(domain, ACTIONSOUTH);
+		new SimpleSGAgentAction(domain, ACTIONEAST);
+		new SimpleSGAgentAction(domain, ACTIONWEST);
 		
 		
 		new AgentInUGoal(PFINUGOAL, domain);
@@ -477,10 +420,11 @@ public class GridGame implements DomainGenerator {
 	 * @return A state with the specified number of objects
 	 */
 	public static State getCleanState(Domain d, int na, int ng, int nhw, int nvw, int width, int height){
+		
+		State s = new MutableState();
 		if (nhw < 2 || nvw < 2) {
 			throw new RuntimeException("There must be at least two horizontal walls and two vertical walls");
 		}
-		State s = new State();
 		addNObjects(d, s, CLASSGOAL, ng);
 		addNObjects(d, s, CLASSAGENT, na);
 		addNObjects(d, s, CLASSDIMHWALL, nhw);
@@ -489,6 +433,23 @@ public class GridGame implements DomainGenerator {
 		setBoundaryWalls(s, width, height);
 		
 		
+		return s;
+	}
+
+	/**
+	 * Returns the initial state for a simple game in which both players can win without interfering with one another.
+	 * @param d the grid games domain object
+	 * @return the simple game initial state
+	 */
+	public static State getSimpleGameInitialState(Domain d){
+		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 3, 3);
+
+		GridGame.setAgent(s, 0, 0, 0, 0);
+		GridGame.setAgent(s, 1, 2, 0, 1);
+
+		GridGame.setGoal(s, 0, 0, 2, 1);
+		GridGame.setGoal(s, 1, 2, 2, 2);
+
 		return s;
 	}
 	
@@ -506,14 +467,14 @@ public class GridGame implements DomainGenerator {
 	 * @param height the height of the playing area
 	 * @return A state with the specified number of objects
 	 */
-	public static State getCleanState(Domain d, List<Agent> agents, int na, int ng, int nhw, int nvw, int width, int height) {
+	public static State getCleanState(Domain d, List<SGAgent> agents, int na, int ng, int nhw, int nvw, int width, int height) {
 		if (nhw < 2 || nvw < 2) {
 			throw new RuntimeException("There must be at least two horizontal walls and two vertical walls");
 		}
 		if (na < agents.size()) {
 			throw new RuntimeException("The number of agents must be at least the size of the agents collection");
 		}
-		State s = new State();
+		State s = new MutableState();
 		addNObjects(d, s, CLASSGOAL, ng);
 		addAgents(d, s, CLASSAGENT, agents, na);
 		addNObjects(d, s, CLASSDIMHWALL, nhw);
@@ -524,7 +485,6 @@ public class GridGame implements DomainGenerator {
 		
 		return s;
 	}
-	
 	
 	
 	/**
@@ -630,7 +590,7 @@ public class GridGame implements DomainGenerator {
 	 */
 	protected static void addNObjects(Domain d, State s, String className, int n){
 		for(int i = 0; i < n; i++){
-			ObjectInstance o = new ObjectInstance(d.getObjectClass(className), className+i);
+			ObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), className+i);
 			s.addObject(o);
 		}
 	}
@@ -643,13 +603,13 @@ public class GridGame implements DomainGenerator {
 	 * @param className the name of the object class for which to create object instances
 	 * @param agents the list of agents which are to be added
 	 */
-	protected static void addAgents(Domain d, State s, String className, List<Agent> agents, int numAgents){
-		for (Agent agent : agents) {
-			ObjectInstance o = new ObjectInstance(d.getObjectClass(className), agent.getAgentName());
+	protected static void addAgents(Domain d, State s, String className, List<SGAgent> agents, int numAgents){
+		for (SGAgent agent : agents) {
+			ObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), agent.getAgentName());
 			s.addObject(o);
 		}
 		for (int i = agents.size(); i < numAgents; i++) {
-			ObjectInstance o = new ObjectInstance(d.getObjectClass(className), className + i);
+			ObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), className + i);
 			s.addObject(o);
 		}
 	}
@@ -759,15 +719,15 @@ public class GridGame implements DomainGenerator {
 
 
 	/**
-	 * Creates and returns a standard {@link burlap.oomdp.stochasticgames.AgentType} for grid games. This {@link burlap.oomdp.stochasticgames.AgentType}
+	 * Creates and returns a standard {@link burlap.oomdp.stochasticgames.SGAgentType} for grid games. This {@link burlap.oomdp.stochasticgames.SGAgentType}
 	 * is assigned the type name "agent", grid game OO-MDP object class for "agent", and has its action space set to all possible actions in the grid game domain.
 	 * Typically, all agents in a grid game should be assigned to the same type.
 	 *
 	 * @param domain the domain object of the grid game.
-	 * @return An {@link burlap.oomdp.stochasticgames.AgentType} that typically all {@link burlap.oomdp.stochasticgames.Agent}'s of the grid game should play as.
+	 * @return An {@link burlap.oomdp.stochasticgames.SGAgentType} that typically all {@link burlap.oomdp.stochasticgames.SGAgent}'s of the grid game should play as.
 	 */
-	public static AgentType getStandardGridGameAgentType(Domain domain){
-		return new AgentType(GridGame.CLASSAGENT, domain.getObjectClass(GridGame.CLASSAGENT), domain.getSingleActions());
+	public static SGAgentType getStandardGridGameAgentType(Domain domain){
+		return new SGAgentType(GridGame.CLASSAGENT, domain.getObjectClass(GridGame.CLASSAGENT), domain.getAgentActions());
 	}
 	
 	
@@ -790,7 +750,7 @@ public class GridGame implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State s, String[] params) {
+		public boolean isTrue(State s, String... params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
 			int ax = agent.getIntValForAttribute(ATTX);
@@ -840,7 +800,7 @@ public class GridGame implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State s, String[] params) {
+		public boolean isTrue(State s, String... params) {
 			
 			ObjectInstance agent = s.getObject(params[0]);
 			int ax = agent.getIntValForAttribute(ATTX);

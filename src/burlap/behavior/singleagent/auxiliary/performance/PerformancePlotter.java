@@ -20,6 +20,9 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentObserver;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jfree.chart.ChartFactory;
@@ -32,12 +35,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
-
-import burlap.oomdp.core.State;
-import burlap.oomdp.singleagent.ActionObserver;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-
 
 
 /**
@@ -70,18 +67,14 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class PerformancePlotter extends JFrame implements ActionObserver {
+public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 
 	private static final long serialVersionUID = 1L;
 	
 	
 	private static final Map<Integer, Double> cachedCriticalValues = new HashMap<Integer, Double>();
 	
-	
-	/**
-	 * The reward funciton used to measure performance.
-	 */
-	protected RewardFunction rf;
+
 	
 	/**
 	 * Contains all the current trial performance data
@@ -232,7 +225,6 @@ public class PerformancePlotter extends JFrame implements ActionObserver {
 	/**
 	 * Initializes a performance plotter.
 	 * @param firstAgentName the name of the first agent whose performance will be measured.
-	 * @param rf the reward function used to meausure performance
 	 * @param chartWidth the width of each chart/plot
 	 * @param chartHeight the height of each chart//plot
 	 * @param columns the number of columns of the plots displayed. Plots are filled in columns first, then move down the next row.
@@ -240,10 +232,9 @@ public class PerformancePlotter extends JFrame implements ActionObserver {
 	 * @param trialMode which plots to use; most recent trial, average over all trials, or both. If both, the most recent plot will be inserted into the window first, then the average.
 	 * @param metrics the metrics that should be plotted. The metrics will appear in the window in the order that they are specified (columns first)
 	 */
-	public PerformancePlotter(String firstAgentName, RewardFunction rf, int chartWidth, int chartHeight, int columns, int maxWindowHeight, 
+	public PerformancePlotter(String firstAgentName, int chartWidth, int chartHeight, int columns, int maxWindowHeight,
 								TrialMode trialMode, PerformanceMetric...metrics){
-		
-		this.rf = rf;
+
 		this.curAgentName = firstAgentName;
 		
 		this.agentTrials = new HashMap<String, List<Trial>>();
@@ -360,22 +351,23 @@ public class PerformancePlotter extends JFrame implements ActionObserver {
 		this.setVisible(true);
 		this.launchThread();
 	}
-	
-	
+
 	@Override
-	synchronized public void actionEvent(State s, GroundedAction ga, State sp) {
-		
+	synchronized public void observeEnvironmentInteraction(EnvironmentOutcome eo) {
 		if(!this.collectData){
 			return;
 		}
-		
-		double r = this.rf.reward(s, ga, sp);
-		this.curTrial.stepIncrement(r);
+
+		this.curTrial.stepIncrement(eo.r);
 		this.curTimeStep++;
+
 	}
-	
-	
-	
+
+	@Override
+	public void observeEnvironmentReset(Environment resetEnvironment) {
+		//do nothing
+	}
+
 	/**
 	 * Informs the plotter that all data for the last episode has been collected.
 	 */

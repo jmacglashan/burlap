@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
-import burlap.behavior.singleagent.planning.ValueFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.datastructures.WekaInterfaces;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import weka.classifiers.Classifier;
 import weka.classifiers.lazy.IBk;
 import weka.core.Instance;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * A class for using supervised learning algorithms provided by the Weka library for fitted value iteration. This class
  * takes a generator for Weka {@link weka.classifiers.Classifier} objects (specified with the {@link burlap.behavior.singleagent.planning.vfa.fittedvi.WekaVFATrainer.WekaClassifierGenerator}
- * interface and a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} to turn BURLAP {@link burlap.oomdp.core.State} objects into
+ * interface and a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} to turn BURLAP {@link burlap.oomdp.core.states.State} objects into
  * feature vectors usable by Weka.
  *
  * <br/><br/>
@@ -33,7 +33,7 @@ public class WekaVFATrainer implements SupervisedVFA{
 	protected WekaClassifierGenerator baseClassifier;
 
 	/**
-	 * The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.State} objects to feature vectors.
+	 * The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.states.State} objects to feature vectors.
 	 */
 	protected StateToFeatureVectorGenerator fvGen;
 
@@ -41,7 +41,7 @@ public class WekaVFATrainer implements SupervisedVFA{
 	/**
 	 * Initializes.
 	 * @param baseClassifier The generator of the Weka {@link weka.classifiers.Classifier} to use for training.
-	 * @param fvGen The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.State} objects to feature vectors.
+	 * @param fvGen The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.states.State} objects to feature vectors.
 	 */
 	public WekaVFATrainer(WekaClassifierGenerator baseClassifier, StateToFeatureVectorGenerator fvGen){
 		this.baseClassifier = baseClassifier;
@@ -104,7 +104,7 @@ public class WekaVFATrainer implements SupervisedVFA{
 	public static class WekaVFA implements ValueFunction{
 
 		/**
-		 * The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.State} objects to feature vectors.
+		 * The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.states.State} objects to feature vectors.
 		 */
 		protected StateToFeatureVectorGenerator fvGen;
 
@@ -116,7 +116,7 @@ public class WekaVFATrainer implements SupervisedVFA{
 
 		/**
 		 * Initializes.
-		 * @param fvGen The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.State} objects to feature vectors.
+		 * @param fvGen The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link burlap.oomdp.core.states.State} objects to feature vectors.
 		 * @param classifier The Weka {@link weka.classifiers.Classifier} used to predict state values.
 		 */
 		public WekaVFA(StateToFeatureVectorGenerator fvGen, Classifier classifier) {

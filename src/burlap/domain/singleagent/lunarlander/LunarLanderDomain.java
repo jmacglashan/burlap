@@ -4,9 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -668,23 +677,23 @@ public class LunarLanderDomain implements DomainGenerator {
 	/**
 	 * Creates a state with one agent/lander, one landing pad, and no number of obstacles. The attribute values
 	 * of these objects will be uninitialized and will need to be set either manually or with this class's methods
-	 * like {@link #setAgent(burlap.oomdp.core.State, double, double, double)}.
+	 * like {@link #setAgent(burlap.oomdp.core.states.State, double, double, double)}.
 	 * @param domain the domain of the state to generate
 	 * @param no the number of obstacle objects to create
 	 * @return a state object
 	 */
 	public static State getCleanState(Domain domain, int no){
 		
-		State s = new State();
+		State s = new MutableState();
 		
-		ObjectInstance agent = new ObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
+		ObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
 		s.addObject(agent);
 		
-		ObjectInstance pad = new ObjectInstance(domain.getObjectClass(PADCLASS), PADCLASS + "0");
+		ObjectInstance pad = new MutableObjectInstance(domain.getObjectClass(PADCLASS), PADCLASS + "0");
 		s.addObject(pad);
 		
 		for(int i = 0; i < no; i++){
-			ObjectInstance obst = new ObjectInstance(domain.getObjectClass(OBSTACLECLASS), OBSTACLECLASS + i);
+			ObjectInstance obst = new MutableObjectInstance(domain.getObjectClass(OBSTACLECLASS), OBSTACLECLASS + i);
 			s.addObject(obst);
 		}
 
@@ -884,7 +893,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionTurn extends Action{
+	public class ActionTurn extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		LLPhysicsParams physParams;
 		double dir;
@@ -896,7 +905,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param dir the direction this action will turn; +1 for clockwise, -1 for counterclockwise.
 		 */
 		public ActionTurn(String name, Domain domain, double dir, LLPhysicsParams physParams) {
-			super(name, domain, "");
+			super(name, domain);
 			this.dir = dir;
 			this.physParams = physParams;
 		}
@@ -904,16 +913,12 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 			incAngle(st, dir, this.physParams);
 			updateMotion(st, 0.0, this.physParams);
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
-		}
 
 		public LLPhysicsParams getPhysParams() {
 			return physParams;
@@ -931,7 +936,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionIdle extends Action{
+	public class ActionIdle extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		LLPhysicsParams physParams;
 		
@@ -941,21 +946,17 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param domain the domain of the action.
 		 */
 		public ActionIdle(String name, Domain domain, LLPhysicsParams physParams) {
-			super(name, domain, "");
+			super(name, domain);
 			this.physParams = physParams;
 		}
 		
 
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 			updateMotion(st, 0.0, this.physParams);
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
-		}
 
 		public LLPhysicsParams getPhysParams() {
 			return physParams;
@@ -973,7 +974,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionThrust extends Action{
+	public class ActionThrust extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected double thrustValue;
 		LLPhysicsParams physParams;
@@ -986,22 +987,18 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param thrustValue the force of thrust for this thrust action
 		 */
 		public ActionThrust(String name, Domain domain, double thrustValue, LLPhysicsParams physParams){
-			super(name, domain, "");
+			super(name, domain);
 			this.thrustValue = thrustValue;
 			this.physParams = physParams;
 		}
 		
 		
 		@Override
-		protected State performActionHelper(State st, String[] params) {
+		protected State performActionHelper(State st, GroundedAction groundedAction) {
 			updateMotion(st, thrustValue, this.physParams);
 			return st;
 		}
 
-		@Override
-		public List<TransitionProbability> getTransitions(State s, String [] params){
-			return this.deterministicTransition(s, params);
-		}
 
 		public double getThrustValue() {
 			return thrustValue;
@@ -1044,7 +1041,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 	
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance pad = st.getObject(params[1]);
@@ -1093,7 +1090,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 	
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance pad = st.getObject(params[1]);
@@ -1143,7 +1140,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			
 			
 			ObjectInstance agent = st.getObject(params[0]);
@@ -1187,7 +1184,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			double y = agent.getRealValForAttribute(YATTNAME);
@@ -1257,7 +1254,7 @@ public class LunarLanderDomain implements DomainGenerator {
 
 		if(expMode == 0){
 
-			TerminalExplorer te = new TerminalExplorer(domain);
+			TerminalExplorer te = new TerminalExplorer(domain, clean);
 
 			te.addActionShortHand("a", ACTIONTURNL);
 			te.addActionShortHand("d", ACTIONTURNR);
@@ -1265,7 +1262,7 @@ public class LunarLanderDomain implements DomainGenerator {
 			te.addActionShortHand("s", ACTIONTHRUST+1);
 			te.addActionShortHand("x", ACTIONIDLE);
 
-			te.exploreFromState(clean);
+			te.explore();
 
 		}
 		else if(expMode == 1){
@@ -1273,8 +1270,8 @@ public class LunarLanderDomain implements DomainGenerator {
 			Visualizer vis = LLVisualizer.getVisualizer(lld);
 			VisualExplorer exp = new VisualExplorer(domain, vis, clean);
 
-			exp.addKeyAction("w", ACTIONTHRUST+0);
-			exp.addKeyAction("s", ACTIONTHRUST+1);
+			exp.addKeyAction("w", ACTIONTHRUST + 0);
+			exp.addKeyAction("s", ACTIONTHRUST + 1);
 			exp.addKeyAction("a", ACTIONTURNL);
 			exp.addKeyAction("d", ACTIONTURNR);
 			exp.addKeyAction("x", ACTIONIDLE);

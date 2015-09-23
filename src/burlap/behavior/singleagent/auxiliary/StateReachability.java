@@ -6,11 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
@@ -32,29 +32,29 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * Returns the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @return the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * @return the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 */
-	public static List <State> getReachableStates(State from, SADomain inDomain, StateHashFactory usingHashFactory){
+	public static List <State> getReachableStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
 		return getReachableStates(from, inDomain, usingHashFactory, new NullTermination());
 	}
 	
 	
 	/**
-	 * Returns the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * Returns the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * @return the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 */
-	public static List <State> getReachableStates(State from, SADomain inDomain, StateHashFactory usingHashFactory, TerminalFunction tf){
-		Set <StateHashTuple> hashedStates = getReachableHashedStates(from, inDomain, usingHashFactory, tf);
+	public static List <State> getReachableStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
+		Set <HashableState> hashedStates = getReachableHashedStates(from, inDomain, usingHashFactory, tf);
 		List <State> states = new ArrayList<State>(hashedStates.size());
-		for(StateHashTuple sh : hashedStates){
+		for(HashableState sh : hashedStates){
 			states.add(sh.s);
 		}
 		
@@ -63,39 +63,39 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * Returns the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * @return the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 */
-	public static Set <StateHashTuple> getReachableHashedStates(State from, SADomain inDomain, StateHashFactory usingHashFactory){
+	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
 		return getReachableHashedStates(from, inDomain, usingHashFactory, new NullTermination());
 	}
 	
 	
 	
 	/**
-	 * Returns the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * Returns the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
+	 * @return the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
 	 */
-	public static Set <StateHashTuple> getReachableHashedStates(State from, SADomain inDomain, StateHashFactory usingHashFactory, TerminalFunction tf){
+	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
 		
 		
-		Set<StateHashTuple> hashedStates = new HashSet<StateHashTuple>();
-		StateHashTuple shi = usingHashFactory.hashState(from);
+		Set<HashableState> hashedStates = new HashSet<HashableState>();
+		HashableState shi = usingHashFactory.hashState(from);
 		List <Action> actions = inDomain.getActions();
 		int nGenerated = 0;
 		
-		LinkedList <StateHashTuple> openList = new LinkedList<StateHashTuple>();
+		LinkedList <HashableState> openList = new LinkedList<HashableState>();
 		openList.offer(shi);
 		hashedStates.add(shi);
 		while(openList.size() > 0){
-			StateHashTuple sh = openList.poll();
+			HashableState sh = openList.poll();
 			
 			
 			if(tf.isTerminal(sh.s)){
@@ -105,9 +105,9 @@ public class StateReachability {
 			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
 			for(GroundedAction ga : gas){
-				List <TransitionProbability> tps = ga.action.getTransitions(sh.s, ga.params);
+				List <TransitionProbability> tps = ga.getTransitions(sh.s);
 				for(TransitionProbability tp : tps){
-					StateHashTuple nsh = usingHashFactory.hashState(tp.s);
+					HashableState nsh = usingHashFactory.hashState(tp.s);
 					nGenerated++;
 					if(!hashedStates.contains(nsh)){
 						openList.offer(nsh);

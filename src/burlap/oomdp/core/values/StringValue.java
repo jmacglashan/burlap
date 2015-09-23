@@ -1,10 +1,6 @@
 package burlap.oomdp.core.values;
 
-import java.util.Collection;
-import java.util.Set;
-
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -12,12 +8,12 @@ import burlap.oomdp.core.Value;
  * @author Greg Yauney (gyauney)
  *
  */
-public class StringValue extends Value {
-
+public class StringValue extends OOMDPValue implements Value {
+	private static final String UNSET = "";
 	/**
 	 * The string value
 	 */
-	protected String			stringVal = "";
+	protected final String			stringVal;
 	
 	
 	/**
@@ -26,6 +22,7 @@ public class StringValue extends Value {
 	 */
 	public StringValue(Attribute attribute) {
 		super(attribute);
+		this.stringVal = UNSET;
 	}
 	
 	
@@ -33,9 +30,14 @@ public class StringValue extends Value {
 	 * Initializes from an existing value.
 	 * @param v the value to copy
 	 */
-	public StringValue(Value v) {
+	public StringValue(StringValue v) {
 		super(v);
 		this.stringVal = ((StringValue)v).stringVal;
+	}
+	
+	public StringValue(Attribute attribute, String stringVal) {
+		super(attribute);
+		this.stringVal = stringVal;
 	}
 
 	@Override
@@ -49,70 +51,24 @@ public class StringValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v) {
-		this.stringVal = Integer.toString(v);
+	public Value setValue(int v) {
+		return new StringValue(this.attribute, Integer.toString(v));
 	}
 	
 	@Override
-	public void setValue(double v) {
-		this.stringVal = Double.toString(v);
+	public Value setValue(double v) {
+		return new StringValue(this.attribute, Double.toString(v));
 	}
 	
 	@Override
-	public void setValue(String v) {
-		this.stringVal = v;
+	public Value setValue(String v) {
+		return new StringValue(this.attribute, v);
 	}
 	
 	@Override
-	public void setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is of type String; cannot be set to a boolean value.");
+	public StringBuilder buildStringVal(StringBuilder builder) {
+		return builder.append(this.stringVal);
 	}
-
-	@Override
-	public void addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is String, cannot add relational target");
-	}
-
-	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is String, cannot add relational targets");
-	}
-	
-	@Override
-	public void clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is String, cannot clear relational targets");
-	}
-
-	@Override
-	public void removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is String, cannot remove relational target");
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException("Value is String, cannot return int value");
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is String, cannot return real value");
-	}
-
-	@Override
-	public String getStringVal() {
-		return this.stringVal;
-	}
-
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is String, cannot return relational values");
-	}
-
-	@Override
-	public double getNumericRepresentation() {
-		throw new UnsupportedOperationException("Value is String, cannot return numeric representation");
-	}
-	
 	
 	@Override
 	public boolean equals(Object obj){
@@ -129,34 +85,4 @@ public class StringValue extends Value {
 		return this.stringVal.equals(o.stringVal);
 		
 	}
-
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is String, cannot return boolean representation.");
-	}
-	
-	@Override
-	public void setValue(int[] intArray) {
-		throw new UnsupportedOperationException("Value is string; cannot be set to an int array.");
-	}
-
-
-	@Override
-	public void setValue(double[] doubleArray) {
-		throw new UnsupportedOperationException("Value is string; cannot be set to a double array.");
-	}
-
-
-	@Override
-	public int[] getIntArray() {
-		throw new UnsupportedOperationException("Value is string; cannot return an int array.");
-	}
-
-
-	@Override
-	public double[] getDoubleArray() {
-		throw new UnsupportedOperationException("Value is string; cannot return a double array.");
-	}
-
 }

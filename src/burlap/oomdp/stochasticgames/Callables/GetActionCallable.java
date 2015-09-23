@@ -3,12 +3,12 @@ package burlap.oomdp.stochasticgames.Callables;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.Agent;
-import burlap.oomdp.stochasticgames.GroundedSingleAction;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.SGAgent;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.parallel.Parallel.ForEachCallable;
 
-public class GetActionCallable extends ForEachCallable<List<Agent>, List<GroundedSingleAction>> {
+public class GetActionCallable extends ForEachCallable<List<SGAgent>, List<GroundedSGAgentAction>> {
 	
 	private final State abstractedCurrent;
 	public GetActionCallable(State abstractedCurrent) {
@@ -16,16 +16,16 @@ public class GetActionCallable extends ForEachCallable<List<Agent>, List<Grounde
 	}
 	
 	@Override
-	public List<GroundedSingleAction> perform(List<Agent> current) {
-		List<GroundedSingleAction> actions = new ArrayList<GroundedSingleAction>();
-		for (Agent agent : current) {
+	public List<GroundedSGAgentAction> perform(List<SGAgent> current) {
+		List<GroundedSGAgentAction> actions = new ArrayList<GroundedSGAgentAction>();
+		for (SGAgent agent : current) {
 			actions.add(agent.getAction(abstractedCurrent));
 		}
 		return actions;
 	}
 
 	@Override
-	public ForEachCallable<List<Agent>, List<GroundedSingleAction>> copy() {
+	public ForEachCallable<List<SGAgent>, List<GroundedSGAgentAction>> copy() {
 		return new GetActionCallable(abstractedCurrent);
 	}
 }

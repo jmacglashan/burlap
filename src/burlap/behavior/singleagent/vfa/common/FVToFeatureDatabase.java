@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.Map;
  * to automatically construct state-action features. Specifically, the state features produced but the
  * {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} are duplicated into unique features for
  * each possible action. The duplication of features for actions is lazy. That is, every time a previously unseen
- * action is queried in the {@link #getActionFeaturesSets(burlap.oomdp.core.State, java.util.List)} method,
+ * action is queried in the {@link #getActionFeaturesSets(burlap.oomdp.core.states.State, java.util.List)} method,
  * it gets new state features assigned to it.
  * @author James MacGlashan.
  */
@@ -66,7 +66,9 @@ public class FVToFeatureDatabase implements FeatureDatabase {
 		double [] vec = this.fvGen.generateFeatureVectorFrom(s);
 		List<StateFeature> sfs = new ArrayList<StateFeature>(vec.length);
 		for(int i = 0; i < vec.length; i++){
-			sfs.add(new StateFeature(i, vec[i]));
+			if(vec[i] != 0.) {
+				sfs.add(new StateFeature(i, vec[i]));
+			}
 		}
 
 		return sfs;
@@ -81,7 +83,9 @@ public class FVToFeatureDatabase implements FeatureDatabase {
 			List<StateFeature> sfs = new ArrayList<StateFeature>(vec.length);
 			int offset = this.getActionMultiplier(ga)*dim;
 			for(int i = 0; i < vec.length; i++){
-				sfs.add(new StateFeature(offset+i, vec[i]));
+				if(vec[i] != 0.) {
+					sfs.add(new StateFeature(offset + i, vec[i]));
+				}
 			}
 			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga, sfs);
 			afqs.add(afq);

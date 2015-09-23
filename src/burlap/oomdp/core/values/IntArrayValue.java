@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -14,21 +13,29 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class IntArrayValue extends Value {
+public class IntArrayValue extends OOMDPValue implements Value {
 
-	protected int [] intArray = null;
+	protected final int [] intArray;
 	
 	
 	public IntArrayValue(Attribute attribute) {
 		super(attribute);
+		this.intArray = null;
 	}
 	
-	public IntArrayValue(Value v){
+	public IntArrayValue(IntArrayValue v){
 		super(v);
 		IntArrayValue iaValue  = (IntArrayValue)v;
 		if(iaValue.intArray != null){
 			this.intArray = iaValue.intArray.clone();
+		} else {
+			this.intArray = null;
 		}
+	}
+	
+	public IntArrayValue(Attribute attribute, int[] intArray) {
+		super(attribute);
+		this.intArray = intArray;
 	}
 
 	@Override
@@ -42,77 +49,27 @@ public class IntArrayValue extends Value {
 	}
 
 	@Override
-	public void setValue(int v) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot set single int value.");
-	}
-
-	@Override
-	public void setValue(double v) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot set double value.");
-	}
-
-	@Override
-	public void setValue(String v) {
+	public Value setValue(String v) {
 		if(v.startsWith("\"") && v.endsWith("\"")){
 			v = v.substring(1, v.length());
 		}
 		String [] comps = v.split(",");
-		this.intArray = new int[comps.length];
+		int[] intArray = new int[comps.length];
 		for(int i = 0; i < comps.length; i++){
-			this.intArray[i] = Integer.parseInt(comps[i]);
+			intArray[i] = Integer.parseInt(comps[i]);
 		}
-	}
-
-	@Override
-	public void addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot set relational value.");
+		return new IntArrayValue(this.attribute, intArray);
 	}
 	
 	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot add relational targets");
-	}
-	
-	@Override
-	public void clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot clear values.");
-	}
-
-	@Override
-	public void removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot clear values.");
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return disc values");
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return real values");
-	}
-
-	@Override
-	public String getStringVal() {
-		StringBuffer buf = new StringBuffer();
+	public StringBuilder buildStringVal(StringBuilder builder) {
 		for(int i = 0; i < this.intArray.length; i++){
 			if(i > 0){
-				buf.append(",");
+				builder.append(",");
 			}
-			buf.append(this.intArray[i]);
+			builder.append(this.intArray[i]);
 		}
-		return buf.toString();
-	}
-
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return relational values");
-	}
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is of type IntArray, cannot return boolean values");
+		return builder;
 	}
 
 	@Override
@@ -126,12 +83,12 @@ public class IntArrayValue extends Value {
 	}
 
 	@Override
-	public void setValue(int[] intArray) {
-		this.intArray = intArray;
+	public Value setValue(int[] intArray) {
+		return new IntArrayValue(this.attribute, intArray);
 	}
 
 	@Override
-	public void setValue(double[] doubleArray) {
+	public Value setValue(double[] doubleArray) {
 		throw new UnsupportedOperationException("Cannot set int array value to double array value.");	
 	}
 
@@ -173,11 +130,6 @@ public class IntArrayValue extends Value {
 		
 		return true;
 		
-	}
-	
-	@Override
-	public void setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray; cannot be set to a boolean value.");
 	}
 
 }

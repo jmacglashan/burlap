@@ -3,12 +3,12 @@ package burlap.oomdp.stochasticgames.Callables;
 import java.util.Map;
 
 import burlap.oomdp.auxiliary.StateAbstraction;
-import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.Agent;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.parallel.Parallel.ForEachCallable;
 
-public class ObserveOutcomeCallable extends ForEachCallable<Agent, Boolean> {
+public class ObserveOutcomeCallable extends ForEachCallable<SGAgent, Boolean> {
 	
 	private final JointAction ja;
 	private final Map<String, Double> jointReward;
@@ -33,7 +33,7 @@ public class ObserveOutcomeCallable extends ForEachCallable<Agent, Boolean> {
 	}
 	
 	@Override
-	public Boolean perform(Agent agent) {
+	public Boolean perform(SGAgent agent) {
 		State abstractedCurrent = abstraction.abstraction(currentState, agent);
 		State abstractedNext = abstraction.abstraction(nextState, agent);
 		agent.observeOutcome(abstractedCurrent, ja, jointReward, abstractedNext, isTerminal);

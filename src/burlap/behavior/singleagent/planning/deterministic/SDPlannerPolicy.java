@@ -5,25 +5,25 @@ import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
- * This is a static deterministic planner policy, which means
- * if the source deterministic planner has not already computed
+ * This is a static deterministic valueFunction policy, which means
+ * if the source deterministic valueFunction has not already computed
  * and cached the plan for a query state, then this policy
  * is undefined for that state and will cause the policy to throw
- * a corresponding {@link burlap.behavior.singleagent.Policy.PolicyUndefinedException} exception object.
+ * a corresponding {@link burlap.behavior.policy.Policy.PolicyUndefinedException} exception object.
  * @author James MacGlashan
  */
 
 
-public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
+public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 
 	protected DeterministicPlanner dp;
 	
@@ -39,13 +39,13 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	
 	@Override
-	public void setPlanner(OOMDPPlanner planner) {
+	public void setSolver(MDPSolverInterface solver) {
 		
-		if(!(planner instanceof DeterministicPlanner)){
+		if(!(solver instanceof DeterministicPlanner)){
 			throw new RuntimeErrorException(new Error("Planner is not a Deterministic Planner"));
 		}
 		
-		this.dp = (DeterministicPlanner)planner;
+		this.dp = (DeterministicPlanner) solver;
 		
 	}
 	
@@ -53,7 +53,7 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	public AbstractGroundedAction getAction(State s) {
 		
 		if(this.dp == null){
-			throw new RuntimeException("The planner used by this Policy is not defined; therefore, the policy is undefined.");
+			throw new RuntimeException("The valueFunction used by this Policy is not defined; therefore, the policy is undefined.");
 		}
 		
 		if(this.dp.hasCachedPlanForState(s)){
@@ -89,7 +89,7 @@ public class SDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	@Override
 	public boolean isDefinedFor(State s) {
 		if(this.dp == null){
-			throw new RuntimeException("The planner used by this Policy is not defined; therefore, the policy is undefined.");
+			throw new RuntimeException("The valueFunction used by this Policy is not defined; therefore, the policy is undefined.");
 		}
 		if(this.dp.hasCachedPlanForState(s)){
 			return true;

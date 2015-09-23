@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode.PSNComparator;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -46,14 +47,14 @@ public class IDAStar extends DeterministicPlanner {
 	
 	
 	/**
-	 * Initializes the planner.
+	 * Initializes the valueFunction.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function that represents costs as negative reward
 	 * @param gc should evaluate to true for goal states; false otherwise
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 */
-	public IDAStar(Domain domain, RewardFunction rf, StateConditionTest gc, StateHashFactory hashingFactory, Heuristic heuristic){
+	public IDAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic){
 		
 		this.deterministicPlannerInit(domain, rf, new NullTermination(), gc, hashingFactory);
 		
@@ -61,17 +62,26 @@ public class IDAStar extends DeterministicPlanner {
 		nodeComparator = new PrioritizedSearchNode.PSNComparator();
 		
 	}
-	
-	
-	
-	
+
+
+
+
+	/**
+	 * Plans and returns a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}. If
+	 * a {@link burlap.oomdp.core.states.State} is not in the solution path of this planner, then
+	 * the {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy} will throw
+	 * a runtime exception. If you want a policy that will dynamically replan for unknown states,
+	 * you should create your own {@link burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy}.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public SDPlannerPolicy planFromState(State initialState) {
 		
-		StateHashTuple sih = this.stateHash(initialState);
+		HashableState sih = this.stateHash(initialState);
 		
 		if(mapToStateIndex.containsKey(sih)){
-			return ; //no need to plan since this is already solved
+			return new SDPlannerPolicy(this); //no need to plan since this is already solved
 		}
 		
 		
@@ -84,7 +94,7 @@ public class IDAStar extends DeterministicPlanner {
 			
 			PrioritizedSearchNode cand = this.FLimtedDFS(initialPSN, nextMinR, 0.);
 			if(cand == null){
-				return ; //FAIL CONDITION, EVERY PATH LEADS TO A DEAD END
+				return new SDPlannerPolicy(this); //FAIL CONDITION, EVERY PATH LEADS TO A DEAD END
 			}
 			
 			//was the goal found within the limit?
@@ -103,7 +113,7 @@ public class IDAStar extends DeterministicPlanner {
 		//search to goal complete now follow back pointers to set policy
 		this.encodePlanIntoPolicy(solutionNode);
 		
-		
+		return new SDPlannerPolicy(this);
 
 	}
 	
@@ -143,7 +153,7 @@ public class IDAStar extends DeterministicPlanner {
 		for(GroundedAction ga : gas){
 			
 			State ns = ga.executeIn(s);
-			StateHashTuple nsh = this.stateHash(ns);
+			HashableState nsh = this.stateHash(ns);
 			
 			double r = rf.reward(s, ga, ns);
 			double g = cumulatedReward + r;

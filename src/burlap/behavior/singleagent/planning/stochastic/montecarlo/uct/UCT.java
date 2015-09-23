@@ -8,32 +8,34 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import burlap.behavior.singleagent.QValue;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.singleagent.planning.StateConditionTest;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTStateNode.UCTStateConstructor;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
- * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.behavior.singleagent.planning.StateConditionTest})
+ * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest})
  * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
  * <br/><br/>
- * The class also implements the {@link burlap.behavior.singleagent.planning.QComputablePlanner} interface. However, it will only return the Q-value
+ * The class also implements the {@link burlap.behavior.valuefunction.QFunction} interface. However, it will only return the Q-value
  * for a state if that state is the root node of the tree. If it is not the root node of the tree, then it will automatically reset the planning results
- * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy}
- * with this planner in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
+ * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.policy.GreedyQPolicy}
+ * with this valueFunction in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
  * Replanning fresh after each step in the world is the standard UCT approach. If you instead want a policy that walks
  * through the tree it generated from some source state,
  * (so that each step computes a Q-value for a shorter horizon than the step before), you can use the
@@ -47,10 +49,10 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class UCT extends OOMDPPlanner implements QComputablePlanner{
+public class UCT extends MDPSolver implements Planner, QFunction {
 
-	protected List<Map<StateHashTuple, UCTStateNode>> 			stateDepthIndex;
-	protected Map <StateHashTuple, List <UCTStateNode>>			statesToStateNodes;
+	protected List<Map<HashableState, UCTStateNode>> 			stateDepthIndex;
+	protected Map <HashableState, List <UCTStateNode>>			statesToStateNodes;
 	protected UCTStateNode										root;
 	protected int												maxHorizon;
 	protected int												maxRollOutsFromRoot;
@@ -64,7 +66,7 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	protected boolean											foundGoal;
 	protected boolean											foundGoalOnRollout;
 	
-	protected Set<StateHashTuple>								uniqueStatesInTree;
+	protected Set<HashableState>								uniqueStatesInTree;
 	
 	protected int												treeSize;
 	protected int												numVisits;
@@ -84,7 +86,7 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	 * @param nRollouts the number of rollouts to perform 
 	 * @param explorationBias the exploration bias constant (suggested >2)
 	 */
-	public UCT(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
+	public UCT(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
 		stateNodeConstructor = new UCTStateConstructor();
 		actionNodeConstructor = new UCTActionConstructor();
@@ -95,9 +97,9 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 		
 	}
 	
-	protected void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
+	protected void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.maxHorizon = horizon;
 		this.maxRollOutsFromRoot = nRollouts;
 		this.explorationBias = explorationBias;
@@ -119,30 +121,36 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	
 	
 	/**
-	 * Tells the planner to stop planning if a goal state is ever found.
-	 * @param gc a {@link burlap.behavior.singleagent.planning.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
+	 * Tells the valueFunction to stop planning if a goal state is ever found.
+	 * @param gc a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
 	 */
 	public void useGoalConditionStopCriteria(StateConditionTest gc){
 		this.goalCondition = gc;
 	}
-	
-	
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		
 		foundGoal = false;
 		
 		treeSize = 1;
 		numVisits = 0;
 		
-		StateHashTuple shi = this.stateHash(initialState);
+		HashableState shi = this.stateHash(initialState);
 		root = stateNodeConstructor.generate(shi, 0, actions, actionNodeConstructor);
 		
-		uniqueStatesInTree = new HashSet<StateHashTuple>();
+		uniqueStatesInTree = new HashSet<HashableState>();
 		
-		stateDepthIndex = new ArrayList<Map<StateHashTuple,UCTStateNode>>();
-		statesToStateNodes = new HashMap<StateHashTuple, List<UCTStateNode>>();
-		Map <StateHashTuple, UCTStateNode> depth0Map = new HashMap<StateHashTuple, UCTStateNode>();
+		stateDepthIndex = new ArrayList<Map<HashableState,UCTStateNode>>();
+		statesToStateNodes = new HashMap<HashableState, List<UCTStateNode>>();
+		Map <HashableState, UCTStateNode> depth0Map = new HashMap<HashableState, UCTStateNode>();
 		depth0Map.put(shi, root);
 		stateDepthIndex.add(depth0Map);
 		
@@ -170,6 +178,8 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 		}
 		DPrint.cl(debugCode, "\nRollouts: " + numRollOutsFromRoot + "; Best Action Expected Return: " + this.bestReturnAction(root).averageReturn());
 
+		return new GreedyQPolicy(this);
+
 	}
 
 	@Override
@@ -181,9 +191,9 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 		}
 
 		//if the root node isn't the query state, then replan
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		if(!sh.equals(this.root.state)){
-			this.resetPlannerResults();
+			this.resetSolver();
 			this.planFromState(s);
 		}
 
@@ -205,9 +215,9 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 		}
 
 		//if the root node isn't the query state, then replan
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		if(!sh.equals(this.root.state)){
-			this.resetPlannerResults();
+			this.resetSolver();
 			this.planFromState(s);
 		}
 
@@ -222,7 +232,12 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	}
 
 	@Override
-	public void resetPlannerResults(){
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
+	}
+
+	@Override
+	public void resetSolver(){
 		this.mapToStateIndex.clear();
 		this.stateDepthIndex.clear();
 		this.statesToStateNodes.clear();
@@ -277,7 +292,7 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 		
 		
 		//sample the action
-		StateHashTuple shprime = this.stateHash(anode.action.executeIn(node.state.s));
+		HashableState shprime = this.stateHash(anode.action.executeIn(node.state.s));
 		double r = rf.reward(node.state.s, anode.action, shprime.s);
 		int depthChange = 1;
 		if(!anode.action.action.isPrimitive()){
@@ -338,7 +353,7 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	
 	/**
 	 * Returns true if rollouts and planning should cease. Planning will stop
-	 * if the planner is told to terminate upon finding a goal and one was found, or if
+	 * if the valueFunction is told to terminate upon finding a goal and one was found, or if
 	 * the maximum number of rollouts have already been performed.
 	 * @return true if rollouts and planning should cease; false otherwise.
 	 */
@@ -410,7 +425,7 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 		if(untriedNodes){
 			List <UCTActionNode> candidates2 = new ArrayList<UCTActionNode>(candidates.size());
 			for(UCTActionNode anode : candidates){
-				StateHashTuple sample = this.stateHash(anode.action.executeIn(snode.state.s));
+				HashableState sample = this.stateHash(anode.action.executeIn(snode.state.s));
 				if(!uniqueStatesInTree.contains(sample)){
 					candidates2.add(anode);
 				}
@@ -454,7 +469,7 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	 * @param d the depth of the state
 	 * @return the corresponding {@link UCTStateNode}
 	 */
-	protected UCTStateNode queryTreeIndex(StateHashTuple sh, int d){
+	protected UCTStateNode queryTreeIndex(HashableState sh, int d){
 		
 		if(d >= stateDepthIndex.size()){
 			return null;
@@ -471,7 +486,7 @@ public class UCT extends OOMDPPlanner implements QComputablePlanner{
 	protected void addNodeToIndexTree(UCTStateNode snode){
 		
 		while(stateDepthIndex.size() <= snode.depth){
-			stateDepthIndex.add(new HashMap<StateHashTuple, UCTStateNode>());
+			stateDepthIndex.add(new HashMap<HashableState, UCTStateNode>());
 		}
 		
 		stateDepthIndex.get(snode.depth).put(snode.state, snode);

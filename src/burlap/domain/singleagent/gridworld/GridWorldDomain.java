@@ -4,20 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import burlap.behavior.singleagent.Policy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -509,9 +513,9 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNoLocationState(Domain d){
 		
-		State s = new State();
+		State s = new MutableState();
 
-		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 				
 		return s;
 		
@@ -526,9 +530,9 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNoLocationState(Domain d, int ax, int ay){
 
-		State s = new State();
+		State s = new MutableState();
 
-		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		GridWorldDomain.setAgent(s, ax, ay);
 
 		return s;
@@ -544,10 +548,10 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentOneLocationState(Domain d){
 		
-		State s = new State();
+		State s = new MutableState();
 		
-		s.addObject(new ObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+0));
-		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+0));
+		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		
 		
 		return s;
@@ -562,12 +566,12 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNLocationState(Domain d, int n){
 		
-		State s = new State();
+		State s = new MutableState();
 		
 		for(int i = 0; i < n; i++){
-			s.addObject(new ObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+i));
+			s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+i));
 		}
-		s.addObject(new ObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		
 		return s;
 	}
@@ -627,12 +631,12 @@ public class GridWorldDomain implements DomainGenerator {
 	 * {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI#initGUI()}
 	 * on the returned object to start it.
 	 * @param states the states whose value should be rendered.
-	 * @param planner the planner that can return the value function.
+	 * @param valueFunction the value Function that can return the state values.
 	 * @param p the policy to render
 	 * @return a gridworld-based {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} object.
 	 */
-	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, QComputablePlanner planner, Policy p){
-		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, planner, p,
+	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, ValueFunction valueFunction, Policy p){
+		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, valueFunction, p,
 				CLASSAGENT, ATTX, ATTY,
 				ACTIONNORTH, ACTIONSOUTH, ACTIONEAST, ACTIONWEST);
 	}
@@ -706,7 +710,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class MovementAction extends Action{
+	public class MovementAction extends SimpleAction implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go
@@ -732,15 +736,14 @@ public class GridWorldDomain implements DomainGenerator {
 		 * @param map the map of the world
 		 */
 		public MovementAction(String name, Domain domain, double [] directions, int [][] map){
-			super(name, domain, "");
+			super(name, domain);
 			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
 			this.map = map;
 		}
-		
+
 		@Override
-		protected State performActionHelper(State st, String[] params) {
-			
+		protected State performActionHelper(State s, GroundedAction groundedAction) {
 			double roll = rand.nextDouble();
 			double curSum = 0.;
 			int dir = 0;
@@ -751,26 +754,25 @@ public class GridWorldDomain implements DomainGenerator {
 					break;
 				}
 			}
-			
+
 			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(dir);
-			GridWorldDomain.this.move(st, dcomps[0], dcomps[1], this.map);
-			
-			return st;
+			GridWorldDomain.this.move(s, dcomps[0], dcomps[1], this.map);
+
+			return s;
 		}
-		
+
 		@Override
-		public List<TransitionProbability> getTransitions(State st, String [] params){
-			
+		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
 			List <TransitionProbability> transitions = new ArrayList<TransitionProbability>();
 			for(int i = 0; i < directionProbs.length; i++){
 				double p = directionProbs[i];
 				if(p == 0.){
 					continue; //cannot transition in this direction
 				}
-				State ns = st.copy();
+				State ns = s.copy();
 				int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(i);
 				GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
-				
+
 				//make sure this direction doesn't actually stay in the same place and replicate another no-op
 				boolean isNew = true;
 				for(TransitionProbability tp : transitions){
@@ -780,20 +782,18 @@ public class GridWorldDomain implements DomainGenerator {
 						break;
 					}
 				}
-				
+
 				if(isNew){
 					TransitionProbability tp = new TransitionProbability(ns, p);
 					transitions.add(tp);
 				}
-			
-				
+
+
 			}
-			
-			
+
+
 			return transitions;
 		}
-		
-		
 		
 	}
 	
@@ -818,7 +818,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			ObjectInstance location = st.getObject(params[1]);
@@ -875,7 +875,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String[] params) {
+		public boolean isTrue(State st, String... params) {
 			
 			ObjectInstance agent = st.getObject(params[0]);
 			
@@ -931,13 +931,13 @@ public class GridWorldDomain implements DomainGenerator {
 		
 		if(expMode == 0){
 			
-			TerminalExplorer exp = new TerminalExplorer(d);
+			TerminalExplorer exp = new TerminalExplorer(d, s);
 			exp.addActionShortHand("n", ACTIONNORTH);
 			exp.addActionShortHand("e", ACTIONEAST);
 			exp.addActionShortHand("w", ACTIONWEST);
 			exp.addActionShortHand("s", ACTIONSOUTH);
 			
-			exp.exploreFromState(s);
+			exp.explore();
 			
 		}
 		else if(expMode == 1){

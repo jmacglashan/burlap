@@ -3,10 +3,10 @@ package burlap.behavior.learningrate;
 import java.util.HashMap;
 import java.util.Map;
 
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 
 /**
@@ -47,7 +47,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	/**
 	 * The state dependent or state-action dependent learning rate time indices
 	 */
-	protected Map<StateHashTuple, StateWiseTimeIndex> stateWiseMap;
+	protected Map<HashableState, StateWiseTimeIndex> stateWiseMap;
 	
 	/**
 	 * The state feature dependent or state feature-action dependent learning rate time indicies
@@ -68,7 +68,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	/**
 	 * How to hash and perform equality checks of states
 	 */
-	protected StateHashFactory hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	
 	/**
@@ -112,7 +112,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	 * @param hashingFactory how to hash and compare states
 	 * @param useSeparateLRPerStateAction whether to have an independent learning rate for each state-action pair, rather than just each state
 	 */
-	public SoftTimeInverseDecayLR(double initialLearningRate, double decayConstantShift, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
+	public SoftTimeInverseDecayLR(double initialLearningRate, double decayConstantShift, HashableStateFactory hashingFactory, boolean useSeparateLRPerStateAction){
 		
 		this.initialLearningRate = initialLearningRate;
 		this.decayConstantShift = decayConstantShift;
@@ -120,7 +120,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 		this.useStateWise = true;
 		this.useStateActionWise = useSeparateLRPerStateAction;
 		this.hashingFactory = hashingFactory;
-		this.stateWiseMap = new HashMap<StateHashTuple, StateWiseTimeIndex>();
+		this.stateWiseMap = new HashMap<HashableState, StateWiseTimeIndex>();
 		this.featureWiseMap = new HashMap<Integer, StateWiseTimeIndex>();
 		
 	}
@@ -135,7 +135,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	 * @param hashingFactory how to hash and compare states
 	 * @param useSeparateLRPerStateAction whether to have an independent learning rate for each state-action pair, rather than just each state
 	 */
-	public SoftTimeInverseDecayLR(double initialLearningRate, double decayConstantShift, double minimumLearningRate, StateHashFactory hashingFactory, boolean useSeparateLRPerStateAction){
+	public SoftTimeInverseDecayLR(double initialLearningRate, double decayConstantShift, double minimumLearningRate, HashableStateFactory hashingFactory, boolean useSeparateLRPerStateAction){
 		
 		this.initialLearningRate = initialLearningRate;
 		this.decayConstantShift = decayConstantShift;
@@ -144,7 +144,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 		this.useStateWise = true;
 		this.useStateActionWise = useSeparateLRPerStateAction;
 		this.hashingFactory = hashingFactory;
-		this.stateWiseMap = new HashMap<StateHashTuple, StateWiseTimeIndex>();
+		this.stateWiseMap = new HashMap<HashableState, StateWiseTimeIndex>();
 		this.featureWiseMap = new HashMap<Integer, SoftTimeInverseDecayLR.StateWiseTimeIndex>();
 		
 	}
@@ -274,7 +274,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	 * @return the learning rate data structure for the given state feature
 	 */
 	protected StateWiseTimeIndex getStateWiseTimeIndex(State s){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		StateWiseTimeIndex slr = this.stateWiseMap.get(sh);
 		if(slr == null){
 			slr = new StateWiseTimeIndex();

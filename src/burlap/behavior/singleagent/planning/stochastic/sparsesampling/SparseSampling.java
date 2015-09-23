@@ -5,41 +5,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.statehashing.NameDependentStateHashFactory;
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.oomdp.core.*;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
- * An implementation of the Sparse Sampling (SS) [1] planning algorithm. SS's computational complexity is indepdent of the state space size, which makes it appealing
+ * An implementation of the Sparse Sampling (SS) [1] planning algorithm. SS's computational complexity is independent of the state space size, which makes it appealing
  * for exponentially large or infinite state space MDPs and it guarantees epsilon optimal planning under certain conditions (use the {@link #setHAndCByMDPError(double, double, int)}
  * method to ensure this, however, the required horizon and C will probably be intractably large). SS must replan for every new state it sees, so an agent following it in general must replan after every step it takes in the real world. Using a
- * Q-based {@link Policy} object, will ensure this behavior because this algorithm will call the planner whenever it's quried for the Q-value for a state it has not seen.
+ * Q-based {@link Policy} object, will ensure this behavior because this algorithm will call the valueFunction whenever it's queried for the Q-value for a state it has not seen.
  * <p/>
- * The algorithm operates by building a tree frome the source initial state. The tree is built by sampling C outcome states for each possible state-action pair, thereby generating new
+ * The algorithm operates by building a tree from the source initial state. The tree is built by sampling C outcome states for each possible state-action pair, thereby generating new
  * state nodes in the tree. The tree is built out to a fixed height H and then in a tail recursive way, the Q-value and state value is estimated using a Bellman update as if the C samples perfectly defined
- * the transition dyanamics. Because the values are are based on fixed horizon and computed in a tail recusive way, only one bellman update is required per node.
+ * the transition dynamics. Because the values are are based on fixed horizon and computed in a recursive way, only one bellman update is required per node.
  * <p/>
- * Although the complexity of the algorithm is indepdent of the state space size, it is exponential in the height of the tree, so if a large tree height is required
+ * Although the complexity of the algorithm is independent of the state space size, it is exponential in the height of the tree, so if a large tree height is required
  * to make good value function estimates, this algorithm may not be appropriate. Therefore, when rewards are sparse or uniform except at a distant horizon, this may not be an appropriate
  * algorithm choice.
  * <p/>
- * By default, this classs will remember the estimated Q-value for every state from which the {@link #planFromState(State)} method was called (which will be indirectly called
+ * By default, this class will remember the estimated Q-value for every state from which the {@link #planFromState(State)} method was called (which will be indirectly called
  * by the Q-value query methods if it does not have the Q-value for it) and it will also remember the value of state tree nodes it computed so that they may be reused in
  * subsequent tree creations, thereby limiting the amount of additional computation required. However, if memory is scarce, the class can be told to forget all prior planning
  * results, except the Q-value estimate for the most recently planned for state, by using the {@link #forgetPreviousPlanResults} method.
@@ -51,13 +48,13 @@ import burlap.oomdp.singleagent.RewardFunction;
  * By default, the state value of leafs will be set to 0, but this value can be changed by providing a {@link ValueFunctionInitialization} object via the
  * {@link #setValueForLeafNodes(ValueFunctionInitialization)} method. Using a non-zero heuristic value may reduce the need for a large tree height.
  * <p/>
- * This class will work with {@link Option}s, but including options will necessarily *increase* the computational complexity, so they are not reccommeneded.
+ * This class will work with {@link Option}s, but including options will necessarily *increase* the computational complexity, so they are not recommended.
  * <p/>
- * This class requires a {@link StateHashFactory}; if the domain is continuous, just use a {@link NameDependentStateHashFactory} instance.
+ * This class requires a {@link burlap.oomdp.statehashing.HashableStateFactory}.
  * <p/>
  * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
- * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is, the
- * {@link Action#getTransitions(State, String[])} method is defined). To set this class to comptue the exact finite horizon value function, use the
+ * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is,
+ * all {@link burlap.oomdp.singleagent.Action} instances implement the {@link burlap.oomdp.singleagent.FullActionModel} interface.). To set this class to compute the exact finite horizon value function, use the
  * {@link #setComputeExactValueFunction(boolean)} method. Note that you cannot use {@link Option}s when using the fully Bellman update, because that would
  * required factored access to the probability of each length of each transition, which is not available from Options (it's aggregated into the transition function
  * itself). An exception will be thrown if {@link Option}s are used with the full Bellman transitions.
@@ -71,7 +68,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
+public class SparseSampling extends MDPSolver implements QFunction, Planner {
 
 	/**
 	 * The height of the tree
@@ -114,7 +111,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	/**
 	 * The root state node Q-values that have been estimated by previous planning calls.
 	 */
-	protected Map<StateHashTuple, List<QValue>> rootLevelQValues;
+	protected Map<HashableState, List<QValue>> rootLevelQValues;
 	
 	
 	/**
@@ -127,22 +124,22 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	/**
 	 * Initializes. Note that you can have h and c set to values that ensure epsilon optimality by using the {@link #setHAndCByMDPError(double, double, int)} method, but in
 	 * general this will result in very large values that will be intractable. If you set c = -1, then the full transition dynamics will be used. You should
-	 * only use the full transition dynanics if the number of possible transitions from each state is small and if the domain Action object's {@link Action#getTransitions(State, String[])}
-	 * method is defined.
+	 * only use the full transition dynamics if the number of possible transitions from each state is small and if the domain Action object's
+	 * implements the {@link burlap.oomdp.singleagent.FullActionModel} interface.
 	 * @param domain the planning domain
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
-	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes. If the domain is continuous, use a {@link NameDependentStateHashFactory}
+	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes.
 	 * @param h the height of the tree
 	 * @param c the number of transition dynamics samples used. If set to -1, then the full transition dynamics are used.
 	 */
-	public SparseSampling(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, StateHashFactory hashingFactory, int h, int c){
-		this.plannerInit(domain, rf, tf, gamma, hashingFactory);
+	public SparseSampling(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int h, int c){
+		this.solverInit(domain, rf, tf, gamma, hashingFactory);
 		this.h = h;
 		this.c = c;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, SparseSampling.StateNode>();
-		this.rootLevelQValues = new HashMap<StateHashTuple, List<QValue>>();
+		this.rootLevelQValues = new HashMap<HashableState, List<QValue>>();
 		if(this.c < 0){
 			this.computeExactValueFunction = true;
 		}
@@ -220,7 +217,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	
 	
 	/**
-	 * Sets whether this planner will compute the exact finite horizon value funciton (using the full transition dynamics) or if sampling
+	 * Sets whether this valueFunction will compute the exact finite horizon value funciton (using the full transition dynamics) or if sampling
 	 * to estimate the value function will be used. The default of this class is to use sampling.
 	 * @param computeExactValueFunction if true, the exact finite horizon value function is computed; if false, then sampling is used.
 	 */
@@ -230,7 +227,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	
 	
 	/**
-	 * Returns whether this planner comptues the exact finite horizon value function (by using the full transition dynamics) or whether
+	 * Returns whether this valueFunction comptues the exact finite horizon value function (by using the full transition dynamics) or whether
 	 * it estimates the value funciton with sampling.
 	 * @return true if the exact finite horizon value function is estimate; false if sampling is used.
 	 */
@@ -277,8 +274,8 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	}
 	
 	/**
-	 * Returns the total number of state value estimates performed since the {@link #resetPlannerResults()} call.
-	 * @return the total number of state value estimates performed since the {@link #resetPlannerResults()} call.
+	 * Returns the total number of state value estimates performed since the {@link #resetSolver()} call.
+	 * @return the total number of state value estimates performed since the {@link #resetSolver()} call.
 	 */
 	public int getNumberOfValueEsitmates(){
 		return this.numUpdates;
@@ -291,18 +288,24 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	public int getNumberOfStateNodesCreated(){
 		return this.nodesByHeight.size() + this.rootLevelQValues.size();
 	}
-	
-	
+
+
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		
 		if(this.forgetPreviousPlanResults){
 			this.rootLevelQValues.clear();
 		}
 		
-		StateHashTuple sh = this.hashingFactory.hashState(initialState);
+		HashableState sh = this.hashingFactory.hashState(initialState);
 		if(this.rootLevelQValues.containsKey(sh)){
-			return; //already planned for this state
+			return new GreedyQPolicy(this); //already planned for this state
 		}
 		
 		DPrint.cl(this.debugCode, "Beginning Planning.");
@@ -319,10 +322,12 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		
 		this.mapToStateIndex.put(sh, sh);
 
+		return new GreedyQPolicy(this);
+
 	}
 
 	@Override
-	public void resetPlannerResults() {
+	public void resetSolver() {
 		this.nodesByHeight.clear();
 		this.rootLevelQValues.clear();
 		this.numUpdates = 0;
@@ -332,7 +337,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	@Override
 	public List<QValue> getQs(State s) {
 		
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		List<QValue> qs = this.rootLevelQValues.get(sh);
 		if(qs == null){
 			this.planFromState(s);
@@ -345,16 +350,16 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
 		
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		List<QValue> qs = this.rootLevelQValues.get(sh);
 		if(qs == null){
 			this.planFromState(s);
 			qs = this.rootLevelQValues.get(sh);
 		}
-		
-		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
-			StateHashTuple storedSh = this.mapToStateIndex.get(sh);
-			a = a.translateParameters(s, storedSh.s);
+
+		if(a instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)a).actionDomainIsObjectIdentifierIndependent()){
+			HashableState storedSh = this.mapToStateIndex.get(sh);
+			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
 		}
 		
 		for(QValue qv : qs){
@@ -365,6 +370,12 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		
 		
 		return null;
+	}
+
+
+	@Override
+	public double value(State s) {
+		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
 	}
 	
 	
@@ -395,7 +406,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 	 * @return the state node for the given state at the given height in the tree
 	 */
 	protected StateNode getStateNode(State s, int height){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		HashedHeightState hhs = new HashedHeightState(sh, height);
 		StateNode sn = this.nodesByHeight.get(hhs);
 		if(sn == null){
@@ -417,7 +428,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		/**
 		 * The hashed state this node represents
 		 */
-		StateHashTuple sh;
+		HashableState sh;
 		
 		/**
 		 * The height of the node (distance from a leaf)
@@ -440,7 +451,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		 * @param sh the hashed state
 		 * @param height the height of the node
 		 */
-		public StateNode(StateHashTuple sh, int height){
+		public StateNode(HashableState sh, int height){
 			this.sh = sh;
 			this.height = height;
 		}
@@ -518,7 +529,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		protected double fullBelmmanQValue(GroundedAction ga){
 			
 			double sum = 0.;
-			List<TransitionProbability> tps = ga.action.getTransitions(this.sh.s, ga.params);
+			List<TransitionProbability> tps = ga.getTransitions(sh.s);
 			
 			if(!(ga.action instanceof Option)){
 				
@@ -582,7 +593,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		/**
 		 * The hashed state
 		 */
-		public StateHashTuple sh;
+		public HashableState sh;
 		
 		/**
 		 * The height of the state
@@ -595,7 +606,7 @@ public class SparseSampling extends OOMDPPlanner implements QComputablePlanner{
 		 * @param sh the hashed state
 		 * @param height the height of the state.
 		 */
-		public HashedHeightState(StateHashTuple sh, int height){
+		public HashedHeightState(HashableState sh, int height){
 			this.sh = sh;
 			this.height = height;
 		}

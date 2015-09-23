@@ -1,10 +1,6 @@
 package burlap.oomdp.core.values;
 
-import java.util.Collection;
-import java.util.Set;
-
 import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Value;
 
 
 /**
@@ -15,20 +11,28 @@ import burlap.oomdp.core.Value;
  * @author James MacGlashan
  *
  */
-public class DoubleArrayValue extends Value{
+public class DoubleArrayValue extends OOMDPValue{
 
-	protected double [] doubleArray;
+	protected final double [] doubleArray;
 	
 	public DoubleArrayValue(Attribute attribute) {
 		super(attribute);
+		this.doubleArray = null;
 	}
 	
-	public DoubleArrayValue(Value v){
+	public DoubleArrayValue(DoubleArrayValue v){
 		super(v);
 		DoubleArrayValue daValue = (DoubleArrayValue)v;
 		if(daValue.doubleArray != null) {
 			this.doubleArray = daValue.doubleArray.clone();
+		} else {
+			this.doubleArray = null;
 		}
+	}
+	
+	public DoubleArrayValue(Attribute attribute, double[] doubleArray) {
+		super(attribute);
+		this.doubleArray = doubleArray;
 	}
 
 	@Override
@@ -42,77 +46,27 @@ public class DoubleArrayValue extends Value{
 	}
 
 	@Override
-	public void setValue(int v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set value to int.");
-	}
-
-	@Override
-	public void setValue(double v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set value to a single double.");
-	}
-
-	@Override
-	public void setValue(String v) {
+	public Value setValue(String v) {
 		if(v.startsWith("\"") && v.endsWith("\"")){
 			v = v.substring(1, v.length());
 		}
 		String [] comps = v.split(",");
-		this.doubleArray = new double[comps.length];
+		double[] doubleArray = new double[comps.length];
 		for(int i = 0; i < comps.length; i++){
-			this.doubleArray[i] = Double.parseDouble(comps[i]);
+			doubleArray[i] = Double.parseDouble(comps[i]);
 		}
+		return new DoubleArrayValue(this.attribute, doubleArray);
 	}
 
 	@Override
-	public void addRelationalTarget(String t) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot set relational value.");
-	}
-
-	@Override
-	public void addAllRelationalTargets(Collection<String> targets) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot add relational targets");
-	}
-	
-	@Override
-	public void clearRelationTargets() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot remove relational value.");
-	}
-
-	@Override
-	public void removeRelationalTarget(String target) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot remove relational value.");
-	}
-
-	@Override
-	public int getDiscVal() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return int value.");
-	}
-
-	@Override
-	public double getRealVal() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return single real value.");
-	}
-
-	@Override
-	public String getStringVal() {
-		StringBuffer buf = new StringBuffer();
+	public StringBuilder buildStringVal(StringBuilder builder) {
 		for(int i = 0; i < this.doubleArray.length; i++){
 			if(i > 0){
-				buf.append(",");
+				builder.append(",");
 			}
-			buf.append(this.doubleArray[i]);
+			builder.append(this.doubleArray[i]);
 		}
-		return buf.toString();
-	}
-
-	@Override
-	public Set<String> getAllRelationalTargets() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return relational values.");
-	}
-
-	@Override
-	public boolean getBooleanValue() {
-		throw new UnsupportedOperationException("Value is of type DoubleArray, cannot return boolean value.");
+		return builder;
 	}
 
 	@Override
@@ -126,16 +80,18 @@ public class DoubleArrayValue extends Value{
 	}
 
 	@Override
-	public void setValue(int[] intArray) {
-		this.doubleArray = new double[intArray.length];
+	public Value setValue(int[] intArray) {
+		
+		double[] doubleArray = new double[intArray.length];
 		for(int i = 0; i < intArray.length; i++){
-			this.doubleArray[i] = intArray[i];
+			doubleArray[i] = intArray[i];
 		}
+		return new DoubleArrayValue(this.attribute, doubleArray);
 	}
 
 	@Override
-	public void setValue(double[] doubleArray) {
-		this.doubleArray = doubleArray;
+	public Value setValue(double[] doubleArray) {
+		return new DoubleArrayValue(this.attribute, doubleArray);
 	}
 
 	@Override
@@ -184,10 +140,4 @@ public class DoubleArrayValue extends Value{
 		return true;
 		
 	}
-
-	@Override
-	public void setValue(boolean v) {
-		throw new UnsupportedOperationException("Value is of type DoubleArray; cannot be set to a boolean value.");
-	}
-
 }

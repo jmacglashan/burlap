@@ -1,6 +1,6 @@
 package burlap.oomdp.singleagent.explorer;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 
 
 /**

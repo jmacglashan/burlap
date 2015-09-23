@@ -6,8 +6,10 @@ import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.states.MutableState;
 
 
 /**
@@ -171,8 +173,8 @@ public class MCRandomStateGenerator implements StateGenerator {
 	@Override
 	public State generateState() {
 		
-		State s = new State();
-		ObjectInstance agent = new ObjectInstance(this.domain.getObjectClass(MountainCar.CLASSAGENT), MountainCar.CLASSAGENT);
+		State s = new MutableState();
+		ObjectInstance agent = new MutableObjectInstance(this.domain.getObjectClass(MountainCar.CLASSAGENT), MountainCar.CLASSAGENT);
 		s.addObject(agent);
 		
 		double rx = this.rand.nextDouble() * (this.xmax - this.xmin) + this.xmin;

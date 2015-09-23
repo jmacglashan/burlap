@@ -6,13 +6,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import burlap.oomdp.core.ObjectInstance;
-import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.World;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
@@ -105,10 +103,10 @@ public class GGVisualizer {
 		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			int colInd = 0;
-			if(ob.getTrueClassName().equals(GridGame.CLASSAGENT)){
+			if(ob.getClassName().equals(GridGame.CLASSAGENT)){
 				colInd = ob.getIntValForAttribute(GridGame.ATTPN);
 			}
-			else if(ob.getTrueClassName().equals(GridGame.CLASSGOAL)){
+			else if(ob.getClassName().equals(GridGame.CLASSGOAL)){
 				colInd = ob.getIntValForAttribute(GridGame.ATTGT);
 			}
 			

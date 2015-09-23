@@ -9,10 +9,10 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
-import burlap.behavior.stochasticgame.GameAnalysis;
+import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.WorldObserver;
@@ -118,15 +118,30 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 		pack();
 		setVisible(true);
 	}
-	
+
+	@Override
+	public void gameStarting(State s) {
+		this.updateAndWait(s);
+	}
+
 
 	@Override
 	public void observe(State s, JointAction ja, Map<String, Double> reward, State sp) {
 		
-		this.painter.updateState(sp);
-		this.updatePropTextArea(sp);
+		this.updateAndWait(sp);
+
+	}
+
+	@Override
+	public void gameEnding(State s) {
+		//do nothing
+	}
+
+	protected void updateAndWait(State s){
+		this.painter.updateState(s);
+		this.updatePropTextArea(s);
 		Thread waitThread = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -136,15 +151,14 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 				}
 			}
 		});
-		
+
 		waitThread.start();
-		
+
 		try {
 			waitThread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
 	}
 	
 	

@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.oomdp.singleagent.environment.Environment;
 import org.ejml.simple.SimpleMatrix;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.QValue;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData.SARS;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.singleagent.planning.commonpolicies.EpsilonGreedy;
-import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.policy.EpsilonGreedy;
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.vfa.ActionApproximationResult;
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
@@ -26,7 +28,7 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -34,25 +36,33 @@ import burlap.oomdp.singleagent.RewardFunction;
 
 /**
  * This class implements the optimized version of last squares policy iteration [1] (runs in quadratic time of the number of state features). Unlike other planning and learning algorithms,
- * it is reccomended that you use this class differently than the conventional ways. That is, rather than using the {@link #planFromState(State)} or {@link #runLearningEpisodeFrom(State)}
+ * it is recommended that you use this class differently than the conventional ways. That is, rather than using the {@link #planFromState(State)} or {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)}
  * methods, you should instead use a {@link SARSCollector} object to gather a bunch of example state-action-reward-state tuples that are then used for policy iteration. You can
  * set the dataset to use using the {@link #setDataset(SARSData)} method and then you can run LSPI on it using the {@link #runPolicyIteration(int, double)} method. LSPI requires
- * initializing a matrix to an identity matrix multiplied by some large positive constant (see the reference for more information). 
+ * initialize a matrix to an identity matrix multiplied by some large positive constant (see the reference for more information).
  * By default this constant is 100, but you can change it with the {@link #setIdentityScalar(double)}
  * method.
  * <p/>
- * If you do use the {@link #planFromState(State)} method, it will work by creating a {@link UniformRandomSARSCollector} and collecting SARS data from the input state and then calling
- * the {@link #runPolicyIteration(int, double)} method. You can change the {@link SARSCollector} this method uses, the number of samples it acquires, the maximum weight change for PI termination,
+ * If you do use the {@link #planFromState(State)} method, you should first initialize the parameters for it using the
+ * {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int, SARSCollector)} or
+ * {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)} method.
+ * If you do not set a {@link burlap.behavior.singleagent.learning.lspi.SARSCollector} to use for planning
+ * a {@link UniformRandomSARSCollector} will be automatically created. After collecting data, it will call
+ * the {@link #runPolicyIteration(int, double)} method using a maximum of 30 policy iterations. You can change the {@link SARSCollector} this method uses, the number of samples it acquires, the maximum weight change for PI termination,
  * and the maximum number of policy iterations by using the {@link #setPlanningCollector(SARSCollector)}, {@link #setNumSamplesForPlanning(int)}, {@link #setMaxChange(double)}, and
- * {@link #setMaxNumPlanningIterations(int)} methods repsectively.
+ * {@link #setMaxNumPlanningIterations(int)} methods respectively.
  * <p/>
- * If you do use the {@link #runLearningEpisodeFrom(State)} method (or the {@link #runLearningEpisodeFrom(State, int)} method), it will work by following a learning policy for the episode and adding its observations to its dataset for its
- * policy iteration. After enough new data has been acquired, policy iteration will be rereun. You can adjust the learning policy, the maximum number of allowed learning steps in an
+ * If you use the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method (or the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)}  method),
+ * it will work by following a learning policy for the episode and adding its observations to its dataset for its
+ * policy iteration. After enough new data has been acquired, policy iteration will be rereun.
+ * You can adjust the learning policy, the maximum number of allowed learning steps in an
  * episode, and the minimum number of new observations until LSPI is rerun using the {@link #setLearningPolicy(Policy)}, {@link #setMaxLearningSteps(int)}, {@link #setMinNewStepsForLearningPI(int)}
  * methods respectively. The LSPI  termination parameters are set using the same methods that you use for adjusting the results from the {@link #planFromState(State)} method discussed above.
  * <p/>
- * This data gathering and replanning behavior from learning episodes is not expected to be an especailly good choice. Therefore, if you want a better online data acquisition, you should consider subclassing this class
- * and overriding the methods {@link #updateDatasetWithLearningEpisode(EpisodeAnalysis)} and {@link #shouldRereunPolicyIteration(EpisodeAnalysis)}, or the {@link #runLearningEpisodeFrom(State, int)} method
+ * This data gathering and replanning behavior from learning episodes is not expected to be an especially good choice.
+ * Therefore, if you want a better online data acquisition, you should consider subclassing this class
+ * and overriding the methods {@link #updateDatasetWithLearningEpisode(EpisodeAnalysis)} and {@link #shouldRereunPolicyIteration(EpisodeAnalysis)}, or
+ * the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} method
  * itself.
  * 
  * <p/>
@@ -61,7 +71,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * @author James MacGlashan
  *
  */
-public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAgent {
+public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner {
 
 	/**
 	 * The object that performs value function approximation given the weights that are estimated
@@ -105,18 +115,18 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 	protected SARSCollector											planningCollector;
 	
 	/**
-	 * The maximum number of policy iterations permitted when LSPI is run from the {@link #planFromState(State)} or {@link #runLearningEpisodeFrom(State)} methods.
+	 * The maximum number of policy iterations permitted when LSPI is run from the {@link #planFromState(State)} or {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} methods.
 	 */
 	protected int													maxNumPlanningIterations = 30;
 	
 	
 	/**
-	 * The learning policy followed in {@link #runLearningEpisodeFrom(State)} method calls. Default is 0.1 epsilon greedy.
+	 * The learning policy followed in {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method calls. Default is 0.1 epsilon greedy.
 	 */
 	protected Policy												learningPolicy;
 	
 	/**
-	 * The maximum number of learning steps in an episode when the {@link #runLearningEpisodeFrom(State)} method is called. Default is INT_MAX.
+	 * The maximum number of learning steps in an episode when the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method is called. Default is INT_MAX.
 	 */
 	protected int													maxLearningSteps = Integer.MAX_VALUE;
 	
@@ -147,20 +157,67 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 	
 	
 	/**
-	 * Initializes for the given domain, reward function, terminal state function, discount factor and the feature database that provides the state features used by LSPI.
+	 * Initializes.
 	 * @param domain the problem domain
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param fd the feature database defining state features on which LSPI will run.
 	 */
-	public LSPI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, FeatureDatabase fd){
-		this.plannerInit(domain, rf, tf, gamma, null);
+	public LSPI(Domain domain, double gamma, FeatureDatabase fd){
+		this.solverInit(domain, rf, tf, gamma, null);
 		this.featureDatabase = fd;
 		this.vfa = new LinearVFA(this.featureDatabase);
 		this.learningPolicy = new EpsilonGreedy(this, 0.1);
 	}
-	
+
+	/**
+	 * Initializes.
+	 * @param domain the problem domain
+	 * @param gamma the discount factor
+	 * @param fd the feature database defining state features on which LSPI will run.
+	 */
+	public LSPI(Domain domain, double gamma, FeatureDatabase fd, SARSData dataset){
+		this.solverInit(domain, rf, tf, gamma, null);
+		this.featureDatabase = fd;
+		this.vfa = new LinearVFA(this.featureDatabase);
+		this.learningPolicy = new EpsilonGreedy(this, 0.1);
+		this.dataset = dataset;
+	}
+
+
+	/**
+	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
+	 * and the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples to use for planning when
+	 * the {@link #planFromState(burlap.oomdp.core.states.State)} method is called. If the
+	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.states.State)} method will throw a runtime exception.
+	 * @param rf the reward function to use for planning
+	 * @param tf the terminal function to use for planning
+	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
+	 */
+	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numSamplesForPlanning){
+		this.rf = rf;
+		this.tf = tf;
+		this.numSamplesForPlanning = numSamplesForPlanning;
+	}
+
+	/**
+	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
+	 * the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples, and the {@link burlap.behavior.singleagent.learning.lspi.SARSCollector} to use
+	 * to collect samples for planning when
+	 * the {@link #planFromState(burlap.oomdp.core.states.State)} method is called. If the
+	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
+	 * are not set, the {@link #planFromState(burlap.oomdp.core.states.State)} method will throw a runtime exception.
+	 * @param rf the reward function to use for planning
+	 * @param tf the terminal function to use for planning
+	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
+	 */
+	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numSamplesForPlanning, SARSCollector planningCollector){
+		this.rf = rf;
+		this.tf = tf;
+		this.numSamplesForPlanning = numSamplesForPlanning;
+		this.planningCollector = planningCollector;
+	}
+
 	
 	/**
 	 * Sets the SARS dataset this object will use for LSPI
@@ -265,16 +322,16 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 
 	
 	/**
-	 * The learning policy followed by the {@link #runLearningEpisodeFrom(State)} and {@link #runLearningEpisodeFrom(State, int)} methods.
-	 * @return learning policy followed by the {@link #runLearningEpisodeFrom(State)} and {@link #runLearningEpisodeFrom(State, int)} methods.
+	 * The learning policy followed by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} and {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
+	 * @return learning policy followed by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} and {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
 	 */
 	public Policy getLearningPolicy() {
 		return learningPolicy;
 	}
 
 	/**
-	 * Sets the learning policy followed by the {@link #runLearningEpisodeFrom(State)} and {@link #runLearningEpisodeFrom(State, int)} methods.
-	 * @param learningPolicy the learning policy followed by the {@link #runLearningEpisodeFrom(State)} and {@link #runLearningEpisodeFrom(State, int)} methods.
+	 * Sets the learning policy followed by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} and {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
+	 * @param learningPolicy the learning policy followed by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} and {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
 	 */
 	public void setLearningPolicy(Policy learningPolicy) {
 		this.learningPolicy = learningPolicy;
@@ -282,16 +339,16 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 
 	
 	/**
-	 * The maximum number of learning steps permitted by the {@link #runLearningEpisodeFrom(State)} method.
-	 * @return maximum number of learning steps permitted by the {@link #runLearningEpisodeFrom(State)} method.
+	 * The maximum number of learning steps permitted by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method.
+	 * @return maximum number of learning steps permitted by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method.
 	 */
 	public int getMaxLearningSteps() {
 		return maxLearningSteps;
 	}
 
 	/**
-	 * Sets the maximum number of learning steps permitted by the {@link #runLearningEpisodeFrom(State)} method.
-	 * @param maxLearningSteps the maximum number of learning steps permitted by the {@link #runLearningEpisodeFrom(State)} method.
+	 * Sets the maximum number of learning steps permitted by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method.
+	 * @param maxLearningSteps the maximum number of learning steps permitted by the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method.
 	 */
 	public void setMaxLearningSteps(int maxLearningSteps) {
 		this.maxLearningSteps = maxLearningSteps;
@@ -316,16 +373,16 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 	
 
 	/**
-	 * The maximum change in weights required to terminate policy iteration when called from the {@link #planFromState(State)}, {@link #runLearningEpisodeFrom(State)} or {@link #runLearningEpisodeFrom(State, int)} methods.
-	 * @return the maximum change in weights required to terminate policy iteration when called from the {@link #planFromState(State)}, {@link #runLearningEpisodeFrom(State)} or {@link #runLearningEpisodeFrom(State, int)} methods.
+	 * The maximum change in weights required to terminate policy iteration when called from the {@link #planFromState(State)}, {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} or {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
+	 * @return the maximum change in weights required to terminate policy iteration when called from the {@link #planFromState(State)}, {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} or {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
 	 */
 	public double getMaxChange() {
 		return maxChange;
 	}
 
 	/**
-	 * Sets the maximum change in weights required to terminate policy iteration when called from the {@link #planFromState(State)}, {@link #runLearningEpisodeFrom(State)} or {@link #runLearningEpisodeFrom(State, int)} methods.
-	 * @param maxChange the maximum change in weights required to terminate policy iteration when called from the {@link #planFromState(State)}, {@link #runLearningEpisodeFrom(State)} or {@link #runLearningEpisodeFrom(State, int)} methods.
+	 * Sets the maximum change in weights required to terminate policy iteration when called from the {@link #planFromState(State)}, {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} or {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
+	 * @param maxChange the maximum change in weights required to terminate policy iteration when called from the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} or {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} methods.
 	 */
 	public void setMaxChange(double maxChange) {
 		this.maxChange = maxChange;
@@ -390,8 +447,9 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 	 * Runs LSPI for either numIterations or until the change in the weight matrix is no greater than maxChange.
 	 * @param numIterations the maximum number of policy iterations.
 	 * @param maxChange when the weight change is smaller than this value, LSPI terminates.
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy} using this object as the {@link burlap.behavior.valuefunction.QFunction} source.
 	 */
-	public void runPolicyIteration(int numIterations, double maxChange){
+	public GreedyQPolicy runPolicyIteration(int numIterations, double maxChange){
 		
 		boolean converged = false;
 		for(int i = 0; i < numIterations && !converged; i++){
@@ -409,6 +467,7 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 			
 		}
 		DPrint.cl(0, "Finished Policy Iteration.");
+		return new GreedyQPolicy(this);
 	}
 	
 	
@@ -470,6 +529,16 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 		return this.getQFromFeaturesFor(results, s, (GroundedAction)a);
 		
 	}
+
+	@Override
+	public double value(State s) {
+		if(this.tf != null) {
+			return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
+		}
+		else{
+			return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		}
+	}
 	
 	
 	/**
@@ -487,20 +556,30 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 		return q;
 	}
 
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
-		
+	public GreedyQPolicy planFromState(State initialState) {
+
+		if(this.rf == null || this.tf == null){
+			throw new RuntimeException("LSPI cannot execute planFromState because the reward function and/or terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
+		}
+
 		if(planningCollector == null){
 			this.planningCollector = new SARSCollector.UniformRandomSARSCollector(this.actions);
 		}
 		this.dataset = this.planningCollector.collectNInstances(new ConstantStateGenerator(initialState), this.rf, this.numSamplesForPlanning, Integer.MAX_VALUE, this.tf, this.dataset);
-		this.runPolicyIteration(this.maxNumPlanningIterations, this.maxChange);
-		
+		return this.runPolicyIteration(this.maxNumPlanningIterations, this.maxChange);
+
 
 	}
 
 	@Override
-	public void resetPlannerResults() {
+	public void resetSolver() {
 		this.dataset.clear();
 		this.vfa.resetWeights();
 	}
@@ -539,20 +618,18 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 	}
 
 
-
-
-
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState) {
-		return this.runLearningEpisodeFrom(initialState, this.maxLearningSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env) {
+		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisodeFrom(State initialState, int maxSteps) {
-		
-		EpisodeAnalysis ea = this.learningPolicy.evaluateBehavior(initialState, this.rf, this.tf, maxSteps);
+	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+
+		EpisodeAnalysis ea = maxSteps != -1 ? this.learningPolicy.evaluateBehavior(env, maxSteps) : this.learningPolicy.evaluateBehavior(env);
+
 		this.updateDatasetWithLearningEpisode(ea);
-	
+
 		if(this.shouldRereunPolicyIteration(ea)){
 			this.runPolicyIteration(this.maxNumPlanningIterations, this.maxChange);
 			this.numStepsSinceLastLearningPI = 0;
@@ -560,14 +637,15 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 		else{
 			this.numStepsSinceLastLearningPI += ea.numTimeSteps()-1;
 		}
-		
+
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
 		}
 		episodeHistory.offer(ea);
-		
+
 		return ea;
 	}
+
 	
 	
 	
@@ -598,17 +676,14 @@ public class LSPI extends OOMDPPlanner implements QComputablePlanner, LearningAg
 		return false;
 	}
 
-	@Override
 	public EpisodeAnalysis getLastLearningEpisode() {
 		return this.episodeHistory.getLast();
 	}
 
-	@Override
 	public void setNumEpisodesToStore(int numEps) {
 		this.numEpisodesToStore = numEps;
 	}
 
-	@Override
 	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
 		return this.episodeHistory;
 	}

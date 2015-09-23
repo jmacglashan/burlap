@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.auxiliary.valuefunctionvis;
 import java.awt.Graphics2D;
 import java.util.Collection;
 
-import burlap.behavior.singleagent.Policy;
-import burlap.oomdp.core.State;
+import burlap.behavior.policy.Policy;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.RenderLayer;
 
 public class PolicyRenderLayer implements RenderLayer{
@@ -44,7 +44,7 @@ public class PolicyRenderLayer implements RenderLayer{
 	 * Sets the states to visualize
 	 * @param stateValuesToVisualize the state to visualize
 	 */
-	public void setStateValuesToVisualize(Collection<State> stateValuesToVisualize) {
+	public void setStatesToVisualize(Collection<State> stateValuesToVisualize) {
 		this.statesToVisualize = stateValuesToVisualize;
 	}
 	

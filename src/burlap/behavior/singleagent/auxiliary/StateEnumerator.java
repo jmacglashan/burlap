@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import burlap.behavior.statehashing.StateHashFactory;
-import burlap.behavior.statehashing.StateHashTuple;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.SADomain;
 
@@ -30,12 +30,12 @@ public class StateEnumerator {
 	/**
 	 * The hashing factory used to hash states and perform equality tests
 	 */
-	protected StateHashFactory						hashingFactory;
+	protected HashableStateFactory hashingFactory;
 	
 	/**
 	 * The forward state enumeration map
 	 */
-	protected Map<StateHashTuple, Integer> 			enumeration = new HashMap<StateHashTuple, Integer>();
+	protected Map<HashableState, Integer> 			enumeration = new HashMap<HashableState, Integer>();
 	
 	/**
 	 * The reverse enumeration id to state map
@@ -55,7 +55,7 @@ public class StateEnumerator {
 	 * @param domain the domain of the states to be enumerated
 	 * @param hashingFactory the hashing factory to use
 	 */
-	public StateEnumerator(Domain domain, StateHashFactory hashingFactory){
+	public StateEnumerator(Domain domain, HashableStateFactory hashingFactory){
 		this.domain = domain;
 		this.hashingFactory = hashingFactory;
 	}
@@ -66,8 +66,8 @@ public class StateEnumerator {
 	 * @param from the state from which all reachable states should be searched
 	 */
 	public void findReachableStatesAndEnumerate(State from){
-		Set<StateHashTuple> reachable = StateReachability.getReachableHashedStates(from, (SADomain)this.domain, this.hashingFactory);
-		for(StateHashTuple sh : reachable){
+		Set<HashableState> reachable = StateReachability.getReachableHashedStates(from, (SADomain)this.domain, this.hashingFactory);
+		for(HashableState sh : reachable){
 			this.getEnumeratedID(sh);
 		}
 	}
@@ -80,8 +80,8 @@ public class StateEnumerator {
 	 * @param tf the terminal function that prevents expanding from terminal states
 	 */
 	public void findReachableStatesAndEnumerate(State from, TerminalFunction tf){
-		Set<StateHashTuple> reachable = StateReachability.getReachableHashedStates(from, (SADomain)this.domain, this.hashingFactory, tf);
-		for(StateHashTuple sh : reachable){
+		Set<HashableState> reachable = StateReachability.getReachableHashedStates(from, (SADomain)this.domain, this.hashingFactory, tf);
+		for(HashableState sh : reachable){
 			this.getEnumeratedID(sh);
 		}
 	}
@@ -93,7 +93,7 @@ public class StateEnumerator {
 	 * @return the enumeration id
 	 */
 	public int getEnumeratedID(State s){
-		StateHashTuple sh = this.hashingFactory.hashState(s);
+		HashableState sh = this.hashingFactory.hashState(s);
 		return this.getEnumeratedID(sh);
 	}
 	
@@ -104,7 +104,7 @@ public class StateEnumerator {
 	 * @param id the enumeration id
 	 * @return the state associated with the given enumeration id.
 	 */
-	public State getStateForEnumertionId(int id){
+	public State getStateForEnumerationId(int id){
 		State s = this.reverseEnumerate.get(id);
 		if(s == null){
 			throw new RuntimeException("There is no state stored with the enumeration id: " + id);
@@ -128,7 +128,7 @@ public class StateEnumerator {
 	 * @param sh the hased state to get the enumeration id
 	 * @return the enumeration id
 	 */
-	protected int getEnumeratedID(StateHashTuple sh){
+	protected int getEnumeratedID(HashableState sh){
 		Integer storedID = this.enumeration.get(sh);
 		if(storedID == null){
 			this.enumeration.put(sh, this.nextEnumeratedID);

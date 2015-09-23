@@ -1,18 +1,20 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
-import burlap.behavior.singleagent.QValue;
-import burlap.behavior.singleagent.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.QComputablePlanner;
-import burlap.behavior.singleagent.planning.ValueFunction;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.statehashing.NameDependentStateHashFactory;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.SimpleHashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +23,14 @@ import java.util.List;
  * A class for performing Fitted Value Iteration [1]. This is a variant of value iteration that takes a set of
  * sample states from a domain and performs synchronous value iteration on the samples by using the Bellman operator
  * and a current approximation of the value function. Specifically, the value function is seeded to some initial value
- * (by default zero, but it can be set to something else with the {@link #setVInit(burlap.behavior.singleagent.ValueFunctionInitialization)}
+ * (by default zero, but it can be set to something else with the {@link #setVInit(burlap.behavior.valuefunction.ValueFunctionInitialization)}
  * method). For each state sample, a new value for the state is computed by applying the bellman operator (using the model
  * of the world and the current, initially zero-valued, value function approximation). The newly computed values for each
  * state are then used as a supervised instance to train the next iteration of the value function.
  *
  * <br/><br/>
  * To perform planning after specifying the state samples to use (either in the constructor or with the {@link #setSamples(java.util.List)} method,
- * you can perform planning with the {@link #runVI()} method. You can also use the standard {@link #planFromState(burlap.oomdp.core.State)} method,
+ * you can perform planning with the {@link #runVI()} method. You can also use the standard {@link #planFromState(burlap.oomdp.core.states.State)} method,
  * but specifying the state does not change behavior; the method just calls the {@link #runVI()} method itself.
  *
  * <br/><br/>
@@ -47,7 +49,7 @@ import java.util.List;
  * 1. Gordon, Geoffrey J. "Stable function approximation in dynamic programming." Proceedings of the twelfth international conference on machine learning. 1995.
  * @author James MacGlashan.
  */
-public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputablePlanner{
+public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Planner {
 
 
 	/**
@@ -86,7 +88,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 
 	/**
 	 * The {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} depth used when
-	 * computing Q-values for the {@link #getQs(burlap.oomdp.core.State)} and {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)}
+	 * computing Q-values for the {@link #getQs(burlap.oomdp.core.states.State)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)}
 	 * methods used for control.
 	 */
 	protected int controlDepth = 1;
@@ -112,7 +114,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 
 	/**
 	 * Initializes. Note that you will need to set the state samples to use for planning with the {@link #setSamples(java.util.List)} method before
-	 * calling {@link #planFromState(burlap.oomdp.core.State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
+	 * calling {@link #planFromState(burlap.oomdp.core.states.State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
 	 * will be thrown.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
@@ -124,7 +126,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
 	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, int transitionSamples, double maxDelta, int maxIterations){
-		this.plannerInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
+		this.solverInit(domain, rf, tf, gamma, new SimpleHashableStateFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.transitionSamples = transitionSamples;
 		this.maxDelta = maxDelta;
@@ -137,7 +139,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 
 	/**
 	 * Initializes. Note that you will need to set the state samples to use for planning with the {@link #setSamples(java.util.List)} method before
-	 * calling {@link #planFromState(burlap.oomdp.core.State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
+	 * calling {@link #planFromState(burlap.oomdp.core.states.State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
 	 * will be thrown.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
@@ -150,7 +152,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
 	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, List<State> samples, int transitionSamples, double maxDelta, int maxIterations){
-		this.plannerInit(domain, rf, tf, gamma, new NameDependentStateHashFactory());
+		this.solverInit(domain, rf, tf, gamma, new SimpleHashableStateFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.samples = samples;
 		this.transitionSamples = transitionSamples;
@@ -200,8 +202,8 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 	}
 
 	/**
-	 * Returns the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
-	 * @return the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * Returns the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * @return the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
 	 */
 	public int getControlDepth() {
 		return controlDepth;
@@ -209,8 +211,8 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 
 
 	/**
-	 * Sets the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
-	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * Sets the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
 	 */
 	public void setControlDepth(int controlDepth) {
 		this.controlDepth = controlDepth;
@@ -218,8 +220,8 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 
 
 	/**
-	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
-	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
 	 */
 	public void setPlanningAndControlDepth(int depth){
 		this.planningDepth = depth;
@@ -276,7 +278,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 		List <Double> oldVs = new ArrayList<Double>(this.samples.size());
 		for(State s : this.samples){
 			oldVs.add(this.valueFunction.value(s));
-			instances.add(new SupervisedVFA.SupervisedVFAInstance(s, QComputablePlanner.QComputablePlannerHelper.getOptimalValue(ss, s)));
+			instances.add(new SupervisedVFA.SupervisedVFAInstance(s, QFunctionHelper.getOptimalValue(ss, s)));
 		}
 
 		this.valueFunction = this.valueFunctionTrainer.train(instances);
@@ -293,13 +295,20 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 	}
 
 
+	/**
+	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
+	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
+	 * @param initialState the initial state of the planning problem
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy}.
+	 */
 	@Override
-	public void planFromState(State initialState) {
+	public GreedyQPolicy planFromState(State initialState) {
 		this.runVI();
+		return new GreedyQPolicy(this);
 	}
 
 	@Override
-	public void resetPlannerResults() {
+	public void resetSolver() {
 		this.valueFunction = this.vinit;
 	}
 
@@ -326,7 +335,7 @@ public class FittedVI extends OOMDPPlanner implements ValueFunction, QComputable
 
 
 	/**
-	 * A class for {@link burlap.behavior.singleagent.ValueFunctionInitialization} that always points to the outer class's current value function approximation.
+	 * A class for {@link burlap.behavior.valuefunction.ValueFunctionInitialization} that always points to the outer class's current value function approximation.
 	 */
 	public class VFAVInit implements ValueFunctionInitialization{
 

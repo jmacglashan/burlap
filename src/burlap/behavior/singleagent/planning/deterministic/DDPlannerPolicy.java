@@ -5,25 +5,25 @@ import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.planning.OOMDPPlanner;
-import burlap.behavior.singleagent.planning.PlannerDerivedPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner.PlanningFailedException;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
 
 /**
- * This is a dynamic deterministic planner policy, which means
- * if the source deterministic planner has not already computed
+ * This is a dynamic deterministic valueFunction policy, which means
+ * if the source deterministic valueFunction has not already computed
  * and cached the plan for a query state, then this policy
- * will first compute a plan using the planner and then return the
+ * will first compute a plan using the valueFunction and then return the
  * answer
  * @author James MacGlashan
  */
-public class DDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
+public class DDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 
 	protected DeterministicPlanner dp;
 	
@@ -33,8 +33,8 @@ public class DDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	}
 	
 	/**
-	 * Initializes with the deterministic planner
-	 * @param dp the deterministic planner to use for policy generation
+	 * Initializes with the deterministic valueFunction
+	 * @param dp the deterministic valueFunction to use for policy generation
 	 */
 	public DDPlannerPolicy(DeterministicPlanner dp){
 		this.dp = dp;
@@ -42,13 +42,13 @@ public class DDPlannerPolicy extends Policy implements PlannerDerivedPolicy{
 	
 	
 	@Override
-	public void setPlanner(OOMDPPlanner planner) {
+	public void setSolver(MDPSolverInterface solver) {
 		
-		if(!(planner instanceof DeterministicPlanner)){
+		if(!(solver instanceof DeterministicPlanner)){
 			throw new RuntimeErrorException(new Error("Planner is not a Deterministic Planner"));
 		}
 		
-		this.dp = (DeterministicPlanner)planner;
+		this.dp = (DeterministicPlanner) solver;
 		
 	}
 	

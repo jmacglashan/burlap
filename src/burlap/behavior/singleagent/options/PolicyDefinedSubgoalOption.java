@@ -1,16 +1,15 @@
 package burlap.behavior.singleagent.options;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import burlap.behavior.singleagent.Policy;
-import burlap.behavior.singleagent.Policy.ActionProb;
-import burlap.behavior.singleagent.planning.StateConditionTest;
-import burlap.oomdp.core.State;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.Policy.ActionProb;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
-
-
-
-
+import burlap.oomdp.singleagent.common.SimpleGroundedAction;
 
 
 /**
@@ -37,10 +36,25 @@ public class PolicyDefinedSubgoalOption extends Option {
 		this.policy = p;
 		this.subgoalTest = sg;
 		this.name = name;
-		this.parameterClasses = new String[0];
-		this.parameterOrderGroup = new String[0];
 	}
-	
+
+
+	@Override
+	public boolean isParameterized() {
+		return false;
+	}
+
+	@Override
+	public GroundedAction getAssociatedGroundedAction() {
+		return new SimpleGroundedAction(this);
+	}
+
+	@Override
+	public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+		GroundedAction ga = new SimpleGroundedAction(this);
+		return this.applicableInState(s, ga) ? Arrays.asList(ga) : new ArrayList<GroundedAction>(0);
+	}
+
 	@Override
 	public boolean isMarkov() {
 		return true;
@@ -57,7 +71,7 @@ public class PolicyDefinedSubgoalOption extends Option {
 	}
 
 	@Override
-	public double probabilityOfTermination(State s, String[] params) {
+	public double probabilityOfTermination(State s, GroundedAction groundedAction) {
 		State ms = this.map(s);
 		if(subgoalTest.satisfies(ms) || !this.policy.isDefinedFor(ms)){
 			return 1.;
@@ -66,23 +80,23 @@ public class PolicyDefinedSubgoalOption extends Option {
 	}
 
 	@Override
-	public boolean applicableInState(State st, String [] params){
+	public boolean applicableInState(State st, GroundedAction groundedAction){
 		return policy.getAction(this.map(st)) != null;
 	}
 	
 	
 	@Override
-	public void initiateInStateHelper(State s, String[] params) {
+	public void initiateInStateHelper(State s, GroundedAction groundedAction) {
 		//no bookkeeping
 	}
 
 	@Override
-	public GroundedAction oneStepActionSelection(State s, String[] params) {
+	public GroundedAction oneStepActionSelection(State s, GroundedAction groundedAction) {
 		return (GroundedAction)policy.getAction(this.map(s));
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s, String[] params) {
+	public List<ActionProb> getActionDistributionForState(State s, GroundedAction groundedAction) {
 		return policy.getActionDistributionForState(this.map(s));
 	}
 
