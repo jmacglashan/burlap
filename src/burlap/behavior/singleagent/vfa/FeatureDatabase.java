@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.vfa;
 
-import java.util.List;
-
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
+
+import java.util.List;
 
 
 /**
@@ -19,7 +19,7 @@ public interface FeatureDatabase {
 	 * @param s the state for which features should be returned
 	 * @return the features for state s
 	 */
-	public List<StateFeature> getStateFeatures(State s);
+	List<StateFeature> getStateFeatures(State s);
 	
 	
 	
@@ -31,7 +31,7 @@ public interface FeatureDatabase {
 	 * @param actions the action set for which the action features should be returned
 	 * @return returns the set set of action features for each action in actions
 	 */
-	public List<ActionFeaturesQuery> getActionFeaturesSets(State s, List <GroundedAction> actions);
+	List<ActionFeaturesQuery> getActionFeaturesSets(State s, List <GroundedAction> actions);
 	
 	
 	/**
@@ -41,14 +41,22 @@ public interface FeatureDatabase {
 	 * instances should be created.
 	 * @param toggle
 	 */
-	public void freezeDatabaseState(boolean toggle);
+	void freezeDatabaseState(boolean toggle);
 	
 	
 	/**
 	 * Returns the number of features this database tracks.
 	 * @return the number of features this database tracks.
 	 */
-	public int numberOfFeatures();
+	int numberOfFeatures();
+
+
+	/**
+	 * Returns a deep copy of this feature database. If the feature database is dynamic, then changes to one will
+	 * not affect the other.
+	 * @return a deep copy of this feature database
+	 */
+	FeatureDatabase copy();
 	
 	
 }

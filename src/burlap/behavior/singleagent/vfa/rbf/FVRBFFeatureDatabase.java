@@ -59,6 +59,8 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 	protected int nextActionMultiplier = 0;
 
 
+
+
 	/**
 	 * Initializes with an empty list of RBF units.
 	 * @param fvGen the state feature vector generator to use to generate the feature vectors provided to RBFs
@@ -192,6 +194,18 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 			return this.nRbfs;
 		}
 		return this.nRbfs*this.nextActionMultiplier;
+	}
+
+	@Override
+	public FVRBFFeatureDatabase copy() {
+
+		FVRBFFeatureDatabase rbf = new FVRBFFeatureDatabase(this.fvGen, this.hasOffset);
+		rbf.rbfs = new ArrayList<FVRBF>(this.rbfs);
+		rbf.nRbfs = this.nRbfs;
+		rbf.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);
+		rbf.nextActionMultiplier = this.nextActionMultiplier;
+
+		return rbf;
 	}
 
 }

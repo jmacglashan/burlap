@@ -1,15 +1,10 @@
 package burlap.behavior.singleagent.vfa.cmac;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
+
+import java.util.*;
 
 
 /**
@@ -38,9 +33,19 @@ public class Tiling {
 		this.specification = new HashMap<String, List<AttributeTileSpecification>>();
 		this.classOrder = new ArrayList<String>();
 	}
-	
-	
-	
+
+
+	/**
+	 * Returns a copy of this tiling.
+	 * @return a copy of this tiling.
+	 */
+	public Tiling copy(){
+		Tiling nTiling = new Tiling();
+		nTiling.specification = new HashMap<String, List<AttributeTileSpecification>>(this.specification);
+		nTiling.classOrder = new ArrayList<String>(this.classOrder);
+		return nTiling;
+	}
+
 	/**
 	 * Adds an attribute tiling specification for the an attribute of the given class with the given window size and bucket/tile boundary.
 	 * @param className the name of the object class whose attribute specification will be provided

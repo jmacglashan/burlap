@@ -126,4 +126,12 @@ public class FVToFeatureDatabase implements FeatureDatabase {
 
 		return stored;
 	}
+
+	@Override
+	public FVToFeatureDatabase copy() {
+		FVToFeatureDatabase fvfd = new FVToFeatureDatabase(this.fvGen, this.dim);
+		fvfd.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);
+		fvfd.nextActionMultiplier = this.nextActionMultiplier;
+		return fvfd;
+	}
 }
