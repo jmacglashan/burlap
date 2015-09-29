@@ -419,7 +419,15 @@ public final class ImmutableState extends OOMDPState implements State {
 		return this.replaceObject(o, newObject);
 	}
 	
-	
+	@Override
+	public <T> State setObjectsValue(String objectName, String attName, T value) {
+		ObjectInstance obj = this.getObject(objectName);
+		if (obj == null) {
+			throw new RuntimeException("Object " + objectName + " does not exist in this state");
+		}
+		return this.replaceObject(obj, obj.setValue(attName, value));
+	}
+
 	/**
 	 * This method computes a matching from objects in the receiver to value-identical objects in the parameter state so. The matching
 	 * is returned as a map from the object names in the receiving state to the matched objects in state so. If

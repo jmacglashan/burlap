@@ -119,7 +119,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	public ImmutableObjectInstance setName(String name){
 		return ImmutableObjectInstance.constructAndHash(this.obClass, name, this.values, this.hashTuple);
 	}
-	
+		
 	/**
 	 * Sets the value of the attribute named attName for this object instance.
 	 * @param attName the name of the attribute whose value is to be set.

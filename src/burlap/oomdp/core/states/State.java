@@ -40,6 +40,7 @@ public interface State {
 	 */
 	State removeObject(String oname);
 	
+	<T> State setObjectsValue(String objectName, String attName, T value);
 	
 	/**
 	 * Removes the object instance o from this state.

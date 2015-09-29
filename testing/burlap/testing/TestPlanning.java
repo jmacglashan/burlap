@@ -1,5 +1,10 @@
 package burlap.testing;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
@@ -19,10 +24,6 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.UniformCostRF;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class TestPlanning {
 	public static final double delta = 0.000001;

@@ -8,7 +8,9 @@ import org.junit.runners.Suite;
 	TestTesting.class,
 	TestGridWorld.class,
 	TestPlanning.class,
-	TestBlockDude.class
+	TestBlockDude.class,
+	TestImmutableState.class,
+	TestHashing.class
 })
 public class TestSuite {
 

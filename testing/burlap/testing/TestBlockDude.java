@@ -1,39 +1,59 @@
 package burlap.testing;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.behavior.singleagent.planning.deterministic.informed.NullHeuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.domain.singleagent.blockdude.BlockDude;
 import burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor;
 import burlap.domain.singleagent.blockdude.BlockDudeTF;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.UniformCostRF;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class TestBlockDude {
+		Domain domain;
+		BlockDude constructor;
+		
+		@Before
+		public void setup() {
+			constructor = new BlockDude();
+			domain = constructor.generateDomain();
+		}
+	
+		@After
+		public void teardown() {
+			this.domain = null;
+			this.constructor = null;
+		}
+		
+		public State generateState() {
+			return BlockDudeLevelConstructor.getLevel3(domain);
+		}
 
 		@Test
 		public void testDude() {
-
-
-			BlockDude constructor = new BlockDude();
-			Domain d = constructor.generateDomain();
-
-			State s = BlockDudeLevelConstructor.getLevel3(d);
+			State s = this.generateState();
+			this.testDude(s);
+		}
+		
+		public void testDude(State s) {
 			TerminalFunction tf = new BlockDudeTF();
 			RewardFunction rf = new UniformCostRF();
 			StateConditionTest sc = new TFGoalCondition(tf);
 
-			AStar astar = new AStar(d, rf, sc, new SimpleHashableStateFactory(), new NullHeuristic());
+			AStar astar = new AStar(domain, rf, sc, new SimpleHashableStateFactory(), new NullHeuristic());
 			astar.toggleDebugPrinting(false);
 			astar.planFromState(s);
 
@@ -98,6 +118,5 @@ public class TestBlockDude {
 			Assert.assertEquals(true, sc.satisfies(lastState));
 			Assert.assertEquals(-94.0, ea.getDiscountedReturn(1.0), 0.001);
 			*/
-
 		}
 }
