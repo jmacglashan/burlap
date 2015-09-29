@@ -12,6 +12,7 @@ import java.util.Set;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
@@ -94,6 +95,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 			List <LocationSetProb> cOutcomeSets = this.getPossibleCollisionOutcomes(previousLocations, basicMoveResults);
 			
 			//turn them into states with probabilities
+			if (cOutcomeSets.size() > 1) {
+				System.out.print("");
+			}
 			for(LocationSetProb csp : cOutcomeSets){
 				
 				State ns = s.copy();
@@ -104,6 +108,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 					ObjectInstance agent = ns.getObject(gsa.actingAgent);
 					agent.setValue(GridGame.ATTX, loc.x);
 					agent.setValue(GridGame.ATTY, loc.y);
+					
 				}
 				
 				double totalProb = sp.p * csp.p;
@@ -121,7 +126,6 @@ public class GridGameStandardMechanics extends JointActionModel {
 
 	@Override
 	protected State actionHelper(State s, JointAction ja) {
-		
 		
 		List <GroundedSGAgentAction> gsas = ja.getActionList();
 		
@@ -994,6 +998,19 @@ public class GridGameStandardMechanics extends JointActionModel {
 		public LocationSetProb(List <Location2> locs, double p){
 			this.locs = locs;
 			this.p = p;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuffer buffer = new StringBuffer();
+			for (int i = 0; i < this.locs.size(); ++i) {
+				Location2 loc = this.locs.get(i);
+				buffer.append(loc.x).append(", ").append(loc.y);
+				if (i < this.locs.size() - 1) {
+					buffer.append(" - ");
+				}
+			}
+			return buffer.toString();
 		}
 		
 	}

@@ -243,7 +243,7 @@ HashableStateFactory usingHashFactory){
 			}
 		}
 
-		DPrint.cl(debugID, "Num generated: " + nGenerated + "; num unique: " + hashedStates.size());
+		//DPrint.cl(debugID, "Num generated: " + nGenerated + "; num unique: " + hashedStates.size());
 		return hashedStates;
 	}
 }

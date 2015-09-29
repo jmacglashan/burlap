@@ -346,7 +346,7 @@ public class World {
 		}
 		
 		// clean up threading
-		DPrint.cl(debugId, currentState.getCompleteStateDescription());
+		//DPrint.cl(debugId, currentState.getCompleteStateDescription());
 
 		this.isRecordingGame = false;
 		
@@ -460,7 +460,7 @@ public class World {
 		this.lastJointAction = ja;
 		
 		
-		DPrint.cl(debugId, "Agents take joint action " + ja.toString());
+		//DPrint.cl(debugId, "Agents take joint action " + ja.toString());
 		
 		
 		//now that we have the joint action, perform it
@@ -468,7 +468,7 @@ public class World {
 		//State abstractedPrime = this.abstractionForAgents.abstraction(sp);
 		Map<String, Double> jointReward = jointRewardModel.reward(currentState, ja, sp);
 		
-		DPrint.cl(debugId, "Agents receive joint reward " + jointReward.toString());
+		//DPrint.cl(debugId, "Agents receive joint reward " + jointReward.toString());
 		
 		//index reward
 		for(String aname : jointReward.keySet()){
@@ -511,14 +511,14 @@ public class World {
 		
 		this.lastJointAction = (JointAction)jp.getAction(this.currentState);
 		
-		DPrint.cl(debugId, this.lastJointAction.toString());
+		//DPrint.cl(debugId, this.lastJointAction.toString());
 		
 		
 		//now that we have the joint action, perform it
 		State sp = worldModel.performJointAction(currentState, this.lastJointAction);
 		Map<String, Double> jointReward = jointRewardModel.reward(currentState, this.lastJointAction, sp);
 		
-		DPrint.cl(debugId, jointReward.toString());
+		//DPrint.cl(debugId, jointReward.toString());
 		
 		//index reward
 		for(String aname : jointReward.keySet()){

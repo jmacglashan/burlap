@@ -6,8 +6,8 @@ import java.util.List;
 import javax.management.RuntimeErrorException;
 
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
@@ -77,7 +77,12 @@ public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
 		double [] probs = bd.getProbabilities();
 		for(int i = 0; i < qValues.size(); i++){
 			QValue q = qValues.get(i);
-			ActionProb ap = new ActionProb(((GroundedAction)q.a).translateParameters(q.s, queryState), probs[i]);
+			ActionProb ap;
+			if (q.a instanceof GroundedAction) {
+				ap = new ActionProb(((GroundedAction)q.a).translateParameters(q.s, queryState), probs[i]);
+			} else {
+				ap = new ActionProb(q.a, probs[i]);
+			}
 			res.add(ap);
 		}
 		
