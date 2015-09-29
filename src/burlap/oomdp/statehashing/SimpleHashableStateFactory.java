@@ -131,7 +131,9 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 		if(!this.identifierIndependent){
 			hashCodeBuilder.append(o.getName());
 		}
-
+		
+		hashCodeBuilder.append(o.getClassName());
+		
 		List<Value> values = o.getValues();
 		for(Value v : values){
 			this.appendHashcodeForValue(hashCodeBuilder, v);
@@ -147,6 +149,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @param v the {@link burlap.oomdp.core.values.Value} whose hash code should be appended.
 	 */
 	protected void appendHashcodeForValue(HashCodeBuilder hashCodeBuilder, Value v){
+		hashCodeBuilder.append(0).append(0);
 		AttClass attClass = getAttClass(v.getAttribute());
 		if(attClass == AttClass.INT){
 			hashCodeBuilder.append(v.getDiscVal());
