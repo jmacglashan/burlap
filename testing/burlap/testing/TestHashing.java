@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.values.Value;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -108,29 +110,66 @@ public class TestHashing {
 	
 	@Test
 	public void testSimpleHashFactoryLargeState() {
-		testSimpleHashFactoryLargeState(10, 100, false);
-		testSimpleHashFactoryLargeState(50, 1000, false);
-		testSimpleHashFactoryLargeState(100, 10000, false);
-		testSimpleHashFactoryLargeState(200,100000, false);
-		testSimpleHashFactoryLargeState(500,100000, false);
+		HashableStateFactory factory = new SimpleHashableStateFactory();
 		
-		testSimpleHashFactoryLargeState(10, 100, true);
-		testSimpleHashFactoryLargeState(20, 1000, true);
-		testSimpleHashFactoryLargeState(50, 10000, true);
-		testSimpleHashFactoryLargeState(100,100000, true);
+		testSimpleHashFactoryLargeState(factory, 10, 100, false);
+		testSimpleHashFactoryLargeState(factory, 50, 1000, false);
+		testSimpleHashFactoryLargeState(factory, 100, 10000, false);
+		testSimpleHashFactoryLargeState(factory, 200,100000, false);
+		testSimpleHashFactoryLargeState(factory, 500,100000, false);
+		
+		testSimpleHashFactoryLargeState(factory, 10, 100, true);
+		testSimpleHashFactoryLargeState(factory, 20, 1000, true);
+		testSimpleHashFactoryLargeState(factory, 50, 10000, true);
+		testSimpleHashFactoryLargeState(factory, 100,100000, true);
 	}
 	
-	public void testSimpleHashFactoryLargeState(int width, int numRandomStates, boolean moveLocObjects) {
+	public void testSimpleHashFactoryLargeState(HashableStateFactory factory, int width, int numRandomStates, boolean moveLocObjects) {
 		GridWorldDomain gw = new GridWorldDomain(width, width);
 		SADomain domain = (SADomain)gw.generateDomain();
 		State startState = this.generateLargeGW(domain, width);
-		HashableStateFactory factory = new SimpleHashableStateFactory();
 		Set<HashableState> hashedStates = this.generateRandomStates(domain, startState, factory, width, numRandomStates, moveLocObjects);
 		Set<Integer> hashes = new HashSet<Integer>();
 		for (HashableState hs : hashedStates) {
 			hashes.add(hs.hashCode());
 		}
 		System.out.println("Hashed states: " + hashedStates.size() + ", hashes: " + hashes.size());
+	}
+	
+	public int getHash1(int x, int y) {
+		HashCodeBuilder b1 = new HashCodeBuilder(17,31);
+		b1.append(x).append(y);
+		return b1.toHashCode();
+	}
+	
+	public int getHash2(int x, int y) {
+		HashCodeBuilder b1 = new HashCodeBuilder(17,31);
+		b1.append(x).append("x").append(y).append("y");
+		return b1.toHashCode();
+	}
+	
+	public int getHash3(int x, int y) {
+		HashCodeBuilder b1 = new HashCodeBuilder(17,31);
+		b1.append(x).append(0).append(0).append(y).append(0).append(0);
+		return b1.toHashCode();
+	}
+	
+	public void testHashingScheme() {
+		int n = 10000;
+		Set<Integer> hashes1 = new HashSet<Integer>();
+		Set<Integer> hashes2 = new HashSet<Integer>();
+		Set<Integer> hashes3 = new HashSet<Integer>();
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				hashes1.add(getHash1(i,j));
+				hashes2.add(getHash2(i,j));
+				hashes3.add(getHash3(i,j));
+			}
+		}
+		System.out.println("1 N: " + n*n + ", " + hashes1.size());
+		System.out.println("2 N: " + n*n + ", " + hashes2.size());
+		System.out.println("3 N: " + n*n + ", " + hashes3.size());
 	}
 	
 	//@Test
@@ -183,7 +222,7 @@ public class TestHashing {
 			if (hashedStates.size() == prevSize) {
 				misses++;
 			}
-			if (misses > 20) {
+			if (misses > 100) {
 				break;
 			}
 			prevSize = hashedStates.size();
