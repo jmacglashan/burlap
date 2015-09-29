@@ -108,18 +108,24 @@ public class TestHashing {
 	
 	@Test
 	public void testSimpleHashFactoryLargeState() {
-		testSimpleHashFactoryLargeState(10, 100);
-		testSimpleHashFactoryLargeState(20, 1000);
-		testSimpleHashFactoryLargeState(50, 10000);
-		testSimpleHashFactoryLargeState(100,100000);
+		testSimpleHashFactoryLargeState(10, 100, false);
+		testSimpleHashFactoryLargeState(50, 1000, false);
+		testSimpleHashFactoryLargeState(100, 10000, false);
+		testSimpleHashFactoryLargeState(200,100000, false);
+		testSimpleHashFactoryLargeState(500,100000, false);
+		
+		testSimpleHashFactoryLargeState(10, 100, true);
+		testSimpleHashFactoryLargeState(20, 1000, true);
+		testSimpleHashFactoryLargeState(50, 10000, true);
+		testSimpleHashFactoryLargeState(100,100000, true);
 	}
 	
-	public void testSimpleHashFactoryLargeState(int width, int numRandomStates) {
+	public void testSimpleHashFactoryLargeState(int width, int numRandomStates, boolean moveLocObjects) {
 		GridWorldDomain gw = new GridWorldDomain(width, width);
 		SADomain domain = (SADomain)gw.generateDomain();
 		State startState = this.generateLargeGW(domain, width);
 		HashableStateFactory factory = new SimpleHashableStateFactory();
-		Set<HashableState> hashedStates = this.generateRandomStates(domain, startState, factory, width, numRandomStates);
+		Set<HashableState> hashedStates = this.generateRandomStates(domain, startState, factory, width, numRandomStates, moveLocObjects);
 		Set<Integer> hashes = new HashSet<Integer>();
 		for (HashableState hs : hashedStates) {
 			hashes.add(hs.hashCode());
@@ -168,7 +174,7 @@ public class TestHashing {
 		return hashedStates;
 	}
 	
-	public Set<HashableState> generateRandomStates(SADomain domain, State state, HashableStateFactory factory, int width, int numStates) {
+	public Set<HashableState> generateRandomStates(SADomain domain, State state, HashableStateFactory factory, int width, int numStates, boolean moveLocations) {
 		Set<HashableState> hashedStates = new HashSet<HashableState>();
 		Random random = new Random();
 		int misses = 0;
@@ -188,9 +194,11 @@ public class TestHashing {
 			copy.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0).setValue(GridWorldDomain.ATTX, random.nextInt(width));
 			copy.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0).setValue(GridWorldDomain.ATTY, random.nextInt(width));
 			
-			for (ObjectInstance loc : copy.getObjectsOfClass(GridWorldDomain.CLASSLOCATION)){
-				loc.setValue(GridWorldDomain.ATTX, random.nextInt(width));
-				loc.setValue(GridWorldDomain.ATTY, random.nextInt(width));
+			if (moveLocations) {
+				for (ObjectInstance loc : copy.getObjectsOfClass(GridWorldDomain.CLASSLOCATION)){
+					loc.setValue(GridWorldDomain.ATTX, random.nextInt(width));
+					loc.setValue(GridWorldDomain.ATTY, random.nextInt(width));
+				}
 			}
 			hashedStates.add(factory.hashState(copy));
 		}
