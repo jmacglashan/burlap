@@ -131,7 +131,9 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 		if(!this.identifierIndependent){
 			hashCodeBuilder.append(o.getName());
 		}
-
+		
+		hashCodeBuilder.append(o.getClassName());
+		
 		List<Value> values = o.getValues();
 		for(Value v : values){
 			this.appendHashcodeForValue(hashCodeBuilder, v);
@@ -148,6 +150,8 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 */
 	protected void appendHashcodeForValue(HashCodeBuilder hashCodeBuilder, Value v){
 		AttClass attClass = getAttClass(v.getAttribute());
+		hashCodeBuilder.append(attClass.name());
+		hashCodeBuilder.append(v.attName());
 		if(attClass == AttClass.INT){
 			hashCodeBuilder.append(v.getDiscVal());
 		}
