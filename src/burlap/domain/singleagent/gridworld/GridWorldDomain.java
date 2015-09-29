@@ -774,7 +774,7 @@ public class GridWorldDomain implements DomainGenerator {
 				}
 				State ns = s.copy();
 				int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(i);
-				GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
+				ns = GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
 
 				//make sure this direction doesn't actually stay in the same place and replicate another no-op
 				boolean isNew = true;
