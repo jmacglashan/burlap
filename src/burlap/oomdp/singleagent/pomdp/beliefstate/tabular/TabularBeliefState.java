@@ -503,7 +503,11 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 		if(this.beliefValues.size() == otb.beliefValues.size()) {
 			boolean match = true;
 			for(Map.Entry<Integer, Double> e : this.beliefValues.entrySet()) {
-				if(Math.abs(otb.beliefValues.get(e.getKey()) - e.getValue()) > 1e-10){
+				Double otherVal = otb.beliefValues.get(e.getKey());
+				if(otherVal == null){
+					return false;
+				}
+				if(Math.abs(otherVal - e.getValue()) > 1e-10){
 					return false;
 				}
 			}
