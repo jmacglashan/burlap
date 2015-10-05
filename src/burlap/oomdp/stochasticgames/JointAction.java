@@ -1,17 +1,12 @@
 package burlap.oomdp.stochasticgames;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.*;
 
 
 /**
@@ -37,6 +32,7 @@ public class JointAction implements AbstractGroundedAction, Iterable<GroundedSGA
 	 * @param actions the actions to add to this joint action.
 	 */
 	public JointAction(List <GroundedSGAgentAction> actions){
+		this.actions = new TreeMap<String, GroundedSGAgentAction>();
 		for(GroundedSGAgentAction gsa : actions){
 			this.addAction(gsa);
 		}
