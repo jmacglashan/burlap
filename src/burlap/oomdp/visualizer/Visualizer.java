@@ -1,9 +1,10 @@
 package burlap.oomdp.visualizer;
 
 
-import java.awt.Color;
-
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.GroundedAction;
+
+import java.awt.*;
 
 /**
  * This class extends the {@link MultiLayerRenderer} class to provide a base instance of a {@link StateRenderLayer} in its render list
@@ -27,6 +28,11 @@ public class Visualizer extends MultiLayerRenderer{
 	 * The {@link StateRenderLayer} instance for visualizing OO-MDP states.
 	 */
 	protected StateRenderLayer			srender;
+
+	/**
+	 * An option {@link burlap.oomdp.visualizer.StateActionRenderLayer} so that actions can be visualized on the same screen.
+	 */
+	protected StateActionRenderLayer	sarender = null;
 	
 	
 	
@@ -46,6 +52,33 @@ public class Visualizer extends MultiLayerRenderer{
 		this.renderLayers.remove(this.srender);
 		this.renderLayers.add(srender);
 		this.srender = srender;
+	}
+
+	/**
+	 * Adds a {@link burlap.oomdp.visualizer.StateActionRenderLayer} to this {@link burlap.oomdp.visualizer.Visualizer}.
+	 * @param sarender The {@link burlap.oomdp.visualizer.StateActionRenderLayer} to add.
+	 * @param afterStateRL if true, then the {@link burlap.oomdp.visualizer.StateActionRenderLayer} will be drawn after the {@link burlap.oomdp.visualizer.StateRenderLayer is drawn
+	 *                     If false, then it draws before.
+	 */
+	public void setStateActionRenderLayer(StateActionRenderLayer sarender, boolean afterStateRL){
+		if(this.sarender != null){
+			this.renderLayers.remove(this.sarender);
+		}
+		this.sarender = sarender;
+		int srenderPos = 0;
+		for(int i = 0; i < this.renderLayers.size(); i++){
+			if(this.renderLayers.get(i) == this.srender){
+				srenderPos = i;
+				break;
+			}
+		}
+
+		if(afterStateRL){
+			this.renderLayers.add(srenderPos+1, sarender);
+		}
+		else{
+			this.renderLayers.add(srenderPos, sarender);
+		}
 	}
 	
 	/**
@@ -94,15 +127,30 @@ public class Visualizer extends MultiLayerRenderer{
 	
 	
 	/**
-	 * Updates the state that needs to be painted and repaints.
+	 * Updates the state that needs to be painted and repaints. If a {@link burlap.oomdp.visualizer.StateActionRenderLayer} has been specified,
+	 * then it will have its state-action cleared before repainting.
 	 * @param s the state to paint
 	 */
 	public void updateState(State s){
 		this.srender.updateState(s);
+		if(this.sarender != null){
+			this.sarender.clearRenderedStateAction();
+		}
 		repaint();
 	}
-	
-	
+
+	/**
+	 * Updates the state and action for the {@link burlap.oomdp.visualizer.StateRenderLayer} and {@link burlap.oomdp.visualizer.StateActionRenderLayer}; then repaints.
+	 * @param s the {@link burlap.oomdp.core.states.State} to be painted.
+	 * @param a the {@link burlap.oomdp.singleagent.GroundedAction} to be painted.
+	 */
+	public void updateStateAction(State s, GroundedAction a){
+		this.srender.updateState(s);
+		if(this.sarender != null) {
+			this.sarender.updateRenderedStateAction(s, a);
+		}
+		repaint();
+	}
 	
 	
 	
