@@ -63,7 +63,6 @@ public class ArrowActionGlyph implements ActionGlyphPainter {
 
 
 
-
 	
 	/**
 	 * creates an arrow action glyph painter in the specified direction

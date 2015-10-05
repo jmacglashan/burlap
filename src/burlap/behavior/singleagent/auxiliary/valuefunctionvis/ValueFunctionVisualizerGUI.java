@@ -17,6 +17,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyph
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
+import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
 
@@ -110,7 +111,7 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 		StateValuePainter2D svp = new StateValuePainter2D();
 		svp.setXYAttByObjectClass(classWithPositionAtts, xAttName,
 				classWithPositionAtts, yAttName);
-
+		
 		PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(classWithPositionAtts, xAttName, yAttName,
 				northActionName, southActionName, eastActionName, westActionName);
 
@@ -123,6 +124,25 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 		return gui;
 
 	}
+	
+	public static ValueFunctionVisualizerGUI createGridGameSingleAgentVFVisualizerGUI(List <State> states, ValueFunction valueFunction, Policy p){
+		
+	
+	StateValuePainter2D svp = new StateValuePainter2D();
+	svp.setXYAttByObjectClass(GridGame.CLASSAGENT, GridGame.ATTX, GridGame.CLASSAGENT, GridGame.ATTY);
+	
+	PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(GridGame.CLASSAGENT, GridGame.ATTX, GridGame.ATTY,
+	GridGame.ACTIONNORTH, GridGame.ACTIONSOUTH, GridGame.ACTIONEAST, GridGame.ACTIONWEST);
+	
+	ValueFunctionVisualizerGUI gui = new ValueFunctionVisualizerGUI(states, svp, valueFunction);
+	gui.setSpp(spp);
+	gui.setPolicy(p);
+	gui.setBgColor(Color.GRAY);
+	
+	
+	return gui;
+
+}
 
 
 
