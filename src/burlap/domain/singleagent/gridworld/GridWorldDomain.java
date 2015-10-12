@@ -570,10 +570,11 @@ public class GridWorldDomain implements DomainGenerator {
 		
 		State s = new MutableState();
 		
+		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		
 		for(int i = 0; i < n; i++){
 			s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+i));
 		}
-		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		
 		return s;
 	}

@@ -2,6 +2,7 @@ package burlap.oomdp.statehashing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,11 +17,37 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.values.Value;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
 
-public class ImmutableStateHashableStateFactory extends SimpleHashableStateFactory {
+public class ImmutableFixedObjectStateHashableStateFactory extends SimpleHashableStateFactory {
 	private ImmutableHashableObjectFactory objectHashingFactory;
-	public ImmutableStateHashableStateFactory(boolean identifierIndependent) {
+	private final BitSet objectMask;
+	private final ImmutableFixedSizeState initialState;
+	
+	public ImmutableFixedObjectStateHashableStateFactory(boolean identifierIndependent, ImmutableFixedSizeState initialState) {
 		super(identifierIndependent, true);
 		this.objectHashingFactory = new ImmutableHashableObjectFactory(this);
+		this.objectMask = new BitSet(initialState.numTotalObjects());
+		this.objectMask.set(0, initialState.numTotalObjects(), true);
+		this.initialState = initialState;
+	}
+	
+	public void setObjectClassMask(String objectClassName) {
+		this.setObjectClassMask(objectClassName, true);
+	}
+	
+	public void setObjectClassMask(String objectClassName, boolean value) {
+		for (int i = 0; i < this.initialState.numTotalObjects(); i++) {
+			if (this.initialState.getObject(i).getObjectClass().name.equals(objectClassName)) {
+				this.objectMask.set(i, value);
+			}
+		}
+	}
+	
+	public void setObjectMask(String objectName, boolean value) {
+		for (int i = 0; i < this.initialState.numTotalObjects(); i++) {
+			if (this.initialState.getObject(i).getName().equals(objectName)) {
+				this.objectMask.set(i, value);
+			}
+		}
 	}
 	
 	@Override
@@ -31,7 +58,7 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		ImmutableFixedSizeState sTimm = (ImmutableFixedSizeState)s;
 		int size = sTimm.numTotalObjects();
 		List<ImmutableObjectInstance> hashed = new ArrayList<ImmutableObjectInstance>(size);
-		for (int i = 0; i < size; i++) {
+		for (int i = this.objectMask.nextSetBit(0); i >= 0; i = this.objectMask.nextSetBit(i+1)) {
 			ObjectInstance obj = sTimm.getObject(i);
 			ObjectInstance hashedObj = this.objectHashingFactory.hashObject(obj);
 			hashed.add(((ImmutableHashableObject)hashedObj).getObjectInstance());
@@ -145,8 +172,7 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 	}
 
 	protected boolean identifierDependentEquals(ImmutableFixedSizeState s1, ImmutableFixedSizeState s2){
-		int size1 = s1.numTotalObjects();
-		for (int i = 0; i < size1; ++i) {		
+		for (int i = this.objectMask.nextSetBit(0); i >= 0; i = this.objectMask.nextSetBit(i+1)) {
 			ImmutableObjectInstance ob1 = (ImmutableObjectInstance)s1.getObject(i);
 			ImmutableObjectInstance ob2 = (ImmutableObjectInstance)s2.getObject(i);
 			String name = ob1.getName();
@@ -224,7 +250,7 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 			
 			ImmutableHashableState other = (ImmutableHashableState)obj;
 			return other.hashCode() == this.hashCode() && 
-					ImmutableStateHashableStateFactory.this.statesEqual(this.s, other.s);
+					ImmutableFixedObjectStateHashableStateFactory.this.statesEqual(this.s, other.s);
 		}
 
 		@Override

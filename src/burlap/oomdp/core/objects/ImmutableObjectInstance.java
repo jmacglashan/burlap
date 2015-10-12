@@ -7,11 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.oomdp.statehashing.ObjectHashTuple;
+import com.google.common.collect.ImmutableList;
+
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.values.Value;
+import burlap.oomdp.statehashing.ObjectHashTuple;
 
 
 /**
@@ -26,8 +28,8 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	
 	private final ObjectClass					obClass;			//object class to which this object belongs
 	private final String						name;				//name of the object for disambiguation
-	private final List <Value>			values;				//the values for each attribute
-	private final ObjectHashTuple				hashTuple;
+	private final ImmutableList <Value>					values;				//the values for each attribute
+	private final int							hashCode;
 	
 	
 	
@@ -40,8 +42,8 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		
 		this.obClass = obClass;
 		this.name = name;
-		this.values = Collections.unmodifiableList(this.initializeValueObjects());
-		this.hashTuple = null;
+		this.values = ImmutableList.copyOf(this.initializeValueObjects());
+		this.hashCode = 0;
 	}
 	
 	/**
@@ -54,24 +56,22 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		this.obClass = o.getObjectClass();
 		this.name = o.getName();
 		
-		List<Value> values = new ArrayList<Value>(o.getValues());
-		this.values = Collections.unmodifiableList(values);
-		
 		if (o instanceof ImmutableObjectInstance) {
 			ImmutableObjectInstance immutable = (ImmutableObjectInstance)o;
-			this.hashTuple = immutable.hashTuple;
+			this.hashCode = immutable.hashCode;
+			this.values = immutable.values;
 		} else {
-			this.hashTuple = null;
+			this.hashCode = 0;
+			this.values = ImmutableList.copyOf(o.getValues());
 		}
 			
 	}
 	
-	public ImmutableObjectInstance(ObjectClass obClass, String name, List<Value> newValues, ObjectHashTuple hashTuple) {
+	public ImmutableObjectInstance(ObjectClass obClass, String name, ImmutableList<Value> newValues, int hashCode) {
 		this.obClass = obClass;
 		this.name = name;
-		List<Value> values = new  ArrayList<Value>(newValues);
-		this.values = Collections.unmodifiableList(values);
-		this.hashTuple = hashTuple;
+		this.values = newValues;
+		this.hashCode = hashCode;
 	}
 	
 	
@@ -79,7 +79,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		this.obClass = objectInstance.obClass;
 		this.name = name;
 		this.values = objectInstance.values;
-		this.hashTuple = objectInstance.hashTuple.getHashingFactory().hashObject(this);
+		this.hashCode = 0;
 	}
 
 	/**
@@ -90,14 +90,18 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		return new ImmutableObjectInstance(this);
 	}
 	
-	private static ImmutableObjectInstance constructAndHash(ObjectClass obClass, String name, List<Value> values, ObjectHashTuple previousTuple) {
-		ImmutableObjectInstance unhashed = new ImmutableObjectInstance(obClass, name, values, null);
-		if (previousTuple == null) {
-			return unhashed;
-		} else {
-			return (ImmutableObjectInstance)previousTuple.getHashingFactory().hashObject(unhashed).getObject();
-		}
+	private static ImmutableObjectInstance constructAndHash(ObjectClass obClass, String name, List<Value> values) {
+		return new ImmutableObjectInstance(obClass, name, ImmutableList.copyOf(values), 0);
 	}
+	
+//	private static ImmutableObjectInstance constructAndHash(ObjectClass obClass, String name, List<Value> values, ObjectHashTuple previousTuple) {
+//		ImmutableObjectInstance unhashed = new ImmutableObjectInstance(obClass, name, values, null);
+//		if (previousTuple == null) {
+//			return unhashed;
+//		} else {
+//			return (ImmutableObjectInstance)previousTuple.getHashingFactory().hashObject(unhashed).getObject();
+//		}
+//	}
 	
 	
 	/**
@@ -117,9 +121,13 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param name the name for this object instance.
 	 */
 	public ImmutableObjectInstance setName(String name){
-		return ImmutableObjectInstance.constructAndHash(this.obClass, name, this.values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, name, this.values/*, this.hashTuple*/);
 	}
 		
+	public ImmutableObjectInstance setHashCode(int code) {
+		return new ImmutableObjectInstance(this.obClass, name, this.values, code);
+	}
+	
 	/**
 	 * Sets the value of the attribute named attName for this object instance.
 	 * @param attName the name of the attribute whose value is to be set.
@@ -130,7 +138,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 		
 	}
 	
@@ -144,7 +152,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	/**
@@ -153,11 +161,10 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param v the int rep value to which the attribute of this object instance should be set.
 	 */
 	public ImmutableObjectInstance setValue(String attName, int v){
-		List<Value> values = new ArrayList<Value>(this.values);
+		Value[] arry = this.values.toArray(new Value[this.values.size()]);
 		int ind = obClass.attributeIndex(attName);
-		Value value = values.get(ind);
-		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		arry[ind] = arry[ind].setValue(v);
+		return new ImmutableObjectInstance(obClass, name, ImmutableList.copyOf(arry), 0);
 	}
 	
 	/**
@@ -170,7 +177,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	/**
@@ -183,7 +190,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	/**
@@ -196,7 +203,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	
@@ -211,7 +218,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.addRelationalTarget(target));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	/**
@@ -225,7 +232,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.addAllRelationalTargets(targets));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	/**
@@ -237,7 +244,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.clearRelationTargets());
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	/**
@@ -250,7 +257,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.removeRelationalTarget(target));
-		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values, this.hashTuple);
+		return ImmutableObjectInstance.constructAndHash(this.obClass, this.name, values/*, this.hashTuple*/);
 	}
 	
 	
@@ -463,7 +470,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		if (!op.name.equals(name)) {
 			return false; 
 		}
-		return op.obClass.equals(this.obClass);
+		return this.valueEquals(op);
 	}
 	
 	
@@ -494,15 +501,26 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	
 	}
 	
+	public boolean isHashed() {
+		return this.hashCode != 0;
+	}
 	
-	public int hashCode(){
-		//return name.hashCode();
-		return this.hashTuple.hashCode();
+	@Override
+	public int hashCode() {
+		if (this.hashCode == 0) {
+			return super.hashCode();
+		}
+		return this.hashCode;
 	}
-
-	public ObjectHashTuple getHashTuple() {
-		return this.hashTuple;
-	}
+	
+//	public int hashCode(){
+//		//return name.hashCode();
+//		return this.hashTuple.hashCode();
+//	}
+//
+//	public ObjectHashTuple getHashTuple() {
+//		return this.hashTuple;
+//	}
 
 	
 	

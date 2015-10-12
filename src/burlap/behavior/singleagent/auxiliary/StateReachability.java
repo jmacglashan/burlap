@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
 
 
 /**
@@ -94,33 +96,60 @@ public class StateReachability {
 		LinkedList <HashableState> openList = new LinkedList<HashableState>();
 		openList.offer(shi);
 		hashedStates.add(shi);
+		long lastTime = System.currentTimeMillis();
+		int lastSize = 1;
+		int lastGenerated = 1;
+		int numProcessed = 1;
+		int lastProcessed = 1;
 		while(openList.size() > 0){
 			HashableState sh = openList.poll();
-			
-			
+			numProcessed++;
 			if(tf.isTerminal(sh.s)){
 				continue; //don't expand
 			}
 			
-			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
 			for(GroundedAction ga : gas){
 				List <TransitionProbability> tps = ga.getTransitions(sh.s);
+				nGenerated += tps.size();
 				for(TransitionProbability tp : tps){
+					//openList.offer(sh);
 					HashableState nsh = usingHashFactory.hashState(tp.s);
-					nGenerated++;
-					if(!hashedStates.contains(nsh)){
+					
+					if (hashedStates.add(nsh)) {
 						openList.offer(nsh);
-						hashedStates.add(nsh);
 					}
 				}
+			}
+			long currentTime = System.currentTimeMillis();
+			if (currentTime - 1000 > lastTime) {
+				System.out.println("Processed " + (numProcessed-lastProcessed) + " Size: " + (hashedStates.size()-lastSize) + " generated: " + (nGenerated - lastGenerated) + " time: " + ((double)currentTime - lastTime)/1000.0);
+				lastTime = currentTime;
+				lastSize = hashedStates.size();
+				lastGenerated = nGenerated;
+				lastProcessed = numProcessed;
 				
 			}
-			
 		}
 		
 		DPrint.cl(debugID, "Num generated: " + nGenerated + "; num unique: " + hashedStates.size());
 		
 		return hashedStates;
+	}
+	
+	private static void checkHashing(Set<HashableState> hashed, HashableState nsh) {
+		for (HashableState hs : hashed) {
+			
+			if (hs.equals(nsh) && hs.hashCode() != nsh.hashCode()) {
+				boolean eq = hs.equals(nsh);
+				throw new RuntimeException("Equality issue");
+			}
+			ObjectInstance agent1 = hs.getObject("agent0");
+			ObjectInstance agent2 = nsh.getObject("agent0");
+			if (agent1.equals(agent2) && !hs.equals(nsh)) {
+				boolean eq = hs.equals(nsh);
+				throw new RuntimeException("Equality issue");
+			}
+		}
 	}
 }
