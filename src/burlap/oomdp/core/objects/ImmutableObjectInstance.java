@@ -2,19 +2,17 @@ package burlap.oomdp.core.objects;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.values.Value;
-import burlap.oomdp.statehashing.ObjectHashTuple;
+
+import com.google.common.collect.ImmutableList;
 
 
 /**
