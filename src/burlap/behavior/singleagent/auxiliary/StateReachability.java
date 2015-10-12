@@ -96,14 +96,10 @@ public class StateReachability {
 		LinkedList <HashableState> openList = new LinkedList<HashableState>();
 		openList.offer(shi);
 		hashedStates.add(shi);
-		long lastTime = System.currentTimeMillis();
-		int lastSize = 1;
-		int lastGenerated = 1;
-		int numProcessed = 1;
-		int lastProcessed = 1;
+		long firstTime = System.currentTimeMillis();
+		long lastTime = firstTime;
 		while(openList.size() > 0){
 			HashableState sh = openList.poll();
-			numProcessed++;
 			if(tf.isTerminal(sh.s)){
 				continue; //don't expand
 			}
@@ -121,35 +117,17 @@ public class StateReachability {
 					}
 				}
 			}
+			
 			long currentTime = System.currentTimeMillis();
-			if (currentTime - 1000 > lastTime) {
-				System.out.println("Processed " + (numProcessed-lastProcessed) + " Size: " + (hashedStates.size()-lastSize) + " generated: " + (nGenerated - lastGenerated) + " time: " + ((double)currentTime - lastTime)/1000.0);
+			if (currentTime - 1000 >= lastTime) {
+				DPrint.cl(debugID, "Num generated: " + (nGenerated) + " Unique: " + (hashedStates.size()) + 
+						" time: " + ((double)currentTime - firstTime)/1000.0);				
 				lastTime = currentTime;
-				lastSize = hashedStates.size();
-				lastGenerated = nGenerated;
-				lastProcessed = numProcessed;
-				
 			}
 		}
 		
 		DPrint.cl(debugID, "Num generated: " + nGenerated + "; num unique: " + hashedStates.size());
 		
 		return hashedStates;
-	}
-	
-	private static void checkHashing(Set<HashableState> hashed, HashableState nsh) {
-		for (HashableState hs : hashed) {
-			
-			if (hs.equals(nsh) && hs.hashCode() != nsh.hashCode()) {
-				boolean eq = hs.equals(nsh);
-				throw new RuntimeException("Equality issue");
-			}
-			ObjectInstance agent1 = hs.getObject("agent0");
-			ObjectInstance agent2 = nsh.getObject("agent0");
-			if (agent1.equals(agent2) && !hs.equals(nsh)) {
-				boolean eq = hs.equals(nsh);
-				throw new RuntimeException("Equality issue");
-			}
-		}
 	}
 }

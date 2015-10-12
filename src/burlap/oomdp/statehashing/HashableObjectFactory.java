@@ -2,8 +2,8 @@ package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.objects.ObjectInstance;
 
-public interface ObjectHashFactory {
+public interface HashableObjectFactory {
 
 	HashableObject hashObject(ObjectInstance object);
-	ValueHashFactory getValueHashFactory();
+	HashableValueFactory getValueHashFactory();
 }

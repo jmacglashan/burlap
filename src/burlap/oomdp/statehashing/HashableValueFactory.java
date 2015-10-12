@@ -2,7 +2,7 @@ package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.values.Value;
 
-public interface ValueHashFactory {
+public interface HashableValueFactory {
 
-	ValueHashTuple hashValue(Value value);
+	HashableValue hashValue(Value value);
 }

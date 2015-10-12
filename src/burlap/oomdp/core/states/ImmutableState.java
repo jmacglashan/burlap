@@ -1,61 +1,69 @@
 package burlap.oomdp.core.states;
 
+import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 
 /**
  * An immutable state cannot be changed (nor subclassed). It is particularly useful when memory management is crucial, as
- * copies are only created when actual changes are applied to an ImmutableState (copy on write). Performance will not be 
- * affected dramatically if they use a StateBuilder object to keep track of desired state changes.
- * @author James MacGlashan
+ * copies are only created when actual changes are applied to an ImmutableState (copy on write). If many objects are altered
+ * during a grounded action update, it is recommended to use the bulk modification methods (replaceAllObjects, addAllObjects, etc).
+ * @author Stephen Brawner, James MacGlashan
  *
  */
-public final class ImmutableState extends OOMDPState implements State {
+public final class ImmutableState extends OOMDPState implements ImmutableStateInterface {
 
 	
 	/**
 	 * List of observable object instances that define the state
 	 */
-	private final List <ImmutableObjectInstance>							objectInstances;
+	private final ImmutableList <ImmutableObjectInstance>			objectInstances;
 	
 	/**
 	 * Map from object names to their instances
 	 */
-	private final Map <String, Integer>							objectMap;
-	
+	private final TObjectIntHashMap <String>						objectMap;
 	
 	/**
 	 * Map of object instances organized by class name
 	 */
-	private final List<List <Integer>>							objectIndexByTrueClass;
+	private final ImmutableList<TIntArrayList>						objectIndexByTrueClass;
 
-	private final Map<String, Integer>							objectClassMap;
+	private final TObjectIntHashMap<String>							objectClassMap;
 	
-	private final int											numObservableObjects;
+	private final int												numObservableObjects;
+	private final int												hashCode;
 	
 	
 	public ImmutableState(){
-		this.objectInstances = Collections.unmodifiableList(new ArrayList<ImmutableObjectInstance>());
-		this.objectIndexByTrueClass = Collections.unmodifiableList(new ArrayList<List<Integer>>());
-		this.objectClassMap = Collections.unmodifiableMap(new HashMap<String, Integer>());
-		this.objectMap = Collections.unmodifiableMap(new HashMap<String, Integer>());
+		this.objectInstances = ImmutableList.copyOf(new ArrayList<ImmutableObjectInstance>());
+		this.objectIndexByTrueClass = ImmutableList.copyOf(new ArrayList<TIntArrayList>());
+		this.objectClassMap = new TObjectIntHashMap<String>();
+		this.objectMap = new TObjectIntHashMap<String>();
 		this.numObservableObjects = 0;
+		this.hashCode = 0;
 	}
 	
 	
@@ -66,82 +74,65 @@ public final class ImmutableState extends OOMDPState implements State {
 	 */
 	public ImmutableState(State s){
 		int size = 2 * (s.numTotalObjects());
-		HashMap<String, Integer> objectMap = new HashMap<String, Integer>(size);
-		Map<String, Integer> objectClassMap = new HashMap<String, Integer>();
+		TObjectIntHashMap<String> objectMap = new TObjectIntHashMap<String>(size, 0.5f, -1);
+		TObjectIntHashMap<String> objectClassMap = new TObjectIntHashMap<String>(s.getObjectClassesPresent().size()*2, 0.5f, -1);
 		
 		List<ImmutableObjectInstance> immutableObjects = null;
 		immutableObjects = this.createImmutableObjects(s.getAllObjects());
 		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(immutableObjects, objectMap, 0);
 		
-		this.objectInstances = Collections.unmodifiableList(objectInstances);
+		this.objectInstances = ImmutableList.copyOf(objectInstances);
 		this.numObservableObjects = this.objectInstances.size();
 		
 		int numberClasses = objectClassMap.size();
-		List<List<Integer>> objectIndexByTrueClass = new ArrayList<List<Integer>>(numberClasses);
+		List<TIntArrayList> objectIndexByTrueClass = new ArrayList<TIntArrayList>(numberClasses);
 		size /= 2;
 		for (int i = 0 ; i < numberClasses; i++) {
-			objectIndexByTrueClass.add(new ArrayList<Integer>(size));
+			objectIndexByTrueClass.add(new TIntArrayList(size));
 		}
 		
 		this.addObjectListToList(this.objectInstances, this.numObservableObjects, numberClasses, objectIndexByTrueClass, objectClassMap);
 		
-		this.objectIndexByTrueClass = Collections.unmodifiableList(objectIndexByTrueClass);
-		this.objectClassMap = Collections.unmodifiableMap(objectClassMap);
-		this.objectMap = Collections.unmodifiableMap(objectMap);
+		this.objectIndexByTrueClass = ImmutableList.copyOf(objectIndexByTrueClass);
+		this.objectClassMap = objectClassMap;
+		this.objectMap = objectMap;
+		this.hashCode = 0;
 	}
 	
-	public ImmutableState(List<ObjectInstance> objects) {
-		Map<String, Integer> objectMap = new HashMap<String, Integer>(2 * objects.size());
-		Map<String, Integer> objectClassMap = new HashMap<String, Integer>();
-		
-		List<ImmutableObjectInstance> immutableObjects = this.createImmutableObjects(objects);
-		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(immutableObjects, objectMap, 0);
-		
-		this.objectInstances = Collections.unmodifiableList(objectInstances);
-		
-		this.numObservableObjects = this.objectInstances.size();
-		
-		List<List<Integer>> objectIndexByTrueClass = 
-				this.buildObjectIndexByTrueClass(objectInstances, objectClassMap);
-		this.objectClassMap = Collections.unmodifiableMap(objectClassMap);
-		this.objectIndexByTrueClass = Collections.unmodifiableList(objectIndexByTrueClass);
-		
-		this.objectMap = Collections.unmodifiableMap(objectMap);
-		
-	}
-	
-	public ImmutableState(List<ImmutableObjectInstance> objects, Map<String, Integer> objectClassMap) {
+	public ImmutableState(List<ImmutableObjectInstance> objects, TObjectIntHashMap<String> objectClassMap) {
 		int size = 2 * (objects.size());
-		HashMap<String, Integer> objectMap = new HashMap<String, Integer>(size);
-		objectClassMap = new HashMap<String, Integer>(objectClassMap);
+		TObjectIntHashMap<String> objectMap = new TObjectIntHashMap<String>(size, 0.5f, -1);
+		objectClassMap = new TObjectIntHashMap<String>(objectClassMap);
 		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(objects, objectMap, 0);
 		
-		this.objectInstances = Collections.unmodifiableList(objectInstances);
+		this.objectInstances = ImmutableList.copyOf(objectInstances);
 		
 		this.numObservableObjects = this.objectInstances.size();
 		
 		int numberClasses = objectClassMap.size();
-		List<List<Integer>> objectIndexByTrueClass = new ArrayList<List<Integer>>(numberClasses);
+		List<TIntArrayList> objectIndexByTrueClass = new ArrayList<TIntArrayList>(numberClasses);
 		size = objects.size();
 		for (int i = 0 ; i < numberClasses; i++) {
-			objectIndexByTrueClass.add(new ArrayList<Integer>(size));
+			objectIndexByTrueClass.add(new TIntArrayList(size));
 		}
 		
 		this.addObjectListToList(this.objectInstances, this.numObservableObjects, numberClasses, objectIndexByTrueClass, objectClassMap);
-		this.objectIndexByTrueClass = Collections.unmodifiableList(objectIndexByTrueClass);
-		this.objectClassMap = Collections.unmodifiableMap(objectClassMap);
-		this.objectMap = Collections.unmodifiableMap(objectMap);
-		
+		this.objectIndexByTrueClass = ImmutableList.copyOf(objectIndexByTrueClass);//Collections.unmodifiableList();
+		this.objectClassMap = objectClassMap;//Collections.unmodifiableMap();
+		this.objectMap = objectMap;//Collections.unmodifiableMap();
+		this.hashCode = 0;
 	}
 	
-	public ImmutableState(List<ImmutableObjectInstance> objects, Map<String, Integer> objectClassMap, List<List<Integer>> objectIndexByTrueClass, Map<String, Integer> objectMap) {
-		this.objectInstances = Collections.unmodifiableList(objects);
+	public ImmutableState(ImmutableList<ImmutableObjectInstance> objects, TObjectIntHashMap<String> objectClassMap, ImmutableList<TIntArrayList> objectIndexByTrueClass, TObjectIntHashMap <String> objectMap, int hashCode) {
+		this.objectInstances = objects;
 		this.numObservableObjects = this.objectInstances.size();
-		this.objectIndexByTrueClass = Collections.unmodifiableList(objectIndexByTrueClass);
-		this.objectClassMap = Collections.unmodifiableMap(objectClassMap);
-		this.objectMap = Collections.unmodifiableMap(objectMap);	
+		this.objectIndexByTrueClass = objectIndexByTrueClass;
+		this.objectClassMap = objectClassMap;
+		this.objectMap = objectMap;
+		this.hashCode = hashCode;
 	}
-	
+
+
 	/**
 	 * This method doesn't actually copy. This implementation only copies on write.
 	 * @return the same state.
@@ -150,6 +141,9 @@ public final class ImmutableState extends OOMDPState implements State {
 		return this;
 	}
 
+	public final ImmutableState replaceAndHash(ImmutableList<ImmutableObjectInstance> objects, int code) {
+		return new ImmutableState(objects, this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, code);
+	}
 	
 	private final List<ImmutableObjectInstance> createImmutableObjects(List<ObjectInstance> objects) {
 		List<ImmutableObjectInstance> immutableObjects = new ArrayList<ImmutableObjectInstance>(objects.size());
@@ -162,15 +156,15 @@ public final class ImmutableState extends OOMDPState implements State {
 		return immutableObjects;
 	}
 	
-	private final List<ImmutableObjectInstance> createObjectLists(List<ImmutableObjectInstance> objectList, Map<String, Integer> objectMap, int offset) {
+	private final List<ImmutableObjectInstance> createObjectLists(List<ImmutableObjectInstance> objectList, TObjectIntHashMap<String> objectMap, int offset) {
 		List<ImmutableObjectInstance> objectInstances = new ArrayList<ImmutableObjectInstance>(objectList.size());
 		for (ImmutableObjectInstance object : objectList) {
 			if (object == null) {
 				continue;
 			}
 			
-			Integer displaced = objectMap.put(object.getName(), objectInstances.size() + offset);
-			if (displaced != null) {
+			int displaced = objectMap.put(object.getName(), objectInstances.size() + offset);
+			if (displaced >= 0) {
 				objectMap.put(object.getName(), displaced);
 			} else {
 				objectInstances.add(object);
@@ -178,39 +172,21 @@ public final class ImmutableState extends OOMDPState implements State {
 		}
 		return objectInstances;
 	}
-	
-	private final List<List<Integer>> buildObjectIndexByTrueClass(List<ImmutableObjectInstance> objects, Map<String, Integer> objectClassMap) {
-		int size = Math.max(10, objectClassMap.size());
-		
-		List<List<Integer>> objectIndexByTrueClass = new ArrayList<List<Integer>>(size);
-		this.addObjectListToList(objects, objects.size(), 0, objectIndexByTrueClass, objectClassMap);
-		
-		/*
-		Map<String, List<Integer>> immutableListObjectsMap = new HashMap<String, List<Integer>>();
-		for (Map.Entry<String, List<Integer>> entry : objectIndexByClass.entrySet()) {
-			immutableListObjectsMap.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
-		}*/
-		return objectIndexByTrueClass;
-	}
-
-	public Map<String, Integer> getObjectMap() {
-		return this.objectMap;
-	}
 
 	private void addObjectListToList(List<ImmutableObjectInstance> objects, int size, int numClasses,
-			List<List<Integer>> objectIndexByTrueClass, Map<String, Integer> objectClassMap) {
+			List<TIntArrayList> objectIndexByTrueClass, TObjectIntHashMap<String> objectClassMap) {
 		
 		for (int i = 0; i < size; i++) {
 			ObjectInstance object = objects.get(i);
 			String objectClassName = object.getClassName();
-			Integer position = objectClassMap.get(objectClassName);
+			int position = objectClassMap.get(objectClassName);
 			
-			if (position == null) {
+			if (position < 0) {
 				position = numClasses++;
 				objectClassMap.put(objectClassName, position );
-				objectIndexByTrueClass.add(new ArrayList<Integer>(size));
+				objectIndexByTrueClass.add(new TIntArrayList(size));
 			}
-			List<Integer> objectsOfClass = 
+			TIntArrayList objectsOfClass = 
 					objectIndexByTrueClass.get(position);
 			objectsOfClass.add(i);
 		}
@@ -231,8 +207,8 @@ public final class ImmutableState extends OOMDPState implements State {
 	}
 	
 	public final ImmutableState removeObject(String objectName) {
-		Integer index = this.objectMap.get(objectName);
-		if (index == null) {
+		int index = this.objectMap.get(objectName);
+		if (index < 0) {
 			return this;
 		}
 		
@@ -250,7 +226,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		List<Integer> indices = new ArrayList<Integer>();
 		for (ObjectInstance object : objectsToRemove) {
 			Integer index = this.objectMap.get(object.getName());
-			if (index != null)
+			if (index >= 0)
 			indices.add(index);
 		}
 		
@@ -274,18 +250,18 @@ public final class ImmutableState extends OOMDPState implements State {
 			throw new RuntimeException("Object " + newObject.getName() + " must be of type ImmutableObjectInstance");
 		}
 		
-		Integer index = this.objectMap.get(oldObjectName);
-		if (index == null) {
+		int index = this.objectMap.get(oldObjectName);
+		if (index < 0) {
 			return this;
 		}
 		List<ImmutableObjectInstance> objects = 
 				 new ArrayList<ImmutableObjectInstance>(this.objectInstances);
 		objects.set(index, (ImmutableObjectInstance)newObject);
 
-		return new ImmutableState(objects, this.objectClassMap, this.objectIndexByTrueClass, this.objectMap);
+		return new ImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
 	}
 	
-	public final ImmutableState replaceAllObjects(List<ObjectInstance> objectsToRemove, List<ObjectInstance> objectsToAdd) {
+	public final ImmutableState replaceAllObjects(List<ImmutableObjectInstance> objectsToRemove, List<ImmutableObjectInstance> objectsToAdd) {
 		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
 		
 		if (objectsToRemove.size() != objectsToAdd.size()) {
@@ -302,8 +278,8 @@ public final class ImmutableState extends OOMDPState implements State {
 				throw new RuntimeException("The objects must have matching names and classes");
 			}
 			
-			Integer index = this.objectMap.get(objectToRemove.getName());
-			if (index == null) {
+			int index = this.objectMap.get(objectToRemove.getName());
+			if (index < 0) {
 				throw new RuntimeException("Object " + oldObjectName + " does not exist");
 			}
 			if (!(objectToAdd instanceof ImmutableObjectInstance)) {
@@ -314,9 +290,16 @@ public final class ImmutableState extends OOMDPState implements State {
 			}
 		}
 
-		return new ImmutableState(objects, this.objectClassMap, this.objectIndexByTrueClass, this.objectMap);
+		return new ImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
 	}
 	
+	public final ImmutableState replaceAllObjectsUnsafe(List<ObjectInstance> objectsToAdd) {
+		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(objectsToAdd.size());
+		for (ObjectInstance obj : objectsToAdd) {
+			objects.add((ImmutableObjectInstance)obj);
+		}
+		return new ImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
+	}
 	
 	/**
 	 * Renames the identifier for object instance o in this state to newName.
@@ -331,10 +314,11 @@ public final class ImmutableState extends OOMDPState implements State {
 	
 	@Override
 	public <T> State setObjectsValue(String objectName, String attName, T value) {
-		ObjectInstance obj = this.getObject(objectName);
-		if (obj == null) {
+		int index = this.objectMap.get(objectName);
+		if (index < 0) {
 			throw new RuntimeException("Object " + objectName + " does not exist in this state");
 		}
+		ObjectInstance obj = this.objectInstances.get(index);
 		return this.replaceObject(obj, obj.setValue(attName, value));
 	}
 
@@ -358,17 +342,21 @@ public final class ImmutableState extends OOMDPState implements State {
 		}
 		
 		Set<String> matchedObs = new HashSet<String>();
-		
-		for(Map.Entry<String, Integer> entry : this.objectClassMap.entrySet()){
-			String oclass = entry.getKey();
-			List <Integer> objectIndices = this.objectIndexByTrueClass.get(entry.getValue());
+		for (TObjectIntIterator<String> it = this.objectClassMap.iterator(); it.hasNext();it.advance()){
+			String oclass = it.key();
+			int classId = it.value();
+		//for(Map.Entry<String, Integer> entry : this.objectClassMap.entrySet()){
+			//String oclass = entry.getKey();
+			TIntArrayList objectIndices = this.objectIndexByTrueClass.get(classId);
 			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
 			if(objectIndices.size() != so.numTotalObjects() && enforceStateExactness){
 				return new HashMap<String, String>(); //states are not equal and therefore cannot be matched
 			}
 			
-			for(Integer i : objectIndices){
-				ObjectInstance o = this.getObject(i);
+			for (int i = 0; i < objectIndices.size(); i++) {
+				int objIndex = objectIndices.get(i);
+				//for(Integer i : objectIndices.){
+				ObjectInstance o = this.objectInstances.get(objIndex);
 				boolean foundMatch = false;
 				for(ObjectInstance oo : oobjects){
 					if(matchedObs.contains(oo.getName())){
@@ -414,14 +402,14 @@ public final class ImmutableState extends OOMDPState implements State {
 		
 		Set<Integer> matchedObjects = new HashSet<Integer>((int)(this.numTotalObjects() / 0.75) + 1);
 		for (int i = 0; i < this.objectIndexByTrueClass.size(); i++){
-			List<Integer> objectIndices = this.objectIndexByTrueClass.get(i);
+			TIntArrayList objectIndices = this.objectIndexByTrueClass.get(i);
 			if (objectIndices.isEmpty()) {
 				continue;
 			}
 			
 			String oclass = this.getObject(objectIndices.get(0)).getObjectClass().name;
 			String ooclass = "";
-			List <Integer> oobjectsIndices = so.objectIndexByTrueClass.get(i);
+			TIntArrayList oobjectsIndices = so.objectIndexByTrueClass.get(i);
 			if (!oobjectsIndices.isEmpty()) {
 				ooclass = so.getObject(objectIndices.get(0)).getObjectClass().name;
 			}
@@ -433,10 +421,11 @@ public final class ImmutableState extends OOMDPState implements State {
 			if(objectIndices.size() != oobjectsIndices.size()){
 				return false;
 			}
-			
-			for(Integer j : objectIndices){
-				ObjectInstance o = this.getObject(j);
-				ObjectInstance oo = so.getObject(j);
+			for (int j = 0; j < objectIndices.size(); j++) {
+				int objIndex = objectIndices.get(j);
+				//for(Integer j : objectIndices){
+				ObjectInstance o = this.getObject(objIndex);
+				ObjectInstance oo = so.getObject(objIndex);
 				// first check if the object in the same order is the same
 				if (o.valueEquals(oo)) {
 					continue;
@@ -449,14 +438,16 @@ public final class ImmutableState extends OOMDPState implements State {
 				
 				// otherwise if there is another object with a different name but is equals
 				boolean foundMatch = false;
-				for(Integer k : oobjectsIndices){
-					if(matchedObjects.contains(k)){
+				for (int k = 0; k < oobjectsIndices.size(); k++) {
+					int oobjIndex = oobjectsIndices.get(k);
+				//for(Integer k : oobjectsIndices){
+					if(matchedObjects.contains(oobjIndex)){
 						continue;
 					}
 					
-					if(o.valueEquals(so.getObject(k))){
+					if(o.valueEquals(so.getObject(oobjIndex))){
 						foundMatch = true;
-						matchedObjects.add(k);
+						matchedObjects.add(oobjIndex);
 						break;
 					}
 				}
@@ -487,11 +478,8 @@ public final class ImmutableState extends OOMDPState implements State {
 		return this.numObservableObjects;
 	}
 		
-	public ObjectInstance getObject(Integer i) {
-		if (i == null) {
-			return null;
-		}
-		return this.objectInstances.get(i);
+	public ObjectInstance getObject(int i) {
+		return objectInstances.get(i);
 	}
 	
 	/**
@@ -500,20 +488,8 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @return the object instance with the name oname or null if there is no object in this state named oname
 	 */
 	public ObjectInstance getObject(String oname){
-		Integer pos = this.objectMap.get(oname);
-		return (pos == null) ? null : this.getObject(pos);
-	}
-	
-	/**
-	 * Returns the observable object instance indexed at position i
-	 * @param i the index of the observable object instance to return
-	 * @return the observable object instance indexed at position i, or null if i > this.numObservableObjects()
-	 */
-	public ObjectInstance getObservableObjectAt(int i){
-		if(i < 0 || i > this.numObservableObjects){
-			return null;
-		}
-		return objectInstances.get(i);
+		int pos = this.objectMap.get(oname);
+		return (pos < 0) ? null : this.objectInstances.get(pos);
 	}
 	
 	
@@ -530,6 +506,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @return the list of observable and hidden object instances in this state.
 	 */
 	public List <ObjectInstance> getAllObjects(){
+		//return objectInstances;
 		return new ArrayList <ObjectInstance>(objectInstances);
 	}
 	
@@ -540,15 +517,15 @@ public final class ImmutableState extends OOMDPState implements State {
 	 */
 	public List <ObjectInstance> getObjectsOfClass(String oclass){
 		
-		Integer position = this.objectClassMap.get(oclass);
-		if(position == null){
+		int position = this.objectClassMap.get(oclass);
+		if(position < 0){
 			return Lists.newArrayList();
 		}
-		List <Integer> tmp = objectIndexByTrueClass.get(position);
+		TIntArrayList tmp = objectIndexByTrueClass.get(position);
 		List<ObjectInstance> objects = new ArrayList<ObjectInstance>(tmp.size());
-		
-		for (Integer i : tmp) {
-			objects.add(this.getObject(i));
+		for (int i = 0; i < tmp.size(); i++) {
+		//for (Integer i : tmp) {
+			objects.add(this.objectInstances.get(tmp.get(i)));
 		}
 		return objects;
 	}
@@ -561,7 +538,7 @@ public final class ImmutableState extends OOMDPState implements State {
 	 */
 	public ObjectInstance getFirstObjectOfClass(String oclass){
 		Integer position = this.objectClassMap.get(oclass);
-		List <Integer> obs = this.objectIndexByTrueClass.get(position);
+		TIntArrayList obs = this.objectIndexByTrueClass.get(position);
 		if(obs != null && obs.size() > 0){
 			return this.getObject(obs.get(0));
 		}
@@ -583,21 +560,14 @@ public final class ImmutableState extends OOMDPState implements State {
 	 */
 	public List <List <ObjectInstance>> getAllObjectsByClass(){
 		List<List<ObjectInstance>> allObjects = new ArrayList<List<ObjectInstance>>(this.objectIndexByTrueClass.size());
-		for (List<Integer> indices : this.objectIndexByTrueClass) {
+		for (TIntArrayList indices : this.objectIndexByTrueClass) {
 			List<ObjectInstance> objects = new ArrayList<ObjectInstance>(indices.size());
-			for (Integer i : indices) {
-				objects.add(this.getObject(i));
+			for (int i = 0; i < indices.size(); i++) {
+			//for (Integer i : indices) {
+				objects.add(this.objectInstances.get(indices.get(i)));
 			}
 		}
 		return allObjects;
-	}
-	
-	public List<List<Integer>> getAllObjectIndicesByTrueClass() {
-		return this.objectIndexByTrueClass;
-	}
-	
-	public Map<String, Integer> getObjectClassMap() {
-		return this.objectClassMap;
 	}
 	
 
@@ -628,39 +598,43 @@ public final class ImmutableState extends OOMDPState implements State {
 	 */
 	
 	public List <List <ObjectInstance>> getPossibleObjectBindingsGivenParamOrderGroups(String [] paramClasses, String [] paramOrderGroups){
-		List<List<Integer>> resIndices = this.getPossibleBindingsIndicesGivenParamOrderGroups(paramClasses, paramOrderGroups);
+		List<TIntArrayList> resIndices = this.getPossibleBindingsIndicesGivenParamOrderGroups(paramClasses, paramOrderGroups);
 		return this.getBindingObjectsFromIndices(resIndices);
 		
 	}
 
 	public List <List <String>> getPossibleBindingsGivenParamOrderGroups(String [] paramClasses, String [] paramOrderGroups){
-		List<List<Integer>> resIndices = this.getPossibleBindingsIndicesGivenParamOrderGroups(paramClasses, paramOrderGroups);
+		List<TIntArrayList> resIndices = this.getPossibleBindingsIndicesGivenParamOrderGroups(paramClasses, paramOrderGroups);
 		return this.getBindingsFromIndices(resIndices);
 	}
 	
-	private List<List<Integer>> getPossibleBindingsIndicesGivenParamOrderGroups(String [] paramClasses, String [] paramOrderGroups) {
-		List <List <Integer>> currentBindingSets = new ArrayList <List<Integer>>();
-		List<Integer> paramClassIds = this.getClassIds(paramClasses);
+	private List<TIntArrayList> getPossibleBindingsIndicesGivenParamOrderGroups(String [] paramClasses, String [] paramOrderGroups) {
+		List <TIntArrayList> currentBindingSets = new ArrayList <TIntArrayList>();
+		TIntArrayList paramClassIds = this.getClassIds(paramClasses);
 		List <String> uniqueRenames = this.identifyUniqueClassesInParameters(Arrays.asList(paramOrderGroups));
-		List <Integer> uniqueParamClasses = this.identifyUniqueClassesInParameters(paramClassIds);
+		TIntArrayList uniqueParamClasses = new TIntArrayList(new TIntHashSet(paramClassIds));//this.identifyUniqueClassesInParameters(paramClassIds);
 		Map <String, Integer> uniqueParamClassCounts = this.getUniqueClassCounts(uniqueRenames, Arrays.asList(paramOrderGroups));
 		
 		List<Integer> currentObjects = new ArrayList<Integer>();
 		int initialSize = 1;
 		//first make sure we have objects for each class parameter; if not return empty list
-		for(Integer classId : uniqueParamClasses){
+		for (int i = 0; i < uniqueParamClasses.size(); i++) {
+			int classId = uniqueParamClasses.get(i);
+		//for(Integer classId : uniqueParamClasses){
 			int n = this.getNumOccurencesOfClassInParameters(classId, paramClassIds);
 			
-			List <Integer> objectsOfClass = objectIndexByTrueClass.get(classId);
+			TIntArrayList objectsOfClass = objectIndexByTrueClass.get(classId);
 			int numObjects = objectsOfClass.size();
 			if(numObjects < n){
-				return new ArrayList <List <Integer>>();
+				return new ArrayList <TIntArrayList>();
 			}
 			initialSize *= numObjects;
-			currentObjects.addAll(objectsOfClass);
+			for (int j = 0; j < objectsOfClass.size(); j++) {
+				currentObjects.add(objectsOfClass.get(j));
+			}
 		}
-		List <List <Integer>> resIndices = new ArrayList <List<Integer>>(initialSize);
-		final Set<Integer> combSet = new HashSet<Integer>(2 * this.numTotalObjects());
+		List <TIntArrayList> resIndices = new ArrayList <TIntArrayList>(initialSize);
+		final TIntHashSet combSet = new TIntHashSet(2 * this.numTotalObjects());
 		Predicate<Integer> retainPredicate = new Predicate<Integer>() {
 			@Override
 			public boolean apply(Integer arg0) {
@@ -668,13 +642,13 @@ public final class ImmutableState extends OOMDPState implements State {
 			}
 		};
 		this.getPossibleRenameBindingsHelper(resIndices, currentBindingSets, 0, currentObjects, uniqueRenames, paramClassIds, 
-				Arrays.asList(paramOrderGroups), uniqueParamClassCounts,  combSet, retainPredicate);
+				Arrays.asList(paramOrderGroups), uniqueParamClassCounts, retainPredicate, combSet);
 		return resIndices;
 		
 	}
 	
-	private List<Integer> getClassIds(String[] classes) {
-		List<Integer> ids = new ArrayList<Integer>(classes.length);
+	private TIntArrayList getClassIds(String[] classes) {
+		TIntArrayList ids = new TIntArrayList(classes.length);
 		for (String c : classes) {
 			ids.add(this.objectClassMap.get(c));
 		}
@@ -689,24 +663,26 @@ public final class ImmutableState extends OOMDPState implements State {
 		return counts;
 	}
 	
-	private List <List <String>> getBindingsFromIndices(List<List<Integer>> allIndices) {
+	private List <List <String>> getBindingsFromIndices(List<TIntArrayList> allIndices) {
 		List<List<String>> res = new ArrayList<List<String>>(allIndices.size());
-		for (List<Integer> indices : allIndices) {
+		for (TIntArrayList indices : allIndices) {
 			List<String> objects = new ArrayList<String>(indices.size());
-			for (Integer i : indices) {
-				objects.add(this.getObject(i).getName());
+			for (int i = 0; i < indices.size(); i++){
+			//for (Integer i : indices) {
+				objects.add(this.objectInstances.get(indices.get(i)).getName());
 			}
 			res.add(objects);
 		}
 		return res;
 	}
 	
-	private List <List <ObjectInstance>> getBindingObjectsFromIndices(List<List<Integer>> allIndices) {
+	private List <List <ObjectInstance>> getBindingObjectsFromIndices(List<TIntArrayList> allIndices) {
 		List<List<ObjectInstance>> res = new ArrayList<List<ObjectInstance>>(allIndices.size());
-		for (List<Integer> indices : allIndices) {
+		for (TIntArrayList indices : allIndices) {
 			List<ObjectInstance> objects = new ArrayList<ObjectInstance>(indices.size());
-			for (Integer i : indices) {
-				objects.add(this.getObject(i));
+			for (int i = 0; i < indices.size(); i++){
+				//for (Integer i : indices) {
+					objects.add(this.objectInstances.get(indices.get(i)));
 			}
 			res.add(objects);
 		}
@@ -715,9 +691,9 @@ public final class ImmutableState extends OOMDPState implements State {
 	
 	
 	
-	private void getPossibleRenameBindingsHelper(List <List <Integer>> res, List <List <Integer>> currentBindingSets, int bindIndex,
-			Iterable<Integer> remainingObjects, List <String> uniqueOrderGroups, List<Integer> paramClassIds, List<String> paramOrderGroups, 
-			Map<String, Integer> uniqueParamOrderCounts, Set<Integer> combSet, Predicate<Integer> retainPredicate){
+	private void getPossibleRenameBindingsHelper(List <TIntArrayList> res, List <TIntArrayList> currentBindingSets, int bindIndex,
+			Iterable<Integer> remainingObjects, List <String> uniqueOrderGroups, TIntArrayList paramClassIds, List<String> paramOrderGroups, 
+			Map<String, Integer> uniqueParamOrderCounts, Predicate<Integer> retainPredicate, TIntHashSet combSet){
 		
 		if(bindIndex == uniqueOrderGroups.size()){
 			//base case, put it all together and add it to the result
@@ -729,7 +705,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		
 		String r = uniqueOrderGroups.get(bindIndex);
 		Integer cId = this.parameterClassAssociatedWithOrderGroup(r, paramOrderGroups, paramClassIds);
-		List <Integer> cands = this.objectsMatchingClass(remainingObjects, cId);
+		TIntArrayList cands = this.objectsMatchingClass(remainingObjects, cId);
 		int k = uniqueParamOrderCounts.get(r);
 		
 		//int k = this.numOccurencesOfOrderGroup(r, paramOrderGroupIds);
@@ -738,7 +714,7 @@ public final class ImmutableState extends OOMDPState implements State {
 		int [] comb = this.initialComb(k, n);
 		
 		
-		List<Integer> combList = this.getObjectsFromComb(cands, comb);
+		TIntArrayList combList = this.getObjectsFromComb(cands, comb);
 		combSet.addAll(combList);
 		this.addBindingCombination(res, currentBindingSets, bindIndex,
 				remainingObjects, uniqueOrderGroups, paramClassIds,
@@ -754,12 +730,13 @@ public final class ImmutableState extends OOMDPState implements State {
 	}
 
 
-	private void addBindingCombination(List<List<Integer>> res,
-			List<List<Integer>> currentBindingSets, int bindIndex,
+	private void addBindingCombination(List<TIntArrayList> res,
+			List<TIntArrayList> currentBindingSets, int bindIndex,
 			Iterable<Integer> remainingObjects, List<String> uniqueOrderGroups,
-			List<Integer> paramClassIds, List<String> paramOrderGroups, Map<String, Integer> uniqueParamClassCounts, List<Integer> cb, Predicate<Integer> retainPredicate, Set<Integer> combSet) {
+			TIntArrayList paramClassIds, List<String> paramOrderGroups, Map<String, Integer> uniqueParamClassCounts, 
+			TIntArrayList cb, Predicate<Integer> retainPredicate, TIntHashSet combSet) {
 		
-		List <List<Integer>> nextBinding = new ArrayList<List<Integer>>(currentBindingSets.size() + 1);
+		List <TIntArrayList> nextBinding = new ArrayList<TIntArrayList>(currentBindingSets.size() + 1);
 		nextBinding.addAll(currentBindingSets);
 		nextBinding.add(cb);
 		
@@ -767,10 +744,9 @@ public final class ImmutableState extends OOMDPState implements State {
 		combSet.addAll(cb);
 		
 		Iterable<Integer> nextObsReamining = this.objectListDifference(remainingObjects, retainPredicate);
-		
 		//recursive step
 		this.getPossibleRenameBindingsHelper(res, nextBinding, bindIndex+1, nextObsReamining, uniqueOrderGroups, paramClassIds, 
-				paramOrderGroups, uniqueParamClassCounts, combSet, retainPredicate);
+				paramOrderGroups, uniqueParamClassCounts, retainPredicate, combSet);
 	}
 	
 	// Reorders objects, to make list removal fast
@@ -778,46 +754,20 @@ public final class ImmutableState extends OOMDPState implements State {
 		return Iterables.filter(objects, retainPredicate);
 	}
 	
-	private int getNumOccurencesOfClassInParameters(Integer id, List<Integer> ids ){
-		return Collections.frequency(ids, id);
-	}
-	/*
-	private int getNumOccurencesOfClassInParameters(String className, String [] paramClasses){
-		int num = 0;
-		for(int i = 0; i < paramClasses.length; i++){
-			if(paramClasses[i].equals(className)){
-				num++;
-			}
+	private int getNumOccurencesOfClassInParameters(int id, TIntArrayList ids ){
+		int count = 0;
+		for (int i = 0; i < ids.size(); i++) {
+			count += (ids.get(i) == id) ? 1 : 0;
 		}
-		return num;
-	}*/
+		return count;
+	}
 	
 	private <T> List <T> identifyUniqueClassesInParameters(List<T> paramClassIds){
 		Set <T> unique = new TreeSet <T>(paramClassIds);
-		/*for(T id : paramClassIds){
-			if(!unique.contains(id)){
-				unique.add(id);
-			}
-		}*/
-		
 		return new ArrayList<T>(unique);
 	}
 	
-	
-	
-	private int numOccurencesOfOrderGroup(String rename, String [] orderGroups){
-		int num = 0;
-		for(int i = 0; i < orderGroups.length; i++){
-			if(orderGroups[i].equals(rename)){
-				num++;
-			}
-		}
-		
-		return num;
-		
-	}
-	
-	private Integer parameterClassAssociatedWithOrderGroup(String orderGroup, List<String> orderGroups, List<Integer> paramClasses){
+	private Integer parameterClassAssociatedWithOrderGroup(String orderGroup, List<String> orderGroups, TIntArrayList paramClasses){
 		for (int i = 0; i < orderGroups.size(); i++) {
 			if (orderGroups.get(i).equals(orderGroup)) {
 				return paramClasses.get(i);
@@ -826,25 +776,16 @@ public final class ImmutableState extends OOMDPState implements State {
 		return -1;
 	}
 	
-	private List<Integer> objectsMatchingClass(Iterable <Integer> sourceObs, Integer id){
-		List <Integer> res = Lists.newArrayList(sourceObs);
-		List<Integer> allClassObjects = this.objectIndexByTrueClass.get(id);
+	private TIntArrayList objectsMatchingClass(Iterable<Integer> sourceObs, Integer id){
+		TIntArrayList res = new TIntArrayList();
+		for (Integer obj : sourceObs) {
+			res.add(obj);
+		}
+		TIntArrayList allClassObjects = this.objectIndexByTrueClass.get(id);
 		res.retainAll(allClassObjects);
 		
 		return res;
 	}
-	
-	/*
-	private List <Integer> objectsMatchingClass(Collection <Integer> sourceObs, String cname){
-		List <Integer> res = new ArrayList<Integer>(sourceObs);
-		int pos = this.objectClassMap.get(cname);
-		List<Integer> allClassObjects = this.objectIndexByClass.get(pos);
-		res.retainAll(allClassObjects);
-		
-		return res;
-	}*/
-	
-	
 	
 	/**
 	 * for a specific parameter order group, return a possible binding
@@ -853,12 +794,12 @@ public final class ImmutableState extends OOMDPState implements State {
 	 * @param orderGroups the parameter order groups for each parameter
 	 * @return a binding as a list of object instance names
 	 */
-	private List <Integer> getBindingFromCombinationSet(List <List <Integer>> comboSets, List <String> orderGroupAssociatedWithSet, List<String> orderGroups){
+	private TIntArrayList getBindingFromCombinationSet(List <TIntArrayList> comboSets, List <String> orderGroupAssociatedWithSet, List<String> orderGroups){
 		
-		List<Integer> res = new ArrayList<Integer>(orderGroups.size());
+		TIntArrayList res = new TIntArrayList(orderGroups.size());
 		//apply the parameter bindings for each rename combination
 		for(int i = 0; i < comboSets.size(); i++){
-			List <Integer> renameCombo = comboSets.get(i);
+			TIntArrayList renameCombo = comboSets.get(i);
 			String r = orderGroupAssociatedWithSet.get(i);
 			
 			//find the parameter indices that match this rename and set a binding accordingly
@@ -874,69 +815,13 @@ public final class ImmutableState extends OOMDPState implements State {
 		return res;
 	}
 	
-	/*
-	 private List <String> getBindngFromCombinationSet(List <List <String>> comboSets, List <String> orderGroupAssociatedWithSet, String [] orderGroups){
-		
-		List <String> res = new ArrayList <String>(orderGroups.length);
-		//add the necessary space first
-		for(int i = 0; i < orderGroups.length; i++){
-			res.add("");
-		}
-		
-		//apply the parameter bindings for each rename combination
-		for(int i = 0; i < comboSets.size(); i++){
-			List <String> renameCombo = comboSets.get(i);
-			String r = orderGroupAssociatedWithSet.get(i);
-			
-			//find the parameter indices that match this rename and set a binding accordingly
-			int ind = 0;
-			for(int j = 0; j < orderGroups.length; j++){
-				if(orderGroups[j].equals(r)){
-					res.set(j, renameCombo.get(ind));
-					ind++;
-				}
-			}
-		}
-		
-		return res;
-	}
-	 */
-	
-	
-	private List <List <Integer>> getAllCombinationsOfObjects(List <Integer> objects, int k){
-		
-		List <List<Integer>> allCombs = new ArrayList <List<Integer>>();
-		
-		int n = this.numObservableObjects;
-		int [] comb = this.initialComb(k, n);
-		List<Integer> initialComb = this.getObjectsFromComb(objects, comb);
-		allCombs.add(initialComb);
-		while(nextComb(comb, k, n) == 1){
-			allCombs.add(this.getObjectsFromComb(objects, comb));
-		}
-		
-		return allCombs;
-		
-	}
-	
-	private List<Integer> getObjectsFromComb(List<Integer> allObjects, int[] comb) {
-		List<Integer> objects = new ArrayList<Integer>(comb.length);
+	private TIntArrayList getObjectsFromComb(TIntArrayList allObjects, int[] comb) {
+		TIntArrayList objects = new TIntArrayList(comb.length);
 		for (int i : comb){ 
 			objects.add(allObjects.get(i));
 		}
 		return objects;
 	}
-	
-	
-	@Deprecated
-	private List <Integer> getListOfBindingsFromCombination(List <Integer> objects, int [] comb){
-		List <Integer> res = new ArrayList <Integer>(comb.length);
-		for(int i = 0; i < comb.length; i++){
-			//res.add(objects.get(comb[i]).getName());
-		}
-		return res;
-	}
-	
 	
 	private int [] initialComb(int k, int n){
 		int [] res = new int[k];
@@ -1000,5 +885,23 @@ public final class ImmutableState extends OOMDPState implements State {
 			desc = desc + o.getObjectDescriptionWithNullForUnsetAttributes() + "\n";
 		}
 		return desc;
+	}
+	
+	public boolean isHashed() {
+		return this.hashCode != 0;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (this.hashCode == 0) {
+			return super.hashCode();
+		}
+		return this.hashCode;
+	}
+
+
+	@Override
+	public Iterator<ImmutableObjectInstance> iterator() {
+		return this.objectInstances.iterator();
 	}
 }

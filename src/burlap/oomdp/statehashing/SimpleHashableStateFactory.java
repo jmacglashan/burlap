@@ -3,7 +3,7 @@ package burlap.oomdp.statehashing;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.states.TImmutableState;
+import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.values.Value;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -106,8 +106,8 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	protected int computeHashCode(State s){
 
 		int [] hashCodes = new int[s.numTotalObjects()];
-		if (s instanceof TImmutableState) {
-			TImmutableState sTimm = (TImmutableState)s;
+		if (s instanceof ImmutableState) {
+			ImmutableState sTimm = (ImmutableState)s;
 			for(int i = 0; i < hashCodes.length; i++){
 				hashCodes[i] = computeHashCode(sTimm.getObject(i));
 			}
@@ -315,6 +315,10 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @return true if the values of o1 = o2; false otherwise.
 	 */
 	protected boolean objectValuesEqual(ObjectInstance o1, ObjectInstance o2){
+		if (o1 == o2) {
+			return true;
+		}
+		
 		if (o1.getObjectClass() != o2.getObjectClass()) {
 			return false;
 		}

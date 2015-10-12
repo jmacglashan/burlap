@@ -1,23 +1,30 @@
 package burlap.oomdp.statehashing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-
-import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.ImmutableFixedSizeState;
+import burlap.oomdp.core.states.ImmutableStateInterface;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.values.Value;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
 
+import com.google.common.collect.ImmutableList;
+
+/**
+ * This Hashing factory works for states that implement the ImmutableStateInterface. It caches the value by default, and 
+ * also will check object equality through the == comparison, since ImmutableStates may share the same objects.
+ * 
+ * @author brawner
+ *
+ */
 public class ImmutableStateHashableStateFactory extends SimpleHashableStateFactory {
-	private ImmutableHashableObjectFactory objectHashingFactory;
+	
+	protected final ImmutableHashableObjectFactory objectHashingFactory;
 	public ImmutableStateHashableStateFactory(boolean identifierIndependent) {
 		super(identifierIndependent, true);
 		this.objectHashingFactory = new ImmutableHashableObjectFactory(this);
@@ -28,18 +35,24 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		if (s instanceof ImmutableHashableState) {
 			return (ImmutableHashableState)s;
 		}
-		ImmutableFixedSizeState sTimm = (ImmutableFixedSizeState)s;
-		int size = sTimm.numTotalObjects();
-		List<ImmutableObjectInstance> hashed = new ArrayList<ImmutableObjectInstance>(size);
-		for (int i = 0; i < size; i++) {
-			ObjectInstance obj = sTimm.getObject(i);
+		
+		if (!(s instanceof ImmutableStateInterface)) {
+			throw new RuntimeException(s.getClass().toString() + " is not an immutable state type.");
+		}
+		
+		ImmutableStateInterface immState = (ImmutableStateInterface)s;
+		List<ImmutableObjectInstance> hashed = new ArrayList<ImmutableObjectInstance>(s.numTotalObjects());
+		List<Integer> hashes = new ArrayList<Integer>(s.numTotalObjects());
+		
+		for (ObjectInstance obj : immState){ 
 			ObjectInstance hashedObj = this.objectHashingFactory.hashObject(obj);
 			hashed.add(((ImmutableHashableObject)hashedObj).getObjectInstance());
+			hashes.add(hashedObj.hashCode());
 		}
-		//Arrays.sort(hashCodes);
 		
 		ImmutableList<ImmutableObjectInstance> immList = ImmutableList.copyOf(hashed);
-		return new ImmutableHashableState(sTimm.replaceAndHash(immList, immList.hashCode()));
+		Collections.sort(hashes);
+		return new ImmutableHashableState(immState.replaceAndHash(immList, hashes.hashCode()));
 	}
 	
 
@@ -122,56 +135,34 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 			return false;
 		}
 		
-		ImmutableFixedSizeState iS1 = this.getImmutableState(s1);
-		ImmutableFixedSizeState iS2 = this.getImmutableState(s2);
+		ImmutableStateInterface iS1 = this.getImmutableState(s1);
+		ImmutableStateInterface iS2 = this.getImmutableState(s2);
 		return this.identifierDependentEquals(iS1, iS2);
-//		for (int i = 0; i < size1; ++i) {		
-//			ImmutableObjectInstance ob1 = (ImmutableObjectInstance)iS1.getObject(i);
-//			ImmutableObjectInstance ob2 = (ImmutableObjectInstance)iS2.getObject(i);
-//			String name = ob1.getName();
-//			
-//			if (!name.equals(ob2.getName())) {
-//				ob2 = (ImmutableObjectInstance)s2.getObject(name);
-//				if (ob2 == null) {
-//					return false;
-//				}
-//			}
-//			if (!this.objectValuesEqual(ob1, ob2)){
-//				return false;
-//			}
-//		}
-//
-//		return true;
 	}
 
-	protected boolean identifierDependentEquals(ImmutableFixedSizeState s1, ImmutableFixedSizeState s2){
-		int size1 = s1.numTotalObjects();
-		for (int i = 0; i < size1; ++i) {		
-			ImmutableObjectInstance ob1 = (ImmutableObjectInstance)s1.getObject(i);
-			ImmutableObjectInstance ob2 = (ImmutableObjectInstance)s2.getObject(i);
+	protected boolean identifierDependentEquals(ImmutableStateInterface s1, ImmutableStateInterface s2){
+		Iterator<ImmutableObjectInstance> it1 = s1.iterator();
+		Iterator<ImmutableObjectInstance> it2 = s2.iterator();
+		
+		while (it1.hasNext()) {
+			ImmutableObjectInstance ob1 = it1.next();
+			ImmutableObjectInstance ob2 = it2.next();
+			
+			if (ob1 == ob2) {
+				continue;
+			}
+			
 			String name = ob1.getName();
 			
 			if (!name.equals(ob2.getName())) {
-				return false;
+				ObjectInstance obj = s2.getObject(name);
+				if (obj == null) {
+					return false;
+				}
+				ob2 = (ImmutableObjectInstance)obj;
+				
 			}
-			if (!this.objectValuesEqual(ob1, ob2)){
-				return false;
-			}
-		}
-
-		return true;
-	}
-	
-	protected boolean objectValuesEqual(ImmutableObjectInstance o1, ImmutableObjectInstance o2){
-		ObjectClass oc = o1.getObjectClass();
-		if (oc != o2.getObjectClass()) {
-			return false;
-		}
-		List<Value> values1 = o1.getValues();
-		List<Value> values2 = o2.getValues();
-		int size = values1.size();
-		for (int i = 0; i < size; i++) {
-			if (!valuesEqual(values1.get(i), values2.get(i))) {
+			if (!this.objectHashingFactory.objectValuesEqual(ob1, ob2)){
 				return false;
 			}
 		}
@@ -179,27 +170,18 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		return true;
 	}
 	
-	private ImmutableFixedSizeState getImmutableState(State s) {
+	private ImmutableStateInterface getImmutableState(State s) {
 		if (s instanceof ImmutableHashableState) {
 			return ((ImmutableHashableState)s).getImmutableState();
-		} else if (s instanceof ImmutableFixedSizeState) {
-			return (ImmutableFixedSizeState)s;
+		} else if (s instanceof ImmutableStateInterface) {
+			return (ImmutableStateInterface)s;
 		} else {
-			return new ImmutableFixedSizeState(s);
+			throw new RuntimeException("State of type " + s.getClass().toString() + " does not implement the ImmutableStateInterface interface");
 		}
-	}
-	
-	private ImmutableObjectInstance getImmutableObject(ObjectInstance obj) {
-		if (obj instanceof ImmutableHashableObject) {
-			return ((ImmutableHashableObject)obj).getObjectInstance();
-		} else if (obj instanceof ImmutableObjectInstance) {
-			return (ImmutableObjectInstance)obj;
-		} 
-		return null;
 	}
 	
 	public class ImmutableHashableState extends HashableState {
-		public ImmutableHashableState(ImmutableFixedSizeState s) {
+		public ImmutableHashableState(ImmutableStateInterface s) {
 			super(s);
 		}
 
@@ -208,8 +190,8 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 			return this;
 		}
 		
-		public ImmutableFixedSizeState getImmutableState() {
-			return (ImmutableFixedSizeState)this.s;
+		public ImmutableStateInterface getImmutableState() {
+			return (ImmutableStateInterface)this.s;
 		}
 
 		@Override

@@ -13,6 +13,9 @@ public abstract class OOMDPObjectInstance implements ObjectInstance{
 		return this.buildObjectDescription(new StringBuilder()).toString();
 	}
 	
+	/**
+	 * Sets an object's value based on it's java.lang type.
+	 */
 	public <T> ObjectInstance setValue(String attName, T value) {
 		String valueClass = value.getClass().getName();
 		switch(valueClass) {

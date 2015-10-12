@@ -20,6 +20,10 @@ public abstract class OOMDPState implements State {
 		return this.renameObject(o, newName);
 	}
 	
+	/** 
+	 * Sets an object's value.
+	 * @throws RuntimeException if the object doesn't exist, or the attribute name doesn't exist for the object.
+	 */
 	public <T> State setObjectsValue(String objectName, String attName, T value) {
 		ObjectInstance obj = this.getObject(objectName);
 		if (obj == null) {
