@@ -38,6 +38,14 @@ public class ImmutableHashableObjectFactory implements HashableObjectFactory {
 		return new ImmutableHashableObject(immObj);
 	}
 	
+	public ImmutableHashableObject hashObject(ImmutableObjectInstance immObj) {
+		if (!immObj.isHashed()) {
+			int code = ImmutableHashableObjectFactory.this.computeHashCode(immObj);
+			return new ImmutableHashableObject(immObj.setHashCode(code, identifierIndependent));
+		}
+		return new ImmutableHashableObject(immObj);
+	}
+	
 	public boolean objectValuesEqual(ImmutableObjectInstance o1, ImmutableObjectInstance o2){
 		if (o1 == o2) {
 			return true;

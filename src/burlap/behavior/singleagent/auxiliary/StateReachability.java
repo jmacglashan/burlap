@@ -85,7 +85,6 @@ public class StateReachability {
 	 */
 	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
 		
-		
 		Set<HashableState> hashedStates = new HashSet<HashableState>();
 		HashableState shi = usingHashFactory.hashState(from);
 		List <Action> actions = inDomain.getActions();
@@ -107,7 +106,6 @@ public class StateReachability {
 				List <TransitionProbability> tps = ga.getTransitions(sh.s);
 				nGenerated += tps.size();
 				for(TransitionProbability tp : tps){
-					//openList.offer(sh);
 					HashableState nsh = usingHashFactory.hashState(tp.s);
 					
 					if (hashedStates.add(nsh)) {

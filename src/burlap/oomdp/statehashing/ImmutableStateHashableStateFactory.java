@@ -97,11 +97,10 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		List<ImmutableObjectInstance> hashed = new ArrayList<ImmutableObjectInstance>(s.numTotalObjects());
 		TIntArrayList hashes = new TIntArrayList(s.numTotalObjects());
 		
-		for (ObjectInstance obj : immState){ 
-			ObjectInstance hashedObj = this.objectHashingFactory.hashObject(obj);
-			hashed.add(((ImmutableHashableObject)hashedObj).getObjectInstance());
-			if (!this.maskedObjectClasses.contains(obj.getClassName()) &&
-					!this.maskedObjects.contains(obj.getName())) {
+		for (ImmutableObjectInstance obj : immState){ 
+			ImmutableHashableObject hashedObj = this.objectHashingFactory.hashObject(obj);
+			hashed.add(hashedObj.getObjectInstance());
+			if (!this.isObjectMasked(obj)) {
 				hashes.add(hashedObj.hashCode());
 			}
 		}
@@ -111,7 +110,11 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		return new ImmutableHashableState(immState.replaceAndHash(immList, hashes.hashCode()));
 	}
 	
-
+	protected boolean isObjectMasked(ObjectInstance obj) {
+		return this.maskedObjectClasses.contains(obj.getClassName()) ||
+				this.maskedObjects.contains(obj.getName());
+	}
+	
 	@Override
 	protected int computeHashCode(State s){
 		return this.hashState(s).hashCode();

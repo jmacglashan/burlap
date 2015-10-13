@@ -75,34 +75,6 @@ public class FixedSizeStateHashableStateFactory extends ImmutableStateHashableSt
 	}
 	
 	@Override
-	public HashableState hashState(State s) {
-		if (s instanceof ImmutableHashableState) {
-			return (ImmutableHashableState)s;
-		}
-		
-		FixedSizeImmutableState sTimm = (FixedSizeImmutableState)s;
-		int size = sTimm.numTotalObjects();
-		List<ImmutableObjectInstance> hashed = new ArrayList<ImmutableObjectInstance>(size);
-		TIntArrayList hashes = new TIntArrayList(size);
-		
-		for (int i = 0; i < s.numTotalObjects(); i++) {
-			ObjectInstance obj = sTimm.getObject(i);
-			ObjectInstance hashedObj = this.objectHashingFactory.hashObject(obj);
-			hashed.add(((ImmutableHashableObject)hashedObj).getObjectInstance());
-			if (this.objectMask.get(i)) {
-				hashes.add(hashedObj.hashCode());
-			}
-		}
-		
-		if (this.identifierIndependent) {
-			hashes.sort();
-		}
-		
-		ImmutableList<ImmutableObjectInstance> immList = ImmutableList.copyOf(hashed);
-		return new ImmutableHashableState(sTimm.replaceAndHash(immList, hashes.hashCode()));
-	}
-	
-	@Override
 	protected boolean statesEqual(State s1, State s2) {
 		if (this.identifierIndependent) {
 			return super.statesEqual(s1, s2);
@@ -123,6 +95,13 @@ public class FixedSizeStateHashableStateFactory extends ImmutableStateHashableSt
 		return identifierDependentEquals(iS1, iS2);
 	}
 
+	/**
+	 * Because the objects are assumed to be in a fixed order. If the equality comparison is name dependent
+	 * you don't need to check equality among any other objects, just the ones used in the comparison.
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
 	protected boolean identifierDependentEquals(ImmutableStateInterface s1, ImmutableStateInterface s2){
 		if (!(s1 instanceof FixedSizeImmutableState) ||
 				!(s2 instanceof FixedSizeImmutableState)) {
