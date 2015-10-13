@@ -385,6 +385,9 @@ public class Attribute {
 	
 	@Override
 	public boolean equals(Object obj){
+		if (this == obj) {
+			return true;
+		}
 		Attribute op = (Attribute)obj;
 		if(op.name.equals(name))
 			return true;

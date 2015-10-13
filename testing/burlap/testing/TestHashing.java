@@ -17,7 +17,6 @@ import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.values.Value;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -261,7 +260,6 @@ public class TestHashing {
 		}
 		return s;
 	}
-	
 	
 	public Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
 		

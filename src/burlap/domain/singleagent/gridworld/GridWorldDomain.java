@@ -12,12 +12,14 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.OOMDPObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.OOMDPState;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -568,10 +570,11 @@ public class GridWorldDomain implements DomainGenerator {
 		
 		State s = new MutableState();
 		
+		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
+		
 		for(int i = 0; i < n; i++){
 			s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+i));
 		}
-		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		
 		return s;
 	}
@@ -650,7 +653,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param xd the attempted new X position of the agent
 	 * @param yd the attempted new Y position of the agent
 	 */
-	protected void move(State s, int xd, int yd, int [][] map){
+	protected State move(State s, int xd, int yd, int [][] map){
 		
 		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		int ax = agent.getIntValForAttribute(ATTX);
@@ -667,8 +670,11 @@ public class GridWorldDomain implements DomainGenerator {
 			ny = ay;
 		}
 		
-		agent.setValue(ATTX, nx);
-		agent.setValue(ATTY, ny);
+		
+		s = s.setObjectsValue(agent.getName(), ATTX, nx);
+		s = s.setObjectsValue(agent.getName(), ATTY, ny);
+
+		return s;
 	}
 	
 	/**
@@ -756,9 +762,7 @@ public class GridWorldDomain implements DomainGenerator {
 			}
 
 			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(dir);
-			GridWorldDomain.this.move(s, dcomps[0], dcomps[1], this.map);
-
-			return s;
+			return GridWorldDomain.this.move(s, dcomps[0], dcomps[1], this.map);
 		}
 
 		@Override
@@ -771,7 +775,7 @@ public class GridWorldDomain implements DomainGenerator {
 				}
 				State ns = s.copy();
 				int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(i);
-				GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
+				ns = GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
 
 				//make sure this direction doesn't actually stay in the same place and replicate another no-op
 				boolean isNew = true;

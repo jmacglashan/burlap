@@ -31,6 +31,7 @@ public interface ObjectInstance {
 	 */
 	ObjectInstance setName(String name);
 	
+	<T> ObjectInstance setValue(String attName, T v);
 	
 	/**
 	 * Sets the value of the attribute named attName for this object instance.

@@ -72,6 +72,9 @@ public class StringValue extends OOMDPValue implements Value {
 	
 	@Override
 	public boolean equals(Object obj){
+		if (this == obj) {
+			return true;
+		}
 		if(!(obj instanceof StringValue)){
 			return false;
 		}

@@ -3,7 +3,9 @@ package burlap.oomdp.statehashing;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.values.Value;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
@@ -103,20 +105,24 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 */
 	protected int computeHashCode(State s){
 
-		List<ObjectInstance> objects = s.getAllObjects();
-		int [] hashCodes = new int[objects.size()];
-		for(int i = 0; i < hashCodes.length; i++){
-			hashCodes[i] = computeHashCode(objects.get(i));
+		int [] hashCodes = new int[s.numTotalObjects()];
+		if (s instanceof ImmutableState) {
+			ImmutableState sTimm = (ImmutableState)s;
+			for(int i = 0; i < hashCodes.length; i++){
+				hashCodes[i] = computeHashCode(sTimm.getObject(i));
+			}
+		} else {
+			List<ObjectInstance> objects = s.getAllObjects();
+			
+			for(int i = 0; i < hashCodes.length; i++){
+				hashCodes[i] = computeHashCode(objects.get(i));
+			}
 		}
 		//sort for invariance to order
 		Arrays.sort(hashCodes);
 		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
-		for(int code : hashCodes){
-			hashCodeBuilder.append(code);
-		}
-		int code = hashCodeBuilder.toHashCode();
-
-		return code;
+		hashCodeBuilder.append(hashCodes);
+		return hashCodeBuilder.toHashCode();
 	}
 
 
@@ -133,12 +139,11 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 		}
 		
 		hashCodeBuilder.append(o.getClassName());
-		
+
 		List<Value> values = o.getValues();
 		for(Value v : values){
 			this.appendHashcodeForValue(hashCodeBuilder, v);
 		}
-
 
 		return hashCodeBuilder.toHashCode();
 	}
@@ -151,22 +156,23 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	protected void appendHashcodeForValue(HashCodeBuilder hashCodeBuilder, Value v){
 		hashCodeBuilder.append(0).append(0);
 		AttClass attClass = getAttClass(v.getAttribute());
-		if(attClass == AttClass.INT){
+		switch(attClass) {
+		case INT:
 			hashCodeBuilder.append(v.getDiscVal());
-		}
-		else if(attClass == AttClass.DOUBLE){
+			break;
+		case DOUBLE:
 			hashCodeBuilder.append(v.getNumericRepresentation());
-		}
-		else if(attClass == AttClass.INTARRAY){
+			break;
+		case INTARRAY:
 			hashCodeBuilder.append(v.getIntArray());
-		}
-		else if(attClass == AttClass.DOUBLEARRAY){
+			break;
+		case DOUBLEARRAY:
 			hashCodeBuilder.append(v.getDoubleArray());
-		}
-		else if(attClass == AttClass.STRING){
+			break;
+		case STRING:
 			hashCodeBuilder.append(v.getStringVal());
-		}
-		else if(attClass == AttClass.RELATIONAL){
+			break;
+		case RELATIONAL:
 			if(identifierIndependent){
 				throw new RuntimeException("SimpleHashableStateFactory is set to be identifier independent, but attribute " + v.attName() + " is " +
 						"relational which require identifier dependence. Instead, set SimpleHashableStateFactory to be idenitifer dependent.");
@@ -175,6 +181,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 			for(String t : targets){
 				hashCodeBuilder.append(t);
 			}
+			break;
 		}
 	}
 
@@ -226,7 +233,10 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @return true if s1 = s2; false otherwise
 	 */
 	protected boolean identifierIndependentEquals(State s1, State s2){
-
+		if (s1 == s2) {
+			return true;
+		}
+		
 		if(s1.numTotalObjects() != s2.numTotalObjects()){
 			return false;
 		}
@@ -272,7 +282,9 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @return true if s1 = s2; false otherwise
 	 */
 	protected boolean identifierDependentEquals(State s1, State s2){
-
+		if (s1 == s2) {
+			return true;
+		}
 		if(s1.numTotalObjects() != s2.numTotalObjects()){
 			return false;
 		}
@@ -303,9 +315,19 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @return true if the values of o1 = o2; false otherwise.
 	 */
 	protected boolean objectValuesEqual(ObjectInstance o1, ObjectInstance o2){
-		for(Value v : o1.getValues()){
-			Value ov = o2.getValueForAttribute(v.attName());
-			if(!valuesEqual(v, ov)){
+		if (o1 == o2) {
+			return true;
+		}
+		
+		if (o1.getObjectClass() != o2.getObjectClass()) {
+			return false;
+		}
+		
+		List<Value> values1 = o1.getValues();
+		List<Value> values2 = o2.getValues();
+		
+		for (int i = 0; i < values1.size(); i++) {
+			if (!valuesEqual(values1.get(i), values2.get(i))) {
 				return false;
 			}
 		}
