@@ -506,8 +506,11 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 	 * @return the list of observable and hidden object instances in this state.
 	 */
 	public List <ObjectInstance> getAllObjects(){
-		//return objectInstances;
-		return new ArrayList <ObjectInstance>(objectInstances);
+		return new ArrayList<ObjectInstance>(this.objectInstances);
+	}
+	
+	public ImmutableList<ImmutableObjectInstance> getImmutableObjects() {
+		return this.objectInstances;
 	}
 	
 	/**

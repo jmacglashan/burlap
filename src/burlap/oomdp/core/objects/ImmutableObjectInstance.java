@@ -29,7 +29,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	private final String						name;				//name of the object for disambiguation
 	private final ImmutableList <Value>			values;				//the values for each attribute
 	private final int							hashCode;
-	
+	private final boolean 						identifierIndependent;
 	
 	/**
 	 * Initializes an object instance for a given object class and name. 
@@ -42,6 +42,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		this.name = name;
 		this.values = ImmutableList.copyOf(this.initializeValueObjects());
 		this.hashCode = 0;
+		this.identifierIndependent = false;
 	}
 	
 	/**
@@ -53,23 +54,26 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		
 		this.obClass = o.getObjectClass();
 		this.name = o.getName();
-		
 		if (o instanceof ImmutableObjectInstance) {
 			ImmutableObjectInstance immutable = (ImmutableObjectInstance)o;
 			this.hashCode = immutable.hashCode;
 			this.values = immutable.values;
+			this.identifierIndependent = immutable.identifierIndependent; 
+					
 		} else {
 			this.hashCode = 0;
 			this.values = ImmutableList.copyOf(o.getValues());
+			this.identifierIndependent = false;
 		}
 			
 	}
 	
-	public ImmutableObjectInstance(ObjectClass obClass, String name, ImmutableList<Value> newValues, int hashCode) {
+	public ImmutableObjectInstance(ObjectClass obClass, String name, ImmutableList<Value> newValues, int hashCode, boolean identifierIndependent) {
 		this.obClass = obClass;
 		this.name = name;
 		this.values = newValues;
 		this.hashCode = hashCode;
+		this.identifierIndependent = identifierIndependent;
 	}
 	
 	
@@ -78,6 +82,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		this.name = name;
 		this.values = objectInstance.values;
 		this.hashCode = 0;
+		this.identifierIndependent = objectInstance.identifierIndependent;
 	}
 
 	/**
@@ -88,8 +93,8 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		return new ImmutableObjectInstance(this);
 	}
 	
-	private static ImmutableObjectInstance construct(ObjectClass obClass, String name, List<Value> values) {
-		return new ImmutableObjectInstance(obClass, name, ImmutableList.copyOf(values), 0);
+	private static ImmutableObjectInstance construct(ObjectClass obClass, String name, List<Value> values, boolean identifierIndependent) {
+		return new ImmutableObjectInstance(obClass, name, ImmutableList.copyOf(values), 0, identifierIndependent);
 	}
 	
 	/**
@@ -109,11 +114,11 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	 * @param name the name for this object instance.
 	 */
 	public ImmutableObjectInstance setName(String name){
-		return ImmutableObjectInstance.construct(this.obClass, name, this.values);
+		return ImmutableObjectInstance.construct(this.obClass, name, this.values, this.identifierIndependent);
 	}
 		
-	public ImmutableObjectInstance setHashCode(int code) {
-		return new ImmutableObjectInstance(this.obClass, name, this.values, code);
+	public ImmutableObjectInstance setHashCode(int code, boolean identifierIndependent) {
+		return new ImmutableObjectInstance(this.obClass, name, this.values, code, identifierIndependent);
 	}
 	
 	/**
@@ -126,7 +131,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 		
 	}
 	
@@ -140,7 +145,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	/**
@@ -152,7 +157,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		Value[] arry = this.values.toArray(new Value[this.values.size()]);
 		int ind = obClass.attributeIndex(attName);
 		arry[ind] = arry[ind].setValue(v);
-		return ImmutableObjectInstance.construct(obClass, name, ImmutableList.copyOf(arry));
+		return ImmutableObjectInstance.construct(obClass, name, ImmutableList.copyOf(arry), this.identifierIndependent);
 	}
 	
 	/**
@@ -165,7 +170,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	/**
@@ -178,7 +183,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	/**
@@ -191,7 +196,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.setValue(v));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	
@@ -206,7 +211,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.addRelationalTarget(target));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	/**
@@ -220,7 +225,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.addAllRelationalTargets(targets));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	/**
@@ -232,7 +237,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.clearRelationTargets());
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	/**
@@ -245,7 +250,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		int ind = obClass.attributeIndex(attName);
 		Value value = values.get(ind);
 		values.set(ind, value.removeRelationalTarget(target));
-		return ImmutableObjectInstance.construct(this.obClass, this.name, values);
+		return ImmutableObjectInstance.construct(this.obClass, this.name, values, this.identifierIndependent);
 	}
 	
 	
@@ -446,7 +451,7 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 	}
 	
 	
-	
+	@Override
 	public boolean equals(Object obj){
 		if (this == obj) {
 			return true;
@@ -455,8 +460,10 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 			return false;
 		}
 		ImmutableObjectInstance op = (ImmutableObjectInstance)obj;
-		if (!op.name.equals(name)) {
-			return false; 
+		if (!this.identifierIndependent) {
+			if (!op.name.equals(name)) {
+				return false; 
+			}
 		}
 		return this.valueEquals(op);
 	}
@@ -501,18 +508,6 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 		return this.hashCode;
 	}
 	
-//	public int hashCode(){
-//		//return name.hashCode();
-//		return this.hashTuple.hashCode();
-//	}
-//
-//	public ObjectHashTuple getHashTuple() {
-//		return this.hashTuple;
-//	}
-
-	
-	
-
 	@Override
 	public List<String> unsetAttributes() {
 		LinkedList<String> unsetAtts = new LinkedList<String>();

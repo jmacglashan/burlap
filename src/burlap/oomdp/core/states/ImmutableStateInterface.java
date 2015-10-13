@@ -19,5 +19,6 @@ public interface ImmutableStateInterface extends State, Iterable<ImmutableObject
 	ImmutableStateInterface replaceAndHash(ImmutableList<ImmutableObjectInstance> objects, int code);
 	ImmutableStateInterface replaceObject(ObjectInstance objectToReplace, ObjectInstance newObject);
 	ImmutableStateInterface replaceAllObjects(List<ImmutableObjectInstance> objectsToRemove, List<ImmutableObjectInstance> objectsToAdd);
-	
+	ImmutableList<ImmutableObjectInstance> getImmutableObjects();
+	boolean isHashed();
 }

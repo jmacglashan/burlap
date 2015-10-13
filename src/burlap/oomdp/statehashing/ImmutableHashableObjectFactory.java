@@ -16,8 +16,11 @@ import burlap.oomdp.core.values.Value;
  */
 public class ImmutableHashableObjectFactory implements HashableObjectFactory {
 	private final SimpleHashableStateFactory stateFactory;
-	public ImmutableHashableObjectFactory(SimpleHashableStateFactory stateFactory) {
+	private final boolean identifierIndependent;
+	
+	public ImmutableHashableObjectFactory(SimpleHashableStateFactory stateFactory, boolean identifierIndependent) {
 		this.stateFactory = stateFactory;
+		this.identifierIndependent = identifierIndependent;
 	}
 
 	@Override
@@ -30,7 +33,7 @@ public class ImmutableHashableObjectFactory implements HashableObjectFactory {
 		
 		if (!immObj.isHashed()) {
 			int code = ImmutableHashableObjectFactory.this.computeHashCode(object);
-			return new ImmutableHashableObject(immObj.setHashCode(code));
+			return new ImmutableHashableObject(immObj.setHashCode(code, identifierIndependent));
 		}
 		return new ImmutableHashableObject(immObj);
 	}

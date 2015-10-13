@@ -1,7 +1,9 @@
 package burlap.oomdp.statehashing;
 
+import gnu.trove.list.array.TIntArrayList;
+
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +16,7 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 /**
  * This Hashing factory works for states that implement the ImmutableStateInterface. It caches the value by default, and 
@@ -25,9 +28,59 @@ import com.google.common.collect.ImmutableList;
 public class ImmutableStateHashableStateFactory extends SimpleHashableStateFactory {
 	
 	protected final ImmutableHashableObjectFactory objectHashingFactory;
+	protected final Set<String> maskedObjectClasses;
+	protected final Set<String> maskedObjects;
+	
 	public ImmutableStateHashableStateFactory(boolean identifierIndependent) {
 		super(identifierIndependent, true);
-		this.objectHashingFactory = new ImmutableHashableObjectFactory(this);
+		this.objectHashingFactory = new ImmutableHashableObjectFactory(this, identifierIndependent);
+
+		this.maskedObjectClasses = new HashSet<String>();
+		this.maskedObjects = new HashSet<String>();
+	}
+	
+	/**
+	 * Sets all objects of the provided object class to not be hashed, or used in an equality comparison.
+	 * @param objectClassName
+	 */
+	public void setObjectClassMask(String ... objectClasses) {
+		this.setObjectClassMask(false, objectClasses);
+	}
+	
+	/**
+	 * Sets all masking value of the provided object classes.
+	 * A value of true, signifies an object will be included in hashing/equality testing
+	 * @param objectClassName
+	 */
+	public void setObjectClassMask(boolean value, String ...objectClassNames) {
+		List<String> list = Arrays.asList(objectClassNames);
+		if (value) {
+			this.maskedObjectClasses.removeAll(list);
+		} else {
+			this.maskedObjectClasses.addAll(list);
+		}
+	}
+	
+	/**
+	 * Sets all objects provided to not be hashed, or used in an equality comparison
+	 * @param objectNames
+	 */
+	public void setObjectMask(String ... objectNames) {
+		this.setObjectMask(false, objectNames);
+	}
+	
+	/**
+	 * Sets all masking value of the provided objects.
+	 * A value of true, signifies an object will be included in hashing/equality testing
+	 * @param objectClassName
+	 */
+	public void setObjectMask(boolean value, String ... objectNames) {
+		List<String> list = Arrays.asList(objectNames);
+		if (value) {
+			this.maskedObjects.removeAll(list);
+		} else {
+			this.maskedObjects.addAll(list);
+		}
 	}
 	
 	@Override
@@ -42,16 +95,19 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		
 		ImmutableStateInterface immState = (ImmutableStateInterface)s;
 		List<ImmutableObjectInstance> hashed = new ArrayList<ImmutableObjectInstance>(s.numTotalObjects());
-		List<Integer> hashes = new ArrayList<Integer>(s.numTotalObjects());
+		TIntArrayList hashes = new TIntArrayList(s.numTotalObjects());
 		
 		for (ObjectInstance obj : immState){ 
 			ObjectInstance hashedObj = this.objectHashingFactory.hashObject(obj);
 			hashed.add(((ImmutableHashableObject)hashedObj).getObjectInstance());
-			hashes.add(hashedObj.hashCode());
+			if (!this.maskedObjectClasses.contains(obj.getClassName()) &&
+					!this.maskedObjects.contains(obj.getName())) {
+				hashes.add(hashedObj.hashCode());
+			}
 		}
 		
 		ImmutableList<ImmutableObjectInstance> immList = ImmutableList.copyOf(hashed);
-		Collections.sort(hashes);
+		hashes.sort();
 		return new ImmutableHashableState(immState.replaceAndHash(immList, hashes.hashCode()));
 	}
 	
@@ -61,75 +117,8 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		return this.hashState(s).hashCode();
 	}
 	
-	/**
-	 * Evaluates whether two states are equal when equality is independent of object identifiers/names being equal
-	 * @param s1 the first {@link State} to compare
-	 * @param s2 the second {@link State} to compare
-	 * @return true if s1 = s2; false otherwise
-	 */
 	@Override
-	protected boolean identifierIndependentEquals(State s1, State s2){
-
-		if(s1.numTotalObjects() != s2.numTotalObjects()){
-			return false;
-		}
-
-		Set<String> matchedObjects = new HashSet<String>();
-		List<List<ObjectInstance>> allObjects1 = s1.getAllObjectsByClass();
-		List<List<ObjectInstance>> allObjects2 = s2.getAllObjectsByClass();
-		
-		if (allObjects1.size() != allObjects2.size()) {
-			return false;
-		}
-		for (int i = 0; i < allObjects1.size(); ++i) {
-			List<ObjectInstance> objects1 = allObjects1.get(i);
-			if (objects1.size() == 0) {
-				continue;
-			}
-			
-			String className1 = objects1.get(0).getClassName();
-			
-			List<ObjectInstance> objects2 = allObjects2.get(i);
-			if (objects2.size() == 0 || className1.equals(objects2.get(0).getClassName())) {
-				objects2 = s2.getObjectsOfClass(className1);
-			}
-			
-			if (objects1.size() != objects2.size()) {
-				return false;
-			}
-			
-			for(ObjectInstance o : objects1){
-				boolean foundMatch = false;
-				for(ObjectInstance oo : objects2){
-					String ooname = oo.getName();
-					if(matchedObjects.contains(ooname)){
-						continue;
-					}
-					if(objectValuesEqual(o, oo)){
-						foundMatch = true;
-						matchedObjects.add(ooname);
-						break;
-					}
-				}
-				if(!foundMatch){
-					return false;
-				}
-			}
-			
-		}
-
-		return true;
-
-	}
-
-	/**
-	 * Evaluates whether two states are equal when equality depends on object identifiers/names being equal.
-	 * @param s1 the first {@link State} to compare
-	 * @param s2 the second {@link State} to compare
-	 * @return true if s1 = s2; false otherwise
-	 */
-	@Override
-	protected boolean identifierDependentEquals(State s1, State s2){
+	protected boolean statesEqual(State s1, State s2) {
 		int size1 = s1.numTotalObjects();
 		if(size1 != s2.numTotalObjects()){
 			return false;
@@ -137,40 +126,46 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		
 		ImmutableStateInterface iS1 = this.getImmutableState(s1);
 		ImmutableStateInterface iS2 = this.getImmutableState(s2);
-		return this.identifierDependentEquals(iS1, iS2);
-	}
-
-	protected boolean identifierDependentEquals(ImmutableStateInterface s1, ImmutableStateInterface s2){
-		Iterator<ImmutableObjectInstance> it1 = s1.iterator();
-		Iterator<ImmutableObjectInstance> it2 = s2.iterator();
 		
-		while (it1.hasNext()) {
-			ImmutableObjectInstance ob1 = it1.next();
-			ImmutableObjectInstance ob2 = it2.next();
-			
-			if (ob1 == ob2) {
-				continue;
-			}
-			
-			String name = ob1.getName();
-			
-			if (!name.equals(ob2.getName())) {
-				ObjectInstance obj = s2.getObject(name);
-				if (obj == null) {
-					return false;
-				}
-				ob2 = (ImmutableObjectInstance)obj;
-				
-			}
-			if (!this.objectHashingFactory.objectValuesEqual(ob1, ob2)){
-				return false;
-			}
+		if (!iS1.isHashed() || !iS2.isHashed()) {
+			throw new RuntimeException("These states should be hashed this equality comparison");
 		}
-
-		return true;
+		
+		Set<ObjectInstance> set1 = this.prepareSet(iS1);
+		Set<ObjectInstance> set2 = this.prepareSet(iS2);
+		return set1.equals(set2);
 	}
 	
-	private ImmutableStateInterface getImmutableState(State s) {
+	protected Set<ObjectInstance> prepareSet(ImmutableStateInterface s) {
+		if (this.maskedObjectClasses.isEmpty() && this.maskedObjects.isEmpty()) {
+			return new HashSet<ObjectInstance>(s.getImmutableObjects());
+		}
+		Set<ObjectInstance> set = new HashSet<ObjectInstance>(s.numTotalObjects() * 2);
+		
+		if (this.maskedObjects.isEmpty()) {
+			List<List<ObjectInstance>> objectsByClass = s.getAllObjectsByClass();
+			for (List<ObjectInstance> objects : objectsByClass) {
+				if (objects.isEmpty()) {
+					continue;
+				}
+				String obClass = objects.get(0).getClassName();
+				if (this.maskedObjectClasses.contains(obClass)) {
+					continue;
+				}
+				set.addAll(objects);	
+			}
+		}
+		
+		for (ImmutableObjectInstance obj : s) {
+			if (!this.maskedObjectClasses.contains(obj.getClassName()) &&
+					!this.maskedObjects.contains(obj.getName())) {
+				set.add(obj);
+			}
+		}
+		return set;
+	}
+	
+	protected ImmutableStateInterface getImmutableState(State s) {
 		if (s instanceof ImmutableHashableState) {
 			return ((ImmutableHashableState)s).getImmutableState();
 		} else if (s instanceof ImmutableStateInterface) {
@@ -205,8 +200,10 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 			}
 			
 			ImmutableHashableState other = (ImmutableHashableState)obj;
-			return other.hashCode() == this.hashCode() && 
-					ImmutableStateHashableStateFactory.this.statesEqual(this.s, other.s);
+			if (other.hashCode() != this.hashCode()) {
+				return false;
+			}
+			return ImmutableStateHashableStateFactory.this.statesEqual(this.s, other.s);
 		}
 
 		@Override

@@ -483,6 +483,10 @@ public final class FixedSizeImmutableState extends OOMDPState implements Immutab
 		return new ArrayList <ObjectInstance>(objectInstances);
 	}
 	
+	public ImmutableList<ImmutableObjectInstance> getImmutableObjects() {
+		return this.objectInstances;
+	}
+	
 	/**
 	 * Returns all objects that belong to the object class named oclass
 	 * @param oclass the name of the object class for which objects should be returned
