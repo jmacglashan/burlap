@@ -57,16 +57,6 @@ public final class FixedSizeImmutableState extends OOMDPState implements Immutab
 	private final int												hashCode;
 	
 	
-	public FixedSizeImmutableState(){
-		this.objectInstances = ImmutableList.copyOf(new ArrayList<ImmutableObjectInstance>());
-		this.objectIndexByTrueClass = ImmutableList.copyOf(new ArrayList<TIntArrayList>());
-		this.objectClassMap = new TObjectIntHashMap<String>();
-		this.objectMap = new TObjectIntHashMap<String>();
-		this.numObservableObjects = 0;
-		this.hashCode = 0;
-	}
-	
-	
 	/**
 	 * Constructs an immutable copy from any state object. All underlying lists are also copied so changes
 	 * to the original state are not reflected in this copy.
@@ -99,36 +89,12 @@ public final class FixedSizeImmutableState extends OOMDPState implements Immutab
 		this.hashCode = 0;
 	}
 	
-	public FixedSizeImmutableState(ImmutableList<ImmutableObjectInstance> objects, TObjectIntHashMap<String> objectClassMap) {
-		int size = 2 * (objects.size());
-		TObjectIntHashMap<String> objectMap = new TObjectIntHashMap<String>(size, 0.5f, -1);
-		objectClassMap = new TObjectIntHashMap<String>(objectClassMap);
-		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(objects, objectMap, 0);
-		
-		this.objectInstances = ImmutableList.copyOf(objectInstances);
-		
-		this.numObservableObjects = this.objectInstances.size();
-		
-		int numberClasses = objectClassMap.size();
-		List<TIntArrayList> objectIndexByTrueClass = new ArrayList<TIntArrayList>(numberClasses);
-		size = objects.size();
-		for (int i = 0 ; i < numberClasses; i++) {
-			objectIndexByTrueClass.add(new TIntArrayList(size));
-		}
-		
-		this.addObjectListToList(this.objectInstances, this.numObservableObjects, numberClasses, objectIndexByTrueClass, objectClassMap);
-		this.objectIndexByTrueClass = ImmutableList.copyOf(objectIndexByTrueClass);//Collections.unmodifiableList();
-		this.objectClassMap = objectClassMap;//Collections.unmodifiableMap();
-		this.objectMap = objectMap;//Collections.unmodifiableMap();
-		this.hashCode = 0;
-	}
-	
 	public FixedSizeImmutableState(ImmutableList<ImmutableObjectInstance> objects, TObjectIntHashMap<String> objectClassMap, ImmutableList<TIntArrayList> objectIndexByTrueClass, TObjectIntHashMap <String> objectMap, int hashCode) {
 		this.objectInstances = objects;
 		this.numObservableObjects = this.objectInstances.size();
 		this.objectIndexByTrueClass = objectIndexByTrueClass;
-		this.objectClassMap = objectClassMap;//Collections.unmodifiableMap();
-		this.objectMap = objectMap;// Collections.unmodifiableMap();	
+		this.objectClassMap = objectClassMap;
+		this.objectMap = objectMap;
 		this.hashCode = hashCode;
 	}
 
