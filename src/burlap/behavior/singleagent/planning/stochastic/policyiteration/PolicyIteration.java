@@ -54,7 +54,17 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * Indicates whether the reachable states has been computed yet.
 	 */
 	protected boolean												foundReachableStates = false;
-	
+
+
+	/**
+	 * The total number of policy iterations performed
+	 */
+	protected int													totalPolicyIterations = 0;
+
+	/**
+	 * The total number of value iterations used to evaluated policies performed
+	 */
+	protected int													totalValueIterations = 0;
 	
 	
 	/**
@@ -131,6 +141,21 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	}
 
 
+	/**
+	 * Returns the total number of policy iterations that have been performed.
+	 * @return the total number of policy iterations that have been performed.
+	 */
+	public int getTotalPolicyIterations() {
+		return totalPolicyIterations;
+	}
+
+	/**
+	 * Returns the total number of value iterations used to evaluate policies.
+	 * @return the total number of value iterations used to evaluate policies.
+	 */
+	public int getTotalValueIterations() {
+		return totalValueIterations;
+	}
 
 	/**
 	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
@@ -155,6 +180,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		}
 
 		DPrint.cl(this.debugCode, "Total policy iterations: " + iterations);
+		this.totalPolicyIterations += iterations;
 
 		return (GreedyQPolicy)this.evaluativePolicy;
 
@@ -165,6 +191,8 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	public void resetSolver(){
 		super.resetSolver();
 		this.foundReachableStates = false;
+		this.totalValueIterations = 0;
+		this.totalPolicyIterations = 0;
 	}
 	
 	/**
@@ -203,6 +231,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		}
 		
 		DPrint.cl(this.debugCode, "Iterations in inner VI for policy eval: " + i);
+		this.totalValueIterations += i;
 		
 		return maxChangeInPolicyEvaluation;
 		
