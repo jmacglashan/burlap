@@ -6,16 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
 
 
 /**
@@ -85,7 +85,6 @@ public class StateReachability {
 	 */
 	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
 		
-		
 		Set<HashableState> hashedStates = new HashSet<HashableState>();
 		HashableState shi = usingHashFactory.hashState(from);
 		List <Action> actions = inDomain.getActions();
@@ -94,29 +93,33 @@ public class StateReachability {
 		LinkedList <HashableState> openList = new LinkedList<HashableState>();
 		openList.offer(shi);
 		hashedStates.add(shi);
+		long firstTime = System.currentTimeMillis();
+		long lastTime = firstTime;
 		while(openList.size() > 0){
 			HashableState sh = openList.poll();
-			
-			
 			if(tf.isTerminal(sh.s)){
 				continue; //don't expand
 			}
 			
-			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
 			for(GroundedAction ga : gas){
 				List <TransitionProbability> tps = ga.getTransitions(sh.s);
+				nGenerated += tps.size();
 				for(TransitionProbability tp : tps){
 					HashableState nsh = usingHashFactory.hashState(tp.s);
-					nGenerated++;
-					if(!hashedStates.contains(nsh)){
+					
+					if (hashedStates.add(nsh)) {
 						openList.offer(nsh);
-						hashedStates.add(nsh);
 					}
 				}
-				
 			}
 			
+			long currentTime = System.currentTimeMillis();
+			if (currentTime - 1000 >= lastTime) {
+				DPrint.cl(debugID, "Num generated: " + (nGenerated) + " Unique: " + (hashedStates.size()) + 
+						" time: " + ((double)currentTime - firstTime)/1000.0);				
+				lastTime = currentTime;
+			}
 		}
 		
 		DPrint.cl(debugID, "Num generated: " + nGenerated + "; num unique: " + hashedStates.size());

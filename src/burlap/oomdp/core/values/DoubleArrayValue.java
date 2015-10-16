@@ -117,6 +117,9 @@ public class DoubleArrayValue extends OOMDPValue{
 	
 	@Override
 	public boolean equals(Object obj){
+		if (this == obj) {
+			return true;
+		}
 		if(!(obj instanceof DoubleArrayValue)){
 			return false;
 		}

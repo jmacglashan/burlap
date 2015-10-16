@@ -108,6 +108,9 @@ public class IntArrayValue extends OOMDPValue implements Value {
 	
 	@Override
 	public boolean equals(Object obj){
+		if (this == obj) {
+			return true;
+		}
 		if(!(obj instanceof IntArrayValue)){
 			return false;
 		}

@@ -2,18 +2,18 @@ package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.values.Value;
 
-public class ValueHashTuple {
-	private final ValueHashFactory hashingFactory;
+public class HashableValue {
+	private final HashableValueFactory hashingFactory;
 	private final Value value;
 	private final int hashCode;
 	
-	public ValueHashTuple(Value value, ValueHashFactory hashingFactory, int hashCode) {
+	public HashableValue(Value value, HashableValueFactory hashingFactory, int hashCode) {
 		this.value = value;
 		this.hashingFactory = hashingFactory;
 		this.hashCode = hashCode;
 	}
 	
-	public ValueHashFactory getHashFactory() {
+	public HashableValueFactory getHashFactory() {
 		return this.hashingFactory;
 	}
 	

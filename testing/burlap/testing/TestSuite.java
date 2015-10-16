@@ -9,6 +9,7 @@ import org.junit.runners.Suite;
 	TestGridWorld.class,
 	TestPlanning.class,
 	TestBlockDude.class,
+	TestImmutableState.class,
 	TestHashing.class
 })
 public class TestSuite {
