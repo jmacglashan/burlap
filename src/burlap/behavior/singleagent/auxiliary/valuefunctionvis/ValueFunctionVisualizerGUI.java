@@ -18,7 +18,9 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValueP
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.stochasticgames.gridgame.GridGame;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.values.Value;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
 
 
@@ -127,22 +129,46 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	
 	public static ValueFunctionVisualizerGUI createGridGameSingleAgentVFVisualizerGUI(List <State> states, ValueFunction valueFunction, Policy p){
 		
+		int minX = Integer.MAX_VALUE, maxX = -1, minY = Integer.MAX_VALUE, maxY = -1;
+		for (State state : states) {
+			
+			for (ObjectInstance obj : state.getAllObjects()) {
+				try {
+					Value x = obj.getValueForAttribute(GridGame.ATTX);
+					Value y = obj.getValueForAttribute(GridGame.ATTY);
+					if (x.getDiscVal() < minX) {
+						minX = x.getDiscVal();
+					} else if (x.getDiscVal() > maxX) {
+						maxX = x.getDiscVal();
+					}
+					if (y.getDiscVal() < minY) {
+						minY = y.getDiscVal();
+					} else if (y.getDiscVal() > maxY) {
+						maxY = y.getDiscVal();
+					}
+				} catch(Exception e) { }
+			}
+		}
 	
-	StateValuePainter2D svp = new StateValuePainter2D();
-	svp.setXYAttByObjectClass(GridGame.CLASSAGENT, GridGame.ATTX, GridGame.CLASSAGENT, GridGame.ATTY);
-	
-	PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(GridGame.CLASSAGENT, GridGame.ATTX, GridGame.ATTY,
-	GridGame.ACTIONNORTH, GridGame.ACTIONSOUTH, GridGame.ACTIONEAST, GridGame.ACTIONWEST);
-	
-	ValueFunctionVisualizerGUI gui = new ValueFunctionVisualizerGUI(states, svp, valueFunction);
-	gui.setSpp(spp);
-	gui.setPolicy(p);
-	gui.setBgColor(Color.GRAY);
-	
-	
-	return gui;
+		StateValuePainter2D svp = new StateValuePainter2D();
+		svp.setNumXCells(maxX+1);
+		svp.setNumYCells(maxY+1);
+		
+		svp.setXYAttByObjectClass(GridGame.CLASSAGENT, GridGame.ATTX, GridGame.CLASSAGENT, GridGame.ATTY);
+		
+		PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(GridGame.CLASSAGENT, GridGame.ATTX, GridGame.ATTY,
+		GridGame.ACTIONNORTH, GridGame.ACTIONSOUTH, GridGame.ACTIONEAST, GridGame.ACTIONWEST);
+		spp.setNumXCells(maxX);
+		spp.setNumYCells(maxY);
+		ValueFunctionVisualizerGUI gui = new ValueFunctionVisualizerGUI(states, svp, valueFunction);
+		gui.setSpp(spp);
+		gui.setPolicy(p);
+		gui.setBgColor(Color.GRAY);
+		
+		
+		return gui;
 
-}
+	}
 
 
 

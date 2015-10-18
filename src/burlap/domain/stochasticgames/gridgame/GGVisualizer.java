@@ -25,14 +25,14 @@ import burlap.oomdp.visualizer.Visualizer;
  *
  */
 public class GGVisualizer {
-	public static final List<Color> agentColors = Arrays.asList(Color.green, Color.blue, Color.magenta, Color.orange);
-	public static final List<String> agentColorNames = Arrays.asList("green", "blue", "magenta", "orange");
+	public static final List<Color> agentColors = Arrays.asList(Color.orange, Color.blue, Color.magenta, Color.green);
+	public static final List<String> agentColorNames = Arrays.asList("orange", "blue", "magenta", "green");
 	public static final List<Color> goalColors = 
 			Arrays.asList(Color.gray, 
-					Color.green.darker().darker(), 
-					Color.blue.darker().darker(), 
+					Color.orange,
+					Color.blue, 
 					Color.magenta.darker().darker(), 
-					Color.orange.darker().darker());
+					Color.green.darker().darker());
 	
 	
 	/**
@@ -126,7 +126,7 @@ public class GGVisualizer {
 				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 			}
 			else if(shape == 1){
-				g2.fill(new Ellipse2D.Float(rx, ry, width, height));
+				g2.fill(new Ellipse2D.Float(rx + 0.1f * width, ry + 0.1f * height, 0.8f * width, 0.8f * height));
 			}
 			
 		}

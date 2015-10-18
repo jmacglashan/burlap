@@ -90,8 +90,13 @@ public class PolicyRenderLayer implements RenderLayer{
 			return;
 		}
 		
+		int count = 0;
 		for(State s : this.statesToVisualize){
+			count++;
 			this.spp.paintStatePolicy(g2, s, policy, width, height);
+			if (count > 10) {
+				break;
+			}
 		}
 		
 	}
