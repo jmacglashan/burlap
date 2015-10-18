@@ -1,13 +1,5 @@
 package burlap.behavior.singleagent.vfa.cmac;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import javax.management.RuntimeErrorException;
-
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
@@ -19,6 +11,9 @@ import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
+
+import javax.management.RuntimeErrorException;
+import java.util.*;
 
 
 
@@ -127,8 +122,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	 * The identifier to use for the next state feature.
 	 */
 	protected int													nextStateFeatureId = 0;
-	
-	
+
 	
 	
 	/**
@@ -141,7 +135,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	 * @param arrangement either RANDOMJITTER or UNIFORM.
 	 */
 	public CMACFeatureDatabase(int nTilings, TilingArrangement arrangement) {
-		
+
 		this.nTilings = nTilings;
 		this.arrangement = arrangement;
 		
@@ -294,7 +288,45 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	public int numberOfFeatures() {
 		return Math.max(this.nextActionFeatureId, this.nextStateFeatureId);
 	}
-	
+
+
+	@Override
+	public CMACFeatureDatabase copy() {
+		CMACFeatureDatabase cmac = new CMACFeatureDatabase(this.nTilings, this.arrangement);
+		cmac.rand = this.rand;
+		List<Tiling> newTilings = new ArrayList<Tiling>(this.tilings.size());
+		for(Tiling tiling : this.tilings){
+			Tiling nTiling = tiling.copy();
+			newTilings.add(nTiling);
+
+		}
+		cmac.tilings = newTilings;
+		cmac.actionTilings = new ArrayList<Map<StateTile, StoredFeaturesForTiling>>(this.actionTilings.size());
+		for(Map<StateTile, StoredFeaturesForTiling> el : this.actionTilings){
+			Map<StateTile, StoredFeaturesForTiling> nel = new HashMap<StateTile, StoredFeaturesForTiling>(el.size());
+			for(Map.Entry<StateTile, StoredFeaturesForTiling> e : el.entrySet()){
+				StoredFeaturesForTiling ev = e.getValue();
+				StoredFeaturesForTiling nev = cmac.new StoredFeaturesForTiling(e.getKey());
+				nev.storedStateTile = e.getKey();
+				nev.storedActionFeatures = new ArrayList<StoredActionFeature>(ev.storedActionFeatures);
+				nel.put(e.getKey(), nev);
+			}
+			cmac.actionTilings.add(nel);
+		}
+
+		cmac.stateTilings = new ArrayList<Map<StateTile, Integer>>(this.stateTilings.size());
+		for(Map<StateTile, Integer> el : this.stateTilings){
+			Map<StateTile, Integer> nel = new HashMap<StateTile, Integer>(el);
+			cmac.stateTilings.add(nel);
+		}
+
+		cmac.nextActionFeatureId = this.nextActionFeatureId;
+		cmac.nextStateFeatureId = this.nextStateFeatureId;
+
+		return cmac;
+	}
+
+
 	/**
 	 * A class that is used to assign unique feature identifiers for each action for each state tile.
 	 * @author James MacGlashan
@@ -417,6 +449,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	}
 
 
-	
+
+
 
 }

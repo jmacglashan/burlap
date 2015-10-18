@@ -1,17 +1,16 @@
 package burlap.behavior.policy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.management.RuntimeErrorException;
-
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.singleagent.GroundedAction;
+
+import javax.management.RuntimeErrorException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -77,12 +76,8 @@ public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
 		double [] probs = bd.getProbabilities();
 		for(int i = 0; i < qValues.size(); i++){
 			QValue q = qValues.get(i);
-			ActionProb ap;
-			if (q.a instanceof GroundedAction) {
-				ap = new ActionProb(((GroundedAction)q.a).translateParameters(q.s, queryState), probs[i]);
-			} else {
-				ap = new ActionProb(q.a, probs[i]);
-			}
+			AbstractGroundedAction translated = AbstractObjectParameterizedGroundedAction.Helper.translateParameters(q.a, q.s, queryState);
+			ActionProb ap = new ActionProb(translated, probs[i]);
 			res.add(ap);
 		}
 		

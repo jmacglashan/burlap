@@ -1,6 +1,7 @@
 package burlap.oomdp.stochasticgames.agentactions;
 
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.states.State;
 
 
 /**
@@ -62,6 +63,14 @@ public abstract class GroundedSGAgentAction implements AbstractGroundedAction {
 	}
 
 
+	/**
+	 * Returns whether this action is applicable (satisfies the preconditions) in the given input {@link burlap.oomdp.core.states.State}
+	 * @param s the input state to check against
+	 * @return true if this action is applicable (satisfies the preconditions) in the given input {@link burlap.oomdp.core.states.State}; false otherwise
+	 */
+	public boolean applicableInState(State s){
+		return this.action.applicableInState(s, this);
+	}
 
 
 	/**

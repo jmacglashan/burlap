@@ -1,10 +1,5 @@
 package burlap.behavior.singleagent.vfa.rbf;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
@@ -13,6 +8,11 @@ import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -186,4 +186,14 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 		return this.nRbfs*this.nextActionMultiplier;
 	}
 
+	@Override
+	public RBFFeatureDatabase copy() {
+		RBFFeatureDatabase rbf = new RBFFeatureDatabase(this.hasOffset);
+		rbf.rbfs = new ArrayList<RBF>(this.rbfs);
+		rbf.nRbfs = this.nRbfs;
+		rbf.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);
+		rbf.nextActionMultiplier = this.nextActionMultiplier;
+
+		return rbf;
+	}
 }

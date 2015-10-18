@@ -1,21 +1,13 @@
 package burlap.behavior.singleagent.vfa.cmac;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.behavior.singleagent.vfa.StateFeature;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.*;
 import burlap.behavior.singleagent.vfa.cmac.CMACFeatureDatabase.TilingArrangement;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
+
+import java.util.*;
 
 
 /**
@@ -80,9 +72,34 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * The identifier to use for the next state feature.
 	 */
 	protected int														nextStateFeatureId = 0;
-	
-	
-	
+
+
+	@Override
+	public FVCMACFeatureDatabase copy() {
+		FVCMACFeatureDatabase cmac = new FVCMACFeatureDatabase(this.featureVectorGenerator);
+		cmac.rand = this.rand;
+		cmac.tilings = new ArrayList<FVTiling>(this.tilings);
+
+		cmac.stateFeatures = new ArrayList<Map<FVTiling.FVTile, Integer>>(this.stateFeatures.size());
+		for(Map<FVTiling.FVTile, Integer> el : this.stateFeatures){
+			Map<FVTiling.FVTile, Integer> nel = new HashMap<FVTiling.FVTile, Integer>(el);
+			cmac.stateFeatures.add(nel);
+		}
+
+		cmac.stateActionFeatures = new ArrayList<Map<FVTiling.FVTile, List<ActionFeatureID>>>(this.stateActionFeatures.size());
+		for(Map<FVTiling.FVTile, List<ActionFeatureID>> el : this.stateActionFeatures){
+			Map<FVTiling.FVTile, List<ActionFeatureID>> nel = new HashMap<FVTiling.FVTile, List<ActionFeatureID>>(el.size());
+			for(Map.Entry<FVTiling.FVTile, List<ActionFeatureID>> e : el.entrySet()){
+				nel.put(e.getKey(), new ArrayList<ActionFeatureID>(e.getValue()));
+			}
+			cmac.stateActionFeatures.add(nel);
+		}
+		cmac.nextActionFeatureId = this.nextActionFeatureId;
+		cmac.nextStateFeatureId = this.nextStateFeatureId;
+
+		return cmac;
+	}
+
 	/**
 	 * Initializes specifying the kind of state feature vector generator to use for turning OO-MDP states into feature vectors.
 	 * The resulting feature vectors are what is tiled by this class.

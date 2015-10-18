@@ -154,6 +154,10 @@ public abstract class HashableState implements State{
 	public List<List<String>> getPossibleBindingsGivenParamOrderGroups(String[] paramClasses, String[] paramOrderGroups) {
 		return s.getPossibleBindingsGivenParamOrderGroups(paramClasses, paramOrderGroups);
 	}
+	
+	public <T> State setObjectsValue(String objectName, String attName, T value) {
+		return s.setObjectsValue(objectName, attName, value);
+	}
 
 	/**
 	 * A hash code cached abstract implementation of {@link HashableState}.

@@ -96,7 +96,9 @@ public class RealValue extends OOMDPValue implements Value {
 	
 	@Override
 	public boolean equals(Object obj){
-		
+		if (this == obj) {
+			return true;
+		}
 		if(!(obj instanceof RealValue)){
 			return false;
 		}

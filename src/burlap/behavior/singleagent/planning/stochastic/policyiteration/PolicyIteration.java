@@ -1,25 +1,24 @@
 package burlap.behavior.singleagent.planning.stochastic.policyiteration;
 
+import burlap.behavior.policy.GreedyDeterministicQPolicy;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
+import burlap.debugtools.DPrint;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
-import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
-import burlap.behavior.policy.SolverDerivedPolicy;
-import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.policy.GreedyDeterministicQPolicy;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.RewardFunction;
 
 public class PolicyIteration extends DynamicProgramming implements Planner {
 
@@ -48,14 +47,24 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	/**
 	 * The current policy to be evaluated
 	 */
-	protected SolverDerivedPolicy evaluativePolicy;
+	protected Policy 												evaluativePolicy;
 	
 	
 	/**
 	 * Indicates whether the reachable states has been computed yet.
 	 */
 	protected boolean												foundReachableStates = false;
-	
+
+
+	/**
+	 * The total number of policy iterations performed
+	 */
+	protected int													totalPolicyIterations = 0;
+
+	/**
+	 * The total number of value iterations used to evaluated policies performed
+	 */
+	protected int													totalValueIterations = 0;
 	
 	
 	/**
@@ -66,7 +75,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param maxDelta when the maximum change in the value function is smaller than this value, policy evaluation will terminate. Similarly, when the maximum value value function change between policy iterations is smaller than this value planning will terminate.
-	 * @param maxEvaluationIterations when the number of policy evaluation iterations exceeds this value, policy evaluation will terminate.
+	 * @param maxEvaluationIterations when the number iterations of value iteration used to evaluate a policy exceeds this value, policy evaluation will terminate.
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
 	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxEvaluationIterations, int maxPolicyIterations){
@@ -77,7 +86,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		this.maxIterations = maxEvaluationIterations;
 		this.maxPolicyIterations = maxPolicyIterations;
 		
-		this.evaluativePolicy = new GreedyDeterministicQPolicy(this);
+		this.evaluativePolicy = new GreedyDeterministicQPolicy(this.getCopyOfValueFunction());
 	}
 	
 	
@@ -90,7 +99,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @param hashingFactory the state hashing factor to use
 	 * @param maxPIDelta when the maximum value value function change between policy iterations is smaller than this value planning will terminate.
 	 * @param maxEvalDelta when the maximum change in the value function is smaller than this value, policy evaluation will terminate.
-	 * @param maxEvaluationIterations when the number of policy evaluation iterations exceeds this value, policy evaluation will terminate.
+	 * @param maxEvaluationIterations when the number iterations of value iteration used to evaluate a policy exceeds this value, policy evaluation will terminate.
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
 	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxPIDelta, double maxEvalDelta, int maxEvaluationIterations, int maxPolicyIterations){
@@ -101,25 +110,26 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		this.maxIterations = maxEvaluationIterations;
 		this.maxPolicyIterations = maxPolicyIterations;
 		
-		this.evaluativePolicy = new GreedyDeterministicQPolicy(this);
+		this.evaluativePolicy = new GreedyDeterministicQPolicy(this.getCopyOfValueFunction());
 	}
 	
 	
 	/**
-	 * Sets which kind of policy to use whenever the policy is updated. The default is a deterministic greedy policy ({@link burlap.behavior.policy.GreedyDeterministicQPolicy}.
-	 * @param p the policy to use when updating to the new evaluated value function.
+	 * Sets the initial policy that will be evaluated when planning with policy iteration begins. After the first policy iteration,
+	 * the evaluative policy will be {@link burlap.behavior.policy.GreedyQPolicy} on the function evaluation.
+	 * @param p the initial policy to evaluate when planning begins.
 	 */
-	public void setPolicyClassToEvaluate(SolverDerivedPolicy p){
+	public void setPolicyToEvaluate(Policy p){
 		this.evaluativePolicy = p;
 	}
 	
 	
 	/**
-	 * Returns the policy that was last computed.
+	 * Returns the policy that was last computed (or the initial policy if no planning has been performed).
 	 * @return the policy that was last computed.
 	 */
 	public Policy getComputedPolicy(){
-		return (Policy)this.evaluativePolicy;
+		return this.evaluativePolicy;
 	}
 	
 	/**
@@ -131,6 +141,21 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	}
 
 
+	/**
+	 * Returns the total number of policy iterations that have been performed.
+	 * @return the total number of policy iterations that have been performed.
+	 */
+	public int getTotalPolicyIterations() {
+		return totalPolicyIterations;
+	}
+
+	/**
+	 * Returns the total number of value iterations used to evaluate policies.
+	 * @return the total number of value iterations used to evaluate policies.
+	 */
+	public int getTotalValueIterations() {
+		return totalValueIterations;
+	}
 
 	/**
 	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
@@ -147,15 +172,17 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 			
 			double delta;
 			do{
-				DynamicProgramming lastValueFunction = this.getCopyOfValueFunction();
-				this.evaluativePolicy.setSolver(lastValueFunction);
 				delta = this.evaluatePolicy();
 				iterations++;
+				this.evaluativePolicy = new GreedyQPolicy(this.getCopyOfValueFunction());
 			}while(delta > this.maxPIDelta && iterations < maxPolicyIterations);
 			
 		}
 
-		return new GreedyQPolicy(this);
+		DPrint.cl(this.debugCode, "Total policy iterations: " + iterations);
+		this.totalPolicyIterations += iterations;
+
+		return (GreedyQPolicy)this.evaluativePolicy;
 
 	}
 	
@@ -164,6 +191,8 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	public void resetSolver(){
 		super.resetSolver();
 		this.foundReachableStates = false;
+		this.totalValueIterations = 0;
+		this.totalPolicyIterations = 0;
 	}
 	
 	/**
@@ -187,7 +216,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 			for(HashableState sh : states){
 				
 				double v = this.value(sh);
-				double maxQ = this.performFixedPolicyBellmanUpdateOn(sh, (Policy)this.evaluativePolicy);
+				double maxQ = this.performFixedPolicyBellmanUpdateOn(sh, this.evaluativePolicy);
 				delta = Math.max(Math.abs(maxQ - v), delta);
 				
 			}
@@ -195,12 +224,14 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 			maxChangeInPolicyEvaluation = Math.max(delta, maxChangeInPolicyEvaluation);
 			
 			if(delta < this.maxEvalDelta){
+				i++;
 				break; //approximated well enough; stop iterating
 			}
 			
 		}
 		
-		DPrint.cl(this.debugCode, "Policy Eval Passes: " + i);
+		DPrint.cl(this.debugCode, "Iterations in inner VI for policy eval: " + i);
+		this.totalValueIterations += i;
 		
 		return maxChangeInPolicyEvaluation;
 		
@@ -274,11 +305,6 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		return true;
 		
 	}
-	
-	
-	
-	
 
-	
 	
 }

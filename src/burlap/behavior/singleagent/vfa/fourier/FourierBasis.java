@@ -1,21 +1,17 @@
 package burlap.behavior.singleagent.vfa.fourier;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
-import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.behavior.singleagent.vfa.StateFeature;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.*;
 import burlap.behavior.singleagent.vfa.common.ConcatenatedObjectFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -75,10 +71,10 @@ public class FourierBasis implements FeatureDatabase {
 	 * The next action Fourier basis function size multiplier to use for the next newly seen action.
 	 */
 	protected int nextActionMultiplier = 0;
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Initializes. The coefficient vectors used by this Fourier Basis function will be generated lazily when the first features for an input state/state-action pair are queried.
 	 * The maximum number of non-zero coefficient entries in a coefficient vector will be set to the maixmum (the state variable dimensionality).
@@ -315,7 +311,17 @@ public class FourierBasis implements FeatureDatabase {
 		
 		return stored;
 	}
-	
+
+
+	@Override
+	public FourierBasis copy() {
+		FourierBasis fb = new FourierBasis(this.featureVectorGenerator, this.order, this.maxNonZeroCoefficents);
+		fb.numStateVariables = this.numStateVariables;
+		fb.coefficientVectors = new ArrayList<short[]>(this.coefficientVectors);
+		fb.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);
+
+		return fb;
+	}
 	
 	
 }

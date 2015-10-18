@@ -19,24 +19,32 @@ public class TestGridWorld {
 	Domain domain;
 	GridWorldDomain gw;
 	
+	
 	@Before
 	public void setup() {
 		this.gw = new GridWorldDomain(11,11);
 		gw.setMapToFourRooms();
 		gw.setProbSucceedTransitionDynamics(1.0);
 		this.domain = gw.generateDomain(); //generate the grid world domain
-
 		
 	}
-	
-	@Test
-	public void testGridWorld() {
-		//setup initial state
+	public State generateState() {
 		State s = GridWorldDomain.getOneAgentOneLocationState(domain);
 		GridWorldDomain.setAgent(s, 0, 0);
 		GridWorldDomain.setLocation(s, 0, 10, 10);
-		
-		
+		return s;
+	}
+	
+	public Domain getDomain() {
+		return this.domain;
+	}
+	@Test
+	public void testGridWorld() {
+		State s = this.generateState();
+		this.testGridWorld(s);
+	}
+	
+	public void testGridWorld(State s) {
 		Action northAction = domain.getAction(GridWorldDomain.ACTIONNORTH);
 		Action eastAction = domain.getAction(GridWorldDomain.ACTIONEAST);
 		Action southAction = domain.getAction(GridWorldDomain.ACTIONSOUTH);
@@ -93,7 +101,6 @@ public class TestGridWorld {
 		s = east.executeIn(s);
 		s = east.executeIn(s);
 		this.assertPFs(s, new boolean[] {true, true, false, true, false});
-		
 	}
 	
 	@After

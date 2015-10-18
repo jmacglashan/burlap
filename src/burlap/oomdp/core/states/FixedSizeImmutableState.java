@@ -27,15 +27,15 @@ import com.google.common.collect.Lists;
 
 
 /**
- * An immutable state cannot be changed (nor subclassed). It is particularly useful when memory management is crucial, as
- * copies are only created when actual changes are applied to an ImmutableState (copy on write). If many objects are altered
- * during a grounded action update, it is recommended to use the bulk modification methods (replaceAllObjects, addAllObjects, etc).
+ * The FixedSizeImmutableState is an ImmutableState class that will only allow you to set attribute values 
+ * of specific objects, and assumes that objects themselves remain in the state. Objects cannot be added to, 
+ * nor removed from the state.By including this assumption, the order of the objects is not changed
+ * internally, and so hashing and equality comparisons are significantly sped up. 
  * @author Stephen Brawner, James MacGlashan
  *
  */
-public final class ImmutableState extends OOMDPState implements ImmutableStateInterface {
+public final class FixedSizeImmutableState extends OOMDPState implements ImmutableStateInterface {
 
-	
 	/**
 	 * List of observable object instances that define the state
 	 */
@@ -57,22 +57,12 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 	private final int												hashCode;
 	
 	
-	public ImmutableState(){
-		this.objectInstances = ImmutableList.copyOf(new ArrayList<ImmutableObjectInstance>());
-		this.objectIndexByTrueClass = ImmutableList.copyOf(new ArrayList<TIntArrayList>());
-		this.objectClassMap = new TObjectIntHashMap<String>();
-		this.objectMap = new TObjectIntHashMap<String>();
-		this.numObservableObjects = 0;
-		this.hashCode = 0;
-	}
-	
-	
 	/**
 	 * Constructs an immutable copy from any state object. All underlying lists are also copied so changes
 	 * to the original state are not reflected in this copy.
 	 * @param s the source state from which this state will be initialized.
 	 */
-	public ImmutableState(State s){
+	public FixedSizeImmutableState(State s){
 		int size = 2 * (s.numTotalObjects());
 		TObjectIntHashMap<String> objectMap = new TObjectIntHashMap<String>(size, 0.5f, -1);
 		TObjectIntHashMap<String> objectClassMap = new TObjectIntHashMap<String>(s.getObjectClassesPresent().size()*2, 0.5f, -1);
@@ -99,31 +89,7 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 		this.hashCode = 0;
 	}
 	
-	public ImmutableState(List<ImmutableObjectInstance> objects, TObjectIntHashMap<String> objectClassMap) {
-		int size = 2 * (objects.size());
-		TObjectIntHashMap<String> objectMap = new TObjectIntHashMap<String>(size, 0.5f, -1);
-		objectClassMap = new TObjectIntHashMap<String>(objectClassMap);
-		List<ImmutableObjectInstance> objectInstances = this.createObjectLists(objects, objectMap, 0);
-		
-		this.objectInstances = ImmutableList.copyOf(objectInstances);
-		
-		this.numObservableObjects = this.objectInstances.size();
-		
-		int numberClasses = objectClassMap.size();
-		List<TIntArrayList> objectIndexByTrueClass = new ArrayList<TIntArrayList>(numberClasses);
-		size = objects.size();
-		for (int i = 0 ; i < numberClasses; i++) {
-			objectIndexByTrueClass.add(new TIntArrayList(size));
-		}
-		
-		this.addObjectListToList(this.objectInstances, this.numObservableObjects, numberClasses, objectIndexByTrueClass, objectClassMap);
-		this.objectIndexByTrueClass = ImmutableList.copyOf(objectIndexByTrueClass);//Collections.unmodifiableList();
-		this.objectClassMap = objectClassMap;//Collections.unmodifiableMap();
-		this.objectMap = objectMap;//Collections.unmodifiableMap();
-		this.hashCode = 0;
-	}
-	
-	public ImmutableState(ImmutableList<ImmutableObjectInstance> objects, TObjectIntHashMap<String> objectClassMap, ImmutableList<TIntArrayList> objectIndexByTrueClass, TObjectIntHashMap <String> objectMap, int hashCode) {
+	public FixedSizeImmutableState(ImmutableList<ImmutableObjectInstance> objects, TObjectIntHashMap<String> objectClassMap, ImmutableList<TIntArrayList> objectIndexByTrueClass, TObjectIntHashMap <String> objectMap, int hashCode) {
 		this.objectInstances = objects;
 		this.numObservableObjects = this.objectInstances.size();
 		this.objectIndexByTrueClass = objectIndexByTrueClass;
@@ -137,12 +103,12 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 	 * This method doesn't actually copy. This implementation only copies on write.
 	 * @return the same state.
 	 */
-	public ImmutableState copy(){
+	public FixedSizeImmutableState copy(){
 		return this;
 	}
 
-	public final ImmutableState replaceAndHash(ImmutableList<ImmutableObjectInstance> objects, int code) {
-		return new ImmutableState(objects, this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, code);
+	public FixedSizeImmutableState setHashCode(int code) {
+		return new FixedSizeImmutableState(this.objectInstances, this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, code);
 	}
 	
 	private final List<ImmutableObjectInstance> createImmutableObjects(List<ObjectInstance> objects) {
@@ -193,58 +159,32 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 	}
 	
 	@Override
-	public final ImmutableState addObject(ObjectInstance object) {
-		return this.addAllObjects(Arrays.asList(object));
+	public final FixedSizeImmutableState addObject(ObjectInstance object) {
+		throw new RuntimeException("This is not an expandable state, choose ImmutableState instead");
 	}
 	
 	@Override
-	public final ImmutableState addAllObjects(Collection<ObjectInstance> objectsToAdd) {
-		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
-		for (ObjectInstance object: objectsToAdd) {
-			objects.add(new ImmutableObjectInstance(object));
-		}
-		return new ImmutableState(objects, this.objectClassMap);
+	public final FixedSizeImmutableState addAllObjects(Collection<ObjectInstance> objectsToAdd) {
+		throw new RuntimeException("This is not an expandable state, choose ImmutableState instead");
 	}
 	
-	public final ImmutableState removeObject(String objectName) {
-		int index = this.objectMap.get(objectName);
-		if (index < 0) {
-			return this;
-		}
-		
-		List<ImmutableObjectInstance> objects = 
-				new ArrayList<ImmutableObjectInstance>(this.objectInstances);
-		objects.remove((int)index);
-		return new ImmutableState(objects, this.objectClassMap);
+	public final FixedSizeImmutableState removeObject(String objectName) {
+		throw new RuntimeException("This is not an expandable state, choose ImmutableState instead");
 	}
 	
-	public final ImmutableState removeObject(ObjectInstance object) {
-		return this.removeObject(object.getName());
+	public final FixedSizeImmutableState removeObject(ObjectInstance object) {
+		throw new RuntimeException("This is not an expandable state, choose ImmutableState instead");
 	}
 	
-	public final ImmutableState removeAllObjects(Collection<ObjectInstance> objectsToRemove) {
-		List<Integer> indices = new ArrayList<Integer>();
-		for (ObjectInstance object : objectsToRemove) {
-			Integer index = this.objectMap.get(object.getName());
-			if (index >= 0)
-			indices.add(index);
-		}
-		
-		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
-		
-		Collections.sort(indices, Collections.reverseOrder());
-		for (Integer i : indices) {
-			objects.remove(i);
-		}
-		
-		return new ImmutableState(objects, this.objectClassMap);	
+	public final FixedSizeImmutableState removeAllObjects(Collection<ObjectInstance> objectsToRemove) {
+		throw new RuntimeException("This is not an expandable state, choose ImmutableState instead");
 	}
 	
-	public final ImmutableState replaceObject(ObjectInstance objectToReplace, ObjectInstance newObject) {
+	public final FixedSizeImmutableState replaceObject(ObjectInstance objectToReplace, ObjectInstance newObject) {
 		String oldObjectName = objectToReplace.getName();
 		String newObjectName = newObject.getName();
-		if (!oldObjectName.equals(newObjectName) || !objectToReplace.getClassName().equals(newObject.getClassName())) {
-			throw new RuntimeException("In order to replace, the objects must have the same name and class. Try remove and add instead");
+		if (!oldObjectName.equals(newObjectName) || !objectToReplace.getObjectClass().equals(newObject.getObjectClass())) {
+			throw new RuntimeException("Objects cannot be replaced unless they are the same name and class.");
 		}
 		if (!(newObject instanceof ImmutableObjectInstance)) {
 			throw new RuntimeException("Object " + newObject.getName() + " must be of type ImmutableObjectInstance");
@@ -258,10 +198,11 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 				 new ArrayList<ImmutableObjectInstance>(this.objectInstances);
 		objects.set(index, (ImmutableObjectInstance)newObject);
 
-		return new ImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
+		return new FixedSizeImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
 	}
 	
-	public final ImmutableState replaceAllObjects(List<ImmutableObjectInstance> objectsToRemove, List<ImmutableObjectInstance> objectsToAdd) {
+	@Override
+	public final FixedSizeImmutableState replaceAllObjects(List<ImmutableObjectInstance> objectsToRemove, List<ImmutableObjectInstance> objectsToAdd) {
 		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(this.objectInstances);
 		
 		if (objectsToRemove.size() != objectsToAdd.size()) {
@@ -290,15 +231,12 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 			}
 		}
 
-		return new ImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
+		return new FixedSizeImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
 	}
 	
-	public final ImmutableState replaceAllObjectsUnsafe(List<ObjectInstance> objectsToAdd) {
-		List<ImmutableObjectInstance> objects = new ArrayList<ImmutableObjectInstance>(objectsToAdd.size());
-		for (ObjectInstance obj : objectsToAdd) {
-			objects.add((ImmutableObjectInstance)obj);
-		}
-		return new ImmutableState(ImmutableList.copyOf(objects), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
+	@Override
+	public final FixedSizeImmutableState replaceAndHash(ImmutableList<ImmutableObjectInstance> objects, int code) {
+		return new FixedSizeImmutableState(objects, this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, code);
 	}
 	
 	/**
@@ -308,8 +246,7 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 	 */
 	@Override
 	public State renameObject(ObjectInstance o, String newName){
-		ObjectInstance newObject = o.setName(newName);
-		return this.replaceObject(o, newObject);
+		throw new RuntimeException("This is not an expandable state, choose ImmutableState instead");
 	}
 	
 	@Override
@@ -318,8 +255,11 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 		if (index < 0) {
 			throw new RuntimeException("Object " + objectName + " does not exist in this state");
 		}
-		ObjectInstance obj = this.objectInstances.get(index);
-		return this.replaceObject(obj, obj.setValue(attName, value));
+		ImmutableObjectInstance obj = this.objectInstances.get(index);
+		
+		ImmutableObjectInstance[] arry = this.objectInstances.toArray(new ImmutableObjectInstance[this.numObservableObjects]);
+		arry[index] = (ImmutableObjectInstance)obj.setValue(attName, value);
+		return new FixedSizeImmutableState(ImmutableList.copyOf(arry), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
 	}
 
 	/**
@@ -389,16 +329,15 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 			return true;
 		}
 		
-		if(!(other instanceof ImmutableState)){
+		if(!(other instanceof FixedSizeImmutableState)){
 			return false;
 		}
 		
-		ImmutableState so = (ImmutableState)other;
+		FixedSizeImmutableState so = (FixedSizeImmutableState)other;
 		
 		if(this.numTotalObjects() != so.numTotalObjects()){
 			return false;
 		}
-		
 		
 		Set<Integer> matchedObjects = new HashSet<Integer>((int)(this.numTotalObjects() / 0.75) + 1);
 		for (int i = 0; i < this.objectIndexByTrueClass.size(); i++){
@@ -506,7 +445,8 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 	 * @return the list of observable and hidden object instances in this state.
 	 */
 	public List <ObjectInstance> getAllObjects(){
-		return new ArrayList<ObjectInstance>(this.objectInstances);
+		//return objectInstances;
+		return new ArrayList <ObjectInstance>(objectInstances);
 	}
 	
 	public ImmutableList<ImmutableObjectInstance> getImmutableObjects() {
@@ -527,7 +467,6 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 		TIntArrayList tmp = objectIndexByTrueClass.get(position);
 		List<ObjectInstance> objects = new ArrayList<ObjectInstance>(tmp.size());
 		for (int i = 0; i < tmp.size(); i++) {
-		//for (Integer i : tmp) {
 			objects.add(this.objectInstances.get(tmp.get(i)));
 		}
 		return objects;
