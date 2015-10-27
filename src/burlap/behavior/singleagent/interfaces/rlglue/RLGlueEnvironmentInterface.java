@@ -308,7 +308,9 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 		this.nextAction.val = null;
 		this.nextStateReference.val = null;
 		this.rlGlueExperimentFinished = true;
-		this.nextStateReference.notifyAll(); //notify to stop blocking
+		synchronized(this.nextStateReference) {
+			nextStateReference.notifyAll(); //notify to stop blocking
+		}
 	}
 
 	@Override
