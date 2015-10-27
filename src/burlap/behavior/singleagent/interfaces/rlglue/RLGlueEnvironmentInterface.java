@@ -94,23 +94,38 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 
 
 	/**
-	 * Loads this RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface} into RLGlue.
+	 * Loads this RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface} into RLGlue and runs its event loop in a
+	 * separate thread.
 	 */
 	public void loadAgent(){
 		DPrint.toggleCode(debugCode, this.printDebug);
-		AgentLoader loader = new AgentLoader(this);
-		loader.run();
+		final AgentLoader loader = new AgentLoader(this);
+		Thread eventThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				loader.run();
+			}
+		});
+		eventThread.start();
+
 	}
 
 	/**
-	 * Loads this RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface} into RLGlue using the specified host address and port.
+	 * Loads this RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface} into RLGlue using the specified host address and port
+	 * nd runs its event loop in a separate thread.
 	 * @param hostAddress the RLGlue host address.
 	 * @param portString the port on which to connect to RLGlue.
 	 */
 	public void loadAgent(String hostAddress, String portString){
 		DPrint.toggleCode(debugCode, this.printDebug);
-		AgentLoader loader = new AgentLoader(hostAddress, portString, this);
-		loader.run();
+		final AgentLoader loader = new AgentLoader(hostAddress, portString, this);
+		Thread eventThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				loader.run();
+			}
+		});
+		eventThread.start();
 	}
 
 	/**
