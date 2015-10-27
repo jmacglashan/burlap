@@ -1,9 +1,14 @@
 package burlap.oomdp.singleagent.interfaces.rlglue;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import burlap.oomdp.auxiliary.StateGenerator;
+import burlap.oomdp.core.Attribute;
+import burlap.oomdp.core.Attribute.AttributeType;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
 import org.rlcommunity.rlglue.codec.EnvironmentInterface;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpecVRLGLUE3;
 import org.rlcommunity.rlglue.codec.taskspec.ranges.DoubleRange;
@@ -13,15 +18,9 @@ import org.rlcommunity.rlglue.codec.types.Observation;
 import org.rlcommunity.rlglue.codec.types.Reward_observation_terminal;
 import org.rlcommunity.rlglue.codec.util.EnvironmentLoader;
 
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,13 +28,18 @@ import burlap.oomdp.singleagent.RewardFunction;
  * can interact. Because of the nature of RLGlue there are a few limitations: 
  * <br/>
  * (1) the same actions available in one state must be available everywhere<br/>
- * (2) the environment cannot represent object identifier invariance and will fill in RLGlue feature vectors by object class and in the order the objects appear for each class;<br/>
+ * (2) the environment cannot represent object identifier independence and will fill in RLGlue feature vectors by object class and in the order the objects appear for each class;<br/>
  * (3) while single target relational domains can be used, multi-target relational domains cannot.
  * <p/>
  * Because a fixed number of objects for each class is assumed, action parameterization is supported by multiplying out all the possible parameterizations. In order
  * for action parameterization and relational domains to work consistently for RLGlue, the state generator should always add objects of each class to the state object
  * in the same order. For instance, in a grid world, the state generator should always add the agent object instance to the state first and then all location objects (or always
  * do it in the reverse order). Object instance names, however, can vary between generated states.
+ * <br/><br/>
+ * Note that RLGlue does not support observations of terminal states; it only gives the final reward upon entering a terminal state.
+ * Therefore, this class will not terminate in a terminal state indicated by the provided {@link burlap.oomdp.core.TerminalFunction}.
+ * Instead, it will allow one more transition from the terminal state, which will transition back to itself with reward zero, which
+ * is mathematically equivalent to transitioning to terminal state and observing it.
  * @author James MacGlashan
  *
  */
@@ -61,6 +65,14 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 * The terminal function
 	 */
 	protected TerminalFunction tf;
+
+	/**
+	 * Indicates the number of times a terminal state has been visited by the agent within the same episode.
+	 * This variable is used because RLGLue does not support observations into terminal states and so
+	 * a terminal flag will only be set once the agent has taken one action in the terminal state, which will transition back
+	 * to itself.
+	 */
+	protected int terminalVisits = 0;
 	
 	/**
 	 * The reward function value range
@@ -97,7 +109,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	
 	
 	/**
-	 * A mapping from action index identiifers (that RLGlue wille use) to BURLAP actions and their parameterizations specified as the index of objects in a state.
+	 * A mapping from action index identifiers (that RLGlue will use) to BURLAP actions and their parametrization specified as the index of objects in a state.
 	 */
 	protected Map<Integer, GroundedAction> actionMap = new HashMap<Integer, GroundedAction>();
 	
@@ -113,7 +125,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	
 	
 	/**
-	 * Whether the state generated from the state generator to gather auxiliariy information (like the number of objects of each class) has yet be used as a starting state for
+	 * Whether the state generated from the state generator to gather auxiliary information (like the number of objects of each class) has yet be used as a starting state for
 	 * an RLGlue episode. When this value is false, the state generated in the constructor will be passed as the initial state of a new episodes. After that, this value
 	 * is set to true and the states used for each RLGlue episode are generated fresh from the state generator.
 	 */
@@ -257,6 +269,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 
 	@Override
 	public Observation env_start() {
+		this.terminalVisits = 0;
 		if(usedConstructorState){
 			this.curState = this.stateGenerator.generateState();
 		}
@@ -270,13 +283,22 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	@Override
 	public Reward_observation_terminal env_step(Action arg0) {
 		GroundedAction burlapAction = this.actionMap.get(arg0.getInt(0));
-		State nextState = burlapAction.executeIn(this.curState);
+		State nextState;
+		boolean curStateTerminal = this.tf.isTerminal(this.curState);
+		if(!curStateTerminal) {
+			nextState = burlapAction.executeIn(this.curState);
+		}
+		else{
+			nextState = this.curState;
+			this.terminalVisits++;
+		}
 		Observation o = this.convertIntoObservation(nextState);
-		double r = this.rf.reward(curState, burlapAction, nextState);
-		boolean isTermainal = this.tf.isTerminal(nextState);
+		double r = curStateTerminal ? 0 : this.rf.reward(curState, burlapAction, nextState);
+
+		boolean flagTerminal = this.terminalVisits > 1;
 		this.curState = nextState;
 		
-		Reward_observation_terminal toRet = new Reward_observation_terminal(r, o, isTermainal);
+		Reward_observation_terminal toRet = new Reward_observation_terminal(r, o, flagTerminal);
 		
 		return toRet;
 	}
