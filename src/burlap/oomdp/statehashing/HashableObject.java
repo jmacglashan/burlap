@@ -1,13 +1,12 @@
 package burlap.oomdp.statehashing;
 
+import burlap.oomdp.core.ObjectClass;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.values.Value;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.values.Value;
 
 public class HashableObject implements ObjectInstance {
 	public ObjectInstance source;
@@ -188,8 +187,8 @@ public class HashableObject implements ObjectInstance {
 
 
 		/**
-		 * Initializes the StateHashTuple with the given {@link burlap.oomdp.core.states.State} object.
-		 * @param s the state object this object will wrap
+		 * Initializes the CachedHashableObject with the given {@link burlap.oomdp.core.objects.ObjectInstance} object.
+		 * @param source the {@link burlap.oomdp.core.objects.ObjectInstance} object this object will wrap
 		 */
 		public CachedHashableObject(ObjectInstance source){
 			super(source);

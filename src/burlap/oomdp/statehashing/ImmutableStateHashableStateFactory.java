@@ -1,22 +1,14 @@
 package burlap.oomdp.statehashing;
 
-import gnu.trove.list.array.TIntArrayList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.ImmutableStateInterface;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
-
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+import gnu.trove.list.array.TIntArrayList;
+
+import java.util.*;
 
 /**
  * This Hashing factory works for states that implement the ImmutableStateInterface. It caches the value by default, and 
@@ -41,7 +33,7 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 	
 	/**
 	 * Sets all objects of the provided object class to not be hashed, or used in an equality comparison.
-	 * @param objectClassName
+	 * @param objectClasses the object class names to mask
 	 */
 	public void setObjectClassMask(String ... objectClasses) {
 		this.setObjectClassMask(false, objectClasses);
@@ -50,7 +42,7 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 	/**
 	 * Sets all masking value of the provided object classes.
 	 * A value of true, signifies an object will be included in hashing/equality testing
-	 * @param objectClassName
+	 * @param objectClassNames the object class names to mask
 	 */
 	public void setObjectClassMask(boolean value, String ...objectClassNames) {
 		List<String> list = Arrays.asList(objectClassNames);
@@ -72,7 +64,7 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 	/**
 	 * Sets all masking value of the provided objects.
 	 * A value of true, signifies an object will be included in hashing/equality testing
-	 * @param objectClassName
+	 * @param objectNames the object names to mask
 	 */
 	public void setObjectMask(boolean value, String ... objectNames) {
 		List<String> list = Arrays.asList(objectNames);
