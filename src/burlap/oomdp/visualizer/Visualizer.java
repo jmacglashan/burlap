@@ -14,7 +14,7 @@ import java.awt.*;
  * ObjectInstnaces to the canvas as well as classes that can paint general domain information. Painters
  * for object classes as well as specific object instances can be provided. If there is a painter
  * for an object class and a painter for a specific object instance of that same class, then the specific object instance
- * painter will be used to pain that object instead of the painter for that instnace's OO-MDP class.
+ * painter will be used to pain that object instead of the painter for that instance's OO-MDP class.
  * @author James MacGlashan
  *
  */
@@ -30,7 +30,7 @@ public class Visualizer extends MultiLayerRenderer{
 	protected StateRenderLayer			srender;
 
 	/**
-	 * An option {@link burlap.oomdp.visualizer.StateActionRenderLayer} so that actions can be visualized on the same screen.
+	 * An optional {@link burlap.oomdp.visualizer.StateActionRenderLayer} so that actions can be visualized on the same screen.
 	 */
 	protected StateActionRenderLayer	sarender = null;
 	
