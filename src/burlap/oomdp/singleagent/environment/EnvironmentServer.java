@@ -23,7 +23,26 @@ public class EnvironmentServer implements Environment {
 	 */
 	protected Environment delegate;
 
+	/**
+	 * The {@link burlap.oomdp.singleagent.environment.EnvironmentObserver} objects that will be notified of {@link burlap.oomdp.singleagent.environment.Environment}
+	 * events.
+	 */
 	protected List<EnvironmentObserver> observers = new LinkedList<EnvironmentObserver>();
+
+
+	/**
+	 * Constructs an {@link burlap.oomdp.singleagent.environment.EnvironmentServer} or {@link burlap.oomdp.singleagent.environment.EnvironmentServer.StateSettableEnvironmentServer},
+	 * based on whether the input delegate implements {@link burlap.oomdp.singleagent.environment.StateSettableEnvironment}.
+	 * @param delegate the delegate {@link burlap.oomdp.singleagent.environment.Environment} for most environment interactions.
+	 * @param observers the {@link burlap.oomdp.singleagent.environment.EnvironmentObserver} objects notified of Environment events.
+	 * @return an {@link burlap.oomdp.singleagent.environment.EnvironmentServer} or {@link burlap.oomdp.singleagent.environment.EnvironmentServer.StateSettableEnvironmentServer}.
+	 */
+	public static EnvironmentServer constructor(Environment delegate, EnvironmentObserver...observers){
+		if(delegate instanceof StateSettableEnvironment){
+			return new StateSettableEnvironmentServer((StateSettableEnvironment)delegate);
+		}
+		return new EnvironmentServer(delegate, observers);
+	}
 
 	public EnvironmentServer(Environment delegate, EnvironmentObserver...observers){
 		this.delegate = delegate;
@@ -115,6 +134,19 @@ public class EnvironmentServer implements Environment {
 		this.delegate.resetEnvironment();
 		for(EnvironmentObserver observer : this.observers){
 			observer.observeEnvironmentReset(this.delegate);
+		}
+	}
+
+
+	public static class StateSettableEnvironmentServer extends EnvironmentServer implements StateSettableEnvironment{
+
+		public StateSettableEnvironmentServer(StateSettableEnvironment delegate, EnvironmentObserver... observers) {
+			super(delegate, observers);
+		}
+
+		@Override
+		public void setCurStateTo(State s) {
+			((StateSettableEnvironment)this.delegate).setCurStateTo(s);
 		}
 	}
 }
