@@ -27,6 +27,13 @@ import java.util.List;
  * a {@link burlap.oomdp.singleagent.environment.Environment#resetEnvironment()} message is observed and block for the
  * same interval of time.
  * This class is especially useful for watching learning algorithms or Monte Carlo-like planning algorithms in action.
+ * <br/><br/>
+ * Optionally, this class may also render state-action events in an {@link burlap.oomdp.singleagent.environment.Environment}
+ * (so that the action is also rendered) so long as
+ * the input {@link burlap.oomdp.visualizer.Visualizer} has a set {@link burlap.oomdp.visualizer.StateActionRenderLayer}.
+ * To enable this support, pass the {@link #setRepaintOnActionInitiation(boolean)} true. If you would then
+ * like to disable rendering the post-state from the {@link #observeEnvironmentInteraction(burlap.oomdp.singleagent.environment.EnvironmentOutcome)}
+ * method, pass the {@link #setRepaintStateOnEnvironmentInteraction(boolean)} false.
  * @author James MacGlashan
  *
  */
@@ -67,8 +74,17 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 	protected long				actionRenderDelay = 17;
 
 
+	/**
+	 * If true (which is default), then the post-state in an {@link #observeEnvironmentInteraction(burlap.oomdp.singleagent.environment.EnvironmentOutcome)}
+	 * is rendered.
+	 */
 	protected boolean			repaintStateOnEnvironmentInteraction = true;
 
+
+	/**
+	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
+	 * so long as the input {@link burlap.oomdp.visualizer.Visualizer} has a set {@link burlap.oomdp.visualizer.StateActionRenderLayer}. Default value is false.
+	 */
 	protected boolean			repaintOnActionInitiation = false;
 	
 	
@@ -192,8 +208,10 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 	@Override
 	public void observeEnvironmentInteraction(EnvironmentOutcome eo) {
-		this.painter.updateState(eo.op);
-		this.updatePropTextArea(eo.op);
+		if(this.repaintStateOnEnvironmentInteraction) {
+			this.painter.updateState(eo.op);
+			this.updatePropTextArea(eo.op);
+		}
 		Thread waitThread = new Thread(new Runnable() {
 
 			@Override
@@ -218,10 +236,10 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 	@Override
 	public void observeEnvironmentReset(Environment resetEnvironment) {
 
-		if(this.repaintStateOnEnvironmentInteraction) {
-			this.painter.updateState(resetEnvironment.getCurrentObservation());
-			this.updatePropTextArea(resetEnvironment.getCurrentObservation());
-		}
+
+		this.painter.updateState(resetEnvironment.getCurrentObservation());
+		this.updatePropTextArea(resetEnvironment.getCurrentObservation());
+
 		Thread waitThread = new Thread(new Runnable() {
 
 			@Override
