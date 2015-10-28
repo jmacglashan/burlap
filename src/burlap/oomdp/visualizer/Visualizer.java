@@ -57,7 +57,7 @@ public class Visualizer extends MultiLayerRenderer{
 	/**
 	 * Adds a {@link burlap.oomdp.visualizer.StateActionRenderLayer} to this {@link burlap.oomdp.visualizer.Visualizer}.
 	 * @param sarender The {@link burlap.oomdp.visualizer.StateActionRenderLayer} to add.
-	 * @param afterStateRL if true, then the {@link burlap.oomdp.visualizer.StateActionRenderLayer} will be drawn after the {@link burlap.oomdp.visualizer.StateRenderLayer is drawn
+	 * @param afterStateRL if true, then the {@link burlap.oomdp.visualizer.StateActionRenderLayer} will be drawn after the {@link burlap.oomdp.visualizer.StateRenderLayer} is drawn
 	 *                     If false, then it draws before.
 	 */
 	public void setStateActionRenderLayer(StateActionRenderLayer sarender, boolean afterStateRL){
