@@ -1,6 +1,7 @@
 package burlap.behavior.stochasticgames.saconversion;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class SGStateReachability {
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @return the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
-	public static List <State> getReachableStates(State from, SGDomain inDomain,Map<String,SGAgentType> SGAgentTypes, HashableStateFactory usingHashFactory){
+	public static Collection <State> getReachableStates(State from, SGDomain inDomain,Map<String,SGAgentType> SGAgentTypes, HashableStateFactory usingHashFactory){
 		return getReachableStates(from, inDomain, SGAgentTypes, usingHashFactory, new NullTermination());
 	}
 
@@ -55,24 +56,26 @@ public class SGStateReachability {
 	 * @param tf a terminal function that prevents expansion from terminal states.
 	 * @return the list of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
-	public static List <State> getReachableStates(State from, SGDomain inDomain, Map<String,SGAgentType> agentList, HashableStateFactory usingHashFactory, TerminalFunction tf){
-		Set <HashableState> hashedStates = getReachableHashedStates(from, inDomain, agentList, usingHashFactory, tf);
-		List <State> states = new ArrayList<State>(hashedStates.size());
-		for(HashableState sh : hashedStates){
-			states.add(sh.s);
-		}
-
-		return states;
+	public static Collection <State> getReachableStates(State from, SGDomain inDomain, Map<String,SGAgentType> agentList, HashableStateFactory usingHashFactory, TerminalFunction tf){
+		Collection<HashableState> res = getReachableHashedStates(from, inDomain, agentList, usingHashFactory, tf);
+		return new ArrayList<State>(res);
+		//return new ArrayList<State>(hashedStates);
+//		for(HashableState sh : hashedStates){
+//			states.add(sh.s);
+//		}
+//
+//		return states;
 	}
 
 	public static List <State> getReachableNonTerminalStates(State from, SGDomain inDomain, Map<String,SGAgentType> agentList, HashableStateFactory usingHashFactory, TerminalFunction tf){
-		Set <HashableState> hashedStates = getReachableNonTerminalHashedStates(from, inDomain, agentList, usingHashFactory, tf);
-		List <State> states = new ArrayList<State>(hashedStates.size());
-		for(HashableState sh : hashedStates){
-			states.add(sh.s);
-		}
-
-		return states;
+		Collection<HashableState> res = getReachableNonTerminalHashedStates(from, inDomain, agentList, usingHashFactory, tf);
+		return new ArrayList<State>(res);
+//		return new ArrayList<State>(hashedStates);
+//		for(HashableState sh : hashedStates){
+//			states.add(sh.s);
+//		}
+//
+//		return states;
 	}
 
 	/**
@@ -82,7 +85,7 @@ public class SGStateReachability {
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
-	public static Set <HashableState> getReachableHashedStates(State from, SGDomain inDomain,Map<String,SGAgentType> agentList,
+	public static Collection <HashableState> getReachableHashedStates(State from, SGDomain inDomain,Map<String,SGAgentType> agentList,
 HashableStateFactory usingHashFactory){
 		return getReachableHashedStates(from, inDomain, agentList, usingHashFactory, new NullTermination());
 	}
@@ -97,7 +100,7 @@ HashableStateFactory usingHashFactory){
 	 * @param tf a terminal function that prevents expansion from terminal states.
 	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
-	public static Set <HashableState> getReachableHashedStates(State from, 
+	public static Collection <HashableState> getReachableHashedStates(State from, 
 			SGDomain inDomain, Map<String, SGAgentType> SGAgentTypes, HashableStateFactory usingHashFactory, TerminalFunction tf){
 
 		//this keeps track of the states
@@ -176,7 +179,7 @@ HashableStateFactory usingHashFactory){
 	 * @param tf a terminal function that prevents expansion from terminal states.
 	 * @return the set of {@link burlap.oomdp.core.State} objects that are reachable from a source state. 
 	 */
-	public static Set <HashableState> getReachableNonTerminalHashedStates(State from, 
+	public static Collection <HashableState> getReachableNonTerminalHashedStates(State from, 
 			SGDomain inDomain, Map<String, SGAgentType> SGAgentTypes, HashableStateFactory usingHashFactory, TerminalFunction tf){
 
 		//this keeps track of the states

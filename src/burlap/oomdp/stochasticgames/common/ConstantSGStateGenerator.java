@@ -4,6 +4,8 @@ import java.util.List;
 
 import burlap.datastructures.HashedAggregator;
 import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.FixedSizeImmutableState;
+import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGStateGenerator;
@@ -38,6 +40,7 @@ public class ConstantSGStateGenerator extends SGStateGenerator {
 	public State generateState(List<SGAgent> agents) {
 		
 		State s = this.srcState.copy();
+		//s = new MutableState(s);
 		HashedAggregator<String> counts = new HashedAggregator<String>();
 		
 		for(SGAgent a : agents){
@@ -48,12 +51,14 @@ public class ConstantSGStateGenerator extends SGStateGenerator {
 				throw new RuntimeException("Error: Constant state used by ConstanteStateSGGenerator does not have enough oo-mdp objects for agents defined by class: " + agentClassName);
 			}
 			ObjectInstance agentObject = possibleAgentObjects.get(index);
-			s.renameObject(agentObject, a.getAgentName());
+			s = s.renameObject(agentObject, a.getAgentName());
 			
 			counts.add(agentClassName, 1.);
 			
 		}
-		
+		if (this.srcState instanceof FixedSizeImmutableState) {
+			return new FixedSizeImmutableState(s);
+		}
 		return s;
 		
 	}

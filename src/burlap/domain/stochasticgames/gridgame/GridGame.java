@@ -7,7 +7,6 @@ import java.util.Map;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.TerminalFunction;
@@ -916,36 +915,95 @@ public class GridGame implements DomainGenerator {
 			Map <String, Double> rewards = new HashMap<String, Double>();
 			
 			//get all agents and initialize reward to default
-			List <ObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
-			for(ObjectInstance o : obs){
-				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
+//			List <ObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
+//			for(ObjectInstance o : obs){
+//				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
+//			}
+			
+			List<ObjectInstance> agents = sp.getObjectsOfClass(GridGame.CLASSAGENT);
+			List<ObjectInstance> goals = sp.getObjectsOfClass(GridGame.CLASSGOAL);
+			
+			for (ObjectInstance agent : agents) {
+				int agentX = agent.getIntValForAttribute(ATTX);
+				int agentY = agent.getIntValForAttribute(ATTY);
+				int number = agent.getIntValForAttribute(GridGame.ATTPN);
+				
+				boolean foundGoal = false;
+				double reward = 0.0;
+				String agentName = agent.getName();
+				for (ObjectInstance goal : goals) {
+					int gt = goal.getIntValForAttribute(ATTGT);
+					if (gt != 0 && gt != number + 1) {
+						continue;
+					}
+					if (agentX == goal.getIntValForAttribute(ATTX) &&
+							agentY == goal.getIntValForAttribute(ATTY)) {
+						foundGoal = true;
+						reward = (gt == 0) ? uGoalReward : 
+							this.getPersonalGoalReward(sp, agentName);
+						break;
+					}
+				}
+				if (!foundGoal) {
+					reward = this.defaultCost(agentName, ja);
+				}
+				rewards.put(agentName, reward);
 			}
 			
 			
 			//check for any agents that reached a universal goal location and give them a goal reward if they did
 			//List<GroundedProp> upgps = sp.getAllGroundedPropsFor(agentInUniversalGoal);
-			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(sp);
-			for(GroundedProp gp : upgps){
-				String agentName = gp.params[0];
-				if(gp.isTrue(sp)){
-					rewards.put(agentName, uGoalReward);
-				}
-			}
+//			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(sp);
+//			for(GroundedProp gp : upgps){
+//				String agentName = gp.params[0];
+//				if(gp.isTrue(sp)){
+//					rewards.put(agentName, uGoalReward);
+//				}
+//			}
 			
 			
 			//check for any agents that reached a personal goal location and give them a goal reward if they did
 			//List<GroundedProp> ipgps = sp.getAllGroundedPropsFor(agentInPersonalGoal);
-			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(sp);
-			for(GroundedProp gp : ipgps){
-				String agentName = gp.params[0];
-				if(gp.isTrue(sp)){
-					rewards.put(agentName, this.getPersonalGoalReward(sp, agentName));
-				}
-			}
+//			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(sp);
+//			for(GroundedProp gp : ipgps){
+//				String agentName = gp.params[0];
+//				if(gp.isTrue(sp)){
+//					rewards.put(agentName, this.getPersonalGoalReward(sp, agentName));
+//				}
+//			}
 			
 			
 			return rewards;
 			
+		}
+		
+		public double getRewardFor(State s, JointAction ja, State sp, String agentName) {
+			ObjectInstance agent = sp.getObject(agentName);
+			int agentX = agent.getIntValForAttribute(ATTX);
+			int agentY = agent.getIntValForAttribute(ATTY);
+			int number = agent.getIntValForAttribute(GridGame.ATTPN);
+			boolean foundGoal = false;
+			double reward = 0.0;
+			List<ObjectInstance> goals = sp.getObjectsOfClass(GridGame.CLASSGOAL);
+			
+			for (ObjectInstance goal : goals) {
+				int gt = goal.getIntValForAttribute(ATTGT);
+				if (gt != 0 && gt != number + 1) {
+					continue;
+				}
+				if (agentX == goal.getIntValForAttribute(ATTX) &&
+						agentY == goal.getIntValForAttribute(ATTY)) {
+					foundGoal = true;
+					reward = (gt == 0) ? uGoalReward : 
+						this.getPersonalGoalReward(sp, agentName);
+					break;
+				}
+			}
+			if (!foundGoal) {
+				reward = this.defaultCost(agentName, ja);
+			
+			}
+			return reward;
 		}
 		
 		
@@ -1011,24 +1069,35 @@ public class GridGame implements DomainGenerator {
 		@Override
 		public boolean isTerminal(State s) {
 			
-			//check personal goals; if anyone reached their personal goal, it's game over
-			//List<GroundedProp> ipgps = s.getAllGroundedPropsFor(agentInPersonalGoal);
-			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(s);
-			for(GroundedProp gp : ipgps){
-				if(gp.isTrue(s)){
+			List<ObjectInstance> agents = s.getObjectsOfClass(GridGame.CLASSAGENT);
+			for (ObjectInstance agent : agents) {
+				String agentName = agent.getName();
+				if (agentInPersonalGoal.isTrue(s, agentName)) {
+					return true;
+				}
+				if (agentInUniversalGoal.isTrue(s, agentName)) {
 					return true;
 				}
 			}
+			
+			//check personal goals; if anyone reached their personal goal, it's game over
+			//List<GroundedProp> ipgps = s.getAllGroundedPropsFor(agentInPersonalGoal);
+//			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(s);
+//			for(GroundedProp gp : ipgps){
+//				if(gp.isTrue(s)){
+//					return true;
+//				}
+//			}
 			
 			
 			//check universal goals; if anyone reached a universal goal, it's game over
 			//List<GroundedProp> upgps = s.getAllGroundedPropsFor(agentInUniversalGoal);
-			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(s);
-			for(GroundedProp gp : upgps){
-				if(gp.isTrue(s)){
-					return true;
-				}
-			}
+//			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(s);
+//			for(GroundedProp gp : upgps){
+//				if(gp.isTrue(s)){
+//					return true;
+//				}
+//			}
 			
 			return false;
 		}

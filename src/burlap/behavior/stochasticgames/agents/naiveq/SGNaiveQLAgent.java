@@ -7,22 +7,23 @@ import java.util.Map;
 
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.stochasticgames.agents.RewardCalculatingJointRewardFunction;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.policy.EpsilonGreedy;
-import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 /**
@@ -192,13 +193,20 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	@Override
 	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		
-		if(internalRewardFunction != null){
+		double r;
+		if(internalRewardFunction != null && internalRewardFunction instanceof RewardCalculatingJointRewardFunction){
+			RewardCalculatingJointRewardFunction rjr = (RewardCalculatingJointRewardFunction)internalRewardFunction;
+			r = rjr.getRewardFor(s, jointAction, sprime, worldAgentName);
+		} else if (internalRewardFunction != null) {
 			jointReward = internalRewardFunction.reward(s, jointAction, sprime);
+			r = jointReward.get(worldAgentName);
+		} else {
+			r = jointReward.get(worldAgentName);
 		}
 		
 		GroundedSGAgentAction myAction = jointAction.action(worldAgentName);
 
-		double r = jointReward.get(worldAgentName);
+		
 		QValue qv = this.getQ(s, myAction);
 		
 		double maxQ = 0.;

@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.google.common.collect.ImmutableList;
 
 import burlap.oomdp.core.ObjectClass;
@@ -21,6 +23,7 @@ import burlap.oomdp.core.states.ImmutableStateInterface;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.values.Value;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
+import burlap.oomdp.statehashing.ImmutableStateHashableStateFactory.ImmutableHashableState;
 
 /**
  * This is a hash factory specifically for FixedSizeImmutableStates. It allows you to set a mask, to only hash
@@ -31,13 +34,24 @@ import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashabl
  *
  */
 public class FixedSizeStateHashableStateFactory extends ImmutableStateHashableStateFactory {
-	private final BitSet objectMask;
-	private final FixedSizeImmutableState initialState;
+	private BitSet objectMask;
+	private FixedSizeImmutableState initialState;
+	public FixedSizeStateHashableStateFactory(boolean identifierIndependent) {
+		super(identifierIndependent);
+		this.initialState = null;
+	}
+	
 	public FixedSizeStateHashableStateFactory(boolean identifierIndependent, FixedSizeImmutableState initialState) {
 		super(identifierIndependent);
 		this.objectMask = new BitSet(initialState.numTotalObjects());
 		this.objectMask.set(0, initialState.numTotalObjects(), true);
 		this.initialState = initialState;
+	}
+	
+	public void setSampleState( FixedSizeImmutableState s) {
+		this.initialState = s;
+		this.objectMask = new BitSet(initialState.numTotalObjects());
+		this.objectMask.set(0, initialState.numTotalObjects(), true);
 	}
 		
 	/**
@@ -93,6 +107,31 @@ public class FixedSizeStateHashableStateFactory extends ImmutableStateHashableSt
 		}
 		
 		return identifierDependentEquals(iS1, iS2);
+	}
+	
+
+	@Override 
+	public HashableState hashState(State s){
+		if (this.identifierIndependent) {
+			return super.hashState(s);
+		}
+		if (!(s instanceof FixedSizeImmutableState)) {
+			throw new RuntimeException("State needs to be of type FixedSizeImmutableState");
+		}
+		
+		FixedSizeImmutableState fs = (FixedSizeImmutableState)s;
+		Iterator<ImmutableObjectInstance> it = iterator(fs, this.objectMask);
+		List<ImmutableObjectInstance> hashed = new ArrayList<ImmutableObjectInstance>(s.numTotalObjects());
+		
+		HashCodeBuilder builder = new HashCodeBuilder();
+		while (it.hasNext()) {
+			ImmutableObjectInstance obj = it.next();
+			ImmutableHashableObject hashedObj = this.objectHashingFactory.hashObject(obj);
+			hashed.add(hashedObj.getObjectInstance());
+		}
+		
+		ImmutableList<ImmutableObjectInstance> immList = ImmutableList.copyOf(hashed);
+		return new ImmutableHashableState(fs.replaceAndHash(immList, hashed.hashCode()));
 	}
 
 	/**

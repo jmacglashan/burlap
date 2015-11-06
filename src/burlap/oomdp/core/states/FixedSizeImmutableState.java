@@ -261,6 +261,36 @@ public final class FixedSizeImmutableState extends OOMDPState implements Immutab
 		arry[index] = (ImmutableObjectInstance)obj.setValue(attName, value);
 		return new FixedSizeImmutableState(ImmutableList.copyOf(arry), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
 	}
+	
+	public <T> State setObjectsValues(String objectName, String att1, T value1, String att2, T value2) {
+		int index = this.objectMap.get(objectName);
+		if (index < 0) {
+			throw new RuntimeException("Object " + objectName + " does not exist in this state");
+		}
+		ObjectInstance obj = this.objectInstances.get(index);
+		
+		ImmutableObjectInstance[] arry = this.objectInstances.toArray(new ImmutableObjectInstance[this.numObservableObjects]);
+		obj = obj.setValue(att1, value1);
+		obj = obj.setValue(att2, value2);
+		arry[index] = (ImmutableObjectInstance)obj;
+		return new FixedSizeImmutableState(ImmutableList.copyOf(arry), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
+	}
+	
+	public <T> State setObjectsValues(String objectName, String[] attNames, T[] values) {
+		int index = this.objectMap.get(objectName);
+		if (index < 0) {
+			throw new RuntimeException("Object " + objectName + " does not exist in this state");
+		}
+		ObjectInstance obj = this.objectInstances.get(index);
+		
+		ImmutableObjectInstance[] arry = this.objectInstances.toArray(new ImmutableObjectInstance[this.numObservableObjects]);
+		for (int i = 0; i < attNames.length; i++) {
+			obj = obj.setValue(attNames[i], values[i]);
+		}
+		
+		arry[index] = (ImmutableObjectInstance)obj;
+		return new FixedSizeImmutableState(ImmutableList.copyOf(arry), this.objectClassMap, this.objectIndexByTrueClass, this.objectMap, 0);
+	}
 
 	/**
 	 * This method computes a matching from objects in the receiver to value-identical objects in the parameter state so. The matching

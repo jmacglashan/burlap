@@ -150,11 +150,11 @@ public class ObjectClass {
 	 * @return the index of the attribute with name attName
 	 */
 	public int attributeIndex(String attName){
-		Integer ind = attributeIndex.get(attName);
-		if(ind != null){
-			return ind;
-		}
-		throw new RuntimeException("The attribute " + attName + " is not defined for this object class (" + this.name + ")");
+		return attributeIndex.get(attName);
+//		if(ind != null){
+//			return ind;
+//		}
+		//throw new RuntimeException("The attribute " + attName + " is not defined for this object class (" + this.name + ")");
 	}
 	
 	

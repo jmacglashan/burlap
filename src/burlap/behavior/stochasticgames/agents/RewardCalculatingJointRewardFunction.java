@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import burlap.behavior.stochasticgames.saconversion.RewardCalculator;
+import burlap.domain.stochasticgames.gridgame.GridGame.GGJointRewardFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
@@ -22,8 +23,8 @@ public class RewardCalculatingJointRewardFunction implements JointReward {
 	private String agentName;
 
 	public RewardCalculatingJointRewardFunction(Map<String,RewardCalculator> rewardCalcMap, 
-			JointReward realRewardFunction, String agentName) {
-		this.realRewardFunction = realRewardFunction;
+			JointReward jointReward, String agentName) {
+		this.realRewardFunction = jointReward;
 		this.rewardCalcMap = rewardCalcMap;
 		this.agentName = agentName;
 	}
@@ -32,9 +33,11 @@ public class RewardCalculatingJointRewardFunction implements JointReward {
 	@Override
 	public Map<String, Double> reward(State s, JointAction ja, State sp) {
 
-		Map<String, Double> calculatedRewards = new HashMap<String, Double>();
-
+		
 		Map<String, Double> realRewards = realRewardFunction.reward(s, ja, sp);
+		Map<String, Double> calculatedRewards = new HashMap<String, Double>(realRewards.size() * 2);
+
+		
 		for(String aName : realRewards.keySet()){
 			//System.out.println("RC.AN: "+rewardCalcMap.get(aName));
 			calculatedRewards.put(aName, 
@@ -45,6 +48,12 @@ public class RewardCalculatingJointRewardFunction implements JointReward {
 		}
 
 		return calculatedRewards;
+	}
+	
+	public double getRewardFor(State s, JointAction ja, State sp, String agent) {
+		Map<String, Double> realRewards = realRewardFunction.reward(s, ja, sp);
+		double propCalculated = rewardCalcMap.get(agent).getReward(agentName, realRewards);
+		return propCalculated;
 	}
 
 }

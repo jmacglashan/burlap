@@ -12,6 +12,7 @@ import java.util.Set;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.FixedSizeImmutableState;
 import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
@@ -155,11 +156,13 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(int i = 0; i < finalPositions.size(); i++){
 			GroundedSGAgentAction gsa = gsas.get(i);
 			Location2 loc = finalPositions.get(i);
-			
-			ObjectInstance agent = s.getObject(gsa.actingAgent);
-			agent.setValue(GridGame.ATTX, loc.x);
-			agent.setValue(GridGame.ATTY, loc.y);
-			
+			if (s instanceof FixedSizeImmutableState) {
+				FixedSizeImmutableState fs = (FixedSizeImmutableState)s;
+				s = fs.setObjectsValues(gsa.actingAgent, GridGame.ATTX, loc.x, GridGame.ATTY, loc.y);
+			} else {
+				s = s.setObjectsValue(gsa.actingAgent, GridGame.ATTX, loc.x);
+				s = s.setObjectsValue(gsa.actingAgent, GridGame.ATTY, loc.y);
+			}
 		}
 		
 		return s;
@@ -492,11 +495,11 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		if(delta.x != 0 && !reset){
-			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL), true);
+			reset = this.sampleWallCollisionVertical(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL));
 		}
 		
 		if(delta.y != 0 && !reset){
-			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL), false);
+			reset = this.sampleWallCollisionHorizontal(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL));
 		}
 		
 		
@@ -584,7 +587,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @return true if the agent is able to move in the desired location; false otherwise
 	 */
 	protected boolean sampleWallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
-		
+		// TODO, easier way to calculate wall collisions?
 		for(int i = 0; i < walls.size(); i++){
 			ObjectInstance w = walls.get(i);
 			if(this.crossesWall(p0, delta, w, vertical)){
@@ -599,12 +602,39 @@ public class GridGameStandardMechanics extends JointActionModel {
 					}
 				}
 			}
+		
 		}
 		
 		return false;
 	}
 	
+	protected boolean sampleWallCollisionHorizontal(Location2 p0, Location2 delta, List <ObjectInstance> walls){
+		for(int i = 0; i < walls.size(); i++){
+			if (sampleWallCollision(p0.x, p0.x + delta.x, p0.y, walls.get(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected boolean sampleWallCollisionVertical(Location2 p0, Location2 delta, List <ObjectInstance> walls){
+		for(int i = 0; i < walls.size(); i++){
+			if (sampleWallCollision(p0.y, p0.y + delta.y, delta.x, walls.get(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
+	protected boolean sampleWallCollision(int start, int end, int position, ObjectInstance wall){
+		int wp = wall.getIntValForAttribute(GridGame.ATTP);
+		int we1 = wall.getIntValForAttribute(GridGame.ATTE1);
+		int we2 = wall.getIntValForAttribute(GridGame.ATTE2);
+		if (start < wp && end >= wp) {
+			return (position >= we1 && position <= we2);
+		}
+		return false;
+	}
 	
 	/**
 	 * Indicates whether there are any wall collisions.
