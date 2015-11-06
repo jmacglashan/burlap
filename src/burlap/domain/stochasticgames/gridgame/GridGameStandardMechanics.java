@@ -495,11 +495,11 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		if(delta.x != 0 && !reset){
-			reset = this.sampleWallCollisionVertical(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL));
+			reset = this.sampleWallCollisionHorizontal(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL));
 		}
 		
 		if(delta.y != 0 && !reset){
-			reset = this.sampleWallCollisionHorizontal(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL));
+			reset = this.sampleWallCollisionVertical(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL));
 		}
 		
 		
