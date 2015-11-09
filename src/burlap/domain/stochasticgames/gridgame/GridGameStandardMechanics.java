@@ -632,6 +632,8 @@ public class GridGameStandardMechanics extends JointActionModel {
 		int we2 = wall.getIntValForAttribute(GridGame.ATTE2);
 		if (start < wp && end >= wp) {
 			return (position >= we1 && position <= we2);
+		} else if (start >= wp && end < wp) {
+			return (position >= we1 && position <= we2);
 		}
 		return false;
 	}
