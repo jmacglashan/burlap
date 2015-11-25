@@ -1,12 +1,12 @@
 package burlap.oomdp.singleagent;
 
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 
 
@@ -89,15 +89,19 @@ public class SADomain extends Domain {
 
 	@Override
 	public List<SGAgentAction> getAgentActions() {
-		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stocashtic game formalisms");
+		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stochastic game formalisms");
 	}
 
 
 	@Override
 	public SGAgentAction getSingleAction(String name) {
-		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stocashtic game formalisms");
+		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stochastic game formalisms");
 	}
 
+	@Override
+	public SGAgentAction getSGAgentAction(String name) {
+		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stochastic game formalisms");
+	}
 
 	@Override
 	protected Domain newInstance() {
