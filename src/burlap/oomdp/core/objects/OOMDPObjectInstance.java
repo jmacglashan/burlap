@@ -18,7 +18,7 @@ public abstract class OOMDPObjectInstance implements ObjectInstance{
 	 */
 	public <T> ObjectInstance setValue(String attName, T value) {
 		String valueClass = value.getClass().getName();
-		if(valueClass.equals("boolean") || valueClass.equals("java.lang.Double")){
+		if(valueClass.equals("boolean") || valueClass.equals("java.lang.Boolean")){
 			Boolean b = (Boolean)value;
 			return this.setValue(attName, (boolean)b);
 		}
