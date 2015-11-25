@@ -49,6 +49,20 @@ public class MyTimer{
 		sumTime = 0;
 	
 	}
+
+	/**
+	 * Creates a new timer and starts it if start=true.
+	 * @param start if true, then start the timer; if false then don't start the timer.
+	 */
+	public MyTimer(boolean start){
+
+		timing = false;
+		numTimers = 0;
+		sumTime = 0;
+
+		this.start();
+
+	}
 	
 	/**
 	 * Starts the timer.
@@ -79,6 +93,9 @@ public class MyTimer{
 	
 	/**
 	 * Returns the elapsed time in seconds since the last start-stop calls.
+	 * The returned value is not well defined if the timer has not been started
+	 * and stopped at least once.
+	 * If you want the elapsed time while it's running, use {@link #peekAtTime()}.
 	 * @return the elapsed time in seconds since the last start-stop calls.
 	 */
 	public double getTime(){
@@ -88,6 +105,22 @@ public class MyTimer{
 		
 		return timeInSeconds;
 	
+	}
+
+	/**
+	 * Returns the current elapsed time since the timer was started. Returns 0 if the timer is not running.
+	 * @return The current elapsed time since the timer was started or 0 if the timer is not running.
+	 */
+	public double peekAtTime(){
+
+		if(!timing){
+			return 0.;
+		}
+
+		long diff = System.currentTimeMillis() - startTime;
+		double timeInSeconds = (double)diff / 1000.0;
+
+		return timeInSeconds;
 	}
 	
 	/**
