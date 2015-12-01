@@ -30,5 +30,6 @@
 	<classpathentry kind="lib" path="lib/weka-src.jar"/>
 	<classpathentry kind="lib" path="lib/weka.jar"/>
 	<classpathentry kind="lib" path="lib/guava-18.0.jar"/>
+	<classpathentry kind="lib" path="lib/trove.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

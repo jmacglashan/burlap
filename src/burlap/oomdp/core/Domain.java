@@ -1,11 +1,11 @@
 package burlap.oomdp.core;
 
 
-import java.util.*;
-
 import burlap.debugtools.DPrint;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.*;
 
 
 /**
@@ -264,12 +264,24 @@ public abstract class Domain {
 	public abstract Action getAction(String name);
 	
 	/**
+	 * DEPRECATED: Use {@link #getSGAgentAction(String)} instead.<br/>
 	 * Return the stochastic game action with the given name. This method will throw a runtime exception
 	 * if it is not an instance of the stochastic game domain (SGDomain).
 	 * @param name the name of the action to return
 	 * @return the action with the given name or null if it does not exist.
 	 */
+	@Deprecated
 	public abstract SGAgentAction getSingleAction(String name);
+
+
+	/**
+	 * Return the stochastic game action ({@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}) with the given name.
+	 * This method will throw a runtime exception
+	 * if it is not an instance of the stochastic game domain (SGDomain).
+	 * @param name the name of the action to return
+	 * @return the {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} with the given name or null if it does not exist.
+	 */
+	public abstract SGAgentAction getSGAgentAction(String name);
 	
 	
 	

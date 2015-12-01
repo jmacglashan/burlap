@@ -18,30 +18,29 @@ public abstract class OOMDPObjectInstance implements ObjectInstance{
 	 */
 	public <T> ObjectInstance setValue(String attName, T value) {
 		String valueClass = value.getClass().getName();
-		switch(valueClass) {
-		case "boolean":
-		case "java.lang.Boolean":
+		if(valueClass.equals("boolean") || valueClass.equals("java.lang.Boolean")){
 			Boolean b = (Boolean)value;
 			return this.setValue(attName, (boolean)b);
-		case "double":
-		case "java.lang.Double":
+		}
+		else if(valueClass.equals("double") || valueClass.equals("java.lang.Double")){
 			Double d = (Double)value;
 			return this.setValue(attName, (double)d);
-		case "double[]":
-		case "java.lang.Double[]":
+		}
+		else if(valueClass.equals("double[]") || valueClass.equals("java.lang.Double[]")){
 			return this.setValue(attName, (double[])value);
-		case "int":
-		case "java.lang.Integer":
+		}
+		else if(valueClass.equals("int") || valueClass.equals("java.lang.Integer")){
 			Integer i = (Integer)value;
 			return this.setValue(attName, (int)i);
-		case "int[]":
-		case "java.lang.Integer[]":
-			this.setValue(attName, (int[])value);
-		case "java.lang.String":
-			this.setValue(attName, (String)value);
-		default:
-			throw new RuntimeException("Unsupported value type " + valueClass);
 		}
+		else if(valueClass.equals("int[]") || valueClass.equals("java.lang.Integer[]")){
+			return this.setValue(attName, (int[])value);
+		}
+		else if(valueClass.equals("java.lang.String")){
+			return this.setValue(attName, (String)value);
+		}
+		throw new RuntimeException("Unsupported value type " + valueClass);
+
 	}
 
 }

@@ -2,7 +2,13 @@ package burlap.debugtools;
 
 
 /**
- * A data structure for keeping track of elapsed and average time.
+ * A data structure for keeping track of elapsed and average time. Use {@link #start()} to start the timer
+ * (or set it to start in the constructor {@link #MyTimer(boolean)}. Use {@link #peekAtTime()} to check
+ * the current elapsed time since it was started. Use {@link #stop()} to stop the timer and
+ * {@link #getTime()} to get the elapsed time between the last time the timer was started and stopped.
+ * If you start and stop the timer multiple times, you can get the average time for all start-stops
+ * using the {@link #getAvgTime()} method and the total time of all start-stops with {@link #getTotalTime()}.
+ * If you want to check if the timer is running, use {@link #isRunning()}.
  * @author James MacGlashan
  *
  */
@@ -49,22 +55,42 @@ public class MyTimer{
 		sumTime = 0;
 	
 	}
+
+	/**
+	 * Creates a new timer and starts it if start=true.
+	 * @param start if true, then start the timer; if false then don't start the timer.
+	 */
+	public MyTimer(boolean start){
+
+		timing = false;
+		numTimers = 0;
+		sumTime = 0;
+
+		this.start();
+
+	}
 	
 	/**
-	 * Starts the timer.
+	 * Starts the timer if it is not running.
+	 * @return returns true if the timer is started; false if it is already running and cannot be started.
 	 */
-	public void start(){
-	
-		startTime = System.currentTimeMillis();
-		timing = true;
+	public boolean start(){
+
+		if(!timing) {
+			startTime = System.currentTimeMillis();
+			timing = true;
+			return true;
+		}
+		return false;
 	
 	}
 	
 	
 	/**
-	 * Stops the timer.
+	 * Stops the timer. Has no effect is the timer has not been started.
+	 * @return returns true if stops the timer; false if the timer is not running and cannot be stopped.
 	 */
-	public void stop(){
+	public boolean stop(){
 	
 		if(timing){
 			timing = false;
@@ -72,13 +98,28 @@ public class MyTimer{
 			long diff = stopTime - startTime;
 			sumTime += diff;
 			numTimers++;
+			return true;
 		}
+
+		return false;
 	
+	}
+
+
+	/**
+	 * Indicates whether this timer is currently running.
+	 * @return true if the timer is running; false if it is not.
+	 */
+	public boolean isRunning(){
+		return this.timing;
 	}
 	
 	
 	/**
 	 * Returns the elapsed time in seconds since the last start-stop calls.
+	 * The returned value is not well defined if the timer has not been started
+	 * and stopped at least once.
+	 * If you want the elapsed time while it's running, use {@link #peekAtTime()}.
 	 * @return the elapsed time in seconds since the last start-stop calls.
 	 */
 	public double getTime(){
@@ -88,6 +129,22 @@ public class MyTimer{
 		
 		return timeInSeconds;
 	
+	}
+
+	/**
+	 * Returns the current elapsed time since the timer was started. Returns 0 if the timer is not running.
+	 * @return The current elapsed time since the timer was started or 0 if the timer is not running.
+	 */
+	public double peekAtTime(){
+
+		if(!timing){
+			return 0.;
+		}
+
+		long diff = System.currentTimeMillis() - startTime;
+		double timeInSeconds = (double)diff / 1000.0;
+
+		return timeInSeconds;
 	}
 	
 	/**

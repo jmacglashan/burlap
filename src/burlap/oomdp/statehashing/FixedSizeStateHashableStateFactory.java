@@ -1,29 +1,19 @@
 package burlap.oomdp.statehashing;
 
-import gnu.trove.list.array.TIntArrayList;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.google.common.collect.ImmutableList;
-
-import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.FixedSizeImmutableState;
 import burlap.oomdp.core.states.ImmutableStateInterface;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.values.Value;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
-import burlap.oomdp.statehashing.ImmutableStateHashableStateFactory.ImmutableHashableState;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * This is a hash factory specifically for FixedSizeImmutableStates. It allows you to set a mask, to only hash
@@ -57,7 +47,7 @@ public class FixedSizeStateHashableStateFactory extends ImmutableStateHashableSt
 	/**
 	 * Sets all masking value of the provided object classes.
 	 * A value of true, signifies an object will be included in hashing/equality testing
-	 * @param objectClassName
+	 * @param objectClassNames the object class names to mask
 	 */
 	@Override
 	public void setObjectClassMask(boolean value, String ...objectClassNames) {
@@ -74,7 +64,7 @@ public class FixedSizeStateHashableStateFactory extends ImmutableStateHashableSt
 	/**
 	 * Sets all masking value of the provided objects.
 	 * A value of true, signifies an object will be included in hashing/equality testing
-	 * @param objectClassName
+	 * @param objectNames the object names to mask
 	 */
 	@Override
 	public void setObjectMask(boolean value, String ... objectNames) {
@@ -137,9 +127,9 @@ public class FixedSizeStateHashableStateFactory extends ImmutableStateHashableSt
 	/**
 	 * Because the objects are assumed to be in a fixed order. If the equality comparison is name dependent
 	 * you don't need to check equality among any other objects, just the ones used in the comparison.
-	 * @param s1
-	 * @param s2
-	 * @return
+	 * @param s1 first {@link burlap.oomdp.core.states.ImmutableState} to compare
+	 * @param s2 second {@link burlap.oomdp.core.states.ImmutableState} o compare
+	 * @return true or false
 	 */
 	protected boolean identifierDependentEquals(ImmutableStateInterface s1, ImmutableStateInterface s2){
 		if (!(s1 instanceof FixedSizeImmutableState) ||

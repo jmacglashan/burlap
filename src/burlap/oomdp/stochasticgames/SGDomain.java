@@ -1,15 +1,10 @@
 package burlap.oomdp.stochasticgames;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.*;
 
 
 /**
@@ -82,7 +77,10 @@ public class SGDomain extends Domain{
 		return singleActionMap.get(name);
 	}
 
-
+	@Override
+	public SGAgentAction getSGAgentAction(String name) {
+		return singleActionMap.get(name);
+	}
 
 	@Override
 	public void addAction(Action act) {
