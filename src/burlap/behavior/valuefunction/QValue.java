@@ -51,4 +51,11 @@ public class QValue {
 		this.q = src.q;
 	}
 	
+	@Override
+	public String toString() {
+		return "Q: " + Double.toString(this.q) + "\n" + 
+				"Action: " + this.a.toString() + "\n" + 
+				"State: " + this.s.toString();
+	}
+	
 }
