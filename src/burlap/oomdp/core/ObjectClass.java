@@ -5,10 +5,8 @@ import java.util.*;
 
 /**
  * Object classes are part of the OO-MDP definition and define the kinds of objects that can exist in an OO-MDP state.
- * Object classes have a name to identify them and a set of attributes that define them. Object classes may also be
- * specified as "hidden" which means that they should not be used by the agent planning/learning algorithms when resolving
- * the state. Hidden object classes may be useful for defining POMDP domains or in facilitating the generation of values
- * for observable object classes.
+ * Object classes have a name to identify them and a set of attributes that define the value domain of objects
+ * that belong to the class.
  * @author James MacGlashan
  *
  */
@@ -16,10 +14,10 @@ public class ObjectClass {
 	
 	public String							name;							//name of the object class
 	public Domain							domain;							//back pointer to host domain
-	public Map <String, Integer>			attributeIndex;					//map from attribute name to feature vector index
+	public Map <String, Integer>			attributeIndex;					//map from attribute name to list index
 	public Map <String, Attribute>			attributeMap;					//map from attribute name to the defining attribute
 	public List <Attribute>					attributeList;					//definitions of object attributes
-	public boolean							hidden;							//whether this is a hidden object class from the agent, but defines the state space
+
 	
 	
 	/**
@@ -35,32 +33,12 @@ public class ObjectClass {
 		this.attributeIndex = new HashMap <String, Integer>();
 		this.attributeMap = new HashMap <String, Attribute>();
 		this.attributeList = new ArrayList <Attribute>();
-		this.hidden = false;
 		
 		this.domain.addObjectClass(this);
 		
 		
 	}
-	
-	/**
-	 * Initializes the attribute indexing data structures, connects this object class
-	 * to the specified domain, and automatically connects the domain to this object class.
-	 * @param domain the domain to which this object class belongs
-	 * @param name the name identifier for this object class
-	 * @param hidden whether this object class is hidden or not
-	 */
-	public ObjectClass(Domain domain, String name, boolean hidden){
-		
-		this.name = name;
-		this.domain = domain;
-		this.attributeIndex = new HashMap <String, Integer>();
-		this.attributeMap = new HashMap <String, Attribute>();
-		this.attributeList = new ArrayList <Attribute>();
-		this.hidden = hidden;
-		this.domain.addObjectClass(this);
-		
-		
-	}
+
 	
 	
 	/**
