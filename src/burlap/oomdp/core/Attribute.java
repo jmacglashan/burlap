@@ -1,22 +1,9 @@
 package burlap.oomdp.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import burlap.oomdp.core.values.*;
 
 import javax.management.RuntimeErrorException;
-
-import burlap.oomdp.core.values.DiscreteValue;
-import burlap.oomdp.core.values.DoubleArrayValue;
-import burlap.oomdp.core.values.IntArrayValue;
-import burlap.oomdp.core.values.IntValue;
-import burlap.oomdp.core.values.MultiTargetRelationalValue;
-import burlap.oomdp.core.values.RealValue;
-import burlap.oomdp.core.values.RelationalValue;
-import burlap.oomdp.core.values.StringValue;
-import burlap.oomdp.core.values.Value;
+import java.util.*;
 
 /**
  * The attribute class defines attributes that define OO-MDP object classes. There are different types of attributes
@@ -32,9 +19,7 @@ import burlap.oomdp.core.values.Value;
  * attribute can be unset to any target. The single-target relational attribute values are represented by strings that specify
  * the name reference of the object to which they are connected. Multi-target relational attribute values are represented
  * by an ordered set of string values indicating the targets to which the attribute is connected.
- * 
- * Attributes may also be specified as "hidden," which means that they should not be used by the agent planning/learning algorithms when resolving
- * the state.
+ *
  *  
  * @author James MacGlashan
  * 
