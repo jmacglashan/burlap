@@ -1,26 +1,22 @@
 package burlap.behavior.singleagent.planning.stochastic.rtdp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 
 /**
@@ -105,7 +101,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * the max number of rollouts to perform when planning is started unless the value function margin is small enough. If
 	 * set to -1, then there is no limit.
 	 */
-	protected int								maxRollouts;
+	protected int								maxRollouts = -1;
 	
 	/**
 	 * The max permitted difference between the lower bound and upperbound for planning termination.
@@ -177,6 +173,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		this.lowerVInit = lowerVInit;
 		this.upperVInit = upperVInit;
 		this.maxDiff = maxDiff;
+		this.maxRollouts = maxRollouts;
 		
 		this.useCachedTransitions = false;
 	}
