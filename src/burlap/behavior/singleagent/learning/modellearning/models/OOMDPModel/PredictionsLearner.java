@@ -36,7 +36,7 @@ public class PredictionsLearner {
 	private Domain d;
 	private int k;
 	private List<PropositionalFunction> propFunsToUse;
-
+	private String statePerceptionToUse;
 	private List<GroundedAction> allGAs;
 
 	/**
@@ -48,7 +48,8 @@ public class PredictionsLearner {
 	 * @param initialState the state to groundings from
 	 * @param k the max number of effects (of one type) that an action can have
 	 */
-	public PredictionsLearner(Domain d, List<PropositionalFunction> propFuns, List<String> effectsToUse, List<Action> actionsToUse, State initialState, int k) {
+	public PredictionsLearner(Domain d, List<PropositionalFunction> propFuns, List<String> effectsToUse, List<Action> actionsToUse, State initialState, int k, String statePerceptionToUse) {
+		this.statePerceptionToUse = statePerceptionToUse;
 		this.d = d;
 		this.k = k;
 		this.propFunsToUse = propFuns;
@@ -85,6 +86,10 @@ public class PredictionsLearner {
 		}
 	}
 
+	public HashMap<AttActionEffectTuple, List<Prediction>> getPredictionsByAttActionAndEffect() {
+		return this.predictionsByAttActionAndEffect;
+	}
+	
 	/**
 	 * 
 	 * @param pred to check for overlaps with
@@ -137,6 +142,8 @@ public class PredictionsLearner {
 	}
 
 	private void learnForOClassAndAtt(State s, GroundedAction a, State sPrime, ObjectClass oClass, Attribute att) {
+		List<Prediction> predictionsThatPredictEffectsForState = new ArrayList<Prediction>();
+
 		//Found a failure condition for an action -- update as necessary
 		if (classAndAttUnchanged(s, sPrime, oClass, att)) {
 			ConditionHypothesis failureHyp = new ConditionHypothesis(s, this.propFunsToUse);
@@ -180,7 +187,7 @@ public class PredictionsLearner {
 				Prediction prediction;
 				if ((prediction = predThatPredictsThisEffect(relevantPredictions, observedEffect)) != null) {
 
-					prediction.updateLearners(s, sPrime);
+					prediction.updateConditionLearners(s, sPrime, true);
 
 					//Verify that there are no overlaps
 					if (this.predictionsOverlap(prediction, relevantPredictions)) {
@@ -190,11 +197,11 @@ public class PredictionsLearner {
 
 				//If we observed an effect that we had no prediction for then add this prediction and update the learner for it
 				else {
-					Prediction toAdd = new Prediction(this.propFunsToUse, oClass, att, a, observedEffect, s);
-					relevantPredictions.add(toAdd);
+					prediction = new Prediction(this.propFunsToUse, oClass, att, a, observedEffect, s, this.statePerceptionToUse);
+					relevantPredictions.add(prediction);
 
 					//Make sure no overlap with an existing prediction of this type
-					if (this.predictionsOverlap(toAdd, relevantPredictions)) {
+					if (this.predictionsOverlap(prediction, relevantPredictions)) {
 						relevantPredictions = null;
 					}
 					//make sure there aren't more than K predictions
@@ -202,13 +209,46 @@ public class PredictionsLearner {
 						relevantPredictions = null;
 					}
 				}
+
+
+				predictionsThatPredictEffectsForState.add(prediction);
+
 				this.predictionsByAttActionAndEffect.put(toHashBy, relevantPredictions);
+			}
+
+
+		}
+		//Lastly update false conditions for all other conditionlearners -- for classic DOORMAX this will do nothing
+		List<Prediction> allPredictions = this.getAllPredictionsByClassEtc(oClass, att, a);
+		for (Prediction currPred : allPredictions) {
+			if (!predictionsThatPredictEffectsForState.contains(currPred)) {
+				currPred.updateConditionLearners(s, sPrime, false);
 			}
 		}
 
 	}
 
+	public List<Prediction> getAllPredictions() {
 
+		List<Prediction> allPredictions = new ArrayList<Prediction>();
+		for (List<Prediction> preds : this.predictionsByAttActionAndEffect.values()) {
+			if (preds != null) {
+				allPredictions.addAll(preds);
+			}
+		}
+		return allPredictions;
+	}
+	private List<Prediction> getAllPredictionsByClassEtc(ObjectClass oClass, Attribute att, GroundedAction ga) {
+		List<Prediction> allPredictions = new ArrayList<Prediction>();
+		for (String eTypeString : this.effectsToUse) {
+			AttActionEffectTuple toHashBy = new AttActionEffectTuple(oClass, att, ga, eTypeString);
+			List<Prediction> relevantPredictions = this.predictionsByAttActionAndEffect.get(toHashBy);
+			if (relevantPredictions != null) {
+				allPredictions.addAll(relevantPredictions);
+			}
+		}
+		return allPredictions;
+	}
 
 	private boolean effectIsIncompatible(List<Effect> effects, State state, Effect eToTest) {
 		DiscreteStateHashFactory hf = new DiscreteStateHashFactory();
@@ -268,6 +308,7 @@ public class PredictionsLearner {
 			AttActionEffectTuple toHashBy = new AttActionEffectTuple(oClass, att, a, effectType);
 
 			List<Prediction> relevantPredictions = this.predictionsByAttActionAndEffect.get(toHashBy);
+
 			//Effect type ruled out so continue
 			if (relevantPredictions == null) continue; 
 
@@ -275,18 +316,24 @@ public class PredictionsLearner {
 			for (Prediction pred : relevantPredictions) {
 				Effect predictedEffect = pred.predictResultingEffect(s);
 
-				//If prediction is true add it to the list
-				if (predictedEffect != null) {
+				//If prediction doesn't know, return don't know
+				if (predictedEffect == null) return null;
+
+				//If prediction is non-null (i.e. condition learner predicted true)
+				if (!predictedEffect.isNullEffect()) {
 
 					//If prediction is incompatible with one of the effects return don't know
 					if (effectIsIncompatible(predictedEffects, s, predictedEffect)) {
 						return null;
 					}
 
-					//If prediction isn't redundant add it
-					if (!effectIsRedundant(predictedEffects, predictedEffect)) {
-						predictedEffects.add(predictedEffect);
+					//If prediction's effect is redundant skip it
+					if (effectIsRedundant(predictedEffects, predictedEffect)) {
+						continue;
 					}
+
+					//Add predicted effect
+					predictedEffects.add(predictedEffect);
 
 				}
 			}
@@ -360,27 +407,27 @@ public class PredictionsLearner {
 		}
 
 		//Failure conditions
-//		for (GroundedAction a : this.allGAs) {
-//
-//			for (ObjectClass oClass : this.d.getObjectClasses()) {
-//				for (Attribute att : oClass.attributeList) {
-//					PaperAttributeActionTuple toHashBy = new PaperAttributeActionTuple(oClass, att, a);
-//					List<ConditionHypothesis> failureConditionsForAction = this.failureConditionsByActionOClassAtt.get(toHashBy);
-//					if (failureConditionsForAction.size() == 0) continue;
-//					toReturn.append("\tFailure condition for " + a +  " on " + oClass.name + "'s " + att.name + ": ");
-//
-//					for (ConditionHypothesis cond : failureConditionsForAction) {
-//						toReturn.append(cond);
-//
-//					}
-//					toReturn.append("\n");
-//				}
-//			}
-//
-//
-//			toReturn.append("\n");
-//
-//		}
+		//				for (GroundedAction a : this.allGAs) {
+		//		
+		//					for (ObjectClass oClass : this.d.getObjectClasses()) {
+		//						for (Attribute att : oClass.attributeList) {
+		//							PaperAttributeActionTuple toHashBy = new PaperAttributeActionTuple(oClass, att, a);
+		//							List<ConditionHypothesis> failureConditionsForAction = this.failureConditionsByActionOClassAtt.get(toHashBy);
+		//							if (failureConditionsForAction.size() == 0) continue;
+		//							toReturn.append("\tFailure condition for " + a +  " on " + oClass.name + "'s " + att.name + ": ");
+		//		
+		//							for (ConditionHypothesis cond : failureConditionsForAction) {
+		//								toReturn.append(cond);
+		//		
+		//							}
+		//							toReturn.append("\n");
+		//						}
+		//					}
+		//		
+		//		
+		//					toReturn.append("\n");
+		//		
+		//				}
 
 		return toReturn.toString();
 	}

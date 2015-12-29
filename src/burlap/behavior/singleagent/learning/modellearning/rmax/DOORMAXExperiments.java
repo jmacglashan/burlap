@@ -23,6 +23,7 @@ import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Pred
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.OOMDPModel;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.Effect;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.EffectHelpers;
+import burlap.behavior.singleagent.learning.modellearning.models.PerceptualModelDataStructures.StatePerception;
 import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
 import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
@@ -52,22 +53,20 @@ import burlap.oomdp.singleagent.common.UniformCostRF;
 public class DOORMAXExperiments {
 
 	private static void runExperiments(final Domain d, final RewardFunction rf, final TerminalFunction tf, final double maxReward, final int nConfident,
-			final double maxVIDelta, final int maxVIPasses, State initialState, int numTrials, int numEpisodes) {
+			final double maxVIDelta, final int maxVIPasses, final State initialState, int numTrials, int numEpisodes, final int k) {
 		final StateHashFactory hf = new DiscreteStateHashFactory();
 		final Model tabModel = new TabularModel(d,new DiscreteStateHashFactory(),1);
 
-		List<PropositionalFunction> propFunsToUse = d.getPropFunctions();
-		List<String> effectsToUse = new ArrayList<String>();
+		final List<PropositionalFunction> propFunsToUse = d.getPropFunctions();
+		final List<String> effectsToUse = new ArrayList<String>();
 		effectsToUse.add(EffectHelpers.arithEffect);
 		effectsToUse.add(EffectHelpers.assigEffect);
-		int k = 2;
-		final Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse, effectsToUse, initialState, k);
 
 		//EXPERIMENTS
 		LearningAgentFactory RMAXLearningFactory = new LearningAgentFactory() {
 			@Override
 			public String getAgentName() {
-				return "RMAX-Learning";
+				return "RMAX";
 			}
 
 			@Override
@@ -81,17 +80,75 @@ public class DOORMAXExperiments {
 
 			@Override
 			public String getAgentName() {
-				return "DOORMAX-Learning";
+				return "DOORMAXWithPFs";
 			}
 
 			@Override
 			public LearningAgent generateAgent() {
+				final Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse, effectsToUse, initialState, k, null);
 				return new PotentialShapedRMax(d, rf, tf,.9, hf,maxReward, nConfident, maxVIDelta, maxVIPasses, oomdpModel);
 			}
 		};
+		
+		LearningAgentFactory DOORMaxTabAttStateLearning = new LearningAgentFactory() {
+
+			@Override
+			public String getAgentName() {
+				return "DOORMaxTabAttStatePerception-Learning";
+			}
+
+			@Override
+			public LearningAgent generateAgent() {
+				final Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse, effectsToUse, initialState, k, StatePerception.FullAttributeStatePerception);
+				return new PotentialShapedRMax(d, rf, tf,.9, hf,maxReward, nConfident, maxVIDelta, maxVIPasses, oomdpModel);
+			}
+		};
+		
+		LearningAgentFactory DOORMAXPFStatePerception = new LearningAgentFactory() {
+
+			@Override
+			public String getAgentName() {
+				return "DOORMAXPFStatePerception-Learning";
+			}
+
+			@Override
+			public LearningAgent generateAgent() {
+				final Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse, effectsToUse, initialState, k, StatePerception.PFStatePerception);
+				return new PotentialShapedRMax(d, rf, tf,.9, hf,maxReward, nConfident, maxVIDelta, maxVIPasses, oomdpModel);
+			}
+		};
+		
+		LearningAgentFactory DOORMAXRelationalStatePerception = new LearningAgentFactory() {
+
+			@Override
+			public String getAgentName() {
+				return "DOORMAXRelationalStatePerception-Learning";
+			}
+
+			@Override
+			public LearningAgent generateAgent() {
+				final Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse, effectsToUse, initialState, k, StatePerception.RelationalStatePerception);
+				return new PotentialShapedRMax(d, rf, tf,.9, hf,maxReward, nConfident, maxVIDelta, maxVIPasses, oomdpModel);
+			}
+		};
+		
+		LearningAgentFactory DOORMAXClassRelationalStatePerception = new LearningAgentFactory() {
+
+			@Override
+			public String getAgentName() {
+				return "DOORMAXWithoutPFs";
+			}
+
+			@Override
+			public LearningAgent generateAgent() {
+				final Model oomdpModel = new OOMDPModel(d,rf, tf,propFunsToUse, effectsToUse, initialState, k, StatePerception.ClassRelationalStatePerception);
+				return new PotentialShapedRMax(d, rf, tf,.9, hf,maxReward, nConfident, maxVIDelta, maxVIPasses, oomdpModel);
+			}
+		};
+		
 		StateGenerator sg = new ConstantStateGenerator(initialState);
 
-		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter((SADomain)d, rf, sg, numTrials, numEpisodes, RMAXLearningFactory, DOORMaxLearning);
+		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter((SADomain)d, rf, sg, numTrials, numEpisodes,RMAXLearningFactory , DOORMaxLearning,DOORMAXClassRelationalStatePerception);
 		exp.setUpPlottingConfiguration(500, 250, 2, 1000, 
 				TrialMode.MOSTRECENTANDAVERAGE, 
 				PerformanceMetric.CUMULATIVESTEPSPEREPISODE);
@@ -109,7 +166,7 @@ public class DOORMAXExperiments {
 		final RewardFunction rf = new UniformCostRF();
 		final double maxReward = 0;
 
-		runExperiments(d, rf, tf, maxReward, nConfident, maxVIDelta, maxVIPasses, initialState, numTrials, numEpisodes);
+		runExperiments(d, rf, tf, maxReward, nConfident, maxVIDelta, maxVIPasses, initialState, numTrials, numEpisodes, 2);
 	}
 
 	private static void runGridWorldExperiments(final int nConfident, final double maxVIDelta, final int maxVIPasses, int numTrials, int numEpisodes) {
@@ -130,7 +187,7 @@ public class DOORMAXExperiments {
 		final double maxReward = 0;
 
 
-		runExperiments(d, rf, tf, maxReward, nConfident, maxVIDelta, maxVIPasses, initialState, numTrials, numEpisodes);
+		runExperiments(d, rf, tf, maxReward, nConfident, maxVIDelta, maxVIPasses, initialState, numTrials, numEpisodes, 1);
 
 	}
 
@@ -140,12 +197,12 @@ public class DOORMAXExperiments {
 		//PARAMS TO SET
 
 		int numTrials = 1;
-		int numEpisodes = 20;
+		int numEpisodes = 10;
 		int nConfident = 1;
 		double maxVIDelta = .1;
 		int maxVIPasses = 20;
 
-		runGridWorldExperiments(nConfident, maxVIDelta, maxVIPasses, numTrials, numEpisodes);
+//		runGridWorldExperiments(nConfident, maxVIDelta, maxVIPasses, numTrials, numEpisodes);
 		runTaxiExperiments(nConfident, maxVIDelta, maxVIPasses, numTrials, numEpisodes);
 
 

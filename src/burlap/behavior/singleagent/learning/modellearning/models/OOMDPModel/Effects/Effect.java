@@ -74,7 +74,7 @@ public abstract class Effect {
 				this.atEffected.equals(otherEffect.getAttributeAffected());
 	}
 	
-	public boolean isDontKnow() {
+	public boolean isNullEffect() {
 		return false;
 	}
 	

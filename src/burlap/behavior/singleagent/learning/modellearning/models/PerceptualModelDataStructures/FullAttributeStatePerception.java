@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.learning.modellearning.models.PerceptualModel;
+package burlap.behavior.singleagent.learning.modellearning.models.PerceptualModelDataStructures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import burlap.oomdp.core.Value;
 
 public class FullAttributeStatePerception extends StatePerception {
 	private double[] data;
-	private boolean tag;
+	private Boolean tag;
 	private List<String> attributeNames;
 	
 	public FullAttributeStatePerception(State state, Boolean posInstance) {
@@ -21,7 +21,7 @@ public class FullAttributeStatePerception extends StatePerception {
 		List<Value> allValues = new ArrayList<Value>();
 		for (ObjectInstance o : allObjects) {
 			for (Attribute att : o.getObjectClass().attributeList) {
-				this.attributeNames.add(o.getName()+att.name);
+				this.attributeNames.add(o.getName()+att.name+ " NUMERIC\n");
 				allValues.add(o.getValueForAttribute(att.name));
 			}
 		}
@@ -39,7 +39,7 @@ public class FullAttributeStatePerception extends StatePerception {
 	}
 	
 	@Override
-	public String getArffString(boolean labeled) {
+	public String getArffValueString(boolean labeled) {
 		StringBuffer sb = new StringBuffer();
 		String prefix = "";
 		for (int i = 0; i < data.length; i++) {
@@ -69,4 +69,6 @@ public class FullAttributeStatePerception extends StatePerception {
 	public List<String> getattributeNames() {
 		return this.attributeNames;
 	}
+	
+
 }

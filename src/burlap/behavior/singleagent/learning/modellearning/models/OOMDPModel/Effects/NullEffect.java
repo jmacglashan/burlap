@@ -25,6 +25,11 @@ public class NullEffect extends Effect {
 	}
 	
 	@Override
+	public boolean isNullEffect() {
+		return true;
+	}
+	
+	@Override
 	public String toString() {
 		return "Null effect on " + this.atEffected.name + " of " + this.objectClassEffected.name;
 	}

@@ -32,7 +32,7 @@ public class OOMDPModel extends Model {
 	private List<PropositionalFunction> relevantPropFuns;
 	private List<String> effectsToUse;
 	private State initialState;
-
+	private String statePerceptionToUse;
 	/**
 	 * 
 	 * @param d domain to use
@@ -42,15 +42,17 @@ public class OOMDPModel extends Model {
 	 * @param effectsToUse list of strings of effects to plan over (documented as static Strings in Effects.EffectHelpers)
 	 * @param initialState the initialState to get grounded actions from
 	 * @param k
+	 * @param statePerceptionToUse string for how to featurize state for condition learner as gotten from StatePerceptions. If null will run classic DOORMAX with PFs.
 	 */
-	public OOMDPModel(Domain d, RewardFunction rf, TerminalFunction tf, List<PropositionalFunction> relevantPropFuns, List<String> effectsToUse, State initialState, int k) {
+	public OOMDPModel(Domain d, RewardFunction rf, TerminalFunction tf, List<PropositionalFunction> relevantPropFuns, List<String> effectsToUse, State initialState, int k, String statePerceptionToUse) {
 		this.d = d;
 		this.rf = rf;
 		this.k = k;
 		this.tf = tf;
+		this.statePerceptionToUse = statePerceptionToUse;
 		this.initialState = initialState;
 		this.relevantPropFuns = relevantPropFuns;
-		this.pLearner = new PredictionsLearner(d, relevantPropFuns, effectsToUse, d.getActions(), this.initialState, this.k);
+		this.pLearner = new PredictionsLearner(d, relevantPropFuns, effectsToUse, d.getActions(), this.initialState, this.k, this.statePerceptionToUse);
 		this.effectsToUse = effectsToUse;
 	}
 
@@ -125,7 +127,7 @@ public class OOMDPModel extends Model {
 
 	@Override
 	public void resetModel() {
-		this.pLearner = new PredictionsLearner(d, relevantPropFuns, effectsToUse, d.getActions(), this.initialState, this.k);
+		this.pLearner = new PredictionsLearner(d, relevantPropFuns, effectsToUse, d.getActions(), this.initialState, this.k, this.statePerceptionToUse);
 
 	}
 

@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.auxiliary.common.StateYAMLParser;
@@ -58,10 +59,14 @@ public class TaxiDomain implements DomainGenerator {
 
 
 
-
-	public int												maxX = 5;
-	public int												maxY = 5;
-	public int												maxFuel = 12;
+	public static int	minMinX = 5;
+	public static int	maxMaxX = 30;
+	public static int	minMinY = 5;
+	public static int	maxMaxY = 30;
+	
+	public int												maxX = maxMaxX;
+	public int												maxY = maxMaxY;
+	public static int												maxFuel = 12;
 
 	public boolean											includeFuel = false;
 	public boolean											includePickedup = false;
@@ -71,7 +76,8 @@ public class TaxiDomain implements DomainGenerator {
 
 	@Override
 	public Domain generateDomain() {
-
+				
+				
 		Domain domain = new SADomain();
 
 		Attribute xAtt = new Attribute(domain, XATT, AttributeType.DISC);
@@ -172,7 +178,63 @@ public class TaxiDomain implements DomainGenerator {
 		return domain;
 	}
 
+	public static State getRandomState(Domain domain){
+		Random rand = new Random();
+		int maxX = rand.nextInt(maxMaxX-minMinX) + minMinX;
+		int maxY = rand.nextInt(maxMaxX-minMinX) + minMinX;
+		
+		State s = new State();
 
+		ObjectInstance taxi = new ObjectInstance(domain.getObjectClass(TAXICLASS), "taxi");
+		s.addObject(taxi);
+
+		boolean usesFuel = domain.getAttribute(FUELATT) != null; 
+
+		if(usesFuel){
+			addNInstances(domain, s, LOCATIONCLASS, 5);
+		}
+		else{
+			addNInstances(domain, s, LOCATIONCLASS, 4);
+		}
+
+		addNInstances(domain, s, PASSENGERCLASS, 1);
+		addNInstances(domain, s, HWALLCLASS, 2);
+		addNInstances(domain, s, VWALLCLASS, 5);
+
+		if(usesFuel){
+			setTaxi(s, 0, 3, 12);
+		}
+		else{
+			setTaxi(s, rand.nextInt(maxX), rand.nextInt(maxY));
+		}
+
+		setLocation(s, 0, rand.nextInt(maxX), rand.nextInt(maxY), 4);
+		setLocation(s, 1, rand.nextInt(maxX), rand.nextInt(maxY), 1);
+		setLocation(s, 2, rand.nextInt(maxX), rand.nextInt(maxY), 3);
+		setLocation(s, 3, rand.nextInt(maxX), rand.nextInt(maxY), 2);
+
+		if(usesFuel){
+			setLocation(s, 4, 2, 1, 0);
+		}
+
+		setPassenger(s, 0, rand.nextInt(maxX), rand.nextInt(maxY), 1);
+
+		//Walls around edges
+		setHWall(s, 0, 0, maxX, maxY);
+		setHWall(s, 1, 0, maxX, 0);
+
+		setVWall(s, 0, 0, maxY, maxX);
+		setVWall(s, 1, 0, maxY, 0);
+		
+		//Random walls
+		setVWall(s, 2, 0, 2, rand.nextInt(maxX));
+		setVWall(s, 3, 3, 5, rand.nextInt(maxX));
+		setVWall(s, 4, 0, 2, rand.nextInt(maxX));
+
+		return s;
+
+	}
+	
 	public static State getClassicState(Domain domain){
 		State s = new State();
 
@@ -210,11 +272,14 @@ public class TaxiDomain implements DomainGenerator {
 
 		setPassenger(s, 0, 3, 0, 1);
 
+		//Walls around borders
 		setHWall(s, 0, 0, 5, 0);
 		setHWall(s, 1, 0, 5, 5);
 
 		setVWall(s, 0, 0, 5, 0);
 		setVWall(s, 1, 0, 5, 5);
+		
+		//Random vertical walls
 		setVWall(s, 2, 0, 2, 1);
 		setVWall(s, 3, 3, 5, 2);
 		setVWall(s, 4, 0, 2, 3);
@@ -245,6 +310,14 @@ public class TaxiDomain implements DomainGenerator {
 		taxi.setValue(FUELATT, fuel);	
 	}
 
+	/**
+	 * 
+	 * @param s
+	 * @param i
+	 * @param x
+	 * @param y
+	 * @param lt
+	 */
 	public static void setLocation(State s, int i, int x, int y, int lt){
 		ObjectInstance l = s.getObjectsOfTrueClass(LOCATIONCLASS).get(i);
 		l.setValue(XATT, x);
@@ -252,6 +325,14 @@ public class TaxiDomain implements DomainGenerator {
 		l.setValue(LOCATIONATT, lt);
 	}
 
+	/**
+	 * 
+	 * @param s
+	 * @param i
+	 * @param x
+	 * @param y
+	 * @param lt
+	 */
 	public static void setPassenger(State s, int i, int x, int y, int lt){
 		ObjectInstance p = s.getObjectsOfTrueClass(PASSENGERCLASS).get(i);
 		p.setValue(XATT, x);
@@ -691,7 +772,7 @@ public class TaxiDomain implements DomainGenerator {
 		TaxiDomain dg = new TaxiDomain();
 		dg.includeFuel = false;
 		Domain d = dg.generateDomain();
-		State s = TaxiDomain.getClassicState(d);
+		State s = TaxiDomain.getRandomState(d);
 
 		//TerminalExplorer exp = new TerminalExplorer(d);
 		//exp.exploreFromState(s);
@@ -701,7 +782,7 @@ public class TaxiDomain implements DomainGenerator {
 		String sstr = sp.stateToString(s);
 		//System.out.println(sstr);
 
-		Visualizer v = TaxiVisualizer.getVisualizer(5, 5);
+		Visualizer v = TaxiVisualizer.getVisualizer(dg.maxX, dg.maxY);
 		v.getStateRenderLayer().addStaticPainter(new VictoryText());
 		VisualExplorer exp = new VisualExplorer(d, v, s);
 

@@ -2,7 +2,12 @@ package burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel;
 
 import java.util.List;
 
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.ConditionLearners.OOMDPConditionLearner;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.ConditionLearners.PFConditionLearner;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.ConditionLearners.PerceptionConditionLearner;
 import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.Effect;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.EffectHelpers;
+import burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.Effects.NullEffect;
 import burlap.behavior.singleagent.learning.modellearning.rmax.TaxiDomain;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.ObjectClass;
@@ -20,7 +25,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  */
 public class Prediction {
 
-	private ConditionLearner CL;
+	private OOMDPConditionLearner CL;
 	private Effect effectToLearnConditionFor;
 	private List<PropositionalFunction> propFuns;
 	private ObjectClass associatedOClass;
@@ -28,7 +33,7 @@ public class Prediction {
 	private GroundedAction associatedAction;
 
 	/**
-	 * 
+	 * Note intialState is true for condition 
 	 * @param propFuns prop functions for the condition learner to consider
 	 * @param OC the relevant object cass
 	 * @param att the relevant attribute
@@ -36,19 +41,24 @@ public class Prediction {
 	 * @param effectToLearnConditionFor the effect that the CELearner is learning the condition for
 	 * @param initialState the state in which the effect was first observed just before taking act
 	 */
-	public Prediction(List<PropositionalFunction> propFuns, ObjectClass OC, Attribute att, GroundedAction act, Effect effectToLearnConditionFor, State initialState) {
+	public Prediction(List<PropositionalFunction> propFuns, ObjectClass OC, Attribute att, GroundedAction act, Effect effectToLearnConditionFor, State initialState, String statePerceptionToUse) {
 
 		this.propFuns = propFuns;
 		this.associatedOClass = OC;
 		this.relevantAtt = att;
-		this.CL = new ConditionLearner();
+		if (statePerceptionToUse != null) {
+			this.CL = new PerceptionConditionLearner(propFuns, statePerceptionToUse);
+		}
+		else {
+			this.CL = new PFConditionLearner(propFuns);
+		}
 		this.associatedAction = act;
 		this.effectToLearnConditionFor = effectToLearnConditionFor;
 
-		int [] currStateAsBitString = StateHelpers.stateToBitStringOfPreds(initialState, this.propFuns);
-		this.CL.updateVersionSpace(currStateAsBitString);
-
+		this.CL.learn(initialState, true);
 	}
+
+
 
 	/**
 	 * 
@@ -56,6 +66,11 @@ public class Prediction {
 	 */
 	public Effect getEffectLearningFor() {
 		return this.effectToLearnConditionFor;
+	}
+	
+	
+	public OOMDPConditionLearner getConditionLearner() {
+		return this.CL;
 	}
 
 
@@ -72,23 +87,30 @@ public class Prediction {
 		return this.associatedOClass.equals(oClass) && this.relevantAtt.equals(att) && this.associatedAction.equals(ga)
 				&& this.effectToLearnConditionFor.getEffectTypeString().equals(effectType);
 	}
-	
+
 	/**
 	 * 
 	 * @param s the state to predict on
 	 * @return null if the condition learner predicts false, the relevant effect otherwise
 	 */
 	public Effect predictResultingEffect(State s) {
-		int [] currStateAsBitString = StateHelpers.stateToBitStringOfPreds(s, this.propFuns);
 
-		boolean CLPrediction = this.CL.conditionTrueInState(currStateAsBitString);
+		Boolean CLPrediction = this.CL.predict(s);
 
-		//CL predicts false -- so it's a no op
-		if (!CLPrediction) {
+		//CL doesn't know so don't know:
+		if (CLPrediction == null) {
+//			System.out.println("CLearner doesnt know: " + this.associatedAction);
 			return null;
 		}
 
+		//CL predicts false -- so it's a no op
+		if (!CLPrediction) {
+//			System.out.println("CL predicted false for " + this.associatedAction);
+			return new NullEffect(null, associatedOClass, relevantAtt);
+		}
+		
 		//CL predicts true
+//		System.out.println("returning effect");
 		return this.effectToLearnConditionFor;
 	}
 
@@ -98,15 +120,8 @@ public class Prediction {
 	 * @param sPrime the resulting state where the effect we are learning for was observed on the relevant object class, attribute and after taking
 	 * the relevant action
 	 */
-	public void updateLearners(State s, State sPrime) {
-//		if (this.associatedOClass.name == "passenger" && (this.relevantAtt.name == TaxiDomain.XATT || this.relevantAtt.name == TaxiDomain.YATT)) {
-//			System.out.println("Prediction for " + this + " being updated");
-//		}
-		
-		
-		int [] currStateAsBitString = StateHelpers.stateToBitStringOfPreds(s, this.propFuns);
-
-		this.CL.updateVersionSpace(currStateAsBitString);
+	public void updateConditionLearners(State s, State sPrime, boolean wasTrueInState) {
+		this.CL.learn(s, wasTrueInState);
 	}
 
 
@@ -118,7 +133,7 @@ public class Prediction {
 	public boolean learningSameEffect(Prediction CELearner) {
 		return this.effectToLearnConditionFor.equals(CELearner.effectToLearnConditionFor);
 	}
-	
+
 	/**
 	 * 
 	 * @param pred other prediction to compare against
@@ -137,7 +152,7 @@ public class Prediction {
 	@Override
 	public String toString() {
 		return "\tPrediction for " + this.associatedAction.actionName() + "'s effect on " + this.relevantAtt.name + " of " + this.associatedOClass.name + 
-				"\n\t\tcondition:" + this.CL.getHSubT() +
+				"\n\t\tcondition:" + this.CL +
 				"\n\t\teffectLearner: " + this.effectToLearnConditionFor;
 	}
 }
