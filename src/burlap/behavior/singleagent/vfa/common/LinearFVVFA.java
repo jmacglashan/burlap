@@ -174,6 +174,7 @@ public class LinearFVVFA implements ValueFunctionApproximation{
 		for(int i = this.stateActionWeights.length; i < nWeights.length; i++){
 			nWeights[i] = new FunctionWeight(i, this.defaultWeight);
 		}
+		this.stateActionWeights = nWeights;
 	}
 
 
@@ -258,13 +259,18 @@ public class LinearFVVFA implements ValueFunctionApproximation{
 	public LinearFVVFA copy() {
 		LinearFVVFA vfa = new LinearFVVFA(this.fvGen, this.defaultWeight);
 		vfa.actionOffset = new HashMap<GroundedAction, Integer>(this.actionOffset);
-		vfa.stateWeights = new FunctionWeight[this.stateWeights.length];
-		for(int i = 0; i < this.stateWeights.length; i++){
-			vfa.stateWeights[i] = new FunctionWeight(this.stateWeights[i].weightId(), this.stateWeights[i].weightValue());
+
+		if(this.stateWeights != null) {
+			vfa.stateWeights = new FunctionWeight[this.stateWeights.length];
+			for(int i = 0; i < this.stateWeights.length; i++) {
+				vfa.stateWeights[i] = new FunctionWeight(this.stateWeights[i].weightId(), this.stateWeights[i].weightValue());
+			}
 		}
-		vfa.stateActionWeights = new FunctionWeight[this.stateActionWeights.length];
-		for(int i = 0; i < this.stateActionWeights.length; i++){
-			vfa.stateActionWeights[i] = new FunctionWeight(this.stateActionWeights[i].weightId(), this.stateActionWeights[i].weightValue());
+		if(this.stateActionWeights != null) {
+			vfa.stateActionWeights = new FunctionWeight[this.stateActionWeights.length];
+			for(int i = 0; i < this.stateActionWeights.length; i++) {
+				vfa.stateActionWeights[i] = new FunctionWeight(this.stateActionWeights[i].weightId(), this.stateActionWeights[i].weightValue());
+			}
 		}
 
 
