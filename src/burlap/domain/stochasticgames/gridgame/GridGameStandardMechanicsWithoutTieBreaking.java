@@ -8,6 +8,10 @@ import burlap.oomdp.core.Domain;
 
 public class GridGameStandardMechanicsWithoutTieBreaking extends GridGameStandardMechanics{
 
+	public GridGameStandardMechanicsWithoutTieBreaking(Domain d) {
+		super(d);
+	}
+	
 	public GridGameStandardMechanicsWithoutTieBreaking(Domain domain, double semiWallProb) {
 		super(domain, semiWallProb);
 	}

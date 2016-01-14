@@ -619,7 +619,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 
 	protected boolean sampleWallCollisionVertical(Location2 p0, Location2 delta, List <ObjectInstance> walls){
 		for(int i = 0; i < walls.size(); i++){
-			if (sampleWallCollision(p0.y, p0.y + delta.y, delta.x, walls.get(i))) {
+			if (sampleWallCollision(p0.y, p0.y + delta.y, p0.x, walls.get(i))) {
 				return true;
 			}
 		}
