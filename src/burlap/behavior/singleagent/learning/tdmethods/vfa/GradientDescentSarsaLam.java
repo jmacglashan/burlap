@@ -476,6 +476,10 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 			}
 
+			//delete traces marked for deletion
+			for(Integer t : deletedSet){
+				traces.remove(t);
+			}
 
 			//move on
 			curState = nextState;

@@ -2,7 +2,6 @@ package burlap.tutorials.scd;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.RandomPolicy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.auxiliary.StateGridder;
@@ -188,13 +187,12 @@ public class ContinuousDomainTutorial {
 		double defaultQ = 0.5;
 		DifferentiableStateActionValue vfa = (DifferentiableStateActionValue)cmac.generateVFA(defaultQ/nTilings);
 		GradientDescentSarsaLam agent = new GradientDescentSarsaLam(domain, 0.99, vfa, 0.02, 0.5);
-		agent.setLearningPolicy(new RandomPolicy(domain));
 
 		MyTimer timer = new MyTimer(true);
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, s);
 		List<EpisodeAnalysis> episodes = new ArrayList<EpisodeAnalysis>();
-		for(int i = 0; i < 100; i++){
-			EpisodeAnalysis ea = agent.runLearningEpisode(env, 3000);
+		for(int i = 0; i < 5000; i++){
+			EpisodeAnalysis ea = agent.runLearningEpisode(env);
 			episodes.add(ea);
 			System.out.println(i + ": " + ea.maxTimeStep());
 			env.resetEnvironment();
