@@ -78,7 +78,7 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 	@Override
 	public double functionInput(State s) {
 		this.currentStateFeatures = this.fvGen.generateFeatureVectorFrom(s);
-		this.currentActionOffset = -1;
+		this.currentActionOffset = 0;
 		if(this.stateWeights == null){
 			this.stateWeights = new double[this.currentStateFeatures.length];
 			for(int i = 0; i < this.stateWeights.length; i++){
@@ -96,7 +96,20 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 
 	@Override
 	public FunctionGradient computeGradient() {
-		return null;
+
+		if(currentGradient != null){
+			return this.currentGradient;
+		}
+
+		FunctionGradient gradient = new FunctionGradient(this.currentStateFeatures.length);
+		int sIndOffset = this.currentActionOffset*this.currentStateFeatures.length;
+		for(int i = 0; i < this.currentStateFeatures.length; i++){
+			gradient.put(i+sIndOffset, this.currentStateFeatures[i]);
+		}
+
+		this.currentGradient = gradient;
+
+		return gradient;
 	}
 
 	@Override
