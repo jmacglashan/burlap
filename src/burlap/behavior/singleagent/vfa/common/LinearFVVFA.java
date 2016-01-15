@@ -162,6 +162,31 @@ public class LinearFVVFA implements ValueFunctionApproximation{
 
 
 	/**
+	 * Resets the state function weight array to a new array of the given sized and default value.
+	 * @param size the dimensionality of the weights
+	 * @param v the default value to which the weights will be set
+	 */
+	public void initializeStateWeightVector(int size, double v){
+		this.stateWeights = new FunctionWeight[size];
+		for(int i = 0; i < this.stateWeights.length; i++){
+			this.stateWeights[i] = new FunctionWeight(i, v);
+		}
+	}
+
+
+	/**
+	 * Resets the state-action function weight array to a new array of the given sized and default value.
+	 * @param size the dimensionality of the weights
+	 * @param v the default value to which the weights will be set
+	 */
+	public void initializeStateActionWeightVector(int size, double v){
+		this.stateActionWeights = new FunctionWeight[size];
+		for(int i = 0; i < this.stateActionWeights.length; i++){
+			this.stateActionWeights[i] = new FunctionWeight(i, v);
+		}
+	}
+
+	/**
 	 * Expands the state-action function weight vector by a fixed sized and initializes their value
 	 * to the default weight value set for this object.
 	 * @param num the number of function weights to add to the state-action function weight vector
@@ -218,8 +243,9 @@ public class LinearFVVFA implements ValueFunctionApproximation{
 			}
 			this.stateActionWeights[featureId].setWeight(w);
 		}
-
-		throw new RuntimeException("VFA cannot set function weight, because function weights and dimensionality have not yet been initialized.");
+		else {
+			throw new RuntimeException("VFA cannot set function weight, because function weights and dimensionality have not yet been initialized.");
+		}
 
 	}
 
@@ -253,6 +279,33 @@ public class LinearFVVFA implements ValueFunctionApproximation{
 		}
 
 		return 0;
+	}
+
+
+	/**
+	 * Returns the {@link java.util.Map} of feature index offsets into the full feature vector for each action
+	 * @return the {@link java.util.Map} of feature index offsets into the full feature vector for each action
+	 */
+	public Map<GroundedAction, Integer> getActionOffset() {
+		return actionOffset;
+	}
+
+
+	/**
+	 * Sets the {@link java.util.Map} of feature index offsets into the full feature vector for each action
+	 * @param actionOffset the {@link java.util.Map} of feature index offsets into the full feature vector for each action
+	 */
+	public void setActionOffset(Map<GroundedAction, Integer> actionOffset) {
+		this.actionOffset = actionOffset;
+	}
+
+	/**
+	 * Sets the {@link java.util.Map} of feature index offset into the full feature vector for the given action
+	 * @param a the action whose feature vector index is to be set
+	 * @param offset the feature index offset for the action
+	 */
+	public void setActionOffset(GroundedAction a, int offset){
+		this.actionOffset.put(a, offset);
 	}
 
 	@Override
