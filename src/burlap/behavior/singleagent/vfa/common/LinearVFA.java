@@ -1,14 +1,24 @@
 package burlap.behavior.singleagent.vfa.common;
 
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.RandomPolicy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.vfa.*;
+import burlap.behavior.singleagent.vfa.cmac.CMACFeatureDatabase;
+import burlap.debugtools.MyTimer;
+import burlap.domain.singleagent.lunarlander.LunarLanderDomain;
+import burlap.domain.singleagent.lunarlander.LunarLanderRF;
+import burlap.domain.singleagent.lunarlander.LunarLanderTF;
+import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.common.NullRewardFunction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 
 /**
@@ -177,5 +187,74 @@ public class LinearVFA implements ValueFunctionApproximation {
 		}
 
 		return vfa;
+	}
+
+	public static void main(String[] args) {
+
+		LunarLanderDomain lld = new LunarLanderDomain();
+		Domain domain = lld.generateDomain();
+		RewardFunction rf = new LunarLanderRF(domain);
+		TerminalFunction tf = new LunarLanderTF(domain);
+
+		State s = LunarLanderDomain.getCleanState(domain, 0);
+		LunarLanderDomain.setAgent(s, 0., 5., 0.);
+		LunarLanderDomain.setPad(s, 75., 95., 0., 10.);
+
+		int nTilings = 5;
+		CMACFeatureDatabase cmac = new CMACFeatureDatabase(nTilings,
+				CMACFeatureDatabase.TilingArrangement.RANDOMJITTER);
+		double resolution = 10.;
+
+		double angleWidth = 2 * lld.getAngmax() / resolution;
+		double xWidth = (lld.getXmax() - lld.getXmin()) / resolution;
+		double yWidth = (lld.getYmax() - lld.getYmin()) / resolution;
+		double velocityWidth = 2 * lld.getVmax() / resolution;
+
+		cmac.addSpecificationForAllTilings(LunarLanderDomain.AGENTCLASS,
+				domain.getAttribute(LunarLanderDomain.AATTNAME),
+				angleWidth);
+		cmac.addSpecificationForAllTilings(LunarLanderDomain.AGENTCLASS,
+				domain.getAttribute(LunarLanderDomain.XATTNAME),
+				xWidth);
+		cmac.addSpecificationForAllTilings(LunarLanderDomain.AGENTCLASS,
+				domain.getAttribute(LunarLanderDomain.YATTNAME),
+				yWidth);
+		cmac.addSpecificationForAllTilings(LunarLanderDomain.AGENTCLASS,
+				domain.getAttribute(LunarLanderDomain.VXATTNAME),
+				velocityWidth);
+		cmac.addSpecificationForAllTilings(LunarLanderDomain.AGENTCLASS,
+				domain.getAttribute(LunarLanderDomain.VYATTNAME),
+				velocityWidth);
+
+
+		double defaultQ = 0.5;
+		ValueFunctionApproximation vfa = cmac.generateVFA(defaultQ/nTilings);
+
+
+		Policy p = new RandomPolicy(domain);
+		int trajectories = 500;
+		List<EpisodeAnalysis> episodes = new ArrayList<EpisodeAnalysis>(trajectories);
+		for(int i = 0; i < trajectories; i++){
+			episodes.add(p.evaluateBehavior(s, new NullRewardFunction(), new NullTermination(), 2000));
+		}
+
+		List<GroundedAction> actions = Action.getAllApplicableGroundedActionsFromActionList(domain.getActions(), s);
+
+		System.out.println("timing vfa");
+		MyTimer timer = new MyTimer(true);
+		int i = 0;
+		for(EpisodeAnalysis ea : episodes){
+			System.out.println("episode: " + i);
+			for(int t = 0; t < ea.maxTimeStep(); t++){
+				List<ActionApproximationResult> res = vfa.getStateActionValues(ea.getState(t), actions);
+				vfa.getWeightGradient(res.get(0).approximationResult);
+
+			}
+			i++;
+		}
+		timer.stop();
+		System.out.println("time: " + timer.getTime());
+
+
 	}
 }
