@@ -1,37 +1,35 @@
 package burlap.behavior.singleagent.learning.lspi;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.singleagent.environment.Environment;
-import org.ejml.simple.SimpleMatrix;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.policy.EpsilonGreedy;
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData.SARS;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.vfa.ActionApproximationResult;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
+import burlap.behavior.singleagent.vfa.DifferentiableStateActionValue;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import org.ejml.simple.SimpleMatrix;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -76,7 +74,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * The object that performs value function approximation given the weights that are estimated
 	 */
-	protected ValueFunctionApproximation							vfa;
+	protected DifferentiableStateActionValue						 vfa;
 	
 	/**
 	 * The SARS dataset on which LSPI is performed
@@ -435,7 +433,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		
 		this.vfa = new LinearVFA(this.featureDatabase);
 		for(int i = 0; i < nf; i++){
-			this.vfa.setWeight(i, w.get(i, 0));
+			this.vfa.setParameter(i, w.get(i, 0));
 		}
 		
 		return w;
@@ -506,11 +504,10 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		
 		List<GroundedAction> gas = this.getAllGroundedActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
-		
-		
-		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gas);
+
+
 		for(GroundedAction ga : gas){
-			qs.add(this.getQFromFeaturesFor(results, s, ga));
+			qs.add(new QValue(s, ga, this.vfa.functionInput(s, ga)));
 		}
 		
 		return qs;
@@ -520,14 +517,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
-		
-		List <GroundedAction> gaList = new ArrayList<GroundedAction>(1);
-		gaList.add((GroundedAction)a);
-		
-		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gaList);
-		
-		return this.getQFromFeaturesFor(results, s, (GroundedAction)a);
-		
+		return new QValue(s, a, this.vfa.functionInput(s, a));
 	}
 
 	@Override
@@ -538,22 +528,6 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		else{
 			return QFunction.QFunctionHelper.getOptimalValue(this, s);
 		}
-	}
-	
-	
-	/**
-	 * Creates a Q-value object in which the Q-value is determined from VFA.
-	 * @param results the VFA prediction results for each action.
-	 * @param s the state of the Q-value
-	 * @param ga the action taken
-	 * @return a Q-value object in which the Q-value is determined from VFA.
-	 */
-	protected QValue getQFromFeaturesFor(List<ActionApproximationResult> results, State s, GroundedAction ga){
-		
-		ActionApproximationResult result = ActionApproximationResult.extractApproximationForAction(results, ga);
-		QValue q = new QValue(s, ga, result.approximationResult.predictedValue);
-		
-		return q;
 	}
 
 	/**
@@ -581,7 +555,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	@Override
 	public void resetSolver() {
 		this.dataset.clear();
-		this.vfa.resetWeights();
+		this.vfa.resetParameters();
 	}
 	
 	

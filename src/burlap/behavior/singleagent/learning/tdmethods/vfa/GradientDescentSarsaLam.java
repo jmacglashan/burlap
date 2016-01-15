@@ -1,34 +1,24 @@
 package burlap.behavior.singleagent.learning.tdmethods.vfa;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
-import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.singleagent.vfa.ActionApproximationResult;
-import burlap.behavior.singleagent.vfa.FunctionWeight;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
-import burlap.behavior.singleagent.vfa.WeightGradient;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.vfa.DifferentiableStateActionValue;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -36,11 +26,13 @@ import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 
+import java.util.*;
+
 
 /**
  * Gradient Descent SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. This implementation will work
  * with both linear and non-linear value function approximations by using the gradient value provided to it through the 
- * {@link burlap.behavior.singleagent.vfa.ValueFunctionApproximation} interface provided. <p/>
+ * {@link burlap.behavior.singleagent.vfa.DifferentiableStateActionValue} implementation provided. <p/>
  * The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
  * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
@@ -67,7 +59,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	/**
 	 * The object that performs value function approximation
 	 */
-	protected ValueFunctionApproximation							vfa;
+	protected DifferentiableStateActionValue 						vfa;
 	
 	/**
 	 * A learning rate function to use
@@ -168,7 +160,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param learningRate the learning rate
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, double gamma, ValueFunctionApproximation vfa,
+	public GradientDescentSarsaLam(Domain domain, double gamma, DifferentiableStateActionValue vfa,
 			double learningRate, double lambda) {
 		
 		this.GDSLInit(domain, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE, lambda);
@@ -187,7 +179,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, double gamma, ValueFunctionApproximation vfa,
+	public GradientDescentSarsaLam(Domain domain, double gamma, DifferentiableStateActionValue vfa,
 			double learningRate, int maxEpisodeSize, double lambda) {
 		
 		this.GDSLInit(domain, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize, lambda);
@@ -207,7 +199,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, double gamma, ValueFunctionApproximation vfa,
+	public GradientDescentSarsaLam(Domain domain, double gamma, DifferentiableStateActionValue vfa,
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 	
 		this.GDSLInit(domain, gamma, vfa, learningRate, learningPolicy, maxEpisodeSize, lambda);
@@ -226,7 +218,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	protected void GDSLInit(Domain domain, double gamma, ValueFunctionApproximation vfa,
+	protected void GDSLInit(Domain domain, double gamma, DifferentiableStateActionValue vfa,
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda){
 		
 		this.solverInit(domain, null, null, gamma, null);
@@ -383,36 +375,31 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 		State curState = initialState;
 		eStepCounter = 0;
-		Map <Integer, EligibilityTraceVector> traces = new HashMap<Integer, GradientDescentSarsaLam.EligibilityTraceVector>();
+		Map <Integer, EligibilityTraceVector> traces = new HashMap<Integer, EligibilityTraceVector>();
 
 		GroundedAction action = (GroundedAction)this.learningPolicy.getAction(curState);
-		List<ActionApproximationResult> allCurApproxResults = this.getAllActionApproximations(curState);
-		ActionApproximationResult curApprox = ActionApproximationResult.extractApproximationForAction(allCurApproxResults, action);
-
-
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
+			//get Q-value and gradient
+			double curQ = this.vfa.functionInput(curState, action);
+			FunctionGradient gradient = this.vfa.computeGradient();
 
-			WeightGradient gradient = this.vfa.getWeightGradient(curApprox.approximationResult);
-
+			//execute our action choice
 			EnvironmentOutcome eo = action.executeIn(env);
-
 			State nextState = eo.op;
-			GroundedAction nextAction = (GroundedAction)this.learningPolicy.getAction(nextState);
-			List<ActionApproximationResult> allNextApproxResults = this.getAllActionApproximations(nextState);
-			ActionApproximationResult nextApprox = ActionApproximationResult.extractApproximationForAction(allNextApproxResults, nextAction);
-			double nextQV = nextApprox.approximationResult.predictedValue;
-			if(eo.terminated){
-				nextQV = 0.;
-			}
 
+			//determine next Q-value for outcome state
+			GroundedAction nextAction = (GroundedAction)this.learningPolicy.getAction(nextState);
+			double nextQV = 0.;
+			if(!eo.terminated){
+				nextQV = this.vfa.functionInput(nextState, nextAction);
+			}
 
 			//manage option specifics
 			double r = eo.r;
 			double discount = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).discount : this.gamma;
 			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps : 1;
 			eStepCounter += stepInc;
-
 			if(action.action.isPrimitive() || !this.shouldAnnotateOptions){
 				ea.recordTransitionTo(action, nextState, r);
 			}
@@ -420,105 +407,82 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 				ea.appendAndMergeEpisodeAnalysis(((Option)action.action).getLastExecutionResults());
 			}
 
+			//compute function delta
+			double delta = r + (discount*nextQV) - curQ;
 
-			//delta
-			double delta = r + (discount * nextQV) - curApprox.approximationResult.predictedValue;
 
+			//manage replacing traces by zeroing out features for actions
+			//also zero out selected action, since it will be put back in later code
+			if(this.useReplacingTraces){
+				List<GroundedAction> allActions = this.getAllGroundedActions(curState);
+				for(GroundedAction oa : allActions){
 
-			if(useReplacingTraces){
-				//then first clear traces of unselected action and reset the trace for the selected one
-				for(ActionApproximationResult aar : allCurApproxResults){
-					if(!aar.ga.equals(action)){ //clear unselected action trace
-						for(FunctionWeight fw : aar.approximationResult.functionWeights){
-							traces.remove(fw.weightId());
+					//get non-zero parameters and zero them
+					this.vfa.functionInput(curState, oa);
+					FunctionGradient ofg = this.vfa.computeGradient();
+					for(Map.Entry<Integer, Double> pds : ofg.getNonZeroPartialDerivatives()){
+						EligibilityTraceVector et = traces.get(pds.getKey());
+						if(et != null){
+							et.eligibilityValue = 0.;
+						}
+						else{
+							//no trace for this yet, so add it
+							et = new EligibilityTraceVector(pds.getKey(), this.vfa.getParameter(pds.getKey()), 0.);
+							traces.put(pds.getKey(), et);
 						}
 					}
-					else{ //reset trace of selected action
-						for(FunctionWeight fw : aar.approximationResult.functionWeights){
-							EligibilityTraceVector storedTrace = traces.get(fw.weightId());
-							if(storedTrace != null){
-								storedTrace.eligibilityValue = 0.;
-							}
-						}
+
+				}
+			}
+			else{
+				//if not using replacing traces, then add any new parameters whose traces need to be set, but set initially
+				//at zero since it will be updated in the next loop
+				for(Map.Entry<Integer, Double> pds : gradient.getNonZeroPartialDerivatives()){
+					if(!traces.containsKey(pds.getKey())){
+						traces.put(pds.getKey(), new EligibilityTraceVector(pds.getKey(), this.vfa.getParameter(pds.getKey()), 0.));
 					}
 				}
+
 			}
 
 
+			//scan through trace elements, update them, and update parameter
 			double learningRate = 0.;
 			if(!this.useFeatureWiseLearningRate){
 				learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState, action);
 			}
 
-
-			//update all traces
 			Set <Integer> deletedSet = new HashSet<Integer>();
 			for(EligibilityTraceVector et : traces.values()){
-
-				int weightId = et.weight.weightId();
 				if(this.useFeatureWiseLearningRate){
-					learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.weight.weightId());
+					learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.weight);
 				}
 
+				et.eligibilityValue += gradient.getPartialDerivative(et.weight);
+				double newParam = et.weight + learningRate * delta * et.eligibilityValue;
+				this.vfa.setParameter(et.weight, newParam);
 
-				et.eligibilityValue += gradient.getPartialDerivative(weightId);
-				double newWeight = et.weight.weightValue() + learningRate*delta*et.eligibilityValue;
-				et.weight.setWeight(newWeight);
-
-				double deltaW = Math.abs(et.initialWeightValue - newWeight);
+				double deltaW = Math.abs(et.initialWeightValue - newParam);
 				if(deltaW > maxWeightChangeInLastEpisode){
 					maxWeightChangeInLastEpisode = deltaW;
 				}
 
+				//now decay and delete from tracking if too small
 				et.eligibilityValue *= this.lambda*discount;
 				if(et.eligibilityValue < this.minEligibityForUpdate){
-					deletedSet.add(weightId);
+					deletedSet.add(et.weight);
 				}
 
-			}
 
-			//add new traces if need be
-			for(FunctionWeight fw : curApprox.approximationResult.functionWeights){
-
-				int weightId = fw.weightId();
-				if(!traces.containsKey(fw)){
-
-					//then it's new and we need to add it
-					if(this.useFeatureWiseLearningRate){
-						learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, weightId);
-					}
-
-					EligibilityTraceVector et = new EligibilityTraceVector(fw, gradient.getPartialDerivative(weightId));
-					double newWeight = fw.weightValue() + learningRate*delta*et.eligibilityValue;
-					fw.setWeight(newWeight);
-
-					double deltaW = Math.abs(et.initialWeightValue - newWeight);
-					if(deltaW > maxWeightChangeInLastEpisode){
-						maxWeightChangeInLastEpisode = deltaW;
-					}
-
-					et.eligibilityValue *= this.lambda*discount;
-					if(et.eligibilityValue >= this.minEligibityForUpdate){
-						traces.put(weightId, et);
-					}
-
-				}
-
-			}
-
-			//delete traces marked for deletion
-			for(Integer t : deletedSet){
-				traces.remove(t);
 			}
 
 
 			//move on
 			curState = nextState;
 			action = nextAction;
-			curApprox = nextApprox;
-			allCurApproxResults = allNextApproxResults;
 
 			this.totalNumberOfSteps++;
+
 
 		}
 
@@ -552,11 +516,9 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	public List<QValue> getQs(State s) {
 		List<GroundedAction> gas = this.getAllGroundedActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
-		
-		
-		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gas);
+
 		for(GroundedAction ga : gas){
-			qs.add(this.getQFromFeaturesFor(results, s, ga));
+			qs.add(new QValue(s, ga, this.vfa.functionInput(s, ga)));
 		}
 		
 		return qs;
@@ -564,13 +526,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
-		
-		List <GroundedAction> gaList = new ArrayList<GroundedAction>(1);
-		gaList.add((GroundedAction)a);
-		
-		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gaList);
-		
-		return this.getQFromFeaturesFor(results, s, (GroundedAction)a);
+		return new QValue(s, a, this.vfa.functionInput(s, a));
 	}
 
 	@Override
@@ -578,47 +534,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		return QFunction.QFunctionHelper.getOptimalValue(this, s);
 	}
 	
-	/**
-	 * Creates a Q-value object in which the Q-value is determined from VFA.
-	 * @param results the VFA prediction results for each action.
-	 * @param s the state of the Q-value
-	 * @param ga the action taken
-	 * @return a Q-value object in which the Q-value is determined from VFA.
-	 */
-	protected QValue getQFromFeaturesFor(List<ActionApproximationResult> results, State s, GroundedAction ga){
-		
-		ActionApproximationResult result = ActionApproximationResult.extractApproximationForAction(results, ga);
-		QValue q = new QValue(s, ga, result.approximationResult.predictedValue);
-		
-		return q;
-	}
-	
-	
-	/**
-	 * Gets all Q-value VFA results for each action for a given state
-	 * @param s the state for which the Q-Value VFA results should be returned.
-	 * @return all Q-value VFA results for each action for a given state
-	 */
-	protected List <ActionApproximationResult> getAllActionApproximations(State s){
-		List<GroundedAction> gas = this.getAllGroundedActions(s);
-		return this.vfa.getStateActionValues(s, gas);
-	}
-	
-	
-	/**
-	 * Returns the VFA Q-value approximation for the given state and action.
-	 * @param s the state for which the VFA result should be returned
-	 * @param ga the action for which the VFA result should be returned
-	 * @return the VFA Q-value approximation for the given state and action.
-	 */
-	protected ActionApproximationResult getActionApproximation(State s, GroundedAction ga){
-		List <GroundedAction> gaList = new ArrayList<GroundedAction>(1);
-		gaList.add(ga);
-		
-		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gaList);
-		
-		return ActionApproximationResult.extractApproximationForAction(results, ga);
-	}
+
 
 
 	/**
@@ -648,7 +564,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	
 	@Override
 	public void resetSolver(){
-		this.vfa.resetWeights();
+		this.vfa.resetParameters();
 		this.eStepCounter = 0;
 		this.maxWeightChangeInLastEpisode = Double.POSITIVE_INFINITY;
 		this.episodeHistory.clear();
@@ -665,7 +581,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		/**
 		 * The VFA weight being traced
 		 */
-		public FunctionWeight		weight;
+		public int					weight;
 		
 		/**
 		 * The eligibility value
@@ -683,10 +599,10 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		 * @param weight the VFA weight
 		 * @param eligibilityValue the eligibility to assign to it.
 		 */
-		public EligibilityTraceVector(FunctionWeight weight, double eligibilityValue){
+		public EligibilityTraceVector(int weight, double weightValue, double eligibilityValue){
 			this.weight = weight;
 			this.eligibilityValue = eligibilityValue;
-			this.initialWeightValue = weight.weightValue();
+			this.initialWeightValue = weightValue;
 		}
 		
 	}

@@ -10,7 +10,7 @@ import burlap.behavior.singleagent.learning.lspi.SARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.DifferentiableStateActionValue;
 import burlap.behavior.singleagent.vfa.cmac.CMACFeatureDatabase;
 import burlap.behavior.singleagent.vfa.common.ConcatenatedObjectFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.fourier.FourierBasis;
@@ -184,7 +184,7 @@ public class ContinuousDomainTutorial {
 
 
 		double defaultQ = 0.5;
-		ValueFunctionApproximation vfa = cmac.generateVFA(defaultQ/nTilings);
+		DifferentiableStateActionValue vfa = (DifferentiableStateActionValue)cmac.generateVFA(defaultQ/nTilings);
 		GradientDescentSarsaLam agent = new GradientDescentSarsaLam(domain, 0.99, vfa, 0.02, 0.5);
 
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, s);
