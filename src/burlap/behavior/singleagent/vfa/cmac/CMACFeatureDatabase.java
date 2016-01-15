@@ -123,6 +123,9 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	 */
 	protected int													nextStateFeatureId = 0;
 
+
+	protected State													lastState;
+	protected List<StateTile>										tilesForLastState;
 	
 	
 	/**
@@ -231,7 +234,13 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 
 	@Override
 	public List<ActionFeaturesQuery> getActionFeaturesSets(State s, List<GroundedAction> actions) {
-		
+
+		if(s == this.lastState){
+			return this.getActionFeatureSetsFromCacheStateTiles(s, actions);
+		}
+
+		this.lastState = s;
+		this.tilesForLastState = new ArrayList<StateTile>(nTilings);
 		List <ActionFeaturesQuery> result = new ArrayList<ActionFeaturesQuery>(actions.size());
 		for(GroundedAction ga : actions){
 			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga);
@@ -241,6 +250,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		for(int i = 0; i < nTilings; i++){
 			Tiling tiling = this.tilings.get(i);
 			StateTile st = tiling.getStateTile(s);
+			this.tilesForLastState.add(st);
 			
 			Map <StateTile, StoredFeaturesForTiling> featureMapping = actionTilings.get(i);
 			StoredFeaturesForTiling storedFs = featureMapping.get(st);
@@ -275,6 +285,53 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 		}
 		
 		
+		return result;
+	}
+
+
+	protected List<ActionFeaturesQuery> getActionFeatureSetsFromCacheStateTiles(State s, List<GroundedAction> actions){
+
+		List <ActionFeaturesQuery> result = new ArrayList<ActionFeaturesQuery>(actions.size());
+		for(GroundedAction ga : actions){
+			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga);
+			result.add(afq);
+		}
+
+
+		int i = 0;
+		for(StateTile st : this.tilesForLastState){
+			Map <StateTile, StoredFeaturesForTiling> featureMapping = actionTilings.get(i);
+			StoredFeaturesForTiling storedFs = featureMapping.get(st);
+			if(storedFs == null){
+				storedFs = new StoredFeaturesForTiling(st);
+				for(ActionFeaturesQuery afq : result){
+					storedFs.addActionFeature(new StoredActionFeature(afq.queryAction, nextActionFeatureId));
+					afq.addFeature(new StateFeature(nextActionFeatureId, 1.0)); //CMACs use binary features
+					nextActionFeatureId++;
+					//System.out.println("num features: " + nextActionFeatureId);
+				}
+				featureMapping.put(st, storedFs);
+			}
+			else{
+				//then we need to extract the action features for each of our queries
+				for(ActionFeaturesQuery afq : result){
+					StoredActionFeature af = storedFs.getStoredActionFeatureFor(st, afq.queryAction);
+					if(af == null){
+						storedFs.addActionFeatureFromQuery(st, afq.queryAction, nextActionFeatureId);
+						afq.addFeature(new StateFeature(nextActionFeatureId, 1.0)); //CMACs use binary features
+						nextActionFeatureId++;
+						//System.out.println("num features (from side add): " + nextActionFeatureId);
+					}
+					else{
+						afq.addFeature(new StateFeature(af.id, 1.0)); //CMACs use binary features
+					}
+				}
+
+			}
+
+			i++;
+		}
+
 		return result;
 	}
 
