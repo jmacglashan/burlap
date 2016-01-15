@@ -14,6 +14,7 @@ import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.NullRewardFunction;
@@ -235,14 +236,19 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 		}
 
 
+		List<GroundedAction> actions = Action.getAllApplicableGroundedActionsFromActionList(domain.getActions(), s);
+
 		System.out.println("timing vfa");
 		MyTimer timer = new MyTimer(true);
 		int i = 0;
 		for(EpisodeAnalysis ea : episodes){
 			System.out.println("episode: " + i);
 			for(int t = 0; t < ea.maxTimeStep(); t++){
-				vfa.functionInput(ea.getState(t), ea.getAction(t));
-				vfa.computeGradient();
+				State eState = ea.getState(t);
+				for(GroundedAction ga : actions) {
+					vfa.functionInput(eState, ga);
+					//vfa.computeGradient();
+				}
 			}
 			i++;
 		}
