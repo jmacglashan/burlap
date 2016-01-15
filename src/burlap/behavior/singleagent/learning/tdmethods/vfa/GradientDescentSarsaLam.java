@@ -459,7 +459,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 				}
 
 				et.eligibilityValue += gradient.getPartialDerivative(et.weight);
-				double newParam = et.weight + learningRate * delta * et.eligibilityValue;
+				double newParam = vfa.getParameter(et.weight) + learningRate * delta * et.eligibilityValue;
 				this.vfa.setParameter(et.weight, newParam);
 
 				double deltaW = Math.abs(et.initialWeightValue - newParam);
