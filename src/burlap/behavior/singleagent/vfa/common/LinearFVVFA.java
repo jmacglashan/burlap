@@ -61,6 +61,22 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 	protected FunctionGradient						currentGradient = null;
 
 
+	/**
+	 * Initializes. This object will be set to perform either state value function approximation or state-action
+	 * function approximation once a call to either {@link #functionInput(burlap.oomdp.core.states.State)}
+	 * or {@link #functionInput(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} is made.
+	 * If the former method is called
+	 * first, then this object will be tasked with state value function approximation. If the latter
+	 * method is called first, then this object will be tasked with state-action value function approximation.
+	 * @param fvGen The state feature vector generator that produces the features used for either linear state value function approximation or state-action-value function approximation.
+	 * @param defaultWeightValue The default weight value of all function weights.
+	 */
+	public LinearFVVFA(StateToFeatureVectorGenerator fvGen, double defaultWeightValue){
+		this.fvGen = fvGen;
+		this.defaultWeight = defaultWeightValue;
+	}
+
+
 	@Override
 	public double functionInput(State s, AbstractGroundedAction a) {
 		this.currentStateFeatures = this.fvGen.generateFeatureVectorFrom(s);
@@ -74,6 +90,9 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 		this.currentGradient = null;
 		return this.currentValue;
 	}
+
+
+
 
 	@Override
 	public double functionInput(State s) {
@@ -151,11 +170,13 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 		if(this.stateWeights != null){
 			if(i < this.stateWeights.length){
 				this.stateWeights[i] = p;
+				return;
 			}
 		}
 		else if(this.stateActionWeights != null){
 			if(i < this.stateActionWeights.length){
 				this.stateActionWeights[i] = p;
+				return;
 			}
 		}
 		throw new RuntimeException("Parameter index out of bounds; parameter cannot be set.");
@@ -212,20 +233,6 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 
 	}
 
-	/**
-	 * Initializes. This object will be set to perform either state value function approximation or state-action
-	 * function approximation once a call to either {@link #functionInput(burlap.oomdp.core.states.State)}
-	 * or {@link #functionInput(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} is made.
-	 * If the former method is called
-	 * first, then this object will be tasked with state value function approximation. If the latter
-	 * method is called first, then this object will be tasked with state-action value function approximation.
-	 * @param fvGen The state feature vector generator that produces the features used for either linear state value function approximation or state-action-value function approximation.
-	 * @param defaultWeightValue The default weight value of all function weights.
-	 */
-	public LinearFVVFA(StateToFeatureVectorGenerator fvGen, double defaultWeightValue){
-		this.fvGen = fvGen;
-		this.defaultWeight = defaultWeightValue;
-	}
 
 
 	public StateToFeatureVectorGenerator getFvGen() {
@@ -288,7 +295,7 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 	 * @param a the action whose feature vector index is to be set
 	 * @param offset the feature index offset for the action
 	 */
-	public void setActionOffset(GroundedAction a, int offset){
+	public void setActionOffset(AbstractGroundedAction a, int offset){
 		this.actionOffset.put(a, offset);
 	}
 
