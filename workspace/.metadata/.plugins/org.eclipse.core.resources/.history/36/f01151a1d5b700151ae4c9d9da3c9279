@@ -1,0 +1,7 @@
+package ellisPaperCode.valueFunctionApproximationWithPfs;
+
+import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+
+public class PFValueFunctionApproximator implements ValueFunctionApproximation {
+
+}

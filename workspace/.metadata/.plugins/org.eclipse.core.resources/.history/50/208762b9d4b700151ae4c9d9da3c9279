@@ -1,0 +1,7 @@
+package ellisPaperCode.propositionalFunctionToFeatures;
+
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+
+public class PropositionalFunctionToFeatures implements StateToFeatureVectorGenerator {
+
+}

@@ -1,0 +1,20 @@
+package ellisPaperCode.propositionalFunctionToFeatures;
+
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.oomdp.core.State;
+
+public class PropositionalFunctionToFeaturesMaker implements StateToFeatureVectorGenerator {
+	
+	public List<PropositionalFunction> propFuns;
+	
+	public PropositionalFunctionToFeaturesMaker(List<PropositonalFunction> propFuns) {
+		this.propFuns = propFuns;
+	}
+
+	@Override
+	public double[] generateFeatureVectorFrom(State s) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

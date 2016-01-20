@@ -1,0 +1,134 @@
+package ellisPaperCode.pfLearner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ellisPaperCode.doormaxCode.OOMDPModel.OOMDPModel;
+import ellisPaperCode.doormaxCode.OOMDPModel.Prediction;
+import ellisPaperCode.doormaxCode.OOMDPModel.ConditionLearners.PerceptionConditionLearner;
+import ellisPaperCode.doormaxCode.OOMDPModel.Effects.EffectHelpers;
+import ellisPaperCode.doormaxCode.PerceptualModelDataStructures.StatePerception;
+import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.auxiliary.StateReachability;
+import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.SADomain;
+
+public class PFLearner {
+	private Policy rolloutPolicy;
+	private int policyRolloutLengthForLearning;
+	private int numPolicyRolloutsForLearning;
+	
+	public PFLearner() {
+		
+	}
+
+	/**
+	 * 
+	 * @param rolloutPol
+	 * @param policyRolloutLengthForLearning
+	 * @param numPolicyRolloutsForLearning
+	 */
+	public PFLearner(Policy rolloutPol, int policyRolloutLengthForLearning, int numPolicyRolloutsForLearning) {
+		this.rolloutPolicy = rolloutPol;
+		this.policyRolloutLengthForLearning = policyRolloutLengthForLearning;
+		this.numPolicyRolloutsForLearning = numPolicyRolloutsForLearning;
+	}
+
+	public List<PropositionalFunction> getPropFuns(Domain d, RewardFunction rf, TerminalFunction tf, State initialState) {
+		int k = 9999;
+		OOMDPModel model = new OOMDPModel(d, rf, tf, getPropFunsToUse(), getEffectsToUse(), initialState, k, StatePerception.ClassRelationalStatePerception);//MAYBE K NOT 0
+
+		//If no policy, just give every possible s,a,s' to learner
+		if (this.rolloutPolicy == null) {
+			this.performExhaustiveLearning(model, d, initialState, rf, tf);
+		}
+		else {
+			this.performLearningWithPolicy(model, this.policyRolloutLengthForLearning, this.numPolicyRolloutsForLearning, d, rf, tf, initialState);
+		}
+
+		return oomdpModelToPFs(model, d);
+	}
+
+	private static List<String> getEffectsToUse() {
+		List<String> effectsToUse = new ArrayList<String>();
+		effectsToUse.add(EffectHelpers.arithEffect);
+		effectsToUse.add(EffectHelpers.assigEffect);
+		return effectsToUse;
+	}
+
+	private static List<PropositionalFunction> getPropFunsToUse() {
+		List<PropositionalFunction> toReturn = new ArrayList<PropositionalFunction>();
+		return toReturn;
+	}
+
+
+	private static List<PropositionalFunction> oomdpModelToPFs(OOMDPModel model, Domain d) {
+		List<PropositionalFunction> toReturn = new ArrayList<PropositionalFunction>();
+		int i = 0;
+		for (Prediction predict : model.getPredictionsLearner().getAllPredictions()) {
+			PerceptionConditionLearner condLearner = (PerceptionConditionLearner) predict.getConditionLearner();
+			String predictionName = "learnedPF" + i;
+			PropositionalFunction pfToAdd = new LearnedPF(predictionName, d, "", condLearner);
+			toReturn.add(pfToAdd);
+			i++;
+		}
+
+		return toReturn;
+
+	}
+
+	private void performExhaustiveLearning(OOMDPModel model, Domain d, State initialState, RewardFunction rf, TerminalFunction tf) {
+		System.out.print("Performing exhaustive PF learning over ");
+		List<State> allStatesT = StateReachability.getReachableStates(initialState, (SADomain)d, new DiscreteStateHashFactory()); //Things only reachable through terminal states are not pruned
+		System.out.println(allStatesT.size() + " states...");
+		for (State s : allStatesT) {
+			for (Action a : d.getActions()) {
+				for (GroundedAction ga : a.getAllApplicableGroundedActions(s)) {
+					State sprime = ga.executeIn(s);
+					double r = rf.reward(s, ga, sprime);
+					boolean sprimeIsTerminal = tf.isTerminal(sprime);
+					model.updateModel(s, ga, sprime, r, sprimeIsTerminal);
+				}
+			}
+		}
+	}
+
+
+	private void performLearningWithPolicy(OOMDPModel model, int maxRolloutLength, int numRollouts, Domain d, RewardFunction rf, TerminalFunction tf, State initialState) {
+		System.out.println("Performing PF learning with a policy with " + numRollouts+ " rollouts, each of length "+ maxRolloutLength + ".");
+		for (int i = 0; i < numRollouts; i++) {
+			State currState = initialState.copy();
+			for (int j = 0; j < maxRolloutLength; j++) {
+				GroundedAction ga = (GroundedAction) this.rolloutPolicy.getAction(currState);
+				State sprime = ga.executeIn(currState);
+				double r = rf.reward(currState, ga, sprime);
+				boolean sprimeIsTerminal = tf.isTerminal(sprime); //Currently no pruning for terminal states
+				model.updateModel(currState, ga, sprime, r, sprimeIsTerminal);
+				currState = sprime;
+			}
+		}
+	}
+
+	private static class LearnedPF extends PropositionalFunction {
+		private PerceptionConditionLearner percCondLearner;
+
+		public LearnedPF(String name, Domain domain, String parameterClasses, PerceptionConditionLearner condLearner) {
+			super(name, domain, parameterClasses);
+			this.percCondLearner = condLearner;
+			this.percCondLearner.trainClassifier();
+		}
+
+		@Override
+		public boolean isTrue(State s, String[] params) {
+			return this.percCondLearner.predict(s);
+		}
+
+	}
+}

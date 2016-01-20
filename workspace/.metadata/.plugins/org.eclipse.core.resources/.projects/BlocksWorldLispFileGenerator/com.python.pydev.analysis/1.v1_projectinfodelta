@@ -1,0 +1,21 @@
+INSTUPsrc.BlocksWorldLispMaker
+/Users/Dhershkowitz/Documents/AI Lab/workspace/BlocksWorldLispFileGenerator/src/BlocksWorldLispMaker.py
+INFOS:&&3|1|2|0&&3|3|2|0&&3|4|2|0&&3|5|2|0&&3|6|2|0&&3|7|2|0&&2|8|2|0&&2|9|2|0&&2|10|2|0&&2|11|2|0&&2|12|2|0&&2|13|2|0&&2|14|2|0&&2|15|2|0&&2|16|2|0&&2|17|2|0&&2|18|2|0
+numGoalStacks=3
+numBlocks=4
+unUsedBlocks=6
+problemStart=11
+blockName=15
+lastBlockName=14
+numStartStacks=1
+code=10
+src.BlocksWorldLispMaker=2
+main=18
+goals=17
+lastBlockNameString=7
+refreshUnusedBlocks=8
+stacksList=13
+blocksList=12
+stack=16
+currBlockIndex=5
+getRandomBlockName=9

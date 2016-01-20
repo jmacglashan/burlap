@@ -1,0 +1,42 @@
+1403536068386	Rename type 'worldGenerator'
+1403544984713	Rename package 'minecraft.EpicWorldGenerator'
+1403549197093	Delete element
+1403622356089	Rename type 'AgentHasAtLeastXGoldPF'
+1403639009166	Delete element
+1403710232502	Delete element
+1403728067708	Delete element
+1403795757915	Delete element
+1403807074699	Move compilation unit
+1403807250429	Rename type 'DistanceMetric'
+1403807329758	Rename compilation unit 'ActionCountDistanceMetrix.java'
+1403809369480	Rename type 'ActionCountSparseVector'
+1403810122804	Delete element
+1403880294373	Delete element
+1403881384279	Rename resource 'jumpworld1'
+1403891052055	Copy file
+1403891075137	Rename resource 'Copy of jumpworld2.map'
+1403891111476	Copy file
+1403892173375	Delete element
+1403893150228	Delete elements
+1403893253347	Rename type 'NotEnoughClustersException'
+1403893306325	Rename resource 'jumpworld1.map'
+1403893313194	Copy file
+1403893325497	Rename resource 'Copy of trenchWorld1.map'
+1403893352483	Copy file
+1403893366601	Rename resource 'Copy of trenchWorld2.map'
+1403893419441	Copy file
+1403893453230	Rename resource 'trenchWorld4.map'
+1403893464098	Rename resource 'trenchWorld1.map'
+1403893471464	Rename resource 'trenchWorld2.map'
+1403893481533	Rename resource 'trenchWorld3.map'
+1403893499306	Copy file
+1403893539095	Copy file
+1403893589371	Copy file
+1403893677483	Copy file
+1403894351426	Copy file
+1403895208957	Copy file
+1403896663732	Rename resource 'deepTrenchWorld2.map'
+1403896776713	Delete element
+1403897679618	Delete elements
+1403897685761	Delete elements
+1403897700890	Delete element

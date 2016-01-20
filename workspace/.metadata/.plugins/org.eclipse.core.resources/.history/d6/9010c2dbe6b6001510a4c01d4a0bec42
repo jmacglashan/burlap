@@ -1,0 +1,68 @@
+package ellisPaperCode.pfLearner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ellisPaperCode.doormaxCode.OOMDPModel.OOMDPModel;
+import ellisPaperCode.doormaxCode.OOMDPModel.Effects.EffectHelpers;
+import ellisPaperCode.doormaxCode.PerceptualModelDataStructures.StatePerception;
+import burlap.behavior.singleagent.Policy;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.singleagent.RewardFunction;
+
+public class PFLearner {
+	private Policy rolloutPolicy;
+	int policyRolloutLengthForLearning;
+	int numPolicyRolloutsForLearning;
+	
+	public PFLearner(Policy rolloutPol, int policyRolloutLengthForLearning, int numPolicyRolloutsForLearning) {
+		this.rolloutPolicy = rolloutPol;
+		this.policyRolloutLengthForLearning = policyRolloutLengthForLearning;
+		this.numPolicyRolloutsForLearning = numPolicyRolloutsForLearning;
+	}
+	
+	public List<PropositionalFunction> getPropFuns(Domain d, RewardFunction rf, TerminalFunction tf, State initialState) {
+		OOMDPModel model = new OOMDPModel(d, rf, tf, getPropFunsToUse(), getEffectsToUse(), initialState, 0, StatePerception.ClassRelationalStatePerception);//MAYBE K NOT 0
+		
+		//If no policy, just give every possible s,a,s' to learner
+		if (this.rolloutPolicy == null) {
+			
+		}
+		else {
+			this.performLearningWithPolicy(model, this.policyRolloutLengthForLearning, this.numPolicyRolloutsForLearning);
+		}
+		
+		return oomdpModelToPFs(t);
+	}
+	
+	private static List<String> getEffectsToUse() {
+		List<String> effectsToUse = new ArrayList<String>();
+		effectsToUse.add(EffectHelpers.arithEffect);
+		effectsToUse.add(EffectHelpers.assigEffect);
+		return effectsToUse;
+	}
+	
+	private static List<PropositionalFunction> getPropFunsToUse() {
+		List<PropositionalFunction> toReturn = new ArrayList<PropositionalFunction>();
+		return toReturn;
+	}
+	
+	
+	private static List<PropositionalFunction> oomdpModelToPFs(OOMDPModel model) {
+		List<PropositionalFunction> toReturn = new ArrayList<PropositionalFunction>();
+		
+	}
+	
+	private void performExhaustiveLearning(OOMDPModel model) {
+		
+	}
+	
+	
+	private void performLearningWithPolicy(OOMDPModel model, int maxRolloutLength, int numRollouts) {
+		
+	}
+
+}

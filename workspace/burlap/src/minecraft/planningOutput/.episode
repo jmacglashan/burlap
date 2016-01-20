@@ -1,0 +1,28 @@
+#EL#
+1,1,2 2
+#ES#
+rotateClockwise
+-1.0
+#EL#
+1,1,2 2
+#ES#
+placeBlock
+-1.0
+#EL#
+1,1,2 1
+#ES#
+lookdown
+-1.0
+#EL#
+1,1,2 1
+#ES#
+lookdown
+-1.0
+#EL#
+1,1,2 1
+#ES#
+placeBlock
+-1.0
+#EL#
+1,1,2 0
+#ES#

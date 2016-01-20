@@ -1,0 +1,22 @@
+package ellisPaperCode.valueFunctionApproximationWithPfs;
+
+import java.util.List;
+
+import burlap.behavior.singleagent.vfa.ActionApproximationResult;
+import burlap.behavior.singleagent.vfa.ApproximationResult;
+import burlap.behavior.singleagent.vfa.FeatureDatabase;
+import burlap.behavior.singleagent.vfa.FunctionWeight;
+import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.WeightGradient;
+import burlap.behavior.singleagent.vfa.common.LinearVFA;
+import burlap.oomdp.core.State;
+import burlap.oomdp.singleagent.GroundedAction;
+
+public class PFLinearValueFunctionApproximator extends LinearVFA {
+
+	public PFLinearValueFunctionApproximator(FeatureDatabase featureDatabase) {
+		super(featureDatabase);
+		// TODO Auto-generated constructor stub
+	}
+
+}

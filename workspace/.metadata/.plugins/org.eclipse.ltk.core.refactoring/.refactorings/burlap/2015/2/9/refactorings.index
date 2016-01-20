@@ -1,0 +1,10 @@
+1424901138663	Rename type 'ConditionEffectLearner'
+1424902189901	Delete element
+1424902197205	Delete element
+1424902223070	Rename type 'MultipleConditionEffectsLearner'
+1424903006898	Rename method 'computePredictions'
+1424907608533	Delete element
+1424908036776	Rename local variable 'relevantLearners'
+1424908047948	Rename local variable 'relevantCELearners'
+1424984579952	Move compilation units
+1425137188916	Delete element

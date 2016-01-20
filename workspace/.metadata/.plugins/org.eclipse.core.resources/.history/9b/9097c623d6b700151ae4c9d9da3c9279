@@ -1,0 +1,7 @@
+package ellisPaperCode.propositionalFunctionToFeatures;
+
+import burlap.behavior.singleagent.vfa.FeatureDatabase;
+
+public class PFsToFeatureDatabase implements FeatureDatabase {
+
+}

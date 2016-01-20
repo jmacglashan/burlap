@@ -1,0 +1,8 @@
+package ellisPaperCode.taxi;
+
+import burlap.oomdp.auxiliary.StateGenerator;
+
+
+public class TaxiRandomStateGenerator implements StateGenerator {
+
+}

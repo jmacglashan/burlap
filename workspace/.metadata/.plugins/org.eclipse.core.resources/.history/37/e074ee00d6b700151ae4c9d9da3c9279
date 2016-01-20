@@ -1,0 +1,5 @@
+package ellisPaperCode.propositionalFunctionToFeatures;
+
+public class PFsToFeatureDatabase implements FeatureDatabase {
+
+}

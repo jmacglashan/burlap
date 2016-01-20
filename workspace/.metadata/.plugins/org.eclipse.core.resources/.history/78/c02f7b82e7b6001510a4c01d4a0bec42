@@ -1,0 +1,105 @@
+package ellisPaperCode.pfLearner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ellisPaperCode.doormaxCode.OOMDPModel.OOMDPModel;
+import ellisPaperCode.doormaxCode.OOMDPModel.Effects.EffectHelpers;
+import ellisPaperCode.doormaxCode.PerceptualModelDataStructures.StatePerception;
+import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.auxiliary.StateReachability;
+import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.SADomain;
+
+public class PFLearner {
+	private Policy rolloutPolicy;
+	int policyRolloutLengthForLearning;
+	int numPolicyRolloutsForLearning;
+
+	public PFLearner(Policy rolloutPol, int policyRolloutLengthForLearning, int numPolicyRolloutsForLearning) {
+		this.rolloutPolicy = rolloutPol;
+		this.policyRolloutLengthForLearning = policyRolloutLengthForLearning;
+		this.numPolicyRolloutsForLearning = numPolicyRolloutsForLearning;
+	}
+
+	public List<PropositionalFunction> getPropFuns(Domain d, RewardFunction rf, TerminalFunction tf, State initialState) {
+		OOMDPModel model = new OOMDPModel(d, rf, tf, getPropFunsToUse(), getEffectsToUse(), initialState, 0, StatePerception.ClassRelationalStatePerception);//MAYBE K NOT 0
+
+		//If no policy, just give every possible s,a,s' to learner
+		if (this.rolloutPolicy == null) {
+			this.performExhaustiveLearning(model, d, initialState, rf, tf);
+		}
+		else {
+			this.performLearningWithPolicy(model, this.policyRolloutLengthForLearning, this.numPolicyRolloutsForLearning);
+		}
+
+		return oomdpModelToPFs(model);
+	}
+
+	private static List<String> getEffectsToUse() {
+		List<String> effectsToUse = new ArrayList<String>();
+		effectsToUse.add(EffectHelpers.arithEffect);
+		effectsToUse.add(EffectHelpers.assigEffect);
+		return effectsToUse;
+	}
+
+	private static List<PropositionalFunction> getPropFunsToUse() {
+		List<PropositionalFunction> toReturn = new ArrayList<PropositionalFunction>();
+		return toReturn;
+	}
+
+
+	private static List<PropositionalFunction> oomdpModelToPFs(OOMDPModel model) {
+		List<PropositionalFunction> toReturn = new ArrayList<PropositionalFunction>();
+
+
+		return toReturn;
+	}
+
+	private void performExhaustiveLearning(OOMDPModel model, Domain d, State initialState, RewardFunction rf, TerminalFunction tf) {
+		List<State> allStatesT = StateReachability.getReachableStates(initialState, (SADomain)d, new DiscreteStateHashFactory());
+		for (State s : allStatesT) {
+			for (Action a : d.getActions()) {
+				for (GroundedAction ga : a.getAllApplicableGroundedActions(s)) {
+					State sprime = ga.executeIn(s);
+					double r = rf.reward(s, ga, sprime);
+					boolean sprimeIsTerminal = tf.isTerminal(sprime);
+					model.updateModel(s, ga, sprime, r, sprimeIsTerminal);
+				}
+			}
+		}
+	}
+
+
+	private void performLearningWithPolicy(OOMDPModel model, int maxRolloutLength, int numRollouts, Domain d, RewardFunction rf, TerminalFunction tf) {
+			for(int i = 0; i < randIterations; i++){
+				System.out.println("Rand iteration: " + i);
+				State currState = initialState.copy();
+				if (taxiRandomStateAtStartOfRandIteration) {
+					currState = TaxiDomain.getRandomState(d);
+					System.out.println("Randomizing taxi initial state");
+
+				}
+				Policy randPol = new Policy.RandomPolicy(d);
+
+
+				for (int j = 0; j < maxRolloutLength; j++) {
+					GroundedAction ga = (GroundedAction) randPol.getAction(currState);
+					State sprime = ga.executeIn(currState);
+					double r = rf.reward(currState, ga, sprime);
+					boolean sprimeIsTerminal = tf.isTerminal(sprime);
+					model.updateModel(currState, ga, sprime, r, sprimeIsTerminal);
+					currState = sprime;
+				}
+			}
+
+	}
+
+}

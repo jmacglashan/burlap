@@ -1,0 +1,59 @@
+package ellisPaperCode.valueFunctionApproximationWithPfs;
+
+import java.util.List;
+
+import burlap.behavior.singleagent.vfa.ActionApproximationResult;
+import burlap.behavior.singleagent.vfa.ApproximationResult;
+import burlap.behavior.singleagent.vfa.FunctionWeight;
+import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.WeightGradient;
+import burlap.oomdp.core.State;
+import burlap.oomdp.singleagent.GroundedAction;
+
+public class PFLinearValueFunctionApproximator implements ValueFunctionApproximation {
+
+	@Override
+	public ApproximationResult getStateValue(State s) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ActionApproximationResult> getStateActionValues(State s,
+			List<GroundedAction> gas) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public WeightGradient getWeightGradient(
+			ApproximationResult approximationResult) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void resetWeights() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setWeight(int featureId, double w) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public FunctionWeight getFunctionWeight(int featureId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int numFeatures() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

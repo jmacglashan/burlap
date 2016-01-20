@@ -1,0 +1,243 @@
+package ellisPaperCode.pfLearner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ellisPaperCode.burlap2Code.FVToFeatureDatabase;
+import ellisPaperCode.burlap2Code.LinearFVVFA;
+import ellisPaperCode.propositionalFunctionToFeatures.PFToFeaturesGenerator;
+import ellisPaperCode.taxi.TaxiDomain;
+import ellisPaperCode.taxi.TaxiRandomStateGenerator;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Policy;
+import burlap.behavior.singleagent.auxiliary.StateReachability;
+import burlap.behavior.singleagent.learning.GoalBasedRF;
+import burlap.behavior.singleagent.learning.lspi.LSPI;
+import burlap.behavior.singleagent.learning.lspi.SARSCollector;
+import burlap.behavior.singleagent.learning.lspi.SARSData;
+import burlap.behavior.singleagent.planning.commonpolicies.GreedyQPolicy;
+import burlap.behavior.singleagent.planning.deterministic.TFGoalCondition;
+import burlap.behavior.singleagent.vfa.FeatureDatabase;
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.rbf.RBFFeatureDatabase;
+import burlap.behavior.statehashing.DiscreteStateHashFactory;
+import burlap.behavior.statehashing.StateHashFactory;
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.oomdp.auxiliary.DomainGenerator;
+import burlap.oomdp.auxiliary.StateGenerator;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.SinglePFTF;
+import burlap.oomdp.singleagent.common.UniformCostRF;
+
+public class PFLearnerTest {
+	public static void printPercentageTruePFs(List<PropositionalFunction> pfs, List<State> allStates) {
+		System.out.print("Printing percentage of true of learned PFs...");
+		StringBuilder toPrint = new StringBuilder();
+		int numStates = allStates.size();
+		for (PropositionalFunction pf : pfs) {
+			double percTrue = 0.0;
+			for (State s : allStates) {
+				if (pf.isTrue(s, "")) {
+					percTrue++;
+				}
+			}
+			percTrue /= (float) numStates;
+			toPrint.append(Double.toString(percTrue)+ ",");
+			System.out.print(".");
+		}
+		System.out.println("");
+		System.out.println(toPrint.toString());
+	}
+
+	public static void runFourRoomsExperiments(int numIterations) {
+		//GRIDWORLD
+		GridWorldDomain dg = new GridWorldDomain(11,11); //11x11 grid world
+		dg.setMapToFourRooms(); //four rooms layout
+		dg.setProbSucceedTransitionDynamics(0.8); //stochastic transitions with 0.8 success rate
+		final Domain domain = dg.generateDomain(); //generate the grid world domain
+
+		//setup initial state
+		State initialState = GridWorldDomain.getOneAgentOneLocationState(domain);
+		GridWorldDomain.setAgent(initialState, 0, 0);
+		GridWorldDomain.setLocation(initialState, 0, 10, 10);
+
+		//ends when the agent reaches a location
+		final TerminalFunction tf = new SinglePFTF(domain.
+				getPropFunction(GridWorldDomain.PFATLOCATION)); 
+
+		//reward function definition
+		final RewardFunction rf = new GoalBasedRF(new TFGoalCondition(tf), 5., -0.1);
+		
+		//COMMON CODE
+		Domain d = dg.generateDomain();
+		List<State> allStates = StateReachability.getReachableStates(initialState, (SADomain)d, new DiscreteStateHashFactory());
+		List<PropositionalFunction> learnedPropFuns = null;
+
+
+
+		//Test learning using a random rollout policy
+		int numRollouts = 10;
+		int policyRolloutLength = 100;
+		PFLearner pfLearnerPol = new PFLearner(new Policy.RandomPolicy(d), policyRolloutLength, numRollouts);
+		learnedPropFuns = pfLearnerPol.getPropFuns(d, rf, tf, initialState);
+		printPercentageTruePFs(learnedPropFuns, allStates);
+
+
+		//Try and run LSPI with learned PFs as features
+
+		//get a state definition earlier, we'll use it soon.
+
+		System.out.print("Collecting S,A,R,S' for linear function approximation...");
+		StateGenerator rStateGen = new TaxiRandomStateGenerator(d, initialState);
+		SARSCollector collector = new SARSCollector.UniformRandomSARSCollector(d);
+		SARSData dataset = collector.collectNInstances(rStateGen, rf, 10000, 1000, tf, null);
+
+		//		for (int i = 0; i < dataset.size(); i++) {
+		//			System.out.println(dataset.get(i).s);
+		//		}
+
+		System.out.println("Done collecting S, A, R, S'.");
+		
+		
+		StateToFeatureVectorGenerator featGen = new PFToFeaturesGenerator(learnedPropFuns);
+		FeatureDatabase databaseConverter = new FVToFeatureDatabase(featGen, learnedPropFuns.size()); //The dimensionality is the number of features
+
+		//Pass LSPI the PF features
+		double gamma = 0.99;
+		System.out.println("Creating LSPI");
+		LSPI lspi = new LSPI(d, rf, tf, gamma, databaseConverter);
+		lspi.setDataset(dataset);
+
+		System.out.println("Running PI");
+		lspi.runPolicyIteration(100, 1e-6);
+
+		GreedyQPolicy p = new GreedyQPolicy(lspi);
+
+		Policy randPol = new Policy.RandomPolicy(d);
+
+		int maxStepsToTake = 1000;
+		EpisodeAnalysis eaRand = randPol.evaluateBehavior(initialState, rf, tf, maxStepsToTake);
+		EpisodeAnalysis ea = p.evaluateBehavior(initialState, rf, tf, maxStepsToTake);
+		
+		double randRewardSum = 0;
+		for (double r : eaRand.rewardSequence) {
+			randRewardSum += r;
+		}
+		
+		double rewardSum = 0;
+
+		for (double r : ea.rewardSequence) {
+			 rewardSum += r;
+		}
+		
+		System.out.println("Reward from random: " + randRewardSum);
+		System.out.println("Reward from learned PFs: " + rewardSum);
+
+	}
+
+
+	public static void main(String[] args) {
+		runFourRoomsExperiments(1);
+		//TAXI
+		//		DomainGenerator dg = new TaxiDomain();
+		//		State initialState = TaxiDomain.getClassicState(d);
+		//		TerminalFunction tf = new TaxiDomain.TaxiTF();
+		//		RewardFunction rf = new UniformCostRF();
+
+		//GRIDWORLD
+//		GridWorldDomain dg = new GridWorldDomain(11,11); //11x11 grid world
+//		dg.setMapToFourRooms(); //four rooms layout
+//		dg.setProbSucceedTransitionDynamics(0.8); //stochastic transitions with 0.8 success rate
+//		final Domain domain = dg.generateDomain(); //generate the grid world domain
+//
+//		//setup initial state
+//		State initialState = GridWorldDomain.getOneAgentOneLocationState(domain);
+//		GridWorldDomain.setAgent(initialState, 0, 0);
+//		GridWorldDomain.setLocation(initialState, 0, 10, 10);
+//
+//		//ends when the agent reaches a location
+//		final TerminalFunction tf = new SinglePFTF(domain.
+//				getPropFunction(GridWorldDomain.PFATLOCATION)); 
+//
+//		//reward function definition
+//		final RewardFunction rf = new GoalBasedRF(new TFGoalCondition(tf), 5., -0.1);
+
+		//COMMON CODE
+//		Domain d = dg.generateDomain();
+//		List<State> allStates = StateReachability.getReachableStates(initialState, (SADomain)d, new DiscreteStateHashFactory());
+		List<PropositionalFunction> learnedPropFuns = null;
+
+		//PF LEARNING CODE
+		//Test exhaustive learning
+		//		PFLearner pfLearnerEx = new PFLearner();
+		//		learnedPropFuns = pfLearnerEx.getPropFuns(d, rf, tf, initialState);
+		//		printPercentageTruePFs(learnedPropFuns, allStates);
+
+		//Test learning using a random rollout policy
+//		int numRollouts = 10;
+//		int policyRolloutLength = 100;
+//		PFLearner pfLearnerPol = new PFLearner(new Policy.RandomPolicy(d), policyRolloutLength, numRollouts);
+//		learnedPropFuns = pfLearnerPol.getPropFuns(d, rf, tf, initialState);
+//		printPercentageTruePFs(learnedPropFuns, allStates);
+
+		//EXPERT PFs
+		//		learnedPropFuns = d.getPropFunctions();
+		//		learnedPropFuns.remove(0);//remove at location for training
+
+
+//		System.out.println("UsedPFs: [" + learnedPropFuns.toString());
+//		System.out.print("Usedactions: " );
+//		for (Action a : d.getActions()) {
+//			System.out.print(a.getName() + ", ");
+//		}
+//		System.out.println("]");
+//		//LSPI Code
+//		StateToFeatureVectorGenerator featGen = new PFToFeaturesGenerator(learnedPropFuns);
+//		//		ValueFunctionApproximation vfApprox = new LinearFVVFA(featGen, 0.0);
+//
+//		FeatureDatabase databaseConverter = new FVToFeatureDatabase(featGen, learnedPropFuns.size()); //The dimensionality is the number of features
+//
+//
+//		//Try and run LSPI with learned PFs as features
+//
+//		//get a state definition earlier, we'll use it soon.
+//
+//		System.out.print("Collecting S,A,R,S' for linear function approximation...");
+//		StateGenerator rStateGen = new TaxiRandomStateGenerator(d, initialState);
+//		SARSCollector collector = new SARSCollector.UniformRandomSARSCollector(d);
+//		SARSData dataset = collector.collectNInstances(rStateGen, rf, 10000, 1000, tf, null);
+//
+//		//		for (int i = 0; i < dataset.size(); i++) {
+//		//			System.out.println(dataset.get(i).s);
+//		//		}
+//
+//		System.out.println("Done collecting S, A, R, S'.");
+//
+//		//Pass LSPI the PF features
+//		System.out.println("Creating LSPI");
+//		LSPI lspi = new LSPI(d, rf, tf, 0.99, databaseConverter);
+//		lspi.setDataset(dataset);
+//
+//		System.out.println("Running PI");
+//		lspi.runPolicyIteration(100, 1e-6);
+//
+//		GreedyQPolicy p = new GreedyQPolicy(lspi);
+//
+//		Policy randPol = new Policy.RandomPolicy(d);
+//
+//		int maxStepsToTake = 1000;
+//		EpisodeAnalysis eaRand = randPol.evaluateBehavior(initialState, rf, tf, maxStepsToTake);
+//		EpisodeAnalysis ea = p.evaluateBehavior(initialState, rf, tf, maxStepsToTake);
+//		System.out.println("ACTIONS TAKEN BY LSPI: " + ea.numTimeSteps());
+//		System.out.println("ACTIONS TAKEN BY RAND: " + eaRand.numTimeSteps());
+
+	}
+
+}

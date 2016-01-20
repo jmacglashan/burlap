@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 4 elements to &apos;NewMinecraftDomain/src/minecraft.maps.planeMaps&apos;&#x0A;- Original project: &apos;NewMinecraftDomain&apos;&#x0A;- Destination element: &apos;NewMinecraftDomain/src/minecraft.maps.planeMaps&apos;&#x0A;- Original elements:&#x0A;     plane3.map&#x0A;     plane1.map&#x0A;     plane2.map&#x0A;     plane1Copy.map" description="Copy files" destination="/src&lt;minecraft.maps.planeMaps" element1="src/minecraft/maps/toCluster/plane3.map" element2="src/minecraft/maps/toCluster/plane1.map" element3="src/minecraft/maps/toCluster/plane2.map" element4="src/minecraft/maps/toCluster/plane1Copy.map" files="4" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1405717202748" units="0" version="1.0"/>
+</session>

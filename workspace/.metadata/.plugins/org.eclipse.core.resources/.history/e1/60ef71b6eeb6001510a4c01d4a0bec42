@@ -1,0 +1,6 @@
+package ellisPaperCode.taxi;
+
+
+public class TaxiRandomStateGenerator implements StateGenerator {
+
+}

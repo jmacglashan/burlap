@@ -1,0 +1,59 @@
+package ellisPaperCode.propositionalFunctionToFeatures;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
+import burlap.behavior.singleagent.vfa.FeatureDatabase;
+import burlap.behavior.singleagent.vfa.StateFeature;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.State;
+import burlap.oomdp.singleagent.GroundedAction;
+
+public class PFsToFeatureDatabase implements FeatureDatabase {
+	List<PropositionalFunction> propFuns;
+	
+	public PFsToFeatureDatabase(List<PropositionalFunction> pfs) {
+		this.propFuns = pfs;
+	}
+
+	@Override
+	public List<StateFeature> getStateFeatures(State s) {
+		List<StateFeature> toReturn = new ArrayList<StateFeature>();
+		int featureID = 0;
+		for (PropositionalFunction pf : propFuns) {
+			StateFeature toAdd = null;
+			if (pf.isTrue(s, "")) {
+				 toAdd = new StateFeature(featureID, 1.0);
+			}
+			else {
+				
+				 toAdd = new StateFeature(featureID, 0.0);
+			}
+			featureID++;
+		}
+		
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ActionFeaturesQuery> getActionFeaturesSets(State s,
+			List<GroundedAction> actions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void freezeDatabaseState(boolean toggle) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int numberOfFeatures() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

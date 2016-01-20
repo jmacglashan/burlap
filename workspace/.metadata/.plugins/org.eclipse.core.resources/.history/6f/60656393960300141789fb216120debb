@@ -1,0 +1,210 @@
+package affordances.WorldPerceptron;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import burlap.behavior.singleagent.planning.ValueFunctionPlanner;
+import burlap.behavior.singleagent.planning.commonpolicies.GreedyDeterministicQPolicy;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
+import burlap.oomdp.core.ObjectInstance;
+import burlap.oomdp.core.State;
+import minecraft.MapIO;
+import minecraft.MinecraftBehavior;
+import minecraft.MinecraftStateParser;
+import minecraft.NameSpace;
+import affordances.WorldClusterer.WorldClusterer;
+
+/**
+ * Takes in a directory path to maps and generates map from clusters to vectors of perception data
+ * @author Dhershkowitz
+ *
+ */
+public class PerceptionDataGenerator {
+	private String outputPath;
+	private int xLookDistance;
+	private int yLookDistance;
+	private int zLookDistance;
+	private int numClusters;
+	private HashMap<Integer, List<int[]>> clusterPerceptions;
+	
+	
+	public PerceptionDataGenerator(String pathToMaps, int numClusters, int xLookDistance, int yLookDistance, int zLookDistance) {
+		this.numClusters = numClusters;
+		this.xLookDistance = xLookDistance;
+		this.yLookDistance = yLookDistance;
+		this.zLookDistance = zLookDistance;
+		updateDirectory(pathToMaps);
+		
+		
+//		for (Integer clusterIndex : this.clusterPerceptions.keySet()) {
+//			List<int[]> currList = this.clusterPerceptions.get(clusterIndex);
+//			for (int[] currPerc : currList) {
+//				String stringOfCurrPerc = Arrays.toString(currPerc);
+//				System.out.println("Cluster " + clusterIndex + ":" + stringOfCurrPerc);
+//				
+//			}
+//			
+//		}
+	}
+	
+	private void updateDirectory(String pathToMaps) {
+		WorldClusterer clusterer = new WorldClusterer(pathToMaps, this.numClusters);
+		this.clusterPerceptions = getClusterPerceptions(clusterer.clusters);
+	}
+	
+	private String getArffString(String fileName) {
+		StringBuffer sb = new StringBuffer();
+		//Set up relation
+		sb.append("@RELATION " + fileName + "\n");
+		int[] samplePercData = this.clusterPerceptions.get(0).get(0);
+		int numPerceptualDPs = samplePercData.length;
+		//Set up attributes -- indexes
+		for (int index = 0; index < numPerceptualDPs; index++) {
+			String attributeLine = "@ATTRIBUTE index" + index + " integer\n";  
+			sb.append(attributeLine);
+		}
+		//Set up attributes -- clusterClasses
+		sb.append("@ATTRIBUTE class {");
+		
+		String prefix = "";
+		for (Integer clusterIndex : this.clusterPerceptions.keySet()) {
+			String clusterClass = "cluster" + clusterIndex;
+			sb.append(prefix + clusterClass);
+			prefix = ",";
+		}
+		sb.append("}\n");
+		
+		//Set up data
+		sb.append("@DATA\n");
+		
+		for (Integer clusterIndex : this.clusterPerceptions.keySet()) {
+			List<int []> clustersData = this.clusterPerceptions.get(clusterIndex);
+			for (int [] oneSetOfPerceptions : clustersData) {
+				prefix = "";
+				for (int index = 0; index < oneSetOfPerceptions.length; index++) {
+					int currentDP = oneSetOfPerceptions[index];
+					sb.append(prefix + currentDP);
+					
+					prefix = ",";
+				}
+				sb.append(",cluster" + clusterIndex + "\n");
+			}
+		}
+	return sb.toString();
+	}
+	
+	public void printArffFile(String outputPath, String fileName) {
+		System.out.println("Writing .arff file...");
+		String arffString = getArffString(fileName);
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(outputPath + fileName + ".arff");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		out.println(arffString);
+		out.close();
+	}
+	
+	private List<State> getAllStates(GreedyDeterministicQPolicy p, MinecraftBehavior mcBeh, ValueFunctionPlanner planner) {
+		//Use full state space
+		List<State> allStates = ((ValueFunctionPlanner) planner).getAllStates();
+		
+		//Use plan
+//		EpisodeAnalysis ea = p.evaluateBehavior(mcBeh.getInitialState(), mcBeh.getRewardFunction(), mcBeh.getTerminalFunction());
+//		List<State> allStates = ea.stateSequence;
+
+		//Roll out policy-reachable states
+//		List<State> allStates = new ArrayList<State>();
+//		List<State> frontier = new ArrayList<State>();
+//		frontier.add(mcBeh.getInitialState());
+//		HashSet<State> visitedStates = new HashSet<State>();
+//		
+//		while(!frontier.isEmpty()) {
+//			State currState = frontier.remove(0);
+//			if (!allStates.contains(currState)) {
+//				GroundedAction currGroundedAction = (GroundedAction) p.getAction(currState);
+//				State resultingState = currGroundedAction.executeIn(currState);//Get state linked by policy
+//				
+//				
+//				//Update DSs as necessary
+//				frontier.add(resultingState);
+//				visitedStates.add(currState);
+//				allStates.add(currState);
+//				System.out.println(allStates.size());
+//			}
+//		}
+		
+		//Prune the terminal state
+		allStates.remove(allStates.size()-1);
+		
+		return allStates;
+	}
+	
+	private List<int []> getAllPercDataForMap(MapIO currMap) {
+		List<int []> toReturn = new ArrayList<int []>();
+		
+		//Get IO, behavior, planner and policy
+		MinecraftBehavior mcBeh = new MinecraftBehavior(currMap);
+		ValueFunctionPlanner planner = new ValueIteration(mcBeh.getDomain(), mcBeh.getRewardFunction(), mcBeh.getTerminalFunction(), mcBeh.getGamma(), mcBeh.getHashFactory(), mcBeh.getMinDelta(), Integer.MAX_VALUE);
+		GreedyDeterministicQPolicy p = (GreedyDeterministicQPolicy)mcBeh.solve(planner);
+		
+		//Get all states
+		List<State> allStates = getAllStates(p, mcBeh, planner);
+		
+		
+		
+		for (State currState : allStates) {
+			char[][][] stateAsCharArray = MinecraftStateParser.stateToCharArray(mcBeh.getDomainGenerator(), currState);
+			ObjectInstance agent = currState.getObjectsOfTrueClass(NameSpace.CLASSAGENT).get(0);
+			int rotDir = agent.getDiscValForAttribute(NameSpace.ATROTDIR);
+			
+			int [] percDataForState = PerceptronHelpers.getFactoredPerceptionToVector(stateAsCharArray, this.xLookDistance, this.yLookDistance, this.zLookDistance, rotDir);
+			toReturn.add(percDataForState);
+		}
+		
+		return toReturn;
+	}
+	
+	public List<State> getAllStatesFromMapIO(MapIO currIO) {
+		//Get IO, behavior, planner and policy
+		MinecraftBehavior mcBeh = new MinecraftBehavior(currIO);
+		ValueFunctionPlanner planner = new ValueIteration(mcBeh.getDomain(), mcBeh.getRewardFunction(), mcBeh.getTerminalFunction(), mcBeh.getGamma(), mcBeh.getHashFactory(), mcBeh.getMinDelta(), Integer.MAX_VALUE);
+		GreedyDeterministicQPolicy p = (GreedyDeterministicQPolicy)mcBeh.solve(planner);
+		
+		//Get all states
+		return getAllStates(p, mcBeh, planner);
+	}
+	
+	public HashMap<Integer, List<int[]>> getClusterPerceptions(HashMap<Integer, List<MapIO>> clusters) {
+		HashMap<Integer, List<int[]>> toReturn = new HashMap<Integer, List<int[]>>();
+		//Loop over cluster
+		for (Integer clusterIndex: clusters.keySet()) {
+			List<int []> allPercDataForCluster = new ArrayList<int []>();
+			List<MapIO> mapsForACluster = clusters.get(clusterIndex);
+			//Loop over maps for cluster
+			for (MapIO currMap : mapsForACluster) {
+				List<int []> percDataForMap = getAllPercDataForMap(currMap);
+				allPercDataForCluster.addAll(percDataForMap);
+				
+			}
+			toReturn.put(clusterIndex, allPercDataForCluster);
+		}
+		
+		
+		
+		return toReturn;
+	}
+	
+	
+	public static void main(String[] args) {
+		String filePath = "src/minecraft/maps/toCluster/";
+		PerceptionDataGenerator dataGenerator = new PerceptionDataGenerator(filePath, 3, 1, 1, 1);
+		dataGenerator.printArffFile("src/affordances/WorldPerceptron/", "testPerceptionData");
+	}
+
+}

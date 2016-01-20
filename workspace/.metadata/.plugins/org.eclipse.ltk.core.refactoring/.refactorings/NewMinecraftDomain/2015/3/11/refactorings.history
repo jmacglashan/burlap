@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;ArffHelpers.java&apos; to &apos;burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.OOMDPModel.java&apos;&#x0A;- Original project: &apos;NewMinecraftDomain&apos;&#x0A;- Destination element: &apos;burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel.OOMDPModel.java&apos;&#x0A;- Original element: &apos;affordances.WorldPerceptron.ArffHelpers.java&apos;" description="Copy compilation unit" destination="=burlap/src&lt;burlap.behavior.singleagent.learning.modellearning.models.OOMDPModel{OOMDPModel.java" element1="/src&lt;affordances.WorldPerceptron{ArffHelpers.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1426122776903" units="1" version="1.0"/>
+</session>

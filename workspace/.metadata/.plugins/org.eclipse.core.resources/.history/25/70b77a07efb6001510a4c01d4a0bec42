@@ -1,0 +1,21 @@
+package ellisPaperCode.taxi;
+
+import burlap.oomdp.auxiliary.StateGenerator;
+import burlap.oomdp.core.State;
+
+
+public class TaxiRandomStateGenerator implements StateGenerator {
+	private Domain d;
+	
+	public TaxiRandomStateGenerator(Domain d) {
+		this.d = d;
+		
+	}
+	
+
+	@Override
+	public State generateState() {
+		return null;
+	}
+
+}

@@ -1,0 +1,6 @@
+package ellisPaperCode.propositionalFunctionToFeatures;
+
+public class PropositionalFunctionToFeatures implements StateToFeatureVectorGenerator {
+	public static List<>
+
+}

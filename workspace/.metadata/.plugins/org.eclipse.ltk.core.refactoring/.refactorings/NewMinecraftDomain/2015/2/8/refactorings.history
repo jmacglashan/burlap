@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy package &apos;minecraft&apos; to &apos;burlap/src/burlap.domain.singleagent.graphdefined&apos;&#x0A;- Original project: &apos;NewMinecraftDomain&apos;&#x0A;- Destination element: &apos;burlap/src/burlap.domain.singleagent.graphdefined&apos;&#x0A;- Original element: &apos;NewMinecraftDomain/src/minecraft&apos;" description="Copy package" destination="=burlap/src&lt;burlap.domain.singleagent.graphdefined" element1="/src&lt;minecraft" flags="589830" fragments="1" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyPackages" stamp="1424288715755" version="1.0"/>
+</session>

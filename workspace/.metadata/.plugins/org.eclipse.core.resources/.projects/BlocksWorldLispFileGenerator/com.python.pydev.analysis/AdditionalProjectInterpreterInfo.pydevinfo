@@ -1,0 +1,29 @@
+-- VERSION_3
+-- START DISKCACHE
+/Users/Dhershkowitz/Documents/AI Lab/workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/BlocksWorldLispFileGenerator/com.python.pydev.analysis/v1_indexcache
+.v1_indexcache
+src.__init__|0|/Users/Dhershkowitz/Documents/AI Lab/workspace/BlocksWorldLispFileGenerator/src/__init__.py
+src.BlocksWorldLispMaker|0|/Users/Dhershkowitz/Documents/AI Lab/workspace/BlocksWorldLispFileGenerator/src/BlocksWorldLispMaker.py
+-- END DISKCACHE
+-- START DICTIONARY
+1
+1=src.BlocksWorldLispMaker
+-- END DICTIONARY
+-- START TREE 1
+12
+blo|2|blockName!10@blocksList!10@
+cod|1|code!10@
+cur|1|currBlockIndex!11@
+get|1|getRandomBlockName!10@
+goa|1|goals!10@
+las|2|lastBlockNameString!11@lastBlockName!10@
+mai|1|main!10@
+num|3|numBlocks!11@numStartStacks!11@numGoalStacks!11@
+pro|1|problemStart!10@
+ref|1|refreshUnusedBlocks!10@
+sta|2|stacksList!10@stack!10@
+unu|1|unUsedBlocks!11@
+-- END TREE
+-- START TREE 2
+0
+-- END TREE

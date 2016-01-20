@@ -1,0 +1,25 @@
+1407169659242	Rename type 'TrenchWorld'
+1407170067456	Rename type 'GoldMineWorld'
+1407170076098	Rename type 'GoldSmeltWorld'
+1407170160047	Delete elements
+1407185027855	Delete elements
+1407258038969	Move compilation unit
+1407258047347	Rename package 'minecraft.MinecraftDomain.MacroAction'
+1407258053748	Move compilation unit
+1407258260379	Rename type 'MinecraftMacroAction'
+1407258494998	Delete element
+1407266075844	Delete element
+1407266089842	Rename type 'MinecraftOptionTest'
+1407267061278	Delete element
+1407267073980	Delete element
+1407335784896	Rename type 'SprintMacroActionWrapper'
+1407336005149	Delete element
+1407336038610	Rename type 'TurnAroundMacroActionWrapper'
+1407336085663	Delete element
+1407336096661	Delete element
+1407336107661	Delete element
+1407342914772	Rename type 'EndOfMapInFrontOfAgentPF'
+1407347668243	Move compilation unit
+1407348097193	Rename type 'RTDP'
+1407352848307	Rename type 'ValueIterationPlanner'
+1407352863984	Rename type 'AffordanceValueIterationPlanner'

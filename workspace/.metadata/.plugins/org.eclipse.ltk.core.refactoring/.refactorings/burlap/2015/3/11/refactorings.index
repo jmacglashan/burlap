@@ -1,0 +1,20 @@
+1426095880270	Rename type 'RMAXExperiments'
+1426096661310	Rename local variable 'stepsPerEpisode'
+1426096687730	Rename type 'DOORMAXTaxiExperiments'
+1426122696999	Delete element
+1426123006064	Copy package
+1426123010898	Delete element
+1426123022072	Delete element
+1426208146333	Rename type 'PerceptionsForEffect'
+1426209735944	Delete element
+1426272166007	Rename type 'ConditionLearner'
+1426273169969	Move compilation unit
+1426273188689	Rename package 'burlap.behavior.singleagent.learning.modellearning.models.PerceptualModel'
+1426273204290	Move compilation unit
+1426273209357	Move compilation unit
+1426273217421	Move compilation unit
+1426273227592	Move compilation unit
+1426299286771	Copy package
+1426301244067	Delete element
+1426303335310	Move compilation unit
+1426303507380	Rename type 'ArithmeticRelation'
