@@ -43,6 +43,9 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 	protected double								currentValue;
 	protected FunctionGradient						currentGradient = null;
 
+	protected State									lastState = null;
+	protected AbstractGroundedAction				lastAction = null;
+
 
 	/**
 	 * Initializes with a feature database; the default weight value will be zero
@@ -82,57 +85,93 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 
 
 	@Override
-	public double functionInput(State s, AbstractGroundedAction a) {
-		this.currentFeatures = this.featureDatabase.getActionFeaturesSets(s, Arrays.asList((GroundedAction)a)).get(0).features;
+	public double evaluate(State s, AbstractGroundedAction a) {
+
+		List<StateFeature> features = this.featureDatabase.getActionFeaturesSets(s, Arrays.asList((GroundedAction)a)).get(0).features;
 		double val = 0.;
-		for(StateFeature sf : this.currentFeatures){
+		for(StateFeature sf : features){
 			double prod = sf.value * this.getWeight(sf.id);
 			val += prod;
 		}
 		this.currentValue = val;
 		this.currentGradient = null;
-		return this.currentValue;
+		this.currentFeatures = features;
+		this.lastState = s;
+		this.lastAction = a;
+		return val;
 	}
 
 	@Override
-	public double functionInput(State s) {
-		this.currentFeatures = this.featureDatabase.getStateFeatures(s);
+	public double evaluate(State s) {
+		List<StateFeature> features = this.featureDatabase.getStateFeatures(s);
 		double val = 0.;
-		for(StateFeature sf : this.currentFeatures){
+		for(StateFeature sf : features){
 			double prod = sf.value * this.getWeight(sf.id);
 			val += prod;
 		}
 		this.currentValue = val;
 		this.currentGradient = null;
+		this.currentFeatures = features;
+		this.lastState = s;
+		this.lastAction = null;
 		return this.currentValue;
 	}
 
+
 	@Override
-	public FunctionGradient computeGradient() {
+	public FunctionGradient gradient(State s) {
 
-		if(this.currentFeatures == null){
-			throw new RuntimeException("Input has not been set for this function; cannot return a gradient.");
+		List<StateFeature> features;
+
+		if(this.lastState == s && this.lastAction == null){
+			if(this.currentGradient != null) {
+				return this.currentGradient;
+			}
+			features = this.currentFeatures;
+		}
+		else{
+			features = this.featureDatabase.getStateFeatures(s);
 		}
 
-		if(this.currentGradient != null){
-			return this.currentGradient;
-		}
-		FunctionGradient gd = new FunctionGradient(this.currentFeatures.size());
-		for(StateFeature sf : this.currentFeatures){
+		FunctionGradient gd = new FunctionGradient(features.size());
+		for(StateFeature sf : features){
 			gd.put(sf.id, sf.value);
 		}
 		this.currentGradient = gd;
+		this.lastState = s;
+		this.lastAction = null;
+		this.currentFeatures = features;
 
-		return this.currentGradient;
+		return gd;
 	}
 
 	@Override
-	public double functionValue() {
-		if(this.currentFeatures == null){
-			throw new RuntimeException("Input has not been set for this function; cannot return a value.");
+	public FunctionGradient gradient(State s, AbstractGroundedAction a) {
+
+		List<StateFeature> features;
+
+		if(this.lastState == s && this.lastAction == a){
+			if(this.currentGradient != null) {
+				return this.currentGradient;
+			}
+			features = this.currentFeatures;
 		}
-		return this.currentValue;
+		else{
+			features = this.featureDatabase.getActionFeaturesSets(s, Arrays.asList((GroundedAction)a)).get(0).features;
+		}
+
+		FunctionGradient gd = new FunctionGradient(features.size());
+		for(StateFeature sf : features){
+			gd.put(sf.id, sf.value);
+		}
+		this.currentGradient = gd;
+		this.lastState = s;
+		this.lastAction = a;
+		this.currentFeatures = features;
+
+		return gd;
 	}
+
 
 	@Override
 	public int numParameters() {

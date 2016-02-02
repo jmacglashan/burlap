@@ -381,8 +381,8 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
 			//get Q-value and gradient
-			double curQ = this.vfa.functionInput(curState, action);
-			FunctionGradient gradient = this.vfa.computeGradient();
+			double curQ = this.vfa.evaluate(curState, action);
+			FunctionGradient gradient = this.vfa.gradient(curState, action);
 
 			//execute our action choice
 			EnvironmentOutcome eo = action.executeIn(env);
@@ -392,7 +392,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			GroundedAction nextAction = (GroundedAction)this.learningPolicy.getAction(nextState);
 			double nextQV = 0.;
 			if(!eo.terminated){
-				nextQV = this.vfa.functionInput(nextState, nextAction);
+				nextQV = this.vfa.evaluate(nextState, nextAction);
 			}
 
 			//manage option specifics
@@ -418,8 +418,8 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 				for(GroundedAction oa : allActions){
 
 					//get non-zero parameters and zero them
-					this.vfa.functionInput(curState, oa);
-					FunctionGradient ofg = this.vfa.computeGradient();
+					this.vfa.evaluate(curState, oa);
+					FunctionGradient ofg = this.vfa.gradient(curState, oa);
 					for(Map.Entry<Integer, Double> pds : ofg.getNonZeroPartialDerivatives()){
 						EligibilityTraceVector et = traces.get(pds.getKey());
 						if(et != null){
@@ -522,7 +522,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
 
 		for(GroundedAction ga : gas){
-			qs.add(new QValue(s, ga, this.vfa.functionInput(s, ga)));
+			qs.add(new QValue(s, ga, this.vfa.evaluate(s, ga)));
 		}
 		
 		return qs;
@@ -530,7 +530,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
-		return new QValue(s, a, this.vfa.functionInput(s, a));
+		return new QValue(s, a, this.vfa.evaluate(s, a));
 	}
 
 	@Override

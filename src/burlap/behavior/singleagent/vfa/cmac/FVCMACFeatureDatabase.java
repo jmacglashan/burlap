@@ -280,7 +280,7 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * @param defaultWeightValue the default value weights for the CMAC features will use.
 	 * @return a linear ValueFunctionApproximation object that uses this feature database
 	 */
-	public DifferentiableFunction generateVFA(double defaultWeightValue){
+	public LinearVFA generateVFA(double defaultWeightValue){
 		return new LinearVFA(this, defaultWeightValue);
 	}
 	

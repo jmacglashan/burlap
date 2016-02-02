@@ -1,20 +1,19 @@
 package burlap.behavior.singleagent.vfa;
 
+import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.states.State;
+
 /**
  * An interface for defining a parametric function that outputs a scalar values (double). This interface is often used
  * for value function approximation implementations. This highest-level of the interface does not define the input
- * domain, which is left to subclasses of this interface. For example, {@link burlap.behavior.singleagent.vfa.DifferentiableStateValue}
- * defines a function that operates on state inputs and {@link burlap.behavior.singleagent.vfa.DifferentiableStateActionValue}
- * defines a function that operates on state-action inputs.
+ * domain, which is left to subclasses of this interface. For example, the {@link ParametricStateFunction} operates
+ * on {@link burlap.oomdp.core.states.State} inputs and the {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction.ParametricStateActionFunction}
+ * operates on {@link burlap.oomdp.core.states.State}-{@link burlap.oomdp.core.AbstractGroundedAction} inputs.
+ *
+ *
  * @author James MacGlashan.
  */
 public interface ParametricScalarFunction {
-
-	/**
-	 * Returns the value of this function for the last input values.
-	 * @return the value of this function for the last input values.
-	 */
-	double functionValue();
 
 	/**
 	 * Returns the number of parameters defining this function. Note that some
@@ -53,5 +52,40 @@ public interface ParametricScalarFunction {
 	 * @return a copy of this {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction}.
 	 */
 	ParametricScalarFunction copy();
+
+
+	/**
+	 * A Parametric function that operates on states.
+	 */
+	public static interface ParametricStateFunction extends ParametricScalarFunction{
+
+
+		/**
+		 * Sets the input of this function to the given {@link burlap.oomdp.core.states.State} and returns
+		 * the value of it.
+		 * @param s the {@link burlap.oomdp.core.states.State} to input to the function
+		 * @return the value of this function evaluated on the input {@link burlap.oomdp.core.states.State}
+		 */
+		double evaluate(State s);
+
+	}
+
+
+	/**
+	 * A parametric function that operations on state-actions
+	 */
+	public static interface ParametricStateActionFunction extends ParametricScalarFunction{
+
+
+		/**
+		 * Sets the input of this function to the given {@link burlap.oomdp.core.states.State} and
+		 * {@link burlap.oomdp.core.AbstractGroundedAction} and returns the value of it.
+		 * @param s the input {@link burlap.oomdp.core.states.State}
+		 * @param a the input action
+		 * @return the value of this function evaluated on the {@link burlap.oomdp.core.states.State} and {@link burlap.oomdp.core.AbstractGroundedAction}
+		 */
+		double evaluate(State s, AbstractGroundedAction a);
+
+	}
 
 }

@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.vfa.cmac;
 
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.DifferentiableFunction;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.cmac.Tiling.StateTile;
@@ -205,7 +204,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	 * @param defaultWeightValue the default value weights for the CMAC features will use.
 	 * @return a linear ValueFunctionApproximation object that uses this feature database
 	 */
-	public DifferentiableFunction generateVFA(double defaultWeightValue){
+	public LinearVFA generateVFA(double defaultWeightValue){
 		return new LinearVFA(this, defaultWeightValue);
 	}
 	

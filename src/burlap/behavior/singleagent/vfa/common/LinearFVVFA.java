@@ -6,7 +6,6 @@ import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +19,7 @@ import java.util.Map;
  * <br/><br/>
  * This class can be used for either state-value functions or state-action-value functions, but only one of them.
  * Which one is used is determined implicitly by whether the first function input is set with the
- * {@link #functionInput(burlap.oomdp.core.states.State)} method or the {@link #functionInput(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)}
+ * {@link #evaluate(burlap.oomdp.core.states.State)} method or the {@link #evaluate(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)}
  * method.
  * @author James MacGlashan.
  */
@@ -59,12 +58,13 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 	protected int									currentActionOffset = -1;
 	protected double								currentValue;
 	protected FunctionGradient						currentGradient = null;
+	protected State									lastState;
 
 
 	/**
 	 * Initializes. This object will be set to perform either state value function approximation or state-action
-	 * function approximation once a call to either {@link #functionInput(burlap.oomdp.core.states.State)}
-	 * or {@link #functionInput(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} is made.
+	 * function approximation once a call to either {@link #evaluate(burlap.oomdp.core.states.State)}
+	 * or {@link #evaluate(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} is made.
 	 * If the former method is called
 	 * first, then this object will be tasked with state value function approximation. If the latter
 	 * method is called first, then this object will be tasked with state-action value function approximation.
@@ -78,7 +78,7 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 
 
 	@Override
-	public double functionInput(State s, AbstractGroundedAction a) {
+	public double evaluate(State s, AbstractGroundedAction a) {
 		this.currentStateFeatures = this.fvGen.generateFeatureVectorFrom(s);
 		this.currentActionOffset = this.getActionOffset(a);
 		int indOff = this.currentActionOffset*this.currentStateFeatures.length;
@@ -88,6 +88,7 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 		}
 		this.currentValue = val;
 		this.currentGradient = null;
+		this.lastState = s;
 		return this.currentValue;
 	}
 
@@ -95,7 +96,7 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 
 
 	@Override
-	public double functionInput(State s) {
+	public double evaluate(State s) {
 		this.currentStateFeatures = this.fvGen.generateFeatureVectorFrom(s);
 		this.currentActionOffset = 0;
 		if(this.stateWeights == null){
@@ -110,34 +111,65 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 		}
 		this.currentValue = val;
 		this.currentGradient = null;
+		this.lastState = s;
 		return this.currentValue;
 	}
 
 	@Override
-	public FunctionGradient computeGradient() {
+	public FunctionGradient gradient(State s) {
 
-		if(currentGradient != null){
-			return this.currentGradient;
+		double [] features;
+		if(this.lastState == s){
+			if(this.currentGradient != null){
+				return this.currentGradient;
+			}
+			features = this.currentStateFeatures;
+		}
+		else{
+			features = this.fvGen.generateFeatureVectorFrom(s);
 		}
 
-		FunctionGradient gradient = new FunctionGradient(this.currentStateFeatures.length);
-		int sIndOffset = this.currentActionOffset*this.currentStateFeatures.length;
-		for(int i = 0; i < this.currentStateFeatures.length; i++){
-			gradient.put(i+sIndOffset, this.currentStateFeatures[i]);
+		FunctionGradient gradient = new FunctionGradient(features.length);
+		for(int i = 0; i < features.length; i++){
+			gradient.put(i, features[i]);
 		}
 
 		this.currentGradient = gradient;
+		this.currentStateFeatures = features;
+		this.lastState = s;
+
+		return gradient;
+
+	}
+
+	@Override
+	public FunctionGradient gradient(State s, AbstractGroundedAction a){
+
+		double [] features;
+		if(this.lastState == s){
+			if(this.currentGradient != null){
+				return this.currentGradient;
+			}
+			features = this.currentStateFeatures;
+		}
+		else{
+			features = this.fvGen.generateFeatureVectorFrom(s);
+		}
+
+		FunctionGradient gradient = new FunctionGradient(features.length);
+		int actionOffset = this.getActionOffset(a);
+		int sIndOffset = actionOffset*features.length;
+		for(int i = 0; i < features.length; i++){
+			gradient.put(i+sIndOffset, features[i]);
+		}
+
+		this.currentGradient = gradient;
+		this.currentStateFeatures = features;
+		this.lastState = s;
 
 		return gradient;
 	}
 
-	@Override
-	public double functionValue() {
-		if(this.currentStateFeatures == null){
-			throw new RuntimeException("Cannot return function value because no input has been specified.");
-		}
-		return this.currentValue;
-	}
 
 	@Override
 	public int numParameters() {

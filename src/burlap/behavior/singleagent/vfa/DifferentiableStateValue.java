@@ -3,18 +3,17 @@ package burlap.behavior.singleagent.vfa;
 import burlap.oomdp.core.states.State;
 
 /**
- * An interface extension for a {@link burlap.behavior.singleagent.vfa.DifferentiableFunction} that
- * operates on {@link burlap.oomdp.core.states.State} objects. Useful for state value function approximation.
+ * An extension of {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction.ParametricStateFunction} that
+ * that is differentiable.
  * @author James MacGlashan.
  */
-public interface DifferentiableStateValue extends DifferentiableFunction{
+public interface DifferentiableStateValue extends ParametricScalarFunction.ParametricStateFunction{
 
 	/**
-	 * Sets the input of this function to the given {@link burlap.oomdp.core.states.State} and returns
-	 * the value of it. The value may also be retrieved later with the {@link #functionValue()} method.
-	 * @param s the {@link burlap.oomdp.core.states.State} to input to the function
-	 * @return the value of this function evaluated on the input {@link burlap.oomdp.core.states.State}
+	 * Returns the gradient of this function
+	 * @param s the input state
+	 * @return the gradient
 	 */
-	double functionInput(State s);
+	FunctionGradient gradient(State s);
 
 }

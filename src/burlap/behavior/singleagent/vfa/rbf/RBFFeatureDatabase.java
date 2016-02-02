@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.vfa.rbf;
 
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.DifferentiableFunction;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
@@ -148,7 +147,7 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	 * @param defaultWeightValue the default feature weight value to use for all features
 	 * @return a linear VFA object over this RBF feature database.
 	 */
-	public DifferentiableFunction generateVFA(double defaultWeightValue)
+	public LinearVFA generateVFA(double defaultWeightValue)
 	{
 		return new LinearVFA(this, defaultWeightValue);
 	}

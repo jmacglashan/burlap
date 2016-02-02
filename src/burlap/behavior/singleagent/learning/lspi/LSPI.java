@@ -9,10 +9,7 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData.SARS;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.DifferentiableStateActionValue;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.behavior.singleagent.vfa.StateFeature;
+import burlap.behavior.singleagent.vfa.*;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
@@ -74,7 +71,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * The object that performs value function approximation given the weights that are estimated
 	 */
-	protected DifferentiableStateActionValue						 vfa;
+	protected ParametricScalarFunction.ParametricStateActionFunction 		vfa;
 	
 	/**
 	 * The SARS dataset on which LSPI is performed
@@ -507,7 +504,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 
 
 		for(GroundedAction ga : gas){
-			qs.add(new QValue(s, ga, this.vfa.functionInput(s, ga)));
+			qs.add(new QValue(s, ga, this.vfa.evaluate(s, ga)));
 		}
 		
 		return qs;
@@ -517,7 +514,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
-		return new QValue(s, a, this.vfa.functionInput(s, a));
+		return new QValue(s, a, this.vfa.evaluate(s, a));
 	}
 
 	@Override
