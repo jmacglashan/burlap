@@ -1,6 +1,8 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.singleagent.vfa.ParametricScalarFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -16,7 +18,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * and setting the featuresAreForNextState boolean to false.
  * @author James MacGlashan.
  */
-public class LinearStateDifferentiableRF extends DifferentiableRF {
+public class LinearStateDifferentiableRF implements DifferentiableRF {
 
 	/**
 	 * Whether features are based on the next state or previous state. Default is for the next state (true).
@@ -27,6 +29,17 @@ public class LinearStateDifferentiableRF extends DifferentiableRF {
 	 * The state feature vector generator.
 	 */
 	protected StateToFeatureVectorGenerator 	fvGen;
+
+	/**
+	 * The parameters of this reward function
+	 */
+	protected double [] 						parameters;
+
+
+	/**
+	 * The dimension of this reward function
+	 */
+	protected int								dim;
 
 
 	/**
@@ -64,19 +77,52 @@ public class LinearStateDifferentiableRF extends DifferentiableRF {
 
 
 	@Override
-	protected DifferentiableRF copyHelper() {
+	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
+
+		double [] features;
+		if(featuresAreForNextState){
+			features = fvGen.generateFeatureVectorFrom(sprime);
+		}
+		else{
+			features = fvGen.generateFeatureVectorFrom(s);
+		}
+		FunctionGradient gradient = new FunctionGradient(features.length);
+		for(int i = 0; i < features.length; i++){
+			gradient.put(i, features[i]);
+		}
+
+		return gradient;
+	}
+
+	@Override
+	public int numParameters() {
+		return this.dim;
+	}
+
+	@Override
+	public double getParameter(int i) {
+		return this.parameters[i];
+	}
+
+	@Override
+	public void setParameter(int i, double p) {
+		this.parameters[i] = p;
+	}
+
+	@Override
+	public void resetParameters() {
+		for(int i = 0; i < this.parameters.length; i++){
+			this.parameters[i] = 0.;
+		}
+	}
+
+	@Override
+	public ParametricScalarFunction copy() {
 		LinearStateDifferentiableRF rf = new LinearStateDifferentiableRF(this.fvGen, this.dim, this.featuresAreForNextState);
+		rf.parameters = this.parameters.clone();
 		return rf;
 	}
 
-	public double [] getGradient(State s, GroundedAction ga, State sp){
-		if(featuresAreForNextState){
-			return fvGen.generateFeatureVectorFrom(sp);
-		}
-		else{
-			return fvGen.generateFeatureVectorFrom(s);
-		}
-	}
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime){

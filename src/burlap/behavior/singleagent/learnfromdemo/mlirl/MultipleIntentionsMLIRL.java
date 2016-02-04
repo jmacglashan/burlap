@@ -328,7 +328,7 @@ public class MultipleIntentionsMLIRL {
 
 		List<DifferentiableRF> rfs = new ArrayList<DifferentiableRF>(k);
 		for(int i = 0; i < k; i++){
-			rfs.add(this.request.getRf().copy());
+			rfs.add((DifferentiableRF)this.request.getRf().copy());
 		}
 
 		this.initializeClusterRFParameters(rfs);
@@ -361,8 +361,19 @@ public class MultipleIntentionsMLIRL {
 	 */
 	protected void initializeClusterRFParameters(List<DifferentiableRF> rfs){
 		for(DifferentiableRF rf : rfs){
-			double [] params = rf.getParameters();
-			this.randomizeParameters(params);
+			this.randomizeParameters(rf);
+		}
+	}
+
+
+	/**
+	 * Randomizes the parameters for a given {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}.
+	 * @param rf the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} whose parameters are not be randomized
+	 */
+	protected void randomizeParameters(DifferentiableRF rf){
+		for(int i = 0; i < rf.numParameters(); i++){
+			double r = this.rand.nextDouble()*2 - 1.;
+			rf.setParameter(i, r);
 		}
 	}
 
