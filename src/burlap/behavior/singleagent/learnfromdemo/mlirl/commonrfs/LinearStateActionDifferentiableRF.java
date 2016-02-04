@@ -7,6 +7,7 @@ import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,5 +153,8 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 		return rf;
 	}
 
-
+	@Override
+	public String toString() {
+		return Arrays.toString(this.parameters);
+	}
 }

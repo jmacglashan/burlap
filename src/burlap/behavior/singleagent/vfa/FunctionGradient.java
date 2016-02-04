@@ -76,4 +76,13 @@ public class FunctionGradient {
 		return this.gradient.entrySet();
 	}
 
+
+	/**
+	 * Returns the number of non-zero partial derivatives
+	 * @return the number of non-zero partial derivatives
+	 */
+	public int numNonZeroPDs(){
+		return this.gradient.size();
+	}
+
 }

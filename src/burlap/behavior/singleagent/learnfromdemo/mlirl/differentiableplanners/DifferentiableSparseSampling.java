@@ -591,10 +591,11 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 				FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(
 						DifferentiableSparseSampling.this.boltzBeta, qs, maxBetaScaled, logSum, gqs, i);
 
+
 				for(Map.Entry<Integer, Double> pd : policyGradient.getNonZeroPartialDerivatives()){
 					double curVal = this.vgrad.getPartialDerivative(pd.getKey());
-					double nextVal = curVal + (probA * gqs[i].getPartialDerivative(pd.getKey())) + qs[i] + pd.getValue();
-					policyGradient.put(pd.getKey(), nextVal);
+					double nextVal = curVal + (probA * gqs[i].getPartialDerivative(pd.getKey())) + (qs[i] * pd.getValue());
+					vgrad.put(pd.getKey(), nextVal);
 				}
 
 

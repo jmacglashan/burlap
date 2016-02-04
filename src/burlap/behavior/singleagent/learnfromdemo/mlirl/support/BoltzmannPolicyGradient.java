@@ -5,8 +5,10 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class provides methods to compute the gradient of a Boltzmann policy. Numerous logarithmic tricks are
@@ -78,22 +80,24 @@ public class BoltzmannPolicyGradient {
 
 		FunctionGradient pg = new FunctionGradient();
 		double constantPart = beta * Math.exp(beta*qs[aInd] + maxBetaScaled - logSum - logSum);
+		Set<Integer> nzPDs = combinedNonZeroPDParameters(gqs);
 		for(int i = 0; i < qs.length; i++){
-			for(Map.Entry<Integer, Double> pd : gqs[i].getNonZeroPartialDerivatives()){
-				double curVal = pg.getPartialDerivative(pd.getKey());
-				double nextVal = curVal + (gqs[aInd].getPartialDerivative(pd.getKey()) - gqs[i].getPartialDerivative(pd.getKey()))
+			for(int param : nzPDs){
+				double curVal = pg.getPartialDerivative(param);
+				double nextVal = curVal + (gqs[aInd].getPartialDerivative(param) - gqs[i].getPartialDerivative(param))
 											* Math.exp(beta * qs[i] - maxBetaScaled);
 
-				pg.put(pd.getKey(), nextVal);
+				pg.put(param, nextVal);
  			}
 		}
 
+		FunctionGradient finalGradient = new FunctionGradient(pg.numNonZeroPDs());
 		for(Map.Entry<Integer, Double> pd : pg.getNonZeroPartialDerivatives()){
 			double nextVal = pd.getValue() * constantPart;
-			pg.put(pd.getKey(), nextVal);
+			finalGradient.put(pd.getKey(), nextVal);
 		}
 
-		return pg;
+		return finalGradient;
 
 	}
 
@@ -131,6 +135,19 @@ public class BoltzmannPolicyGradient {
 		double v = maxBetaScaled + Math.log(expSum);
 		return v;
 
+	}
+
+	protected static Set<Integer> combinedNonZeroPDParameters(FunctionGradient...gradients){
+
+		Set<Integer> c = new HashSet<Integer>();
+		for(FunctionGradient g : gradients){
+			Set<Map.Entry<Integer, Double>> p = g.getNonZeroPartialDerivatives();
+			for(Map.Entry<Integer, Double> e : p){
+				c.add(e.getKey());
+			}
+		}
+
+		return c;
 	}
 
 

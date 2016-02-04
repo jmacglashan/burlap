@@ -7,6 +7,8 @@ import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
+import java.util.Arrays;
+
 /**
  * A class for defining a linear state {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}.
  * The features of the reward function are produced by a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}.
@@ -138,6 +140,11 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 			sum += features[i] * this.parameters[i];
 		}
 		return sum;
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(this.parameters);
 	}
 
 }
