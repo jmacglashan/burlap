@@ -1,4 +1,4 @@
-package burlap.oomdp.singleagent.environment.shell.command.std;
+package burlap.shell.command.env;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.MutableObjectInstance;
@@ -7,8 +7,9 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentDelegation;
 import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
-import burlap.oomdp.singleagent.environment.shell.EnvironmentShell;
-import burlap.oomdp.singleagent.environment.shell.command.ShellCommand;
+import burlap.shell.BurlapShell;
+import burlap.shell.EnvironmentShell;
+import burlap.shell.command.ShellCommand;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -34,8 +35,8 @@ public class AddStateObjectCommand implements ShellCommand {
 	}
 
 	@Override
-	public int call(EnvironmentShell shell, String argString, Environment env, Scanner is, PrintStream os) {
-
+	public int call(BurlapShell shell, String argString, Scanner is, PrintStream os) {
+		Environment env = ((EnvironmentShell)shell).getEnv();
 		OptionSet oset = this.parser.parse(argString.split(" "));
 		List<String> args = (List<String>)oset.nonOptionArguments();
 		if(oset.has("h")){

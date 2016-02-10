@@ -1,6 +1,6 @@
-package burlap.oomdp.singleagent.environment.shell;
+package burlap.shell;
 
-import burlap.oomdp.singleagent.environment.shell.command.ShellCommand;
+import burlap.shell.command.ShellCommand;
 
 /**
  * @author James MacGlashan.
