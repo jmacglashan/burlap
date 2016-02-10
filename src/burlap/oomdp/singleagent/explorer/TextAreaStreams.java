@@ -31,7 +31,7 @@ public class TextAreaStreams {
 	}
 
 	public void receiveInput(String input){
-		area.append("> " + input);
+		area.append(input + "\n");
 		synchronized(inputBuf){
 			inputBuf.append(input);
 			inputBuf.notifyAll();
@@ -62,40 +62,46 @@ public class TextAreaStreams {
 
 	public class TextIn extends InputStream{
 
+
 		@Override
-		public int read(byte[] b) throws IOException {
-			synchronized(inputBuf){
-				while(available() == 0){
-					try {
-						inputBuf.wait();
-					} catch(InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-
-
+		public int read(byte b[], int off, int len) throws IOException {
+			if (b == null) {
+				throw new NullPointerException();
+			} else if (off < 0 || len < 0 || len > b.length - off) {
+				throw new IndexOutOfBoundsException();
+			} else if (len == 0) {
+				return 0;
 			}
 
-			return super.read(b);
-		}
+			int c = read();
+			if (c == -1) {
+				return -1;
+			}
+			b[off] = (byte)c;
 
-		@Override
-		public int read(byte[] b, int off, int len) throws IOException {
-			return super.read(b, off, len);
-		}
-
-		@Override
-		public int available() throws IOException {
-			return inputBuf.length() - bufIndex;
+			int i = 1;
+			try {
+				for (; i < len ; i++) {
+					c = read();
+					if (c == -1) {
+						break;
+					}
+					b[off + i] = (byte)c;
+				}
+			} catch (IOException ee) {
+			}
+			return i;
 		}
 
 		@Override
 		public int read() throws IOException {
 
+			//System.out.println("Read request");
+
 			int b;
 			synchronized(inputBuf){
 
-				while(bufIndex - inputBuf.length() == 0){
+				while(inputBuf.length() == 0){
 					try {
 						inputBuf.wait();
 					} catch(InterruptedException e) {
@@ -103,8 +109,9 @@ public class TextAreaStreams {
 					}
 				}
 
+
 				char c = inputBuf.charAt(bufIndex);
-				b = Character.getNumericValue(c);
+				b = (int)c;
 
 				bufIndex++;
 				if(bufIndex == inputBuf.length()){
@@ -115,6 +122,8 @@ public class TextAreaStreams {
 
 				inputBuf.notifyAll();
 			}
+
+			System.out.println("Read byte " + b);
 
 			return b;
 		}

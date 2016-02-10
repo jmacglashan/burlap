@@ -6,8 +6,6 @@ import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -15,17 +13,20 @@ import burlap.oomdp.singleagent.common.NullRewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
-import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
 import burlap.oomdp.stateserialization.SerializableStateFactory;
 import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
 import burlap.oomdp.visualizer.Visualizer;
+import burlap.shell.EnvironmentShell;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,7 @@ public class VisualExplorer extends JFrame{
 	protected int											numSteps;
 
 	protected JFrame										consoleFrame;
-	protected TextArea										stateConsole;
+	protected JTextArea										stateConsole;
 	
 	//recording data members
 	protected EpisodeAnalysis 								currentEpisode = null;
@@ -79,6 +80,9 @@ public class VisualExplorer extends JFrame{
 	protected boolean										isRecording = false;
 
 	protected boolean										runLivePolling = false;
+
+	protected EnvironmentShell								shell;
+	protected TextAreaStreams								tstreams;
 
 	
 	/**
@@ -442,6 +446,8 @@ public class VisualExplorer extends JFrame{
 		this.consoleFrame = new JFrame();
 		this.consoleFrame.setPreferredSize(new Dimension(600, 500));
 
+
+		/*
 		JLabel consoleCommands = new JLabel("<html><h2>Console command syntax:</h2>" +
 				"&nbsp;&nbsp;&nbsp;&nbsp;<b>add</b> objectClass object<br/>" +
 				"&nbsp;&nbsp;&nbsp;&nbsp;<b>remove</b> object<br/>" +
@@ -453,11 +459,47 @@ public class VisualExplorer extends JFrame{
 				"&nbsp;&nbsp;&nbsp;&nbsp;<b>pollState</b><br/>&nbsp;</html>");
 
 		consoleFrame.getContentPane().add(consoleCommands, BorderLayout.NORTH);
+		*/
 
-		this.stateConsole = new TextArea(this.getConsoleText(this.env.getCurrentObservation()), 40, 40, TextArea.SCROLLBARS_BOTH);
+		this.stateConsole = new JTextArea(40, 40);
+		this.stateConsole.setLineWrap(true);
+		DefaultCaret caret = (DefaultCaret)this.stateConsole.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		this.stateConsole.setEditable(false);
+
 		this.consoleFrame.getContentPane().add(this.stateConsole, BorderLayout.CENTER);
 
+		this.tstreams = new TextAreaStreams(this.stateConsole);
+		this.shell = new EnvironmentShell(domain, env, tstreams.getTin(), new PrintStream(tstreams.getTout()));
+		//this.shell.start();
+
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("reading");
+				InputStreamReader reader = new InputStreamReader(tstreams.getTin());
+				String read = null;
+				int ir=-1;
+				try {
+					ir = reader.read();
+					//ir = tstreams.getTin().read();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("READ: " + ir);
+			}
+		});
+		t.start();
+
 		JTextField consoleCommand = new JTextField(40);
+		consoleCommand.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String command = ((JTextField)e.getSource()).getText();
+				tstreams.receiveInput(command + "\n");
+			}
+		});
+		/*
 		consoleCommand.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -556,6 +598,7 @@ public class VisualExplorer extends JFrame{
 
 			}
 		});
+		*/
 
 		this.consoleFrame.getContentPane().add(consoleCommand, BorderLayout.SOUTH);
 
