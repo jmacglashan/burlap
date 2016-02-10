@@ -34,7 +34,8 @@ public class Visualizer extends MultiLayerRenderer{
 	 */
 	protected StateActionRenderLayer	sarender = null;
 	
-	
+
+	protected boolean saAfterStateRL;
 	
 	public Visualizer(){
 		super();
@@ -61,6 +62,9 @@ public class Visualizer extends MultiLayerRenderer{
 	 *                     If false, then it draws before.
 	 */
 	public void setStateActionRenderLayer(StateActionRenderLayer sarender, boolean afterStateRL){
+
+		this.saAfterStateRL = afterStateRL;
+
 		if(this.sarender != null){
 			this.renderLayers.remove(this.sarender);
 		}
@@ -153,7 +157,19 @@ public class Visualizer extends MultiLayerRenderer{
 	}
 	
 	
-	
+	public Visualizer copy(){
+		Visualizer v = new Visualizer(this.srender);
+		if(this.sarender != null) {
+			v.setStateActionRenderLayer(this.sarender, this.saAfterStateRL);
+		}
+		for(RenderLayer rl : this.renderLayers){
+			if(rl != this.srender && rl != this.sarender){
+				this.renderLayers.add(rl);
+			}
+		}
+
+		return v;
+	}
 	
 	
 	

@@ -8,6 +8,9 @@ import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * An {@link burlap.oomdp.singleagent.environment.Environment} that simulates interactions using the {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
  * method of the the {@link burlap.oomdp.core.Domain} provided to this Environment. The rewards and terminal states are similarly tracked using a
@@ -28,7 +31,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * terminal states with the {@link #setAllowActionFromTerminalStates(boolean)} method.
  * @author James MacGlashan.
  */
-public class SimulatedEnvironment implements StateSettableEnvironment, TaskSettableEnvironment{
+public class SimulatedEnvironment implements StateSettableEnvironment, TaskSettableEnvironment, EnvironmentServerInterface{
 
 	/**
 	 * The domain of this environment
@@ -68,6 +71,15 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 	 * If this value is true, then actions will be carried out according to the domain's transition dynamics.
 	 */
 	protected boolean allowActionFromTerminalStates = false;
+
+
+	/**
+	 * The {@link burlap.oomdp.singleagent.environment.EnvironmentObserver} objects that will be notified of {@link burlap.oomdp.singleagent.environment.Environment}
+	 * events.
+	 */
+	protected List<EnvironmentObserver> observers = new LinkedList<EnvironmentObserver>();
+
+
 
 	public SimulatedEnvironment(Domain domain, RewardFunction rf, TerminalFunction tf){
 		this.domain = domain;
@@ -123,6 +135,30 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 		this.stateGenerator = stateGenerator;
 	}
 
+	@Override
+	public void addObservers(EnvironmentObserver... observers) {
+		for(EnvironmentObserver o : observers){
+			this.observers.add(o);
+		}
+	}
+
+	@Override
+	public void clearAllObservers() {
+		this.observers.clear();
+	}
+
+	@Override
+	public void removeObservers(EnvironmentObserver... observers) {
+		for(EnvironmentObserver o : observers){
+			this.observers.remove(o);
+		}
+	}
+
+	@Override
+	public List<EnvironmentObserver> getObservers() {
+		return this.observers;
+	}
+
 	/**
 	 * Sets whether the environment will respond to actions from a terminal state. If false,
 	 * then once a the environment transitions to a terminal state, any action attempted by the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)}
@@ -156,6 +192,11 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 		if(simGA.action == null){
 			throw new RuntimeException("Cannot execute action " + ga.toString() + " in this SimulatedEnvironment because the action is to known in this Environment's domain");
 		}
+
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentActionInitiation(this.getCurrentObservation(), ga);
+		}
+
 		State nextState;
 		if(this.allowActionFromTerminalStates || !this.isInTerminalState()) {
 			nextState = simGA.executeIn(this.curState);
@@ -169,6 +210,10 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 		EnvironmentOutcome eo = new EnvironmentOutcome(this.curState.copy(), simGA, nextState.copy(), this.lastReward, this.tf.isTerminal(nextState));
 
 		this.curState = nextState;
+
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentInteraction(eo);
+		}
 
 		return eo;
 	}
@@ -187,5 +232,8 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 	public void resetEnvironment() {
 		this.lastReward = 0.;
 		this.curState = stateGenerator.generateState();
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentReset(this);
+		}
 	}
 }
