@@ -257,7 +257,7 @@ public class Tiling {
 				}
 				else if(ats.attribute.type.equals(Attribute.AttributeType.REAL) || ats.attribute.type.equals(Attribute.AttributeType.REALUNBOUND)){
 					double v = o.getRealValForAttribute(attName);
-					tv = (int)((v - ats.bucketBoundary) / ats.windowSize);
+					tv = (int)Math.floor((v - ats.bucketBoundary) / ats.windowSize);
 				}
 				attTiles.put(attName, tv);
 				hashCode = 31*hashCode + tv;
