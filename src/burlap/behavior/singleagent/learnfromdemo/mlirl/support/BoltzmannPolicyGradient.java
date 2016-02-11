@@ -1,11 +1,14 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
+import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class provides methods to compute the gradient of a Boltzmann policy. Numerous logarithmic tricks are
@@ -25,15 +28,8 @@ public class BoltzmannPolicyGradient {
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @return the gradient of the policy.
 	 */
-	public static double [] computeBoltzmannPolicyGradient(State s, GroundedAction a, QGradientPlanner planner, double beta){
+	public static FunctionGradient computeBoltzmannPolicyGradient(State s, GroundedAction a, QGradientPlanner planner, double beta){
 
-		DifferentiableRF rf = (DifferentiableRF)((MDPSolver)planner).getRF();
-		int d = rf.getParameterDimension();
-
-		double gv [] = new double[d];
-		for(int i = 0; i < d; i++){
-			gv[i] = 0.;
-		}
 
 		//get q objects
 		List<QValue> Qs = planner.getQs(s);
@@ -55,19 +51,16 @@ public class BoltzmannPolicyGradient {
 			throw new RuntimeException("Error in computing BoltzmannPolicyGradient: Could not find query action in Q-value list.");
 		}
 
-		//get all q gradients
-		double [][] gqs = new double[qs.length][d];
+		FunctionGradient [] qGradients = new FunctionGradient[qs.length];
 		for(int i = 0; i < qs.length; i++){
-			double [] gq = planner.getQGradient(s, (GroundedAction)Qs.get(i).a).gradient;
-			for(int j = 0; j < d; j++){
-				gqs[i][j] = gq[j];
-			}
+			qGradients[i] = planner.getQGradient(s, (GroundedAction)Qs.get(i).a).gradient;
 		}
+
 
 		double maxBetaScaled = maxBetaScaled(qs, beta);
 		double logSum = logSum(qs, maxBetaScaled, beta);
 
-		double [] policyGradient = computePolicyGradient(rf, beta, qs, maxBetaScaled, logSum, gqs, aind);
+		FunctionGradient policyGradient = computePolicyGradient(beta, qs, maxBetaScaled, logSum, qGradients, aind);
 
 		return policyGradient;
 
@@ -75,7 +68,6 @@ public class BoltzmannPolicyGradient {
 
 	/**
 	 * Computes the gradient of a Boltzmann policy using values derived from a Differentiable Botlzmann backup valueFunction.
-	 * @param rf the valueFunction's {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @param qs an array holding the Q-value for each action.
 	 * @param maxBetaScaled the maximum Q-value after being scaled by the parameter beta
@@ -84,25 +76,29 @@ public class BoltzmannPolicyGradient {
 	 * @param aInd the index of the query action for which the policy's gradient is being computed
 	 * @return the gradient of the policy.
 	 */
-	public static double [] computePolicyGradient(DifferentiableRF rf, double beta, double [] qs, double maxBetaScaled, double logSum, double [][] gqs, int aInd){
+	public static FunctionGradient computePolicyGradient(double beta, double [] qs, double maxBetaScaled, double logSum, FunctionGradient [] gqs, int aInd){
 
-		int d = rf.getParameterDimension();
-		double [] pg = new double[d];
-
+		FunctionGradient pg = new FunctionGradient();
 		double constantPart = beta * Math.exp(beta*qs[aInd] + maxBetaScaled - logSum - logSum);
-
+		Set<Integer> nzPDs = combinedNonZeroPDParameters(gqs);
 		for(int i = 0; i < qs.length; i++){
-			for(int j = 0; j < d; j++){
-				pg[j] += (gqs[aInd][j] - gqs[i][j]) * Math.exp(beta * qs[i] - maxBetaScaled);
-			}
+			for(int param : nzPDs){
+				double curVal = pg.getPartialDerivative(param);
+				double nextVal = curVal + (gqs[aInd].getPartialDerivative(param) - gqs[i].getPartialDerivative(param))
+											* Math.exp(beta * qs[i] - maxBetaScaled);
+
+				pg.put(param, nextVal);
+ 			}
 		}
 
-		for(int j = 0; j < d; j++){
-			pg[j] *= constantPart;
+		FunctionGradient finalGradient = new FunctionGradient(pg.numNonZeroPDs());
+		for(Map.Entry<Integer, Double> pd : pg.getNonZeroPartialDerivatives()){
+			double nextVal = pd.getValue() * constantPart;
+			finalGradient.put(pd.getKey(), nextVal);
 		}
 
+		return finalGradient;
 
-		return pg;
 	}
 
 
@@ -139,6 +135,19 @@ public class BoltzmannPolicyGradient {
 		double v = maxBetaScaled + Math.log(expSum);
 		return v;
 
+	}
+
+	protected static Set<Integer> combinedNonZeroPDParameters(FunctionGradient...gradients){
+
+		Set<Integer> c = new HashSet<Integer>();
+		for(FunctionGradient g : gradients){
+			Set<Map.Entry<Integer, Double>> p = g.getNonZeroPartialDerivatives();
+			for(Map.Entry<Integer, Double> e : p){
+				c.add(e.getKey());
+			}
+		}
+
+		return c;
 	}
 
 

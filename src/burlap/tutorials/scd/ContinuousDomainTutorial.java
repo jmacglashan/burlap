@@ -10,7 +10,7 @@ import burlap.behavior.singleagent.learning.lspi.SARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.DifferentiableStateActionValue;
 import burlap.behavior.singleagent.vfa.cmac.CMACFeatureDatabase;
 import burlap.behavior.singleagent.vfa.common.ConcatenatedObjectFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.fourier.FourierBasis;
@@ -18,6 +18,7 @@ import burlap.behavior.singleagent.vfa.rbf.DistanceMetric;
 import burlap.behavior.singleagent.vfa.rbf.RBFFeatureDatabase;
 import burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF;
 import burlap.behavior.singleagent.vfa.rbf.metrics.EuclideanDistance;
+import burlap.debugtools.MyTimer;
 import burlap.domain.singleagent.cartpole.InvertedPendulum;
 import burlap.domain.singleagent.cartpole.InvertedPendulumVisualizer;
 import burlap.domain.singleagent.lunarlander.LLVisualizer;
@@ -184,9 +185,10 @@ public class ContinuousDomainTutorial {
 
 
 		double defaultQ = 0.5;
-		ValueFunctionApproximation vfa = cmac.generateVFA(defaultQ/nTilings);
+		DifferentiableStateActionValue vfa = (DifferentiableStateActionValue)cmac.generateVFA(defaultQ/nTilings);
 		GradientDescentSarsaLam agent = new GradientDescentSarsaLam(domain, 0.99, vfa, 0.02, 0.5);
 
+		MyTimer timer = new MyTimer(true);
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, s);
 		List<EpisodeAnalysis> episodes = new ArrayList<EpisodeAnalysis>();
 		for(int i = 0; i < 5000; i++){
@@ -195,6 +197,8 @@ public class ContinuousDomainTutorial {
 			System.out.println(i + ": " + ea.maxTimeStep());
 			env.resetEnvironment();
 		}
+		timer.stop();
+		System.out.println("total time: " + timer.getTime());
 
 		Visualizer v = LLVisualizer.getVisualizer(lld.getPhysParams());
 		new EpisodeSequenceVisualizer(v, domain, episodes);

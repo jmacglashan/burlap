@@ -1,21 +1,19 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
-import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.statehashing.HashableState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A class for performing dynamic programming with a differentiable value backup operator.
@@ -31,7 +29,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	/**
 	 * The value function gradient for each state.
 	 */
-	protected Map<HashableState, double[]> valueGradient = new HashMap<HashableState, double[]>();
+	protected Map<HashableState, FunctionGradient> valueGradient = new HashMap<HashableState, FunctionGradient>();
 
 	/**
 	 * The Boltzmann backup operator beta parameter. The larger the beta, the more deterministic the
@@ -86,16 +84,11 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 * @param sh the hashed state on which to perform the Boltzmann gradient update.
 	 * @return the gradient.
 	 */
-	protected double [] performDPValueGradientUpdateOn(HashableState sh){
+	protected FunctionGradient performDPValueGradientUpdateOn(HashableState sh){
 		//updates gradient of value function for the given state using bellman-like method
 
-		//prepare value function gradient double array
-		int d = ((DifferentiableRF)this.rf).getParameterDimension();
-		double gv [] = new double[d];
-		for(int i = 0; i < d; i++){
-			gv[i] = 0.;
-		}
 
+		FunctionGradient vGradient = new FunctionGradient();
 		//get q objects
 		List<QValue> Qs = this.getQs(sh.s);
 		double [] qs = new double[Qs.size()];
@@ -103,14 +96,9 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 			qs[i] = Qs.get(i).q;
 		}
 
-
-		//get all q gradients
-		double [][] gqs = new double[qs.length][d];
+		FunctionGradient [] qGradients = new FunctionGradient[qs.length];
 		for(int i = 0; i < qs.length; i++){
-			double [] gq = this.getQGradient(sh.s, (GroundedAction)Qs.get(i).a).gradient;
-			for(int j = 0; j < d; j++){
-				gqs[i][j] = gq[j];
-			}
+			qGradients[i] = this.getQGradient(sh.s, (GroundedAction)Qs.get(i).a).gradient;
 		}
 
 		double maxBetaScaled = BoltzmannPolicyGradient.maxBetaScaled(qs, this.boltzBeta);
@@ -119,17 +107,19 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 		for(int i = 0; i < qs.length; i++){
 
 			double probA = Math.exp(this.boltzBeta * qs[i] - logSum);
-			double [] policyGradient = BoltzmannPolicyGradient.computePolicyGradient((DifferentiableRF)this.rf, this.boltzBeta, qs, maxBetaScaled, logSum, gqs, i);
+			FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(this.boltzBeta, qs, maxBetaScaled, logSum, qGradients, i);
 
-			for(int j = 0; j < d; j++){
-				gv[j] += (probA * gqs[i][j]) + qs[i] * policyGradient[j];
+			for(Map.Entry<Integer, Double> pd : policyGradient.getNonZeroPartialDerivatives()){
+				double curVal = vGradient.getPartialDerivative(pd.getKey());
+				double nextVal = curVal + (probA * qGradients[i].getPartialDerivative(pd.getKey())) + qs[i] * pd.getValue();
+				vGradient.put(pd.getKey(), nextVal);
 			}
+
 
 		}
 
-		this.valueGradient.put(sh, gv);
 
-		return gv;
+		return vGradient;
 	}
 
 
@@ -138,12 +128,12 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 * @param s the state for which the gradient is be returned.
 	 * @return the value function gradient for the given {@link burlap.oomdp.core.states.State}
 	 */
-	public double [] getValueGradient(State s){
+	public FunctionGradient getValueGradient(State s){
 		//returns deriviate value
 		HashableState sh = this.hashingFactory.hashState(s);
-		double [] grad = this.valueGradient.get(sh);
+		FunctionGradient grad = this.valueGradient.get(sh);
 		if(grad == null){
-			grad = new double[((DifferentiableRF)this.rf).getParameterDimension()];
+			grad = new FunctionGradient();
 		}
 		return grad;
 	}
@@ -161,7 +151,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	@Override
 	public QGradientTuple getQGradient(State s, GroundedAction a){
 
-		double [] gradient = this.computeQGradient(s, a);
+		FunctionGradient gradient = this.computeQGradient(s, a);
 		QGradientTuple tuple = new QGradientTuple(s, a, gradient);
 		return tuple;
 	}
@@ -179,26 +169,40 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 * @param ga the grounded action.
 	 * @return the Q-value gradient that was computed.
 	 */
-	protected double [] computeQGradient(State s, GroundedAction ga){
+	protected FunctionGradient computeQGradient(State s, GroundedAction ga){
 
-		int d = ((DifferentiableRF)this.rf).getParameterDimension();
-		double [] gradient = new double[d];
-		for(int i = 0; i < gradient.length; i++){
-			gradient[i] = 0.;
-		}
-
+		FunctionGradient qgradient = new FunctionGradient();
 		List<TransitionProbability> tps = ga.getTransitions(s);
 		for(TransitionProbability tp : tps){
-			double [] valueGradient = this.getValueGradient(tp.s);
-			double [] rewardGradient = ((DifferentiableRF)this.rf).getGradient(s, ga, tp.s);
-			for(int i = 0; i < gradient.length; i++){
-				gradient[i] += tp.p * (rewardGradient[i] + this.gamma * valueGradient[i]);
+			FunctionGradient valueGradient = this.getValueGradient(tp.s);
+			FunctionGradient rewardGradient = ((DifferentiableRF)this.rf).gradient(s, ga, tp.s);
+			Set<Integer> params = combinedNonZeroPDParameters(valueGradient, rewardGradient);
+
+			for(int i : params){
+				double curval = qgradient.getPartialDerivative(i);
+				double nval = curval + tp.p * (rewardGradient.getPartialDerivative(i) + this.gamma * valueGradient.getPartialDerivative(i));
+				qgradient.put(i, nval);
+			}
+
+
+		}
+
+		return qgradient;
+
+	}
+
+
+	protected Set<Integer> combinedNonZeroPDParameters(FunctionGradient...gradients){
+
+		Set<Integer> c = new HashSet<Integer>();
+		for(FunctionGradient g : gradients){
+			Set<Map.Entry<Integer, Double>> p = g.getNonZeroPartialDerivatives();
+			for(Map.Entry<Integer, Double> e : p){
+				c.add(e.getKey());
 			}
 		}
 
-
-		return gradient;
-
+		return c;
 	}
 
 

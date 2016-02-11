@@ -1,10 +1,13 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.singleagent.vfa.ParametricScalarFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,12 +27,23 @@ import java.util.Map;
  * constructor, or added iteratively with the {@link #addAction(burlap.oomdp.singleagent.GroundedAction)} method.
  * @author James MacGlashan.
  */
-public class LinearStateActionDifferentiableRF extends DifferentiableRF {
+public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 
 	/**
 	 * An ordering of grounded actions
 	 */
 	protected Map<GroundedAction, Integer> 		actionMap;
+
+	/**
+	 * The parameters of this reward function
+	 */
+	protected double [] 						parameters;
+
+
+	/**
+	 * The dimension of this reward function
+	 */
+	protected int								dim;
 
 	/**
 	 * The state feature vector generator to use
@@ -81,15 +95,6 @@ public class LinearStateActionDifferentiableRF extends DifferentiableRF {
 
 
 	@Override
-	protected DifferentiableRF copyHelper() {
-		LinearStateActionDifferentiableRF rf = new LinearStateActionDifferentiableRF(this.fvGen, this.numStateFeatures);
-		for(Map.Entry<GroundedAction, Integer> e : this.actionMap.entrySet()){
-			rf.actionMap.put(e.getKey(), e.getValue());
-		}
-		return rf;
-	}
-
-	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
 		double [] sFeatures = this.fvGen.generateFeatureVectorFrom(s);
 		int sIndex = this.actionMap.get(a) * this.numStateFeatures;
@@ -99,28 +104,57 @@ public class LinearStateActionDifferentiableRF extends DifferentiableRF {
 		}
 		return sum;
 	}
+
+
 	@Override
-	public double[] getGradient(State s, GroundedAction ga, State sp) {
+	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
 		double [] sFeatures = this.fvGen.generateFeatureVectorFrom(s);
-		int sIndex = this.actionMap.get(ga) * this.numStateFeatures;
-		double [] gradient = new double[this.numStateFeatures*this.numActions];
-		this.copyInto(sFeatures, gradient, sIndex);
+		int sIndex = this.actionMap.get(a) * this.numStateFeatures;
+
+		FunctionGradient gradient = new FunctionGradient(sFeatures.length);
+		int soff = this.numStateFeatures*this.numActions;
+		for(int i = 0; i < sFeatures.length; i++){
+			int f = i + soff;
+			gradient.put(f, sFeatures[i]);
+		}
 
 		return gradient;
 	}
 
+	@Override
+	public int numParameters() {
+		return this.dim;
+	}
 
-	/**
-	 * The copies the values of source into the target, starting in target index position index. For example,
-	 * target[index] = source[0]; target[index+1] = source[1]; etc.
-	 * @param source the source values
-	 * @param target the target array to receive the source values
-	 * @param index the starting index in the target array into which the source values will be copied.
-	 */
-	protected void copyInto(double [] source, double [] target, int index){
-		for(int i = index; i < index + source.length; i++){
-			target[i] = source[i-index];
+	@Override
+	public double getParameter(int i) {
+		return this.parameters[i];
+	}
+
+	@Override
+	public void setParameter(int i, double p) {
+		this.parameters[i] = p;
+	}
+
+	@Override
+	public void resetParameters() {
+		for(int i = 0; i < this.parameters.length; i++){
+			this.parameters[i] = 0.;
 		}
 	}
 
+	@Override
+	public ParametricScalarFunction copy() {
+		LinearStateActionDifferentiableRF rf = new LinearStateActionDifferentiableRF(this.fvGen, this.numStateFeatures);
+		for(Map.Entry<GroundedAction, Integer> e : this.actionMap.entrySet()){
+			rf.actionMap.put(e.getKey(), e.getValue());
+		}
+		rf.parameters = this.parameters.clone();
+		return rf;
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(this.parameters);
+	}
 }

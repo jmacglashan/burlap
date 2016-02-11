@@ -1,13 +1,13 @@
 package burlap.oomdp.visualizer;
 
-import java.awt.Graphics2D;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 
 
 /**
@@ -29,23 +29,23 @@ public class StateRenderLayer implements RenderLayer{
 	/**
 	 * the current state to be painted next
 	 */
-	private State									curState;
+	protected State									curState;
 	
 	/**
 	 * list of static painters that pain static non-object defined properties of the domain
 	 */
-	private List <StaticPainter>					staticPainters;
+	protected List <StaticPainter>					staticPainters;
 	
 	
 	/**
 	 * Ordered list of painters for each object class
 	 */
-	private List <ObjectPainterAndClassNamePair>	objectClassPainterList;
+	protected List <ObjectPainterAndClassNamePair>	objectClassPainterList;
 	
 	/**
 	 * Map of painters that define how to paint specific objects; if an object it appears in both specific and general lists, the specific painter is used
 	 */
-	private Map <String, ObjectPainter>				specificObjectPainters;
+	protected Map <String, ObjectPainter>				specificObjectPainters;
 	
 
 	
@@ -112,9 +112,24 @@ public class StateRenderLayer implements RenderLayer{
 		System.out.println(s.toString());
 		curState = s;
 	}
-	
-	
-	
+
+
+	public State getCurState() {
+		return curState;
+	}
+
+	public List<StaticPainter> getStaticPainters() {
+		return staticPainters;
+	}
+
+	public List<ObjectPainterAndClassNamePair> getObjectClassPainterList() {
+		return objectClassPainterList;
+	}
+
+	public Map<String, ObjectPainter> getSpecificObjectPainters() {
+		return specificObjectPainters;
+	}
+
 	@Override
 	public void render(Graphics2D g2, float width, float height) {
 		
@@ -166,9 +181,13 @@ public class StateRenderLayer implements RenderLayer{
 		}
 		
 	}
-	
-	
-	static class ObjectPainterAndClassNamePair{
+
+
+	/**
+	 * A pair of the name of an object class to paint, and the {@link burlap.oomdp.visualizer.ObjectPainter} to
+	 * use to paint it.
+	 */
+	public static class ObjectPainterAndClassNamePair{
 		String className;
 		ObjectPainter painter;
 		

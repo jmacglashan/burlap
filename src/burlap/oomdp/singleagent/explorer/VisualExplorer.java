@@ -1,10 +1,27 @@
 package burlap.oomdp.singleagent.explorer;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.TextArea;
-import java.awt.TextField;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.oomdp.auxiliary.StateGenerator;
+import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.common.NullRewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
+import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
+import burlap.oomdp.stateserialization.SerializableStateFactory;
+import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
+import burlap.oomdp.visualizer.Visualizer;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -13,33 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.legacy.StateParser;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.common.NullRewardFunction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
-import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
-import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
-import burlap.oomdp.stateserialization.SerializableState;
-import burlap.oomdp.stateserialization.SerializableStateFactory;
-import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
-import burlap.oomdp.visualizer.Visualizer;
 
 /**
  * This class allows you act as the agent by choosing actions in an {@link burlap.oomdp.singleagent.environment.Environment}.
@@ -147,6 +137,14 @@ public class VisualExplorer extends JFrame{
 		
 		this.numSteps = 0;
 		
+	}
+
+	/**
+	 * Returns the {@link burlap.oomdp.visualizer.Visualizer} used by this explorer.
+	 * @return the {@link burlap.oomdp.visualizer.Visualizer} used by this explorer.
+	 */
+	public Visualizer getVisualizer(){
+		return this.painter;
 	}
 
 

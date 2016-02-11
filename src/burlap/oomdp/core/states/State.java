@@ -1,12 +1,33 @@
 package burlap.oomdp.core.states;
 
-import java.util.*;
-
 import burlap.oomdp.core.objects.ObjectInstance;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
- * State objects are a collection of Object Instances.
+ * A State instance is used to define the state of an environment or an observation from the environment. This interface
+ * provides common methods for working with states that are represented with the
+ * the OO-MDP paradigm in which states are a collection of objects (defined with the {@link burlap.oomdp.core.objects.ObjectInstance}
+ * interface). Each object has its own value assignment to a set of attributes. OO-MDPs can represent
+ * a very large range of different kinds of MDP problems and so you can typically formulate any MDP state as an OO-MDP
+ * state. Two standard implementations of State include {@link burlap.oomdp.core.states.MutableState} and
+ * {@link burlap.oomdp.core.states.ImmutableState} which store state information as explicit collections of
+ * {@link burlap.oomdp.core.objects.MutableObjectInstance} and {@link burlap.oomdp.core.objects.ImmutableObjectInstance} objects.
+ * However, in special cases and for efficiency reasons, you may want make a custom implementation of {@link burlap.oomdp.core.states.State}
+ * that maintains state information in a different way. For full compatibility with all BURLAP tools, like the {@link burlap.oomdp.visualizer.Visualizer},
+ * and for making using of the existing {@link burlap.oomdp.statehashing.HashableStateFactory} implementations, you should make
+ * sure you implement the OO-MDP methods of this interface, even if your {@link burlap.oomdp.core.states.State} implementation
+ * does not explicitly store some collection of {@link burlap.oomdp.core.objects.ObjectInstance} elements. However,
+ * if you are willing to write your own implementations of those tools for a custom {@link burlap.oomdp.core.states.State}
+ * implementation that does not implement all the methods, you can do so. For example, If your {@link burlap.oomdp.core.states.State}
+ * implementation does not implement all OO-MDP methods, you can write your own {@link burlap.oomdp.statehashing.HashableStateFactory}
+ * to work with it and then use any BURLAP tabular planning or learning algorithm, like {@link burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar},
+ * {@link burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration}, etc.
+ *
  * @author James MacGlashan
  *
  */

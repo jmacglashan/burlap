@@ -112,6 +112,9 @@ public class EnvironmentServer implements Environment {
 
 	@Override
 	public EnvironmentOutcome executeAction(GroundedAction ga) {
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentActionInitiation(this.delegate.getCurrentObservation(), ga);
+		}
 		EnvironmentOutcome eo = this.delegate.executeAction(ga);
 		for(EnvironmentObserver observer : this.observers){
 			observer.observeEnvironmentInteraction(eo);

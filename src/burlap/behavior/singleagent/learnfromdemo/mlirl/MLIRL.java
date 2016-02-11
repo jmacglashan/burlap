@@ -1,16 +1,20 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.BoltzmannQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of Maximum-likelihood Inverse Reinforcement Learning [1]. This class takes as input (from an
@@ -135,24 +139,22 @@ public class MLIRL {
 		DPrint.cl(this.debugCode, "Log likelihood: " + lastLikelihood);
 
 
+		DifferentiableRF rf = this.request.getRf();
+
 		int i;
 		for(i = 0; i < maxSteps || this.maxSteps == -1; i++){
 
-			//get current param values
-			double [] oldParams = this.request.getRf().getParameters().clone();
-
-			//get gradient
-			double [] grad = this.logLikelihoodGradient();
-
-
 			//move up gradient
+			FunctionGradient gradient = this.logLikelihoodGradient();
 			double maxChange = 0.;
-			double [] params = this.request.getRf().getParameters();
-			for(int f = 0; f < params.length; f++){
-				params[f] += this.learningRate*grad[f];
-				double delta = Math.abs(params[f]-oldParams[f]);
+			for(Map.Entry<Integer, Double> pd : gradient.getNonZeroPartialDerivatives()){
+				double curVal = rf.getParameter(pd.getKey());
+				double nexVal = curVal + this.learningRate*pd.getValue();
+				rf.setParameter(pd.getKey(), nexVal);
+				double delta = Math.abs(curVal-nexVal);
 				maxChange = Math.max(maxChange, delta);
 			}
+
 
 			//reset valueFunction
 			this.request.getPlanner().resetSolver();
@@ -220,12 +222,16 @@ public class MLIRL {
 	}
 
 
+
+
+
 	/**
 	 * Computes and returns the gradient of the log-likelihood of all trajectories
 	 * @return the gradient of the log-likelihood of all trajectories
 	 */
-	public double [] logLikelihoodGradient(){
-		double [] gradient = new double[this.request.getRf().getParameterDimension()];
+	public FunctionGradient logLikelihoodGradient(){
+		HashedAggregator<Integer> gradientSum = new HashedAggregator<Integer>();
+
 		double [] weights = this.request.getEpisodeWeights();
 		List<EpisodeAnalysis> exampleTrajectories = this.request.getExpertEpisodes();
 
@@ -234,18 +240,27 @@ public class MLIRL {
 			double weight = weights[i];
 			for(int t = 0; t < ea.numTimeSteps()-1; t++){
 				this.request.getPlanner().planFromState(ea.getState(t));
-				double [] policyGrad = this.logPolicyGrad(ea.getState(t), ea.getAction(t));
+				FunctionGradient policyGrad = this.logPolicyGrad(ea.getState(t), ea.getAction(t));
 				//weigh it by trajectory strength
-				for(int j = 0; j < policyGrad.length; j++){
-					policyGrad[j] *= weight;
+				for(Map.Entry<Integer, Double> pd : policyGrad.getNonZeroPartialDerivatives()){
+					double newVal = pd.getValue() * weight;
+					gradientSum.add(pd.getKey(), newVal);
 				}
-				this.addToVector(gradient,policyGrad);
+
 			}
 		}
 
+		FunctionGradient gradient = new FunctionGradient(gradientSum.size());
+		for(Map.Entry<Integer, Double> e : gradientSum.entrySet()){
+			gradient.put(e.getKey(), e.getValue());
+		}
 
 		return gradient;
 	}
+
+
+
+
 
 
 	/**
@@ -254,17 +269,22 @@ public class MLIRL {
 	 * @param ga the action for which the policy is queried.
 	 * @return s the gradient of the Boltzmann policy for the given state and action.
 	 */
-	public double [] logPolicyGrad(State s, GroundedAction ga){
+	public FunctionGradient logPolicyGrad(State s, GroundedAction ga){
 
 		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		double invActProb = 1./p.getProbOfAction(s, ga);
-		double [] gradient = BoltzmannPolicyGradient.computeBoltzmannPolicyGradient(s, ga, (QGradientPlanner)this.request.getPlanner(), this.request.getBoltzmannBeta());
-		for(int f = 0; f < gradient.length; f++){
-			gradient[f] *= invActProb;
+		FunctionGradient gradient = BoltzmannPolicyGradient.computeBoltzmannPolicyGradient(s, ga, (QGradientPlanner)this.request.getPlanner(), this.request.getBoltzmannBeta());
+
+		for(Map.Entry<Integer, Double> pd : gradient.getNonZeroPartialDerivatives()){
+			double newVal = pd.getValue() * invActProb;
+			gradient.put(pd.getKey(), newVal);
 		}
+
 		return gradient;
 
 	}
+
+
 
 
 	/**
