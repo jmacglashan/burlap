@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A reserved {@link burlap.shell.command.ShellCommand} for terminating a shell.
  * @author James MacGlashan.
  */
 public class QuitCommand implements ShellCommand{

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * A reserved {@link burlap.shell.command.ShellCommand} for creating a command alias for a given command. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class AliasCommand implements ShellCommand {

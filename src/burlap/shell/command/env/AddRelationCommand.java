@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for adding a relational target to an attribute for the current {@link burlap.oomdp.singleagent.environment.Environment}
+ * {@link burlap.oomdp.core.states.State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class AddRelationCommand implements ShellCommand{

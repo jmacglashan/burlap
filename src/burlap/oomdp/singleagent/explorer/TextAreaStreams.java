@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * Object that provides an {@link java.io.InputStream} and {@link java.io.OutputStream} that affect the content
+ * of a {@link javax.swing.JTextArea}. Specifically, this code is used to instantiate a GUI for the {@link burlap.shell.EnvironmentShell}
+ * used by a {@link burlap.oomdp.singleagent.explorer.VisualExplorer}.
  * @author James MacGlashan.
  */
 public class TextAreaStreams {
@@ -22,16 +25,30 @@ public class TextAreaStreams {
 		this.area = area;
 	}
 
+	/**
+	 * Returns the {@link java.io.OutputStream} for the {@link javax.swing.JTextArea}
+	 * @return the {@link burlap.oomdp.singleagent.explorer.TextAreaStreams.TextOut} {@link java.io.OutputStream}
+	 */
 	public TextOut getTout() {
 		return tout;
 	}
 
+
+	/**
+	 * Returns the {@link java.io.InputStream} for the {@link javax.swing.JTextArea}.
+	 * @return the {@link burlap.oomdp.singleagent.explorer.TextAreaStreams.TextIn} {@link java.io.InputStream}
+	 */
 	public TextIn getTin() {
 		return tin;
 	}
 
+
+	/**
+	 * Adds data to the {@link java.io.InputStream}
+	 * @param input the string data to add.
+	 */
 	public void receiveInput(String input){
-		area.append(input + "\n");
+		area.append(input);
 		synchronized(inputBuf){
 			inputBuf.append(input);
 			inputBuf.notifyAll();
@@ -64,39 +81,7 @@ public class TextAreaStreams {
 
 
 		@Override
-		public int read(byte b[], int off, int len) throws IOException {
-			if (b == null) {
-				throw new NullPointerException();
-			} else if (off < 0 || len < 0 || len > b.length - off) {
-				throw new IndexOutOfBoundsException();
-			} else if (len == 0) {
-				return 0;
-			}
-
-			int c = read();
-			if (c == -1) {
-				return -1;
-			}
-			b[off] = (byte)c;
-
-			int i = 1;
-			try {
-				for (; i < len ; i++) {
-					c = read();
-					if (c == -1) {
-						break;
-					}
-					b[off + i] = (byte)c;
-				}
-			} catch (IOException ee) {
-			}
-			return i;
-		}
-
-		@Override
 		public int read() throws IOException {
-
-			//System.out.println("Read request");
 
 			int b;
 			synchronized(inputBuf){
@@ -110,11 +95,16 @@ public class TextAreaStreams {
 				}
 
 
-				char c = inputBuf.charAt(bufIndex);
-				b = (int)c;
+				if(bufIndex == inputBuf.length()){
+					b = -1;
+				}
+				else {
+					char c = inputBuf.charAt(bufIndex);
+					b = (int) c;
+				}
 
 				bufIndex++;
-				if(bufIndex == inputBuf.length()){
+				if(bufIndex == inputBuf.length()+1){
 					inputBuf.setLength(0);
 					bufIndex = 0;
 				}
@@ -122,8 +112,6 @@ public class TextAreaStreams {
 
 				inputBuf.notifyAll();
 			}
-
-			System.out.println("Read byte " + b);
 
 			return b;
 		}

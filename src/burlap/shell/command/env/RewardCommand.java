@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for checking the last reward received from the {@link burlap.oomdp.singleagent.environment.Environment}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class RewardCommand implements ShellCommand {

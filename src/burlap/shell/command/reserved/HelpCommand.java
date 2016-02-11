@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A reserved {@link burlap.shell.command.ShellCommand} for displaying the general shell help information.
  * @author James MacGlashan.
  */
 public class HelpCommand implements ShellCommand {

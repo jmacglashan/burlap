@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for executing an action in the {@link burlap.oomdp.singleagent.environment.Environment}
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class ExecuteActionCommand implements ShellCommand {

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * Two {@link burlap.shell.command.ShellCommand}s, rec and episode, for recording and browsing episodes of behavior that take place in the {@link burlap.oomdp.singleagent.environment.Environment}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class EpisodeRecordingCommands implements EnvironmentObserver {

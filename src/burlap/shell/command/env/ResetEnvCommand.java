@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for resetting the {@link burlap.oomdp.singleagent.environment.Environment}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class ResetEnvCommand implements ShellCommand {

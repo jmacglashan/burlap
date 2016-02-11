@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for adding an OO-MDP object to the current {@link burlap.oomdp.singleagent.environment.Environment}
+ * {@link burlap.oomdp.core.states.State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class AddStateObjectCommand implements ShellCommand {

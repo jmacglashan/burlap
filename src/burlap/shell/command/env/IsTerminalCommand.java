@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for checking if the {@link burlap.oomdp.singleagent.environment.Environment}
+ * is in a terminal state. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class IsTerminalCommand implements ShellCommand{

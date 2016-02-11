@@ -10,6 +10,21 @@ import java.io.PrintStream;
 import java.util.*;
 
 /**
+ * A class for a runtime shell. Takes as input a {@link java.io.InputStream} and {@link java.io.OutputStream}
+ * for the shell. Shell commands are implemented by objects implementing the {@link burlap.shell.command.ShellCommand}
+ * interface, and allows a shells set of commands to be customized and trivially extended by adding new commands
+ * with the {@link #addCommand(burlap.shell.command.ShellCommand)} method.
+ * <br/><br/>
+ * The shell keeps a small set of special reserved commands that new commands cannot replace. These include the help,
+ * cmds (lists all known shell commands), quit (stops the shell), alias (allows a custom name to be assigned to a command),
+ * and aliases (lists all known aliases).
+ * <br/><br/>
+ * The shell is started with the {@link #start()} method, which runs the shell in a separate thread. Beyond the
+ * {@link java.io.InputStream} that is scanned for user input, shell commands may also be executed using the
+ * {@link #executeCommand(String)} method. Other objects can be alerted to command execution completion by implementing
+ * the {@link burlap.shell.ShellObserver} and adding an observer with the {@link #addObservers(ShellObserver...)}
+ * method.
+ * @see burlap.shell.EnvironmentShell EnvironmentShell
  * @author James MacGlashan.
  */
 public class BurlapShell {
@@ -23,6 +38,8 @@ public class BurlapShell {
 	protected Map<String, ShellCommand> commands = new HashMap<String, ShellCommand>();
 	protected Map<String, String> aliases = new HashMap<String, String>();
 	protected Set<String> reserved;
+
+	protected List<ShellObserver> observers = new ArrayList<ShellObserver>();
 
 	protected volatile boolean kill = false;
 
@@ -188,6 +205,13 @@ public class BurlapShell {
 		this.visualizer = visualizer;
 	}
 
+	public void addObservers(ShellObserver...observers){
+		for(ShellObserver observer : observers){
+			this.observers.add(observer);
+		}
+	}
+
+
 	public void start(){
 		this.kill = false;
 
@@ -199,6 +223,7 @@ public class BurlapShell {
 					os.print("> ");
 					String input = scanner.nextLine();
 					executeCommand(input);
+
 				}
 			}
 		});
@@ -225,9 +250,14 @@ public class BurlapShell {
 				if(statusCode == -1){
 					os.println(command.commandName() + " could not parse input arguments");
 				}
+				for(ShellObserver observer : observers){
+					observer.observeCommand(this, new ShellObserver.ShellCommandEvent(input, command, statusCode));
+				}
 			}catch(Exception e){
 				os.println("Exception in command execution:\n"+e.getMessage());
 			}
+
+
 
 		}
 		else{
