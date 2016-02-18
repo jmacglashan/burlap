@@ -248,7 +248,7 @@ public class World {
 			wob.gameStarting(this.currentState);
 		}
 
-		while(!tf.isTerminal(currentState) && (t < maxStages || t == -1)){
+		while(!tf.isTerminal(currentState) && (t < maxStages || maxStages == -1)){
 			this.runStage();
 			t++;
 		}
@@ -471,6 +471,15 @@ public class World {
 		}
 		
 		return -1;
+	}
+
+
+	/**
+	 * Returns whether a game in this world is currently running.
+	 * @return true if a game is running, false otherwise.
+	 */
+	public boolean gameIsRunning(){
+		return this.isRecordingGame;
 	}
 	
 	
