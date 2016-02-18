@@ -4,6 +4,8 @@ import burlap.oomdp.singleagent.environment.Environment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import java.io.PrintStream;
 import java.util.Scanner;
@@ -15,6 +17,8 @@ import java.util.Scanner;
  */
 public class ObservationCommand implements ShellCommand {
 
+	protected OptionParser parser = new OptionParser("h*");
+
 	@Override
 	public String commandName() {
 		return "obs";
@@ -22,6 +26,12 @@ public class ObservationCommand implements ShellCommand {
 
 	@Override
 	public int call(BurlapShell shell, String argString, Scanner is, PrintStream os) {
+
+		OptionSet oset = this.parser.parse(argString.split(" "));
+		if(oset.has("h")){
+			os.println("Prints the current observation from the environment.");
+			return 0;
+		}
 
 		Environment env = ((EnvironmentShell)shell).getEnv();
 		os.println(env.getCurrentObservation().getCompleteStateDescriptionWithUnsetAttributesAsNull());
