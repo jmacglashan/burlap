@@ -1,19 +1,19 @@
 package burlap.oomdp.stochasticgames;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -209,52 +209,37 @@ public class World {
 	
 	/**
 	 * Runs a game until a terminal state is hit.
+	 * @return a {@link burlap.behavior.stochasticgames.GameAnalysis} of the game.
 	 */
 	public GameAnalysis runGame(){
-		
-		for(SGAgent a : agents){
-			a.gameStarting();
-		}
-		
-		currentState = initialStateGenerator.generateState(agents);
-		this.currentGameRecord = new GameAnalysis(currentState);
-		this.isRecordingGame = true;
-
-		for(WorldObserver wob : this.worldObservers){
-			wob.gameStarting(this.currentState);
-		}
-		
-		while(!tf.isTerminal(currentState)){
-			this.runStage();
-		}
-		
-		for(SGAgent a : agents){
-			a.gameTerminated();
-		}
-
-		for(WorldObserver wob : this.worldObservers){
-			wob.gameEnding(this.currentState);
-		}
-		
-		DPrint.cl(debugId, currentState.getCompleteStateDescription());
-		
-		this.isRecordingGame = false;
-		
-		return this.currentGameRecord;
-		
+		return this.runGame(-1);
 	}
 	
 	/**
 	 * Runs a game until a terminal state is hit for maxStages have occurred
-	 * @param maxStages the maximum number of stages to play in the game before its forced to end.
+	 * @param maxStages the maximum number of stages to play in the game before its forced to end. If set to -1, then run until a terminal state is hit.
+	 * @return a {@link burlap.behavior.stochasticgames.GameAnalysis} of the game.
 	 */
 	public GameAnalysis runGame(int maxStages){
 		
+		return this.runGame(maxStages, initialStateGenerator.generateState(agents));
+		
+	}
+
+
+	/**
+	 * Runs a game starting in the input state until a terminal state is hit.
+	 * @param maxStages the maximum number of stages to play in the game before its forced to end. If set to -1, then run until a terminal state is hit.
+	 * @param s the input {@link burlap.oomdp.core.states.State} from which the game will start
+	 * @return a {@link burlap.behavior.stochasticgames.GameAnalysis} of the game.
+	 */
+	public GameAnalysis runGame(int maxStages, State s){
+
 		for(SGAgent a : agents){
 			a.gameStarting();
 		}
-		
-		currentState = initialStateGenerator.generateState(agents);
+
+		currentState = s;
 		this.currentGameRecord = new GameAnalysis(currentState);
 		this.isRecordingGame = true;
 		int t = 0;
@@ -262,12 +247,12 @@ public class World {
 		for(WorldObserver wob : this.worldObservers){
 			wob.gameStarting(this.currentState);
 		}
-		
-		while(!tf.isTerminal(currentState) && t < maxStages){
+
+		while(!tf.isTerminal(currentState) && (t < maxStages || t == -1)){
 			this.runStage();
 			t++;
 		}
-		
+
 		for(SGAgent a : agents){
 			a.gameTerminated();
 		}
@@ -275,13 +260,12 @@ public class World {
 		for(WorldObserver wob : this.worldObservers){
 			wob.gameEnding(this.currentState);
 		}
-		
+
 		DPrint.cl(debugId, currentState.getCompleteStateDescription());
-		
+
 		this.isRecordingGame = false;
-		
+
 		return this.currentGameRecord;
-		
 	}
 	
 	/**
@@ -335,11 +319,11 @@ public class World {
 	 * Runs a single stage of this game.
 	 */
 	public void runStage(){
+
+
 		if(tf.isTerminal(currentState)){
 			return ; //cannot continue this game
 		}
-		
-		
 		
 		JointAction ja = new JointAction();
 		State abstractedCurrent = abstractionForAgents.abstraction(currentState);
