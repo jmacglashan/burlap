@@ -1,13 +1,11 @@
 package burlap.shell;
 
 import burlap.domain.stochasticgames.gridgame.GridGame;
-import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.common.NullJointReward;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.world.*;
 
@@ -56,7 +54,9 @@ public class SGWorldShell extends BurlapShell {
 		ManualAgentsCommands macs = new ManualAgentsCommands();
 		return Arrays.<ShellCommand>asList(new WorldObservationCommand(), macs.getRegCommand(), macs.getLsActions(),
 				macs.getLsAgents(), macs.getSetAction(), new GameCommand(), new JointActionCommand(),
-				new RewardsCommand(), new LastJointActionCommand(), new IsTerminalSGCommand(), new GenerateStateCommand());
+				new RewardsCommand(), new LastJointActionCommand(), new IsTerminalSGCommand(),
+				new GenerateStateCommand(), new AddRelationSGCommand(), new AddStateObjectSGCommand(domain),
+				new RemoveRelationSGCommand(), new RemoveStateObjectSGCommand(), new SetAttributeSGCommand());
 	}
 
 
@@ -68,7 +68,7 @@ public class SGWorldShell extends BurlapShell {
 		SGAgentType type = GridGame.getStandardGridGameAgentType(domain);
 		State s = GridGame.getSimpleGameInitialState(domain);
 
-		World w = new World(domain, new NullJointReward(), new NullTermination(), s);
+		World w = new World(domain, new GridGame.GGJointRewardFunction(domain), new GridGame.GGTerminalFunction(domain), s);
 
 		SGWorldShell shell = new SGWorldShell(domain, System.in, new PrintStream(System.out), w);
 
