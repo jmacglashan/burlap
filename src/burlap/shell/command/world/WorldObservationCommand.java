@@ -1,0 +1,39 @@
+package burlap.shell.command.world;
+
+import burlap.oomdp.stochasticgames.World;
+import burlap.shell.BurlapShell;
+import burlap.shell.SGWorldShell;
+import burlap.shell.command.ShellCommand;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
+import java.io.PrintStream;
+import java.util.Scanner;
+
+/**
+ * @author James MacGlashan.
+ */
+public class WorldObservationCommand implements ShellCommand {
+
+	protected OptionParser parser = new OptionParser("h*");
+
+	@Override
+	public String commandName() {
+		return "obs";
+	}
+
+	@Override
+	public int call(BurlapShell shell, String argString, Scanner is, PrintStream os) {
+
+		OptionSet oset = this.parser.parse(argString.split(" "));
+		if(oset.has("h")){
+			os.println("Prints the current observation from the world.");
+			return 0;
+		}
+
+		World world = ((SGWorldShell)shell).getWorld();
+		os.println(world.getCurrentWorldState().getCompleteStateDescriptionWithUnsetAttributesAsNull());
+
+		return 0;
+	}
+}
