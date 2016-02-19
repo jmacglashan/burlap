@@ -13,6 +13,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for printing the last joint action taken in a {@link burlap.oomdp.stochasticgames.World}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class LastJointActionCommand implements ShellCommand {

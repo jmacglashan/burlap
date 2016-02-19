@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for checking whether the current world state is a terminal state or not.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class IsTerminalSGCommand implements ShellCommand {

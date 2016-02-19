@@ -11,6 +11,9 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for generating a new state in a {@link burlap.oomdp.stochasticgames.World}
+ * according to the {@link burlap.oomdp.stochasticgames.World}'s assigned {@link burlap.oomdp.stochasticgames.SGStateGenerator}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class GenerateStateCommand implements ShellCommand {

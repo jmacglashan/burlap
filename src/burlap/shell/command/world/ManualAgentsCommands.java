@@ -16,6 +16,11 @@ import java.io.PrintStream;
 import java.util.*;
 
 /**
+ * A controller for a set of {@link burlap.shell.command.ShellCommand} objects. These commands including
+ * registering manually controlled agents with a {@link burlap.oomdp.stochasticgames.World}
+ * that can play games in the world. Listing
+ * the manual agents. Setting the action selections of manual agents, and listing the currently selected
+ * actions of the manual agents. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class ManualAgentsCommands {

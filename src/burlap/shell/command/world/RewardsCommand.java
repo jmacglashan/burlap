@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for printing the last joint rewards delivered by a {@link burlap.oomdp.stochasticgames.World}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class RewardsCommand implements ShellCommand {

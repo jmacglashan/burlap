@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for printing the current observation from the shell's {@link burlap.oomdp.stochasticgames.World}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class WorldObservationCommand implements ShellCommand {

@@ -12,6 +12,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for starting a game with the agents registered in a {@link burlap.oomdp.stochasticgames.World}.
+ * Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class GameCommand implements ShellCommand {

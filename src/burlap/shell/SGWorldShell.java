@@ -35,8 +35,8 @@ public class SGWorldShell extends BurlapShell {
 				"alias - set an alias for a command.\n" +
 				"quit - terminate this shell.\n\n" +
 				"Other useful, but non-reserved, commands are:\n" +
-				"obs - print the current observation of the environment\n" +
-				"ex - execute an action\n\n" +
+				"obs - print the current observation of the world\n" +
+				"ja - specify and execute a joint action\n\n" +
 				"Usually, you can get help on an individual command by passing it the -h option.";
 
 	}

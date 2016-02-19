@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * A {@link burlap.shell.command.ShellCommand} for manually setting and executing a {@link burlap.oomdp.stochasticgames.JointAction}
+ * for the shell's {@link burlap.oomdp.stochasticgames.World}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class JointActionCommand implements ShellCommand{
