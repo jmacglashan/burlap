@@ -110,6 +110,8 @@ public class World {
 		agentCumulativeReward = new HashedAggregator<String>();
 		
 		worldObservers = new ArrayList<WorldObserver>();
+
+		this.getCurrentWorldState();
 		
 		debugId = 284673923;
 	}
