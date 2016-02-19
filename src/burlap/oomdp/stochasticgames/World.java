@@ -115,8 +115,15 @@ public class World {
 		
 		debugId = 284673923;
 	}
-	
-	
+
+	public SGDomain getDomain() {
+		return domain;
+	}
+
+	public void setDomain(SGDomain domain) {
+		this.domain = domain;
+	}
+
 	/**
 	 * This class will report execution information as games are played using the {@link burlap.debugtools.DPrint} class. If the user
 	 * wishes to suppress these messages, they can retrieve this code and suppress DPrint from printing messages that correspond to this code.
