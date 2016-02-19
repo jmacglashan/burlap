@@ -111,7 +111,7 @@ public class World {
 		
 		worldObservers = new ArrayList<WorldObserver>();
 
-		this.getCurrentWorldState();
+		this.generateNewCurrentState();
 		
 		debugId = 284673923;
 	}
@@ -180,6 +180,15 @@ public class World {
 		if(!this.gameIsRunning()) {
 			currentState = initialStateGenerator.generateState(agents);
 		}
+	}
+
+
+	/**
+	 * Returns whether the current state in the world is a terminal state or not.
+	 * @return true if the current world state is terminal; false otherwise.
+	 */
+	public boolean worldStateIsTerminal(){
+		return this.tf.isTerminal(this.currentState);
 	}
 
 	/**
