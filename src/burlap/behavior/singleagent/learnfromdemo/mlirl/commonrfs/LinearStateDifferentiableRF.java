@@ -88,7 +88,7 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 		else{
 			features = fvGen.generateFeatureVectorFrom(s);
 		}
-		FunctionGradient gradient = new FunctionGradient(features.length);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(features.length);
 		for(int i = 0; i < features.length; i++){
 			gradient.put(i, features[i]);
 		}

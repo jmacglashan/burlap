@@ -420,15 +420,15 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 					//get non-zero parameters and zero them
 					this.vfa.evaluate(curState, oa);
 					FunctionGradient ofg = this.vfa.gradient(curState, oa);
-					for(Map.Entry<Integer, Double> pds : ofg.getNonZeroPartialDerivatives()){
-						EligibilityTraceVector et = traces.get(pds.getKey());
+					for(FunctionGradient.PartialDerivative pds : ofg.getNonZeroPartialDerivatives()){
+						EligibilityTraceVector et = traces.get(pds.parameterId);
 						if(et != null){
 							et.eligibilityValue = 0.;
 						}
 						else{
 							//no trace for this yet, so add it
-							et = new EligibilityTraceVector(pds.getKey(), this.vfa.getParameter(pds.getKey()), 0.);
-							traces.put(pds.getKey(), et);
+							et = new EligibilityTraceVector(pds.parameterId, this.vfa.getParameter(pds.parameterId), 0.);
+							traces.put(pds.parameterId, et);
 						}
 					}
 
@@ -437,9 +437,9 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			else{
 				//if not using replacing traces, then add any new parameters whose traces need to be set, but set initially
 				//at zero since it will be updated in the next loop
-				for(Map.Entry<Integer, Double> pds : gradient.getNonZeroPartialDerivatives()){
-					if(!traces.containsKey(pds.getKey())){
-						traces.put(pds.getKey(), new EligibilityTraceVector(pds.getKey(), this.vfa.getParameter(pds.getKey()), 0.));
+				for(FunctionGradient.PartialDerivative pds : gradient.getNonZeroPartialDerivatives()){
+					if(!traces.containsKey(pds.parameterId)){
+						traces.put(pds.parameterId, new EligibilityTraceVector(pds.parameterId, this.vfa.getParameter(pds.parameterId), 0.));
 					}
 				}
 

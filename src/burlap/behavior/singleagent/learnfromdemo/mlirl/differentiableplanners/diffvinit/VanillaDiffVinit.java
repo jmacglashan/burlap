@@ -65,12 +65,12 @@ public class VanillaDiffVinit implements DifferentiableVInit {
 
 	@Override
 	public FunctionGradient getVGradient(State s) {
-		return new FunctionGradient();
+		return new FunctionGradient.SparseGradient();
 	}
 
 	@Override
 	public FunctionGradient getQGradient(State s, AbstractGroundedAction ga) {
-		return new FunctionGradient();
+		return new FunctionGradient.SparseGradient();
 	}
 
 	@Override

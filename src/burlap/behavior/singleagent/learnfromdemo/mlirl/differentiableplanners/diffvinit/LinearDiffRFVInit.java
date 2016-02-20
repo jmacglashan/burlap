@@ -151,7 +151,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 			sfeatures = rfFvGen.generateFeatureVectorFrom(s);
 		}
 
-		FunctionGradient gradient = new FunctionGradient(sfeatures.length);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(sfeatures.length);
 		for(int i = 0; i < sfeatures.length; i++){
 			gradient.put(i, sfeatures[i]);
 		}
@@ -186,7 +186,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	public FunctionGradient getVGradient(State s){
 
 		double [] vFeatures = this.vinitFvGen.generateFeatureVectorFrom(s);
-		FunctionGradient gradient = new FunctionGradient(vFeatures.length);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(vFeatures.length);
 
 		for(int i = 0; i < vFeatures.length; i++){
 			gradient.put(i+this.rfDim, vFeatures[i]);

@@ -133,7 +133,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 			features = this.featureDatabase.getStateFeatures(s);
 		}
 
-		FunctionGradient gd = new FunctionGradient(features.size());
+		FunctionGradient gd = new FunctionGradient.SparseGradient(features.size());
 		for(StateFeature sf : features){
 			gd.put(sf.id, sf.value);
 		}
@@ -160,7 +160,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 			features = this.featureDatabase.getActionFeaturesSets(s, Arrays.asList((GroundedAction)a)).get(0).features;
 		}
 
-		FunctionGradient gd = new FunctionGradient(features.size());
+		FunctionGradient gd = new FunctionGradient.SparseGradient(features.size());
 		for(StateFeature sf : features){
 			gd.put(sf.id, sf.value);
 		}

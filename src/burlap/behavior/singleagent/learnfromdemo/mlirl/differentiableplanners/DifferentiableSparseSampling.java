@@ -461,7 +461,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		public void sampledBellmanQEstimate(GroundedAction ga, QAndQGradient qs){
 
-			FunctionGradient qGradient = new FunctionGradient();
+			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
 			//generate C samples
 			double sum = 0.;
@@ -486,9 +486,9 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 			}
 			sum /= (double)c;
-			for(Map.Entry<Integer, Double> pd : qGradient.getNonZeroPartialDerivatives()){
-				double nextVal = pd.getValue() / (double)c;
-				qGradient.put(pd.getKey(), nextVal);
+			for(FunctionGradient.PartialDerivative pd : qGradient.getNonZeroPartialDerivatives()){
+				double nextVal = pd.value / (double)c;
+				qGradient.put(pd.parameterId, nextVal);
 			}
 
 
@@ -501,7 +501,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		public void fulldBellmanQEstimate(GroundedAction ga, QAndQGradient qs){
 
 			int dim = DifferentiableSparseSampling.this.rfDim;
-			FunctionGradient qGradient = new FunctionGradient();
+			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
 			double sum = 0.;
 			List<TransitionProbability> tps = ga.getTransitions(sh.s);
@@ -537,7 +537,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 			if(DifferentiableSparseSampling.this.tf.isTerminal(this.sh.s)){
 				this.v = 0.;
-				this.vgrad = new FunctionGradient();
+				this.vgrad = new FunctionGradient.SparseGradient();
 				this.closed = true;
 				return new VAndVGradient(this.v, this.vgrad);
 			}
@@ -568,7 +568,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		protected void setVGrad(QAndQGradient qvs){
 
-			this.vgrad = new FunctionGradient();
+			this.vgrad = new FunctionGradient.SparseGradient();
 
 			//pack qs into double array
 			double [] qs = new double[qvs.qs.size()];
@@ -592,10 +592,10 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 						DifferentiableSparseSampling.this.boltzBeta, qs, maxBetaScaled, logSum, gqs, i);
 
 
-				for(Map.Entry<Integer, Double> pd : policyGradient.getNonZeroPartialDerivatives()){
-					double curVal = this.vgrad.getPartialDerivative(pd.getKey());
-					double nextVal = curVal + (probA * gqs[i].getPartialDerivative(pd.getKey())) + (qs[i] * pd.getValue());
-					vgrad.put(pd.getKey(), nextVal);
+				for(FunctionGradient.PartialDerivative pd : policyGradient.getNonZeroPartialDerivatives()){
+					double curVal = this.vgrad.getPartialDerivative(pd.parameterId);
+					double nextVal = curVal + (probA * gqs[i].getPartialDerivative(pd.parameterId)) + (qs[i] * pd.value);
+					vgrad.put(pd.parameterId, nextVal);
 				}
 
 
@@ -610,9 +610,9 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		Set<Integer> c = new HashSet<Integer>();
 		for(FunctionGradient g : gradients){
-			Set<Map.Entry<Integer, Double>> p = g.getNonZeroPartialDerivatives();
-			for(Map.Entry<Integer, Double> e : p){
-				c.add(e.getKey());
+			Set<FunctionGradient.PartialDerivative> p = g.getNonZeroPartialDerivatives();
+			for(FunctionGradient.PartialDerivative e : p){
+				c.add(e.parameterId);
 			}
 		}
 

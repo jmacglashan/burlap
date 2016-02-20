@@ -7,7 +7,6 @@ import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -78,7 +77,7 @@ public class BoltzmannPolicyGradient {
 	 */
 	public static FunctionGradient computePolicyGradient(double beta, double [] qs, double maxBetaScaled, double logSum, FunctionGradient [] gqs, int aInd){
 
-		FunctionGradient pg = new FunctionGradient();
+		FunctionGradient pg = new FunctionGradient.SparseGradient();
 		double constantPart = beta * Math.exp(beta*qs[aInd] + maxBetaScaled - logSum - logSum);
 		Set<Integer> nzPDs = combinedNonZeroPDParameters(gqs);
 		for(int i = 0; i < qs.length; i++){
@@ -91,10 +90,10 @@ public class BoltzmannPolicyGradient {
  			}
 		}
 
-		FunctionGradient finalGradient = new FunctionGradient(pg.numNonZeroPDs());
-		for(Map.Entry<Integer, Double> pd : pg.getNonZeroPartialDerivatives()){
-			double nextVal = pd.getValue() * constantPart;
-			finalGradient.put(pd.getKey(), nextVal);
+		FunctionGradient finalGradient = new FunctionGradient.SparseGradient(pg.numNonZeroPDs());
+		for(FunctionGradient.PartialDerivative pd : pg.getNonZeroPartialDerivatives()){
+			double nextVal = pd.value * constantPart;
+			finalGradient.put(pd.parameterId, nextVal);
 		}
 
 		return finalGradient;
@@ -141,9 +140,9 @@ public class BoltzmannPolicyGradient {
 
 		Set<Integer> c = new HashSet<Integer>();
 		for(FunctionGradient g : gradients){
-			Set<Map.Entry<Integer, Double>> p = g.getNonZeroPartialDerivatives();
-			for(Map.Entry<Integer, Double> e : p){
-				c.add(e.getKey());
+			Set<FunctionGradient.PartialDerivative> p = g.getNonZeroPartialDerivatives();
+			for(FunctionGradient.PartialDerivative e : p){
+				c.add(e.parameterId);
 			}
 		}
 

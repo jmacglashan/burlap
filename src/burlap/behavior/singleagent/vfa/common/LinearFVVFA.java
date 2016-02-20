@@ -129,7 +129,7 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 			features = this.fvGen.generateFeatureVectorFrom(s);
 		}
 
-		FunctionGradient gradient = new FunctionGradient(features.length);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(features.length);
 		for(int i = 0; i < features.length; i++){
 			gradient.put(i, features[i]);
 		}
@@ -156,7 +156,7 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 			features = this.fvGen.generateFeatureVectorFrom(s);
 		}
 
-		FunctionGradient gradient = new FunctionGradient(features.length);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(features.length);
 		int actionOffset = this.getActionOffset(a);
 		int sIndOffset = actionOffset*features.length;
 		for(int i = 0; i < features.length; i++){

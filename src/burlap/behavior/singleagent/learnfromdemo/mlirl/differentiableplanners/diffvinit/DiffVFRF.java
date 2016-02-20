@@ -33,7 +33,7 @@ public class DiffVFRF implements DifferentiableRF {
 
 	@Override
 	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
-		return new FunctionGradient();
+		return new FunctionGradient.SparseGradient();
 	}
 
 	@Override

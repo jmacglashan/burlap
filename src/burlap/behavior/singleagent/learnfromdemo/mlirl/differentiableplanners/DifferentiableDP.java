@@ -88,7 +88,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 		//updates gradient of value function for the given state using bellman-like method
 
 
-		FunctionGradient vGradient = new FunctionGradient();
+		FunctionGradient vGradient = new FunctionGradient.SparseGradient();
 		//get q objects
 		List<QValue> Qs = this.getQs(sh.s);
 		double [] qs = new double[Qs.size()];
@@ -109,10 +109,10 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 			double probA = Math.exp(this.boltzBeta * qs[i] - logSum);
 			FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(this.boltzBeta, qs, maxBetaScaled, logSum, qGradients, i);
 
-			for(Map.Entry<Integer, Double> pd : policyGradient.getNonZeroPartialDerivatives()){
-				double curVal = vGradient.getPartialDerivative(pd.getKey());
-				double nextVal = curVal + (probA * qGradients[i].getPartialDerivative(pd.getKey())) + qs[i] * pd.getValue();
-				vGradient.put(pd.getKey(), nextVal);
+			for(FunctionGradient.PartialDerivative pd : policyGradient.getNonZeroPartialDerivatives()){
+				double curVal = vGradient.getPartialDerivative(pd.parameterId);
+				double nextVal = curVal + (probA * qGradients[i].getPartialDerivative(pd.parameterId)) + qs[i] * pd.value;
+				vGradient.put(pd.parameterId, nextVal);
 			}
 
 
@@ -133,7 +133,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 		HashableState sh = this.hashingFactory.hashState(s);
 		FunctionGradient grad = this.valueGradient.get(sh);
 		if(grad == null){
-			grad = new FunctionGradient();
+			grad = new FunctionGradient.SparseGradient();
 		}
 		return grad;
 	}
@@ -171,7 +171,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 */
 	protected FunctionGradient computeQGradient(State s, GroundedAction ga){
 
-		FunctionGradient qgradient = new FunctionGradient();
+		FunctionGradient qgradient = new FunctionGradient.SparseGradient();
 		List<TransitionProbability> tps = ga.getTransitions(s);
 		for(TransitionProbability tp : tps){
 			FunctionGradient valueGradient = this.getValueGradient(tp.s);
@@ -196,9 +196,9 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 		Set<Integer> c = new HashSet<Integer>();
 		for(FunctionGradient g : gradients){
-			Set<Map.Entry<Integer, Double>> p = g.getNonZeroPartialDerivatives();
-			for(Map.Entry<Integer, Double> e : p){
-				c.add(e.getKey());
+			Set<FunctionGradient.PartialDerivative> p = g.getNonZeroPartialDerivatives();
+			for(FunctionGradient.PartialDerivative e : p){
+				c.add(e.parameterId);
 			}
 		}
 

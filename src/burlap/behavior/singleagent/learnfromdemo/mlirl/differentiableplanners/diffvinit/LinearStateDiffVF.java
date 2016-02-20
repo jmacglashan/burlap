@@ -65,7 +65,7 @@ public class LinearStateDiffVF implements DifferentiableVInit {
 	@Override
 	public FunctionGradient getVGradient(State s){
 		double [] fvec = this.fvgen.generateFeatureVectorFrom(s);
-		FunctionGradient gradient = new FunctionGradient();
+		FunctionGradient gradient = new FunctionGradient.SparseGradient();
 		for(int i = 0; i < fvec.length; i++){
 			gradient.put(i, fvec[i]);
 		}

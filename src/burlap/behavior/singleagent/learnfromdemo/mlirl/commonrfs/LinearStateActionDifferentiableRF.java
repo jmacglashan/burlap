@@ -111,7 +111,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 		double [] sFeatures = this.fvGen.generateFeatureVectorFrom(s);
 		int sIndex = this.actionMap.get(a) * this.numStateFeatures;
 
-		FunctionGradient gradient = new FunctionGradient(sFeatures.length);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(sFeatures.length);
 		int soff = this.numStateFeatures*this.numActions;
 		for(int i = 0; i < sFeatures.length; i++){
 			int f = i + soff;

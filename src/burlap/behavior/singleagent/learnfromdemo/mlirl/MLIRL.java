@@ -147,10 +147,10 @@ public class MLIRL {
 			//move up gradient
 			FunctionGradient gradient = this.logLikelihoodGradient();
 			double maxChange = 0.;
-			for(Map.Entry<Integer, Double> pd : gradient.getNonZeroPartialDerivatives()){
-				double curVal = rf.getParameter(pd.getKey());
-				double nexVal = curVal + this.learningRate*pd.getValue();
-				rf.setParameter(pd.getKey(), nexVal);
+			for(FunctionGradient.PartialDerivative pd : gradient.getNonZeroPartialDerivatives()){
+				double curVal = rf.getParameter(pd.parameterId);
+				double nexVal = curVal + this.learningRate*pd.value;
+				rf.setParameter(pd.parameterId, nexVal);
 				double delta = Math.abs(curVal-nexVal);
 				maxChange = Math.max(maxChange, delta);
 			}
@@ -242,15 +242,15 @@ public class MLIRL {
 				this.request.getPlanner().planFromState(ea.getState(t));
 				FunctionGradient policyGrad = this.logPolicyGrad(ea.getState(t), ea.getAction(t));
 				//weigh it by trajectory strength
-				for(Map.Entry<Integer, Double> pd : policyGrad.getNonZeroPartialDerivatives()){
-					double newVal = pd.getValue() * weight;
-					gradientSum.add(pd.getKey(), newVal);
+				for(FunctionGradient.PartialDerivative pd : policyGrad.getNonZeroPartialDerivatives()){
+					double newVal = pd.value * weight;
+					gradientSum.add(pd.parameterId, newVal);
 				}
 
 			}
 		}
 
-		FunctionGradient gradient = new FunctionGradient(gradientSum.size());
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(gradientSum.size());
 		for(Map.Entry<Integer, Double> e : gradientSum.entrySet()){
 			gradient.put(e.getKey(), e.getValue());
 		}
@@ -275,9 +275,9 @@ public class MLIRL {
 		double invActProb = 1./p.getProbOfAction(s, ga);
 		FunctionGradient gradient = BoltzmannPolicyGradient.computeBoltzmannPolicyGradient(s, ga, (QGradientPlanner)this.request.getPlanner(), this.request.getBoltzmannBeta());
 
-		for(Map.Entry<Integer, Double> pd : gradient.getNonZeroPartialDerivatives()){
-			double newVal = pd.getValue() * invActProb;
-			gradient.put(pd.getKey(), newVal);
+		for(FunctionGradient.PartialDerivative pd : gradient.getNonZeroPartialDerivatives()){
+			double newVal = pd.value * invActProb;
+			gradient.put(pd.parameterId, newVal);
 		}
 
 		return gradient;
