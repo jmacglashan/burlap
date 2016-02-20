@@ -109,4 +109,13 @@ public class JointActionCommand implements ShellCommand{
 
 		return 0;
 	}
+
+	/**
+	 * Adds a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} to the {@link burlap.oomdp.stochasticgames.JointAction}
+	 * being built and to be executed.
+	 * @param action the {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} to add to the {@link burlap.oomdp.stochasticgames.JointAction}.
+	 */
+	public void addGroundedActionToJoint(GroundedSGAgentAction action){
+		this.ja.addAction(action);
+	}
 }

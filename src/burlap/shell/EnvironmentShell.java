@@ -1,15 +1,7 @@
 package burlap.shell;
 
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
-import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
-import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
-import burlap.oomdp.visualizer.Visualizer;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.env.*;
 
@@ -72,22 +64,4 @@ public class EnvironmentShell extends BurlapShell{
 	}
 
 
-	public static void main(String[] args) {
-		GridWorldDomain gwd = new GridWorldDomain(11, 11);
-		gwd.setMapToFourRooms();
-		GridWorldRewardFunction rf = new GridWorldRewardFunction(11, 11, 0);
-		rf.setReward(10, 10, 1.);
-		TerminalFunction tf = new GridWorldTerminalFunction(10, 10);
-
-		Domain domain = gwd.generateDomain();
-		State s = GridWorldDomain.getOneAgentNoLocationState(domain, 0, 0);
-
-
-		Environment env = new SimulatedEnvironment(domain, rf, tf, s);
-
-		EnvironmentShell shell = new EnvironmentShell(domain, env, System.in, System.out);
-		Visualizer v = GridWorldVisualizer.getVisualizer(gwd.getMap());
-		shell.setVisualizer(v);
-		shell.start();
-	}
 }

@@ -1,10 +1,6 @@
 package burlap.shell;
 
-import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.World;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.world.*;
@@ -60,20 +56,5 @@ public class SGWorldShell extends BurlapShell {
 	}
 
 
-	public static void main(String[] args) {
 
-		GridGame gg = new GridGame();
-
-		SGDomain domain = (SGDomain)gg.generateDomain();
-		SGAgentType type = GridGame.getStandardGridGameAgentType(domain);
-		State s = GridGame.getSimpleGameInitialState(domain);
-
-		World w = new World(domain, new GridGame.GGJointRewardFunction(domain), new GridGame.GGTerminalFunction(domain), s);
-
-		SGWorldShell shell = new SGWorldShell(domain, System.in, new PrintStream(System.out), w);
-
-		shell.start();
-		//shell.executeCommand("reg -r 2 agent");
-
-	}
 }

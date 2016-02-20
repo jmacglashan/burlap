@@ -213,8 +213,7 @@ public class GridGame implements DomainGenerator {
 		
 		Visualizer v = GGVisualizer.getVisualizer(9, 9);
 		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
-		
-		exp.setJAC("c"); //press c to execute the constructed joint action
+
 		
 		exp.addKeyAction("w", CLASSAGENT+"0:"+ACTIONNORTH);
 		exp.addKeyAction("s", CLASSAGENT+"0:"+ACTIONSOUTH);

@@ -1,17 +1,14 @@
 package burlap.domain.singleagent.lunarlander;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -19,6 +16,9 @@ import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -1255,12 +1255,6 @@ public class LunarLanderDomain implements DomainGenerator {
 		if(expMode == 0){
 
 			TerminalExplorer te = new TerminalExplorer(domain, clean);
-
-			te.addActionShortHand("a", ACTIONTURNL);
-			te.addActionShortHand("d", ACTIONTURNR);
-			te.addActionShortHand("w", ACTIONTHRUST+0);
-			te.addActionShortHand("s", ACTIONTHRUST+1);
-			te.addActionShortHand("x", ACTIONIDLE);
 
 			te.explore();
 
