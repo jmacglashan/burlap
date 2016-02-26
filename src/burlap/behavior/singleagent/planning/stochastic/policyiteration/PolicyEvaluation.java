@@ -77,7 +77,6 @@ public class PolicyEvaluation extends DynamicProgramming {
 	/**
 	 * Computes the value function for the given policy over the states that have been discovered
 	 * @param policy the {@link burlap.behavior.policy.Policy} to evaluate
-	 * @return the maximum single iteration change in the value function
 	 */
 	public void evaluatePolicy(Policy policy){
 

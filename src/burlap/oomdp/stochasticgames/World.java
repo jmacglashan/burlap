@@ -220,7 +220,7 @@ public class World {
 
 	/**
 	 * Returns the last rewards received.
-	 * @return
+	 * @return the last rewards reward delivered to each agent.
 	 */
 	public Map<String, Double> getLastRewards() {
 		return lastRewards;
