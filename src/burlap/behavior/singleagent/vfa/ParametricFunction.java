@@ -4,7 +4,7 @@ import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
 
 /**
- * An interface for defining a parametric function that outputs a scalar values (double). This interface is often used
+ * An interface for defining a parametric function. This interface is often used
  * for value function approximation implementations. This highest-level of the interface does not define the input
  * domain, which is left to subclasses of this interface. For example, the {@link ParametricStateFunction} operates
  * on {@link burlap.oomdp.core.states.State} inputs and the {@link ParametricFunction.ParametricStateActionFunction}
