@@ -3,11 +3,11 @@ package burlap.behavior.singleagent.vfa;
 import burlap.oomdp.core.states.State;
 
 /**
- * An extension of {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction.ParametricStateFunction} that
+ * An extension of {@link ParametricFunction.ParametricStateFunction} that
  * that is differentiable.
  * @author James MacGlashan.
  */
-public interface DifferentiableStateValue extends ParametricScalarFunction.ParametricStateFunction{
+public interface DifferentiableStateValue extends ParametricFunction.ParametricStateFunction{
 
 	/**
 	 * Returns the gradient of this function

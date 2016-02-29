@@ -71,7 +71,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * The object that performs value function approximation given the weights that are estimated
 	 */
-	protected ParametricScalarFunction.ParametricStateActionFunction 		vfa;
+	protected ParametricFunction.ParametricStateActionFunction 		vfa;
 	
 	/**
 	 * The SARS dataset on which LSPI is performed

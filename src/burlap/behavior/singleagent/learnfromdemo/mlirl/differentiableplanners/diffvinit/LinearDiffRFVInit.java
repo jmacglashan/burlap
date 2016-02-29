@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.d
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricScalarFunction;
+import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
@@ -241,7 +241,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	}
 
 	@Override
-	public ParametricScalarFunction copy() {
+	public ParametricFunction copy() {
 		return new LinearDiffRFVInit(this.rfFvGen, this.vinitFvGen, this.rfDim, this.vinitDim, this.rfFeaturesAreForNextState);
 	}
 }

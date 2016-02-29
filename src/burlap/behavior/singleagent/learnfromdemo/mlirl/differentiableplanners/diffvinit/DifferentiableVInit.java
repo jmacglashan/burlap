@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
 import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricScalarFunction;
+import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
@@ -13,7 +13,7 @@ import burlap.oomdp.core.states.State;
  *
  * @author James MacGlashan.
  */
-public interface DifferentiableVInit extends ValueFunctionInitialization, ParametricScalarFunction {
+public interface DifferentiableVInit extends ValueFunctionInitialization, ParametricFunction {
 
 	/**
 	 * Returns the value function gradient.

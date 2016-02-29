@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.d
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricScalarFunction;
+import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -57,7 +57,7 @@ public class DiffVFRF implements DifferentiableRF {
 	}
 
 	@Override
-	public ParametricScalarFunction copy() {
+	public ParametricFunction copy() {
 		return new DiffVFRF(this.objectiveRF, (DifferentiableVInit)this.diffVInit.copy());
 	}
 

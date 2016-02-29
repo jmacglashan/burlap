@@ -4,12 +4,12 @@ import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
 
 /**
- * An extension of {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction.ParametricStateActionFunction} that
+ * An extension of {@link ParametricFunction.ParametricStateActionFunction} that
  * is differentiable.
  * Useful for state-action value function approximation (e.g., Q-value function approximation).
  * @author James MacGlashan.
  */
-public interface DifferentiableStateActionValue extends ParametricScalarFunction.ParametricStateActionFunction {
+public interface DifferentiableStateActionValue extends ParametricFunction.ParametricStateActionFunction {
 
 	/**
 	 * Returns the gradient of this function.

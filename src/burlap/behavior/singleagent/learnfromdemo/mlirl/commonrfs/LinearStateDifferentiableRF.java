@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricScalarFunction;
+import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -119,7 +119,7 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 	}
 
 	@Override
-	public ParametricScalarFunction copy() {
+	public ParametricFunction copy() {
 		LinearStateDifferentiableRF rf = new LinearStateDifferentiableRF(this.fvGen, this.dim, this.featuresAreForNextState);
 		rf.parameters = this.parameters.clone();
 		return rf;

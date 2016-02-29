@@ -7,13 +7,13 @@ import burlap.oomdp.core.states.State;
  * An interface for defining a parametric function that outputs a scalar values (double). This interface is often used
  * for value function approximation implementations. This highest-level of the interface does not define the input
  * domain, which is left to subclasses of this interface. For example, the {@link ParametricStateFunction} operates
- * on {@link burlap.oomdp.core.states.State} inputs and the {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction.ParametricStateActionFunction}
+ * on {@link burlap.oomdp.core.states.State} inputs and the {@link ParametricFunction.ParametricStateActionFunction}
  * operates on {@link burlap.oomdp.core.states.State}-{@link burlap.oomdp.core.AbstractGroundedAction} inputs.
  *
  *
  * @author James MacGlashan.
  */
-public interface ParametricScalarFunction {
+public interface ParametricFunction {
 
 	/**
 	 * Returns the number of parameters defining this function. Note that some
@@ -48,16 +48,16 @@ public interface ParametricScalarFunction {
 
 
 	/**
-	 * Returns a copy of this {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction}.
-	 * @return a copy of this {@link burlap.behavior.singleagent.vfa.ParametricScalarFunction}.
+	 * Returns a copy of this {@link ParametricFunction}.
+	 * @return a copy of this {@link ParametricFunction}.
 	 */
-	ParametricScalarFunction copy();
+	ParametricFunction copy();
 
 
 	/**
 	 * A Parametric function that operates on states.
 	 */
-	public static interface ParametricStateFunction extends ParametricScalarFunction{
+	public static interface ParametricStateFunction extends ParametricFunction {
 
 
 		/**
@@ -74,7 +74,7 @@ public interface ParametricScalarFunction {
 	/**
 	 * A parametric function that operations on state-actions
 	 */
-	public static interface ParametricStateActionFunction extends ParametricScalarFunction{
+	public static interface ParametricStateActionFunction extends ParametricFunction {
 
 
 		/**
