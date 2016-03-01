@@ -60,7 +60,7 @@ public class EnvironmentShell extends BurlapShell{
 		return Arrays.asList(new ExecuteActionCommand(domain), new ObservationCommand(), new ResetEnvCommand(),
 				new AddStateObjectCommand(domain), new RemoveStateObjectCommand(), new SetAttributeCommand(),
 				new AddRelationCommand(), new RemoveRelationCommand(), new RewardCommand(), new IsTerminalCommand(),
-				erc.getRecCommand(), erc.getBrowser());
+				erc.getRecCommand(), erc.getBrowser(), new ListActionsCommand(), new ListPropFunctions());
 	}
 
 
