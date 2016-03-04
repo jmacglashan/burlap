@@ -161,6 +161,11 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 
 		}
 
+		if(sum == 0. || Double.isNaN(sum)){
+			throw new RuntimeException("getUpdatedBeliefState for TaubularBeliefState failed because the probability normalization is " + sum + "." +
+					"\nFailed for action: " + ga.toString() + "\nAnd observation:\n" + observation.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+		}
+
 		TabularBeliefState newBeliefState = new TabularBeliefState(this.domain, this.stateEnumerator);
 		for(int i = 0; i < newBeliefStateVector.length; i++){
 			double nb = newBeliefStateVector[i] / sum;
