@@ -1,13 +1,10 @@
 package burlap.oomdp.singleagent.explorer;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -15,21 +12,27 @@ import burlap.oomdp.singleagent.common.NullRewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
-import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
-import burlap.oomdp.stateserialization.SerializableStateFactory;
-import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
 import burlap.oomdp.visualizer.Visualizer;
+import burlap.shell.BurlapShell;
+import burlap.shell.EnvironmentShell;
+import burlap.shell.ShellObserver;
+import burlap.shell.command.ShellCommand;
+import burlap.shell.command.env.ObservationCommand;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * This class allows you act as the agent by choosing actions in an {@link burlap.oomdp.singleagent.environment.Environment}.
@@ -38,16 +41,26 @@ import java.util.Map;
  * by either pressing keys that are mapped to actions or by typing the actions into the action command field. 
  * Action parameters in the action field are specified by space delineated input. For instance: "stack block0 block1" will cause
  * the stack action to called with action parameters block0 and block1. The ` key
- * causes the state to reset to the initial state provided to the explorer or to a state that is sampled from a provided {@link StateGenerator} object. 
- * Other special kinds of actions
- * not described in the domain can be added and executed by pressing corresponding keys for them. The episodes of action taken by a user may also be recorded
- * to a list of recorded episodes and then subsequently polled by a client object. To enable episode recording, use the method
- * {@link #enableEpisodeRecording(String, String)}. To check if the user
- * is still recording episodes, use the method {@link #isRecording()}. To retrieve the recorded episodes, use the method {@link #getRecordedEpisodes()}.
+ * causes the environment to reset.
+ * <br/><br/>
+ * Additionally, the VisualExplorer also creates an associated instance of an {@link burlap.shell.EnvironmentShell}
+ * that you can access using the "Show Shell" button. You can use the shell to modify the state (assuming the input
+ * {@link burlap.oomdp.singleagent.environment.Environment} implements {@link burlap.oomdp.singleagent.environment.StateSettableEnvironment},
+ * record trajectories that you make in the environment, and any number of other tasks. The shell's "programs," specified with
+ * {@link burlap.shell.command.ShellCommand} instances, may also be expanded so that you can create your own runtime tools.
+ * See the {@link burlap.shell.BurlapShell} and {@link burlap.shell.EnvironmentShell} Java doc for more information on how
+ * to use them. If you need access to the shell instance, you can get it with the {@link #getShell()} method. You can
+ * also set shell commands to be executed when a key is pressed in the visualization. Set them with the
+ * {@link #addKeyShellCommand(String, String)} method.
+ * <br/><br/>
+ * A special shell command, "livePoll" is automatically added to the shell, that allows the user to set the visualizer
+ * to auto poll the environment at a fixed interval for the state and display it. This is useful when the environment
+ * can evolve independent of agent action or explicit shell commands. See it's help in the shell (-h option) for more
+ * information on it.
  * @author James MacGlashan
  *
  */
-public class VisualExplorer extends JFrame{
+public class VisualExplorer extends JFrame implements ShellObserver{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -55,7 +68,8 @@ public class VisualExplorer extends JFrame{
 	protected Environment									env;
 	protected Domain										domain;
 	protected Map <String, GroundedAction>					keyActionMap;
-	protected Map <String, SpecialExplorerAction>			keySpecialMap;
+	protected Map <String, String>							keyShellMap = new HashMap<String, String>();
+
 	
 	protected Visualizer 									painter;
 	protected TextArea										propViewer;
@@ -67,7 +81,7 @@ public class VisualExplorer extends JFrame{
 	protected int											numSteps;
 
 	protected JFrame										consoleFrame;
-	protected TextArea										stateConsole;
+	protected JTextArea										stateConsole;
 	
 	//recording data members
 	protected EpisodeAnalysis 								currentEpisode = null;
@@ -79,6 +93,10 @@ public class VisualExplorer extends JFrame{
 	protected boolean										isRecording = false;
 
 	protected boolean										runLivePolling = false;
+	protected long											pollInterval;
+
+	protected EnvironmentShell								shell;
+	protected TextAreaStreams								tstreams;
 
 	
 	/**
@@ -124,10 +142,8 @@ public class VisualExplorer extends JFrame{
 		this.env = env;
 		this.painter = painter;
 		this.keyActionMap = new HashMap <String, GroundedAction>();
-		this.keySpecialMap = new HashMap <String, SpecialExplorerAction>();
 		
-		StateResetSpecialAction reset = new StateResetSpecialAction(this.env);
-		this.addSpecialAction("`", reset);
+		this.keyShellMap.put("`", "reset");
 		
 		this.cWidth = w;
 		this.cHeight = h;
@@ -149,14 +165,12 @@ public class VisualExplorer extends JFrame{
 
 
 	/**
-	 * Returns a special action that causes the state to reset to the initial state.
-	 * @return a special action that causes the state to reset to the initial state.
+	 * Returns the {@link burlap.shell.EnvironmentShell} instance associated with this object.
+	 * @return the {@link burlap.shell.EnvironmentShell} instance associated with this object.
 	 */
-	public StateResetSpecialAction getResetSpecialAction(){
-		return (StateResetSpecialAction)keySpecialMap.get("`");
+	public EnvironmentShell getShell() {
+		return shell;
 	}
-
-
 
 	/**
 	 * Specifies a string representation of an action to execute when the specified key is pressed.
@@ -185,152 +199,32 @@ public class VisualExplorer extends JFrame{
 	public void addKeyAction(String key, GroundedAction action){
 		keyActionMap.put(key, action);
 	}
-	
-	
-	/**
-	 * Specifies which special non-domain action to take for a given key press
-	 * @param key the key that is pressed by the user
-	 * @param action the special non-domain action to take when the key is pressed
-	 */
-	public void addSpecialAction(String key, SpecialExplorerAction action){
-		keySpecialMap.put(key, action);
-	}
-	
-	
-	/**
-	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
-	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
-	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
-	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
-	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
-	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
-	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
-	 */
-	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey){
-		this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
-		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
-		this.isRecording = true;
-		
-		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
-			
-			@Override
-			public State applySpecialAction(State curState) {
-				synchronized(VisualExplorer.this) {
-					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
-					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
-				}
-				return curState;
-			}
-		});
-		
-		this.keySpecialMap.put(finishedRecordingKey, new SpecialExplorerAction() {
-			
-			@Override
-			public State applySpecialAction(State curState) {
-				synchronized(VisualExplorer.this) {
-					VisualExplorer.this.isRecording = false;
-				}
-				return curState;
-			}
-		});
-		
-	}
-
-	/**
-	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
-	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
-	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
-	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
-	 * recorded episodes is saved to disk in the directory saveDirectory. States will be serialized with {@link burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory}
-	 * The list of
-	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
-	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
-	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
-	 * @param saveDirectory the directory in which all episodes will be saved
-	 */
-	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey,
-									   String saveDirectory){
-		this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
-		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
-		this.isRecording = true;
-
-		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
-
-			@Override
-			public State applySpecialAction(State curState) {
-				synchronized(VisualExplorer.this) {
-					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
-					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
-				}
-				return curState;
-			}
-		});
-
-		this.keySpecialMap.put(finishedRecordingKey, new SaveEpisodeAction(saveDirectory, new SimpleSerializableStateFactory()));
-
-	}
 
 
 	/**
-	 * Enables episodes recording of actions taken. Whenever the recordLastEpisodeKey is pressed, the episode
-	 * starting from the initial state, or last state reset (activated with the ` key) up until the current state
-	 * is stored in a list of recorded episodes. When the finishedRecordingKey is pressed, the {@link #isRecording()} flag
-	 * is set to false to let any client objects know that the list of recorded episodes can be safely polled. The list of
-	 * recorded episodes is saved to disk in the directory saveDirectory.
-	 * The list of
-	 * recorded episodes can be polled using the method {@link #getRecordedEpisodes()}.
-	 * @param recordLastEpisodeKey the key to press to indicate that the last episode should be recorded/saved.
-	 * @param finishedRecordingKey the key to press to indicate that no more episodes will be recorded so that the list of recorded episodes can be safely polled by a client object.
-	 * @param saveDirectory the directory in which all episodes will be saved
-	 * @param serializableStateFactory the {@link burlap.oomdp.stateserialization.SerializableStateFactory} to use for serializing states
+	 * Cause a shell command to be executed when key is pressed with the visualizer highlighted.
+	 * @param key the key to activate the shell command.
+	 * @param shellCommand the shell command to execute.
 	 */
-	public void enableEpisodeRecording(String recordLastEpisodeKey, String finishedRecordingKey,
-									   String saveDirectory, SerializableStateFactory serializableStateFactory){
-		this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
-		this.recordedEpisodes = new ArrayList<EpisodeAnalysis>();
-		this.isRecording = true;
-
-		this.keySpecialMap.put(recordLastEpisodeKey, new SpecialExplorerAction() {
-
-			@Override
-			public State applySpecialAction(State curState) {
-				synchronized(VisualExplorer.this) {
-					VisualExplorer.this.recordedEpisodes.add(VisualExplorer.this.currentEpisode);
-					System.out.println("Recorded Episode: " + VisualExplorer.this.recordedEpisodes.size());
-				}
-				return curState;
-			}
-		});
-
-		this.keySpecialMap.put(finishedRecordingKey, new SaveEpisodeAction(saveDirectory, serializableStateFactory));
-
+	public void addKeyShellCommand(String key, String shellCommand){
+		this.keyShellMap.put(key, shellCommand);
 	}
-	
-	/**
-	 * Returns whether episodes are still be recorded by a user.
-	 * @return true is the user is still recording episode; false otherwise.
-	 */
-	public boolean isRecording(){
-		return this.isRecording;
-	}
-	
-	
-	/**
-	 * Returns the list of episodes recorded by a user.
-	 * @return the list of episodes recorded by a user.
-	 */
-	public List<EpisodeAnalysis> getRecordedEpisodes(){
-		return this.recordedEpisodes;
-	}
+
+
 
 
 	/**
 	 * Starts a thread that polls this explorer's {@link burlap.oomdp.singleagent.environment.Environment} every
 	 * msPollDelay milliseconds for its current state and updates the visualizer to that state.
-	 * Polling can be stopped with the {@link #stopLivePolling()}.
+	 * Polling can be stopped with the {@link #stopLivePolling()}. If live polling is already running,
+	 * this method call will only change the poll rate.
 	 * @param msPollDelay the number of milliseconds between environment polls and state updates.
 	 */
 	public void startLiveStatePolling(final long msPollDelay){
+		this.pollInterval = msPollDelay;
+		if(this.runLivePolling){
+			return;
+		}
 		this.runLivePolling = true;
 		Thread pollingThread = new Thread(new Runnable() {
 			@Override
@@ -341,7 +235,7 @@ public class VisualExplorer extends JFrame{
 						updateState(s);
 					}
 					try {
-						Thread.sleep(msPollDelay);
+						Thread.sleep(pollInterval);
 					} catch(InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -360,7 +254,17 @@ public class VisualExplorer extends JFrame{
 		this.runLivePolling = false;
 	}
 
-	
+
+	@Override
+	public void observeCommand(BurlapShell shell, ShellCommandEvent event) {
+		if(event.returnCode == 1){
+			this.updateState(this.env.getCurrentObservation());
+		}
+		if(event.command instanceof ObservationCommand){
+			this.updateState(this.env.getCurrentObservation());
+		}
+	}
+
 	/**
 	 * Initializes the visual explorer GUI and presents it to the user.
 	 */
@@ -368,7 +272,6 @@ public class VisualExplorer extends JFrame{
 		
 		painter.setPreferredSize(new Dimension(cWidth, cHeight));
 		propViewer.setPreferredSize(new Dimension(cWidth, 100));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Container bottomContainer = new Container();
 		bottomContainer.setLayout(new BorderLayout());
@@ -429,7 +332,7 @@ public class VisualExplorer extends JFrame{
 		painter.updateState(this.env.getCurrentObservation());
 		this.updatePropTextArea(this.env.getCurrentObservation());
 
-		JButton showConsoleButton = new JButton("Show Console");
+		JButton showConsoleButton = new JButton("Show Shell");
 		showConsoleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -442,118 +345,35 @@ public class VisualExplorer extends JFrame{
 		this.consoleFrame = new JFrame();
 		this.consoleFrame.setPreferredSize(new Dimension(600, 500));
 
-		JLabel consoleCommands = new JLabel("<html><h2>Console command syntax:</h2>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>add</b> objectClass object<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>remove</b> object<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>set</b> object attribute [attribute_2 ... attribute_n] value [value_2 ... value_n]<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>addRelation</b> sourceObject relationalAttribute targetObject<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>removeRelation</b> sourceObject relationalAttribute targetObject<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>clearRelations</b> sourceObject relationalAttribute<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>execute</b> action [param_1 ... param_n]<br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<b>pollState</b><br/>&nbsp;</html>");
 
-		consoleFrame.getContentPane().add(consoleCommands, BorderLayout.NORTH);
 
-		this.stateConsole = new TextArea(this.getConsoleText(this.env.getCurrentObservation()), 40, 40, TextArea.SCROLLBARS_BOTH);
-		this.consoleFrame.getContentPane().add(this.stateConsole, BorderLayout.CENTER);
+		this.stateConsole = new JTextArea(40, 40);
+		this.stateConsole.setLineWrap(true);
+		DefaultCaret caret = (DefaultCaret)this.stateConsole.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		this.stateConsole.setEditable(false);
+		this.stateConsole.setMargin(new Insets(10, 5, 10, 5));
 
-		JTextField consoleCommand = new JTextField(40);
+
+		JScrollPane shellScroll = new JScrollPane(this.stateConsole, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+		this.consoleFrame.getContentPane().add(shellScroll, BorderLayout.CENTER);
+
+		this.tstreams = new TextAreaStreams(this.stateConsole);
+		this.shell = new EnvironmentShell(domain, env, tstreams.getTin(), new PrintStream(tstreams.getTout()));
+		this.shell.addObservers(this);
+		this.shell.setVisualizer(this.painter);
+		this.shell.addCommand(new LivePollCommand());
+		this.shell.start();
+
+
+		final JTextField consoleCommand = new JTextField(40);
 		consoleCommand.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String command = ((JTextField)e.getSource()).getText();
-
-
-				String [] comps = command.split(" ");
-				if(comps.length > 0){
-
-					State ns = VisualExplorer.this.env.getCurrentObservation().copy();
-
-					boolean madeChange = false;
-					if(comps[0].equals("set")){
-						if(comps.length >= 4) {
-							ObjectInstance o = ns.getObject(comps[1]);
-							if(o != null){
-								int rsize = comps.length - 2;
-								if(rsize % 2 == 0){
-									int vind = rsize / 2;
-									for(int i = 0; i < rsize / 2; i++){
-										o.setValue(comps[2+i], comps[2+i+vind]);
-									}
-								}
-								madeChange = true;
-							}
-						}
-
-					}
-					else if(comps[0].equals("addRelation")){
-						if(comps.length == 4){
-							ObjectInstance o = ns.getObject(comps[1]);
-							if(o != null){
-								o.addRelationalTarget(comps[2], comps[3]);
-								madeChange = true;
-							}
-						}
-					}
-					else if(comps[0].equals("removeRelation")){
-						if(comps.length == 4){
-							ObjectInstance o = ns.getObject(comps[1]);
-							if(o != null){
-								o.removeRelationalTarget(comps[2], comps[3]);
-								madeChange = true;
-							}
-						}
-					}
-					else if(comps[0].equals("clearRelations")){
-						if(comps.length == 3){
-							ObjectInstance o = ns.getObject(comps[1]);
-							if(o != null){
-								o.clearRelationalTargets(comps[2]);
-								madeChange = true;
-							}
-						}
-					}
-					else if(comps[0].equals("add")){
-						if(comps.length == 3){
-							ObjectInstance o = new MutableObjectInstance(VisualExplorer.this.domain.getObjectClass(comps[1]), comps[2]);
-							ns.addObject(o);
-							madeChange = true;
-						}
-					}
-					else if(comps[0].equals("remove")){
-						if(comps.length == 2){
-							ns.removeObject(comps[1]);
-							madeChange = true;
-						}
-					}
-					else if(comps[0].equals("execute")){
-						String [] actionComps = new String[comps.length-1];
-						for(int i = 1; i < comps.length; i++){
-							actionComps[i-1] = comps[i];
-						}
-						VisualExplorer.this.executeAction(actionComps);
-					}
-					else if(comps[0].equals("pollState")){
-						updateState(env.getCurrentObservation());
-					}
-
-					if(madeChange) {
-						if(env instanceof StateSettableEnvironment) {
-							((StateSettableEnvironment)env).setCurStateTo(ns);
-							VisualExplorer.this.updateState(env.getCurrentObservation());
-							VisualExplorer.this.numSteps = 0;
-							if(VisualExplorer.this.currentEpisode != null) {
-								VisualExplorer.this.currentEpisode = new EpisodeAnalysis(env.getCurrentObservation());
-							}
-						}
-						else{
-							warningMessage = "Cannot edit state because the Environment does not implement StateSettableEnvironment";
-							VisualExplorer.this.updateState(env.getCurrentObservation());
-						}
-					}
-				}
-
-
+				consoleCommand.setText("");
+				tstreams.receiveInput(command + "\n");
 			}
 		});
 
@@ -574,50 +394,12 @@ public class VisualExplorer extends JFrame{
 	 * @param s the state to visualize.
 	 */
 	synchronized public void updateState(State s){
-		this.stateConsole.setText(this.getConsoleText(s));
 		this.painter.updateState(s);
 		this.updatePropTextArea(s);
 
 	}
 
 
-	/**
-	 * Returns the text that will be printed to the console for the given input state.
-	 * @param s the state for which the current console text will be generated.
-	 * @return the text that will be printed to the console for the given input state.
-	 */
-	protected String getConsoleText(State s){
-		StringBuilder sb = new StringBuilder(256);
-		sb.append(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
-		if(this.env.isInTerminalState()){
-			sb.append("State IS terminal\n");
-		}
-		else{
-			sb.append("State is NOT terminal\n");
-		}
-
-		sb.append("Reward: " + this.lastReward + "\n");
-
-		if(this.warningMessage.length() > 0) {
-			sb.append("WARNING: " + this.warningMessage + "\n");
-			this.warningMessage = "";
-		}
-		sb.append("\n------------------------------\n\n");
-
-		if(s.getAllUnsetAttributes().size() == 0){
-			sb.append("Applicable Actions:\n");
-			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.domain.getActions(), s);
-			for(GroundedAction ga : gas){
-				sb.append(ga.toString()).append("\n");
-			}
-		}
-		else{
-			sb.append("State has unset values; set them them to see applicable action list.");
-		}
-
-
-		return sb.toString();
-	}
 
 
 	/**
@@ -652,20 +434,14 @@ public class VisualExplorer extends JFrame{
 			
 		}
 		else{
-			
-			SpecialExplorerAction sea = keySpecialMap.get(key);
-			if(sea != null){
-				sea.applySpecialAction(this.env.getCurrentObservation());
-			}
-			if(sea instanceof StateResetSpecialAction){
-				System.out.println("Number of steps before reset: " + numSteps);
-				numSteps = 0;
-				this.lastReward = 0.;
-				if(this.currentEpisode != null){
-					this.currentEpisode = new EpisodeAnalysis(this.env.getCurrentObservation());
+
+			String shellCommand = this.keyShellMap.get(key);
+			if(shellCommand != null){
+				if(this.shell != null){
+					this.shell.executeCommand(shellCommand);
 				}
 			}
-			this.updateState(this.env.getCurrentObservation());
+
 		}
 		
 	}
@@ -797,52 +573,54 @@ public class VisualExplorer extends JFrame{
 
 
 	/**
-	 * Class for receiving key presses from a {@link burlap.oomdp.singleagent.explorer.VisualExplorer}
-	 * that handles it as ending episode recoding and saving all recorded episodes to disk.
+	 * Shell command that allow live polling of the {@link burlap.oomdp.singleagent.explorer.VisualExplorer} to be polled.
 	 */
-	protected class SaveEpisodeAction implements SpecialExplorerAction{
+	public class LivePollCommand implements ShellCommand{
 
-		/**
-		 * The directory in which the episodes will be recorded.
-		 */
-		protected String directory;
+		protected OptionParser parser = new OptionParser("t:fch*");
 
-		/**
-		 * The {@link burlap.oomdp.stateserialization.SerializableStateFactory} used to serialize states.
-		 */
-		protected SerializableStateFactory serializableStateFactory;
-
-
-		/**
-		 * Initializes
-		 * @param directory the directory path in which episodes will be recorded
-		 * @param serializableStateFactory the {@link burlap.oomdp.stateserialization.SerializableStateFactory} to use for serializing states.
-		 */
-		public SaveEpisodeAction(String directory, SerializableStateFactory serializableStateFactory){
-			this.directory = directory;
-			this.serializableStateFactory = serializableStateFactory;
-
-			if(!this.directory.endsWith("/")){
-				this.directory = this.directory + "/";
-			}
-
+		@Override
+		public String commandName() {
+			return "livePoll";
 		}
 
 		@Override
-		public State applySpecialAction(State curState) {
+		public int call(BurlapShell shell, String argString, Scanner is, PrintStream os) {
 
-			synchronized(VisualExplorer.this) {
-				VisualExplorer.this.isRecording = false;
-				List<EpisodeAnalysis> episodes = VisualExplorer.this.getRecordedEpisodes();
-				EpisodeAnalysis.writeEpisodesToDisk(episodes, this.directory, "episode", this.serializableStateFactory);
-				System.out.println("Recorded " + VisualExplorer.this.recordedEpisodes.size()
-						+ " episodes to directory " + this.directory);
+			Environment env = ((EnvironmentShell)shell).getEnv();
+			OptionSet oset = this.parser.parse(argString.split(" "));
+
+			if(oset.has("h")){
+				os.println("[-t interval] [-f] [-c]\n\n" +
+						"Used to set the associated visual explorer to poll the environment for the current state and update the display on a fixed interval.\n" +
+						"-t interval: turns on live polling and causes the environment to be polled every interval milliseconds.\n" +
+						"-f: turns off live polling.\n" +
+						"-c: returns the status of live polling (enabled/disabled and rate");
+
 			}
 
-			return curState;
+			if(oset.has("t")){
+				String val = (String)oset.valueOf("t");
+				long interval = Long.valueOf(val);
+				startLiveStatePolling(interval);
+			}
+			else if(oset.has("f")){
+				stopLivePolling();
+			}
 
+			if(oset.has("c")){
+				if(runLivePolling){
+					os.println("Live polling is enabled and polls every " + pollInterval + " milliseconds.");
+				}
+				else{
+					os.println("Live polling is disabled.");
+				}
+			}
+
+			return 0;
 		}
 	}
+
 
 
 }

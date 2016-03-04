@@ -1,10 +1,6 @@
 package burlap.oomdp.singleagent.pomdp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TransitionProbability;
@@ -12,6 +8,9 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -346,7 +345,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 	 * the input {@link State} objects are classes that implement {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState}
 	 * and {@link burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.
 	 * If the POMDP reward function does not depend on the next state, then this can be declared with the srcRFIsNextStateIndependent
-	 * flag in the {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.BeliefRF#BeliefRF(PODomain, burlap.oomdp.singleagent.RewardFunction, boolean)}
+	 * flag in the {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.BeliefRF#BeliefRF(PODomain, RewardFunction, boolean)}
 	 * constructor, which will decrease the computational demands since the next states do not have to be marginalized over.
 	 */
 	public static class BeliefRF implements RewardFunction{

@@ -1,27 +1,22 @@
 package burlap.domain.stochasticgames.gridgame;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.stochasticgames.SGAgentType;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
+import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The GridGame domain is much like the GridWorld domain, except for arbitrarily many agents in
@@ -218,8 +213,7 @@ public class GridGame implements DomainGenerator {
 		
 		Visualizer v = GGVisualizer.getVisualizer(9, 9);
 		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
-		
-		exp.setJAC("c"); //press c to execute the constructed joint action
+
 		
 		exp.addKeyAction("w", CLASSAGENT+"0:"+ACTIONNORTH);
 		exp.addKeyAction("s", CLASSAGENT+"0:"+ACTIONSOUTH);
@@ -900,7 +894,7 @@ public class GridGame implements DomainGenerator {
 			if(this.noopIncursCost){
 				return this.stepCost;
 			}
-			else if(ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
+			else if(ja.action(aname) == null || ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
 				return 0.;
 			}
 			return this.stepCost;

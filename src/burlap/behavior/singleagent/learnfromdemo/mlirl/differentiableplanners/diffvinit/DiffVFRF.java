@@ -1,6 +1,8 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -14,29 +16,51 @@ import burlap.oomdp.singleagent.RewardFunction;
  *
  * @author James MacGlashan.
  */
-public class DiffVFRF extends DifferentiableRF {
+public class DiffVFRF implements DifferentiableRF {
 
 	protected RewardFunction objectiveRF;
-	protected DifferentiableVInit.ParamedDiffVInit diffVInit;
+	protected DifferentiableVInit diffVInit;
+
+	protected int dim;
 
 
-	public DiffVFRF(RewardFunction objectiveRF, DifferentiableVInit.ParamedDiffVInit diffVinit){
+	public DiffVFRF(RewardFunction objectiveRF, DifferentiableVInit diffVinit){
 		this.objectiveRF = objectiveRF;
 		this.diffVInit = diffVinit;
 
-		this.dim = diffVinit.getParameterDimension();
-		this.parameters = diffVinit.getParameters();
+		this.dim = diffVinit.numParameters();
 	}
 
 	@Override
-	public double[] getGradient(State s, GroundedAction ga, State sp) {
-		return new double[this.dim];
+	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
+		return new FunctionGradient.SparseGradient();
 	}
 
 	@Override
-	protected DifferentiableRF copyHelper() {
-		return null;
+	public int numParameters() {
+		return this.diffVInit.numParameters();
 	}
+
+	@Override
+	public double getParameter(int i) {
+		return this.diffVInit.getParameter(i);
+	}
+
+	@Override
+	public void setParameter(int i, double p) {
+		this.diffVInit.setParameter(i, p);
+	}
+
+	@Override
+	public void resetParameters() {
+		this.diffVInit.resetParameters();
+	}
+
+	@Override
+	public ParametricFunction copy() {
+		return new DiffVFRF(this.objectiveRF, (DifferentiableVInit)this.diffVInit.copy());
+	}
+
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
@@ -44,10 +68,5 @@ public class DiffVFRF extends DifferentiableRF {
 	}
 
 
-	@Override
-	public void setParameters(double[] parameters) {
-		super.setParameters(parameters);
-		this.diffVInit.setParameters(parameters);
-	}
 
 }

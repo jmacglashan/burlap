@@ -1,36 +1,25 @@
 package burlap.behavior.singleagent.auxiliary;
 
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.TextArea;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.datastructures.AlphanumericSorting;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.GroundedProp;
+import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.visualizer.Visualizer;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.datastructures.AlphanumericSorting;
-import burlap.oomdp.legacy.StateParser;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.stateserialization.SerializableStateFactory;
-import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
-import burlap.oomdp.visualizer.Visualizer;
 
 
 
@@ -207,7 +196,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		propViewer.setEditable(false);
 		painter.setPreferredSize(new Dimension(cWidth, cHeight));
 		propViewer.setPreferredSize(new Dimension(cWidth, 100));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		
 		getContentPane().add(painter, BorderLayout.CENTER);
 		getContentPane().add(propViewer, BorderLayout.SOUTH);

@@ -1,14 +1,13 @@
 package burlap.oomdp.singleagent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -261,6 +260,20 @@ public abstract class Action{
 	public abstract GroundedAction getAssociatedGroundedAction();
 
 
+	/**
+	 * Returns the {@link GroundedAction} instance associated with this action with its parameters set to the provided
+	 * string representation of the parameters. This method works by first calling an the {@link #getAssociatedGroundedAction()}
+	 * method of this object, and then calling the {@link GroundedAction#initParamsWithStringRep(String[])} method
+	 * to set its parameters with the string representations. Consequently, the provided {@link GroundedAction}
+	 * implementation must implement the {@link GroundedAction#initParamsWithStringRep(String[])} for this method to work.
+	 * @param strParams the parameters of the action specified with their string representation.
+	 * @return a {@link burlap.oomdp.singleagent.GroundedAction} instance.
+	 */
+	public GroundedAction getGroundedAction(String...strParams){
+		GroundedAction ga = this.getAssociatedGroundedAction();
+		ga.initParamsWithStringRep(strParams);
+		return ga;
+	}
 
 	/**
 	 * Returns all possible groundings of this action that can be applied in the provided {@link State}. To check if a grounded

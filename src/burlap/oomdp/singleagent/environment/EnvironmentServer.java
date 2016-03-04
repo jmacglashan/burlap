@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A server that delegates all {@link burlap.oomdp.singleagent.environment.Environment} interactions and request
+ * A {@link burlap.oomdp.singleagent.environment.EnvironmentServerInterface} implementation that delegates all {@link burlap.oomdp.singleagent.environment.Environment} interactions and request
  * to a provided {@link burlap.oomdp.singleagent.environment.Environment} delegate. This class will also
  * intercept all interactions through the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)} and
  * {@link #resetEnvironment()} methods
@@ -15,7 +15,7 @@ import java.util.List;
  * about the event.
  * @author James MacGlashan.
  */
-public class EnvironmentServer implements Environment {
+public class EnvironmentServer implements EnvironmentServerInterface, EnvironmentDelegation {
 
 	/**
 	 * the {@link burlap.oomdp.singleagent.environment.Environment} delegate that handles all primary {@link burlap.oomdp.singleagent.environment.Environment}
@@ -29,6 +29,24 @@ public class EnvironmentServer implements Environment {
 	 */
 	protected List<EnvironmentObserver> observers = new LinkedList<EnvironmentObserver>();
 
+
+	/**
+	 * If the input {@link burlap.oomdp.singleagent.environment.Environment} is an instance {@link burlap.oomdp.singleagent.environment.EnvironmentServerInterface},
+	 * then all the input observers are added to it and it is returned. Otherwise, a new {@link burlap.oomdp.singleagent.environment.EnvironmentServer}
+	 * is created around it, with all of the observers added.
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} that will have observers added to it
+	 * @param observers the {@link burlap.oomdp.singleagent.environment.EnvironmentObserver} objects to add.
+	 * @return the input {@link burlap.oomdp.singleagent.environment.Environment} or an {@link burlap.oomdp.singleagent.environment.EnvironmentServer}.
+	 */
+	public static EnvironmentServerInterface constructServerOrAddObservers(Environment env, EnvironmentObserver...observers){
+		if(env instanceof EnvironmentServerInterface){
+			((EnvironmentServerInterface)env).addObservers(observers);
+			return (EnvironmentServerInterface)env;
+		}
+		else{
+			return constructor(env, observers);
+		}
+	}
 
 	/**
 	 * Constructs an {@link burlap.oomdp.singleagent.environment.EnvironmentServer} or {@link burlap.oomdp.singleagent.environment.EnvironmentServer.StateSettableEnvironmentServer},
@@ -112,6 +130,9 @@ public class EnvironmentServer implements Environment {
 
 	@Override
 	public EnvironmentOutcome executeAction(GroundedAction ga) {
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentActionInitiation(this.delegate.getCurrentObservation(), ga);
+		}
 		EnvironmentOutcome eo = this.delegate.executeAction(ga);
 		for(EnvironmentObserver observer : this.observers){
 			observer.observeEnvironmentInteraction(eo);

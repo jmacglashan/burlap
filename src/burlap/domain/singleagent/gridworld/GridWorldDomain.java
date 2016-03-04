@@ -1,24 +1,14 @@
 package burlap.domain.singleagent.gridworld;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OOMDPObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.OOMDPState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -27,6 +17,10 @@ import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 
@@ -936,10 +930,6 @@ public class GridWorldDomain implements DomainGenerator {
 		if(expMode == 0){
 			
 			TerminalExplorer exp = new TerminalExplorer(d, s);
-			exp.addActionShortHand("n", ACTIONNORTH);
-			exp.addActionShortHand("e", ACTIONEAST);
-			exp.addActionShortHand("w", ACTIONWEST);
-			exp.addActionShortHand("s", ACTIONSOUTH);
 			
 			exp.explore();
 			

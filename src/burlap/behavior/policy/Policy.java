@@ -1,20 +1,20 @@
 package burlap.behavior.policy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -550,7 +550,11 @@ public abstract class Policy {
 			this.ga = ga;
 			this.pSelection = p;
 		}
-		
+
+		@Override
+		public String toString() {
+			return this.pSelection + ": " + ga.toString();
+		}
 	}
 
 

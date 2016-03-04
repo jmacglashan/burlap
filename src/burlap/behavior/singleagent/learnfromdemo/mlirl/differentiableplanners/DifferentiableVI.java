@@ -146,7 +146,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 
 				double v = this.value(sh);
 				double newV = this.performBellmanUpdateOn(sh);
-				double [] ng = this.performDPValueGradientUpdateOn(sh);
+				this.performDPValueGradientUpdateOn(sh);
 				delta = Math.max(Math.abs(newV - v), delta);
 
 			}

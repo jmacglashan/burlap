@@ -1,37 +1,24 @@
 package burlap.domain.stochasticgames.normalform;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.SGAgentType;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.JointReward;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.SGStateGenerator;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.oomdp.stochasticgames.World;
 import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.oomdp.stochasticgames.common.StaticRepeatedGameActionModel;
 import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
+
+import java.util.*;
 
 
 
@@ -907,18 +894,11 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		SingleStageNormalFormGame game = SingleStageNormalFormGame.getPrisonersDilemma();
 		SGDomain domain = (SGDomain)game.generateDomain();
 		JointReward r = game.getJointRewardFunction();
-		
-		SGTerminalExplorer exp = new SGTerminalExplorer(domain);
-		
-		//add short hand as first letter of each action name
-		for(SGAgentAction sa : domain.getAgentActions()){
-			exp.addActionShortHand(sa.actionName.substring(0, 1), sa.actionName);
-		}
-		
-		
-		exp.setRewardFunction(r);
-		
-		exp.exploreFromState(SingleStageNormalFormGame.getState(domain));
+
+		World w = new World(domain, r, new NullTermination(), SingleStageNormalFormGame.getState(domain));
+
+		SGTerminalExplorer exp = new SGTerminalExplorer(w);
+		exp.explore();
 		
 	}
 	
