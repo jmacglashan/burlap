@@ -26,7 +26,7 @@ import java.util.*;
  * (or state-action) features stored are dynamically created as new states are introduced. That is, {@link Tiling}
  * objects procedurally determine which tile a state is in, but the associated state feature id for each state
  * feature is determined as needed.
- * <p/>
+ * <p>
  * Note that different tilings in a CMAC can be defined over different attributes and object classes. For instance
  * a CMAC can consist of two one dimensional tilings that are over different attibutes, such as one that tiles an
  * x position while another tiles the y position. Alternatively, a tiling may be multidimensional with different tilings
@@ -35,7 +35,7 @@ import java.util.*;
  * 
  * 
  * 
- * <p/>
+ * <p>
  * 
  * 1. Albus, James S. "A theory of cerebellar function." Mathematical Biosciences 10.1 (1971): 25-61
  * @author James MacGlashan

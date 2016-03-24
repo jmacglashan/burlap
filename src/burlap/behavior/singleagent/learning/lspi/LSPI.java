@@ -37,7 +37,7 @@ import java.util.List;
  * initialize a matrix to an identity matrix multiplied by some large positive constant (see the reference for more information).
  * By default this constant is 100, but you can change it with the {@link #setIdentityScalar(double)}
  * method.
- * <p/>
+ * <p>
  * If you do use the {@link #planFromState(State)} method, you should first initialize the parameters for it using the
  * {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int, SARSCollector)} or
  * {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)} method.
@@ -46,21 +46,21 @@ import java.util.List;
  * the {@link #runPolicyIteration(int, double)} method using a maximum of 30 policy iterations. You can change the {@link SARSCollector} this method uses, the number of samples it acquires, the maximum weight change for PI termination,
  * and the maximum number of policy iterations by using the {@link #setPlanningCollector(SARSCollector)}, {@link #setNumSamplesForPlanning(int)}, {@link #setMaxChange(double)}, and
  * {@link #setMaxNumPlanningIterations(int)} methods respectively.
- * <p/>
+ * <p>
  * If you use the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method (or the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)}  method),
  * it will work by following a learning policy for the episode and adding its observations to its dataset for its
  * policy iteration. After enough new data has been acquired, policy iteration will be rereun.
  * You can adjust the learning policy, the maximum number of allowed learning steps in an
  * episode, and the minimum number of new observations until LSPI is rerun using the {@link #setLearningPolicy(Policy)}, {@link #setMaxLearningSteps(int)}, {@link #setMinNewStepsForLearningPI(int)}
  * methods respectively. The LSPI  termination parameters are set using the same methods that you use for adjusting the results from the {@link #planFromState(State)} method discussed above.
- * <p/>
+ * <p>
  * This data gathering and replanning behavior from learning episodes is not expected to be an especially good choice.
  * Therefore, if you want a better online data acquisition, you should consider subclassing this class
  * and overriding the methods {@link #updateDatasetWithLearningEpisode(EpisodeAnalysis)} and {@link #shouldRereunPolicyIteration(EpisodeAnalysis)}, or
  * the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} method
  * itself.
  * 
- * <p/>
+ * <p>
  * 1. Lagoudakis, Michail G., and Ronald Parr. "Least-squares policy iteration." The Journal of Machine Learning Research 4 (2003): 1107-1149.
  * 
  * @author James MacGlashan

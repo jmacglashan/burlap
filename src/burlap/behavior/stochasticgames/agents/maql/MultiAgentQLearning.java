@@ -31,21 +31,21 @@ import burlap.oomdp.stochasticgames.World;
  * A class for performing multi-agent Q-learning in which different Q-value backup operators can be provided to enable the learning
  * of different solution concepts. Multi-agent Q-learning differs from single agent Q-learning in that Q-values are associated
  * with joint actions, rather than actions, and in that a different Q-value is stored for each agent in the game.
- * <p/>
+ * <p>
  * In this class, each agent stores its own Q-value and an object that provides a source for the Q-values of other agents. This allows
  * the storage of Q-values to vary so that an agent can store the Q-values forall other agents, or the map can provide access to the
  * Q-values stored by other MultiAgentQLearning agents in the world so that only one copy of each agent's Q-value is ever stored.
  * In the case of the latter, all agents should be implementing the same solution concept learning algorithm. Otherwise, each agent
  * should maintain their own set of Q-values.
- * <p/>
+ * <p>
  * After an agent observes an outcome, it determines the change in Q-value. However, the agent will not actually update its Q-value
  * to the new value until it is asked for its next action ({@link #getAction(State)}) or until the {@link #gameTerminated()} message is sent.
  * Q-value updates are delayed in this way because if Q-values for each agent are shared and distributed among the agents, this ensures
  * that the Q-values are all updated after the next Q-value has been determined for each agent.
- * <p/>
+ * <p>
  * In general the learning policy followed by this agent should reflect the needs of the solution concept being learned. For instance,
  * CoCo-Q should use some variant of a maximum welfare joint policy.
- * <p/>
+ * <p>
  * The learning policy and its underlining joint policy will automatically be told that this agent is its target agent, the agent definitions
  * in the world, and that this agent is the Q-source provider of the joint policy {@link MAQSourcePolicy}. If the set joint policy
  * is not an instance of {@link MAQSourcePolicy}, then an exception will be thrown.

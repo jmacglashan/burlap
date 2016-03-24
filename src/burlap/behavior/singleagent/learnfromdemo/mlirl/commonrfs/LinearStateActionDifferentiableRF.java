@@ -16,13 +16,13 @@ import java.util.Map;
  * The class takes as input a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} and the set of possible
  * grounded actions that can be applied in the world. The dimensionality of this reward function is equal to |A|*|f|,
  * where A is the set of possible grounded actions, and |f| is the state feature vector dimensionality.
- * <p/>
+ * <p>
  * The reward function is defined as R(s, a, s') = w(a) * f(s), where w(a) is the set of weights (the parameters) of this
  * reward functions associated with action a, * is the dot product operator, and f(s) is the feature vector for state s.
- * <p/>
+ * <p>
  * Note that when the gradient is a vector of size |A||f|, since the feature vector is replicated for each action, and the gradient
  * for all entries associated with an action other than the one taken in the (s, a, s') query will have a gradient value of zero.
- * <p/>
+ * <p>
  * The set of possible grounded actions must be defined either in the {@link #LinearStateActionDifferentiableRF(burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator, int, burlap.oomdp.singleagent.GroundedAction...)}
  * constructor, or added iteratively with the {@link #addAction(burlap.oomdp.singleagent.GroundedAction)} method.
  * @author James MacGlashan.

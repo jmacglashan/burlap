@@ -17,12 +17,12 @@ import java.util.Random;
  * clusters the trajectories assigning each cluster its own reward function parameter values. The algorithm uses
  * EM to find the reward function parameter values for each cluster and uses {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL}
  * to perform the maximization step of the parameter values. EM is run for a specified number of iterations.
- * <p/>
+ * <p>
  * At initialization, the reward function parameters for each behavior cluster will be randomly assigned values between
  * -1 and 1. If you want to change this behavior, subclass this object and override the
  * {@link #initializeClusterRFParameters(java.util.List)} method.
  *
- * <p/>
+ * <p>
  * 1. Babes, Monica, et al. "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
  *
  * @author James MacGlashan; code is modeled from code written by Lei Yang.

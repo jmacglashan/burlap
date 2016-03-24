@@ -10,9 +10,9 @@ package burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibrium
  * and {@link #computeColStrategy(double[][], double[][])} methods and then cached. The cahced results
  * can be retreived using the {@link #getLastComputedRowStrategy()} and {@link #getLastComputedColStrategy()} methods.
  * 
- * <p/>
+ * <p>
  * Note that the bimatrix is compared to the last cached version for equality with an epislon difference comparions
- * of the individual double values. That is, if the difference absolute difference |a - b| < {@link #doubleEpislon},
+ * of the individual double values. That is, if the difference absolute difference |a - b| &lt; {@link #doubleEpislon},
  * then the a and b are treated as equal. By default, {@link #doubleEpislon} is set to 1e-8; but this is a public
  * static member that can be changed.
  * @author James MacGlashan
@@ -112,9 +112,9 @@ public abstract class BimatrixEquilibriumSolver {
 	 * this method returns true.
 	 * Equality
 	 * between two double values is tested with an epsilon difference where value a and b are evaluated as equal if
-	 * |a - b| < {@link #doubleEpislon}. 
-	 * @param rowPayoff
-	 * @param colPayoff
+	 * |a - b| &lt; {@link #doubleEpislon}.
+	 * @param rowPayoff the row player payoffs.
+	 * @param colPayoff the column player payoffs.
 	 * @return true if the input bimatrix is equal to the last cached bimatrix; false otherwise.
 	 */
 	protected boolean bimatrixEqualsLast(double [][] rowPayoff, double [][] colPayoff){
@@ -140,10 +140,10 @@ public abstract class BimatrixEquilibriumSolver {
 	
 	
 	/**
-	 * Returns true if |a - b| < {@link #doubleEpislon}; false otherwise.
+	 * Returns true if |a - b| &lt; {@link #doubleEpislon}; false otherwise.
 	 * @param a first input
 	 * @param b second input
-	 * @return true if |a - b| < {@link #doubleEpislon}; false otherwise.
+	 * @return true if |a - b| &lt; {@link #doubleEpislon}; false otherwise.
 	 */
 	protected static boolean doubleEquality(double a, double b){
 		double diff = Math.abs(a-b);

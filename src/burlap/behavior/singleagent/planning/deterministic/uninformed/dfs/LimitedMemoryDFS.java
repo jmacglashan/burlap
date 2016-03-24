@@ -24,7 +24,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * a state in the memory, but will explore it at an earlier depth, the valueFunction will explore it anyway, since it's
  * possible it will lead to a goal given that it can expand further than the previous exploration.
  * 
- * <p/>
+ * <p>
  * If a terminal function is provided via the setter method defined for OO-MDPs, then the search algorithm will not expand any nodes
  * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
  * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but

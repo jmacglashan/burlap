@@ -16,7 +16,7 @@ import java.util.Map;
  * An implementation of a hash map backed heap/priority queue. This data structure allows efficient O(1) "contains" checks and efficient
  * O(lg(n)) modifications of entries already in the heap that with a typical Java PriorityQueue would require linear updates. This data structure is especially
  * useful for planning algorithms like A* that keep a priority queue of states, but may need to update their priority if a better path to them is found.
- * <p/>
+ * <p>
  * By default, the heap is a max heap (which results in elements with the highest priority being dequeued first), but it may also be set to be a min heap.
  * 
  * @author James MacGlashan

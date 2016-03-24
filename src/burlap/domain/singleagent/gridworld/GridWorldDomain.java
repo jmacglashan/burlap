@@ -29,14 +29,14 @@ import java.util.Random;
  * of arbitrarily sized grid worlds with user defined layouts. The grid world supports
  * classic north, south, east, west movement actions that may be either deterministic
  * or stochastic with user defined stochastic failures.
- * <br/>
+ * <p>
  * The domain consists of only
  * two object classes: an agent class and a location class, each of which is defined by
  * and x and y position. Locations also have an attribute defining which type of location it is.
  * The number of
  * possible types can be set using the {@link #setNumberOfLocationTypes(int)} method.
  * Setting location types may be useful if terminating "pits" and goal locations exist in the world
- * <br/> 
+ * <p> 
  * Walls are not considered objects. Instead walls are
  * considered part of the transition dynamics. There are 2 types of walls supported. Walls that are more like obstacles
  * and occupy an entire cell of the map and 1D walls. 1D walls are specified as either a horizontal wall on the north side
@@ -44,11 +44,11 @@ import java.util.Random;
  * for each cell is specified by a 2D int matrix provided to the constructor. Cells in the matrix with a 0 are clear of any walls
  * and obstacle; 1s indicate a full cell obstacle; 2s a 1D north wall; 3s a 1D east wall; and 4s indicate that the cell has both
  * a 1D north wall and 1D east wall.
- * <br/>
+ * <p>
  * Note that if you change the stochastic transition dynamics or the map of the domain generator *after* generating
  * a domain with {@link #generateDomain()}, the previously generated domain will use the settings prior to its
  * generation. To use the new settings, you will need to generate a new domain object.
- * <br/>
+ * <p>
  * There are five propositional functions
  * supported: atLocation(agent, location), wallToNorth(agent), wallToSouth(agent),
  * wallToEast(agent), and wallToWest(agent). 

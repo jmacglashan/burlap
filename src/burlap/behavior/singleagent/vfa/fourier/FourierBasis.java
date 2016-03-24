@@ -23,11 +23,11 @@ import java.util.Map;
  * and normally all possible coefficient vectors (and their corresponding basis functions) for
  * order n are produced. However, this class can be told to limit the permitted coefficient vectors to those that have no more than k non-zero entries in the coefficient vector. When k = 1, all features are treated as indepdent resulting
  * in n*d basis functions.
- * <p/>
+ * <p>
  * When using a learning algorithm like {@link GradientDescentSarsaLam} with Fourier basis functions, it is typically a good idea to use the {@link FourierBasisLearningRateWrapper}, which scales the normal learning rate by the inverse of the norm
  * of a basis function's coefficient vector. 
  * 
- * <p/>
+ * <p>
  * 1. G.D. Konidaris, S. Osentoski and P.S. Thomas. Value Function Approximation in Reinforcement Learning using the Fourier Basis. In Proceedings of the Twenty-Fifth Conference on Artificial Intelligence, pages 380-385, August 2011.
  * 
  * @author James MacGlashan

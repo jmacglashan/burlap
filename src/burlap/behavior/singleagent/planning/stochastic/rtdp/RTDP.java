@@ -26,7 +26,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * all Bellman updates are stalled until rollout
  * is complete, after which the Bellman update is performed on each state that was visited
  * in reverse.
- * <p/>
+ * <p>
  * To ensure optimality, an optimistic value function initialization should be used. However, RTDP excels when a good value function initialization
  * (e.g., an admissible heuristic) can be provided.
  * 

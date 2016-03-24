@@ -1,37 +1,37 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Dynamic Weighted A* [1] uses a dynamic heuristic weight that is based on depth of the current search tree and based on an expected depth of the search. Specifically,
  * f(n) = g(n) + (1 + \epsilon * w(n))*h(n),
  * 
- * where epsilon is a parameter > 1 indicating greediness (the larger the more greedy) and
+ * where epsilon is a parameter &gt; 1 indicating greediness (the larger the more greedy) and
  * 
- * w(n) = {  1 - d(n)/N      if d(n) <= N
- *        {  0               if d(n) > N,
+ * w(n) = {  1 - d(n)/N      if d(n) &lt;= N
+ *        {  0               if d(n) &gt; N,
  *        
  * where d(n) is the depth of the search and N is the expected depth of the search. This algorithm has the effect of becoming less
  * greedy as the search continues, which allows it to find a decent solution quickly but avoid returning extremely sub-optimal solutions.
  * 
- * <p/>
+ * <p>
  * If a terminal function is provided via the setter method defined for OO-MDPs, then the BestFirst search algorithm will not expand any nodes
  * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
  * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but
@@ -47,7 +47,7 @@ import burlap.oomdp.singleagent.RewardFunction;
 public class DynamicWeightedAStar extends AStar {
 
 	/**
-	 * parameter > 1 indicating the maximum amount of greediness; the larger the more greedy.
+	 * parameter &gt; 1 indicating the maximum amount of greediness; the larger the more greedy.
 	 */
 	protected double										epsilon;
 	
@@ -74,7 +74,7 @@ public class DynamicWeightedAStar extends AStar {
 	 * @param gc should evaluate to true for goal states; false otherwise
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
-	 * @param epsilon parameter > 1 indicating greediness; the larger the value the more greedy.
+	 * @param epsilon parameter &gt; 1 indicating greediness; the larger the value the more greedy.
 	 * @param expectedDepth the expected depth of the plan
 	 */
 	public DynamicWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double epsilon, int expectedDepth) {
@@ -115,7 +115,7 @@ public class DynamicWeightedAStar extends AStar {
 	 * the {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy} will throw
 	 * a runtime exception. If you want a policy that will dynamically replan for unknown states,
 	 * you should create your own {@link burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy}.
-	 * <br/>
+	 * <p>
 	 * This method overrides AStar's implementation so that it avoids reopening closed states that are not actually better due to the dynamic
 	 * h weight, the reopen check needs to be based on the g score, note the f score
 	 * @param initialState the initial state of the planning problem

@@ -24,18 +24,18 @@ import java.util.Set;
  * Instead, the player must manipulate a set of blocks scattered across the world using a pick up action (which raises
  * the block the player is facing above their head to be carried), and a put down action that places a held block directly
  * in front of the agent.
- * <br/><br/>
+ * <p>
  * Block Dude has a very large state action space that makes planning problems in it difficult. States are encoded
  * by the player's position, facing direction, whether they are holding a block, the place of every block in the world
  * and an int array specifying the map of the "bricks" that define the landscape.
- * <br/>
- * <br/>
+ * <p>
+ * <p>
  * States representing the first three levels of Block Dude can be generated from the
  * {@link burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor} and states can be visualized with the
  * {@link burlap.domain.singleagent.blockdude.BlockDudeVisualizer}. You can run this class' main method
  * to launch an interactive visualizer for the first level with keys: w, a, d, s, x for
  * the actions up, west, east, pickup, putdown, respectively.
- * <br/><br/>
+ * <p>
  * By default this domain's actions will use a {@link burlap.oomdp.core.states.MutableState#semiDeepCopy(java.util.Set)} instead of a
  * {@link burlap.oomdp.core.states.State#copy()}. The semi-deep copy only copies {@link burlap.oomdp.core.objects.ObjectInstance}
  * in the previous state that will have its values modified by the action execution:
@@ -404,7 +404,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * Modifies state s to be the result of a horizontal movement. This method will also move any held blocks
 	 * by the agent and cause the agent (and its held block) to fall if it walks off a cliff. The agent will not
-	 * be able to move to an x position < 0 or >= the maximum x dimensionality
+	 * be able to move to an x position &lt; 0 or &gt;= the maximum x dimensionality
 	 * @param s the state to modify
 	 * @param dx the change in x direction; should only be +1 (east) or -1 (west).
 	 * @param maxx the maximum x dimensionality of the world
@@ -643,14 +643,14 @@ public class BlockDude implements DomainGenerator{
 
 
 	/**
-	 * Returns the maximum height of the world at the provided x coordinate that is <= the value maxY. The height
-	 * is based on either the highest brick at x and y<=maxY, or the highest block at x and y<=maxY.
+	 * Returns the maximum height of the world at the provided x coordinate that is &lt;= the value maxY. The height
+	 * is based on either the highest brick at x and y &lt;= maxY, or the highest block at x and y &lt;= maxY.
 	 * @param s the state to search
 	 * @param map the brick map
 	 * @param xWidth the maximum x dimensionality of the world
 	 * @param x the x position to search
 	 * @param maxY the y position under which the highest point is searched
-	 * @return the maximum height or zero if there are no bricks or blocks at x, y<=maxY.
+	 * @return the maximum height or zero if there are no bricks or blocks at x, y &lt;= maxY.
 	 */
 	public static int greatestHeightBelow(State s, int [] map, int xWidth, int x, int maxY){
 

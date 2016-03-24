@@ -26,16 +26,16 @@ import java.util.Map;
 /**
  * This class can be used to take a BURLAP domain and task with discrete actions and turn it into an RLGlue environment with which other RLGlue agents
  * can interact. Because of the nature of RLGlue there are a few limitations: 
- * <br/>
- * (1) the same actions available in one state must be available everywhere<br/>
- * (2) the environment cannot represent object identifier independence and will fill in RLGlue feature vectors by object class and in the order the objects appear for each class;<br/>
+ * <p>
+ * (1) the same actions available in one state must be available everywhere<p>
+ * (2) the environment cannot represent object identifier independence and will fill in RLGlue feature vectors by object class and in the order the objects appear for each class;<p>
  * (3) while single target relational domains can be used, multi-target relational domains cannot.
- * <p/>
+ * <p>
  * Because a fixed number of objects for each class is assumed, action parameterization is supported by multiplying out all the possible parameterizations. In order
  * for action parameterization and relational domains to work consistently for RLGlue, the state generator should always add objects of each class to the state object
  * in the same order. For instance, in a grid world, the state generator should always add the agent object instance to the state first and then all location objects (or always
  * do it in the reverse order). Object instance names, however, can vary between generated states.
- * <br/><br/>
+ * <p>
  * Note that RLGlue does not support observations of terminal states; it only gives the final reward upon entering a terminal state.
  * Therefore, this class will not terminate in a terminal state indicated by the provided {@link burlap.oomdp.core.TerminalFunction}.
  * Instead, it will allow one more transition from the terminal state, which will transition back to itself with reward zero, which

@@ -456,7 +456,7 @@ public class BlocksWorld implements DomainGenerator {
 	/**
 	 * Main method for exploring the domain. The initial state will have 3 red blocks starting on the table. By default this method will launch the visual explorer.
 	 * Pass a "t" argument to use the terminal explorer.
-	 * @param args
+	 * @param args process arguments
 	 */
 	public static void main(String [] args){
 		

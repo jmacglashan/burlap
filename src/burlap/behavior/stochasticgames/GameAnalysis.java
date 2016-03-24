@@ -36,12 +36,12 @@ import org.yaml.snakeyaml.representer.Representer;
 /**
  * This class provides a means to record all the interactions in a stochastic game; specifically, the sequence of states, joint actions taken, and joint reward received.
  * It also has methods to converting everything to a string/file and parsing a string/file back into this object so that results can be recorded and saved to disk.
- * <p/>
+ * <p>
  * This class should be used either by constructing with an initial state ({@link #GameAnalysis(State)}) or by constructing with the default constructor and then
  * using the {@link #initializeGameWithInitialState(State)} method before recording any further transitions. Transitions should then be recorded with the
  * {@link #recordTransitionTo(JointAction, State, Map)} method which takes as input the next state to which the agent transtions, the joint action taken
  * in the previously recorded state that causes the transition, and the joint reward received for the transition.
- * <p/>
+ * <p>
  * When querying about the state, joint action, or joint rewards, use the methods {@link #getState(int)}, {@link #getJointAction(int)}, and {@link #getJointReward(int)}
  * respectively.
  * These methods take as input the time step of the element you want. Note that t = 0 refers to the initial state step so calling getState(0) and getJointAction(0)
@@ -506,7 +506,7 @@ public class GameAnalysis {
 	
 	/**
 	 * returns a string representation of a joint reward in the form:
-	 * <br/>
+	 * <p>
 	 * agent1:r1;agent2:r2
 	 * @param jointReward the joint reward
 	 * @return a string representation of the joint reward

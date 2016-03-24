@@ -17,22 +17,22 @@ import com.joptimizer.optimizers.LPPrimalDualMethod;
  * Correlated equilibrium provide joint strategy for the agents to follow such that there would be no incentive
  * for an agent to change their behavior if a referee selected a joint action accroding to the joint strategy and informed
  * each agent of the action they should take, assuming all other agents would follow their selected action.
- * <p/>
+ * <p>
  * 4 different correlated equilibrium problems can be solved:
  * utilitarian, egalitarian, libertarian, and republican, as defined by Greenwald and Hall [1]. The utilitarian
  * objective maximizes the sum payoff of the found joint strategy. Egalitarian maximizes the minimum player payoff.
  * Republican maximizes the maximum player payoff. Liberatarian maximizes the payoff for a specific player.
  * These different objectives can be specified with the {@link CorrelatedEquilibriumObjective} enumeration.
  * 
- * <p/>
+ * <p>
  * The primary method
  * to use to get the equilibrium is the {@link #getCorrelatedEQJointStrategy(CorrelatedEquilibriumObjective, double[][], double[][])} method.
  * 
- * <p/>
+ * <p>
  * This class depends on the SCPSolver library.
  * 
  * 
- * <p/>
+ * <p>
  * 1. Greenwald, Amy, Keith Hall, and Roberto Serrano. "Correlated Q-learning." ICML. Vol. 3. 2003.
  * @author James MacGlashan
  *

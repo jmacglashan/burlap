@@ -9,7 +9,7 @@ import java.awt.*;
 /**
  * This class extends the {@link MultiLayerRenderer} class to provide a base instance of a {@link StateRenderLayer} in its render list
  * and provides methods to directly access and interface with the {@link StateRenderLayer} instance. 
- * <p/>
+ * <p>
  * The {@link StateRenderLayer} instance provides 2D visualization of states by being provided a set of classes that can paint
  * ObjectInstances to the canvas as well as classes that can paint general domain information. Painters
  * for object classes as well as specific object instances can be provided. If there is a painter

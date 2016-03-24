@@ -13,7 +13,7 @@ import burlap.oomdp.core.states.State;
  * learning rate value and then scale it by the inverse of the L2 norm of the coefficient vector that is associated with the Fourier basis function for that feature id.
  * That is, if alpha(j) is the learning rate returned by the source {@link LearningRate} implementation for basis function (feature id) j, then
  * this implementation will return alpha(j) / ||c_j||, where c_j is the coefficient vector associated with Fourier baiss function j.
- * <p/>
+ * <p>
  * Since this wrapper operates on state-action features, it will throw a runtime exception if it is queried for OO-MDP {@link State}-wise learning rate peek and poll
  * methods ({@link #peekAtLearningRate(State, AbstractGroundedAction)} and {@link #pollLearningRate(int, State, AbstractGroundedAction)}, repsectively). Instead, clients
  * should only call the {@link #peekAtLearningRate(int)} and {@link #pollLearningRate(int, int)} methods.

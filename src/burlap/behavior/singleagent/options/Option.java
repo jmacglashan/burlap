@@ -36,7 +36,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * handle options specially; for instance Q-learning needs to treat the return from options
  * specially. However, the current planning and learning algorithms all handle options in the
  * appropriately special ways so that Options may be used confidently with existing algorithms.
- * <p/>
+ * <p>
  * In order for correct value function returns from option executions to be determined,
  * options need to keep track of the cumulative reward and number of steps they've taken
  * since they began execution. This abstract class has data structures and code in place to automatically
@@ -45,7 +45,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * through the {@link burlap.behavior.singleagent.MDPSolver#addNonDomainReferencedAction(Action)}
  * method, it will automatically tell the Option which reward function and discount factor it should be using
  * to keep track of the cumulative reward.
- * <p/>
+ * <p>
  * Note that value function planning algorithms that use the Bellman update (such as value iteration)
  * require the option to return not only the possible terminal states, but the expected number of
  * steps to those terminal states and the expected cumulative reward. By default, this
@@ -61,12 +61,12 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * note that the {@link #getTransitions(State, burlap.oomdp.singleagent.GroundedAction)} returns {@link burlap.oomdp.core.TransitionProbability}
  * elements, where each {@link burlap.oomdp.core.TransitionProbability} holds the probability of transitioning to a state discounted
  * by the the expected length of time. That is, the probability value in each {@link burlap.oomdp.core.TransitionProbability} is
- * <br/> 
- * \sum_k \gamma^k * p(s, s', k) <br/>
+ * <p> 
+ * \sum_k \gamma^k * p(s, s', k) <p>
  * where p(s, s', k) is the
  * probability that the option will terminate in s' after being initiated in state s and taking k steps, gamma is the discount
  * factor and s' is the state associated with the probability value in the {@link burlap.oomdp.core.TransitionProbability} object.
- * <p/>
+ * <p>
  * 1. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction 
  * in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
  * @author James MacGlashan

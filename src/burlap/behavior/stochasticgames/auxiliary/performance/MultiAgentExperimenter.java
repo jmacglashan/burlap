@@ -16,14 +16,14 @@ import burlap.oomdp.stochasticgames.WorldObserver;
  * multiple trials is plotted using the {@link MultiAgentPerformancePlotter} {@link WorldObserver} object and the results can also be printed
  * out to CSV files using the {@link #writeEpisodeDataToCSV(String)}, {@link #writeStepDataToCSV(String)}, or {@link #writeStepAndEpisodeDataToCSV(String)}
  * methods. If only the CSV data is desired without plotting, the plotting may be disabled using the {@link #toggleVisualPlots(boolean)} method.
- * <p/>
+ * <p>
  * To set up the metrics and plots that will be displayed, use the {@link #setUpPlottingConfiguration(int, int, int, int, TrialMode, PerformanceMetric...)}
  * method. If this method is not called, but plots are not disabled, then my default the cumulative reward will be displayed.
- * <p/>
+ * <p>
  * The length of a trial can have two interpretations, either the number of episodes, or the total number of steps taken across multiple episdes.
  * By default, the trial length will be interpreted as the number of episodes in a trial, but this interpreation can be changed with the
  * {@link #toggleTrialLengthInterpretation(boolean)}
- * <p/>
+ * <p>
  * To start an experiment once everything is configured, use the {@link #startExperiment()} method.
  * 
  * 
@@ -253,9 +253,9 @@ public class MultiAgentExperimenter {
 	
 	/**
 	 * Writes the step-wise and episode-wise data to CSV files.
-	 * The episode-wise data will be saved to the file <pathAndBaseNameToUse>Episodes.csv. The step-wise data will.
+	 * The episode-wise data will be saved to the file &lt;pathAndBaseNameToUse&gt;Episodes.csv. The step-wise data will.
 	 * If the experimenter as not been run, then nothing will be saved and a warrning message will be printed to indicate as such.
-	 * be saved to the file <pathAndBaseNameToUse>Steps.csv
+	 * be saved to the file &lt;pathAndBaseNameToUse&gt;Steps.csv
 	 * @param pathAndBaseNameToUse the base path and file name for the epsidoe-wise and step-wise csv files.
 	 */
 	public void writeStepAndEpisodeDataToCSV(String pathAndBaseNameToUse){

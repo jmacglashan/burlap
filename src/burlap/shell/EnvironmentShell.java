@@ -14,7 +14,7 @@ import java.util.Collection;
  * This is a subclass of {@link burlap.shell.BurlapShell} for a shell with shell commands that manipulate or read
  * an {@link burlap.oomdp.singleagent.environment.Environment}. The {@link burlap.oomdp.singleagent.environment.Environment}
  * can be accessed with the {@link #getEnv()} method.
- * <br/><br/>
+ * <p>
  * Use the cmds shell command to see all commands
  * and use the -h option on any given command to see its help message. Generally, the Java implementations of the
  * default commands provided for this

@@ -42,7 +42,7 @@ import java.util.Map;
  * causes the state to reset to the initial state provided to the explorer or the {@link burlap.oomdp.stochasticgames.World}'s
  * {@link burlap.oomdp.stochasticgames.SGStateGenerator}. This explorer also associates itself with a {@link burlap.shell.SGWorldShell} so that additional commands can be given.
  * Keys can also be mapped to execute specific shell commands. You can access the shell with the
- * <br/><br/>
+ * <p>
  * @author James MacGlashan
  *
  */

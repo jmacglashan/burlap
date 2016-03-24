@@ -1,26 +1,26 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.BestFirst;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An implementation of A*. The typical "costs" of A* should be represented by negative reward returned by the reward function.
- * Similarly, the heuristic function should return non-positive values and an admissible heuristic would be h(n) >= C(n) for all n.
+ * Similarly, the heuristic function should return non-positive values and an admissible heuristic would be h(n) &gt;= C(n) for all n.
  * A* computes the f-score as g(n) + h(n) where g(n) is the cost so far to node n and h(n) is the admissible heuristic to estimate
  * the remaining cost. Again, costs should be represented as negative reward.
- * <p/>
+ * <p>
  * If a terminal function is provided via the setter method defined for OO-MDPs, then the search algorithm will not expand any nodes
  * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
  * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but

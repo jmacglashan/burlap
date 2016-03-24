@@ -19,10 +19,10 @@ import java.util.List;
  * but an initial {@link burlap.oomdp.core.states.State} is provided in a constructor, then the {@link burlap.oomdp.auxiliary.StateGenerator} is
  * set to a {@link burlap.oomdp.auxiliary.common.ConstantStateGenerator} so that upon {@link #resetEnvironment()} method calls,
  * the initial state is the same as the original input state.
- * <br/><br/>
+ * <p>
  * All returned environment observations are fully observable returning a copy of the true internal {@link burlap.oomdp.core.states.State} of
  * the environment. Copies of the state are returned to prevent tampering of the internal environment state.
- * <br/><br/>
+ * <p>
  * By default, this {@link burlap.oomdp.singleagent.environment.Environment} will not allow states to change when the current
  * environment state is a terminal state (as specified by the input {@link burlap.oomdp.core.TerminalFunction}); instead, the
  * same current state will be returned with a reward of zero if someone attempts to interact with the environment through {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)}.

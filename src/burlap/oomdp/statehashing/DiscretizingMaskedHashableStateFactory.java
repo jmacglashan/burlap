@@ -14,7 +14,7 @@ import java.util.Map;
  * class documentation and for more information on how {@link burlap.oomdp.core.Attribute}/{@link burlap.oomdp.core.ObjectClass}
  * masking is performed see the {@link MaskedHashableStateFactory} class
  * documentation.
- * <br/><br/>
+ * <p>
  * This class extends {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
  * to be object identifier/name independent or dependent and can be set to use {@link burlap.oomdp.statehashing.HashableState}
  * instances that hash their hash code or not. See the {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}

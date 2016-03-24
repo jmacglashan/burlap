@@ -19,7 +19,7 @@ import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 /**
  * A correlated Q backup operator [1] for using in stochastic game multi-agent Q-learning or dynamic programming.
  * 
- * <p/>
+ * <p>
  * 1. Greenwald, Amy, Keith Hall, and Roberto Serrano. "Correlated Q-learning." ICML. Vol. 3. 2003.
  * @author James MacGlashan
  *

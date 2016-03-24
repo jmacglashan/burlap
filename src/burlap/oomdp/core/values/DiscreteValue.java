@@ -1,14 +1,11 @@
 package burlap.oomdp.core.values;
 
-import java.util.Collection;
-import java.util.Set;
-
 import burlap.oomdp.core.Attribute;
 
 
 /**
  * A discrete value subclass in which discrete values are stored as int values. The int values correspond to the attributes
- * categorical list of discrete values, so the int values should always be >= 0 unless it is unset, which is specified by a value of -1.
+ * categorical list of discrete values, so the int values should always be &gt;= 0 unless it is unset, which is specified by a value of -1.
  * @author James MacGlashan
  *
  */

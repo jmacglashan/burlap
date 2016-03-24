@@ -35,7 +35,7 @@ import org.yaml.snakeyaml.representer.Representer;
  * or by calling the default constructor and then calling the {@link #initializeEpisideWithInitialState(State)} method to set the initial state of the episode, before recording
  * any transitions. It is then advised that transitions are recorded with the {@link #recordTransitionTo(GroundedAction, State, double)} method, which takes as input
  * the next state to which the agent transitioned, the action applied in the last recorded state, and the reward received fro the transition.
- * <p/>
+ * <p>
  * When querying about the state, action, and reward sequences, use the {@link #getState(int)}, {@link #getAction(int)}, and {@link #getReward(int)} methods.
  * These methods take as input the time step of the element you want. Note that t = 0 refers to the initial state step so calling getState(0) and getAction(0)
  * will return the initial state and the action taken in the initial state, respectively. However, rewards are always received in the next time step
