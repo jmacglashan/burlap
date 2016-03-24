@@ -13,7 +13,7 @@ import java.util.Set;
  * interface because grounded actions that have parameters references to OO-MDO {@link burlap.oomdp.core.objects.ObjectInstance}s
  * may require special care by a planning or learning algorithm since the names of object references can change between states
  * that are otherwise equal (that is, states that are object identifier independent).
- * <br/><br/>
+ * <p>
  * This interface also includes the inner class {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction.Helper}
  * which provides the static method {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction.Helper#translateParameters(AbstractGroundedAction, burlap.oomdp.core.states.State, burlap.oomdp.core.states.State)}
  * that can be used to reparameterize a {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}'s object references

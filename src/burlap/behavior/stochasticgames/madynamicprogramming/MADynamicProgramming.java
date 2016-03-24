@@ -23,11 +23,11 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * An abstract value function based planning algorithm base for sequential stochastic games that require the computation of Q-values for each agent for each joint action. Value function
  * updates are performed using a Bellman-like backup operator; however, planning for different solution concepts is achieved by providing different backup operators via the
  * {@link SGBackupOperator} object.
- * <p/>
+ * <p>
  * Note that the agent definitions can only be changed up until planning begins. Once planning has begun, the agent definitions must remain fixed
  * for consistency of planning results. If the the client tries to change the agent definitions after planning has already begun, then a runtime exception will
  * be thrown.
- * <p/>
+ * <p>
  * Since value function planning algorithms compute multi-agent Q-values, this object implements the {@link MultiAgentQSourceProvider} interface. 
  * 
  * @author James MacGlashan

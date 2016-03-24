@@ -19,12 +19,12 @@ import java.util.List;
  * {@link burlap.oomdp.singleagent.Action#getAllApplicableGroundedActions(burlap.oomdp.core.states.State)} method. See
  * the {@link burlap.oomdp.singleagent.Action} class documentation for more information on implementing parameterized
  * {@link burlap.oomdp.singleagent.Action} definitions.
- * <br/><br/>
+ * <p>
  * Implementing this class requires implementing three methods from {@link burlap.oomdp.core.AbstractGroundedAction}
- * that are not implemented by {@link burlap.oomdp.singleagent.GroundedAction}:<br/>
- * {@link #copy()}<br/>
- * {@link #initParamsWithStringRep(String[])} and<br/>
- * {@link #getParametersAsString()}.<br/>
+ * that are not implemented by {@link burlap.oomdp.singleagent.GroundedAction}:<p>
+ * {@link #copy()}<p>
+ * {@link #initParamsWithStringRep(String[])} and<p>
+ * {@link #getParametersAsString()}.<p>
  * If the {@link burlap.oomdp.singleagent.Action} with which the {@link burlap.oomdp.singleagent.GroundedAction} is associated
  * is not parameterized, then you can return the concrete class {@link burlap.oomdp.singleagent.common.SimpleGroundedAction}.
  * Otherwise, you will need to make your own subclass of {@link burlap.oomdp.singleagent.GroundedAction} and implement those methods.
@@ -33,14 +33,14 @@ import java.util.List;
  * the parameter information. Additionally, for full support with all BURLAP tools, it should be possible to initialize
  * the parameters with a String array using the {@link #initParamsWithStringRep(String[])} and get a String array representation
  * of them with the {@link #getParametersAsString()}.
- * <br/><br/>
+ * <p>
  * In addition to specifying parameter assignment information for a {@link burlap.oomdp.singleagent.Action} definition,
  * this class also provides a number of useful shortcut methods for evaluating the {@link burlap.oomdp.singleagent.GroundedAction}.
- * Specifically, see the<br/>
- * {@link #executeIn(burlap.oomdp.core.states.State)}<br/>
- * {@link #executeIn(burlap.oomdp.singleagent.environment.Environment)}<br/>
- * {@link #getTransitions(burlap.oomdp.core.states.State)} and<br/>
- * {@link #applicableInState(burlap.oomdp.core.states.State)} <br/>
+ * Specifically, see the<p>
+ * {@link #executeIn(burlap.oomdp.core.states.State)}<p>
+ * {@link #executeIn(burlap.oomdp.singleagent.environment.Environment)}<p>
+ * {@link #getTransitions(burlap.oomdp.core.states.State)} and<p>
+ * {@link #applicableInState(burlap.oomdp.core.states.State)} <p>
  * methods, which call the associated {@link burlap.oomdp.singleagent.Action} methods providing this instance
  * as the set of parameters to use. Note that the {@link #getTransitions(burlap.oomdp.core.states.State)} method
  * will throw a runtime exception if the associated {@link burlap.oomdp.singleagent.Action} definition does

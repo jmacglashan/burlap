@@ -11,7 +11,7 @@ import java.util.List;
  * This policy takes as input a policy for a belief MDP generated with {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator}
  * and when queried for an action, first queries the belief MDP policy and then translates its actions to the corresponding
  * POMDP actions that can be executed in a POMDP domain.
- * <br/><br/>
+ * <p>
  * Note that this policy is should *not* be used with policies returned by wrapper planning algorithms like {@link burlap.behavior.singleagent.pomdp.wrappedmdpalgs.BeliefSparseSampling},
  * because these algorithms already manage the conversion between belief MDP and POMDP actions. You should only use this policy if you are manually solving a belief MDP
  * with a standard MDP planner.

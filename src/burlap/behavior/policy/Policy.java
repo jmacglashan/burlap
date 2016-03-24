@@ -25,27 +25,27 @@ import java.util.Random;
  * {@link #getActionDistributionForState(burlap.oomdp.core.states.State)},
  * {@link #isStochastic()}, and
  * {@link #isDefinedFor(burlap.oomdp.core.states.State)}.
- * <br/><br/>
+ * <p>
  * The {@link #getAction(burlap.oomdp.core.states.State)} should return the action (specified by an
  * {@link burlap.oomdp.core.AbstractGroundedAction}; e.g., a {@link burlap.oomdp.singleagent.GroundedAction} for
  * single agent domains) this policy defines for the
  * input {@link burlap.oomdp.core.states.State}. If this {@link Policy} is a stochastic policy,
  * then the {@link #getAction(burlap.oomdp.core.states.State)} method should sample an action from its probability distribution
  * and return it.
- * <br/><br/>
+ * <p>
  * The {@link #getActionDistributionForState(burlap.oomdp.core.states.State)} should return this {@link Policy}'s
  * action selection probability distribution for the input {@link burlap.oomdp.core.states.State}. The probability distribution is
  * specified by returning a {@link java.util.List} of {@link Policy.ActionProb} instances.
  * An {@link Policy.ActionProb} is a pair consisting of an {@link burlap.oomdp.core.AbstractGroundedAction}
  * specifying the action and a double specifying the probability that this {@link Policy} would
  * select that action.
- * <br/><br/>
+ * <p>
  * The {@link #isStochastic()} method should return true if this {@link Policy} is
  * stochastic and false if it is deterministic.
- * <br/><br/>
+ * <p>
  * The {@link #isDefinedFor(burlap.oomdp.core.states.State)} method should return true if this {@link Policy}
  * is defined for the input {@link burlap.oomdp.core.states.State} and false if it is not.
- * <br/><br/>
+ * <p>
  * This abstract class also has some pre-implemented methods that can be used to help define these required methods. For example,
  * if the {@link #getActionDistributionForState(burlap.oomdp.core.states.State)} is implemented and stochastic, then the
  * {@link #getAction(burlap.oomdp.core.states.State)} can be trivially implemented by having it return the result of the
@@ -56,14 +56,14 @@ import java.util.Random;
  * {@link #getActionDistributionForState(burlap.oomdp.core.states.State)} method can be trivially implemented by having it
  * return the result of {@link #getDeterministicPolicy(burlap.oomdp.core.states.State)}, which will call {@link #getAction(burlap.oomdp.core.states.State)}
  * and wrap the result in an {@link Policy.ActionProb} object with assigned probability of 1.0.
- * <br/><br/><br/><br/>
- * <b>Superclass method</b><br/>
+ * <p><p>
+ * <b>Superclass method</b><p>
  * This class also has many superclass methods for interacting with policy. These include
  * {@link #getProbOfAction(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)},
  * {@link #evaluateBehavior(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction)}
  * (and other variants of the method signature), and {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment)} (and
  * other variants of the method signature).
- * <br/><br/>
+ * <p>
  * The {@link #getProbOfAction(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} method
  * takes as input a {@link burlap.oomdp.core.states.State} and {@link burlap.oomdp.core.AbstractGroundedAction} and returns
  * the probability of this {@link Policy} selecting that action. It uses the result of the
@@ -71,7 +71,7 @@ import java.util.Random;
  * the matching {@link burlap.oomdp.core.AbstractGroundedAction} in the returned list, and then returns its assigned probability.
  * It may be possible to return this value in a more efficient way than enumerating the full probability distribution,
  * in which case you may want to consider overriding the method.
- * <br/><br/>
+ * <p>
  * The {@link #evaluateBehavior(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction)},
  * {@link #evaluateBehavior(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.RewardFunction, int)}, and
  * {@link #evaluateBehavior(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
@@ -85,7 +85,7 @@ import java.util.Random;
  * policy defines the policy for an agent in a stochastic game, returning {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} instances
  * for the action, then the policy cannot be rolled out since the outcome state would depend on the action selection of
  * other agents.
- * <br/><br/>
+ * <p>
  * The {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment)} and
  * {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment, int)}
  * methods will execute this policy in some input {@link burlap.oomdp.singleagent.environment.Environment} until either
@@ -94,7 +94,7 @@ import java.util.Random;
  * with a planning algorithm using some model of the world and then needs to be executed in an environment which may
  * have slightly different transitions; for example, planning a policy for a robot using a model of the world and then
  * executing it on the actual robot by following the policy in an {@link burlap.oomdp.singleagent.environment.Environment}.
- * <br/><br/>
+ * <p>
  * All of the evaluateBehavior methods also know how to work with {@link burlap.behavior.singleagent.options.Option}s.
  * In particular, they also are able to record
  * the option execution in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} object in verbose ways
@@ -327,7 +327,7 @@ public abstract class Policy {
 	
 	/**
 	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
-	 * when the number of steps taken is >= numSteps.
+	 * when the number of steps taken is &gt;= numSteps.
 	 * @param s the state from which to roll out the policy
 	 * @param rf the reward function used to track rewards accumulated during the episode
 	 * @param numSteps the number of steps to take before terminating the policy rollout
@@ -560,13 +560,13 @@ public abstract class Policy {
 
 	/**
 	 * A class for annotating an action selection, specified with a {@link burlap.oomdp.singleagent.GroundedAction}, with a string.
-	 * The resulting {@link #toString()} method will produce a string of the following form:<br/>
+	 * The resulting {@link #toString()} method will produce a string of the following form:<p>
 	 * "*annotation--action.toString()" where annotation is the user input annotation and action.toString()
 	 * is the result from the input {@link burlap.oomdp.singleagent.GroundedAction} that is being annotated. The
 	 * leading * character indicates to {@link burlap.oomdp.singleagent.GroundedAction} serializers (such as
 	 * the {@link burlap.behavior.singleagent.EpisodeAnalysis} serialization) that this {@link burlap.oomdp.singleagent.GroundedAction}
 	 * is an {@link burlap.behavior.policy.Policy.GroundedAnnotatedAction}.
-	 * <br/><br/>
+	 * <p>
 	 * All other {@link burlap.oomdp.singleagent.GroundedAction} methods are delegated to the inputted
 	 * {@link burlap.oomdp.singleagent.GroundedAction}.
 	 */

@@ -17,10 +17,10 @@ import java.util.Set;
  * delegate {@link #s} is a {@link burlap.oomdp.statehashing.HashableState} itself, and you wish
  * to get the underlying {@link burlap.oomdp.core.states.State}, then you should use the
  * {@link #getSourceState()} method, which will recursively descend and return the base source {@link burlap.oomdp.core.states.State}.
- * <br/><br/>
+ * <p>
  * Implementing this class requires implementing
  * the {@link #hashCode()} and {@link #equals(Object)} method.
- * <br/><br/>
+ * <p>
  * Note that this class implements the {@link burlap.oomdp.core.states.State} interface; however,
  * because the purpose of this class is to used with hashed data structures, it is not recommended that
  * you modify the state.

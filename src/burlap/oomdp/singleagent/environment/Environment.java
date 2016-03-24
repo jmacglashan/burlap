@@ -15,7 +15,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * than the model (e.g., robotics operating in the real world). {@link burlap.oomdp.singleagent.environment.Environment} implementations
  * also make it easy to train a {@link burlap.behavior.singleagent.learning.LearningAgent} in one {@link burlap.oomdp.singleagent.environment.Environment}
  * and then use them in a new {@link burlap.oomdp.singleagent.environment.Environment} after learning.
- * <br/><br/>
+ * <p>
  * If you wish to use a simulated BURLAP {@link burlap.oomdp.core.Domain} to manage the transitions and reward function, you should
  * consider using the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment} implementation.
  * 

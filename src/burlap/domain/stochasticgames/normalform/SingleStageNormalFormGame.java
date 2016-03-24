@@ -30,18 +30,18 @@ import java.util.*;
  * {@link burlap.oomdp.stochasticgames.SGAgentType} can be specified to have
  * all of the possible actions, because they will only be able to execute the relevant ones. The method {@link #getAgentTypeForAllPlayers(SGDomain)} will return
  * such an {@link burlap.oomdp.stochasticgames.SGAgentType} class that can be used for all agents.
- * <p/>
+ * <p>
  * In addition to this generator being able to return the domain object, it may also be used to return the corresponding joint reward function. The method
  * {@link #getRepatedGameActionModel()} will return a joint action mode that always returns to the same state, which can be used for repeated game playing.
- * <p/>
+ * <p>
  * This class also provides static methods for returning generators for a number of classic bimatrix games: prisoner's dilemma, chicken, hawk dove,
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
- * <p/>
+ * <p>
  * This class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
  * in the constructed game. For this use either the {@link #createRepeatedGameWorld(burlap.oomdp.stochasticgames.SGAgent...)} or {@link #createRepeatedGameWorld(SGDomain, burlap.oomdp.stochasticgames.SGAgent...)}
  * method. The former method will create an new domain instance using the {@link #generateDomain()} method; the latter will
  * use an already generated version of the domain that you provide to it.
- * <p/>
+ * <p>
  * Finally, this class's payout function definition (and other properties) can be modified without affecting previously
  * generated domains or payout functions, allowing it to be reused multiple times.
  * @author James MacGlashan
@@ -496,8 +496,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an instance of Prisoner's Dilemma, which is defined by:<br/>
-	 * (3,3); (0,5) <br/>
+	 * Returns an instance of Prisoner's Dilemma, which is defined by:<p>
+	 * (3,3); (0,5) <p>
 	 * (5,0); (1,1)
 	 * @return and instance of Prisoner's Dilemma.
 	 */
@@ -514,8 +514,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an instance of Chicken, which is defined by:<br/>
-	 * (0,0); (-1,1) <br/>
+	 * Returns an instance of Chicken, which is defined by:<p>
+	 * (0,0); (-1,1) <p>
 	 * (1,-1); (-10,-10)
 	 * @return and instance of Chicken.
 	 */
@@ -532,8 +532,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an instance of Hawk Dove, which is defined by:<br/>
-	 * (-1,-1); (2,0) <br/>
+	 * Returns an instance of Hawk Dove, which is defined by:<p>
+	 * (-1,-1); (2,0) <p>
 	 * (0,2); (1,1)
 	 * @return and instance of Hawk Dove.
 	 */
@@ -551,8 +551,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an instance of Battle of the Sexes 1, which is defined by:<br/>
-	 * (3,2); (0,0) <br/>
+	 * Returns an instance of Battle of the Sexes 1, which is defined by:<p>
+	 * (3,2); (0,0) <p>
 	 * (0,0); (2,3)
 	 * @return and instance of Battle of the Sexes 1.
 	 */
@@ -569,8 +569,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an instance of Battle of the Sexes 2, which is defined by:<br/>
-	 * (3,2); (1,1) <br/>
+	 * Returns an instance of Battle of the Sexes 2, which is defined by:<p>
+	 * (3,2); (1,1) <p>
 	 * (0,0); (2,3)
 	 * @return and instance of Battle of the Sexes 2.
 	 */
@@ -588,8 +588,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an instance of Matching Pennies, which is defined by:<br/>
-	 * (1,-1); (-1,1) <br/>
+	 * Returns an instance of Matching Pennies, which is defined by:<p>
+	 * (1,-1); (-1,1) <p>
 	 * (-1,1); (1,-1)
 	 * @return and instance of Matching Pennies.
 	 */
@@ -606,8 +606,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an instance of Stag Hunt, which is defined by:<br/>
-	 * (2,2); (0,1) <br/>
+	 * Returns an instance of Stag Hunt, which is defined by:<p>
+	 * (2,2); (0,1) <p>
 	 * (1,0); (1,1)
 	 * @return and instance of Stag Hunt.
 	 */

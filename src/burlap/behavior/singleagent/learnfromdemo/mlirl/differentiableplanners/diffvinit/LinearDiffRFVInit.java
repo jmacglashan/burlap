@@ -14,7 +14,7 @@ import burlap.oomdp.singleagent.GroundedAction;
  * when the reward function and value function initialization are linear functions over some set of features.
  * The total parameter dimensionality will be the sum of the reward function feature dimension
  * and value function initialization feature dimension.
- * <br/>
+ * <p>
  * This class is useful when learning both a reward function and the shaping values at the leaf nodes of
  * a finite horizon valueFunction.
  * @author James MacGlashan.

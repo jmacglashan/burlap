@@ -16,7 +16,7 @@ import java.util.*;
  * multi-agent stochastic games, they are defined with {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} and a
  * {@link burlap.oomdp.stochasticgames.JointActionModel}. See the respective single-agent {@link burlap.oomdp.singleagent.SADomain}
  * and stochastic games {@link burlap.oomdp.stochasticgames.SGDomain} subclasses for more information on their definitions.
- * <br/><br/>
+ * <p>
  * Note that a {@link burlap.oomdp.core.Domain} does *not* include task information, which will be defined separately with
  * a {@link burlap.oomdp.singleagent.RewardFunction} or {@link burlap.oomdp.stochasticgames.JointReward}, and a {@link burlap.oomdp.core.TerminalFunction}.
  * @author James MacGlashan
@@ -264,7 +264,7 @@ public abstract class Domain {
 	public abstract Action getAction(String name);
 	
 	/**
-	 * DEPRECATED: Use {@link #getSGAgentAction(String)} instead.<br/>
+	 * DEPRECATED: Use {@link #getSGAgentAction(String)} instead.<p>
 	 * Return the stochastic game action with the given name. This method will throw a runtime exception
 	 * if it is not an instance of the stochastic game domain (SGDomain).
 	 * @param name the name of the action to return

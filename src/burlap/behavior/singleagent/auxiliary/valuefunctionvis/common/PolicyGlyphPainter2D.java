@@ -27,8 +27,8 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 
 	
 	/**
-	 * MAXACTION paints only glphys for only those actions that have the highest likelihood <br/>
-	 * MAXACTIONSOFTTIE paints the glyphs for all actions whose likelihood is within some threshold of the most likely action <br/>
+	 * MAXACTION paints only glphys for only those actions that have the highest likelihood <p>
+	 * MAXACTIONSOFTTIE paints the glyphs for all actions whose likelihood is within some threshold of the most likely action <p>
 	 * DISTSCALED paints glyphs for all actions and scales them by the likelihood of the action
 	 * @author James MacGlashan
 	 *

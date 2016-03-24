@@ -16,7 +16,7 @@ import java.util.Map;
  * for object classes as well as specific object instances can be provided. If there is a painter
  * for an object class and a painter for a specific object instance of that same class, then the specific object instance
  * painter will be used to pain that object instead of the painter for that instnace's OO-MDP class.
- * <p/>
+ * <p>
  * The order of painting is first the static painters, in the order they were added; then the object class
  * painters in the order they were painted (except for objects that have specific object painter); finally,
  * the object instances that have specific painter associated with them, in the order that they appear in the

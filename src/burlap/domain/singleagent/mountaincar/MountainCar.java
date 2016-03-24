@@ -24,7 +24,7 @@ import burlap.oomdp.visualizer.Visualizer;
  * previously generated a {@link burlap.oomdp.core.Domain}, changing the physics parameters of this {@link burlap.oomdp.auxiliary.DomainGenerator} will
  * not affect how the previously generated domain behaves, only future generated ones.
  * 
- * <p/>
+ * <p>
  * 1. Singh, Satinder P., and Richard S. Sutton. "Reinforcement learning with replacing eligibility traces." Machine learning 22.1-3 (1996): 123-158.
  * 
  * @author James MacGlashan
@@ -314,7 +314,7 @@ public class MountainCar implements DomainGenerator {
 	
 	
 	/**
-	 * A Terminal Function for the Mountain Car domain that terminates when the agent's position is >= the max position in the world.
+	 * A Terminal Function for the Mountain Car domain that terminates when the agent's position is &gt;= the max position in the world.
 	 * Alternatively, a different threshold can be specified in the constructor.
 	 * @author James MacGlashan
 	 *
@@ -326,15 +326,15 @@ public class MountainCar implements DomainGenerator {
 		
 		
 		/**
-		 * Sets terminal states to be those that are >= the maximum position in the world.
+		 * Sets terminal states to be those that are &gt;= the maximum position in the world.
 		 */
 		public ClassicMCTF(){
 
 		}
 		
 		/**
-		 * Sets terminal states to be those >= the given threshold.
-		 * @param threshold position >= this will be terminal states
+		 * Sets terminal states to be those &gt;= the given threshold.
+		 * @param threshold position &gt;= this will be terminal states
 		 */
 		public ClassicMCTF(double threshold){
 			this.threshold = threshold;

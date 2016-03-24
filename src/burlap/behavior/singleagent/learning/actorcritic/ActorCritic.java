@@ -25,7 +25,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * That action is taken and a resulting state is observed. The {@link Critic} is then asked to critique this behavior
  * which is returned in a {@link CritiqueResult} object and then passed along to the {@link Actor} so that the actor may
  * update is behavior accordingly.
- * <br/><br/>
+ * <p>
  * In addition to learning, this algorithm can also be used for planning using the {@link #planFromState(burlap.oomdp.core.states.State)}
  * method. If you plan to use it for planning, you should call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
  * method before calling the {@link #planFromState(burlap.oomdp.core.states.State)}.

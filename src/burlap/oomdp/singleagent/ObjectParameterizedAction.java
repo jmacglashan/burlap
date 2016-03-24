@@ -15,14 +15,14 @@ import java.util.List;
  * instance associated with this action is {@link burlap.oomdp.singleagent.ObjectParameterizedAction.ObjectParameterizedGroundedAction},
  * which implements the {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}, since its parameters refer to
  * OO-MDP {@link burlap.oomdp.core.objects.ObjectInstance} references.
- * <br/><br/>
+ * <p>
  * The string array in the {@link #ObjectParameterizedAction(String, burlap.oomdp.core.Domain, String[])} constructor
  * specifies the valid type of {@link burlap.oomdp.core.ObjectClass}
  * to which the parameters must belong. For example, in {@link burlap.domain.singleagent.blocksworld.BlocksWorld},
  * we might define a "stack" {@link burlap.oomdp.singleagent.ObjectParameterizedAction} that takes two parameters
  * that each must be instances of the BLOCK class. In such a case, the String array passed to the constructor of the stack
  * {@link burlap.oomdp.singleagent.ObjectParameterizedAction} would be new String[]{"BLOCK", "BLOCK"}.
- * <br/><br/>
+ * <p>
  * It may also be the case that the order of parameters for an {@link burlap.oomdp.singleagent.ObjectParameterizedAction} is unimportant.
  * For example, a cooking domain might have a "combine"
  * action that combines two INGREDIENT objects. In such a case, the effect of combine(ing1, ing2) would be the same as combine(ing2, ing1).

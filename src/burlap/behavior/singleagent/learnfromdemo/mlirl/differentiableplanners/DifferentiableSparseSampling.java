@@ -32,8 +32,8 @@ import java.util.*;
  * nodes of this valueFunction may also be parametrized using a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
  * object and learned with {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL},
  * enabling a nice separation of shaping features/rewards and the learned (or known) reward function.
- * <br/>
- * <br/>
+ * <p>
+ * <p>
  * 1. MacGlashan, J. Littman, M., "Between Imitation and Intention Learning," Proceedings of IJCAI 15, 2015.
  * 2. Babes, M., Marivate, V., Subramanian, K., and Littman, "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
  * @author James MacGlashan.

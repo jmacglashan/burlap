@@ -14,11 +14,11 @@ import java.util.*;
  * for the shell. Shell commands are implemented by objects implementing the {@link burlap.shell.command.ShellCommand}
  * interface, and allows a shells set of commands to be customized and trivially extended by adding new commands
  * with the {@link #addCommand(burlap.shell.command.ShellCommand)} method.
- * <br/><br/>
+ * <p>
  * The shell keeps a small set of special reserved commands that new commands cannot replace. These include the help,
  * cmds (lists all known shell commands), quit (stops the shell), alias (allows a custom name to be assigned to a command),
  * and aliases (lists all known aliases).
- * <br/><br/>
+ * <p>
  * The shell is started with the {@link #start()} method, which runs the shell in a separate thread. Beyond the
  * {@link java.io.InputStream} that is scanned for user input, shell commands may also be executed using the
  * {@link #executeCommand(String)} method. Other objects can be alerted to command execution completion by implementing

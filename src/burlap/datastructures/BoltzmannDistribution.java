@@ -1,10 +1,9 @@
 package burlap.datastructures;
 
-import java.util.Random;
+import burlap.debugtools.RandomFactory;
 
 import javax.management.RuntimeErrorException;
-
-import burlap.debugtools.RandomFactory;
+import java.util.Random;
 
 
 /**
@@ -67,7 +66,7 @@ public class BoltzmannDistribution {
 	 * a temperature value to control how deterministic the probability output is. Lower temperature values result in a more
 	 * deterministic distribution; higher values produce a more uniform distribution.
 	 * @param preferences the preference values to turn into a probability distribution
-	 * @param temperature a value on 0 < temperature < +infinity
+	 * @param temperature a value on 0 &lt; temperature &lt; +infinity
 	 */
 	public BoltzmannDistribution(double [] preferences, double temperature) {
 		this.preferences = preferences.clone();
@@ -117,7 +116,7 @@ public class BoltzmannDistribution {
 	
 	/**
 	 * Sets the temperature value to use.
-	 * @param t a value on 0 < temperature < +infinity
+	 * @param t a value on 0 &lt; temperature &lt; +infinity
 	 */
 	public void setTemperature(double t){
 		this.temperature = t;

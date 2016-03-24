@@ -15,30 +15,30 @@ import burlap.oomdp.singleagent.GroundedAction;
  * {@link #canEnumerateObservations()}, {@link #getAllPossibleObservations()}, {@link #getObservationProbability(burlap.oomdp.core.states.State, burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)},
  * {@link #getObservationProbabilities(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}, and
  * {@link #sampleObservation(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}.
- * <br/>
+ * <p>
  * {@link #canEnumerateObservations()} indicates whether this object can enumerate all observations and therefore implements
  * the {@link #getAllPossibleObservations()} and {@link #getObservationProbabilities(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
  * methods. If those methods cannot be implement because the observation space is infinite (or simply too large), then the method
  * should return false.
- * <br/>
+ * <p>
  * {@link #getAllPossibleObservations()} returns the list of possible POMDP observations. Each observation is represented using the
  * {@link burlap.oomdp.core.states.State} interface,
  * since observations may consist of multiple observations of distinct objects in the world; however, that the observation is represented
  * with a {@link burlap.oomdp.core.states.State} interface does not mean it should be confused with the MDP state. If the observations
  * cannot be enumerated, then it should throw an {@link java.lang.UnsupportedOperationException}.
  * should be thrown.
- * <br/>
+ * <p>
  * ({@link #getObservationProbabilities(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} specifies the
  * probability mass/density function for a given observation conditioned on the MDP state and previous action selected that led to the MDP state.
- * <br/>
+ * <p>
  * {@link #getObservationProbabilities(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} generates a list of all possible
  * observations with non-zero probability and their associated probability mass, conditioned on the given true hidden state and previously selected
  * action that led to that state. If the observations cannot be enumerated then an {@link java.lang.UnsupportedOperationException} should be thrown instead.
- * <br/>
+ * <p>
  * {@link #sampleObservation(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} samples an observation
  * from the observation distribution conditioned on the given true hidden state and previously selected action that led to the
  * hidden state.
- * <br/><br/>
+ * <p>
  * The {@link #getObservationProbabilities(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} and
  * {@link #sampleObservation(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} methods can be trivially
  * implemented by having them return the result of the super class methods

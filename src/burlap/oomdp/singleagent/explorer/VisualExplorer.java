@@ -42,7 +42,7 @@ import java.util.Scanner;
  * Action parameters in the action field are specified by space delineated input. For instance: "stack block0 block1" will cause
  * the stack action to called with action parameters block0 and block1. The ` key
  * causes the environment to reset.
- * <br/><br/>
+ * <p>
  * Additionally, the VisualExplorer also creates an associated instance of an {@link burlap.shell.EnvironmentShell}
  * that you can access using the "Show Shell" button. You can use the shell to modify the state (assuming the input
  * {@link burlap.oomdp.singleagent.environment.Environment} implements {@link burlap.oomdp.singleagent.environment.StateSettableEnvironment},
@@ -52,7 +52,7 @@ import java.util.Scanner;
  * to use them. If you need access to the shell instance, you can get it with the {@link #getShell()} method. You can
  * also set shell commands to be executed when a key is pressed in the visualization. Set them with the
  * {@link #addKeyShellCommand(String, String)} method.
- * <br/><br/>
+ * <p>
  * A special shell command, "livePoll" is automatically added to the shell, that allows the user to set the visualizer
  * to auto poll the environment at a fixed interval for the state and display it. This is useful when the environment
  * can evolve independent of agent action or explicit shell commands. See it's help in the shell (-h option) for more

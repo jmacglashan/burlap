@@ -16,7 +16,7 @@ import java.util.Map;
  * the state features on which linear function approximation is performed. In the case of Q-value
  * function approximation, the state features are replicated for each action with all other action's associated
  * state features set to zero, thereby allowing for unique predictions for each action.
- * <br/><br/>
+ * <p>
  * This class can be used for either state-value functions or state-action-value functions, but only one of them.
  * Which one is used is determined implicitly by whether the first function input is set with the
  * {@link #evaluate(burlap.oomdp.core.states.State)} method or the {@link #evaluate(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)}

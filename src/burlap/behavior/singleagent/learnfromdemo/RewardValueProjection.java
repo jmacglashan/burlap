@@ -23,12 +23,12 @@ import java.util.List;
  * It is useful for analyzing learned reward function through IRL, for example, for passing a learned reward function
  * to a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} to visualize what
  * was learned. This class returns values based one of four possible reward projection types
- * ({@link burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType}):<br/>
- * SOURCESTATE: when the reward function only depends on the source state<br/>
- * DESTINATIONSTATE: when the reward function only depends on the destination state (the state to which the agent transitions)<br/>
- * STATEACTION: when the reward function only depends on the state-action pair<br/>
- * ONESTEP: when the reward function depends on a transition of some sort (e.g., from a source state to a target state)<br/>
- * The default assumption is DESTINATIONSTATE.<br/><br/>
+ * ({@link burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType}):<p>
+ * SOURCESTATE: when the reward function only depends on the source state<p>
+ * DESTINATIONSTATE: when the reward function only depends on the destination state (the state to which the agent transitions)<p>
+ * STATEACTION: when the reward function only depends on the state-action pair<p>
+ * ONESTEP: when the reward function depends on a transition of some sort (e.g., from a source state to a target state)<p>
+ * The default assumption is DESTINATIONSTATE.<p>
  * When the {@link #value(burlap.oomdp.core.states.State)} of a state is queried, it returns the value of the
  * {@link burlap.oomdp.singleagent.RewardFunction} using the most minimal information. For example, if the projection
  * type is DESTINATIONSTATE, then the value returned is rf.reward(null, null, s), where rf is the input {@link burlap.oomdp.singleagent.RewardFunction}

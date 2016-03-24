@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * A factory for producing a simple {@link burlap.oomdp.stateserialization.SerializableState} representation of
  * {@link burlap.domain.singleagent.gridworld.GridWorldDomain} states by using a string representation.
- * <br/>
- * String format:<br/>
+ * <p>
+ * String format:<p>
  * ax ay, l1x l1y l1t, l2x l2y lt2, ..., lnx lny lnt
- * <br/>
+ * <p>
  * where ax and ay is the agent x and y position and lix liy is the ith location objects x and y position and lit is the type of the ith location object.
  *
  * @author James MacGlashan.

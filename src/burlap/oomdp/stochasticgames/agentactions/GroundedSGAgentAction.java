@@ -16,11 +16,11 @@ import burlap.oomdp.core.states.State;
  * {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction#getAllApplicableGroundedActions(burlap.oomdp.core.states.State, String)}.
  * See the {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} class documentation for more information on
  * defining parameterized {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}s.
- * <br/><br/>
- * This high-level abstract class requires implementing a few methods:<br/>
- * {@link #copy()},<br/>
- * {@link #initParamsWithStringRep(String[])} and,<br/>
- * {@link #getParametersAsString()}.<br/>
+ * <p>
+ * This high-level abstract class requires implementing a few methods:<p>
+ * {@link #copy()},<p>
+ * {@link #initParamsWithStringRep(String[])} and,<p>
+ * {@link #getParametersAsString()}.<p>
  * The {@link #copy()} method should be override to return a new instance of your subclass with all parameter assignment information
  * copied over. The latter two methods are necessary for supporting all of the BURLAP's tools with parameterized actions, but
  * may not be needed for critical operations.
@@ -29,7 +29,7 @@ import burlap.oomdp.core.states.State;
  * not parameterized, then you can simply use the {@link burlap.oomdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction}
  * implementation.
  *
- * <br/><br/>
+ * <p>
  * If you plan on
  * making an {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} definition with OO-MDP object parameters, you can use the existing
  * {@link burlap.oomdp.stochasticgames.agentactions.ObParamSGAgentAction}, which is associated with the {@link burlap.oomdp.singleagent.GroundedAction}

@@ -14,11 +14,11 @@ import java.util.List;
  * instance associated with this action is {@link burlap.oomdp.stochasticgames.agentactions.ObParamSGAgentAction.GroundedObParamSGAgentAction},
  * which implements the {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}, since its parameters refer to
  * OO-MDP {@link burlap.oomdp.core.objects.ObjectInstance} references.
- * <br/><br/>
+ * <p>
  * The string array in the {@link #ObParamSGAgentAction(burlap.oomdp.stochasticgames.SGDomain, String, String[])} constructor
  * specifies the valid type of {@link burlap.oomdp.core.ObjectClass}
  * to which the parameters must belong.
- * <br/><br/>
+ * <p>
  * It may also be the case that the order of parameters for an {@link burlap.oomdp.singleagent.ObjectParameterizedAction} is unimportant.
  * In this case, you can specify parameter order groups to indicate for which parameters the order is unimportant. See the
  * {@link burlap.oomdp.singleagent.ObjectParameterizedAction} class documentation for more information of parameter order groups.

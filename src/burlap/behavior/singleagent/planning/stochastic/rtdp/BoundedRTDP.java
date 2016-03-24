@@ -24,11 +24,11 @@ import java.util.*;
  * being that both an upper bound and lower bound value function is computed. Like RTDP, the upper bound is used for planning rollout
  * exploration, but when planning rollouts are complete, the lower bound value function is used to direct behavior. Using the lower
  * bound provides significantly better any-time planning performance that does not require convergence to get resaonable results.
- * <p/>
+ * <p>
  * Another differences in Bounded RTDP is updating the value of each state in a rollout in reverse after its completion,
  * which has the effect of propagating back goal state values to the beginning (though this can be disbaled in this implementation using
  * the {@link #setRunRolloutsInRevere(boolean)} method).
- * <p/>
+ * <p>
  * Finally, after action selection, the next outcome state from which the rollout continues may also be selected in a number of ways.
  * The way presnted in the original paper is to select the next state randomly according to the transition dynamics probability weighted
  * by the margin between the upper bound and lower bound of the states, which promotes exploration toward states that are uncertain.
@@ -40,10 +40,10 @@ import java.util.*;
  * 
  * 
  * 
- * <p/>
+ * <p>
  * 1.McMahan, H. Brendan, Maxim Likhachev, and Geoffrey J. Gordon. "Bounded real-time dynamic programming: RTDP with monotone upper bounds and performance guarantees." 
  * Proceedings of the 22nd international conference on Machine learning. ACM, 2005.
- * <br/>
+ * <p>
  * 2. Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
  * 
  * 
@@ -56,16 +56,16 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	/**
 	 * The different ways that states can be selected for expansion. That is, after an action is selected in the rollout,
 	 * the next state from the possible outcome states may be selected in these different ways. The default, and reccomended mode
-	 * is MODELBASED.<p/>
+	 * is MODELBASED.<p>
 	 * MODELBASED is a standard RTDP-like sampling from the transition dynamics. This is the default mode and in practice,
 	 * we found it gives faster performance than the reccomeneded approach in the Bounded RTDP paper. Additionally, if the domain
 	 * has an efficient performAction state sampler, this mode will provide some computational gains over the other approaches.
-	 * <p/>
+	 * <p>
 	 * WEIGHTEDMARGIN is the state selection method suggested in the original Bounded RTDP paper, which we found to be somewhat slower than
 	 * MODELBASED. In this approach, each possible outcome state is selected randomly from a distribution that is the transition dynamics probability
 	 * weighted by the margin in the lower bound and upper bound of the next state's value function. This promotes exploration towards states that
 	 * are more uncertain.
-	 * <p/>
+	 * <p>
 	 * MAXMARGIN selects the state with the maximum margin between the lower bound and upperbound of the value function. Ties are broken randomly.
 	 * This method is much more exploratory, but results in significantly longer initial rollouts.
 	 * @author James MacGlashan

@@ -24,14 +24,14 @@ import java.util.Map;
  * which is defined by an x position, a y position, and a player number. Agents can either move north, south, east,
  * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.oomdp.stochasticgames.SGAgentType}
  * to use with this game, use the {@link #getStandardGridGameAgentType(burlap.oomdp.core.Domain)} static method.
- * <br/><br/>
+ * <p>
  * In this domain, there is also an OO-MDP object class for 1-dimensional walls (both for horizontal
  * walls or vertical walls). Each wall can take on a different type; a solid wall that can never be passed (type 0),
  * and a semi-wall, can be passed with some stochastic probability (type 1). Finally, there is also an OO-MDP
  * class for goal locations, which also have different types. There is a type that can be indicated
  * as a universal goal/reward location for all agents (type 0), and type that is only useful to each individual
  * agent (type i is a personal goal for player i-1).
- * <br/><br/>
+ * <p>
  * The {@link burlap.oomdp.stochasticgames.JointActionModel} set for the domain is {@link burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics},
  * with a default semi-wall probability of passing through of 0.5, which is changeable with the
  *
@@ -180,7 +180,7 @@ public class GridGame implements DomainGenerator {
 	 * and u sets the second agent to do nothing. When the actions for both agents have been set,
 	 * the actions can be committed to affect the world by pressing the c key.
 	 * 
-	 * <p/>
+	 * <p>
 	 * If "t" is passed as an argument then a terminal explorer is used instead.
 	 * 
 	 * @param args

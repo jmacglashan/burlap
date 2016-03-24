@@ -25,14 +25,14 @@ import java.util.Map;
  * is non-linear, it's possible that it may get stuck in local optimas. Computing the policy gradient is done
  * by iteratively replanning after each gradient ascent step with a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner}
  * instance provided in the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object.
- * <p/>
+ * <p>
  * The gradient ascent will stop either after a fixed number of steps or until the change in likelihood is smaller
  * than some threshold. If the max number of steps is set to -1, then it will continue until the change in likelihood
  * is smaller than the threshold.
  *
  *
  *
- * <p/>
+ * <p>
  * 1. Babes, Monica, et al. "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
  *
  * @author James MacGlashan.
