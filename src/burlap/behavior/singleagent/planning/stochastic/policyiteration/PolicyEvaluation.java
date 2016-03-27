@@ -24,7 +24,7 @@ import java.util.Set;
  * policy from some initial seed state. You can reuse this class to evaluate different subsequent policies, but doing so
  * will overwrite the value function. If you want to save the value function that was computed for some policy,
  * use the {@link #getCopyOfValueFunction()} method.
- * <br/><br/>
+ * <p>
  * Alternatively, you can also evaluate a policy with the {@link #evaluatePolicy(burlap.behavior.policy.Policy)} method,
  * but you should have already seeded the state space by having called the {@link #evaluatePolicy(burlap.behavior.policy.Policy, burlap.oomdp.core.states.State)}
  * method or the {@link #performReachabilityFrom(burlap.oomdp.core.states.State)} method at least once previously,
@@ -77,7 +77,6 @@ public class PolicyEvaluation extends DynamicProgramming {
 	/**
 	 * Computes the value function for the given policy over the states that have been discovered
 	 * @param policy the {@link burlap.behavior.policy.Policy} to evaluate
-	 * @return the maximum single iteration change in the value function
 	 */
 	public void evaluatePolicy(Policy policy){
 

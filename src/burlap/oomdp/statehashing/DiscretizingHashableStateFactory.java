@@ -14,14 +14,14 @@ import java.util.Map;
  * multiple value of 1.0 is equivalent to floor values to their corresponding int value.
  * Large multiple values result in course discretization and small
  * multiple values result in a fine discretization.
- * <br/><br/>
+ * <p>
  * The multiple used can be specified for individual attributes so that different attributes have different degrees of discretization. To set
  * the multiple used for an specific attribute, use the {@link #addFloorDiscretizingMultipleFor(String, double)} method. When a continuous attribute is to be
  * hashed or compared, it is first checked if there has been a specific multiple value set for it. If so, that multiple is used for discretization. If not,
  * the default multiple is used. The default multiple may be set
  * though the constructors or by
  * using the {@link #setDefaultFloorDiscretizingMultiple(double)} method.
- * <br/><br/>
+ * <p>
  * This class extends {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
  * to be object identifier/name independent or dependent and can be set to use {@link burlap.oomdp.statehashing.HashableState}
  * instances that hash their hash code or not. See the {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}
@@ -167,7 +167,7 @@ public class DiscretizingHashableStateFactory extends SimpleHashableStateFactory
 	 * @return the int result of num / mult
 	 */
 	protected static int intMultiples(double mult, double num){
-		int div = (int)(num / mult);
+		int div = (int)Math.floor(num / mult);
 		return div;
 	}
 

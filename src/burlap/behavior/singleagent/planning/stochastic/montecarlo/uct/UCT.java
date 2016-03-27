@@ -1,37 +1,31 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTStateNode.UCTStateConstructor;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 /**
  * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest})
  * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
- * <br/><br/>
+ * <p>
  * The class also implements the {@link burlap.behavior.valuefunction.QFunction} interface. However, it will only return the Q-value
  * for a state if that state is the root node of the tree. If it is not the root node of the tree, then it will automatically reset the planning results
  * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.policy.GreedyQPolicy}
@@ -42,8 +36,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * {@link burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTTreeWalkPolicy}. The TreeWalkPolicy
  * will be more computationally efficient than replanning at each step, but may have degrading performance after each step since
  * each step has a shorter horizon from which to plan and may not have as many samples from which it estimated its Q-value.
- * <br/>
- * <br/>
+ * <p>
  * 1. Kocsis, Levente, and Csaba Szepesvari. "Bandit based monte-carlo planning." ECML (2006). 282-293.
  * 
  * @author James MacGlashan
@@ -84,7 +77,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	 * @param hashingFactory the state hashing factory
 	 * @param horizon the planning horizon
 	 * @param nRollouts the number of rollouts to perform 
-	 * @param explorationBias the exploration bias constant (suggested >2)
+	 * @param explorationBias the exploration bias constant (suggested &gt;2)
 	 */
 	public UCT(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		

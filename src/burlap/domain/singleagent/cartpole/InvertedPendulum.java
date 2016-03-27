@@ -25,7 +25,7 @@ import burlap.oomdp.visualizer.Visualizer;
  * the angle and angular velocity of the pole. However, there is also noise included in the actions
  * of this domain as well a noop action. This version of the inverted pendulum is the version used in the original
  * Least-Squares Policy Iteration paper [1].
- * <p/>
+ * <p>
  * 
  * 
  * 1. Lagoudakis, Michail G., and Ronald Parr. "Least-squares policy iteration." The Journal of Machine Learning Research 4 (2003): 1107-1149.

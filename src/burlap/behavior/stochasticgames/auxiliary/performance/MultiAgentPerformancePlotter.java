@@ -1,25 +1,12 @@
 package burlap.behavior.stochasticgames.auxiliary.performance;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-
+import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
+import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
+import burlap.debugtools.DPrint;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.WorldObserver;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jfree.chart.ChartFactory;
@@ -33,13 +20,12 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
 
-import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
-import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
-import burlap.debugtools.DPrint;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.WorldObserver;
+import javax.swing.*;
+import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.*;
+import java.util.List;
 
 
 
@@ -52,18 +38,18 @@ import burlap.oomdp.stochasticgames.WorldObserver;
  * Any subset of these metrics
  * may be displayed in any order specified by the user and plots are displayed in a matrix format with a maximum number of columns that are filled out first.
  * If the number of plots would cause a window height larger than a maximimum specified, then the plots are placed in a scroll view.
- * <p/>
+ * <p>
  * The way this class should be used is first the constructor should be called, then the {@link #startGUI()} method. At the start of each trial, the {@link #startNewTrial()} method should be called
  * (although it is unncessary to call this method if it is the *first* trial since that will automatically be created.) A world object should then be created
  * with this object attached to it. The world should then be run for as many episodes as desired until the next trial when things repeat. After all trials
  * are complete, the {@link #startNewTrial()} method should be called.
- * <p/>
+ * <p>
  * To ensure proper use of this class, it is highly recommended that the {@link MultiAgentExperimenter} class is used, because it will perform all the necessary steps for you.
- * <p/>
+ * <p>
  * When testing is done, you may optionally request all data to be printed to CSV files. One CSV file will produce the step-wise performance
  * metric (cumulaitve reward by step) for all agents and trials. Another will produce all the episode-wise performance metric data. This data
  * can be produced regardless of which metrics you requested to be plotted.
- * <p/>
+ * <p>
  * Note that the plots that are created have a number of interactive options. Try right-clicking on them to see the list of things you can modfiy in the GUI.
  * 
  * @author James MacGlashan
@@ -521,9 +507,9 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	
 	/**
 	 * Writes the step-wise and episode-wise data to CSV files.
-	 * The episode-wise data will be saved to the file <pathAndBaseNameToUse>Episodes.csv. The step-wise data will
-	 * be saved to the file <pathAndBaseNameToUse>Steps.csv
-	 * @param pathAndBaseNameToUse the base path and file name for the epsidoe-wise and step-wise csv files.
+	 * The episode-wise data will be saved to the file &lt;pathAndBaseNameToUse&gt;Episodes.csv. The step-wise data will
+	 * be saved to the file &lt;pathAndBaseNameToUse&gt;Steps.csv
+	 * @param pathAndBaseNameToUse the base path and file name for the episode-wise and step-wise csv files.
 	 */
 	public void writeStepAndEpisodeDataToCSV(String pathAndBaseNameToUse){
 		

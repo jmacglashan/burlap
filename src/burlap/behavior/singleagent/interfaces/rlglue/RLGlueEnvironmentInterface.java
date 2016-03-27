@@ -18,12 +18,12 @@ import org.rlcommunity.rlglue.codec.util.AgentLoader;
  * and an RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface}, since BURLAP agents will communicate to the RL Glue
  * Environment through the an RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface}. However, you can use this
  * class like a normal BURLAP {@link burlap.oomdp.singleagent.environment.Environment}.
- * <br/><br/>
+ * <p>
  * To initialize this environment, use the {@link #loadAgent()} or {@link #loadAgent(String, String)} methods so that
  * RLGlue knows to tell this class about the environment this class is wrapping. After the load method,
  * you can get the corresponding BURLAP domain that represents it by calling the {@link #getDomain()} method.
  * You can also get the RLGlue preferred discount factor using the {@link #getDiscountFactor()} method.
- * <br/><br/>
+ * <p>
  * As with normal BURLAP {@link burlap.oomdp.singleagent.environment.Environment} implementations, you should call
  * the {@link #resetEnvironment()} method whenever a terminal state is reached. This will cause this class to
  * block until RLGlue has started a new episode with a new initial state, unless the RLGlue experiment has finished, in which case

@@ -1,39 +1,38 @@
 package burlap.behavior.singleagent.learning.tdmethods;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.management.RuntimeErrorException;
-
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
-import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.policy.EpsilonGreedy;
-import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import javax.management.RuntimeErrorException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -43,17 +42,15 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * method before calling {@link #planFromState(burlap.oomdp.core.states.State)}.
  * The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
- * <br/><br/>
+ * <p>
  * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to
  * anything with the {@link #setLearningPolicy(burlap.behavior.policy.Policy)} policy.
- * <br/><br/>
+ * <p>
  * If you
  * want to use a custom learning rate decay schedule rather than a constant learning rate, use the
  * {@link #setLearningRateFunction(burlap.behavior.learningrate.LearningRate)}.
- * <br/><br/>
- * 
- * <p/>
- * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
+ * <p>
+ * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <p>
  * 2. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
  * 
  * @author James MacGlashan

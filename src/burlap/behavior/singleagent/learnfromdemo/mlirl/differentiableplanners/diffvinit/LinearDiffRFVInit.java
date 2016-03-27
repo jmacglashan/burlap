@@ -1,6 +1,8 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
@@ -12,12 +14,12 @@ import burlap.oomdp.singleagent.GroundedAction;
  * when the reward function and value function initialization are linear functions over some set of features.
  * The total parameter dimensionality will be the sum of the reward function feature dimension
  * and value function initialization feature dimension.
- * <br/>
+ * <p>
  * This class is useful when learning both a reward function and the shaping values at the leaf nodes of
  * a finite horizon valueFunction.
  * @author James MacGlashan.
  */
-public class LinearDiffRFVInit extends DifferentiableRF implements DifferentiableVInit {
+public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF {
 
 	/**
 	 * Whether features are based on the next state or previous state. Default is for the next state (true).
@@ -45,6 +47,12 @@ public class LinearDiffRFVInit extends DifferentiableRF implements Differentiabl
 	 * The dimensionality of the value function initialization parameters
 	 */
 	protected int									vinitDim;
+
+
+
+	protected double[]								parameters;
+
+	protected int 									dim;
 
 
 	/**
@@ -133,11 +141,9 @@ public class LinearDiffRFVInit extends DifferentiableRF implements Differentiabl
 		this.vinitDim = vinitDim;
 	}
 
-	@Override
-	public double[] getGradient(State s, GroundedAction ga, State sp) {
+	public FunctionGradient gradient(State s, GroundedAction ga, State sp){
 
-		double sfeatures [];
-
+		double [] sfeatures;
 		if(rfFeaturesAreForNextState){
 			sfeatures = rfFvGen.generateFeatureVectorFrom(sp);
 		}
@@ -145,19 +151,18 @@ public class LinearDiffRFVInit extends DifferentiableRF implements Differentiabl
 			sfeatures = rfFvGen.generateFeatureVectorFrom(s);
 		}
 
-		double [] allFeatures = new double [this.dim];
-		for(int i = 0; i < this.rfDim; i++){
-			allFeatures[i] = sfeatures[i];
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(sfeatures.length);
+		for(int i = 0; i < sfeatures.length; i++){
+			gradient.put(i, sfeatures[i]);
 		}
 
+		return gradient;
 
-		return allFeatures;
 	}
 
-	@Override
-	protected DifferentiableRF copyHelper() {
-		return null;
-	}
+
+
+
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
@@ -177,24 +182,25 @@ public class LinearDiffRFVInit extends DifferentiableRF implements Differentiabl
 
 	}
 
-
 	@Override
-	public double[] getVGradient(State s) {
+	public FunctionGradient getVGradient(State s){
 
 		double [] vFeatures = this.vinitFvGen.generateFeatureVectorFrom(s);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient(vFeatures.length);
 
-		double [] allFeatures = new double[this.dim];
 		for(int i = 0; i < vFeatures.length; i++){
-			allFeatures[i+this.rfDim] = vFeatures[i];
+			gradient.put(i+this.rfDim, vFeatures[i]);
 		}
+		return  gradient;
 
-		return allFeatures;
 	}
 
 	@Override
-	public double[] getQGradient(State s, AbstractGroundedAction ga) {
+	public FunctionGradient getQGradient(State s, AbstractGroundedAction ga){
 		return this.getVGradient(s);
 	}
+
+
 
 	@Override
 	public double value(State s) {
@@ -212,4 +218,30 @@ public class LinearDiffRFVInit extends DifferentiableRF implements Differentiabl
 		return this.value(s);
 	}
 
+	@Override
+	public int numParameters() {
+		return this.dim;
+	}
+
+	@Override
+	public double getParameter(int i) {
+		return this.parameters[i];
+	}
+
+	@Override
+	public void setParameter(int i, double p) {
+		this.parameters[i] = p;
+	}
+
+	@Override
+	public void resetParameters() {
+		for(int i = 0; i < this.parameters.length; i++){
+			this.parameters[i] = 0;
+		}
+	}
+
+	@Override
+	public ParametricFunction copy() {
+		return new LinearDiffRFVInit(this.rfFvGen, this.vinitFvGen, this.rfDim, this.vinitDim, this.rfFeaturesAreForNextState);
+	}
 }

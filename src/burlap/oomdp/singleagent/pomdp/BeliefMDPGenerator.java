@@ -1,10 +1,6 @@
 package burlap.oomdp.singleagent.pomdp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TransitionProbability;
@@ -13,18 +9,21 @@ import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A class for taking an input POMDP (defined by a {@link burlap.oomdp.singleagent.pomdp.PODomain} and turning it into
  * a BeliefMDP, which can then be input to any MDP solver to solve the POMDP. To get the belief MDP reward function,
  * create and instance of the static inner class {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.BeliefRF}.
- * <br/>
+ * <p>
  * The generated Belief MDP action getTransitions method, and the BeliefRF require that the input state object classes
  * implement the {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState} and {@link burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}
  * interfaces. The getTransitions method (used by planning algorithms that require the full transition dynamics)
  * also operates by iterating over all possible observations. If your domain has many observations, consider using
  * a sample-based MDP planning algorithm.
- * <br/>
+ * <p>
  * For more information on Belief MDPs, see the POMDP wikipedia page: https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process#Belief_MDP
  *
  */
@@ -346,7 +345,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 	 * the input {@link State} objects are classes that implement {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState}
 	 * and {@link burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.
 	 * If the POMDP reward function does not depend on the next state, then this can be declared with the srcRFIsNextStateIndependent
-	 * flag in the {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.BeliefRF#BeliefRF(PODomain, burlap.oomdp.singleagent.RewardFunction, boolean)}
+	 * flag in the
 	 * constructor, which will decrease the computational demands since the next states do not have to be marginalized over.
 	 */
 	public static class BeliefRF implements RewardFunction{

@@ -9,7 +9,7 @@ import java.util.List;
  * An interface for learning value function approximation via a supervised learning algorithm. This interface
  * defines the method {@link #train} which takes as input a list of {@link burlap.behavior.singleagent.planning.vfa.fittedvi.SupervisedVFA.SupervisedVFAInstance}
  * objects, runs a regression algorithm, and returns the learned function, which is an interface of {@link burlap.behavior.valuefunction.ValueFunction}.
- * <br/><br/>
+ * <p>
  * A {@link burlap.behavior.singleagent.planning.vfa.fittedvi.SupervisedVFA.SupervisedVFAInstance} is a pair consisting
  * of a {@link burlap.oomdp.core.states.State} and the target state value that is to be learned.
  * @author James MacGlashan.

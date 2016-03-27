@@ -17,7 +17,7 @@ import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 /**
  * The CoCoQ backup operator for sequential stochastic games [1].
- * <p/>
+ * <p>
  * 1. Sodomka, Eric, et al. "Coco-Q: Learning in Stochastic Games with Side Payments." Proceedings of the 30th International Conference on Machine Learning (ICML-13). 2013.
  * @author Esha Gosh, John Meehan, Michalis Michaelidis, and James MacGlashan
  *

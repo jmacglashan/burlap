@@ -1,37 +1,32 @@
 package burlap.behavior.singleagent.learning.lspi;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.singleagent.environment.Environment;
-import org.ejml.simple.SimpleMatrix;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.policy.EpsilonGreedy;
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData.SARS;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.vfa.ActionApproximationResult;
-import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.behavior.singleagent.vfa.StateFeature;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.vfa.*;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.environment.Environment;
+import org.ejml.simple.SimpleMatrix;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -42,7 +37,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * initialize a matrix to an identity matrix multiplied by some large positive constant (see the reference for more information).
  * By default this constant is 100, but you can change it with the {@link #setIdentityScalar(double)}
  * method.
- * <p/>
+ * <p>
  * If you do use the {@link #planFromState(State)} method, you should first initialize the parameters for it using the
  * {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int, SARSCollector)} or
  * {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)} method.
@@ -51,21 +46,21 @@ import burlap.oomdp.singleagent.RewardFunction;
  * the {@link #runPolicyIteration(int, double)} method using a maximum of 30 policy iterations. You can change the {@link SARSCollector} this method uses, the number of samples it acquires, the maximum weight change for PI termination,
  * and the maximum number of policy iterations by using the {@link #setPlanningCollector(SARSCollector)}, {@link #setNumSamplesForPlanning(int)}, {@link #setMaxChange(double)}, and
  * {@link #setMaxNumPlanningIterations(int)} methods respectively.
- * <p/>
+ * <p>
  * If you use the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment)} method (or the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)}  method),
  * it will work by following a learning policy for the episode and adding its observations to its dataset for its
  * policy iteration. After enough new data has been acquired, policy iteration will be rereun.
  * You can adjust the learning policy, the maximum number of allowed learning steps in an
  * episode, and the minimum number of new observations until LSPI is rerun using the {@link #setLearningPolicy(Policy)}, {@link #setMaxLearningSteps(int)}, {@link #setMinNewStepsForLearningPI(int)}
  * methods respectively. The LSPI  termination parameters are set using the same methods that you use for adjusting the results from the {@link #planFromState(State)} method discussed above.
- * <p/>
+ * <p>
  * This data gathering and replanning behavior from learning episodes is not expected to be an especially good choice.
  * Therefore, if you want a better online data acquisition, you should consider subclassing this class
  * and overriding the methods {@link #updateDatasetWithLearningEpisode(EpisodeAnalysis)} and {@link #shouldRereunPolicyIteration(EpisodeAnalysis)}, or
  * the {@link #runLearningEpisode(burlap.oomdp.singleagent.environment.Environment, int)} method
  * itself.
  * 
- * <p/>
+ * <p>
  * 1. Lagoudakis, Michail G., and Ronald Parr. "Least-squares policy iteration." The Journal of Machine Learning Research 4 (2003): 1107-1149.
  * 
  * @author James MacGlashan
@@ -76,7 +71,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * The object that performs value function approximation given the weights that are estimated
 	 */
-	protected ValueFunctionApproximation							vfa;
+	protected ParametricFunction.ParametricStateActionFunction 		vfa;
 	
 	/**
 	 * The SARS dataset on which LSPI is performed
@@ -435,7 +430,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		
 		this.vfa = new LinearVFA(this.featureDatabase);
 		for(int i = 0; i < nf; i++){
-			this.vfa.setWeight(i, w.get(i, 0));
+			this.vfa.setParameter(i, w.get(i, 0));
 		}
 		
 		return w;
@@ -506,11 +501,10 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		
 		List<GroundedAction> gas = this.getAllGroundedActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
-		
-		
-		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gas);
+
+
 		for(GroundedAction ga : gas){
-			qs.add(this.getQFromFeaturesFor(results, s, ga));
+			qs.add(new QValue(s, ga, this.vfa.evaluate(s, ga)));
 		}
 		
 		return qs;
@@ -520,14 +514,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a) {
-		
-		List <GroundedAction> gaList = new ArrayList<GroundedAction>(1);
-		gaList.add((GroundedAction)a);
-		
-		List<ActionApproximationResult> results = vfa.getStateActionValues(s, gaList);
-		
-		return this.getQFromFeaturesFor(results, s, (GroundedAction)a);
-		
+		return new QValue(s, a, this.vfa.evaluate(s, a));
 	}
 
 	@Override
@@ -538,22 +525,6 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		else{
 			return QFunction.QFunctionHelper.getOptimalValue(this, s);
 		}
-	}
-	
-	
-	/**
-	 * Creates a Q-value object in which the Q-value is determined from VFA.
-	 * @param results the VFA prediction results for each action.
-	 * @param s the state of the Q-value
-	 * @param ga the action taken
-	 * @return a Q-value object in which the Q-value is determined from VFA.
-	 */
-	protected QValue getQFromFeaturesFor(List<ActionApproximationResult> results, State s, GroundedAction ga){
-		
-		ActionApproximationResult result = ActionApproximationResult.extractApproximationForAction(results, ga);
-		QValue q = new QValue(s, ga, result.approximationResult.predictedValue);
-		
-		return q;
 	}
 
 	/**
@@ -581,7 +552,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	@Override
 	public void resetSolver() {
 		this.dataset.clear();
-		this.vfa.resetWeights();
+		this.vfa.resetParameters();
 	}
 	
 	

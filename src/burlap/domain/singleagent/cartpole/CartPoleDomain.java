@@ -27,13 +27,13 @@ import burlap.oomdp.singleagent.explorer.VisualExplorer;
  * parameter to false. The infinite track is handled by never changing the position value of the cart. All model/physics parameters are stored in the
  * {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object {@link #physParams}. Modifying this generator's model parameters
  * will not affected previously generated domains, so the same generator can be used to generate different domains without affecting others.
- * <p/>
+ * <p>
  * By default, this implementation will use the simulation described by Florian, which corrects two problems in the classic Barto, Sutton, and Anderson paper.
  * The two problems were (1) gravity was specified as negative in the equations when it should have been positive and (2) friction was not calculated
  * correctly. However, this domain may also be set to use the classic incorrect mechanics or the classic mechanics with correct gravity for comparison
  * purposes. To do so, use the methods {@link #setToIncorrectClassicModel()} and {@link #setToIncorrectClassicModelWithCorrectGravity()}. Note that
  * when incorrect gravity is used, the pole will "bounce" once it reaches about 90 degrees (though in most tasks the pole is never allowed to fall this far).
- * <p/>
+ * <p>
  * This domain consists of a single object with 4 real valued attributes: the x position of the cart, the x velocity of the cart, the angle between the pole
  * and the vertical axis, and the speed of the change in angle. Additionally, a 5th hidden attribute is included
  * when the corrected physics are used that maintains the sign of the normal force in the last step. If the classic mechanics are used instead,
@@ -41,9 +41,9 @@ import burlap.oomdp.singleagent.explorer.VisualExplorer;
  * The physics are simulated using a non-linear differential equation
  * that is estimated using Euler's Method. All system parameters are defaulted to those used in the
  * original paper, but they may modified as desired.
- * <p/>
+ * <p>
  * Also included with this class are default classes for reward function and terminal function for this domain.
- * <p/>
+ * <p>
  * Running the main method of this class will launch and interactive visualizer with the 'a' and 'd' keys controlling left and right movement
  * force respectively.
 

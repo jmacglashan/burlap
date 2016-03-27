@@ -18,15 +18,15 @@ import java.util.*;
  * of attributes for an {@link burlap.oomdp.core.ObjectClass} or all {@link burlap.oomdp.core.ObjectClass} objects,
  * consider using instead the {@link #gridEntireObjectClass(burlap.oomdp.core.ObjectClass, int)}} or
  * {@link #gridEntireDomainSpace(burlap.oomdp.core.Domain, int)} methods.
- * <p/>
+ * <p>
  * After the desired grid specifications have been set, a list of states spanning a grid according to the specification
  * can be generated using the {@link #gridInputState(burlap.oomdp.core.states.State)} method. This method takes a source input
  * state and creates a grid from it. Objects classes and attributes that did not have grid specifications
  * defined for them will remain as constant objects/values in each of the returned states. The input state values
  * will remain unaffected by the gridding.
- * <p/>
+ * <p>
  * Note that this gridder only works with attributes that are {@link burlap.oomdp.core.Attribute.AttributeType#REAL}
- * <p/>
+ * <p>
  * Example usage with the {@link burlap.domain.singleagent.mountaincar.MountainCar} domain below.
  * <pre>
  * {@code
@@ -43,7 +43,7 @@ import java.util.*;
  *  }
  * }
  * </pre>
- * <p/>
+ * <p>
  * Alternatively, you may replace the grid specification with something more specific; e.g., to create a 4x3 grid:
  * <pre>
  * {@code

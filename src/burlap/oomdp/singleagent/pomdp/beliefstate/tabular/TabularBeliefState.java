@@ -20,12 +20,12 @@ import java.util.*;
  * A class for storing a sparse tabular representation of the belief state. That is, each MDP state is assigned a unique
  * identifier using a {@link burlap.behavior.singleagent.auxiliary.StateEnumerator} and this class uses a {@link java.util.Map}
  * to associated the probability mass with each state. MDP states that have zero mass are not stored in the map.
- * <br/>
+ * <p>
  * The OO-MDP representation of this state associates with a singleton {@link burlap.oomdp.singleagent.SADomain} that has
  * one {@link burlap.oomdp.core.ObjectClass} named belief, that has one double array attribute named belief. When
  * An OO-MDP state representation is request, an {@link burlap.oomdp.core.objects.MutableObjectInstance} belonging to class
  * belief is created with its belief attribute set to the dense (non-sparse) belief vector that this BeliefState represents.
- * <br/>
+ * <p>
  * If using a BeliefMDP solver with a {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState},
  * it is recommended that you use {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory}
  * which will compute hash codes and perform state equality checks with the sparse Map representation
@@ -159,6 +159,11 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 			sum += numerator;
 			newBeliefStateVector[i] = numerator;
 
+		}
+
+		if(sum == 0. || Double.isNaN(sum)){
+			throw new RuntimeException("getUpdatedBeliefState for TaubularBeliefState failed because the probability normalization is " + sum + "." +
+					"\nFailed for action: " + ga.toString() + "\nAnd observation:\n" + observation.getCompleteStateDescriptionWithUnsetAttributesAsNull());
 		}
 
 		TabularBeliefState newBeliefState = new TabularBeliefState(this.domain, this.stateEnumerator);

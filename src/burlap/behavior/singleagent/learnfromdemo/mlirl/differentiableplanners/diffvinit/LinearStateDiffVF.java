@@ -1,5 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
+import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
@@ -9,13 +11,16 @@ import burlap.oomdp.core.states.State;
  * for learning the value function initialization for leaf nodes of a finite horizon valueFunction with {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL}.
  * @author James MacGlashan.
  */
-public class LinearStateDiffVF extends DifferentiableVInit.ParamedDiffVInit {
+public class LinearStateDiffVF implements DifferentiableVInit {
 
 
 	/**
 	 * The state feature vector generator over which the linear function operates
 	 */
 	protected StateToFeatureVectorGenerator fvgen;
+
+	protected int dim;
+	protected double [] parameters;
 
 
 	/**
@@ -29,14 +34,49 @@ public class LinearStateDiffVF extends DifferentiableVInit.ParamedDiffVInit {
 		this.fvgen = fvgen;
 	}
 
+
 	@Override
-	public double[] getVGradient(State s) {
-		return this.fvgen.generateFeatureVectorFrom(s);
+	public int numParameters() {
+		return this.dim;
 	}
 
 	@Override
-	public double[] getQGradient(State s, AbstractGroundedAction ga) {
-		return this.fvgen.generateFeatureVectorFrom(s);
+	public double getParameter(int i) {
+		return this.parameters[i];
+	}
+
+	@Override
+	public void setParameter(int i, double p) {
+		this.parameters[i] = p;
+	}
+
+	@Override
+	public void resetParameters() {
+		for(int i = 0; i < this.parameters.length; i++){
+			this.parameters[i] = 0.;
+		}
+	}
+
+	@Override
+	public ParametricFunction copy() {
+		return null;
+	}
+
+	@Override
+	public FunctionGradient getVGradient(State s){
+		double [] fvec = this.fvgen.generateFeatureVectorFrom(s);
+		FunctionGradient gradient = new FunctionGradient.SparseGradient();
+		for(int i = 0; i < fvec.length; i++){
+			gradient.put(i, fvec[i]);
+		}
+		return gradient;
+	}
+
+
+
+	@Override
+	public FunctionGradient getQGradient(State s, AbstractGroundedAction ga) {
+		return this.getVGradient(s);
 	}
 
 	@Override

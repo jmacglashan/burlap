@@ -30,7 +30,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * The {@link #runVI()} method can also be called directly to force value iteration to be performed on all states that have been previously found,
  * but the state reachability must have been performed at least once before to seed the state space. State reachability can be performed manually
  * by calling the {@link #performStateReachabilityFrom(State)} method.
- * <p/>
+ * <p>
  * Value iteration will continue until either the maximum change in Q-value is less than some user provided threshold or until a max number
  * of iterations have passed. 
  * 
@@ -169,7 +169,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * Runs Value Iteration over the set of states that have been discovered. VI terminates either when the max change in Q-value is less than the threshold stored
 	 * in this object's maxDelta parameter
 	 * or when the number of iterations exceeds  this object's maxIterations parameter.
-	 * <p/>
+	 * <p>
 	 * If {@link #performStateReachabilityFrom(State)} has not yet been called, then the state set will be empty and a runtime exception will be thrown.
 	 */
 	public void runVI(){

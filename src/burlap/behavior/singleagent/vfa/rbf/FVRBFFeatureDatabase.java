@@ -158,7 +158,7 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 	 * @param defaultWeightValue the default feature weight value to use for all features
 	 * @return a linear VFA object over this RBF feature database.
 	 */
-	public ValueFunctionApproximation generateVFA(double defaultWeightValue)
+	public LinearVFA generateVFA(double defaultWeightValue)
 	{
 		return new LinearVFA(this, defaultWeightValue);
 	}

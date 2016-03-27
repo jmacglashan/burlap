@@ -3,7 +3,6 @@ package burlap.behavior.singleagent.vfa.rbf;
 import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.states.State;
@@ -148,7 +147,7 @@ public class RBFFeatureDatabase implements FeatureDatabase {
 	 * @param defaultWeightValue the default feature weight value to use for all features
 	 * @return a linear VFA object over this RBF feature database.
 	 */
-	public ValueFunctionApproximation generateVFA(double defaultWeightValue)
+	public LinearVFA generateVFA(double defaultWeightValue)
 	{
 		return new LinearVFA(this, defaultWeightValue);
 	}

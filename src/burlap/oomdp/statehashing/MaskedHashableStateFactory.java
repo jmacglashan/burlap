@@ -13,7 +13,7 @@ import java.util.*;
  * specific {@link burlap.oomdp.core.ObjectClass} or value assignments for specific {@link burlap.oomdp.core.Attribute}s.
  * You can specify which attributes and object classes to ignore through an attribute name mask and an object class name
  * mask. There are a variety of methods for manipulating the masks.
- * <br/><br/>
+ * <p>
  * This class extends {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
  * to be object identifier/name independent or dependent and can be set to use {@link burlap.oomdp.statehashing.HashableState}
  * instances that hash their hash code or not. See the {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}

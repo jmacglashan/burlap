@@ -10,7 +10,7 @@ import burlap.behavior.singleagent.learning.lspi.SARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.singleagent.vfa.ValueFunctionApproximation;
+import burlap.behavior.singleagent.vfa.DifferentiableStateActionValue;
 import burlap.behavior.singleagent.vfa.cmac.CMACFeatureDatabase;
 import burlap.behavior.singleagent.vfa.common.ConcatenatedObjectFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.fourier.FourierBasis;
@@ -35,7 +35,6 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.GoalBasedRF;
 import burlap.oomdp.singleagent.common.VisualActionObserver;
-import burlap.oomdp.singleagent.environment.EnvironmentServer;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
 import burlap.oomdp.visualizer.Visualizer;
@@ -69,11 +68,11 @@ public class ContinuousDomainTutorial {
 		vob.initGUI();
 
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, MountainCar.getCleanState(domain, mcGen.physParams));
-		EnvironmentServer envServ = new EnvironmentServer(env, vob);
+		env.addObservers(vob);
 
 		for(int i = 0; i < 5; i++){
-			p.evaluateBehavior(envServ);
-			envServ.resetEnvironment();
+			p.evaluateBehavior(env);
+			env.resetEnvironment();
 		}
 
 		System.out.println("Finished");
@@ -112,11 +111,11 @@ public class ContinuousDomainTutorial {
 
 
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, s);
-		EnvironmentServer envServ = new EnvironmentServer(env, vob);
+		env.addObservers(vob);
 
 		for(int i = 0; i < 5; i++){
-			p.evaluateBehavior(envServ);
-			envServ.resetEnvironment();
+			p.evaluateBehavior(env);
+			env.resetEnvironment();
 		}
 
 		System.out.println("Finished");
@@ -185,7 +184,7 @@ public class ContinuousDomainTutorial {
 
 
 		double defaultQ = 0.5;
-		ValueFunctionApproximation vfa = cmac.generateVFA(defaultQ/nTilings);
+		DifferentiableStateActionValue vfa = cmac.generateVFA(defaultQ/nTilings);
 		GradientDescentSarsaLam agent = new GradientDescentSarsaLam(domain, 0.99, vfa, 0.02, 0.5);
 
 		MyTimer timer = new MyTimer(true);

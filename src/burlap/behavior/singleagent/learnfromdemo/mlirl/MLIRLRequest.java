@@ -17,7 +17,7 @@ import java.util.List;
  * This request adds a set of optionally specified weights on the expert trajectories, the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}
  * to use, and the Boltzmann beta parameter used for Differentiable planning. The larger the beta value, the more
  * deterministic the expert trajectories are assumed to be.
- * <p/>
+ * <p>
  * If no expert trajectory weights are provided,
  * then they will all be assumed to have a weight of 1. Calls to the {@link #getEpisodeWeights()} method when weights have
  * not been specified will result in a new double array being created and returned with the value 1.0 everywhere, so changes

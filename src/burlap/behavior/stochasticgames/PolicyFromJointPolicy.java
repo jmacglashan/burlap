@@ -17,11 +17,11 @@ import burlap.oomdp.stochasticgames.JointAction;
  * and the agent name whose actions in the returned joint actions are being followed. The action distribution for the agent
  * is determined by marginalizing over other agent's actions in the joint policy as if they were selcted indepently. Note that
  * this assumption may not always be correct, depending on the joint policy.
- * <p/>
+ * <p>
  * When the agent name for this policy is
  * set, it automatically calls the {@link JointPolicy#setTargetAgent(String)} method of the source joint policy with the same
  * agent name.
- * <p/>
+ * <p>
  * Action selection from the underlying joint policy may also be synchronized with multiple agents who are following the same
  * underlying joint policy object. This has the effect of the joint policy choosing a joint action for each time step and causing
  * each agent to follow that selected joint action. See the {@link JointPolicy} class documentation for more information on how

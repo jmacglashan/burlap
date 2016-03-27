@@ -1,17 +1,14 @@
 package burlap.domain.singleagent.lunarlander;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -19,6 +16,9 @@ import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -29,14 +29,14 @@ import burlap.oomdp.visualizer.Visualizer;
  *  action exerts force in the opposite direction the lander is oriented. Gravity acts
  *  on the agent so the agent must find the right balance of thrust to take off
  *  and reach some designated landing position.
- *  <p/>
+ *  <p>
  *  The agent object class is made up of 5 attributes, x-y position, x-y velocity,
  *  and the angle or orientation (in radians from the default vertical orientation). Two
  *  other object classes are defined for landing pads and obstacles. Both are objects
  *  are defined as a rectangular region with a left, right, bottom, and top attribute
  *  defining the space. Typically, the goal is for the agent to land on the land pad
  *  while avoiding the obstacles.
- *  <p/>
+ *  <p>
  *  The domain generator allows the client to specify the physics and action definitions
  *  for the lunar lander. In particular the client can add as many thrust actions (each
  *  with their own thrust force) as desired, the force of gravity can be changed, the
@@ -45,7 +45,7 @@ import burlap.oomdp.visualizer.Visualizer;
  *  rotate increment size that results from applying a clockwise/counterclockwise 
  *  rotate action can also be set. There is also a method to set the domain
  *  to a standard set of physics and actions.
- *  <p/>
+ *  <p>
  *  If the domain generator physics parameters are changed after a domain has been generated,
  *  the previously generated domain will remain unaffected, allowing you to reuse the same
  *  domain generator to produce different versions of the domain without conflict.
@@ -554,16 +554,16 @@ public class LunarLanderDomain implements DomainGenerator {
 	
 	
 	/**
-	 * Sets the domain to use a standard set of physics and with a standard set of two thrust actions.<br/>
-	 * gravity = -0.2<br/>
-	 * xmin = 0<br/>
-	 * xmax = 100<br/>
-	 * ymin = 0<br/>
-	 * ymax = 50<br/>
-	 * max velocity component speed = 4<br/>
-	 * maximum angle of rotation = pi/4<br/>
-	 * change in angle from turning = pi/20<br/>
-	 * thrust1 force = 0.32<br/>
+	 * Sets the domain to use a standard set of physics and with a standard set of two thrust actions.<p>
+	 * gravity = -0.2<p>
+	 * xmin = 0<p>
+	 * xmax = 100<p>
+	 * ymin = 0<p>
+	 * ymax = 50<p>
+	 * max velocity component speed = 4<p>
+	 * maximum angle of rotation = pi/4<p>
+	 * change in angle from turning = pi/20<p>
+	 * thrust1 force = 0.32<p>
 	 * thrust2 force = 0.2 (opposite gravity) 
 	 */
 	public void setToStandardLunarLander(){
@@ -573,8 +573,8 @@ public class LunarLanderDomain implements DomainGenerator {
 	
 	
 	/**
-	 * Adds two standard thrust actions.<br/>
-	 * thrust1 force = 0.32<br/>
+	 * Adds two standard thrust actions.<p>
+	 * thrust1 force = 0.32<p>
 	 * thrust2 force = 0.2 (opposite gravity) 
 	 */
 	public void addStandardThrustActions(){
@@ -1205,13 +1205,13 @@ public class LunarLanderDomain implements DomainGenerator {
 	/**
 	 * This method will launch a visual explorer for the lunar lander domain. It will use the default
 	 * physics, start the agent on the left side of the world with a landing pad on the right
-	 * and an obstacle in between. The agent is controlled with the following keys: <br/>
-	 * w: heavy thrust<br/>
-	 * s: weak thrust<br/>
-	 * a: turn/rotate counterclockwise<br/>
-	 * d: turn/rotate clockwise<br/>
+	 * and an obstacle in between. The agent is controlled with the following keys: <p>
+	 * w: heavy thrust<p>
+	 * s: weak thrust<p>
+	 * a: turn/rotate counterclockwise<p>
+	 * d: turn/rotate clockwise<p>
 	 * x: idle (drift for one time step)
-	 * <p/>
+	 * <p>
 	 * If you pass the main method "t" as an argument, a terminal explorer will be used instead of a visual explorer.
 	 * @param args optionally pass "t" asn argument to use a terminal explorer instead of a visual explorer.
 	 */
@@ -1255,12 +1255,6 @@ public class LunarLanderDomain implements DomainGenerator {
 		if(expMode == 0){
 
 			TerminalExplorer te = new TerminalExplorer(domain, clean);
-
-			te.addActionShortHand("a", ACTIONTURNL);
-			te.addActionShortHand("d", ACTIONTURNR);
-			te.addActionShortHand("w", ACTIONTHRUST+0);
-			te.addActionShortHand("s", ACTIONTHRUST+1);
-			te.addActionShortHand("x", ACTIONIDLE);
 
 			te.explore();
 

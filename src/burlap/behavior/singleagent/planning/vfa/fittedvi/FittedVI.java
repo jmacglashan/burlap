@@ -28,12 +28,12 @@ import java.util.List;
  * of the world and the current, initially zero-valued, value function approximation). The newly computed values for each
  * state are then used as a supervised instance to train the next iteration of the value function.
  *
- * <br/><br/>
+ * <p>
  * To perform planning after specifying the state samples to use (either in the constructor or with the {@link #setSamples(java.util.List)} method,
  * you can perform planning with the {@link #runVI()} method. You can also use the standard {@link #planFromState(burlap.oomdp.core.states.State)} method,
  * but specifying the state does not change behavior; the method just calls the {@link #runVI()} method itself.
  *
- * <br/><br/>
+ * <p>
  * To compute the value of a state sample with the current value function approximation, this class will invoke the
  * {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} class. This enables it to
  * perform an approximate Bellman operator with sparse samples from the transition dynamics, which is useful if
@@ -45,7 +45,7 @@ import java.util.List;
  *
  *
  *
- * <br/><br/>
+ * <p>
  * 1. Gordon, Geoffrey J. "Stable function approximation in dynamic programming." Proceedings of the twelfth international conference on machine learning. 1995.
  * @author James MacGlashan.
  */

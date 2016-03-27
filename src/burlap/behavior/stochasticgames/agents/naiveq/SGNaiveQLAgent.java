@@ -29,8 +29,8 @@ import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
  * A Tabular Q-learning [1] algorithm for stochastic games formalisms. This algorithm ignores the actions of other agents and treats the outcomes
  * from their decisions as if they're part of the environment transition dynamics, hence the "naive" qualifier.
  * 
- * <p/>
- * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <br/>
+ * <p>
+ * 1. Watkins, Christopher JCH, and Peter Dayan. "Q-learning." Machine learning 8.3-4 (1992): 279-292. <p>
  * @author James MacGlashan
  *
  */

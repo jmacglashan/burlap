@@ -1,10 +1,11 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
+import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
 
 /**
- * A tuple (triple) for storing the Q-gradient associated with a state and action. The gradient is stored in a double array.
+ * A tuple (triple) for storing the Q-gradient associated with a state and action.
  * @author James MacGlashan.
  */
 public class QGradientTuple {
@@ -22,7 +23,7 @@ public class QGradientTuple {
 	/**
 	 * The gradient for the state and action.
 	 */
-	public double [] gradient;
+	public FunctionGradient gradient;
 
 
 	/**
@@ -31,7 +32,7 @@ public class QGradientTuple {
 	 * @param a the action
 	 * @param gradient the gradient for the state an action
 	 */
-	public QGradientTuple(State s, AbstractGroundedAction a, double [] gradient){
+	public QGradientTuple(State s, AbstractGroundedAction a, FunctionGradient gradient){
 		this.s = s;
 		this.a = a;
 		this.gradient = gradient;

@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * that this class treats states at different depths as unique states. In general the typical {@link TDLambda} method is recommend unless a special 
  * {@link burlap.behavior.singleagent.learning.actorcritic.Actor} object that exploits the time information is to be used as well.
  * 
- * <p/>
+ * <p>
  * 1. Barto, Andrew G., Steven J. Bradtke, and Satinder P. Singh. "Learning to act using real-time dynamic programming." Artificial Intelligence 72.1 (1995): 81-138.
  * @author James MacGlashan
  *

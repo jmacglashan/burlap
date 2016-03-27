@@ -19,10 +19,10 @@ import java.util.List;
  * which takes a {@link java.util.List} of {@link SerializableState} objects and turns it
  * into a {@link java.util.List} of {@link burlap.oomdp.core.states.State} objects by calling the {@link #deserialize(burlap.oomdp.core.Domain)}
  * method of each element.
- * <br/><br/>
+ * <p>
  * In general, {@link SerializableState} objects should be constructed with a
  * {@link SerializableStateFactory}.
- * <br/><br/>
+ * <p>
  * A standard serializable representation that operates reading the {@link burlap.oomdp.core.objects.ObjectInstance}
  * and {@link burlap.oomdp.core.values.Value} objects returned by a {@link burlap.oomdp.core.states.State} and explicitly
  * representing their information is the

@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
@@ -21,10 +22,7 @@ import burlap.oomdp.core.*;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A Differentiable finite horizon valueFunction that can also use sparse sampling over the transition dynamics when the
@@ -34,8 +32,8 @@ import java.util.Map;
  * nodes of this valueFunction may also be parametrized using a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit}
  * object and learned with {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL},
  * enabling a nice separation of shaping features/rewards and the learned (or known) reward function.
- * <br/>
- * <br/>
+ * <p>
+ * <p>
  * 1. MacGlashan, J. Littman, M., "Between Imitation and Intention Learning," Proceedings of IJCAI 15, 2015.
  * 2. Babes, M., Marivate, V., Subramanian, K., and Littman, "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
  * @author James MacGlashan.
@@ -116,7 +114,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		this.boltzBeta = boltzBeta;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, DiffStateNode>();
 		this.rootLevelQValues = new HashMap<HashableState, DifferentiableSparseSampling.QAndQGradient>();
-		this.rfDim = rf.getParameterDimension();
+		this.rfDim = rf.numParameters();
 
 		this.vinit = new VanillaDiffVinit(new ValueFunctionInitialization.ConstantValueFunctionInitialization(), rf);
 
@@ -411,7 +409,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		/**
 		 * The gradient of the value function
 		 */
-		double [] vgrad;
+		FunctionGradient vgrad;
 
 
 		/**
@@ -463,8 +461,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		public void sampledBellmanQEstimate(GroundedAction ga, QAndQGradient qs){
 
-			int dim = DifferentiableSparseSampling.this.rfDim;
-			double [] qGradient = new double[dim];
+			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
 			//generate C samples
 			double sum = 0.;
@@ -473,20 +470,27 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 				//execute
 				State ns = ga.executeIn(this.sh.s);
 				double r = DifferentiableSparseSampling.this.rf.reward(this.sh.s, ga, ns);
-				double [] rGradient = ((DifferentiableRF)DifferentiableSparseSampling.this.rf).getGradient(this.sh.s, ga, ns);
+				FunctionGradient rGradient = ((DifferentiableRF)DifferentiableSparseSampling.this.rf).gradient(this.sh.s, ga, ns);
 
 				DiffStateNode nsn = DifferentiableSparseSampling.this.getStateNode(ns, this.height-1);
 
 				VAndVGradient vVals = nsn.estimateV();
+				Set<Integer> params = combinedNonZeroPDParameters(vVals.vGrad, rGradient);
 				sum += r + DifferentiableSparseSampling.this.gamma*vVals.v;
-				for(int f = 0; f < rGradient.length; f++){
-					qGradient[f] += rGradient[f] + DifferentiableSparseSampling.this.gamma*vVals.vGrad[f];
+				for(Integer p : params){
+					double curVal = qGradient.getPartialDerivative(p);
+					double nextVal = curVal + rGradient.getPartialDerivative(p) + DifferentiableSparseSampling.this.gamma * vVals.vGrad.getPartialDerivative(p);
+					qGradient.put(p, nextVal);
 				}
+
+
 			}
 			sum /= (double)c;
-			for(int f = 0; f < qGradient.length; f++){
-				qGradient[f] /= (double)c;
+			for(FunctionGradient.PartialDerivative pd : qGradient.getNonZeroPartialDerivatives()){
+				double nextVal = pd.value / (double)c;
+				qGradient.put(pd.parameterId, nextVal);
 			}
+
 
 			qs.add(new QValue(this.sh.s, ga, sum), new QGradientTuple(this.sh.s, ga, qGradient));
 
@@ -497,7 +501,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		public void fulldBellmanQEstimate(GroundedAction ga, QAndQGradient qs){
 
 			int dim = DifferentiableSparseSampling.this.rfDim;
-			double [] qGradient = new double[dim];
+			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
 			double sum = 0.;
 			List<TransitionProbability> tps = ga.getTransitions(sh.s);
@@ -505,14 +509,17 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 				State ns = tp.s;
 				double r = DifferentiableSparseSampling.this.rf.reward(this.sh.s, ga, ns);
-				double [] rGradient = ((DifferentiableRF)DifferentiableSparseSampling.this.rf).getGradient(this.sh.s, ga, ns);
+				FunctionGradient rGradient = ((DifferentiableRF)DifferentiableSparseSampling.this.rf).gradient(this.sh.s, ga, ns);
 
 				DiffStateNode nsn = DifferentiableSparseSampling.this.getStateNode(ns, this.height-1);
 
 				VAndVGradient vVals = nsn.estimateV();
+				Set<Integer> params = combinedNonZeroPDParameters(vVals.vGrad, rGradient);
 				sum += tp.p * (r + DifferentiableSparseSampling.this.gamma*vVals.v);
-				for(int f = 0; f < rGradient.length; f++){
-					qGradient[f] += tp.p * (rGradient[f] + DifferentiableSparseSampling.this.gamma*vVals.vGrad[f]);
+				for(Integer p : params){
+					double curVal = qGradient.getPartialDerivative(p);
+					double nextVal = curVal + tp.p * (rGradient.getPartialDerivative(p) + DifferentiableSparseSampling.this.gamma * vVals.vGrad.getPartialDerivative(p));
+					qGradient.put(p, nextVal);
 				}
 
 			}
@@ -530,7 +537,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 			if(DifferentiableSparseSampling.this.tf.isTerminal(this.sh.s)){
 				this.v = 0.;
-				this.vgrad = new double[DifferentiableSparseSampling.this.rfDim];
+				this.vgrad = new FunctionGradient.SparseGradient();
 				this.closed = true;
 				return new VAndVGradient(this.v, this.vgrad);
 			}
@@ -561,8 +568,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		protected void setVGrad(QAndQGradient qvs){
 
-			this.vgrad = new double[DifferentiableSparseSampling.this.rfDim];
-			int d = vgrad.length;
+			this.vgrad = new FunctionGradient.SparseGradient();
 
 			//pack qs into double array
 			double [] qs = new double[qvs.qs.size()];
@@ -571,12 +577,9 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			}
 
 			//get all q gradients
-			double [][] gqs = new double[qs.length][d];
+			FunctionGradient [] gqs = new FunctionGradient[qs.length];
 			for(int i = 0; i < qs.length; i++){
-				double [] gq = qvs.qGrads.get(i).gradient;
-				for(int j = 0; j < d; j++){
-					gqs[i][j] = gq[j];
-				}
+				gqs[i] = qvs.qGrads.get(i).gradient;
 			}
 
 			double maxBetaScaled = BoltzmannPolicyGradient.maxBetaScaled(qs, DifferentiableSparseSampling.this.boltzBeta);
@@ -585,18 +588,35 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			for(int i = 0; i < qs.length; i++){
 
 				double probA = Math.exp(DifferentiableSparseSampling.this.boltzBeta * qs[i] - logSum);
-				double [] policyGradient = BoltzmannPolicyGradient.computePolicyGradient((DifferentiableRF)DifferentiableSparseSampling.this.rf,
+				FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(
 						DifferentiableSparseSampling.this.boltzBeta, qs, maxBetaScaled, logSum, gqs, i);
 
-				for(int j = 0; j < d; j++){
-					this.vgrad[j] += (probA * gqs[i][j]) + qs[i] * policyGradient[j];
+
+				for(FunctionGradient.PartialDerivative pd : policyGradient.getNonZeroPartialDerivatives()){
+					double curVal = this.vgrad.getPartialDerivative(pd.parameterId);
+					double nextVal = curVal + (probA * gqs[i].getPartialDerivative(pd.parameterId)) + (qs[i] * pd.value);
+					vgrad.put(pd.parameterId, nextVal);
 				}
+
 
 			}
 
 		}
 
 
+	}
+
+	protected Set<Integer> combinedNonZeroPDParameters(FunctionGradient...gradients){
+
+		Set<Integer> c = new HashSet<Integer>();
+		for(FunctionGradient g : gradients){
+			Set<FunctionGradient.PartialDerivative> p = g.getNonZeroPartialDerivatives();
+			for(FunctionGradient.PartialDerivative e : p){
+				c.add(e.parameterId);
+			}
+		}
+
+		return c;
 	}
 
 
@@ -630,9 +650,9 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	protected static class VAndVGradient{
 
 		double v;
-		double [] vGrad;
+		FunctionGradient vGrad;
 
-		public VAndVGradient(double v, double [] vGrad){
+		public VAndVGradient(double v, FunctionGradient vGrad){
 			this.v = v;
 			this.vGrad = vGrad;
 		}

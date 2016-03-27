@@ -29,7 +29,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * (so that they can be quickly retrieved without multiple calls to the action transition generation) and a map
  * from states to their values. It also implements {@link burlap.behavior.valuefunction.QFunction} which can return
  * Q-values by using the transition dynamics and the stored value function.
- * <p/>
+ * <p>
  * Note that by default {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} instances
  * will cache the transition dynamics so that they do not have to be procedurally generated
  * by the {@link burlap.oomdp.singleagent.Action}. Transition dynamic caching can be disable by calling the {@link #toggleUseCachedTransitionDynamics(boolean)}

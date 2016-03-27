@@ -27,7 +27,7 @@ import java.util.List;
  * a {@link burlap.oomdp.singleagent.environment.Environment#resetEnvironment()} message is observed and block for the
  * same interval of time.
  * This class is especially useful for watching learning algorithms or Monte Carlo-like planning algorithms in action.
- * <br/><br/>
+ * <p>
  * Optionally, this class may also render state-action events in an {@link burlap.oomdp.singleagent.environment.Environment}
  * (so that the action is also rendered) so long as
  * the input {@link burlap.oomdp.visualizer.Visualizer} has a set {@link burlap.oomdp.visualizer.StateActionRenderLayer}.

@@ -11,7 +11,7 @@ import burlap.oomdp.core.TerminalFunction;
  * This class is used for setting a terminal function for GridWorlds that is based on the location of the agent in the world.
  * An alternative approch would be to use location objects and the atLocation propositional function to specify terminal states,
  * but this approach may be simpler to define or when terminal states are defined independent of location objects. 
- * <p/>
+ * <p>
  * The set of terminal positions is defined either in the constructor or with subsequent calls to the {@link #markAsTerminalPosition(int, int)}
  * method. Terminal positions may also be removed with the {@link #unmarkTerminalPosition(int, int)} and {@link #unmarkAllTerminalPositions()}
  * methods.

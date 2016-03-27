@@ -19,15 +19,15 @@ import java.util.Set;
  * (the names of objects don't affect the state definition). However, you can make it object identifier dependent
  * with the either of the constructors {@link #SimpleHashableStateFactory(boolean)} or
  * {@link #SimpleHashableStateFactory(boolean, boolean)}.
- * <br/><br/>
+ * <p>
  * This factory is capable of hashing states with any kind of values. However, if you wish to hash states
  * that have relational attributes, you must set the factory to be object identifier dependent.
- * <br/><br/>
+ * <p>
  * Optionally, this factory can be set to produce {@link burlap.oomdp.statehashing.HashableState} instances
  * that cache the hash code so that it does not need to be recomputed on multiple calls of the hashCode method.
  * To enable hash code caching, use the {@link #SimpleHashableStateFactory(boolean, boolean)} constructor.
  * Using caching will use slightly more memory by having to associate an int with each {@link burlap.oomdp.statehashing.HashableState}.
- * <br/><br/>
+ * <p>
  * This class has multiple aspects of the state equality methods implemented so that it can be easily sub classed
  * by other forms of equality checking and have each method override only what it needs to override.
  * @author James MacGlashan.

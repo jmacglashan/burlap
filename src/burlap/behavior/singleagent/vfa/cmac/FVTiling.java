@@ -68,7 +68,7 @@ public class FVTiling {
 		int [] tiledVector = new int[input.length];
 		for(int i = 0; i < input.length; i++){
 			if(this.dimensionMask[i]){
-				tiledVector[i] = (int)((input[i] - this.offset[i]) / this.widths[i]);
+				tiledVector[i] = (int)Math.floor((input[i] - this.offset[i]) / this.widths[i]);
 			}
 			else{
 				tiledVector[i] = 0;

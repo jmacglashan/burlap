@@ -4,9 +4,6 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentServer;
 
@@ -20,15 +17,15 @@ import burlap.oomdp.singleagent.environment.EnvironmentServer;
  * an {@link burlap.behavior.singleagent.learning.LearningAgentFactory} is begun).
  * The length of the trials by default is assumed to be in episodes, but it may also be changed to indicate length in total number of steps using the 
  * {@link #toggleTrialLengthInterpretation(boolean)} method.
- * <p/>
+ * <p>
  * Performance results are displayed in plots using the {@link PerformancePlotter} class, but visualization may also be disabled with the {@link #toggleVisualPlots(boolean)}
  * method. Results may be saved to csv files after the experiment is complete.
- * <p/>
+ * <p>
  * The purpose of the experimenter is to test an agent for a specified number of trials. At the beginning of each trial, a new agent is generated using the designated
  * LearningAgentFactory and is used for the specified trial length. After all trials are complete for an agent, the next agent is tested. Note that immediately before
  * an agent is generated from an agent factory, the performance plotter is temporarily frozen from collecting data until the new agent is returned. This allows
  * agent factories to perform offline learning before returning a new agent in the same domain without affecting the experimenter results.
- * <p/>
+ * <p>
  * By default the cumulative reward per step will be plotted and if more than one trial is specified, the both the most recent trail and the trial average plot will be shown.
  * If only one trial is specified, then only the most recent trial plot will be shown. To control the kinds of plots displayed use the 
  * {@link #setUpPlottingConfiguration(int, int, int, int, TrialMode, PerformanceMetric...)} method. 
@@ -264,10 +261,10 @@ public class LearningAlgorithmExperimenter {
 	
 	/**
 	 * Writes the step-wise and episode-wise data to CSV files.
-	 * The episode-wise data will be saved to the file <pathAndBaseNameToUse>Episodes.csv. The step-wise data will.
-	 * If the experimenter as not been run, then nothing will be saved and a warrning message will be printed to indicate as such.
-	 * be saved to the file <pathAndBaseNameToUse>Steps.csv
-	 * @param pathAndBaseNameToUse the base path and file name for the epsidoe-wise and step-wise csv files.
+	 * The episode-wise data will be saved to the file &lt;pathAndBaseNameToUse&gt;Episodes.csv. The step-wise data will.
+	 * If the experimenter as not been run, then nothing will be saved and a warning message will be printed to indicate as such.
+	 * be saved to the file &lt;pathAndBaseNameToUse&gt;Steps.csv
+	 * @param pathAndBaseNameToUse the base path and file name for the episode-wise and step-wise csv files.
 	 */
 	public void writeStepAndEpisodeDataToCSV(String pathAndBaseNameToUse){
 		if(!this.completedExperiment){

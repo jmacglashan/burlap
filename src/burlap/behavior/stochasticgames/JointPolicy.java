@@ -20,11 +20,11 @@ import burlap.oomdp.stochasticgames.World;
  * The primary extension of this object is a set of agent definitions which define the set of possible joint actions in any state.
  * An agent definition consists of an agent name and their {@link burlap.oomdp.stochasticgames.SGAgentType}, the latter of which specifies the set of individual actions
  * that they can take and which object class represents their state.
- * <p/>
+ * <p>
  * It is not uncommon for some joint policies to be defined from a privledged agent's position. This class also contains an abstract method
  * for setting that target privledge agent: {@link #setTargetAgent(String)}. If the joint policy is agent agnostic, then this method
  * does not need to do anything.
- * <p/>
+ * <p>
  * This class can also be used to synchonize the action selection of multiple agents according to the same sampled joint action. This is achieved
  * by using the {@link #getAgentSynchronizedActionSelection(String, State)} method, which returns the single action for each agent (of the specified
  * name) from the same sampled joint action until all agents defined in the policy have queried the method for their action selection.

@@ -13,24 +13,24 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * to the single-agent action definition class, {@link burlap.oomdp.singleagent.Action}, except it does
  * not include the transition dynamic information which is instead provided by a {@link burlap.oomdp.stochasticgames.JointActionModel}
  * that takes the simultaneous action selections of all agents in a game and determines the outcome.
- * <br/><br/>
+ * <p>
  * A {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} is closely associated with an implementation of
  * the {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} class. An {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
  * differs from a {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} in that the {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
  * includes parameter assignment information necessary for the agent to execute the action.
- * <br/><br/>
- * Implementing this class requires subclassing the following abstract methods:<br/>
- * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedSGAgentAction)}, <br/>
- * {@link #isParameterized()}, <br/>
- * {@link #getAssociatedGroundedAction(String)}, and<br/>
- * {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State, String)}. <br/>
+ * <p>
+ * Implementing this class requires subclassing the following abstract methods:<p>
+ * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedSGAgentAction)}, <p>
+ * {@link #isParameterized()}, <p>
+ * {@link #getAssociatedGroundedAction(String)}, and<p>
+ * {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State, String)}. <p>
  * The {@link #applicableInState(burlap.oomdp.core.states.State, GroundedSGAgentAction)}
  * method defines the preconditions of the action definition. The latter three methods are important
  * for defining parameterized actions. Note that if you If you are defining a parameter-less action that has no
  * preconditions (can be executed in any state), then you may simply use the {@link SimpleSGAgentAction}
  * implementation for creating your action definition. Otherwise, the {@link #isParameterized()} method should
  * return true and you will also need to implementing the remaining methods.
- * <br/><br/>
+ * <p>
  * As noted previously, an {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} implementation
  * stores a set of parameter assignments that need to be provided to apply your parameterized {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}.
  * For custom parameterizations, you will need to subclass {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} to include data
@@ -39,12 +39,12 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * pointing to this  {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} and its {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction#actingAgent}
  * data member pointing to the actingAgent argument. The parameter assignments in the returned {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}
  * do not need to be specified; this method serves as a means for simply generating an instance of the associated {@link burlap.oomdp.singleagent.GroundedAction}.
- * <br/><br/>
+ * <p>
  * The {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State, String)} method should return a list of {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
  * instances, covering all possible parameterizations of this action for the acting agent in the given state. However,
  * the returned list should only include {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} instances that satisfy the
  * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedSGAgentAction)} method.
- * <br/><br/>
+ * <p>
  * Overriding these two methods and having them return a custom {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} subclass
  * is all that is required to implement a parameterized {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} and by allowing you to
  * define your own subclass of {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction},

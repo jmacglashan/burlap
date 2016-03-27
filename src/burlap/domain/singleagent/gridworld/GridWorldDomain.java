@@ -1,24 +1,14 @@
 package burlap.domain.singleagent.gridworld;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OOMDPObjectInstance;
 import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.core.states.OOMDPState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -28,6 +18,10 @@ import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 
 
 /**
@@ -35,14 +29,14 @@ import burlap.oomdp.visualizer.Visualizer;
  * of arbitrarily sized grid worlds with user defined layouts. The grid world supports
  * classic north, south, east, west movement actions that may be either deterministic
  * or stochastic with user defined stochastic failures.
- * <br/>
+ * <p>
  * The domain consists of only
  * two object classes: an agent class and a location class, each of which is defined by
  * and x and y position. Locations also have an attribute defining which type of location it is.
  * The number of
  * possible types can be set using the {@link #setNumberOfLocationTypes(int)} method.
  * Setting location types may be useful if terminating "pits" and goal locations exist in the world
- * <br/> 
+ * <p> 
  * Walls are not considered objects. Instead walls are
  * considered part of the transition dynamics. There are 2 types of walls supported. Walls that are more like obstacles
  * and occupy an entire cell of the map and 1D walls. 1D walls are specified as either a horizontal wall on the north side
@@ -50,11 +44,11 @@ import burlap.oomdp.visualizer.Visualizer;
  * for each cell is specified by a 2D int matrix provided to the constructor. Cells in the matrix with a 0 are clear of any walls
  * and obstacle; 1s indicate a full cell obstacle; 2s a 1D north wall; 3s a 1D east wall; and 4s indicate that the cell has both
  * a 1D north wall and 1D east wall.
- * <br/>
+ * <p>
  * Note that if you change the stochastic transition dynamics or the map of the domain generator *after* generating
  * a domain with {@link #generateDomain()}, the previously generated domain will use the settings prior to its
  * generation. To use the new settings, you will need to generate a new domain object.
- * <br/>
+ * <p>
  * There are five propositional functions
  * supported: atLocation(agent, location), wallToNorth(agent), wallToSouth(agent),
  * wallToEast(agent), and wallToWest(agent). 
@@ -936,10 +930,6 @@ public class GridWorldDomain implements DomainGenerator {
 		if(expMode == 0){
 			
 			TerminalExplorer exp = new TerminalExplorer(d, s);
-			exp.addActionShortHand("n", ACTIONNORTH);
-			exp.addActionShortHand("e", ACTIONEAST);
-			exp.addActionShortHand("w", ACTIONWEST);
-			exp.addActionShortHand("s", ACTIONSOUTH);
 			
 			exp.explore();
 			

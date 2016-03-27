@@ -34,7 +34,7 @@ import java.util.List;
  * Any subset of these metrics
  * may be displayed in any order specified by the user and plots are displayed in a matrix format with a maximum number of columns that are filled out first.
  * If the number of plots would cause a window height larger than a maximimum specified, then the plots are placed in a scroll view.
- * <p/>
+ * <p>
  * The way this class should be used is the constructor is first called. Then the {@link #startGUI()} method. A trial indicates a single evaluation of
  * a learning algorithm for some number of steps or episodes. Multiple trials are used to produce the average trial plots. Each trial should reinitialize
  * the learning algorithm so that it learns from scratch. At the start of each trial the {@link #startNewTrial()} method should be called. At the end
@@ -42,14 +42,14 @@ import java.util.List;
  * all trials for the current agent are complete and a new agent is to tested to be compared, the {@link #startNewAgent(String)} method should be called,
  * providing the name of the new agent to be tested. Since the constructor takes the name of the first agent, this method does not have to be called for
  * the first agent. When all testing for all agents is complete, a call to the {@link #endTrialsForCurrentAgent()} method should be made.
- * <p/>
+ * <p>
  * To ensure proper use of this class, it is highly reccomended that the {@link LearningAlgorithmExperimenter} class is used, since it handles all of these
  * method calls behind the scenes.
- * <p/>
+ * <p>
  * When testing is done, you may optionally request all data to be printed to CSV files. One CSV file will produce the step-wise performance
  * metric (cumulaitve reward by step) for all agents and trials. Another will produce all the episode-wise performance metric data. This data
  * can be produced regardless of which metrics you requested to be plotted.
- * <p/>
+ * <p>
  * Note that the plots that are created have a number of interactive options. Try right-clicking on them to see the list of things you can modfiy in the GUI.
  * 
  * 
@@ -491,8 +491,8 @@ public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 	
 	/**
 	 * Writes the step-wise and episode-wise data to CSV files.
-	 * The episode-wise data will be saved to the file <pathAndBaseNameToUse>Episodes.csv. The step-wise data will
-	 * be saved to the file <pathAndBaseNameToUse>Steps.csv
+	 * The episode-wise data will be saved to the file &lt;pathAndBaseNameToUse&gt;Episodes.csv. The step-wise data will
+	 * be saved to the file &lt;pathAndBaseNameToUse&gt;Steps.csv
 	 * @param pathAndBaseNameToUse the base path and file name for the epsidoe-wise and step-wise csv files.
 	 */
 	public void writeStepAndEpisodeDataToCSV(String pathAndBaseNameToUse){

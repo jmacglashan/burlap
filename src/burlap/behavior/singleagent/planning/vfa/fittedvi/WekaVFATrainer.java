@@ -19,7 +19,7 @@ import java.util.List;
  * interface and a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} to turn BURLAP {@link burlap.oomdp.core.states.State} objects into
  * feature vectors usable by Weka.
  *
- * <br/><br/>
+ * <p>
  * This class also provides the static method {@link #getKNNTrainer(burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator, int)}
  * for construction of the Weka instance-based regression algorithm {@link weka.classifiers.lazy.IBk},
  * since instance-based methods have convergence guarantees for fitted value iteration.

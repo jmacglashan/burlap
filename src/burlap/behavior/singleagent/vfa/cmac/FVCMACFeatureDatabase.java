@@ -15,16 +15,16 @@ import java.util.*;
  * before tiling them, this feature database causes the states to be object identifier *dependent*. If your domain would benefit from object identifier invariance,
  * use the {@link CMACFeatureDatabase} class instead, otherwise, this implementation is slightly more efficient.
  * 
- * <p/>
+ * <p>
  * Different tilings can be created over different dimensions of the converted state feature vector and different tiling widths for each dimension can be specified. Each tiling
  * over the same dimensions can either be randomly jittered from each other or uniformly distributed across the space, which is specified using the {@link TilingArrangement}
  * enumerator.
- * <p/>
+ * <p>
  * To specify the tiling used, use the {@link #addTilingsForAllDimensionsWithWidths(double[], int, CMACFeatureDatabase.TilingArrangement)} or 
  * {@link #addTilingsForDimensionsAndWidths(boolean[], double[], int, CMACFeatureDatabase.TilingArrangement)} method.
  * 
  * 
- * <p/>
+ * <p>
  * 
  * 1. Albus, James S. "A theory of cerebellar function." Mathematical Biosciences 10.1 (1971): 25-61
  * 
@@ -280,7 +280,7 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * @param defaultWeightValue the default value weights for the CMAC features will use.
 	 * @return a linear ValueFunctionApproximation object that uses this feature database
 	 */
-	public ValueFunctionApproximation generateVFA(double defaultWeightValue){
+	public LinearVFA generateVFA(double defaultWeightValue){
 		return new LinearVFA(this, defaultWeightValue);
 	}
 	

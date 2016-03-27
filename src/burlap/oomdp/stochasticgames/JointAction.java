@@ -39,7 +39,8 @@ public class JointAction implements AbstractGroundedAction, Iterable<GroundedSGA
 	}
 	
 	/**
-	 * Adds a single {@link GroundedSGAgentAction} object to this joint aciton
+	 * Adds a single {@link GroundedSGAgentAction} object to this joint action. Replaces the action for the same
+	 * agent if an action for that agent is already specified.
 	 * @param action the action to add
 	 */
 	public void addAction(GroundedSGAgentAction action){

@@ -22,7 +22,7 @@ import burlap.oomdp.singleagent.common.UniformCostRF;
 /**
  * Implements Breadth-first search.
  * 
- * <p/>
+ * <p>
  * If a terminal function is provided via the setter method defined for OO-MDPs, then the search algorithm will not expand any nodes
  * that are terminal states, as if there were no actions that could be executed from that state. Note that terminal states
  * are not necessarily the same as goal states, since there could be a fail condition from which the agent cannot act, but

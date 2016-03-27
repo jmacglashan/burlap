@@ -1,17 +1,20 @@
 package burlap.domain.singleagent.blocksworld;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.*;
+import burlap.oomdp.core.states.State;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.ObjectParameterizedAction;
+import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
@@ -453,7 +456,7 @@ public class BlocksWorld implements DomainGenerator {
 	/**
 	 * Main method for exploring the domain. The initial state will have 3 red blocks starting on the table. By default this method will launch the visual explorer.
 	 * Pass a "t" argument to use the terminal explorer.
-	 * @param args
+	 * @param args process arguments
 	 */
 	public static void main(String [] args){
 		
@@ -476,8 +479,6 @@ public class BlocksWorld implements DomainGenerator {
 		if(expMode == 0){
 			
 			TerminalExplorer exp = new TerminalExplorer(domain, s);
-			exp.addActionShortHand("s", ACTIONSTACK);
-			exp.addActionShortHand("u", ACTIONUNSTACK);
 			
 			exp.explore();
 			

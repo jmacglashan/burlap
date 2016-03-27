@@ -13,7 +13,7 @@ import burlap.oomdp.singleagent.RewardFunction;
  * the agent transitions. That is, a double matrix (called rewardMatrix) the size of the grid world is stored. In an agent transitions
  * to cell x,y, then they will receive the double value stored in rewardMatrix[x][y]. The rewards returned for transitioning to an agent position
  * may be set with the {@link #setReward(int, int, double)} method.
- * <p/>
+ * <p>
  * This reward function is useful for simple grid worlds without any location objects or worlds for which the rewards are independent
  * of location objects. An alternative to this class is to define worlds with location objects and use the atLocation propositional function
  * and location types to define rewards.

@@ -1,29 +1,22 @@
 package burlap.domain.singleagent.graphdefined;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
+import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.MutableState;
-import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
+
+import java.util.*;
 
 
 /**
@@ -31,11 +24,11 @@ import burlap.oomdp.singleagent.explorer.TerminalExplorer;
  * Edges are added/modified for state-action pairs with the {@link #setTransition(int, int, int, double)} method and
  * transitions can be cleared/removed with the methods {@link #clearStateTransitionsFrom(int)},
  * {@link #clearStateActionTransitions(int, int)}, and {@link #removeEdge(int, int, int)}.
- * <p/>
+ * <p>
  * A constructed graph's transition dynamics can be validated as proper (all edges from a state-action pair sum to 1)
  * using the method {@link #isValidMDPGraph()} and if they are false, a string reporting which state-actions do not
  * sum to 1 (and their various edges) can be returned with the {@link #invalidMDPReport()} method.
- * <p/>
+ * <p>
  * Modifying the transition dynamics of a graph will not affect the transition dynamics of previously generated
  * {@link burlap.oomdp.core.Domain}, allowing you to reuse the same generator without affected previous domains.
  * @author James MacGlashan
@@ -201,12 +194,12 @@ public class GraphDefinedDomain implements DomainGenerator {
 	/**
 	 * Returns a string that lists the state-action paris that have improper transition dynamics (transitions that don't sum to 1).
 	 * If there are no improper dynamics, then the returned string is empty. The output form is:
-	 * <br/>
-	 * (s, a): sumProbability<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_1' p_1<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_2' p_2<br/>
+	 * <p>
+	 * (s, a): sumProbability<p>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)-&gt;s_1' p_1<p>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)-&gt;s_2' p_2<p>
 	 * ...
-	 * <br/>
+	 * <p>
 	 * @return a string that lists the state-action paris that have improper transition dynamics or an empty string if all transitions are proper.
 	 */
 	public String invalidMDPReport(){
@@ -217,12 +210,12 @@ public class GraphDefinedDomain implements DomainGenerator {
 	/**
 	 * Returns a string that lists the state-action paris that have improper transition dynamics (transitions that don't sum to 1).
 	 * If there are no improper dynamics, then the returned string is empty. The output form is:
-	 * <br/>
-	 * (s, a): sumProbability<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_1' p_1<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)->s_2' p_2<br/>
+	 * <p>
+	 * (s, a): sumProbability<p>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)-&gt;s_1' p_1<p>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;(s, a)-&gt;s_2' p_2<p>
 	 * ...
-	 * <br/>
+	 * <p>
 	 * @param transitionDynamics the transition dynamics of the MDP/Graph
 	 * @return a string that lists the state-action paris that have improper transition dynamics or an empty string if all transitions are proper.
 	 */
