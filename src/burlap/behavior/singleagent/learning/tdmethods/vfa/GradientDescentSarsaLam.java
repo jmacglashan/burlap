@@ -75,12 +75,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
 	protected double												lambda;
-	
-	
-	/**
-	 * The maximum number of steps that will be taken in an episode before the agent terminates a learning episode
-	 */
-	protected int													maxEpisodeSize;
+
 	
 	/**
 	 * A counter for counting the number of steps in an episode that have been taken thus far
@@ -225,7 +220,6 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		this.vfa = vfa;
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
-		this.maxEpisodeSize = maxEpisodeSize;
 		this.lambda = lambda;
 		
 		numEpisodesToStore = 1;
@@ -348,7 +342,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * is enabled and this is set to true, primitive actions taken by an option in EpisodeAnalysis objects will be
 	 * recorded with a special action name that indicates which option was called to produce the primitive action
 	 * as well as which step of the option the primitive action is. When set to false, recorded names of primitives
-	 * will be only the primitive aciton's name it will be unclear which option was taken to generate it.
+	 * will be only the primitive action's name it will be unclear which option was taken to generate it.
 	 * @param toggle whether to annotate the primitive actions of options with the calling option's name.
 	 */
 	public void toggleShouldAnnotateOptionDecomposition(boolean toggle){
