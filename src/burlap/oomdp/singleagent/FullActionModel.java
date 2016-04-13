@@ -65,7 +65,7 @@ public interface FullActionModel {
 			double sum = 0.;
 			for(TransitionProbability tp : tps){
 				sum += tp.p;
-				if(roll < tp.p){
+				if(roll < sum){
 					return tp.s;
 				}
 			}
