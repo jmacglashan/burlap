@@ -1,8 +1,5 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.policies;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
@@ -13,9 +10,12 @@ import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.behavior.stochasticgames.solvers.MinMaxSolver;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -129,7 +129,7 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 		
 		
 		List<ActionProb> aps = new ArrayList<ActionProb>();
-		double eCont = this.epsilon / (forAgentGSAs.size() + otherAgentGSAs.size());
+		double eCont = this.epsilon / (forAgentGSAs.size() * otherAgentGSAs.size());
 		for(int i = 0; i < forAgentGSAs.size(); i++){
 			for(int j = 0; j < otherAgentGSAs.size(); j++){
 				JointAction ja = new JointAction();
