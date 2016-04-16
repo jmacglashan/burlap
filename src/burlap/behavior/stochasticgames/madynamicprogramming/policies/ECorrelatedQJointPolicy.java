@@ -126,7 +126,7 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 		double [][] jointActionProbs = CorrelatedEquilibriumSolver.getCorrelatedEQJointStrategy(objectiveType, payout1, payout2);
 		
 		List<ActionProb> aps = new ArrayList<ActionProb>();
-		double eCont = this.epsilon / (forAgentGSAs.size() + otherAgentGSAs.size());
+		double eCont = this.epsilon / (forAgentGSAs.size() * otherAgentGSAs.size());
 		for(int i = 0; i < forAgentGSAs.size(); i++){
 			for(int j = 0; j < otherAgentGSAs.size(); j++){
 				JointAction ja = new JointAction();
