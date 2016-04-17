@@ -59,9 +59,8 @@ public class WeightedGreedy extends AStar {
 		
 		double H  = heuristic.h(successorState.s);
 		lastComputedCumR = cumR;
-		double F = (this.costWeight * cumR) + H;
-		
-		return F;
+		// Compute F
+		return (this.costWeight * cumR) + H;
 	}
 
 }

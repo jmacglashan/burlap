@@ -163,9 +163,7 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 			
 			State srcState = TabulatedDomainWrapper.this.getSourceDomainState(s);
 			State srcNextState = srcAction.performAction(srcState, groundedAction);
-			State tabState = TabulatedDomainWrapper.this.getTabularizedState(srcNextState);
-			
-			return tabState;
+			return TabulatedDomainWrapper.this.getTabularizedState(srcNextState);
 		}
 		
 		

@@ -75,9 +75,7 @@ public class FVTiling {
 			}
 		}
 		
-		FVTile tile = new FVTile(tiledVector);
-		
-		return tile;
+		return new FVTile(tiledVector);
 	}
 	
 	

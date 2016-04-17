@@ -386,8 +386,7 @@ public class MutableState extends OOMDPState implements State{
 	 * @return the list of observable and hidden object instances in this state.
 	 */
 	public List <ObjectInstance> getAllObjects(){
-		List <ObjectInstance> objects = new ArrayList <ObjectInstance>(objectInstances);
-		return objects;
+		return new ArrayList <ObjectInstance>(objectInstances);
 	}
 	
 	/**

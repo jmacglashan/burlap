@@ -312,9 +312,7 @@ public class MultipleIntentionsMLIRL {
 		}
 
 		double logSum = Math.log(sum);
-		double finalSum = mx + logSum;
-
-		return finalSum;
+		return mx + logSum;
 	}
 
 

@@ -150,8 +150,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 			return 0.;
 		}
 		Double V = valueFunction.get(sh);
-		double v = V == null ? this.getDefaultValue(sh.s) : V;
-		return v;
+		return V == null ? this.getDefaultValue(sh.s) : V;
 	}
 	
 	
@@ -233,9 +232,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 			HashableState sh = this.stateHash(s);
 			double dq = this.computeQ(sh, (GroundedAction)a);
 			
-			QValue q = new QValue(s, a, dq);
-			
-			return q;
+			return new QValue(s, a, dq);
 			
 		}
 		

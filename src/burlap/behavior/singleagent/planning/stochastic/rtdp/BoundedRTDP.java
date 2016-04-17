@@ -419,9 +419,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		}
 		
 		int rint = RandomFactory.getMapped(0).nextInt(maxStates.size());
-		StateSelectionAndExpectedGap select = new StateSelectionAndExpectedGap(maxStates.get(rint), sum);
-		
-		return select;
+		return new StateSelectionAndExpectedGap(maxStates.get(rint), sum);
 	}
 	
 	
@@ -452,8 +450,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		for(int i = 0; i < weightedGap.length; i++){
 			cumSum += weightedGap[i]/sum;
 			if(roll < cumSum){
-				StateSelectionAndExpectedGap select = new StateSelectionAndExpectedGap(hashedStates[i], sum);
-				return select;
+				return new StateSelectionAndExpectedGap(hashedStates[i], sum);
 			}
 		}
 		
@@ -472,8 +469,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		double l = this.value(sh);
 		this.setValueFunctionToUpperBound();
 		double u = this.value(sh);
-		double gap = u-l;
-		return gap;
+		return u-l;
 	}
 	
 	

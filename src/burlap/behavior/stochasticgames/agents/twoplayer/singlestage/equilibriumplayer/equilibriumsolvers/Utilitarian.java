@@ -28,9 +28,8 @@ public class Utilitarian extends BimatrixEquilibriumSolver {
 			}
 		}
 		
-		double [] strat = GeneralBimatrixSolverTools.zero1Array(maxInd, rowPayoff.length);
-		
-		return strat;
+		// Strategy
+		return GeneralBimatrixSolverTools.zero1Array(maxInd, rowPayoff.length);		
 	}
 
 	@Override
@@ -49,10 +48,9 @@ public class Utilitarian extends BimatrixEquilibriumSolver {
 			}
 		}
 		
-		double [] strat = GeneralBimatrixSolverTools.zero1Array(maxInd, rowPayoff[0].length);
-		
-		return strat;
-		
+		// Strategy
+		return GeneralBimatrixSolverTools.zero1Array(maxInd, rowPayoff[0].length);
+				
 	}
 
 }

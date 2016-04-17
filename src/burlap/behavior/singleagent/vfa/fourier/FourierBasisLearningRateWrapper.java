@@ -63,8 +63,7 @@ public class FourierBasisLearningRateWrapper implements LearningRate {
 		if(norm == 0){
 			return l;
 		}
-		double nl = l / norm;
-		return nl;
+		return l / norm;
 	}
 
 	@Override
@@ -74,8 +73,7 @@ public class FourierBasisLearningRateWrapper implements LearningRate {
 		if(norm == 0){
 			return l;
 		}
-		double nl = l / norm;
-		return nl;
+		return l / norm;
 	}
 
 	@Override

@@ -150,10 +150,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			State observation = BeliefMDPGenerator.this.podomain.getObservationFunction().sampleObservation(mdpSP, mdpGA);
 			
 			//get next belief state
-			BeliefState nbs = bs.getUpdatedBeliefState(observation, mdpGA);
-
-			
-			return nbs;
+			return bs.getUpdatedBeliefState(observation, mdpGA);
 		}
 
 		@Override
@@ -191,9 +188,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 				}
 			}
 			
-			List<TransitionProbability> collapsed = this.collapseTransitionProbabilityDuplicates(tps);
-			
-			return collapsed;
+			return this.collapseTransitionProbabilityDuplicates(tps);
 		}
 
 

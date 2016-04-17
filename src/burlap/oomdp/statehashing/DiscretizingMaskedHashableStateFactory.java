@@ -179,7 +179,6 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 	 * @return the int result of num / mult
 	 */
 	protected static int intMultiples(double mult, double num){
-		int div = (int)Math.floor(num / mult);
-		return div;
+		return (int)Math.floor(num / mult);
 	}
 }

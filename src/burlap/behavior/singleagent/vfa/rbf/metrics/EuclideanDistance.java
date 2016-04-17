@@ -30,9 +30,8 @@ public class EuclideanDistance implements DistanceMetric {
 			sum += diff*diff;
 		}
 		
-		double dist = Math.sqrt(sum);
-		
-		return dist;
+		// Euclidean Distance
+		return Math.sqrt(sum);
 	}
 
 }

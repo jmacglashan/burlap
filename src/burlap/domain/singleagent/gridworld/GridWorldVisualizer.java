@@ -38,9 +38,7 @@ public class GridWorldVisualizer {
 	public static Visualizer getVisualizer(Domain d, int [][] map){
 		
 		StateRenderLayer r = getRenderLayer(d, map);
-		Visualizer v = new Visualizer(r);
-		
-		return v;
+		return new Visualizer(r);
 	}
 	
 	/**
@@ -51,9 +49,7 @@ public class GridWorldVisualizer {
 	public static Visualizer getVisualizer(int [][] map){
 		
 		StateRenderLayer r = getRenderLayer(map);
-		Visualizer v = new Visualizer(r);
-		
-		return v;
+		return new Visualizer(r);
 	}
 	
 	

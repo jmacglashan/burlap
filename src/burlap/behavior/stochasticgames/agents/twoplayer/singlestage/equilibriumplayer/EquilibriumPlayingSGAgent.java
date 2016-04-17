@@ -63,9 +63,7 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 		BimatrixTuple bimatrix = this.constructBimatrix(s, myActions);
 		solver.solve(bimatrix.rowPayoffs, bimatrix.colPayoffs);
 		double [] strategy = solver.getLastComputedRowStrategy();
-		GroundedSGAgentAction selection = myActions.get(this.sampleStrategy(strategy));
-		
-		return selection;
+		return myActions.get(this.sampleStrategy(strategy));
 	}
 
 	@Override

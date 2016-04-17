@@ -31,8 +31,7 @@ public class MountainCarVisualizer {
 	 */
 	public static Visualizer getVisualizer(MountainCar mcGen){
 		
-		Visualizer v = new Visualizer(getStateRenderLayer(mcGen.physParams));
-		return v;
+		return new Visualizer(getStateRenderLayer(mcGen.physParams));
 		
 	}
 
@@ -44,8 +43,7 @@ public class MountainCarVisualizer {
 	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
 	 */
 	public static Visualizer getVisualizer(MountainCar.MCPhysicsParams physParams){
-		Visualizer v = new Visualizer(getStateRenderLayer(physParams));
-		return v;
+		return new Visualizer(getStateRenderLayer(physParams));
 	}
 
 

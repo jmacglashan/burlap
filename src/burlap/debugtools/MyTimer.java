@@ -125,9 +125,7 @@ public class MyTimer{
 	public double getTime(){
 	
 		long diff = stopTime - startTime;
-		double timeInSeconds = (double)diff / 1000.0;
-		
-		return timeInSeconds;
+		return (double)diff / 1000.0;
 	
 	}
 
@@ -142,9 +140,7 @@ public class MyTimer{
 		}
 
 		long diff = System.currentTimeMillis() - startTime;
-		double timeInSeconds = (double)diff / 1000.0;
-
-		return timeInSeconds;
+		return (double)diff / 1000.0;
 	}
 	
 	/**

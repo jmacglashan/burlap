@@ -21,8 +21,6 @@ public class FVEuclideanDistance implements FVDistanceMetric{
 			sum += diff*diff;
 		}
 
-		double dist = Math.sqrt(sum);
-
-		return dist;
+		return Math.sqrt(sum);
 	}
 }

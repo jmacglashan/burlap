@@ -282,8 +282,7 @@ public class GameAnalysis {
 	public String serialize(SerializableStateFactory serializableStateFactory){
 
 		Yaml yaml = new Yaml(new GameAnalysisYamlRepresenter(serializableStateFactory));
-		String yamlOut = yaml.dump(this);
-		return yamlOut;
+		return yaml.dump(this);
 	}
 
 	private class GameAnalysisYamlRepresenter extends Representer {
@@ -322,8 +321,7 @@ public class GameAnalysis {
 	public static GameAnalysis parseGame(SGDomain domain, String episodeString){
 
 		Yaml yaml = new Yaml(new GameAnalysisConstructor(domain));
-		GameAnalysis ga = (GameAnalysis)yaml.load(episodeString);
-		return ga;
+		return (GameAnalysis)yaml.load(episodeString);
 	}
 
 	private static class GameAnalysisConstructor extends Constructor {
@@ -365,8 +363,7 @@ public class GameAnalysis {
 			@Override
 			public Object construct(Node node) {
 				String val = (String) constructScalar((ScalarNode)node);
-				JointAction ja = parseStringIntoJointAction(val, domain);
-				return ja;
+				return parseStringIntoJointAction(val, domain);
 			}
 		}
 	}

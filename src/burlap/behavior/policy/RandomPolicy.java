@@ -122,8 +122,7 @@ public class RandomPolicy extends Policy{
 		if(gas.size() == 0){
 			throw new PolicyUndefinedException();
 		}
-		GroundedAction selection = gas.get(this.rand.nextInt(this.actions.size()));
-		return selection;
+		return gas.get(this.rand.nextInt(this.actions.size()));
 	}
 
 	@Override

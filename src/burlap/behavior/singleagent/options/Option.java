@@ -473,7 +473,7 @@ public abstract class Option extends Action implements FullActionModel{
 			this.oneStep(env, groundedActions);
 		}while(this.continueFromState(env.getCurrentObservation(), groundedActions) && !env.isInTerminalState());
 
-		EnvironmentOptionOutcome eoo = new EnvironmentOptionOutcome(initialState,
+		return new EnvironmentOptionOutcome(initialState,
 																	groundedActions.copy(),
 																	env.getCurrentObservation(),
 																	this.lastCumulativeReward,
@@ -481,7 +481,6 @@ public abstract class Option extends Action implements FullActionModel{
 																	this.discountFactor,
 																	this.lastNumSteps);
 
-		return eoo;
 	}
 
 	/**

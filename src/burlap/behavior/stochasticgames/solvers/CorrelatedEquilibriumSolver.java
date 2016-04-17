@@ -549,10 +549,7 @@ public class CorrelatedEquilibriumSolver {
 		int nCols = payoffRow[0].length;
 		int n = (nRows * nCols) + 1;
 		
-		double [] objective = GeneralBimatrixSolverTools.zero1Array(n-1, n);
-		
-		
-		return objective;
+		return GeneralBimatrixSolverTools.zero1Array(n-1, n);
 		
 	}
 	

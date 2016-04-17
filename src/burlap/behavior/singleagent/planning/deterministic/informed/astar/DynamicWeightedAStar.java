@@ -249,9 +249,8 @@ public class DynamicWeightedAStar extends AStar {
 		lastComputedCumR = cumR;
 		lastComputedDepth = d;
 		double weightedE = this.epsilon * this.epsilonWeight(d);
-		double F = cumR + ((1. + weightedE)*H);
-		
-		return F;
+		// Compute F
+		return cumR + ((1. + weightedE)*H);
 	}
 	
 	
