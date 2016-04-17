@@ -53,10 +53,8 @@ public class LocalSubgoalTF implements TerminalFunction {
 	@Override
 	public boolean isTerminal(State s) {
 		
-		if(this.applicableStateTest != null){
-			if(!this.applicableStateTest.satisfies(s)){
-				return true; //terminate when reaching a state that is not an initiation state
-			}
+		if(this.applicableStateTest != null && !this.applicableStateTest.satisfies(s)){
+		    return true; //terminate when reaching a state that is not an initiation state
 		}
 		
 		return this.subgoalStateTest.satisfies(s);

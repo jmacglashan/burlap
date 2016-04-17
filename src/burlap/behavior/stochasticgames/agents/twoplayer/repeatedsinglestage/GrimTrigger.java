@@ -88,10 +88,8 @@ public class GrimTrigger extends SGAgent {
 			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		
 		for(GroundedSGAgentAction gsa : jointAction){
-			if(!gsa.actingAgent.equals(this.worldAgentName)){
-				if(this.opponentDefect.actionName.equals(gsa.action.actionName)){
-					grimTrigger = true;
-				}
+			if(!gsa.actingAgent.equals(this.worldAgentName) && this.opponentDefect.actionName.equals(gsa.action.actionName)){
+			    grimTrigger = true;
 			}
 		}
 

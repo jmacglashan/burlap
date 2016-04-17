@@ -114,10 +114,8 @@ public class LocalSubgoalRF implements RewardFunction {
 			return this.subgoalReward;
 		}
 		
-		if(this.applicableStateTest != null){
-			if(!this.applicableStateTest.satisfies(sprime)){
-				return failReward; //agent has exited option range without achieving goal
-			}
+		if(this.applicableStateTest != null && !this.applicableStateTest.satisfies(sprime)){
+		    return failReward; //agent has exited option range without achieving goal
 		}
 		
 		return defaultReward;

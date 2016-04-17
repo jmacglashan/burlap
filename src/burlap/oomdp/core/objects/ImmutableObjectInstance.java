@@ -460,10 +460,8 @@ public final class ImmutableObjectInstance extends OOMDPObjectInstance implement
 			return false;
 		}
 		ImmutableObjectInstance op = (ImmutableObjectInstance)obj;
-		if (!this.identifierIndependent) {
-			if (!op.name.equals(name)) {
-				return false; 
-			}
+		if (!this.identifierIndependent && !op.name.equals(name)) {
+		    return false; 
 		}
 		return this.valueEquals(op);
 	}

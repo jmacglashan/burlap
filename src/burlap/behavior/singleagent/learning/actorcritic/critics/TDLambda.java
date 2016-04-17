@@ -136,10 +136,8 @@ public class TDLambda implements Critic, ValueFunction {
 	
 	@Override
 	public void addNonDomainReferencedAction(Action a) {
-		if(a instanceof Option){
-			if(!(this.rf instanceof OptionEvaluatingRF)){
-				this.rf = new OptionEvaluatingRF(this.rf);
-			}
+		if(a instanceof Option && !(this.rf instanceof OptionEvaluatingRF)){
+		    this.rf = new OptionEvaluatingRF(this.rf);
 		}
 
 	}

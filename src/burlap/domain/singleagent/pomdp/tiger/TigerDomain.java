@@ -573,10 +573,8 @@ public class TigerDomain implements DomainGenerator {
 		Environment poEnv = new SimulatedPOEnvironment(domain, rf, tf, tigerGenerator);
 
 		Environment envTouse = poEnv;
-		if(args.length > 0){
-			if(args[0].equals("h")){
-				envTouse = observableEnv;
-			}
+		if(args.length > 0 && args[0].equals("h")){
+		    envTouse = observableEnv;
 		}
 
 		TerminalExplorer exp = new TerminalExplorer(domain, envTouse);

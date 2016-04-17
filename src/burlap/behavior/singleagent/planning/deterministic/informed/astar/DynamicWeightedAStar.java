@@ -180,12 +180,8 @@ public class DynamicWeightedAStar extends AStar {
 					
 					//check closed
 					PrioritizedSearchNode closedPSN = closedSet.get(npsn);
-					if(closedPSN != null){
-						
-						if(lastComputedCumR <= cumulatedRewardMap.get(closedPSN.s)){
-							continue; //no need to reopen because this is a worse path to an already explored node
-						}
-						
+					if(closedPSN != null && lastComputedCumR <= cumulatedRewardMap.get(closedPSN.s)){
+					    continue; //no need to reopen because this is a worse path to an already explored node
 					}
 					
 					

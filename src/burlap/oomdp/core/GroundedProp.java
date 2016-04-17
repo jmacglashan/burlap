@@ -90,11 +90,9 @@ public class GroundedProp implements Cloneable{
 					if(j == i){
 						continue; //already checked this
 					}
-					if(orderGroup.equals(that.pf.parameterOrderGroup[j])){
-						if(params[i].equals(that.params[j])){
-							foundMatch = true;
-							break;
-						}
+					if(orderGroup.equals(that.pf.parameterOrderGroup[j]) && params[i].equals(that.params[j])){
+					    foundMatch = true;
+                        break;
 					}
 					
 				}

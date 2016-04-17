@@ -180,11 +180,9 @@ public class IDAStar extends DeterministicPlanner {
 		for(int i = successors.size()-1; i >= 0; i--){
 			PrioritizedSearchNode snode = successors.get(i);
 			PrioritizedSearchNode cand = this.FLimtedDFS(snode, minR, successorGs.get(i));
-			if(cand != null){
-				if(cand.priority > maxCandR){
-					bestCand = cand;
-					maxCandR = cand.priority;
-				}
+			if(cand != null && cand.priority > maxCandR){
+			    bestCand = cand;
+                maxCandR = cand.priority;
 			}
 			
 		}
