@@ -155,7 +155,7 @@ public abstract class Policy {
 	 */
 	public double getProbOfAction(State s, AbstractGroundedAction ga){
 		List <ActionProb> probs = this.getActionDistributionForState(s);
-		if(probs == null || probs.size() == 0){
+		if(probs == null || probs.isEmpty()){
 			throw new PolicyUndefinedException();
 		}
 		for(ActionProb ap : probs){
@@ -173,7 +173,7 @@ public abstract class Policy {
 	 */
 	@Deprecated
 	public static double getProbOfActionGivenDistribution(State s, AbstractGroundedAction ga, List<ActionProb> distribution){
-		if(distribution == null || distribution.size() == 0){
+		if(distribution == null || distribution.isEmpty()){
 			throw new RuntimeException("Distribution is null or empty, cannot return probability for given action.");
 		}
 		for(ActionProb ap : distribution){
@@ -191,7 +191,7 @@ public abstract class Policy {
 	 * @return the probability of selecting action ga according to the probability specified in distribution.
 	 */
 	public static double getProbOfActionGivenDistribution(AbstractGroundedAction ga, List<ActionProb> distribution){
-		if(distribution == null || distribution.size() == 0){
+		if(distribution == null || distribution.isEmpty()){
 			throw new RuntimeException("Distribution is null or empty, cannot return probability for given action.");
 		}
 		for(ActionProb ap : distribution){
@@ -237,7 +237,7 @@ public abstract class Policy {
 		Random rand = RandomFactory.getMapped(0);
 		double roll = rand.nextDouble();
 		List <ActionProb> probs = this.getActionDistributionForState(s);
-		if(probs == null || probs.size() == 0){
+		if(probs == null || probs.isEmpty()){
 			throw new PolicyUndefinedException();
 		}
 		double sump = 0.;

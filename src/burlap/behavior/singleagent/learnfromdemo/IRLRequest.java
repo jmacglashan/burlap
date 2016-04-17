@@ -71,7 +71,7 @@ public class IRLRequest {
 			return false;
 		}
 
-		if (this.expertEpisodes == null || this.expertEpisodes.size() == 0) {
+		if (this.expertEpisodes == null || this.expertEpisodes.isEmpty()) {
 			return false;
 		}
 

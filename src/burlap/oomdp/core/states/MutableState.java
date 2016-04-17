@@ -411,7 +411,7 @@ public class MutableState extends OOMDPState implements State{
 	 */
 	public ObjectInstance getFirstObjectOfClass(String oclass){
 		List <ObjectInstance> obs = this.objectIndexByClass.get(oclass);
-		if(obs != null && obs.size() > 0){
+		if(obs != null && !obs.isEmpty()){
 			return obs.get(0);
 		}
 		return null;
@@ -445,7 +445,7 @@ public class MutableState extends OOMDPState implements State{
 		Map<String, List<String>> unset = new HashMap<String, List<String>>();
 		for(ObjectInstance o : this.objectInstances){
 			List<String> unsetA = o.unsetAttributes();
-			if(unsetA.size() > 0){
+			if(!unsetA.isEmpty()){
 				unset.put(o.getName(), unsetA);
 			}
 		}

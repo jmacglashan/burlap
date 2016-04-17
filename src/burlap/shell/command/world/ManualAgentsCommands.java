@@ -109,7 +109,7 @@ public class ManualAgentsCommands {
 			List<String> actionNames = args.subList(1, args.size());
 			List<SGAgentAction> actions = new ArrayList<SGAgentAction>();
 
-			if(actionNames.size() == 0){
+			if(actionNames.isEmpty()){
 				actions = shell.getDomain().getAgentActions();
 			}
 			else{

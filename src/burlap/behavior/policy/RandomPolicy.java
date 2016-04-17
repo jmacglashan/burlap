@@ -119,7 +119,7 @@ public class RandomPolicy extends Policy{
 	@Override
 	public AbstractGroundedAction getAction(State s) {
 		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
-		if(gas.size() == 0){
+		if(gas.isEmpty()){
 			throw new PolicyUndefinedException();
 		}
 		GroundedAction selection = gas.get(this.rand.nextInt(this.actions.size()));
@@ -129,7 +129,7 @@ public class RandomPolicy extends Policy{
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
 		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
-		if(gas.size() == 0){
+		if(gas.isEmpty()){
 			throw new PolicyUndefinedException();
 		}
 		double p = 1./gas.size();

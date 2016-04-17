@@ -78,7 +78,7 @@ public class BFS extends DeterministicPlanner {
 		
 		
 		int nexpanded = 0;
-		while(openQueue.size() > 0){
+		while(!openQueue.isEmpty()){
 			
 			SearchNode node = openQueue.poll();
 			nexpanded++;

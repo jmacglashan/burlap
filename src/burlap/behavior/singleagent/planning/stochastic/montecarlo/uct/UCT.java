@@ -423,7 +423,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 					candidates2.add(anode);
 				}
 			}
-			if(candidates2.size() > 0){
+			if(!candidates2.isEmpty()){
 				candidates = candidates2;
 			}
 		}

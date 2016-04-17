@@ -130,7 +130,7 @@ public class StateRenderLayer implements RenderLayer{
 			for(ObjectInstance o : objects){
 				if(!this.specificObjectPainters.containsKey(o.getName())){
 					List<String> unsetAttributes = o.unsetAttributes();
-					if(unsetAttributes.size() > 0){
+					if(!unsetAttributes.isEmpty()){
 						System.out.println("Warning: not rendering object " + o.getName() + " because it has the following unset attributes: ");
 						for(String a : unsetAttributes){
 							System.out.println("    " + a);
@@ -149,7 +149,7 @@ public class StateRenderLayer implements RenderLayer{
 			//is there a specific object painter for this object?
 			if(specificObjectPainters.containsKey(o.getName())){
 				List<String> unsetAttributes = o.unsetAttributes();
-				if(unsetAttributes.size() > 0){
+				if(!unsetAttributes.isEmpty()){
 					System.out.println("Warning: not rendering object " + o.getName() + " because it has the following unset attributes: ");
 					for(String a : unsetAttributes){
 						System.out.println("    " + a);

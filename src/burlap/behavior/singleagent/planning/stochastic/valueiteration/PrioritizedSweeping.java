@@ -123,7 +123,7 @@ public class PrioritizedSweeping extends ValueIteration{
 		openedSet.add(inode);
 		
 		
-		while(openList.size() > 0){
+		while(!openList.isEmpty()){
 			BPTRNode node = openList.poll();
 			
 			

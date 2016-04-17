@@ -159,7 +159,7 @@ public class BFSRTDP extends RTDP {
 		openList.offer(sih);
 		openedSet.add(sih);
 		
-		while(openList.size() > 0){
+		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
 			
 			//skip this if it's already been expanded
