@@ -1,6 +1,8 @@
 package burlap.oomdp.core;
 
 
+import java.util.Arrays;
+
 import burlap.oomdp.core.states.State;
 
 /**
@@ -62,50 +64,61 @@ public class GroundedProp implements Cloneable{
 	}
 	
 	
+	
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(params);
+        result = prime * result + ((pf == null) ? 0 : pf.hashCode());
+        return result;
+    }
+
+
 	public boolean equals(Object obj){
-		if(this == obj){
-			return true;
-		}
-		
-		if(!(obj instanceof GroundedProp)){
-			return false;
-		}
-		
-		GroundedProp that = (GroundedProp)obj;
-		
-		if(pf != that.pf){
-			return false;
-		}
-		
-		if(params.length != that.params.length){
-			return false;
-		}
-		
-		for(int i = 0; i < params.length; i++){
-			if(!params[i].equals(that.params[i])){
-				//check if there is another parameter with this reference that has the same rename class (which means parameters are order independent)
-				String orderGroup = pf.parameterOrderGroup[i];
-				boolean foundMatch = false;
-				for(int j = 0; j < that.params.length; j++){
-					if(j == i){
-						continue; //already checked this
-					}
-					if(orderGroup.equals(that.pf.parameterOrderGroup[j])){
-						if(params[i].equals(that.params[j])){
-							foundMatch = true;
-							break;
-						}
-					}
-					
-				}
-				if(!foundMatch){
-					return false;
-				}
-			}
-		}
-		
-		return true;
-		
-	}
+        if(this == obj){
+            return true;
+        }
+        
+        if(!(obj instanceof GroundedProp)){
+            return false;
+        }
+        
+        GroundedProp that = (GroundedProp)obj;
+        
+        if(pf != that.pf){
+            return false;
+        }
+        
+        if(params.length != that.params.length){
+            return false;
+        }
+        
+        for(int i = 0; i < params.length; i++){
+            if(!params[i].equals(that.params[i])){
+                //check if there is another parameter with this reference that has the same rename class (which means parameters are order independent)
+                String orderGroup = pf.parameterOrderGroup[i];
+                boolean foundMatch = false;
+                for(int j = 0; j < that.params.length; j++){
+                    if(j == i){
+                        continue; //already checked this
+                    }
+                    if(orderGroup.equals(that.pf.parameterOrderGroup[j])){
+                        if(params[i].equals(that.params[j])){
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                    
+                }
+                if(!foundMatch){
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+        
+    }
 	
 }

@@ -922,17 +922,32 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		
+		
 		@Override
-		public boolean equals(Object o){
-			if(!(o instanceof Location2)){
-				return false;
-			}
-			
-			Location2 ol = (Location2)o;
-			
-			return x == ol.x && y == ol.y;
-			
-		}
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + x;
+            result = prime * result + y;
+            return result;
+        }
+
+		@Override
+        public boolean equals(Object o){
+            if(!(o instanceof Location2)){
+                return false;
+            }
+            
+            Location2 ol = (Location2)o;
+            
+            return x == ol.x && y == ol.y;
+            
+        }
+
+        private GridGameStandardMechanics getOuterType() {
+            return GridGameStandardMechanics.this;
+        }
 		
 	}
 	

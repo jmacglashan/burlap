@@ -103,24 +103,33 @@ public class DiscreteValue extends OOMDPValue implements Value{
 		return (double)this.discVal;
 	}
 	
+	
 	@Override
-	public boolean equals(Object obj){
-		if (this == obj) {
-			return true;
-		}
-		
-		if(!(obj instanceof DiscreteValue)){
-			return false;
-		}
-		
-		DiscreteValue op = (DiscreteValue)obj;
-		if(!op.attribute.equals(attribute)){
-			return false;
-		}
-		
-		return discVal == op.discVal;
-		
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + discVal;
+        return result;
+    }
+
+	@Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        
+        if(!(obj instanceof DiscreteValue)){
+            return false;
+        }
+        
+        DiscreteValue op = (DiscreteValue)obj;
+        if(!op.attribute.equals(attribute)){
+            return false;
+        }
+        
+        return discVal == op.discVal;
+        
+    }
 
 	@Override
 	public boolean getBooleanValue() {

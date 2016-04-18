@@ -1,5 +1,7 @@
 package burlap.oomdp.core.values;
 
+import java.util.Arrays;
+
 import burlap.oomdp.core.Attribute;
 
 
@@ -116,31 +118,39 @@ public class DoubleArrayValue extends OOMDPValue{
 	
 	
 	@Override
-	public boolean equals(Object obj){
-		if (this == obj) {
-			return true;
-		}
-		if(!(obj instanceof DoubleArrayValue)){
-			return false;
-		}
-		
-		DoubleArrayValue o = (DoubleArrayValue)obj;
-		
-		if(!o.attribute.equals(this.attribute)){
-			return false;
-		}
-		
-		if(this.doubleArray.length != o.doubleArray.length){
-			return false;
-		}
-		
-		for(int i = 0; i < this.doubleArray.length; i++){
-			if(this.doubleArray[i] != o.doubleArray[i]){
-				return false;
-			}
-		}
-		
-		return true;
-		
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(doubleArray);
+        return result;
+    }
+
+	@Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        if(!(obj instanceof DoubleArrayValue)){
+            return false;
+        }
+        
+        DoubleArrayValue o = (DoubleArrayValue)obj;
+        
+        if(!o.attribute.equals(this.attribute)){
+            return false;
+        }
+        
+        if(this.doubleArray.length != o.doubleArray.length){
+            return false;
+        }
+        
+        for(int i = 0; i < this.doubleArray.length; i++){
+            if(this.doubleArray[i] != o.doubleArray[i]){
+                return false;
+            }
+        }
+        
+        return true;
+        
+    }
 }

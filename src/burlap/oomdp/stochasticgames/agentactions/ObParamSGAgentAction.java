@@ -6,6 +6,7 @@ import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGDomain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -190,46 +191,54 @@ public abstract class ObParamSGAgentAction extends SGAgentAction {
 
 
 		@Override
-		public boolean equals(Object other){
+        public int hashCode() {
+            final int prime = 31;
+            int result = super.hashCode();
+            result = prime * result + Arrays.hashCode(params);
+            return result;
+        }
 
-			if(this == other){
-				return true;
-			}
+		@Override
+        public boolean equals(Object other){
 
-			if(!(other instanceof GroundedObParamSGAgentAction)){
-				return false;
-			}
+            if(this == other){
+                return true;
+            }
 
-			GroundedObParamSGAgentAction go = (GroundedObParamSGAgentAction)other;
+            if(!(other instanceof GroundedObParamSGAgentAction)){
+                return false;
+            }
 
-			if(!this.actingAgent.equals(go.actingAgent)){
-				return false;
-			}
+            GroundedObParamSGAgentAction go = (GroundedObParamSGAgentAction)other;
 
-			if(!this.action.actionName.equals(go.action.actionName)){
-				return false;
-			}
+            if(!this.actingAgent.equals(go.actingAgent)){
+                return false;
+            }
 
-			String [] rclasses = ((ObParamSGAgentAction)this.action).parameterOrderGroups;
+            if(!this.action.actionName.equals(go.action.actionName)){
+                return false;
+            }
 
-			for(int i = 0; i < this.params.length; i++){
-				String p = this.params[i];
-				String replaceClass = rclasses[i];
-				boolean foundMatch = false;
-				for(int j = 0; j < go.params.length; j++){
-					if(p.equals(go.params[j]) && replaceClass.equals(rclasses[j])){
-						foundMatch = true;
-						break;
-					}
-				}
-				if(!foundMatch){
-					return false;
-				}
+            String [] rclasses = ((ObParamSGAgentAction)this.action).parameterOrderGroups;
 
-			}
+            for(int i = 0; i < this.params.length; i++){
+                String p = this.params[i];
+                String replaceClass = rclasses[i];
+                boolean foundMatch = false;
+                for(int j = 0; j < go.params.length; j++){
+                    if(p.equals(go.params[j]) && replaceClass.equals(rclasses[j])){
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if(!foundMatch){
+                    return false;
+                }
 
-			return true;
-		}
+            }
+
+            return true;
+        }
 	}
 
 }

@@ -307,57 +307,71 @@ public class MutableState extends OOMDPState implements State{
 	}
 	
 	
-	
-	
 	@Override
-	public boolean equals(Object other){
-	
-		if(this == other){
-			return true;
-		}
-		
-		if(!(other instanceof MutableState)){
-			return false;
-		}
-		
-		MutableState so = (MutableState)other;
-		
-		if(this.numTotalObjects() != so.numTotalObjects()){
-			return false;
-		}
-		
-		Set<String> matchedObjects = new HashSet<String>();
-		for(List <ObjectInstance> objects : objectIndexByClass.values()){
-			
-			String oclass = objects.get(0).getClassName();
-			List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
-			if(objects.size() != oobjects.size()){
-				return false;
-			}
-			
-			for(ObjectInstance o : objects){
-				boolean foundMatch = false;
-				for(ObjectInstance oo : oobjects){
-					String ooname = oo.getName();
-					if(matchedObjects.contains(ooname)){
-						continue;
-					}
-					if(o.valueEquals(oo)){
-						foundMatch = true;
-						matchedObjects.add(ooname);
-						break;
-					}
-				}
-				if(!foundMatch){
-					return false;
-				}
-			}
-			
-		}
-		
-		
-		return true;
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime
+                * result
+                + ((objectIndexByClass == null) ? 0 : objectIndexByClass
+                        .hashCode());
+        result = prime * result
+                + ((objectInstances == null) ? 0 : objectInstances.hashCode());
+        result = prime * result
+                + ((objectMap == null) ? 0 : objectMap.hashCode());
+        return result;
+    }
+
+
+	@Override
+    public boolean equals(Object other){
+    
+        if(this == other){
+            return true;
+        }
+        
+        if(!(other instanceof MutableState)){
+            return false;
+        }
+        
+        MutableState so = (MutableState)other;
+        
+        if(this.numTotalObjects() != so.numTotalObjects()){
+            return false;
+        }
+        
+        Set<String> matchedObjects = new HashSet<String>();
+        for(List <ObjectInstance> objects : objectIndexByClass.values()){
+            
+            String oclass = objects.get(0).getClassName();
+            List <ObjectInstance> oobjects = so.getObjectsOfClass(oclass);
+            if(objects.size() != oobjects.size()){
+                return false;
+            }
+            
+            for(ObjectInstance o : objects){
+                boolean foundMatch = false;
+                for(ObjectInstance oo : oobjects){
+                    String ooname = oo.getName();
+                    if(matchedObjects.contains(ooname)){
+                        continue;
+                    }
+                    if(o.valueEquals(oo)){
+                        foundMatch = true;
+                        matchedObjects.add(ooname);
+                        break;
+                    }
+                }
+                if(!foundMatch){
+                    return false;
+                }
+            }
+            
+        }
+        
+        
+        return true;
+    }
 	
 	
 	/**

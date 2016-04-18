@@ -93,24 +93,33 @@ public class IntValue extends OOMDPValue implements Value {
 	
 	
 	@Override
-	public boolean equals(Object obj){
-		if (this == obj) {
-			return true;
-		}
-		
-		if(!(obj instanceof IntValue)){
-			return false;
-		}
-		
-		IntValue o = (IntValue)obj;
-		
-		if(!o.attribute.equals(attribute)){
-			return false;
-		}
-		
-		return this.intVal == o.intVal;
-		
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + intVal;
+        return result;
+    }
+
+
+	@Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        
+        if(!(obj instanceof IntValue)){
+            return false;
+        }
+        
+        IntValue o = (IntValue)obj;
+        
+        if(!o.attribute.equals(attribute)){
+            return false;
+        }
+        
+        return this.intVal == o.intVal;
+        
+    }
 
 
 	@Override
