@@ -182,7 +182,7 @@ public class CMACFeatureDatabase implements FeatureDatabase {
 	 */
 	public void addSpecificaitonForTiling(int i, String className, Attribute attribute, double windowSize){
 		
-		double bucketBoundary = 0.;
+		double bucketBoundary;
 		if(this.arrangement == TilingArrangement.RANDOMJITTER){
 			bucketBoundary = rand.nextDouble()*windowSize;
 		}

@@ -254,7 +254,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	
 	
 	protected double learningRate(int time){
-		double r = 0.;
+		double r;
 		if(time == 0){
 			r = this.initialLearningRate;
 		}

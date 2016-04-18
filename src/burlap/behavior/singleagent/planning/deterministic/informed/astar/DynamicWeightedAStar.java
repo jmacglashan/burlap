@@ -228,7 +228,7 @@ public class DynamicWeightedAStar extends AStar {
 	@Override
 	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
 		double cumR = 0.;
-		double r = 0.;
+		double r;
 		int d = 0;
 		if(parentNode != null){
 			double pCumR = cumulatedRewardMap.get(parentNode.s);

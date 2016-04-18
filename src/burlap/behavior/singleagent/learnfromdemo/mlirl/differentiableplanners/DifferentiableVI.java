@@ -138,7 +138,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 
 		Set<HashableState> states = mapToStateIndex.keySet();
 
-		int i = 0;
+		int i;
 		for(i = 0; i < this.maxIterations; i++){
 
 			double delta = 0.;

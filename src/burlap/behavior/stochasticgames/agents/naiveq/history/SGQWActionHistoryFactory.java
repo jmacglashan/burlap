@@ -116,7 +116,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 
 	@Override
 	public SGAgent generateAgent() {
-		SGQWActionHistory agent = null;
+		SGQWActionHistory agent;
 		if(this.actionMap != null){
 			agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
 		}

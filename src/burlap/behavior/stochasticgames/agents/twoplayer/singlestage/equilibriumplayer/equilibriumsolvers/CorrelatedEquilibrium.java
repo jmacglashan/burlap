@@ -38,7 +38,7 @@ public class CorrelatedEquilibrium extends BimatrixEquilibriumSolver {
 	public double[] computeColStrategy(double[][] rowPayoff,
 			double[][] colPayoff) {
 		
-		double [][] jointStrategy = null;
+		double [][] jointStrategy;
 		if(this.objective != CorrelatedEquilibriumObjective.LIBERTARIAN){
 			jointStrategy = CorrelatedEquilibriumSolver.getCorrelatedEQJointStrategy(this.objective, rowPayoff, colPayoff);
 			return GeneralBimatrixSolverTools.marginalizeColPlayerStrategy(jointStrategy);
