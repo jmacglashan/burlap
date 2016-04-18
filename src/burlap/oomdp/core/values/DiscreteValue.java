@@ -35,7 +35,7 @@ public class DiscreteValue extends OOMDPValue implements Value{
 	 */
 	public DiscreteValue(DiscreteValue v){
 		super(v);
-		DiscreteValue dv = (DiscreteValue)v;
+		DiscreteValue dv = v;
 		this.discVal = dv.discVal;
 	}
 	

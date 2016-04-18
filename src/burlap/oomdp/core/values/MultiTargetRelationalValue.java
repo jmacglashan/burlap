@@ -40,7 +40,7 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 	 */
 	public MultiTargetRelationalValue(MultiTargetRelationalValue v){
 		super(v);
-		MultiTargetRelationalValue rv = (MultiTargetRelationalValue)v;
+		MultiTargetRelationalValue rv = v;
 		this.targetObjects = rv.targetObjects;
 	}
 	

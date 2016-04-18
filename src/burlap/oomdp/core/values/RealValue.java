@@ -35,7 +35,7 @@ public class RealValue extends OOMDPValue implements Value {
 	 */
 	public RealValue(RealValue v){
 		super(v);
-		RealValue rv = (RealValue)v;
+		RealValue rv = v;
 		this.realVal = rv.realVal;
 	}
 	

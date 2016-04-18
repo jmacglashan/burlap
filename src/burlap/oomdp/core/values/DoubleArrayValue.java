@@ -22,7 +22,7 @@ public class DoubleArrayValue extends OOMDPValue{
 	
 	public DoubleArrayValue(DoubleArrayValue v){
 		super(v);
-		DoubleArrayValue daValue = (DoubleArrayValue)v;
+		DoubleArrayValue daValue = v;
 		if(daValue.doubleArray != null) {
 			this.doubleArray = daValue.doubleArray.clone();
 		} else {
