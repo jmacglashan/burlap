@@ -11,6 +11,9 @@ import burlap.oomdp.core.states.State;
  */
 public class BlockDudeLevelConstructor {
 
+    private BlockDudeLevelConstructor() {
+        // do nothing
+    }
 
 	/**
 	 * Returns the initial {@link burlap.oomdp.core.states.State} of the first level.

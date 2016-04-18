@@ -43,6 +43,10 @@ public interface FullActionModel {
 	 * A class with helper methods for working with actions that implement {@link burlap.oomdp.singleagent.FullActionModel}.
 	 */
 	public static class FullActionModelHelper{
+	    
+	    private FullActionModelHelper() {
+	        // do nothing
+	    }
 
 
 		/**

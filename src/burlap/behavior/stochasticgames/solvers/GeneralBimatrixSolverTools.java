@@ -7,6 +7,10 @@ package burlap.behavior.stochasticgames.solvers;
  *
  */
 public class GeneralBimatrixSolverTools {
+    
+    private GeneralBimatrixSolverTools() {
+        // do nothing
+    }
 	
 	
 	/**

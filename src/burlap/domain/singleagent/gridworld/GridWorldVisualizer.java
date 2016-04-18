@@ -25,6 +25,10 @@ import burlap.oomdp.visualizer.Visualizer;
  *
  */
 public class GridWorldVisualizer {
+    
+    private GridWorldVisualizer() {
+        // do nothing
+    }
 
 	
 	/**

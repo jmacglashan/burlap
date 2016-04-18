@@ -22,6 +22,9 @@ public class DPrint {
 	 */
 	static boolean					universalPrint = true;
 	
+	private DPrint() {
+	    // do nothing
+	}
 	
 	/**
 	 * Specify whether previously unset debug codes will by default be allowed to print or not.

@@ -22,6 +22,9 @@ import burlap.oomdp.visualizer.Visualizer;
  */
 public class LLVisualizer {
 
+    private LLVisualizer() {
+        // do nothing
+    }
 
 	/**
 	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} using

@@ -25,6 +25,10 @@ import burlap.oomdp.visualizer.Visualizer;
  *
  */
 public class GGVisualizer {
+    
+    private GGVisualizer() {
+        // do nothing
+    }
 
 	
 	/**

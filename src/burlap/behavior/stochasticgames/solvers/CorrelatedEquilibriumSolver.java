@@ -39,6 +39,10 @@ import com.joptimizer.optimizers.LPPrimalDualMethod;
  */
 public class CorrelatedEquilibriumSolver {
 
+    private CorrelatedEquilibriumSolver() {
+        // do nothing
+    }
+    
 	/**
 	 * The four different equilibrium objectives that can be used:
 	 * UTILITARIAN, EGALITARIAN, REPUBLICAN, and LIBERTARIAN.

@@ -16,6 +16,10 @@ public class DebugFlags {
 	 */
 	private static Map <Integer, Integer> flags;
 	
+	private DebugFlags() {
+	    // do nothing
+	}
+	
 	/**
 	 * Creates/sets a debug flag
 	 * @param id the flag identifier

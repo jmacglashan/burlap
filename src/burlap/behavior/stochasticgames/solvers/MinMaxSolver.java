@@ -6,6 +6,10 @@ import scpsolver.lpsolver.SolverFactory;
 import scpsolver.problems.LinearProgram;
 
 public class MinMaxSolver {
+    
+    private MinMaxSolver() {
+        // do nothing
+    }
 
 	
 	

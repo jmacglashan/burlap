@@ -24,6 +24,10 @@ public interface EnvironmentDelegation extends Environment {
 	 * A class that provides tools for working with Environment delegates
 	 */
 	public static class EnvDelegationTools{
+	    
+	    private EnvDelegationTools() {
+	        // do nothing
+	    }
 
 		/**
 		 * Returns the root {@link burlap.oomdp.singleagent.environment.Environment} delegate. Useful

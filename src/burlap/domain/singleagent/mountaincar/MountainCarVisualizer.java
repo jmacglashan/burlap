@@ -21,6 +21,10 @@ import burlap.oomdp.visualizer.Visualizer;
  * The agent will be drawn as a red square and the shape of the hill in a black line.
  */
 public class MountainCarVisualizer {
+    
+    private MountainCarVisualizer() {
+        // do nothing
+    }
 
 	
 	/**

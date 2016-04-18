@@ -21,6 +21,10 @@ import burlap.oomdp.visualizer.Visualizer;
  */
 public class CartPoleVisualizer {
 
+    private CartPoleVisualizer() {
+        // do nothing
+    }
+    
 	/**
 	 * Returns a visualizer for cart pole.
 	 * @return a visualizer for cart pole.
