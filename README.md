@@ -9,7 +9,7 @@ BURLAP is a java code library for the use and development of single or multi-age
 
 ## Linking
 
-BURALP now fully supports Maven and is indexed on Maven Central, so all you need to do to have your Maven project link to BURLAP is add the following to the `<dependencies>` section of your project's pom.xml file:
+BURLAP now fully supports Maven and is indexed on Maven Central, so all you need to do to have your Maven project link to BURLAP is add the following to the `<dependencies>` section of your project's pom.xml file:
 ```
 <dependency>
   <groupId>edu.brown.cs.burlap</groupId>
@@ -24,7 +24,7 @@ Alternatively, you can compile from the source using either Maven or, for the ti
 
 ### Maven
 
-Compile with `mvn compile`. Create a jar file with `mvn package` This will create a jar in the target directory along with sources and Java doc. It will also create a jar that includes all the dependencies. Install to your local reposoitory with `mvn install`.
+Compile with `mvn compile`. Create a jar file with `mvn package` This will create a jar in the target directory along with sources and Java doc. It will also create a jar that includes all the dependencies. Install to your local repository with `mvn install`.
 
 ### Ant
 
