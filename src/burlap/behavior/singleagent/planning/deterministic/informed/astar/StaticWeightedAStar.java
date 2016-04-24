@@ -49,7 +49,7 @@ public class StaticWeightedAStar extends AStar {
 	@Override
 	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
 		double cumR = 0.;
-		double r = 0.;
+		double r;
 		if(parentNode != null){
 			double pCumR = cumulatedRewardMap.get(parentNode.s);
 			r = rf.reward(parentNode.s.s, generatingAction, successorState.s);

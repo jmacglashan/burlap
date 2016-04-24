@@ -307,7 +307,7 @@ public class ApprenticeshipLearning {
 				ApprenticeshipLearning.estimateFeatureExpectation(sampleEpisodes, featureFunctions, request.getGamma());
 		featureExpectationsHistory.add(curFE);
 		double[] lastProjFE = null;
-		double[] newProjFE = null;
+		double[] newProjFE;
 
 		int maxIterations = request.getMaxIterations();
 		double[] tHistory = new double[maxIterations];

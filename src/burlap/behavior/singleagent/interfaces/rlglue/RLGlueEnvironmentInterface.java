@@ -244,7 +244,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 
 
 
-		Action toRet = null;
+		Action toRet;
 		synchronized (nextAction) {
 			while(nextAction.val == null){
 				try{
@@ -274,7 +274,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 			nextStateReference.notifyAll();
 		}
 
-		Action toRet = null;
+		Action toRet;
 		synchronized (nextAction) {
 			while(nextAction.val == null){
 				try{
@@ -348,7 +348,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 
 		DPrint.cl(debugCode, "Set action (" + this.nextAction.val + ")");
 
-		State toRet = null;
+		State toRet;
 		synchronized (this.nextStateReference) {
 			while(this.nextStateReference.val == null){
 				try{

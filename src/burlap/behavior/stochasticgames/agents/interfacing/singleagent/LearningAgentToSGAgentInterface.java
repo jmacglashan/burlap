@@ -124,7 +124,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 			this.saThread.start();
 		}
 
-		GroundedSGAgentAction toRet = null;
+		GroundedSGAgentAction toRet;
 		synchronized(nextAction){
 			while(nextAction.val == null){
 				try{

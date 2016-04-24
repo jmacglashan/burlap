@@ -179,7 +179,7 @@ public class Tournament {
 		
 		selector.resetMatchSelections();
 		
-		List<MatchEntry> match = null;
+		List<MatchEntry> match;
 		while((match = selector.getNextMatch()) != null){
 			
 			World w = worldGenerator.generateWorld();

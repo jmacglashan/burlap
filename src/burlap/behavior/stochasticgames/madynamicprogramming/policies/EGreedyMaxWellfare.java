@@ -125,7 +125,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	public AbstractGroundedAction getAction(State s) {
 		
 		List<JointAction> jas = this.getAllJointActions(s);
-		JointAction selected = null;
+		JointAction selected;
 		AgentQSourceMap qSources = this.qSourceProvider.getQSources();
 		
 		double r = rand.nextDouble();

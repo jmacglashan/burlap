@@ -379,7 +379,7 @@ public abstract class Policy {
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(env.getCurrentObservation());
 
-		int nSteps = 0;
+		int nSteps;
 		do{
 			this.followAndRecordPolicy(env, ea);
 			nSteps = ea.numTimeSteps();
@@ -467,7 +467,7 @@ public abstract class Policy {
 	 */
 	protected State followAndRecordPolicy(EpisodeAnalysis ea, State cur, RewardFunction rf){
 		
-		State next = null;
+		State next;
 		
 		//follow policy
 		AbstractGroundedAction aga = this.getAction(cur);

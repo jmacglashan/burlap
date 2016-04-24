@@ -295,10 +295,10 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		
 		UCTStateNode snprime = this.queryTreeIndex(shprime, depth+depthChange);
 		
-		double sampledReturn = 0.;
+		double sampledReturn;
 		
 		boolean shouldConnectNode = false;
-		double futureReturn = 0.;
+		double futureReturn;
 		if(snprime != null){
 			
 			//then this state already exists in the tree

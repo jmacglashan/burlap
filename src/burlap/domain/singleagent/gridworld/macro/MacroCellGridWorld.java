@@ -142,8 +142,8 @@ public class MacroCellGridWorld extends GridWorldDomain {
 		State s = new MutableState();
 		int [][] map = gridWorldGenerator.getMap();
 		
-		int rx = 0;
-		int ry = 0;
+		int rx;
+		int ry;
 		
 		do{
 			rx = r.nextInt(map.length);
