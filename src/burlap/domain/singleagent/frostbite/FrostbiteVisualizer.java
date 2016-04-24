@@ -19,6 +19,10 @@ public class FrostbiteVisualizer {
 	private final static Color waterColor = new Color(0.34509805f, 0.43529412f, 0.60784316f);
 	static int glob = 0;
 
+	private FrostbiteVisualizer() {
+	    // do nothing
+	}
+	
 	/**
 	 * Returns a visualizer for a lunar lander domain.
 	 *

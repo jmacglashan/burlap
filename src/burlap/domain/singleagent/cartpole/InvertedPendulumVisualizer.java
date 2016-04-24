@@ -14,6 +14,10 @@ import burlap.oomdp.visualizer.Visualizer;
 
 public class InvertedPendulumVisualizer {
 
+    private InvertedPendulumVisualizer() {
+        
+    }
+    
 	
 	/**
 	 * Returns a {@link Visualizer} object for the {@link InvertedPendulum} domain.

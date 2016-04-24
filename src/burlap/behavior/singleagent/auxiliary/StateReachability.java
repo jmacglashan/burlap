@@ -30,6 +30,10 @@ public class StateReachability {
 	 */
 	public static int			debugID = 837493;
 	
+	private StateReachability() {
+	    // do nothing
+	}
+	
 	
 	/**
 	 * Returns the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.

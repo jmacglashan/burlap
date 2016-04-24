@@ -16,6 +16,9 @@ import java.awt.geom.Rectangle2D;
  */
 public class BlockDudeVisualizer {
 
+    private BlockDudeVisualizer() {
+        // do nothing
+    }
 
 	/**
 	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}.

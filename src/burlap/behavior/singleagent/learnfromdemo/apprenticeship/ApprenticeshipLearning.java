@@ -54,6 +54,10 @@ public class ApprenticeshipLearning {
 	
 	public static final int								debugCodeScore = 746329;
 	public static final int								debugCodeRFWeights = 636392;
+	
+	private ApprenticeshipLearning() {
+	    // do nothing
+	}
 
 	/**
 	 * Calculates the Feature Expectations given one demonstration, a feature mapping and a discount factor gamma

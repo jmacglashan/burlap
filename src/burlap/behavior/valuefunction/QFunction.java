@@ -35,6 +35,10 @@ public interface QFunction extends ValueFunction{
 	 * methods for computing the value function of a state, given the Q-values (the max Q-value or policy weighted value).
 	 */
 	public static class QFunctionHelper {
+	    
+	    private QFunctionHelper() {
+	        // do nothing
+	    }
 
 		/**
 		 * Returns the optimal state value function for a state given a {@link QFunction}.

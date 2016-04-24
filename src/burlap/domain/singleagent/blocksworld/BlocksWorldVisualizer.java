@@ -15,6 +15,10 @@ import burlap.oomdp.visualizer.Visualizer;
 
 public class BlocksWorldVisualizer {
 
+    private BlocksWorldVisualizer() {
+        // do nothing
+    }
+    
 	
 	/**
 	 * Returns a 2D Visualizer canvas object to visualize {@link BlocksWorld} states.

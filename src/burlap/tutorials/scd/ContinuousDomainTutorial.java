@@ -44,6 +44,10 @@ import java.util.List;
 
 
 public class ContinuousDomainTutorial {
+    
+    private ContinuousDomainTutorial() {
+        // do nothing
+    }
 
 	public static void MCLSPIFB(){
 

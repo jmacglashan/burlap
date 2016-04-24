@@ -17,6 +17,10 @@ import burlap.oomdp.core.states.State;
  */
 public class MultiStatePrePlanner {
 
+    private MultiStatePrePlanner() {
+        // do nothing
+    }
+    
 	/**
 	 * Runs a planning algorithm from multiple initial states to ensure that an adequate plan/policy exist for of the states.
 	 * @param planner the valueFunction to be used.

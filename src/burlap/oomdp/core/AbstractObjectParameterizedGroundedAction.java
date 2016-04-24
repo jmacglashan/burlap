@@ -43,6 +43,10 @@ public interface AbstractObjectParameterizedGroundedAction extends AbstractGroun
 
 
 	public static class Helper {
+	    
+	    private Helper() {
+	        // do nothing
+	    }
 
 		/**
 		 * This method will translate this object's parameters that were assigned for a given source state, into object parameters in the

@@ -14,7 +14,10 @@ import weka.core.Instances;
  * @author James MacGlashan.
  */
 public class WekaInterfaces {
-
+    
+    private WekaInterfaces() {
+        // do nothing
+    }
 
 	/**
 	 * Creates a Weka {@link Instance} for a state by first converting the state into a feature vector and then creating

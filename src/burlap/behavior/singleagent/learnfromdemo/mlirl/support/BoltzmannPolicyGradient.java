@@ -18,6 +18,9 @@ import java.util.Set;
  */
 public class BoltzmannPolicyGradient {
 
+    private BoltzmannPolicyGradient() {
+        // do nothing
+    }
 
 	/**
 	 * Computes the gradient of a Boltzmann policy using the given differentiable valueFunction.
