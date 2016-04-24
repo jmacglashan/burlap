@@ -1,10 +1,5 @@
 package burlap.domain.singleagent.gridworld.macro;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Map;
-
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
 import burlap.oomdp.core.states.State;
@@ -12,13 +7,17 @@ import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.StaticPainter;
 import burlap.oomdp.visualizer.Visualizer;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.Map;
+
 /**
  * A class for visualizing the reward weights assigned to a Macro-cell in a Macro-cell grid world. Reward weights provided are first normalized to lie between 0 and 1.
  * Macro cells are filled in with color that ranges from white if the reward weight is 0, to blue if the reward weight 1. The agent is rendered as a grey circle.
  * @author Stephen Brawner and Mark Ho; modified by James MacGlashan
  *
  */
-public class MacroCellVisualizer extends GridWorldVisualizer {
+public class MacroCellVisualizer {
 
 	
 
