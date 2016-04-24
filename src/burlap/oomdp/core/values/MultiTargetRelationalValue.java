@@ -122,30 +122,40 @@ public class MultiTargetRelationalValue extends OOMDPValue implements Value{
 	
 	
 	@Override
-	public boolean equals(Object obj){
-		if (this == obj) {
-			return true;
-		}
-		if(!(obj instanceof MultiTargetRelationalValue)){
-			return false;
-		}
-		
-		MultiTargetRelationalValue op = (MultiTargetRelationalValue)obj;
-		if(!op.attribute.equals(attribute)){
-			return false;
-		}
-		
-		if(this.targetObjects.size() != op.targetObjects.size()){
-			return false;
-		}
-		
-		for(String t : this.targetObjects){
-			if(!op.targetObjects.contains(t)){
-				return false;
-			}
-		}
-		
-		return true;
-		
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((targetObjects == null) ? 0 : targetObjects.hashCode());
+        return result;
+    }
+
+
+	@Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        if(!(obj instanceof MultiTargetRelationalValue)){
+            return false;
+        }
+        
+        MultiTargetRelationalValue op = (MultiTargetRelationalValue)obj;
+        if(!op.attribute.equals(attribute)){
+            return false;
+        }
+        
+        if(this.targetObjects.size() != op.targetObjects.size()){
+            return false;
+        }
+        
+        for(String t : this.targetObjects){
+            if(!op.targetObjects.contains(t)){
+                return false;
+            }
+        }
+        
+        return true;
+        
+    }
 }

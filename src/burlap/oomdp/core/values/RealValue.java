@@ -94,21 +94,33 @@ public class RealValue extends OOMDPValue implements Value {
 		return this.realVal;
 	}
 	
+	
 	@Override
-	public boolean equals(Object obj){
-		if (this == obj) {
-			return true;
-		}
-		if(!(obj instanceof RealValue)){
-			return false;
-		}
-		
-		RealValue op = (RealValue)obj;
-		if(!op.attribute.equals(attribute)){
-			return false;
-		}
-		
-		return realVal == op.realVal;
-		
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(realVal);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+
+	@Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        if(!(obj instanceof RealValue)){
+            return false;
+        }
+        
+        RealValue op = (RealValue)obj;
+        if(!op.attribute.equals(attribute)){
+            return false;
+        }
+        
+        return realVal == op.realVal;
+        
+    }
 }

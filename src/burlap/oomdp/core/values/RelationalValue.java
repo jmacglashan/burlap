@@ -94,24 +94,33 @@ public class RelationalValue  extends OOMDPValue implements Value {
 	public double getNumericRepresentation() {
 		return 0;
 	}
-
+	
 	
 	@Override
-	public boolean equals(Object obj){
-		if (this == obj) {
-			return true;
-		}
-		if(!(obj instanceof RelationalValue)){
-			return false;
-		}
-		
-		RelationalValue op = (RelationalValue)obj;
-		if(!op.attribute.equals(attribute)){
-			return false;
-		}
-		
-		return this.target.equals(op.target);
-		
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((target == null) ? 0 : target.hashCode());
+        return result;
+    }
+
+
+	@Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        if(!(obj instanceof RelationalValue)){
+            return false;
+        }
+        
+        RelationalValue op = (RelationalValue)obj;
+        if(!op.attribute.equals(attribute)){
+            return false;
+        }
+        
+        return this.target.equals(op.target);
+        
+    }
 
 }

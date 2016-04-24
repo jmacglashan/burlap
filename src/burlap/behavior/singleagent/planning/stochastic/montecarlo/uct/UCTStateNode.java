@@ -69,17 +69,30 @@ public class UCTStateNode {
 	
 	
 	@Override
-	public boolean equals(Object o){
-		
-		if(!(o instanceof UCTStateNode)){
-			return false;
-		}
-		
-		UCTStateNode os = (UCTStateNode)o;
-		
-		return state.equals(os.state) && depth == os.depth;
-		
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((actionNodes == null) ? 0 : actionNodes.hashCode());
+        result = prime * result + depth;
+        result = prime * result + n;
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
+        return result;
+    }
+	
+	
+	@Override
+    public boolean equals(Object o){
+        
+        if(!(o instanceof UCTStateNode)){
+            return false;
+        }
+        
+        UCTStateNode os = (UCTStateNode)o;
+        
+        return state.equals(os.state) && depth == os.depth;
+        
+    }
 	
 	
 	
