@@ -189,10 +189,8 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 				return this.stateWeights[i];
 			}
 		}
-		else if(this.stateActionWeights != null){
-			if(i < this.stateActionWeights.length){
-				return this.stateActionWeights[i];
-			}
+		else if(this.stateActionWeights != null && i < this.stateActionWeights.length){
+		    return this.stateActionWeights[i];
 		}
 		throw new RuntimeException("Parameter index out of bounds; parameter cannot be returned.");
 	}
@@ -205,11 +203,9 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 				return;
 			}
 		}
-		else if(this.stateActionWeights != null){
-			if(i < this.stateActionWeights.length){
-				this.stateActionWeights[i] = p;
-				return;
-			}
+		else if(this.stateActionWeights != null && i < this.stateActionWeights.length){
+		    this.stateActionWeights[i] = p;
+            return;
 		}
 		throw new RuntimeException("Parameter index out of bounds; parameter cannot be set.");
 	}

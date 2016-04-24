@@ -262,11 +262,9 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		}
 		
 		if(tf.isTerminal(node.state.s)){
-			if(goalCondition != null){
-				if(goalCondition.satisfies(node.state.s)){
-					foundGoal = true;
-					foundGoalOnRollout = true;
-				}
+			if(goalCondition != null && goalCondition.satisfies(node.state.s)){
+			    foundGoal = true;
+                foundGoalOnRollout = true;
 			}
 			DPrint.cl(debugCode, numRollOutsFromRoot + " Hit terminal at depth: " + depth);
 			return 0.;

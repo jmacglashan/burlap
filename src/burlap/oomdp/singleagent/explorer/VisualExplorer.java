@@ -436,10 +436,8 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		else{
 
 			String shellCommand = this.keyShellMap.get(key);
-			if(shellCommand != null){
-				if(this.shell != null){
-					this.shell.executeCommand(shellCommand);
-				}
+			if(shellCommand != null && this.shell != null){
+			    this.shell.executeCommand(shellCommand);
 			}
 
 		}

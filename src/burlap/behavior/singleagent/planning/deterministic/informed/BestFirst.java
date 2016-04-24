@@ -152,12 +152,8 @@ public abstract class BestFirst extends DeterministicPlanner {
 					
 					//check closed
 					PrioritizedSearchNode closedPSN = closedSet.get(npsn);
-					if(closedPSN != null){
-						
-						if(F <= closedPSN.priority){
-							continue; //no need to reopen because this is a worse path to an already explored node
-						}
-						
+					if(closedPSN != null && F <= closedPSN.priority){
+					    continue; //no need to reopen because this is a worse path to an already explored node
 					}
 					
 					//check open
