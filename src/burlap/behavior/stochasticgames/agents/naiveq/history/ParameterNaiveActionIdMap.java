@@ -68,8 +68,7 @@ public class ParameterNaiveActionIdMap implements ActionIdMap {
 			int sid = map.get(key);
 			if(sid == id){
 				//found it
-				GroundedSGAgentAction gsa = new SimpleGroundedSGAgentAction("", domain.getSingleAction(key));
-				return gsa;
+				return new SimpleGroundedSGAgentAction("", domain.getSingleAction(key));
 			}
 		}
 		

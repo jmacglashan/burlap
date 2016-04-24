@@ -152,8 +152,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	public QGradientTuple getQGradient(State s, GroundedAction a){
 
 		FunctionGradient gradient = this.computeQGradient(s, a);
-		QGradientTuple tuple = new QGradientTuple(s, a, gradient);
-		return tuple;
+		return new QGradientTuple(s, a, gradient);
 	}
 
 

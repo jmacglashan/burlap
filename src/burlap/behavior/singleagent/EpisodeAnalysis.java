@@ -450,8 +450,7 @@ public class EpisodeAnalysis {
 	public String serialize(SerializableStateFactory serializableStateFactory){
 
 		Yaml yaml = new Yaml(new EpisodeAnalysisYamlRepresenter(serializableStateFactory));
-		String yamlOut = yaml.dump(this);
-		return yamlOut;
+		return yaml.dump(this);
 	}
 
 	private class EpisodeAnalysisYamlRepresenter extends Representer{
@@ -493,8 +492,7 @@ public class EpisodeAnalysis {
 	public static EpisodeAnalysis parseEpisode(Domain domain, String episodeString){
 
 		Yaml yaml = new Yaml(new EpisodeAnalysisConstructor(domain));
-		EpisodeAnalysis ea = (EpisodeAnalysis)yaml.load(episodeString);
-		return ea;
+		return (EpisodeAnalysis)yaml.load(episodeString);
 	}
 
 	private static class EpisodeAnalysisConstructor extends Constructor{
@@ -536,8 +534,7 @@ public class EpisodeAnalysis {
 			@Override
 			public Object construct(Node node) {
 				String val = (String) constructScalar((ScalarNode)node);
-				GroundedAction ga = getGAFromSpaceDelimGAString(domain, val);
-				return ga;
+				return getGAFromSpaceDelimGAString(domain, val);
 			}
 		}
 	}
@@ -653,8 +650,7 @@ public class EpisodeAnalysis {
 			String [] annotatedParts = str.split("--");
 			GroundedAction primitivePart = getGAFromSpaceDelimGAString(d, annotatedParts[1]);
 			String annotation = annotatedParts[0].substring(1);
-			Policy.GroundedAnnotatedAction ga = new Policy.GroundedAnnotatedAction(annotation, primitivePart);
-			return ga;
+			return new Policy.GroundedAnnotatedAction(annotation, primitivePart);
 		}
 		else {
 

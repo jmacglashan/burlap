@@ -74,8 +74,7 @@ public class SerializableInvertedPendulumStateFactory implements SerializableSta
 		double a = o.getRealValForAttribute(InvertedPendulum.ATTANGLE);
 		double av = o.getRealValForAttribute(InvertedPendulum.ATTANGLEV);
 
-		String res = a + " " + av;
-		return res;
+		return a + " " + av;
 	}
 
 	public static State stringToState(Domain domain, String str){
@@ -83,8 +82,7 @@ public class SerializableInvertedPendulumStateFactory implements SerializableSta
 		String [] comps = str.split(" ");
 		double a = Double.parseDouble(comps[0]);
 		double av = Double.parseDouble(comps[1]);
-		State s = InvertedPendulum.getInitialState(domain, a, av);
-		return s;
+		return InvertedPendulum.getInitialState(domain, a, av);
 	}
 
 }

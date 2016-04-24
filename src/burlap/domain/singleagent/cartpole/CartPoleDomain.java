@@ -306,9 +306,7 @@ public class CartPoleDomain implements DomainGenerator {
 		double t = Math.sqrt(2 * (2*this.physParams.halfTrackLength) / cartAcceleration);
 		
 		//final time
-		double vf = cartAcceleration * t;
-		
-		return vf;
+		return cartAcceleration * t;
 	}
 	
 	
@@ -565,11 +563,10 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @return the normal force
 	 */
 	protected static double getNormForce(double a0, double av0, double a_2, CPPhysicsParams physParams){
-		double norm = ((physParams.cartMass + physParams.poleMass) * physParams.gravity)
+		return ((physParams.cartMass + physParams.poleMass) * physParams.gravity)
 						- (physParams.poleMass * physParams.halfPoleLength
 								* (a_2 * Math.sin(a0) + (av0*av0*Math.cos(a0)))
 						  );
-		return norm;
 	}
 	
 	/**
@@ -596,9 +593,7 @@ public class CartPoleDomain implements DomainGenerator {
 						  )
 						- (physParams.cartFriction * n * Math.signum(n*xv0));
 		
-		double x_2 = xnum/sMass;
-		
-		return x_2;
+		return xnum/sMass;
 		
 	}
 	

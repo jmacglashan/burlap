@@ -194,9 +194,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 			this.nextState.val = null;
 		}
 
-		EnvironmentOutcome eo = new EnvironmentOutcome(prevState, ga, this.currentState, this.lastReward, this.curStateIsTerminal);
-
-		return eo;
+		return new EnvironmentOutcome(prevState, ga, this.currentState, this.lastReward, this.curStateIsTerminal);
 	}
 
 	@Override

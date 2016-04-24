@@ -172,9 +172,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	protected Location2 getLocation(State s, String agentName){
 		
 		ObjectInstance a = s.getObject(agentName);
-		Location2 loc = new Location2(a.getIntValForAttribute(GridGame.ATTX), a.getIntValForAttribute(GridGame.ATTY));
-		
-		return loc;
+		return new Location2(a.getIntValForAttribute(GridGame.ATTX), a.getIntValForAttribute(GridGame.ATTY));
 	}
 	
 	

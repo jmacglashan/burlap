@@ -298,9 +298,8 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		boolean flagTerminal = this.terminalVisits > 1;
 		this.curState = nextState;
 		
-		Reward_observation_terminal toRet = new Reward_observation_terminal(r, o, flagTerminal);
+		return new Reward_observation_terminal(r, o, flagTerminal);
 		
-		return toRet;
 	}
 	
 	

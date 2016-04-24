@@ -127,9 +127,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 		EnumerableBeliefState bs = (EnumerableBeliefState)s;
 
 
-		QValue q = new QValue(s, a, this.qForBelief(bs, (GroundedAction)a));
-		
-		return q;
+		return new QValue(s, a, this.qForBelief(bs, (GroundedAction)a));
 	}
 
 	@Override

@@ -73,10 +73,8 @@ public class CoCoQ implements SGBackupOperator {
 		
 		double minmaxQ = GeneralBimatrixSolverTools.expectedPayoffs(minMaxPayout, GeneralBimatrixSolverTools.getNegatedMatrix(minMaxPayout), forAgentStrat, otherAgentStrat)[0];
 		
-		double cocoQ = (maxmax/2.)+minmaxQ;
+		return (maxmax/2.)+minmaxQ;
 		
-		
-		return cocoQ;
 		
 	}
 	

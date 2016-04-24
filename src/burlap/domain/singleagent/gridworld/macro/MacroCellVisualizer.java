@@ -31,8 +31,7 @@ public class MacroCellVisualizer {
 	public static Visualizer getVisualizer(int [][] map, MacroCellGridWorld.InMacroCellPF[] propFunctions, Map<String, Double> rewardMap) {
 		
 		StateRenderLayer r = getStateRenderLayer(map, propFunctions, rewardMap);
-		Visualizer v = new Visualizer(r);
-		return v;
+		return new Visualizer(r);
 	}
 	
 	

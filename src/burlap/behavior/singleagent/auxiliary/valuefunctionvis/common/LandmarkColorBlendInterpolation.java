@@ -142,9 +142,7 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 		float green = this.interpolate(sColorComp[1], eColorComp[1], (float)t);
 		float blue = this.interpolate(sColorComp[2], eColorComp[2], (float)t);
 		
-		Color finalColor = new Color(red, green, blue);
-		
-		return finalColor;
+		return new Color(red, green, blue);
 	}
 	
 	

@@ -62,8 +62,7 @@ public class HashedAggregator <K>{
 	 */
 	public double v(K ind){
 		Double cur = storage.get(ind);
-		double c = cur != null ? cur : initialValue;
-		return c;
+		return cur != null ? cur : initialValue;
 	}
 	
 	/**

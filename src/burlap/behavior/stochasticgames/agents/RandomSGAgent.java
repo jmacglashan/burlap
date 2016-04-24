@@ -30,9 +30,7 @@ public class RandomSGAgent extends SGAgent {
 		List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, this.worldAgentName, this.agentType.actions);
 		
 		int r = RandomFactory.getMapped(0).nextInt(gsas.size());
-		GroundedSGAgentAction gsa = gsas.get(r);
-		
-		return gsa;
+		return gsas.get(r);
 	}
 
 	@Override

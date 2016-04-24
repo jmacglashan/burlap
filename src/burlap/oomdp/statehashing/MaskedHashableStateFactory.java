@@ -156,9 +156,8 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 		for(int code : hashCodes){
 			hashCodeBuilder.append(code);
 		}
-		int code = hashCodeBuilder.toHashCode();
+		return hashCodeBuilder.toHashCode();
 
-		return code;
 	}
 
 	@Override

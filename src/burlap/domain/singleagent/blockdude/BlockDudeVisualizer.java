@@ -27,8 +27,7 @@ public class BlockDudeVisualizer {
 	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}
 	 */
 	public static Visualizer getVisualizer(int maxx, int maxy){
-		Visualizer v = new Visualizer(getStateRenderLayer(maxx, maxy));
-		return v;
+		return new Visualizer(getStateRenderLayer(maxx, maxy));
 	}
 
 	/**

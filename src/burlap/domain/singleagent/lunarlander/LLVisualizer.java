@@ -35,8 +35,7 @@ public class LLVisualizer {
 	 */
 	public static Visualizer getVisualizer(LunarLanderDomain lld){
 		
-		Visualizer v = new Visualizer(getStateRenderLayer(lld.getPhysParams()));
-		return v;
+		return new Visualizer(getStateRenderLayer(lld.getPhysParams()));
 	}
 
 	/**
@@ -47,8 +46,7 @@ public class LLVisualizer {
 	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
 	 */
 	public static Visualizer getVisualizer(LunarLanderDomain.LLPhysicsParams physParams){
-		Visualizer v = new Visualizer(getStateRenderLayer(physParams));
-		return v;
+		return new Visualizer(getStateRenderLayer(physParams));
 	}
 
 	/**

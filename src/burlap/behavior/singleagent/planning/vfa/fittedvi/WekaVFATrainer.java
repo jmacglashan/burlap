@@ -92,8 +92,7 @@ public class WekaVFATrainer implements SupervisedVFA{
 			}
 		};
 
-		WekaVFATrainer trainer = new WekaVFATrainer(generator, fvGen);
-		return trainer;
+		return new WekaVFATrainer(generator, fvGen);
 
 	}
 

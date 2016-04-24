@@ -481,8 +481,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @return an {@link burlap.oomdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
 	 */
 	public static SGAgentType getAgentTypeForAllPlayers(SGDomain domain){
-		SGAgentType at = new SGAgentType("player", domain.getObjectClass(CLASSPLAYER), domain.getAgentActions());
-		return at;
+		return new SGAgentType("player", domain.getObjectClass(CLASSPLAYER), domain.getAgentActions());
 	}
 	
 	

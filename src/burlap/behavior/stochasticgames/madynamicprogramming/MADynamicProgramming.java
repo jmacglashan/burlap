@@ -286,10 +286,8 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 				
 			}
 			
-			JAQValue q = new JAQValue(s, ja, sumQ);
+			return new JAQValue(s, ja, sumQ);
 			
-			
-			return q;
 		}
 		
 		

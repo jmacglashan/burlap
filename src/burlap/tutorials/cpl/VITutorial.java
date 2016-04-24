@@ -88,9 +88,7 @@ public class VITutorial extends MDPSolver implements Planner, QFunction{
 		}
 
 		//create Q-value wrapper
-		QValue qValue = new QValue(s, ga, q);
-
-		return qValue;
+		return new QValue(s, ga, q);
 	}
 
 	protected double bellmanEquation(State s){

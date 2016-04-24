@@ -34,8 +34,7 @@ public class BeliefPolicyAgent extends BeliefAgent {
 	@Override
 	public GroundedAction getAction(BeliefState curBelief) {
 
-		GroundedAction ga = (GroundedAction)this.policy.getAction(curBelief);
-		return ga;
+		return (GroundedAction)this.policy.getAction(curBelief);
 	}
 	
 	

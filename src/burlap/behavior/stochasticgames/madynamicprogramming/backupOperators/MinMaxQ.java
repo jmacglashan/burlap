@@ -71,10 +71,7 @@ public class MinMaxQ implements SGBackupOperator {
 		double [] otherAgentStrat = MinMaxSolver.getColPlayersStrategy(GeneralBimatrixSolverTools.getNegatedMatrix(payout1));
 		
 		//we can use true payoff for player 1 for both players, because we're ignoring the payout for the second player.
-		double expectedpayoffforPlayer1 = GeneralBimatrixSolverTools.expectedPayoffs(truePayout1, truePayout1, forAgentStrat, otherAgentStrat)[0];
-		
-		
-		return expectedpayoffforPlayer1;
+		return GeneralBimatrixSolverTools.expectedPayoffs(truePayout1, truePayout1, forAgentStrat, otherAgentStrat)[0];
 	}
 
 }

@@ -362,9 +362,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 			this.nextStateReference.val = null;
 		}
 
-		EnvironmentOutcome eo = new EnvironmentOutcome(prevState, ga, toRet, this.lastReward, this.curStateIsTerminal);
-
-		return eo;
+		return new EnvironmentOutcome(prevState, ga, toRet, this.lastReward, this.curStateIsTerminal);
 	}
 
 	@Override

@@ -131,8 +131,7 @@ public class GridWorldRewardFunction implements RewardFunction {
 					this.height +" world, but the agent transitioned to position (" + x + "," + y + "), which is outside the bounds.");
 		}
 		
-		double r = this.rewardMatrix[x][y];
-		return r;
+		return this.rewardMatrix[x][y];
 	}
 
 }

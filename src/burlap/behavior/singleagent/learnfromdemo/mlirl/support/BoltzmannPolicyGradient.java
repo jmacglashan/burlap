@@ -62,9 +62,7 @@ public class BoltzmannPolicyGradient {
 		double maxBetaScaled = maxBetaScaled(qs, beta);
 		double logSum = logSum(qs, maxBetaScaled, beta);
 
-		FunctionGradient policyGradient = computePolicyGradient(beta, qs, maxBetaScaled, logSum, qGradients, aind);
-
-		return policyGradient;
+		return computePolicyGradient(beta, qs, maxBetaScaled, logSum, qGradients, aind);
 
 	}
 
@@ -134,9 +132,7 @@ public class BoltzmannPolicyGradient {
 		for(int i = 0; i < qs.length; i++){
 			expSum += Math.exp(beta * qs[i] - maxBetaScaled);
 		}
-		double v = maxBetaScaled + Math.log(expSum);
-		return v;
-
+		return maxBetaScaled + Math.log(expSum);
 	}
 
 	protected static Set<Integer> combinedNonZeroPDParameters(FunctionGradient...gradients){

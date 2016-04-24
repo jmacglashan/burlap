@@ -180,8 +180,7 @@ public class SGToSADomain implements DomainGenerator {
 		@Override
 		public GroundedAction translateParameters(State source, State target) {
 			AbstractGroundedAction translatedWrapped = AbstractObjectParameterizedGroundedAction.Helper.translateParameters(this.wrappedSGAction, source, target);
-			GroundedSAAActionWrapper translated = new GroundedSAAActionWrapper(this.action, (GroundedSGAgentAction)translatedWrapped);
-			return translated;
+			return new GroundedSAAActionWrapper(this.action, (GroundedSGAgentAction)translatedWrapped);
 		}
 
 		@Override

@@ -77,9 +77,8 @@ public class SerializableCartPoleStateFactory implements SerializableStateFactor
 		double a = cp.getRealValForAttribute(CartPoleDomain.ATTANGLE);
 		double av = cp.getRealValForAttribute(CartPoleDomain.ATTANGLEV);
 
-		String res = x + " " + xv + " " + a + " " + av;
+		return x + " " + xv + " " + a + " " + av;
 
-		return res;
 	}
 
 	public static State stringToState(Domain domain, String str){

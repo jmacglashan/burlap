@@ -87,9 +87,7 @@ public class StateYAMLParser implements StateParser {
 	public String stateToString(State s) {
 		
 		Yaml yaml = new Yaml();
-		String output = yaml.dump(this.getYAMLPrepared(s));
-		
-		return output;
+		return yaml.dump(this.getYAMLPrepared(s));
 	}
 
 	@Override

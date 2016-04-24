@@ -93,8 +93,7 @@ public abstract class GroundedAction implements AbstractGroundedAction{
 			for(String param : strParams){
 				builder.append(" ").append(param);
 			}
-			String rep = builder.toString();
-			return rep;
+			return builder.toString();
 		}
 	}
 
