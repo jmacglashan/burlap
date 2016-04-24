@@ -32,7 +32,7 @@ public class StringValue extends OOMDPValue implements Value {
 	 */
 	public StringValue(StringValue v) {
 		super(v);
-		this.stringVal = ((StringValue)v).stringVal;
+		this.stringVal = v.stringVal;
 	}
 	
 	public StringValue(Attribute attribute, String stringVal) {

@@ -38,7 +38,7 @@ public class RelationalValue  extends OOMDPValue implements Value {
 	 */
 	public RelationalValue(RelationalValue v){
 		super(v);
-		RelationalValue rv = (RelationalValue)v;
+		RelationalValue rv = v;
 		this.target = rv.target;
 	}
 	

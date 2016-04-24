@@ -26,7 +26,7 @@ public class IntArrayValue extends OOMDPValue implements Value {
 	
 	public IntArrayValue(IntArrayValue v){
 		super(v);
-		IntArrayValue iaValue  = (IntArrayValue)v;
+		IntArrayValue iaValue  = v;
 		if(iaValue.intArray != null){
 			this.intArray = iaValue.intArray.clone();
 		} else {

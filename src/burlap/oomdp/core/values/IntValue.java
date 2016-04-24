@@ -38,7 +38,7 @@ public class IntValue extends OOMDPValue implements Value {
 	 */
 	public IntValue(IntValue v) {
 		super(v);
-		this.intVal = ((IntValue)v).intVal;
+		this.intVal = v.intVal;
 	}
 	
 	public IntValue(Attribute attribute, int intVal) {
