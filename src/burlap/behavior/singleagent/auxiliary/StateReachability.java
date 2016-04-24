@@ -28,7 +28,7 @@ public class StateReachability {
 	/**
 	 * The debugID used for making calls to {@link burlap.debugtools.DPrint}.
 	 */
-	public static int			debugID = 837493;
+	public static final int			debugID = 837493;
 	
 	private StateReachability() {
 	    // do nothing

@@ -81,7 +81,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	/**
 	 * A constant for the name of the history object class. 
 	 */
-	public static String						CLASSHISTORY = "histAID";
+	public static final String						CLASSHISTORY = "histAID";
 	
 	
 	

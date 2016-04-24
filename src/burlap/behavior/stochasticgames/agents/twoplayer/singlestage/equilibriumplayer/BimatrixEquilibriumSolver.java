@@ -23,7 +23,7 @@ public abstract class BimatrixEquilibriumSolver {
 	/**
 	 * The epislon difference used to test for double equality.
 	 */
-	public static double doubleEpislon = 1e-8;
+	public static final double doubleEpislon = 1e-8;
 	
 	
 	/**
