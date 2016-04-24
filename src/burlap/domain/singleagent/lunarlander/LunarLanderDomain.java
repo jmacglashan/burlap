@@ -588,7 +588,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		Domain domain = new SADomain();
 		
 		List <Double> thrustValuesTemp = this.thrustValues;
-		if(thrustValuesTemp.size() == 0){
+		if(thrustValuesTemp.isEmpty()){
 			thrustValuesTemp.add(0.32);
 			thrustValuesTemp.add(-physParams.gravity);
 		}

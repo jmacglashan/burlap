@@ -270,7 +270,7 @@ public class TestHashing {
 		LinkedList <HashableState> openList = new LinkedList<HashableState>();
 		openList.offer(shi);
 		hashedStates.add(shi);
-		while(openList.size() > 0){
+		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
 			
 			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);

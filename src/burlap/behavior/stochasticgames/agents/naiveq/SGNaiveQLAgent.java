@@ -326,7 +326,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			
 		}
 		
-		if(returnedEntries.size() == 0){
+		if(returnedEntries.isEmpty()){
 			throw new RuntimeException();
 		}
 		

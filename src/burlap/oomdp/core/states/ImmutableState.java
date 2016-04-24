@@ -873,7 +873,7 @@ public final class ImmutableState extends OOMDPState implements ImmutableStateIn
 		Map<String, List<String>> unset = new HashMap<String, List<String>>();
 		for(ObjectInstance o : this.objectInstances){
 			List<String> unsetA = o.unsetAttributes();
-			if(unsetA.size() > 0){
+			if(!unsetA.isEmpty()){
 				unset.put(o.getName(), unsetA);
 			}
 		}

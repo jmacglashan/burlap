@@ -337,7 +337,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		
 		//run in reverse
 		if(this.runRolloutsInReverse){
-			while(trajectory.size() > 0){
+			while(!trajectory.isEmpty()){
 				HashableState sh = trajectory.pop();
 				this.setValueFunctionToLowerBound();
 				QValue mxL = this.maxQ(sh.s);

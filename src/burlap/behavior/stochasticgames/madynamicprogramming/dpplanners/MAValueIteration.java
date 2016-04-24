@@ -174,7 +174,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 */
 	public void runVI(){
 		
-		if(this.states.size() == 0){
+		if(this.states.isEmpty()){
 			throw new RuntimeException("No states to iterate over. Note that state reacability needs to be performed before runVI() can be called. Consider using planFromState(State s) method instead or using the performStateReachabilityFrom(State s) method first.");
 		}
 		
@@ -219,7 +219,7 @@ public class MAValueIteration extends MADynamicProgramming {
 		LinkedList<HashableState> openQueue = new LinkedList<HashableState>();
 		openQueue.add(shi);
 		
-		while(openQueue.size() > 0){
+		while(!openQueue.isEmpty()){
 			
 			HashableState sh = openQueue.poll();
 			

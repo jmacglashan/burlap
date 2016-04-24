@@ -99,7 +99,7 @@ public class StateReachability {
 		hashedStates.add(shi);
 		long firstTime = System.currentTimeMillis();
 		long lastTime = firstTime;
-		while(openList.size() > 0){
+		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
 			if(tf.isTerminal(sh.s)){
 				continue; //don't expand
@@ -204,7 +204,7 @@ public class StateReachability {
 		hashedStates.add(shi);
 
 		MyTimer timer = new MyTimer(true);
-		while(openList.size() > 0){
+		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
 			if(tf.isTerminal(sh.s)){
 				continue; //don't expand

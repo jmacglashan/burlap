@@ -181,7 +181,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 
 	@Override
 	protected boolean identifierIndependentEquals(State s1, State s2) {
-		if(s1.numTotalObjects() != s2.numTotalObjects() && this.maskedObjectClasses.size() == 0){
+		if(s1.numTotalObjects() != s2.numTotalObjects() && this.maskedObjectClasses.isEmpty()){
 			return false;
 		}
 
@@ -223,7 +223,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 
 	@Override
 	protected boolean identifierDependentEquals(State s1, State s2) {
-		if(s1.numTotalObjects() != s2.numTotalObjects() && this.maskedObjectClasses.size() == 0){
+		if(s1.numTotalObjects() != s2.numTotalObjects() && this.maskedObjectClasses.isEmpty()){
 			return false;
 		}
 

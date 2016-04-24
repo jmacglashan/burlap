@@ -267,7 +267,7 @@ public class MacroCellGridWorld extends GridWorldDomain {
 		@Override
 		public boolean isTrue(State state, String... params) {
 			List<ObjectInstance> agents = state.getObjectsOfClass(MacroCellGridWorld.CLASSAGENT);
-			if (agents.size() == 0) {
+			if (agents.isEmpty()) {
 				return false;
 			}
 			ObjectInstance agent = agents.get(0);

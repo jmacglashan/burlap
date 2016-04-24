@@ -31,7 +31,7 @@ public class UnmodeledFavoredPolicy extends Policy{
 
 		List<AbstractGroundedAction> unmodeled = this.model.getUnmodeledActionsForState(s);
 
-		if(unmodeled.size() > 0){
+		if(!unmodeled.isEmpty()){
 			return unmodeled.get(RandomFactory.getMapped(0).nextInt(unmodeled.size()));
 		}
 
@@ -43,7 +43,7 @@ public class UnmodeledFavoredPolicy extends Policy{
 
 		List<AbstractGroundedAction> unmodeled = this.model.getUnmodeledActionsForState(s);
 
-		if(unmodeled.size() > 0){
+		if(!unmodeled.isEmpty()){
 			List<ActionProb> aps = new ArrayList<ActionProb>(unmodeled.size());
 			double p = 1./(double)unmodeled.size();
 			for(AbstractGroundedAction ga : unmodeled){

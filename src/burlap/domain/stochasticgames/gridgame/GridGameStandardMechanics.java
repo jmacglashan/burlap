@@ -239,7 +239,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		
-		if(newNoopPositions.size() > 0){
+		if(!newNoopPositions.isEmpty()){
 			return this.backupNoOps(originalPositions, resolvedPositions, newNoopPositions);
 		}
 		

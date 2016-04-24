@@ -62,7 +62,7 @@ public class ExecuteActionCommand implements ShellCommand {
 			return 0;
 		}
 
-		if(args.size() == 0){
+		if(args.isEmpty()){
 			return -1;
 		}
 

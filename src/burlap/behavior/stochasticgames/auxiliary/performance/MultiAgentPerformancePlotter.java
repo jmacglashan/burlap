@@ -866,7 +866,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 * @param v the value to add to the last value of list and append
 	 */
 	protected static void accumulate(List<Double> list, double v){
-		if(list.size() > 0){
+		if(!list.isEmpty()){
 			v += list.get(list.size()-1);
 		}
 		list.add(v);

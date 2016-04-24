@@ -173,7 +173,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		for(Map.Entry<Integer, Map<Integer, Set<NodeTransitionProbability>>> e : transitionDynamics.entrySet()){
 			Map<Integer, Set<NodeTransitionProbability>> at = e.getValue();
 			for(Map.Entry<Integer, Set<NodeTransitionProbability>> e2 : at.entrySet()){
-				if(e2.getValue().size() > 0) {
+				if(!e2.getValue().isEmpty()) {
 					double sum = 0.;
 					for(NodeTransitionProbability ntp : e2.getValue()) {
 						sum += ntp.probability;
@@ -226,7 +226,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		for(Map.Entry<Integer, Map<Integer, Set<NodeTransitionProbability>>> e : transitionDynamics.entrySet()){
 			Map<Integer, Set<NodeTransitionProbability>> at = e.getValue();
 			for(Map.Entry<Integer, Set<NodeTransitionProbability>> e2 : at.entrySet()){
-				if(e2.getValue().size() > 0) {
+				if(!e2.getValue().isEmpty()) {
 
 					double sum = 0.;
 					StringBuilder sb2 = new StringBuilder();
@@ -502,7 +502,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 			if(transitions == null){
 				return false;
 			}
-			if(transitions.size() == 0){
+			if(transitions.isEmpty()){
 				return false;
 			}
 			

@@ -67,7 +67,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 		//define policy for all states that are expanded along the greedy path of the UCT tree
 		LinkedList<UCTStateNode> queue = new LinkedList<UCTStateNode>();
 		queue.add(planner.getRoot());
-		while(queue.size() > 0){
+		while(!queue.isEmpty()){
 			
 			UCTStateNode snode = queue.poll();
 			

@@ -46,7 +46,7 @@ public class JointActionCommand implements ShellCommand{
 			return 0;
 		}
 
-		if(args.size() > 0){
+		if(!args.isEmpty()){
 			String agentName = args.get(0);
 
 			String aname = args.get(1);

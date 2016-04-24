@@ -49,7 +49,7 @@ public interface QFunction extends ValueFunction{
 		 */
 		public static double getOptimalValue(QFunction qSource, State s){
 			List <QValue> qs = qSource.getQs(s);
-			if(qs.size() == 0){
+			if(qs.isEmpty()){
 				return 0.;
 			}
 			double max = Double.NEGATIVE_INFINITY;
@@ -89,7 +89,7 @@ public interface QFunction extends ValueFunction{
 
 			double expectedValue = 0.;
 			List <Policy.ActionProb> aps = p.getActionDistributionForState(s);
-			if(aps.size() == 0){
+			if(aps.isEmpty()){
 				return 0.;
 			}
 			for(Policy.ActionProb ap : aps){
