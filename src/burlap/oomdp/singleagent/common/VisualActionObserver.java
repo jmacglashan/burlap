@@ -299,7 +299,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 	
 	private void updatePropTextArea(State s){
 		
-		StringBuffer buf = new StringBuffer();
+	    StringBuilder buf = new StringBuilder();
 		
 		List <PropositionalFunction> props = domain.getPropFunctions();
 		for(PropositionalFunction pf : props){

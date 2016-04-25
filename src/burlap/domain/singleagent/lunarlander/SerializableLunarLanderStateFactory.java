@@ -73,7 +73,7 @@ public class SerializableLunarLanderStateFactory implements SerializableStateFac
 
 
 	public static String stateToString(State s){
-		StringBuffer buf = new StringBuffer(256);
+	    StringBuilder buf = new StringBuilder(256);
 
 		ObjectInstance agent = s.getObjectsOfClass(LunarLanderDomain.AGENTCLASS).get(0);
 		ObjectInstance pad = s.getObjectsOfClass(LunarLanderDomain.PADCLASS).get(0);

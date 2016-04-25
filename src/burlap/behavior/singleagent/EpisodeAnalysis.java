@@ -255,7 +255,7 @@ public class EpisodeAnalysis {
 	 * @return a string representing the actions taken in this episode
 	 */
 	public String getActionSequenceString(String delimiter){
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		boolean first = true;
 		for(GroundedAction ga : actionSequence){
 			if(!first){

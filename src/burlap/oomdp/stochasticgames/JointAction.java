@@ -99,7 +99,7 @@ public class JointAction implements AbstractGroundedAction, Iterable<GroundedSGA
 	 * @return a string representation of this joint aciton without including the parameters of any parameterized actions
 	 */
 	public String noParametersActionDescription(){
-		StringBuffer buf = new StringBuffer(100);
+	    StringBuilder buf = new StringBuilder(100);
 		List <GroundedSGAgentAction> gsas = this.getActionList();
 		for(int i = 0; i < gsas.size(); i++){
 			if(i > 0){
@@ -113,7 +113,7 @@ public class JointAction implements AbstractGroundedAction, Iterable<GroundedSGA
 	
 	@Override
 	public String toString(){
-		StringBuffer buf = new StringBuffer(100);
+	    StringBuilder buf = new StringBuilder(100);
 		List <GroundedSGAgentAction> gsas = this.getActionList();
 		for(int i = 0; i < gsas.size(); i++){
 			if(i > 0){

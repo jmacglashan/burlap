@@ -49,7 +49,7 @@ public class GroundedProp implements Cloneable{
 	 * then the returned format is: "PFName(ob1, ob2)"
 	 */
 	public String toString(){
-		StringBuffer buf = new StringBuffer();
+	    StringBuilder buf = new StringBuilder();
 		
 		buf.append(pf.name).append("(");
 		for(int i = 0; i < params.length; i++){
