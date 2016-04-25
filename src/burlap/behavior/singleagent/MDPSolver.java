@@ -132,18 +132,6 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	public List<Action> getActions(){
 		return new ArrayList<Action>(this.actions);
 	}
-	
-	@Override
-	public TerminalFunction getTF(){
-		return tf;
-	}
-	
-	
-	@Override
-	public RewardFunction getRF(){
-		return rf;
-	}
-
 
 	@Override
 	public void setHashingFactory(HashableStateFactory hashingFactory) {

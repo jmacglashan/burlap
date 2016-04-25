@@ -47,7 +47,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	public QMDP(PODomain domain, QFunction mdpQSource){
 		this.mdpQSource = mdpQSource;
 		Planner planner = (Planner)this.mdpQSource;
-		this.solverInit(domain, planner.getRF(), planner.getTF(), planner.getGamma(), planner.getHashingFactory());
+		this.solverInit(domain, planner.getRf(), planner.getTf(), planner.getGamma(), planner.getHashingFactory());
 	}
 
 

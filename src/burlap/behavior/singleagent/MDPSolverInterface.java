@@ -72,20 +72,6 @@ public interface MDPSolverInterface {
 
 
 	/**
-	 * Returns the {@link burlap.oomdp.core.TerminalFunction} this solver uses.
-	 * @return the {@link burlap.oomdp.core.TerminalFunction} this solver uses.
-	 */
-	TerminalFunction getTF();
-
-
-	/**
-	 * Returns the {@link burlap.oomdp.singleagent.RewardFunction} this solver uses.
-	 * @return the {@link burlap.oomdp.singleagent.RewardFunction} this solver uses.
-	 */
-	RewardFunction getRF();
-
-
-	/**
 	 * Sets the {@link burlap.oomdp.statehashing.HashableStateFactory} used to hash states for tabular solvers.
 	 * @param hashingFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} used to hash states for tabular solvers.
 	 */
