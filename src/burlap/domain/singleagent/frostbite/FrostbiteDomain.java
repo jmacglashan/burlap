@@ -125,13 +125,13 @@ public class FrostbiteDomain implements DomainGenerator{
 	/**
 	 * Game parameters
 	 */
-	protected static final int gameHeight = 130 * SCALE;
-	protected static final int gameIceHeight = gameHeight / 4;
-	protected static final int gameWidth = 160 * SCALE;
-	private static final int jumpSize = 22 * SCALE;
-	private static final int stepSize = 2 * SCALE;
-	private static final int jumpSpeed = jumpSize / 4;
-	private static final int platformSpeed = 1 * SCALE;
+	protected static final int GAME_HEIGHT = 130 * SCALE;
+	protected static final int GAME_ICE_HEIGHT = GAME_HEIGHT / 4;
+	protected static final int GAME_WIDTH = 160 * SCALE;
+	private static final int JUMP_SIZE = 22 * SCALE;
+	private static final int STEP_SIZE = 2 * SCALE;
+	private static final int JUMP_SPEED = JUMP_SIZE / 4;
+	private static final int PLATFORM_SPEED = 1 * SCALE;
 	private static int numberPlatformRow = 4;
 	private static int numberPlatformCol = 4;
 	private static int agentSize = 8 * SCALE;
@@ -254,8 +254,8 @@ public class FrostbiteDomain implements DomainGenerator{
 			ObjectInstance platform = new MutableObjectInstance(d.getObjectClass(PLATFORMCLASS), PLATFORMCLASS + (i + row * numberPlatformCol));
 			s.addObject(platform);
 
-			platform.setValue(XATTNAME, spaceBetweenPlatforms * i + ((row % 2 == 0) ? 0 : gameWidth / 3));
-			platform.setValue(YATTNAME, gameIceHeight + jumpSize / 2 - platformSize / 2 + agentSize / 2 + jumpSize * row);
+			platform.setValue(XATTNAME, spaceBetweenPlatforms * i + ((row % 2 == 0) ? 0 : GAME_WIDTH / 3));
+			platform.setValue(YATTNAME, GAME_ICE_HEIGHT + JUMP_SIZE / 2 - platformSize / 2 + agentSize / 2 + JUMP_SIZE * row);
 			platform.setValue(SIZEATTNAME, platformSize);
 			platform.setValue(ACTIVATEDATTNAME, false);
 		}
@@ -280,7 +280,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		for (int i = 0; i < numberPlatformRow; i++)
 			setPlatformRow(domain, s, i);
 
-		setAgent(s, platformSize / 2 + agentSize / 2, gameIceHeight - jumpSize / 2);
+		setAgent(s, platformSize / 2 + agentSize / 2, GAME_ICE_HEIGHT - JUMP_SIZE / 2);
 		return s;
 	}
 
@@ -322,16 +322,16 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		//create attributes
 		Attribute xatt = new Attribute(domain, XATTNAME, Attribute.AttributeType.INT);
-		xatt.setLims(0, gameWidth);
+		xatt.setLims(0, GAME_WIDTH);
 
 		Attribute yatt = new Attribute(domain, YATTNAME, Attribute.AttributeType.INT);
-		yatt.setLims(0, gameHeight);
+		yatt.setLims(0, GAME_HEIGHT);
 
 		Attribute hatt = new Attribute(domain, HEIGHTATTNAME, Attribute.AttributeType.INT);
 		hatt.setLims(-83, 83);
 
 		Attribute satt = new Attribute(domain, SIZEATTNAME, Attribute.AttributeType.INT);
-		satt.setLims(0, gameWidth);
+		satt.setLims(0, GAME_WIDTH);
 
 		Attribute batt = new Attribute(domain, BUILDINGATTNAME, Attribute.AttributeType.INT);
 		satt.setLims(0, 256); // It's an Atari game, it should crash at some point!
@@ -420,7 +420,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		int ay = agent.getIntValForAttribute(YATTNAME);
 		int leftToJump = agent.getIntValForAttribute(HEIGHTATTNAME);
 
-		int nx = ax + xd * stepSize;
+		int nx = ax + xd * STEP_SIZE;
 		int ny = ay;
 
 		boolean inAir = leftToJump != 0;
@@ -429,19 +429,19 @@ public class FrostbiteDomain implements DomainGenerator{
 		// Is a jump triggered while player is on the ground?
 		if (leftToJump == 0 && yd != 0) {
 			// Player can only jump when on a platform (except last line), or when hitting down on the top part
-			if ((platformSpeedOnAgent != 0 && ay + yd * jumpSize < gameHeight - agentSize) || (platformSpeedOnAgent == 0 && yd > 0)) {
-				leftToJump = yd * jumpSize;
+			if ((platformSpeedOnAgent != 0 && ay + yd * JUMP_SIZE < GAME_HEIGHT - agentSize) || (platformSpeedOnAgent == 0 && yd > 0)) {
+				leftToJump = yd * JUMP_SIZE;
 				platformSpeedOnAgent = 0;
 			}
 		}
 
 		// If the player is in the air, move it.
 		if (leftToJump < 0) {
-			int jumpIncrement = Math.max(-jumpSpeed, leftToJump);
+			int jumpIncrement = Math.max(-JUMP_SPEED, leftToJump);
 			leftToJump -= jumpIncrement;
 			ny += jumpIncrement;
 		} else if (leftToJump > 0) {
-			int jumpIncrement = Math.min(jumpSpeed, leftToJump);
+			int jumpIncrement = Math.min(JUMP_SPEED, leftToJump);
 			leftToJump -= jumpIncrement;
 			ny += jumpIncrement;
 		}
@@ -451,7 +451,7 @@ public class FrostbiteDomain implements DomainGenerator{
 			nx += platformSpeedOnAgent;
 
 		// If agent goes out of the screen, stop it.
-		if (nx < 0 || nx >= gameWidth - agentSize || ny < 0 || ny >= gameHeight - agentSize) {
+		if (nx < 0 || nx >= GAME_WIDTH - agentSize || ny < 0 || ny >= GAME_HEIGHT - agentSize) {
 			nx = ax;
 			ny = ay;
 		}
@@ -479,10 +479,10 @@ public class FrostbiteDomain implements DomainGenerator{
 		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			int directionL = ((i / numberPlatformCol) % 2 == 0) ? 1 : -1;
-			int x = platforms.get(i).getIntValForAttribute(XATTNAME) + directionL * platformSpeed;
+			int x = platforms.get(i).getIntValForAttribute(XATTNAME) + directionL * PLATFORM_SPEED;
 			if (x < 0)
-				x += gameWidth;
-			platforms.get(i).setValue(XATTNAME, x % gameWidth);
+				x += GAME_WIDTH;
+			platforms.get(i).setValue(XATTNAME, x % GAME_WIDTH);
 		}
 
 		// Player landed
@@ -498,10 +498,10 @@ public class FrostbiteDomain implements DomainGenerator{
 				int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 				ObjectInstance igloo = s.getObjectsOfClass(IGLOOCLASS).get(0);
 				int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
-				if (platformSpeedOnAgent == 0 && ay > gameIceHeight) {
+				if (platformSpeedOnAgent == 0 && ay > GAME_ICE_HEIGHT) {
 					System.out.println("Game over.");
 					System.exit(0);
-				} else if (ay <= gameIceHeight && building >= buildingStepsToWin) {
+				} else if (ay <= GAME_ICE_HEIGHT && building >= buildingStepsToWin) {
 					System.out.println("You won.");
 					System.exit(0);
 				}
@@ -552,7 +552,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		for (int i = 0; i < platforms.size(); i++) {
 			ObjectInstance platform = platforms.get(i);
 			if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME)))
-				return ((i / numberPlatformCol) % 2 == 0) ? platformSpeed : -platformSpeed;
+				return ((i / numberPlatformCol) % 2 == 0) ? PLATFORM_SPEED : -PLATFORM_SPEED;
 		}
 		return 0;
 	}
@@ -569,9 +569,9 @@ public class FrostbiteDomain implements DomainGenerator{
 	private boolean pointInPlatform(int px, int py, int x, int y, int s) {
 		if (pointInPlatformHelper(px, py, x, y, s))
 			return true;
-		if (x + s > FrostbiteDomain.gameWidth && pointInPlatformHelper(px, py, x - gameWidth, y, s))
+		if (x + s > FrostbiteDomain.GAME_WIDTH && pointInPlatformHelper(px, py, x - GAME_WIDTH, y, s))
 			return true;
-		else if (x < 0 && pointInPlatformHelper(px, py, x + gameWidth, y, s))
+		else if (x < 0 && pointInPlatformHelper(px, py, x + GAME_WIDTH, y, s))
 			return true;
 		return false;
 	}
@@ -773,7 +773,7 @@ public class FrostbiteDomain implements DomainGenerator{
 				return false;
 
 			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-			return ay >= gameIceHeight;
+			return ay >= GAME_ICE_HEIGHT;
 		}
 	}
 
@@ -794,7 +794,7 @@ public class FrostbiteDomain implements DomainGenerator{
 			ObjectInstance agent = st.getObject(params[0]);
 
 			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-			return ay < gameIceHeight;
+			return ay < GAME_ICE_HEIGHT;
 		}
 	}
 
