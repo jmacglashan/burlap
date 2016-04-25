@@ -402,7 +402,7 @@ public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 			
 		//wait until it's updated before allowing anything else to happen
 		synchronized (this.trialUpdateComplete) {
-			while(this.trialUpdateComplete.b == false){
+			while(!this.trialUpdateComplete.b){
 				try {
 					this.trialUpdateComplete.wait();
 				} catch (InterruptedException e) {

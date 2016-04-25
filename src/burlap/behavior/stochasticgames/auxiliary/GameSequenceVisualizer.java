@@ -321,7 +321,7 @@ public class GameSequenceVisualizer extends JFrame {
 	
 	private void handleEpisodeSelection(ListSelectionEvent e){
 		
-		if (e.getValueIsAdjusting() == false) {
+		if (!e.getValueIsAdjusting()) {
 
 			int ind = episodeList.getSelectedIndex();
 			//System.out.println("epsidoe id: " + ind);
@@ -352,7 +352,7 @@ public class GameSequenceVisualizer extends JFrame {
 	
 	private void handleIterationSelection(ListSelectionEvent e){
 		
-		if (e.getValueIsAdjusting() == false) {
+		if (!e.getValueIsAdjusting()) {
 
        		if (iterationList.getSelectedIndex() != -1) {
 				//System.out.println("Changing visualization...");
