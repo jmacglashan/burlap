@@ -198,8 +198,8 @@ public class LLVisualizer {
 			double ow = or - ol;
 			double oh = ot - obb;
 			
-			double xr = (lld.getXmax() - lld.getXmin());
-			double yr = (lld.getYmax() - lld.getYmin());
+			double xr = lld.getXmax() - lld.getXmin();
+			double yr = lld.getYmax() - lld.getYmin();
 			
 			double nl = (ol - lld.getXmin()) / xr;
 			double nt = (ot - lld.getYmin()) / yr;
@@ -207,7 +207,7 @@ public class LLVisualizer {
 			double nw = ow/xr;
 			double nh = oh/yr;
 			
-			double sx = (nl*cWidth);
+			double sx = nl*cWidth;
 			double sy = cHeight - (nt*cHeight);
 			
 			double sw = nw*cWidth;
@@ -250,8 +250,8 @@ public class LLVisualizer {
 			double ow = or - ol;
 			double oh = ot - obb;
 			
-			double xr = (lld.getXmax() - lld.getXmin());
-			double yr = (lld.getYmax() - lld.getYmin());
+			double xr = lld.getXmax() - lld.getXmin();
+			double yr = lld.getYmax() - lld.getYmin();
 			
 			double nl = (ol - lld.getXmin()) / xr;
 			double nt = (ot - lld.getYmin()) / yr;
@@ -259,7 +259,7 @@ public class LLVisualizer {
 			double nw = ow/xr;
 			double nh = oh/yr;
 			
-			double sx = (nl*cWidth);
+			double sx = nl*cWidth;
 			double sy = cHeight - (nt*cHeight);
 			
 			double sw = nw*cWidth;

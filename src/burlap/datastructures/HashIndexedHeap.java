@@ -337,7 +337,7 @@ public class HashIndexedHeap <T> implements Iterable<T>{
 	}
 	
 	private int right(int i ){
-		return (2*(i+1));
+		return 2*(i+1);
 	}
 
 	
