@@ -161,7 +161,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 			
 			int nu = uniqueStatesInTree.size();
 			if(nu - lastNumUnique > 0){
-				DPrint.cl(debugCode, "" + numRollOutsFromRoot + "; unique states: " + nu  + "; tree size: " + treeSize + "; total visits: " + numVisits);
+				DPrint.cl(debugCode, String.valueOf(numRollOutsFromRoot) + "; unique states: " + nu  + "; tree size: " + treeSize + "; total visits: " + numVisits);
 				lastNumUnique = nu;
 			}
 			
