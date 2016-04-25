@@ -3,6 +3,7 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
@@ -64,11 +65,11 @@ public class ParameterNaiveActionIdMap implements ActionIdMap {
 	@Override
 	public GroundedSGAgentAction getActionForId(int id) {
 		
-		for(String key : map.keySet()){
-			int sid = map.get(key);
+		for(Entry<String, Integer> action : map.entrySet()){
+			int sid = action.getValue();
 			if(sid == id){
 				//found it
-				GroundedSGAgentAction gsa = new SimpleGroundedSGAgentAction("", domain.getSingleAction(key));
+				GroundedSGAgentAction gsa = new SimpleGroundedSGAgentAction("", domain.getSingleAction(action.getKey()));
 				return gsa;
 			}
 		}

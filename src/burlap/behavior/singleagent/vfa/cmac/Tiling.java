@@ -5,6 +5,7 @@ import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 
 /**
@@ -302,9 +303,9 @@ public class Tiling {
 				return false;
 			}
 			
-			for(String attName : this.attTiles.keySet()){
-				int tv = this.attTiles.get(attName);
-				int ttv = that.attTiles.get(attName);
+			for(Entry<String, Integer> attr : this.attTiles.entrySet()){
+				int tv = attr.getValue();
+				int ttv = that.attTiles.get(attr.getKey());
 				if(tv != ttv){
 					return false;
 				}

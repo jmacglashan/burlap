@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -419,9 +420,9 @@ public class World {
 		DPrint.cl(debugId, jointReward.toString());
 		
 		//index reward
-		for(String aname : jointReward.keySet()){
-			double r = jointReward.get(aname);
-			agentCumulativeReward.add(aname, r);
+		for(Entry<String, Double> ar : jointReward.entrySet()){
+			double r = ar.getValue();
+			agentCumulativeReward.add(ar.getKey(), r);
 		}
 		
 		//tell all the agents about it
@@ -468,9 +469,9 @@ public class World {
 		DPrint.cl(debugId, jointReward.toString());
 		
 		//index reward
-		for(String aname : jointReward.keySet()){
-			double r = jointReward.get(aname);
-			agentCumulativeReward.add(aname, r);
+		for(Entry<String, Double> ar : jointReward.entrySet()){
+			double r = ar.getValue();
+			agentCumulativeReward.add(ar.getKey(), r);
 		}
 		
 		
