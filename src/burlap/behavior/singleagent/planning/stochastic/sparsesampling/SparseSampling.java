@@ -613,6 +613,9 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		
 		@Override
 		public boolean equals(Object other){
+		    if (other == null || this.getClass() != other.getClass()) {
+	            return false;   
+	        }
 			HashedHeightState o = (HashedHeightState)other;
 			return this.height == o.height && this.sh.equals(o.sh);
 		}

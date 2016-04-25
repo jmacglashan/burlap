@@ -59,6 +59,9 @@ public class PrioritizedSearchNode extends SearchNode {
 	
 	@Override
 	public boolean equals(Object o){
+	    if (o == null || this.getClass() != o.getClass()) {
+            return false;   
+        }
 		PrioritizedSearchNode po = (PrioritizedSearchNode)o;
 		return s.equals(po.s);
 	}

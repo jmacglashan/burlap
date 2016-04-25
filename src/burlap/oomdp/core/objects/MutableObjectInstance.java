@@ -463,6 +463,9 @@ public class MutableObjectInstance extends OOMDPObjectInstance implements Object
 	
 	@Override
 	public boolean equals(Object obj){
+	    if (obj == null || this.getClass() != obj.getClass()) {
+            return false;   
+        }
 		MutableObjectInstance op = (MutableObjectInstance)obj;
 		if(op.name.equals(name))
 			return true;
