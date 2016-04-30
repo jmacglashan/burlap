@@ -30,6 +30,9 @@ Compile with `mvn compile`. Create a jar file with `mvn package` This will creat
 
 To compile with ant, type "ant dist" to produce the jar file, which will be created in the directory "dist". To compile the javadoc type: "ant doc" which will put the javadoc files in the directory "doc".
 
+##Example and Tutorial Code
+Example code for various aspects of BURLAP can be found at:
+https://github.com/jmacglashan/burlap_examples
 
 ## More information
 You can find more information on BURLAP, including tutorials, FAQS, Java docs, and library extensions, by visiting our website at:
