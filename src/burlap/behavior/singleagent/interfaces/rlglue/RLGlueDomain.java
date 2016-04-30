@@ -148,7 +148,7 @@ public class RLGlueDomain implements DomainGenerator {
 		 * @param ind the RLGlue int identifier of the action
 		 */
 		public RLGlueActionSpecification(Domain domain, int ind) {
-			super(""+ind, domain);
+			super(String.valueOf(ind), domain);
 			this.ind = ind;
 		}
 

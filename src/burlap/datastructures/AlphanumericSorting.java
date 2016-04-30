@@ -94,7 +94,7 @@ public class AlphanumericSorting implements Comparator {
 	private String removePadding(String string) {
 		String result="";
 		try{
-			result+= Integer.parseInt(string.trim());
+			result = Integer.toString(Integer.parseInt(string.trim()));
 		} catch (Exception e) {
 			result= string;
 		}
