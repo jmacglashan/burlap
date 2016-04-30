@@ -3,6 +3,7 @@ package burlap.oomdp.stochasticgames.agentactions;
 import java.util.ArrayList;
 import java.util.List;
 
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGDomain;
 
@@ -51,7 +52,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * you can have any kind of {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}
  * parametrization that you'd like.
  * That said, a common form of {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} parameterization is an action that operates on OO-MDP
- * {@link burlap.oomdp.core.objects.ObjectInstance} references in a state. If you would like to have a OO-MDP object parameterization,
+ * {@link OldObjectInstance} references in a state. If you would like to have a OO-MDP object parameterization,
  * rather than define your own subclass, you should consider subclassing the {@link burlap.oomdp.stochasticgames.agentactions.ObParamSGAgentAction}
  * class. See it's documentation for more details.
  *

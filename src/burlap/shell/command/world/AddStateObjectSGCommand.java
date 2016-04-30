@@ -2,7 +2,7 @@ package burlap.shell.command.world;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
@@ -58,7 +58,7 @@ public class AddStateObjectSGCommand implements ShellCommand {
 			return -1;
 		}
 
-		ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(args.get(0)), args.get(1));
+		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(args.get(0)), args.get(1));
 		State s = w.getCurrentWorldState().copy();
 		s.addObject(o);
 		w.setCurrentState(s);

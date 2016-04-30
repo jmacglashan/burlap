@@ -3,8 +3,7 @@ package burlap.domain.singleagent.blocksworld;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -150,10 +149,10 @@ public class BlocksWorld implements DomainGenerator {
 	 * @return a new state with nBlocks block objects
 	 */
 	public static State getNewState(Domain d, int nBlocks){
-		State s = new MutableState();
+		State s = new CMutableState();
 		ObjectClass oc = d.getObjectClass(CLASSBLOCK);
 		for(int i = 0; i < nBlocks; i++){
-			ObjectInstance o = new MutableObjectInstance(oc, CLASSBLOCK+i);
+			OldObjectInstance o = new MutableObjectInstance(oc, CLASSBLOCK+i);
 			setBlock(o, "", 1, 1, COLORRED);
 			s.addObject(o);
 		}
@@ -168,7 +167,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @param color the categorical color value (either "red", "green", or "blue")
 	 */
 	public static void setBlockColor(State s, int blockInd, String color){
-		ObjectInstance b = s.getObjectsOfClass(CLASSBLOCK).get(blockInd);
+		OldObjectInstance b = s.getObjectsOfClass(CLASSBLOCK).get(blockInd);
 		b.setValue(ATTCOLOR, color);
 	}
 	
@@ -208,7 +207,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @param clear the binary clear value
 	 * @param color the categorical color value (either "red", "green", or "blue")
 	 */
-	public static void setBlock(ObjectInstance block, String onBlock, int onTable, int clear, String color){
+	public static void setBlock(OldObjectInstance block, String onBlock, int onTable, int clear, String color){
 		block.setValue(ATTONBLOCK, onBlock);
 		block.setValue(ATTONTABLE, onTable);
 		block.setValue(ATTCLEAR, clear);
@@ -235,13 +234,13 @@ public class BlocksWorld implements DomainGenerator {
 
 			//blocks must be clear
 			
-			ObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance src = st.getObject(params[0]);
 			
 			if(src.getIntValForAttribute(ATTCLEAR) == 0){
 				return false;
 			}
 			
-			ObjectInstance target = st.getObject(params[1]);
+			OldObjectInstance target = st.getObject(params[1]);
 			if(target.getIntValForAttribute(ATTCLEAR) == 0){
 				return false;
 			}
@@ -255,8 +254,8 @@ public class BlocksWorld implements DomainGenerator {
 
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
-			ObjectInstance src = st.getObject(params[0]);
-			ObjectInstance target = st.getObject(params[1]);
+			OldObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance target = st.getObject(params[1]);
 			
 			String srcOnName = src.getStringValForAttribute(ATTONBLOCK);
 			
@@ -266,7 +265,7 @@ public class BlocksWorld implements DomainGenerator {
 			target.setValue(ATTCLEAR, 0);
 			
 			if(!srcOnName.equals("")){
-				ObjectInstance oldTarget = st.getObject(srcOnName);
+				OldObjectInstance oldTarget = st.getObject(srcOnName);
 				oldTarget.setValue(ATTCLEAR, 1);
 			}
 			
@@ -309,7 +308,7 @@ public class BlocksWorld implements DomainGenerator {
 
 			//block must be clear
 			
-			ObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance src = st.getObject(params[0]);
 			
 			if(src.getIntValForAttribute(ATTCLEAR) == 0){
 				return false;
@@ -326,7 +325,7 @@ public class BlocksWorld implements DomainGenerator {
 
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
-			ObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance src = st.getObject(params[0]);
 			
 			String srcOnName = src.getStringValForAttribute(ATTONBLOCK);
 			
@@ -334,7 +333,7 @@ public class BlocksWorld implements DomainGenerator {
 			src.setValue(ATTONTABLE, 1);
 			
 			if(!srcOnName.equals("")){
-				ObjectInstance oldTarget = st.getObject(srcOnName);
+				OldObjectInstance oldTarget = st.getObject(srcOnName);
 				oldTarget.setValue(ATTCLEAR, 1);
 			}
 			
@@ -372,8 +371,8 @@ public class BlocksWorld implements DomainGenerator {
 
 		@Override
 		public boolean isTrue(State st, String... params) {
-			ObjectInstance src = st.getObject(params[0]);
-			ObjectInstance target = st.getObject(params[1]);
+			OldObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance target = st.getObject(params[1]);
 			if(src.getStringValForAttribute(ATTONBLOCK).equals(target.getName())){
 				return true;
 			}
@@ -396,7 +395,7 @@ public class BlocksWorld implements DomainGenerator {
 
 		@Override
 		public boolean isTrue(State st, String... params) {
-			ObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance src = st.getObject(params[0]);
 			if(src.getIntValForAttribute(ATTONTABLE) == 1){
 				return true;
 			}
@@ -419,7 +418,7 @@ public class BlocksWorld implements DomainGenerator {
 
 		@Override
 		public boolean isTrue(State st, String... params) {
-			ObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance src = st.getObject(params[0]);
 			if(src.getIntValForAttribute(ATTCLEAR) == 1){
 				return true;
 			}
@@ -443,7 +442,7 @@ public class BlocksWorld implements DomainGenerator {
 
 		@Override
 		public boolean isTrue(State st, String... params) {
-			ObjectInstance src = st.getObject(params[0]);
+			OldObjectInstance src = st.getObject(params[0]);
 			if(src.getStringValForAttribute(ATTCOLOR).equals(this.name)){
 				return true;
 			}

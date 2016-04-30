@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.gridworld;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.stateserialization.SerializableState;
@@ -86,15 +86,15 @@ public class SerializableGridWorldStateFactory implements SerializableStateFacto
 	public static String stateToString(State s){
 		StringBuilder sbuf = new StringBuilder(256);
 
-		ObjectInstance a = s.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0);
-		List<ObjectInstance> locs = s.getObjectsOfClass(GridWorldDomain.CLASSLOCATION);
+		OldObjectInstance a = s.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0);
+		List<OldObjectInstance> locs = s.getObjectsOfClass(GridWorldDomain.CLASSLOCATION);
 
 		String xa = GridWorldDomain.ATTX;
 		String ya = GridWorldDomain.ATTY;
 		String lt = GridWorldDomain.ATTLOCTYPE;
 
 		sbuf.append(a.getIntValForAttribute(xa)).append(" ").append(a.getIntValForAttribute(ya));
-		for(ObjectInstance l : locs){
+		for(OldObjectInstance l : locs){
 			sbuf.append(", ").append(l.getIntValForAttribute(xa)).append(" ").append(l.getIntValForAttribute(ya)).append(" ").append(l.getIntValForAttribute(lt));
 		}
 

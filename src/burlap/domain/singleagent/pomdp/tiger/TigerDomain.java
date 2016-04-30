@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
-import burlap.behavior.singleagent.pomdp.qmdp.QMDP;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;
@@ -16,10 +12,8 @@ import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -31,7 +25,6 @@ import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.pomdp.ObservationFunction;
 import burlap.oomdp.singleagent.pomdp.PODomain;
 import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
-import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
 
@@ -201,8 +194,8 @@ public class TigerDomain implements DomainGenerator {
 	 * @return the hidden state for when the tiger is behind the left door
 	 */
 	public static State tigerLeftState(PODomain domain){
-		State s = new MutableState();
-		ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSTIGER), CLASSTIGER);
+		State s = new CMutableState();
+		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSTIGER), CLASSTIGER);
 		o.setValue(ATTTIGERDOOR, VALLEFT);
 		s.addObject(o);
 		return s;
@@ -215,8 +208,8 @@ public class TigerDomain implements DomainGenerator {
 	 * @return the hidden state for when the tiger is behind the right door
 	 */
 	public static State tigerRightState(PODomain domain){
-		State s = new MutableState();
-		ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSTIGER), CLASSTIGER);
+		State s = new CMutableState();
+		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSTIGER), CLASSTIGER);
 		o.setValue(ATTTIGERDOOR, VALRIGHT);
 		s.addObject(o);
 		return s;
@@ -436,8 +429,8 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of hearing the tiger behind the left door
 		 */
 		protected State observationLeft(){
-			State hearLeft = new MutableState();
-			ObjectInstance obL = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
+			State hearLeft = new CMutableState();
+			OldObjectInstance obL = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
 			obL.setValue(ATTOBSERVATION, OBHEARLEFT);
 			hearLeft.addObject(obL);
 			return hearLeft;
@@ -449,8 +442,8 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of hearing the tiger behind the right door
 		 */
 		protected State observationRight(){
-			State hearRight = new MutableState();
-			ObjectInstance obR = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
+			State hearRight = new CMutableState();
+			OldObjectInstance obR = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
 			obR.setValue(ATTOBSERVATION, OBHEARRIGHT);
 			hearRight.addObject(obR);
 			return hearRight;
@@ -462,8 +455,8 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of approaching a new pair of doors
 		 */
 		protected State observationReset(){
-			State reset = new MutableState();
-			ObjectInstance obReset = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
+			State reset = new CMutableState();
+			OldObjectInstance obReset = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
 			obReset.setValue(ATTOBSERVATION, OBRESET);
 			reset.addObject(obReset);
 			return reset;
@@ -475,8 +468,8 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of hearing nothing; occurs when the do nothing action is selected
 		 */
 		protected State observationNothing(){
-			State nothing = new MutableState();
-			ObjectInstance obNothing = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
+			State nothing = new CMutableState();
+			OldObjectInstance obNothing = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
 			obNothing.setValue(ATTOBSERVATION, OBNOTHING);
 			nothing.addObject(obNothing);
 			return nothing;

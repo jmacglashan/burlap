@@ -3,7 +3,7 @@ package burlap.domain.singleagent.gridworld;
 import java.util.HashSet;
 import java.util.Set;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 
@@ -88,7 +88,7 @@ public class GridWorldTerminalFunction implements TerminalFunction {
 	
 	@Override
 	public boolean isTerminal(State s) {
-		ObjectInstance agent = s.getFirstObjectOfClass(GridWorldDomain.CLASSAGENT);
+		OldObjectInstance agent = s.getFirstObjectOfClass(GridWorldDomain.CLASSAGENT);
 		int x = agent.getIntValForAttribute(GridWorldDomain.ATTX);
 		int y = agent.getIntValForAttribute(GridWorldDomain.ATTY);
 		return this.terminalPositions.contains(new IntPair(x, y));

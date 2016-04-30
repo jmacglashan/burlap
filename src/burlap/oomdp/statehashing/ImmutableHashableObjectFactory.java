@@ -1,11 +1,9 @@
 package burlap.oomdp.statehashing;
 
 import java.util.Iterator;
-import java.util.List;
 
-import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.values.Value;
 
 /**
@@ -24,7 +22,7 @@ public class ImmutableHashableObjectFactory implements HashableObjectFactory {
 	}
 
 	@Override
-	public HashableObject hashObject(ObjectInstance object) {
+	public HashableObject hashObject(OldObjectInstance object) {
 		if (!(object instanceof ImmutableObjectInstance)) {
 			throw new RuntimeException("This object hashing factory must be used for ImmutableObjectInstances");
 		}
@@ -65,7 +63,7 @@ public class ImmutableHashableObjectFactory implements HashableObjectFactory {
 		return true;
 	}
 	
-	protected int computeHashCode(ObjectInstance object) {
+	protected int computeHashCode(OldObjectInstance object) {
 		return this.stateFactory.computeHashCode(object);
 	}
 	

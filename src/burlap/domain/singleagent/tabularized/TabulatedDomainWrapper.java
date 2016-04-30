@@ -8,15 +8,12 @@ import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.SADomain;
 
@@ -124,8 +121,8 @@ public class TabulatedDomainWrapper implements DomainGenerator {
 	 */
 	public State getTabularizedState(State s){
 		int id = this.enumerator.getEnumeratedID(s);
-		State ts = new MutableState();
-		ObjectInstance o = new MutableObjectInstance(this.tabDomain.getObjectClass(CLASSSTATE), "state");
+		State ts = new CMutableState();
+		OldObjectInstance o = new MutableObjectInstance(this.tabDomain.getObjectClass(CLASSSTATE), "state");
 		o.setValue(ATTSTATE, id);
 		ts.addObject(o);
 		return ts;

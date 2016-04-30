@@ -2,13 +2,10 @@ package burlap.domain.singleagent.graphdefined;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -374,9 +371,9 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @return a new state object where the agent is in the specified state node number.
 	 */
 	public static State getState(Domain d, int sNode){
-		State s = new MutableState();
+		State s = new CMutableState();
 		
-		ObjectInstance o = new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT);
+		OldObjectInstance o = new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT);
 		o.setValue(ATTNODE, sNode);
 		
 		s.addObject(o);
@@ -494,7 +491,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		@Override
 		public boolean applicableInState(State st, GroundedAction groundedAction){
 			
-			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
+			OldObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
 			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
@@ -513,7 +510,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		@Override
 		protected State performActionHelper(State st, GroundedAction groundedAction) {
 			
-			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
+			OldObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
 			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
@@ -541,7 +538,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 			
 			List <TransitionProbability> result = new ArrayList<TransitionProbability>();
 			
-			ObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
+			OldObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
 			int n = o.getIntValForAttribute(ATTNODE);
 			
 			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
@@ -550,7 +547,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 			for(NodeTransitionProbability ntp : transitions){
 				
 				State ns = st.copy();
-				ObjectInstance no = ns.getObjectsOfClass(CLASSAGENT).get(0);
+				OldObjectInstance no = ns.getObjectsOfClass(CLASSAGENT).get(0);
 				no.setValue(ATTNODE, ntp.transitionTo);
 				
 				TransitionProbability tp = new TransitionProbability(ns, ntp.probability);

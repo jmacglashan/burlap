@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.cartpole;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.stateserialization.SerializableState;
@@ -71,7 +71,7 @@ public class SerializableCartPoleStateFactory implements SerializableStateFactor
 
 
 	public static String stateToString(State s){
-		ObjectInstance cp = s.getFirstObjectOfClass(CartPoleDomain.CLASSCARTPOLE);
+		OldObjectInstance cp = s.getFirstObjectOfClass(CartPoleDomain.CLASSCARTPOLE);
 		double x = cp.getRealValForAttribute(CartPoleDomain.ATTX);
 		double xv = cp.getRealValForAttribute(CartPoleDomain.ATTV);
 		double a = cp.getRealValForAttribute(CartPoleDomain.ATTANGLE);

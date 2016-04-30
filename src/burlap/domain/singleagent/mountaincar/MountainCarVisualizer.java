@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
@@ -91,7 +91,7 @@ public class MountainCarVisualizer {
 		
 		
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
+		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
 				float cWidth, float cHeight) {
 			
 			double worldWidth = physParams.xmax - physParams.xmin;

@@ -2,7 +2,6 @@ package burlap.oomdp.stochasticgames;
 
 import java.util.List;
 
-import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 

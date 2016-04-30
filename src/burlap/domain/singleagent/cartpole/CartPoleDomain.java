@@ -1,17 +1,11 @@
 package burlap.domain.singleagent.cartpole;
 
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
@@ -332,7 +326,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @return the corresponding initial state object
 	 */
 	public static State getInitialState(Domain domain, double x, double xv, double a, double av){
-		ObjectInstance cartPole = new MutableObjectInstance(domain.getObjectClass(CLASSCARTPOLE), CLASSCARTPOLE);
+		OldObjectInstance cartPole = new MutableObjectInstance(domain.getObjectClass(CLASSCARTPOLE), CLASSCARTPOLE);
 		cartPole.setValue(ATTX, x);
 		cartPole.setValue(ATTV, xv);
 		cartPole.setValue(ATTANGLE, a);
@@ -341,7 +335,7 @@ public class CartPoleDomain implements DomainGenerator {
 			cartPole.setValue(ATTNORMSGN, 1.);
 		}
 		
-		State s = new MutableState();
+		State s = new CMutableState();
 		s.addObject(cartPole);
 		
 		return s;
@@ -360,7 +354,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 */
 	public static State moveClassicModel(State s, double dir, CPPhysicsParams physParams){
 		
-		ObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
+		OldObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
 		double x0 = cartPole.getRealValForAttribute(ATTX);
 		double xv0 = cartPole.getRealValForAttribute(ATTV);
 		double a0 = cartPole.getRealValForAttribute(ATTANGLE);
@@ -451,7 +445,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 */
 	public static State moveCorrectModel(State s, double dir, CPPhysicsParams physParams){
 		
-		ObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
+		OldObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
 		double x0 = cartPole.getRealValForAttribute(ATTX);
 		double xv0 = cartPole.getRealValForAttribute(ATTV);
 		double a0 = cartPole.getRealValForAttribute(ATTANGLE);
@@ -680,7 +674,7 @@ public class CartPoleDomain implements DomainGenerator {
 		@Override
 		public boolean isTerminal(State s) {
 			
-			ObjectInstance cartpole = s.getFirstObjectOfClass(CLASSCARTPOLE);
+			OldObjectInstance cartpole = s.getFirstObjectOfClass(CLASSCARTPOLE);
 			double x = cartpole.getRealValForAttribute(ATTX);
 			Attribute xatt = cartpole.getObjectClass().getAttribute(ATTX);
 			double xmin = xatt.lowerLim;
@@ -736,7 +730,7 @@ public class CartPoleDomain implements DomainGenerator {
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
 			
-			ObjectInstance cartpole = sprime.getFirstObjectOfClass(CLASSCARTPOLE);
+			OldObjectInstance cartpole = sprime.getFirstObjectOfClass(CLASSCARTPOLE);
 			double x = cartpole.getRealValForAttribute(ATTX);
 			Attribute xatt = cartpole.getObjectClass().getAttribute(ATTX);
 			double xmin = xatt.lowerLim;

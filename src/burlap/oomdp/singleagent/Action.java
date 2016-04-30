@@ -80,7 +80,7 @@ import java.util.List;
  * By allowing you to
  * define your own subclass of {@link burlap.oomdp.singleagent.GroundedAction} that is returned by these methods, you can have any kind of {@link burlap.oomdp.singleagent.Action}
  * parametrization that you'd like. That said, A common form of {@link burlap.oomdp.singleagent.Action} parameterization is an action that operates on OO-MDP
- * {@link burlap.oomdp.core.objects.ObjectInstance} references in a state (for example, stacking on block on another
+ * {@link burlap.oomdp.core.states.oo.ObjectInstance} references in a state (for example, stacking on block on another
  * in {@link burlap.domain.singleagent.blocksworld.BlocksWorld}. Therefore, if you would like to have a OO-MDP object parameterization,
  * rather than define your own subclass, you should consider subclassing the {@link burlap.oomdp.singleagent.ObjectParameterizedAction}
  * class. See it's documentation for more details.

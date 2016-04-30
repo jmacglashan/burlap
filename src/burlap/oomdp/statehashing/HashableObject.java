@@ -1,82 +1,81 @@
 package burlap.oomdp.statehashing;
 
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.values.Value;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class HashableObject implements ObjectInstance {
-	public ObjectInstance source;
-	public HashableObject(ObjectInstance source) {
+public class HashableObject implements OldObjectInstance {
+	public OldObjectInstance source;
+	public HashableObject(OldObjectInstance source) {
 		this.source = source;
 	}
 
 	@Override
-	public ObjectInstance copy() {
+	public OldObjectInstance copy() {
 		return new HashableObject(this.source);
 	}
 
 	@Override
-	public ObjectInstance setName(String name) {
+	public OldObjectInstance setName(String name) {
 		return this.source.setName(name);
 	}
 
 	@Override
-	public <T> ObjectInstance setValue(String attName, T v) {
+	public <T> OldObjectInstance setValue(String attName, T v) {
 		return this.source.setValue(attName, v);
 	}
 
 	@Override
-	public ObjectInstance setValue(String attName, String v) {
+	public OldObjectInstance setValue(String attName, String v) {
 		return this.setValue(attName, v);
 	}
 
 	@Override
-	public ObjectInstance setValue(String attName, double v) {
+	public OldObjectInstance setValue(String attName, double v) {
 		return this.setValue(attName, v);
 	}
 
 	@Override
-	public ObjectInstance setValue(String attName, int v) {
+	public OldObjectInstance setValue(String attName, int v) {
 		return this.setValue(attName, v);
 	}
 
 	@Override
-	public ObjectInstance setValue(String attName, boolean v) {
+	public OldObjectInstance setValue(String attName, boolean v) {
 		return this.setValue(attName, v);
 	}
 
 	@Override
-	public ObjectInstance setValue(String attName, int[] v) {
+	public OldObjectInstance setValue(String attName, int[] v) {
 		return this.setValue(attName, v);
 	}
 
 	@Override
-	public ObjectInstance setValue(String attName, double[] v) {
+	public OldObjectInstance setValue(String attName, double[] v) {
 		return this.setValue(attName, v);
 	}
 
 	@Override
-	public ObjectInstance addRelationalTarget(String attName, String target) {
+	public OldObjectInstance addRelationalTarget(String attName, String target) {
 		return this.source.addRelationalTarget(attName, target);
 	}
 
 	@Override
-	public ObjectInstance addAllRelationalTargets(String attName,
-			Collection<String> targets) {
+	public OldObjectInstance addAllRelationalTargets(String attName,
+													 Collection<String> targets) {
 		return this.source.addAllRelationalTargets(attName, targets);
 	}
 
 	@Override
-	public ObjectInstance clearRelationalTargets(String attName) {
+	public OldObjectInstance clearRelationalTargets(String attName) {
 		return this.source.clearRelationalTargets(attName);
 	}
 
 	@Override
-	public ObjectInstance removeRelationalTarget(String attName, String target) {
+	public OldObjectInstance removeRelationalTarget(String attName, String target) {
 		return this.source.removeRelationalTarget(attName, target);
 	}
 
@@ -176,7 +175,7 @@ public class HashableObject implements ObjectInstance {
 	}
 
 	@Override
-	public boolean valueEquals(ObjectInstance obj) {
+	public boolean valueEquals(OldObjectInstance obj) {
 		return this.source.valueEquals(obj);
 	}
 	
@@ -187,10 +186,10 @@ public class HashableObject implements ObjectInstance {
 
 
 		/**
-		 * Initializes the CachedHashableObject with the given {@link burlap.oomdp.core.objects.ObjectInstance} object.
-		 * @param source the {@link burlap.oomdp.core.objects.ObjectInstance} object this object will wrap
+		 * Initializes the CachedHashableObject with the given {@link OldObjectInstance} object.
+		 * @param source the {@link OldObjectInstance} object this object will wrap
 		 */
-		public CachedHashableObject(ObjectInstance source){
+		public CachedHashableObject(OldObjectInstance source){
 			super(source);
 			needToRecomputeHashCode = true;
 		}

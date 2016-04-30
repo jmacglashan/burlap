@@ -1,7 +1,8 @@
 package burlap.oomdp.core;
 
-import burlap.oomdp.core.objects.ObjectInstance;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.states.oo.OOState;
+import burlap.oomdp.core.states.oo.ObjectInstance;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,15 +10,15 @@ import java.util.Set;
 
 /**
  * An interface extension to the {@link burlap.oomdp.core.AbstractGroundedAction} interface for grounded actions whose
- * parameter included references to OO-MDP {@link burlap.oomdp.core.objects.ObjectInstance}s. This is a special
- * interface because grounded actions that have parameters references to OO-MDO {@link burlap.oomdp.core.objects.ObjectInstance}s
+ * parameter included references to OO-MDP {@link burlap.oomdp.core.states.oo.ObjectInstance}s. This is a special
+ * interface because grounded actions that have parameters references to OO-MDO {@link burlap.oomdp.core.states.oo.ObjectInstance}s
  * may require special care by a planning or learning algorithm since the names of object references can change between states
  * that are otherwise equal (that is, states that are object identifier independent).
  * <p>
  * This interface also includes the inner class {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction.Helper}
  * which provides the static method {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction.Helper#translateParameters(AbstractGroundedAction, burlap.oomdp.core.states.State, burlap.oomdp.core.states.State)}
  * that can be used to reparameterize a {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}'s object references
- * to equivalent {@link burlap.oomdp.core.objects.ObjectInstance} objects in separate state with different names. See its
+ * to equivalent {@link burlap.oomdp.core.states.oo.ObjectInstance} objects in separate state with different names. See its
  * method documentation for more information.
  * @author James MacGlashan.
  */
@@ -63,6 +64,12 @@ public interface AbstractObjectParameterizedGroundedAction extends AbstractGroun
 				return groundedAction;
 			}
 
+			if(!(sourceState instanceof OOState) || !(targetState instanceof OOState)){
+				throw new RuntimeException("Cannot translate object parameters for state that does not implement OOState");
+			}
+
+			OOState ooSource = (OOState)sourceState;
+			OOState ooTarget = (OOState)targetState;
 
 			String[] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
@@ -77,13 +84,13 @@ public interface AbstractObjectParameterizedGroundedAction extends AbstractGroun
 			String[] nparams = new String[params.length];
 			int i = 0;
 			for(String oname : params) {
-				ObjectInstance o = sourceState.getObject(oname);
-				List<ObjectInstance> cands = targetState.getObjectsOfClass(o.getObjectClass().name);
+				ObjectInstance o = ooSource.object(oname);
+				List<ObjectInstance> cands = ooTarget.objectsOfClass(o.className());
 				for(ObjectInstance cand : cands) {
 					if(matchedObjects.contains(cand.getName())) {
 						continue;
 					}
-					if(o.valueEquals(cand)) {
+					if(o.equals(cand)) {
 						nparams[i] = o.getName();
 						matchedObjects.add(o.getName());
 						break;

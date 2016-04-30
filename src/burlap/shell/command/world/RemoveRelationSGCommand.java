@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
@@ -61,7 +61,7 @@ public class RemoveRelationSGCommand implements ShellCommand {
 		}
 
 		State s = w.getCurrentWorldState().copy();
-		ObjectInstance o = s.getObject(args.get(0));
+		OldObjectInstance o = s.getObject(args.get(0));
 		if(o == null){
 			os.println("Unknown object " + args.get(0));
 			return 0;

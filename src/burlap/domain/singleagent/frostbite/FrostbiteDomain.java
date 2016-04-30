@@ -4,8 +4,7 @@ import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -188,7 +187,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param y the y position of the agent
 	 */
 	public static void setAgent(State s, int x, int y) {
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 
 		agent.setValue(XATTNAME, x);
 		agent.setValue(YATTNAME, y);
@@ -204,7 +203,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param h the height of the agent (0 is ground)
 	 */
 	public static void setAgent(State s, int x, int y, int h) {
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 
 		agent.setValue(XATTNAME, x);
 		agent.setValue(YATTNAME, y);
@@ -218,7 +217,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param building igloo building status
 	 */
 	public static void setIgloo(State s, int building) {
-		ObjectInstance agent = s.getObjectsOfClass(IGLOOCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(IGLOOCLASS).get(0);
 
 		agent.setValue(BUILDINGATTNAME, building);
 	}
@@ -234,7 +233,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param activatedStatus the platform status
 	 */
 	public static void setPlatform(State s, int i, int x, int y, int ss, boolean activatedStatus) {
-		ObjectInstance platform = s.getObjectsOfClass(PLATFORMCLASS).get(i);
+		OldObjectInstance platform = s.getObjectsOfClass(PLATFORMCLASS).get(i);
 
 		platform.setValue(XATTNAME, x);
 		platform.setValue(YATTNAME, y);
@@ -251,7 +250,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	private static void setPlatformRow(Domain d, State s, int row) {
 		for (int i = 0; i < numberPlatformCol; i++) {
-			ObjectInstance platform = new MutableObjectInstance(d.getObjectClass(PLATFORMCLASS), PLATFORMCLASS + (i + row * numberPlatformCol));
+			OldObjectInstance platform = new MutableObjectInstance(d.getObjectClass(PLATFORMCLASS), PLATFORMCLASS + (i + row * numberPlatformCol));
 			s.addObject(platform);
 
 			platform.setValue(XATTNAME, spaceBetweenPlatforms * i + ((row % 2 == 0) ? 0 : gameWidth / 3));
@@ -270,11 +269,11 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	public static State getCleanState(Domain domain) {
 
-		State s = new MutableState();
+		State s = new CMutableState();
 
-		ObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
+		OldObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
 		s.addObject(agent);
-		ObjectInstance igloo = new MutableObjectInstance(domain.getObjectClass(IGLOOCLASS), IGLOOCLASS + "0");
+		OldObjectInstance igloo = new MutableObjectInstance(domain.getObjectClass(IGLOOCLASS), IGLOOCLASS + "0");
 		s.addObject(igloo);
 
 		for (int i = 0; i < numberPlatformRow; i++)
@@ -416,7 +415,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	protected void move(State s, int xd, int yd) {
 
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		int ax = agent.getIntValForAttribute(XATTNAME);
 		int ay = agent.getIntValForAttribute(YATTNAME);
 		int leftToJump = agent.getIntValForAttribute(HEIGHTATTNAME);
@@ -477,7 +476,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 */
 	private void update(State s, int leftToJump, boolean justLanded, int platformSpeedOnAgent) {
 		// Move the platforms
-		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
+		List<OldObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
 			int directionL = ((i / numberPlatformCol) % 2 == 0) ? 1 : -1;
 			int x = platforms.get(i).getIntValForAttribute(XATTNAME) + directionL * platformSpeed;
@@ -495,9 +494,9 @@ public class FrostbiteDomain implements DomainGenerator{
 
 			// Termination conditions (only used to test the domain)
 			if (visualizingDomain) {
-				ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+				OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 				int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-				ObjectInstance igloo = s.getObjectsOfClass(IGLOOCLASS).get(0);
+				OldObjectInstance igloo = s.getObjectsOfClass(IGLOOCLASS).get(0);
 				int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
 				if (platformSpeedOnAgent == 0 && ay > gameIceHeight) {
 					System.out.println("Game over.");
@@ -522,18 +521,18 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @param s State on which to activate the platforms
 	 */
 	private void activatePlatforms(State s) {
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
 		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
+		List<OldObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
-			ObjectInstance platform = platforms.get(i);
+			OldObjectInstance platform = platforms.get(i);
 			if (!platform.getBooleanValForAttribute(ACTIVATEDATTNAME))
 
 				if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME))) {
 					for (int j = numberPlatformCol * (i / numberPlatformCol); j < numberPlatformCol * (1 + i / numberPlatformCol); j++)
 						platforms.get(j).setValue(ACTIVATEDATTNAME, true);
-					ObjectInstance igloo = s.getFirstObjectOfClass(IGLOOCLASS);
+					OldObjectInstance igloo = s.getFirstObjectOfClass(IGLOOCLASS);
 					igloo.setValue(BUILDINGATTNAME, igloo.getIntValForAttribute(BUILDINGATTNAME) + 1);
 					break;
 				}
@@ -546,12 +545,12 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * @return 0 if the player is not on a platform. Otherwise returns the platform speed of the platform the player is on.
 	 */
 	private int getLandedPlatformSpeed(State s) {
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		int ax = agent.getIntValForAttribute(XATTNAME) + agentSize / 2;
 		int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
-		List<ObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
+		List<OldObjectInstance> platforms = s.getObjectsOfClass(PLATFORMCLASS);
 		for (int i = 0; i < platforms.size(); i++) {
-			ObjectInstance platform = platforms.get(i);
+			OldObjectInstance platform = platforms.get(i);
 			if (pointInPlatform(ax, ay, platform.getIntValForAttribute(XATTNAME), platform.getIntValForAttribute(YATTNAME), platform.getIntValForAttribute(SIZEATTNAME)))
 				return ((i / numberPlatformCol) % 2 == 0) ? platformSpeed : -platformSpeed;
 		}
@@ -711,8 +710,8 @@ public class FrostbiteDomain implements DomainGenerator{
 		@Override
 		public boolean isTrue(State st, String... params) {
 
-			ObjectInstance agent = st.getObject(params[0]);
-			ObjectInstance platform = st.getObject(params[1]);
+			OldObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance platform = st.getObject(params[1]);
 
 			int x = platform.getIntValForAttribute(XATTNAME);
 			int y = platform.getIntValForAttribute(YATTNAME);
@@ -743,7 +742,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		@Override
 		public boolean isTrue(State st, String... params) {
-			ObjectInstance platform = st.getObject(params[0]);
+			OldObjectInstance platform = st.getObject(params[0]);
 			return platform.getBooleanValForAttribute(ACTIVATEDATTNAME);
 		}
 	}
@@ -763,7 +762,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		@Override
 		public boolean isTrue(State st, String... params) {
 
-			ObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance agent = st.getObject(params[0]);
 			int ah = agent.getIntValForAttribute(HEIGHTATTNAME);
 
 			if (ah != 0)
@@ -792,7 +791,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		@Override
 		public boolean isTrue(State st, String... params) {
-			ObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance agent = st.getObject(params[0]);
 
 			int ay = agent.getIntValForAttribute(YATTNAME) + agentSize / 2;
 			return ay < gameIceHeight;
@@ -812,7 +811,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 		@Override
 		public boolean isTrue(State st, String... params) {
-			ObjectInstance igloo = st.getObject(params[0]);
+			OldObjectInstance igloo = st.getObject(params[0]);
 
 			int building = igloo.getIntValForAttribute(BUILDINGATTNAME);
 			return building >= buildingStepsToWin;

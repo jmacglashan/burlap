@@ -2,7 +2,7 @@ package burlap.shell.command.env;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentDelegation;
@@ -59,7 +59,7 @@ public class AddStateObjectCommand implements ShellCommand {
 			return -1;
 		}
 
-		ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(args.get(0)), args.get(1));
+		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(args.get(0)), args.get(1));
 		State s = env.getCurrentObservation();
 		s.addObject(o);
 		senv.setCurStateTo(s);

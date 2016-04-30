@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
@@ -72,12 +72,12 @@ public class BlocksWorldVisualizer {
 		
 		
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
+		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
 				float cWidth, float cHeight) {
 			
-			List <ObjectInstance> objects = s.getAllObjects();
+			List <OldObjectInstance> objects = s.getAllObjects();
 			List <String> obNames = new ArrayList<String>(objects.size());
-			for(ObjectInstance o : objects){
+			for(OldObjectInstance o : objects){
 				obNames.add(o.getName());
 			}
 			Collections.sort(obNames);
@@ -113,14 +113,14 @@ public class BlocksWorldVisualizer {
 			
 		}
 		
-		protected String getStackBottom(State s, ObjectInstance ob){
+		protected String getStackBottom(State s, OldObjectInstance ob){
 			if(ob.getIntValForAttribute(BlocksWorld.ATTONTABLE) == 1){
 				return ob.getName();
 			}
 			return this.getStackBottom(s, s.getObject(ob.getStringValForAttribute(BlocksWorld.ATTONBLOCK)));
 		}
 		
-		protected int getHeight(State s, ObjectInstance ob){
+		protected int getHeight(State s, OldObjectInstance ob){
 			if(ob.getIntValForAttribute(BlocksWorld.ATTONTABLE) == 1){
 				return 0;
 			}

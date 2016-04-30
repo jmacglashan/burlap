@@ -6,7 +6,6 @@ import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.GroundedProp;
 import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.visualizer.Visualizer;
@@ -336,7 +335,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
 				
-				painter.updateState(new MutableState()); //clear screen
+				painter.updateState(new CMutableState()); //clear screen
 				this.setIterationListData();
 				
 			}

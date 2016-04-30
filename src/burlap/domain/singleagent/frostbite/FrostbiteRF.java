@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.frostbite;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -40,9 +40,9 @@ public class FrostbiteRF implements RewardFunction{
 	}
 
 	private int numberPlatformsActive(State s) {
-		List<ObjectInstance> platforms = s.getObjectsOfClass(FrostbiteDomain.PLATFORMCLASS);
+		List<OldObjectInstance> platforms = s.getObjectsOfClass(FrostbiteDomain.PLATFORMCLASS);
 		int nb = 0;
-		for (ObjectInstance platform : platforms)
+		for (OldObjectInstance platform : platforms)
 			if (platform.getBooleanValForAttribute(FrostbiteDomain.ACTIVATEDATTNAME))
 				nb++;
 		return nb;

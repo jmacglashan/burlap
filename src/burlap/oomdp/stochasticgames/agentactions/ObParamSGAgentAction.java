@@ -1,7 +1,7 @@
 package burlap.oomdp.stochasticgames.agentactions;
 
-import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.SGDomain;
 
@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *  If your {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} implementation is paramerterized to OO-MDP {@link burlap.oomdp.core.objects.ObjectInstance}
+ *  If your {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} implementation is paramerterized to OO-MDP {@link OldObjectInstance}
  * references, you can subclass this {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} subclass to easily provide that functionality. The {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
  * instance associated with this action is {@link burlap.oomdp.stochasticgames.agentactions.ObParamSGAgentAction.GroundedObParamSGAgentAction},
  * which implements the {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}, since its parameters refer to
- * OO-MDP {@link burlap.oomdp.core.objects.ObjectInstance} references.
+ * OO-MDP {@link OldObjectInstance} references.
  * <p>
  * The string array in the {@link #ObParamSGAgentAction(burlap.oomdp.stochasticgames.SGDomain, String, String[])} constructor
  * specifies the valid type of {@link burlap.oomdp.core.ObjectClass}

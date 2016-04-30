@@ -9,11 +9,10 @@ import java.util.Random;
 import burlap.debugtools.RandomFactory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
@@ -139,7 +138,7 @@ public class MacroCellGridWorld extends GridWorldDomain {
 	 */
 	public static State getRandomInitialState(GridWorldDomain gridWorldGenerator, Domain d) {
 		Random r = RandomFactory.getMapped(0);
-		State s = new MutableState();
+		State s = new CMutableState();
 		int [][] map = gridWorldGenerator.getMap();
 		
 		int rx;
@@ -150,7 +149,7 @@ public class MacroCellGridWorld extends GridWorldDomain {
 			ry = r.nextInt(map[0].length);
 		}while(map[rx][ry] == 1);
 		
-		ObjectInstance agent = new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0);
+		OldObjectInstance agent = new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0);
 		agent.setValue(ATTX, rx);
 		agent.setValue(ATTY, ry);
 		s.addObject(agent);
@@ -266,11 +265,11 @@ public class MacroCellGridWorld extends GridWorldDomain {
 
 		@Override
 		public boolean isTrue(State state, String... params) {
-			List<ObjectInstance> agents = state.getObjectsOfClass(MacroCellGridWorld.CLASSAGENT);
+			List<OldObjectInstance> agents = state.getObjectsOfClass(MacroCellGridWorld.CLASSAGENT);
 			if (agents.isEmpty()) {
 				return false;
 			}
-			ObjectInstance agent = agents.get(0);
+			OldObjectInstance agent = agents.get(0);
 			int agentX = agent.getIntValForAttribute(MacroCellGridWorld.ATTX);
 			int agentY = agent.getIntValForAttribute(MacroCellGridWorld.ATTY);
 			return this.isTrue(agentX, agentY);

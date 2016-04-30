@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.frostbite;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.stateserialization.SerializableState;
@@ -74,9 +74,9 @@ public class SerializableFrostbiteStateFactory implements SerializableStateFacto
 	public static String stateToString(State s){
 	    StringBuilder buf = new StringBuilder(256);
 
-		ObjectInstance agent = s.getObjectsOfClass(FrostbiteDomain.AGENTCLASS).get(0);
-		ObjectInstance igloo = s.getObjectsOfClass(FrostbiteDomain.IGLOOCLASS).get(0);
-		List<ObjectInstance> platforms = s.getObjectsOfClass(FrostbiteDomain.PLATFORMCLASS);
+		OldObjectInstance agent = s.getObjectsOfClass(FrostbiteDomain.AGENTCLASS).get(0);
+		OldObjectInstance igloo = s.getObjectsOfClass(FrostbiteDomain.IGLOOCLASS).get(0);
+		List<OldObjectInstance> platforms = s.getObjectsOfClass(FrostbiteDomain.PLATFORMCLASS);
 
 		//write agent
 		buf.append(agent.getRealValForAttribute(FrostbiteDomain.XATTNAME)).append(" ");
@@ -86,7 +86,7 @@ public class SerializableFrostbiteStateFactory implements SerializableStateFacto
 		buf.append(igloo.getRealValForAttribute(FrostbiteDomain.BUILDINGATTNAME));
 
 		//write each obstacle
-		for (ObjectInstance ob : platforms) {
+		for (OldObjectInstance ob : platforms) {
 			buf.append("\n").append(ob.getRealValForAttribute(FrostbiteDomain.XATTNAME)).append(" ");
 			buf.append(ob.getRealValForAttribute(FrostbiteDomain.YATTNAME)).append(" ");
 			buf.append(ob.getRealValForAttribute(FrostbiteDomain.SIZEATTNAME)).append(" ");

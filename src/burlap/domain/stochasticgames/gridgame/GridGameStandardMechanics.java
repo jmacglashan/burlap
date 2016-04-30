@@ -11,7 +11,7 @@ import java.util.Set;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
@@ -101,7 +101,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 					GroundedSGAgentAction gsa = gsas.get(i);
 					Location2 loc = csp.locs.get(i);
 					
-					ObjectInstance agent = ns.getObject(gsa.actingAgent);
+					OldObjectInstance agent = ns.getObject(gsa.actingAgent);
 					agent.setValue(GridGame.ATTX, loc.x);
 					agent.setValue(GridGame.ATTY, loc.y);
 				}
@@ -152,7 +152,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 			GroundedSGAgentAction gsa = gsas.get(i);
 			Location2 loc = finalPositions.get(i);
 			
-			ObjectInstance agent = s.getObject(gsa.actingAgent);
+			OldObjectInstance agent = s.getObject(gsa.actingAgent);
 			agent.setValue(GridGame.ATTX, loc.x);
 			agent.setValue(GridGame.ATTY, loc.y);
 			
@@ -171,7 +171,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 */
 	protected Location2 getLocation(State s, String agentName){
 		
-		ObjectInstance a = s.getObject(agentName);
+		OldObjectInstance a = s.getObject(agentName);
 		Location2 loc = new Location2(a.getIntValForAttribute(GridGame.ATTX), a.getIntValForAttribute(GridGame.ATTY));
 		
 		return loc;
@@ -579,10 +579,10 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param vertical whether the list of provided walls are vertical or horizontal walls
 	 * @return true if the agent is able to move in the desired location; false otherwise
 	 */
-	protected boolean sampleWallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
+	protected boolean sampleWallCollision(Location2 p0, Location2 delta, List <OldObjectInstance> walls, boolean vertical){
 		
 		for(int i = 0; i < walls.size(); i++){
-			ObjectInstance w = walls.get(i);
+			OldObjectInstance w = walls.get(i);
 			if(this.crossesWall(p0, delta, w, vertical)){
 				int wt = w.getIntValForAttribute(GridGame.ATTWT);
 				if(wt == 0){ //solid wall
@@ -610,10 +610,10 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param vertical true if the wall objects are vertical; false if they are horizontal
 	 * @return 0 if there is no collision with a wall, 1 if there is a collision with a solid wall, 2 if there is a potential collision with a semi-wall
 	 */
-	protected int wallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
+	protected int wallCollision(Location2 p0, Location2 delta, List <OldObjectInstance> walls, boolean vertical){
 		
 		for(int i = 0; i < walls.size(); i++){
-			ObjectInstance w = walls.get(i);
+			OldObjectInstance w = walls.get(i);
 			if(this.crossesWall(p0, delta, w, vertical)){
 				int wt = w.getIntValForAttribute(GridGame.ATTWT);
 				if(wt == 0){ //solid wall
@@ -639,7 +639,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param vertical true if the wall is a vertical wall; false if the wall is a horizontal wall
 	 * @return whether the agent's movement would cross a wall
 	 */
-	protected boolean crossesWall(Location2 p0, Location2 delta, ObjectInstance w, boolean vertical){
+	protected boolean crossesWall(Location2 p0, Location2 delta, OldObjectInstance w, boolean vertical){
 		
 		int a0, a1, d;
 		if(vertical){
@@ -842,9 +842,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 */
 	protected boolean agentsEqual(State s1, State s2){
 		
-		List<ObjectInstance> agents1 = s1.getObjectsOfClass(GridGame.CLASSAGENT);
-		for(ObjectInstance a1 : agents1){
-			ObjectInstance a2 = s2.getObject(a1.getName());
+		List<OldObjectInstance> agents1 = s1.getObjectsOfClass(GridGame.CLASSAGENT);
+		for(OldObjectInstance a1 : agents1){
+			OldObjectInstance a2 = s2.getObject(a1.getName());
 			
 			int x1 = a1.getIntValForAttribute(GridGame.ATTX);
 			int x2 = a2.getIntValForAttribute(GridGame.ATTX);

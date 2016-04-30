@@ -7,7 +7,6 @@ import burlap.behavior.singleagent.vfa.cmac.Tiling.StateTile;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 

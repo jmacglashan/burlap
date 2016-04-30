@@ -1,6 +1,6 @@
 package burlap.oomdp.statehashing;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.values.Value;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  * This class produces {@link burlap.oomdp.statehashing.HashableState} instances in which the hash code and equality
- * of the states ignores either {@link burlap.oomdp.core.objects.ObjectInstance} belonging to
+ * of the states ignores either {@link OldObjectInstance} belonging to
  * specific {@link burlap.oomdp.core.ObjectClass} or value assignments for specific {@link burlap.oomdp.core.Attribute}s.
  * You can specify which attributes and object classes to ignore through an attribute name mask and an object class name
  * mask. There are a variety of methods for manipulating the masks.
@@ -143,9 +143,9 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 
 	@Override
 	protected int computeHashCode(State s) {
-		List<ObjectInstance> objects = s.getAllObjects();
+		List<OldObjectInstance> objects = s.getAllObjects();
 		List<Integer> hashCodes = new ArrayList<Integer>(objects.size());
-		for(ObjectInstance o : objects){
+		for(OldObjectInstance o : objects){
 			if(!this.maskedObjectClasses.contains(o.getClassName())){
 				hashCodes.add(computeHashCode(o));
 			}
@@ -162,7 +162,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 	}
 
 	@Override
-	protected int computeHashCode(ObjectInstance o) {
+	protected int computeHashCode(OldObjectInstance o) {
 		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
 		if(!this.identifierIndependent){
 			hashCodeBuilder.append(o.getName());
@@ -186,20 +186,20 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 		}
 
 		Set<String> matchedObjects = new HashSet<String>();
-		for(List<ObjectInstance> objects : s1.getAllObjectsByClass()){
+		for(List<OldObjectInstance> objects : s1.getAllObjectsByClass()){
 
 			String oclass = objects.get(0).getClassName();
 			if(this.maskedObjectClasses.contains(oclass)){
 				continue;
 			}
-			List <ObjectInstance> oobjects = s2.getObjectsOfClass(oclass);
+			List <OldObjectInstance> oobjects = s2.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size()){
 				return false;
 			}
 
-			for(ObjectInstance o : objects){
+			for(OldObjectInstance o : objects){
 				boolean foundMatch = false;
-				for(ObjectInstance oo : oobjects){
+				for(OldObjectInstance oo : oobjects){
 					String ooname = oo.getName();
 					if(matchedObjects.contains(ooname)){
 						continue;
@@ -227,15 +227,15 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 			return false;
 		}
 
-		List<ObjectInstance> theseObjects = s1.getAllObjects();
+		List<OldObjectInstance> theseObjects = s1.getAllObjects();
 		if(theseObjects.size() != s2.numTotalObjects()){
 			return false;
 		}
-		for(ObjectInstance ob : theseObjects){
+		for(OldObjectInstance ob : theseObjects){
 			if(this.maskedObjectClasses.contains(ob.getClassName())){
 				continue;
 			}
-			ObjectInstance oByName = s2.getObject(ob.getName());
+			OldObjectInstance oByName = s2.getObject(ob.getName());
 			if(oByName == null){
 				return false;
 			}
@@ -248,7 +248,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 	}
 
 	@Override
-	protected boolean objectValuesEqual(ObjectInstance o1, ObjectInstance o2) {
+	protected boolean objectValuesEqual(OldObjectInstance o1, OldObjectInstance o2) {
 		for(Value v : o1.getValues()){
 			if(this.maskedAttributes.contains(v.attName())){
 				continue;

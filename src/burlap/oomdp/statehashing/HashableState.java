@@ -1,7 +1,7 @@
 package burlap.oomdp.statehashing;
 
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 
 import java.util.Collection;
@@ -60,12 +60,12 @@ public abstract class HashableState implements State{
 
 
 	@Override
-	public State addObject(ObjectInstance o) {
+	public State addObject(OldObjectInstance o) {
 		return s.addObject(o);
 	}
 
 	@Override
-	public State addAllObjects(Collection<ObjectInstance> objects) {
+	public State addAllObjects(Collection<OldObjectInstance> objects) {
 		return s.addAllObjects(objects);
 	}
 
@@ -75,12 +75,12 @@ public abstract class HashableState implements State{
 	}
 
 	@Override
-	public State removeObject(ObjectInstance o) {
+	public State removeObject(OldObjectInstance o) {
 		return s.removeObject(o);
 	}
 
 	@Override
-	public State removeAllObjects(Collection<ObjectInstance> objects) {
+	public State removeAllObjects(Collection<OldObjectInstance> objects) {
 		return s.removeAllObjects(objects);
 	}
 
@@ -90,7 +90,7 @@ public abstract class HashableState implements State{
 	}
 
 	@Override
-	public State renameObject(ObjectInstance o, String newName) {
+	public State renameObject(OldObjectInstance o, String newName) {
 		return s.renameObject(o, newName);
 	}
 
@@ -105,22 +105,22 @@ public abstract class HashableState implements State{
 	}
 
 	@Override
-	public ObjectInstance getObject(String oname) {
+	public OldObjectInstance getObject(String oname) {
 		return s.getObject(oname);
 	}
 
 	@Override
-	public List<ObjectInstance> getAllObjects() {
+	public List<OldObjectInstance> getAllObjects() {
 		return s.getAllObjects();
 	}
 
 	@Override
-	public List<ObjectInstance> getObjectsOfClass(String oclass) {
+	public List<OldObjectInstance> getObjectsOfClass(String oclass) {
 		return s.getObjectsOfClass(oclass);
 	}
 
 	@Override
-	public ObjectInstance getFirstObjectOfClass(String oclass) {
+	public OldObjectInstance getFirstObjectOfClass(String oclass) {
 		return s.getFirstObjectOfClass(oclass);
 	}
 
@@ -130,7 +130,7 @@ public abstract class HashableState implements State{
 	}
 
 	@Override
-	public List<List<ObjectInstance>> getAllObjectsByClass() {
+	public List<List<OldObjectInstance>> getAllObjectsByClass() {
 		return s.getAllObjectsByClass();
 	}
 

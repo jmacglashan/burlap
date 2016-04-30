@@ -6,8 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StateValuePainter;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Attribute.AttributeType;
 
@@ -231,8 +230,8 @@ public class StateValuePainter2D extends StateValuePainter {
 	@Override
 	public void paintStateValue(Graphics2D g2, State s, double value, float cWidth, float cHeight) {
 		
-		ObjectInstance xOb = this.xObjectInstance(s);
-		ObjectInstance yOb = this.yObjectInstance(s);
+		OldObjectInstance xOb = this.xObjectInstance(s);
+		OldObjectInstance yOb = this.yObjectInstance(s);
 		
 		Attribute xAtt = xOb.getObjectClass().getAttribute(xAttName);
 		Attribute yAtt = yOb.getObjectClass().getAttribute(yAttName);
@@ -315,7 +314,7 @@ public class StateValuePainter2D extends StateValuePainter {
 	 * @param s the state for which to get the x-position
 	 * @return the object instance in a state that holds the x-position information.
 	 */
-	protected ObjectInstance xObjectInstance(State s){
+	protected OldObjectInstance xObjectInstance(State s){
 		if(this.xClassName != null){
 			return s.getFirstObjectOfClass(xClassName);
 		}
@@ -328,7 +327,7 @@ public class StateValuePainter2D extends StateValuePainter {
 	 * @param s the state for which to get the y-position
 	 * @return the object instance in a state that holds the y-position information.
 	 */
-	protected ObjectInstance yObjectInstance(State s){
+	protected OldObjectInstance yObjectInstance(State s){
 		if(this.yClassName != null){
 			return s.getFirstObjectOfClass(yClassName);
 		}

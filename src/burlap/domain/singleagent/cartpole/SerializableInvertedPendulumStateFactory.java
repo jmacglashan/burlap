@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.cartpole;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.stateserialization.SerializableState;
@@ -70,7 +70,7 @@ public class SerializableInvertedPendulumStateFactory implements SerializableSta
 
 
 	public static String stateToString(State s){
-		ObjectInstance o = s.getFirstObjectOfClass(InvertedPendulum.CLASSPENDULUM);
+		OldObjectInstance o = s.getFirstObjectOfClass(InvertedPendulum.CLASSPENDULUM);
 		double a = o.getRealValForAttribute(InvertedPendulum.ATTANGLE);
 		double av = o.getRealValForAttribute(InvertedPendulum.ATTANGLEV);
 

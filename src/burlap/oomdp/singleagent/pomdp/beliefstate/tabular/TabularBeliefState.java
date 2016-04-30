@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -344,12 +344,12 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public State addObject(ObjectInstance o) {
+	public State addObject(OldObjectInstance o) {
 		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects added to it.");
 	}
 
 	@Override
-	public State addAllObjects(Collection<ObjectInstance> objects) {
+	public State addAllObjects(Collection<OldObjectInstance> objects) {
 		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects added to it.");
 	}
 
@@ -359,12 +359,12 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public State removeObject(ObjectInstance o) {
+	public State removeObject(OldObjectInstance o) {
 		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects removed from it.");
 	}
 
 	@Override
-	public State removeAllObjects(Collection<ObjectInstance> objects) {
+	public State removeAllObjects(Collection<OldObjectInstance> objects) {
 		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects removed from it.");
 	}
 
@@ -374,7 +374,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public State renameObject(ObjectInstance o, String newName) {
+	public State renameObject(OldObjectInstance o, String newName) {
 		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects renamed");
 	}
 
@@ -399,7 +399,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 			}
 		}
 		else {
-			ObjectInstance obelief = so.getFirstObjectOfClass(BELIEFCLASSNAME);
+			OldObjectInstance obelief = so.getFirstObjectOfClass(BELIEFCLASSNAME);
 			if(obelief != null) {
 				double [] vec = obelief.getDoubleArrayValForAttribute(BELIEFATTNAME);
 				if(vec.length >= this.beliefValues.size()){
@@ -426,9 +426,9 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public ObjectInstance getObject(String oname) {
+	public OldObjectInstance getObject(String oname) {
 		if(oname.equals(BELIEFCLASSNAME)){
-			ObjectInstance o = new MutableObjectInstance(getTabularBeliefMDPDomain().getObjectClass(BELIEFCLASSNAME), BELIEFCLASSNAME);
+			OldObjectInstance o = new MutableObjectInstance(getTabularBeliefMDPDomain().getObjectClass(BELIEFCLASSNAME), BELIEFCLASSNAME);
 			o.setValue(BELIEFATTNAME, this.getBeliefVector());
 			return o;
 		}
@@ -437,20 +437,20 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public List<ObjectInstance> getAllObjects() {
+	public List<OldObjectInstance> getAllObjects() {
 		return Arrays.asList(this.getObject(BELIEFCLASSNAME));
 	}
 
 	@Override
-	public List<ObjectInstance> getObjectsOfClass(String oclass) {
+	public List<OldObjectInstance> getObjectsOfClass(String oclass) {
 		if(oclass.equals(BELIEFCLASSNAME)){
 			return this.getAllObjects();
 		}
-		return new ArrayList<ObjectInstance>();
+		return new ArrayList<OldObjectInstance>();
 	}
 
 	@Override
-	public ObjectInstance getFirstObjectOfClass(String oclass) {
+	public OldObjectInstance getFirstObjectOfClass(String oclass) {
 		if(oclass.equals(BELIEFCLASSNAME)){
 			return this.getObject(BELIEFCLASSNAME);
 		}
@@ -465,7 +465,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public List<List<ObjectInstance>> getAllObjectsByClass() {
+	public List<List<OldObjectInstance>> getAllObjectsByClass() {
 		return Arrays.asList(this.getAllObjects());
 	}
 

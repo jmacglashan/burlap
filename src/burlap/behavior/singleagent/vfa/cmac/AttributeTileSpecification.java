@@ -1,7 +1,5 @@
 package burlap.behavior.singleagent.vfa.cmac;
 
-import burlap.oomdp.core.Attribute;
-
 
 /**
  * Specifies how a single attribute of a specific object class is to be tiled.

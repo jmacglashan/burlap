@@ -1,8 +1,7 @@
 package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.ImmutableStateInterface;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
 import com.google.common.collect.ImmutableList;
@@ -102,7 +101,7 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 		return new ImmutableHashableState(immState.replaceAndHash(immList, hashes.hashCode()));
 	}
 	
-	protected boolean isObjectMasked(ObjectInstance obj) {
+	protected boolean isObjectMasked(OldObjectInstance obj) {
 		return this.maskedObjectClasses.contains(obj.getClassName()) ||
 				this.maskedObjects.contains(obj.getName());
 	}
@@ -126,20 +125,20 @@ public class ImmutableStateHashableStateFactory extends SimpleHashableStateFacto
 			throw new RuntimeException("These states should be hashed this equality comparison");
 		}
 		
-		Set<ObjectInstance> set1 = this.prepareSet(iS1);
-		Set<ObjectInstance> set2 = this.prepareSet(iS2);
+		Set<OldObjectInstance> set1 = this.prepareSet(iS1);
+		Set<OldObjectInstance> set2 = this.prepareSet(iS2);
 		return set1.equals(set2);
 	}
 	
-	protected Set<ObjectInstance> prepareSet(ImmutableStateInterface s) {
+	protected Set<OldObjectInstance> prepareSet(ImmutableStateInterface s) {
 		if (this.maskedObjectClasses.isEmpty() && this.maskedObjects.isEmpty()) {
-			return new HashSet<ObjectInstance>(s.getImmutableObjects());
+			return new HashSet<OldObjectInstance>(s.getImmutableObjects());
 		}
-		Set<ObjectInstance> set = new HashSet<ObjectInstance>(s.numTotalObjects() * 2);
+		Set<OldObjectInstance> set = new HashSet<OldObjectInstance>(s.numTotalObjects() * 2);
 		
 		if (this.maskedObjects.isEmpty()) {
-			List<List<ObjectInstance>> objectsByClass = s.getAllObjectsByClass();
-			for (List<ObjectInstance> objects : objectsByClass) {
+			List<List<OldObjectInstance>> objectsByClass = s.getAllObjectsByClass();
+			for (List<OldObjectInstance> objects : objectsByClass) {
 				if (objects.isEmpty()) {
 					continue;
 				}

@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.vfa.cmac;
 
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 
 import java.util.*;
@@ -124,9 +123,9 @@ public class Tiling {
 			this.hashCode = 1;
 			
 			for(String className : Tiling.this.classOrder){
-				List<ObjectInstance> objectsOfClass = s.getObjectsOfClass(className);
+				List<OldObjectInstance> objectsOfClass = s.getObjectsOfClass(className);
 				List <ObjectTile> objectTiles = new ArrayList<Tiling.ObjectTile>(objectsOfClass.size());
-				for(ObjectInstance o : objectsOfClass){
+				for(OldObjectInstance o : objectsOfClass){
 					ObjectTile ot = new ObjectTile(o);
 					objectTiles.add(ot);
 				}
@@ -242,7 +241,7 @@ public class Tiling {
 		 * Creates a tile for the given object instance
 		 * @param o the object instance for which a tile will be created
 		 */
-		public ObjectTile(ObjectInstance o){
+		public ObjectTile(OldObjectInstance o){
 			this.objectName = o.getName();
 			attTiles = new HashMap<String, Integer>();
 			hashCode = 1;

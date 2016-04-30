@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.auxiliary;
 
 import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 
 import java.util.*;
@@ -115,23 +115,23 @@ public class StateGridder {
 		s = s.copy();
 
 		//first thing we want to do is get the list of objects that need to be modified
-		List<ObjectInstance> objectsToGrid = new ArrayList<ObjectInstance>(s.numTotalObjects());
+		List<OldObjectInstance> objectsToGrid = new ArrayList<OldObjectInstance>(s.numTotalObjects());
 		for(Map.Entry<String, AttributeSpecification[]> e : objectClassAttriutes.entrySet()){
-			List<ObjectInstance> obs = s.getObjectsOfClass(e.getKey());
+			List<OldObjectInstance> obs = s.getObjectsOfClass(e.getKey());
 			objectsToGrid.addAll(obs);
 		}
 
 		//now get a clean state without those object instances, but leave non-modified objects intact
-		for(ObjectInstance o : objectsToGrid){
+		for(OldObjectInstance o : objectsToGrid){
 			s.removeObject(o);
 		}
 
 		//now get all the possible gridded object values for the objects to modify
-		List<List<ObjectInstance>> possibleGridVals = new ArrayList<List<ObjectInstance>>(objectsToGrid.size());
-		for(ObjectInstance o  : objectsToGrid){
-			List<ObjectInstance> griddedVals = new LinkedList<ObjectInstance>();
+		List<List<OldObjectInstance>> possibleGridVals = new ArrayList<List<OldObjectInstance>>(objectsToGrid.size());
+		for(OldObjectInstance o  : objectsToGrid){
+			List<OldObjectInstance> griddedVals = new LinkedList<OldObjectInstance>();
 			this.objectGridder(o, this.objectClassAttriutes.get(o.getObjectClass().name), 0, griddedVals);
-			possibleGridVals.add(new ArrayList<ObjectInstance>(griddedVals)); //convert to array list once size is known
+			possibleGridVals.add(new ArrayList<OldObjectInstance>(griddedVals)); //convert to array list once size is known
 		}
 
 		//now we want to grid all objects and create a separate state for each
@@ -145,7 +145,7 @@ public class StateGridder {
 
 
 
-	private void stateGridder(State cleanState, List<List<ObjectInstance>> possibleGridVals, int index, int [] choices, List<State> states){
+	private void stateGridder(State cleanState, List<List<OldObjectInstance>> possibleGridVals, int index, int [] choices, List<State> states){
 		if(index == choices.length){
 			//done
 			State toAdd = cleanState.copy();
@@ -156,7 +156,7 @@ public class StateGridder {
 			states.add(toAdd);
 		}
 		else{
-			List<ObjectInstance> thisObsPossibleVals = possibleGridVals.get(index);
+			List<OldObjectInstance> thisObsPossibleVals = possibleGridVals.get(index);
 			for(int i = 0; i < thisObsPossibleVals.size(); i++){
 				choices[index] = i;
 				this.stateGridder(cleanState, possibleGridVals, index+1, choices, states);
@@ -165,7 +165,7 @@ public class StateGridder {
 	}
 
 
-	private void objectGridder(ObjectInstance o, AttributeSpecification [] specs, int index, List<ObjectInstance> objects){
+	private void objectGridder(OldObjectInstance o, AttributeSpecification [] specs, int index, List<OldObjectInstance> objects){
 		if(index == specs.length){
 			//done
 			objects.add(o.copy());

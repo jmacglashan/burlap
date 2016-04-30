@@ -6,8 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
@@ -54,7 +53,7 @@ public class CartPoleVisualizer {
 	public static class CartPoleObjectPainter implements ObjectPainter{
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
+		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
 				float cWidth, float cHeight) {
 			
 			

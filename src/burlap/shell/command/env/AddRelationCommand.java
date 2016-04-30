@@ -1,6 +1,6 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentDelegation;
@@ -53,7 +53,7 @@ public class AddRelationCommand implements ShellCommand{
 		}
 
 		State s = env.getCurrentObservation();
-		ObjectInstance o = s.getObject(args.get(0));
+		OldObjectInstance o = s.getObject(args.get(0));
 		if(o == null){
 			os.println("Unknown object " + args.get(0));
 			return 0;

@@ -1,6 +1,6 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StaticPainter;
@@ -59,7 +59,7 @@ public class FrostbiteVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
+		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
 								float cWidth, float cHeight) {
 
 
@@ -90,7 +90,7 @@ public class FrostbiteVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
+		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
 								float cWidth, float cHeight) {
 
 			g2.setColor(Color.black);
@@ -112,7 +112,7 @@ public class FrostbiteVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob,
+		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
 								float cWidth, float cHeight) {
 
 			g2.setColor(iglooColor);

@@ -3,8 +3,7 @@ package burlap.domain.stochasticgames.gridgame;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
@@ -408,7 +407,7 @@ public class GridGame implements DomainGenerator {
 	 */
 	public static State getCleanState(Domain d, int na, int ng, int nhw, int nvw, int width, int height){
 		
-		State s = new MutableState();
+		State s = new CMutableState();
 		addNObjects(d, s, CLASSGOAL, ng);
 		addNObjects(d, s, CLASSAGENT, na);
 		addNObjects(d, s, CLASSDIMHWALL, nhw);
@@ -542,7 +541,7 @@ public class GridGame implements DomainGenerator {
 	 */
 	protected static void addNObjects(Domain d, State s, String className, int n){
 		for(int i = 0; i < n; i++){
-			ObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), className+i);
+			OldObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), className+i);
 			s.addObject(o);
 		}
 	}
@@ -557,7 +556,7 @@ public class GridGame implements DomainGenerator {
 	 * @param pn the player number of the agent
 	 */
 	public static void setAgent(State s, int i, int x, int y, int pn){
-		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(i);
+		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(i);
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTY, y);
 		agent.setValue(ATTPN, pn);
@@ -573,7 +572,7 @@ public class GridGame implements DomainGenerator {
 	 * @param gt the goal type
 	 */
 	public static void setGoal(State s, int i, int x, int y, int gt){
-		ObjectInstance goal = s.getObjectsOfClass(CLASSGOAL).get(i);
+		OldObjectInstance goal = s.getObjectsOfClass(CLASSGOAL).get(i);
 		goal.setValue(ATTX, x);
 		goal.setValue(ATTY, y);
 		goal.setValue(ATTGT, gt);
@@ -589,14 +588,14 @@ public class GridGame implements DomainGenerator {
 	 */
 	public static void setBoundaryWalls(State s, int w, int h){
 		
-		List<ObjectInstance> verticalWalls = s.getObjectsOfClass(CLASSDIMVWALL);
-		List<ObjectInstance> horizontalWalls = s.getObjectsOfClass(CLASSDIMHWALL);
+		List<OldObjectInstance> verticalWalls = s.getObjectsOfClass(CLASSDIMVWALL);
+		List<OldObjectInstance> horizontalWalls = s.getObjectsOfClass(CLASSDIMHWALL);
 		
-		ObjectInstance leftWall = verticalWalls.get(0);
-		ObjectInstance rightWall = verticalWalls.get(1);
+		OldObjectInstance leftWall = verticalWalls.get(0);
+		OldObjectInstance rightWall = verticalWalls.get(1);
 		
-		ObjectInstance bottomWall = horizontalWalls.get(0);
-		ObjectInstance topWall = horizontalWalls.get(1);
+		OldObjectInstance bottomWall = horizontalWalls.get(0);
+		OldObjectInstance topWall = horizontalWalls.get(1);
 		
 		setWallInstance(leftWall, 0, 0, h-1, 0);
 		setWallInstance(rightWall, w, 0, h-1, 0);
@@ -615,7 +614,7 @@ public class GridGame implements DomainGenerator {
 	 * @param e2 the second end point of the wall
 	 * @param wt the type of the wall
 	 */
-	public static void setWallInstance(ObjectInstance w, int p, int e1, int e2, int wt){
+	public static void setWallInstance(OldObjectInstance w, int p, int e1, int e2, int wt){
 		w.setValue(ATTP, p);
 		w.setValue(ATTE1, e1);
 		w.setValue(ATTE2, e2);
@@ -686,14 +685,14 @@ public class GridGame implements DomainGenerator {
 		@Override
 		public boolean isTrue(State s, String... params) {
 			
-			ObjectInstance agent = s.getObject(params[0]);
+			OldObjectInstance agent = s.getObject(params[0]);
 			int ax = agent.getIntValForAttribute(ATTX);
 			int ay = agent.getIntValForAttribute(ATTY);
 			
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
-			for(ObjectInstance goal : goals){
+			List <OldObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
+			for(OldObjectInstance goal : goals){
 				
 				int gt = goal.getIntValForAttribute(ATTGT);
 				if(gt == 0){
@@ -736,14 +735,14 @@ public class GridGame implements DomainGenerator {
 		@Override
 		public boolean isTrue(State s, String... params) {
 			
-			ObjectInstance agent = s.getObject(params[0]);
+			OldObjectInstance agent = s.getObject(params[0]);
 			int ax = agent.getIntValForAttribute(ATTX);
 			int ay = agent.getIntValForAttribute(ATTY);
 			int apn = agent.getIntValForAttribute(ATTPN);
 			
 			//find all universal goals
-			List <ObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
-			for(ObjectInstance goal : goals){
+			List <OldObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
+			for(OldObjectInstance goal : goals){
 				
 				int gt = goal.getIntValForAttribute(ATTGT);
 				if(gt == apn+1){
@@ -850,8 +849,8 @@ public class GridGame implements DomainGenerator {
 			Map <String, Double> rewards = new HashMap<String, Double>();
 			
 			//get all agents and initialize reward to default
-			List <ObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
-			for(ObjectInstance o : obs){
+			List <OldObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
+			for(OldObjectInstance o : obs){
 				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
 			}
 			

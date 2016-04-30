@@ -1,11 +1,10 @@
 package burlap.oomdp.singleagent.interfaces.rlglue;
 
 import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -171,8 +170,8 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 			}
 		}
 		
-		List<List<ObjectInstance>> obsByClass = exampleState.getAllObjectsByClass();
-		for(List<ObjectInstance> obs : obsByClass){
+		List<List<OldObjectInstance>> obsByClass = exampleState.getAllObjectsByClass();
+		for(List<OldObjectInstance> obs : obsByClass){
 			String className = obs.get(0).getClassName();
 			this.numObjectsOfEachClass.put(className, obs.size());
 		}
@@ -316,10 +315,10 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		int discCounter = 0;
 		int contCounter = 0;
 		for(Map.Entry<String, Integer> e : this.numObjectsOfEachClass.entrySet()){
-			List<ObjectInstance> obs = s.getObjectsOfClass(e.getKey());
+			List<OldObjectInstance> obs = s.getObjectsOfClass(e.getKey());
 			List<Attribute> atts = this.domain.getObjectClass(e.getKey()).attributeList;
 			for(int i = 0; i < obs.size(); i++){
-				ObjectInstance oi = obs.get(i);
+				OldObjectInstance oi = obs.get(i);
 				for(Attribute att : atts){
 					if(att.type == AttributeType.DISC || att.type == AttributeType.INT || att.type == AttributeType.BOOLEAN){
 						o.setInt(discCounter, oi.getIntValForAttribute(att.name));
@@ -349,9 +348,9 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 * @return the index of obName in state s
 	 */
 	protected int objectIndex(State s, String obName){
-		List<ObjectInstance> obs = s.getAllObjects();
+		List<OldObjectInstance> obs = s.getAllObjects();
 		int i = 0;
-		for(ObjectInstance o : obs){
+		for(OldObjectInstance o : obs){
 			if(o.getName().equals(obName)){
 				return i;
 			}

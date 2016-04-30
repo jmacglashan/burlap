@@ -1,13 +1,10 @@
 package burlap.domain.singleagent.lunarlander;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.PropositionalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -329,7 +326,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param vy the y velocity component of the lander
 	 */
 	public static void setAgent(State s, double a, double x, double y, double vx, double vy){
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		
 		agent.setValue(AATTNAME, a);
 		agent.setValue(XATTNAME, x);
@@ -349,7 +346,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param t the top boundary
 	 */
 	public static void setObstacle(State s, int i, double l, double r, double b, double t){
-		ObjectInstance obst = s.getObjectsOfClass(OBSTACLECLASS).get(i);
+		OldObjectInstance obst = s.getObjectsOfClass(OBSTACLECLASS).get(i);
 		
 		obst.setValue(LATTNAME, l);
 		obst.setValue(RATTNAME, r);
@@ -381,7 +378,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param t the top boundary
 	 */
 	public static void setPad(State s, int i, double l, double r, double b, double t){
-		ObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(i);
+		OldObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(i);
 		
 		pad.setValue(LATTNAME, l);
 		pad.setValue(RATTNAME, r);
@@ -684,16 +681,16 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	public static State getCleanState(Domain domain, int no){
 		
-		State s = new MutableState();
+		State s = new CMutableState();
 		
-		ObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
+		OldObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
 		s.addObject(agent);
 		
-		ObjectInstance pad = new MutableObjectInstance(domain.getObjectClass(PADCLASS), PADCLASS + "0");
+		OldObjectInstance pad = new MutableObjectInstance(domain.getObjectClass(PADCLASS), PADCLASS + "0");
 		s.addObject(pad);
 		
 		for(int i = 0; i < no; i++){
-			ObjectInstance obst = new MutableObjectInstance(domain.getObjectClass(OBSTACLECLASS), OBSTACLECLASS + i);
+			OldObjectInstance obst = new MutableObjectInstance(domain.getObjectClass(OBSTACLECLASS), OBSTACLECLASS + i);
 			s.addObject(obst);
 		}
 
@@ -709,7 +706,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	protected static void incAngle(State s, double dir, LLPhysicsParams physParams){
 		
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		double curA = agent.getRealValForAttribute(AATTNAME);
 		
 		double newa = curA + (dir * physParams.anginc);
@@ -735,7 +732,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		double ti = 1.;
 		double tt = ti*ti;
 		
-		ObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
 		double ang = agent.getRealValForAttribute(AATTNAME);
 		double x = agent.getRealValForAttribute(XATTNAME);
 		double y = agent.getRealValForAttribute(YATTNAME);
@@ -796,8 +793,8 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		//check for collisions
-		List <ObjectInstance> obstacles = s.getObjectsOfClass(OBSTACLECLASS);
-		for(ObjectInstance o : obstacles){
+		List <OldObjectInstance> obstacles = s.getObjectsOfClass(OBSTACLECLASS);
+		for(OldObjectInstance o : obstacles){
 			double l = o.getRealValForAttribute(LATTNAME);
 			double r = o.getRealValForAttribute(RATTNAME);
 			double b = o.getRealValForAttribute(BATTNAME);
@@ -839,7 +836,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		//check the pad collision
-		ObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(0);
+		OldObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(0);
 		double l = pad.getRealValForAttribute(LATTNAME);
 		double r = pad.getRealValForAttribute(RATTNAME);
 		double b = pad.getRealValForAttribute(BATTNAME);
@@ -1043,8 +1040,8 @@ public class LunarLanderDomain implements DomainGenerator {
 		@Override
 		public boolean isTrue(State st, String... params) {
 	
-			ObjectInstance agent = st.getObject(params[0]);
-			ObjectInstance pad = st.getObject(params[1]);
+			OldObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance pad = st.getObject(params[1]);
 			
 			
 			double l = pad.getRealValForAttribute(LATTNAME);
@@ -1092,8 +1089,8 @@ public class LunarLanderDomain implements DomainGenerator {
 		@Override
 		public boolean isTrue(State st, String... params) {
 	
-			ObjectInstance agent = st.getObject(params[0]);
-			ObjectInstance pad = st.getObject(params[1]);
+			OldObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance pad = st.getObject(params[1]);
 			
 			
 			double l = pad.getRealValForAttribute(LATTNAME);
@@ -1143,8 +1140,8 @@ public class LunarLanderDomain implements DomainGenerator {
 		public boolean isTrue(State st, String... params) {
 			
 			
-			ObjectInstance agent = st.getObject(params[0]);
-			ObjectInstance o = st.getObject(params[1]);
+			OldObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance o = st.getObject(params[1]);
 			double x = agent.getRealValForAttribute(XATTNAME);
 			double y = agent.getRealValForAttribute(YATTNAME);
 			
@@ -1186,7 +1183,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		@Override
 		public boolean isTrue(State st, String... params) {
 			
-			ObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance agent = st.getObject(params[0]);
 			double y = agent.getRealValForAttribute(YATTNAME);
 			double ymin = agent.getObjectClass().domain.getAttribute(YATTNAME).lowerLim;
 			

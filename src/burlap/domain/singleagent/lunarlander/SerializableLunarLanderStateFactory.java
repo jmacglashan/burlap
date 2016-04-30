@@ -2,7 +2,7 @@ package burlap.domain.singleagent.lunarlander;
 
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.stateserialization.SerializableState;
@@ -75,9 +75,9 @@ public class SerializableLunarLanderStateFactory implements SerializableStateFac
 	public static String stateToString(State s){
 	    StringBuilder buf = new StringBuilder(256);
 
-		ObjectInstance agent = s.getObjectsOfClass(LunarLanderDomain.AGENTCLASS).get(0);
-		ObjectInstance pad = s.getObjectsOfClass(LunarLanderDomain.PADCLASS).get(0);
-		List<ObjectInstance> obsts = s.getObjectsOfClass(LunarLanderDomain.OBSTACLECLASS);
+		OldObjectInstance agent = s.getObjectsOfClass(LunarLanderDomain.AGENTCLASS).get(0);
+		OldObjectInstance pad = s.getObjectsOfClass(LunarLanderDomain.PADCLASS).get(0);
+		List<OldObjectInstance> obsts = s.getObjectsOfClass(LunarLanderDomain.OBSTACLECLASS);
 
 		//write agent
 		buf.append(agent.getRealValForAttribute(LunarLanderDomain.AATTNAME)).append(" ");
@@ -93,7 +93,7 @@ public class SerializableLunarLanderStateFactory implements SerializableStateFac
 		buf.append(pad.getRealValForAttribute(LunarLanderDomain.TATTNAME));
 
 		//write each obstacle
-		for(ObjectInstance ob : obsts){
+		for(OldObjectInstance ob : obsts){
 			buf.append("\n").append(ob.getRealValForAttribute(LunarLanderDomain.LATTNAME)).append(" ");
 			buf.append(ob.getRealValForAttribute(LunarLanderDomain.RATTNAME)).append(" ");
 			buf.append(ob.getRealValForAttribute(LunarLanderDomain.BATTNAME)).append(" ");

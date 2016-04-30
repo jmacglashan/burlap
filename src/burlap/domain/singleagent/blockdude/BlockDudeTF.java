@@ -1,6 +1,6 @@
 package burlap.domain.singleagent.blockdude;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 
@@ -16,13 +16,13 @@ public class BlockDudeTF implements TerminalFunction {
 	@Override
 	public boolean isTerminal(State s) {
 
-		ObjectInstance agent = s.getFirstObjectOfClass(BlockDude.CLASSAGENT);
-		List<ObjectInstance> exits = s.getObjectsOfClass(BlockDude.CLASSEXIT);
+		OldObjectInstance agent = s.getFirstObjectOfClass(BlockDude.CLASSAGENT);
+		List<OldObjectInstance> exits = s.getObjectsOfClass(BlockDude.CLASSEXIT);
 
 		int ax = agent.getIntValForAttribute(BlockDude.ATTX);
 		int ay = agent.getIntValForAttribute(BlockDude.ATTY);
 
-		for(ObjectInstance e : exits){
+		for(OldObjectInstance e : exits){
 			int ex = e.getIntValForAttribute(BlockDude.ATTX);
 			if(ex == ax){
 				int ey = e.getIntValForAttribute(BlockDude.ATTY);

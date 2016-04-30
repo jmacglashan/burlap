@@ -2,11 +2,9 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.stochasticgames.agents.naiveq.SGNaiveQLAgent;
 import burlap.behavior.valuefunction.QValue;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.statehashing.HashableStateFactory;
@@ -241,11 +239,11 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	 * @param h how far back in history the action was taken.
 	 * @return a history object instance for the corresponding action and how far back in history it occurred
 	 */
-	protected ObjectInstance getHistoryObjectInstanceForAgent(GroundedSGAgentAction gsa, int h){
+	protected OldObjectInstance getHistoryObjectInstanceForAgent(GroundedSGAgentAction gsa, int h){
 		
 		String aname = gsa.actingAgent;
 		
-		ObjectInstance o = new MutableObjectInstance(classHistory, aname + "-h" + h);
+		OldObjectInstance o = new MutableObjectInstance(classHistory, aname + "-h" + h);
 		o.setValue(ATTHNUM, h);
 		o.setValue(ATTHPN, world.getPlayerNumberForAgent(aname));
 		o.setValue(ATTHAID, actionMap.getActionId(gsa));
@@ -262,9 +260,9 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	 * @param h how many step backs this object instance represents
 	 * @return a history object instance
 	 */
-	protected ObjectInstance getHistoryLessObjectInstanceForAgent(String aname, int h){
+	protected OldObjectInstance getHistoryLessObjectInstanceForAgent(String aname, int h){
 		
-		ObjectInstance o = new MutableObjectInstance(classHistory, aname + "-h" + h);
+		OldObjectInstance o = new MutableObjectInstance(classHistory, aname + "-h" + h);
 		o.setValue(ATTHNUM, h);
 		o.setValue(ATTHPN, world.getPlayerNumberForAgent(aname));
 		o.setValue(ATTHAID, actionMap.maxValue());

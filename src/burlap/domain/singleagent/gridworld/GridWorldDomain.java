@@ -7,8 +7,7 @@ import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -509,7 +508,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNoLocationState(Domain d){
 		
-		State s = new MutableState();
+		State s = new CMutableState();
 
 		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 				
@@ -526,7 +525,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNoLocationState(Domain d, int ax, int ay){
 
-		State s = new MutableState();
+		State s = new CMutableState();
 
 		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		GridWorldDomain.setAgent(s, ax, ay);
@@ -544,7 +543,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentOneLocationState(Domain d){
 		
-		State s = new MutableState();
+		State s = new CMutableState();
 		
 		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+0));
 		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
@@ -562,7 +561,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static State getOneAgentNLocationState(Domain d, int n){
 		
-		State s = new MutableState();
+		State s = new CMutableState();
 		
 		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
 		
@@ -581,7 +580,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the agent
 	 */
 	public static void setAgent(State s, int x, int y){
-		ObjectInstance o = s.getObjectsOfClass(CLASSAGENT).get(0);
+		OldObjectInstance o = s.getObjectsOfClass(CLASSAGENT).get(0);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -595,7 +594,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param y the y position of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y){
-		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
+		OldObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -611,7 +610,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param locType the location type of the location
 	 */
 	public static void setLocation(State s, int i, int x, int y, int locType){
-		ObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
+		OldObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
 		
 		o.setValue(ATTX, x);
 		o.setValue(ATTY, y);
@@ -649,7 +648,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	protected State move(State s, int xd, int yd, int [][] map){
 		
-		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		int ax = agent.getIntValForAttribute(ATTX);
 		int ay = agent.getIntValForAttribute(ATTY);
 		
@@ -819,8 +818,8 @@ public class GridWorldDomain implements DomainGenerator {
 		@Override
 		public boolean isTrue(State st, String... params) {
 			
-			ObjectInstance agent = st.getObject(params[0]);
-			ObjectInstance location = st.getObject(params[1]);
+			OldObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance location = st.getObject(params[1]);
 			
 			int ax = agent.getIntValForAttribute(ATTX);
 			int ay = agent.getIntValForAttribute(ATTY);
@@ -876,7 +875,7 @@ public class GridWorldDomain implements DomainGenerator {
 		@Override
 		public boolean isTrue(State st, String... params) {
 			
-			ObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance agent = st.getObject(params[0]);
 			
 			int ax = agent.getIntValForAttribute(ATTX);
 			int ay = agent.getIntValForAttribute(ATTY);

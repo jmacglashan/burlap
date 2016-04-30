@@ -4,15 +4,12 @@ import java.util.List;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
@@ -191,7 +188,7 @@ public class InvertedPendulum implements DomainGenerator {
 	 */
 	public static void updateState(State s, double controlForce, IPPhysicsParams physParams){
 		
-		ObjectInstance pend = s.getFirstObjectOfClass(CLASSPENDULUM);
+		OldObjectInstance pend = s.getFirstObjectOfClass(CLASSPENDULUM);
 		double a0 = pend.getRealValForAttribute(ATTANGLE);
 		double av0 = pend.getRealValForAttribute(ATTANGLEV);
 		
@@ -247,8 +244,8 @@ public class InvertedPendulum implements DomainGenerator {
 	 * @return an initial state with the pole at the given angle and with the given angular velocity of the pole.
 	 */
 	public static State getInitialState(Domain domain, double angle, double angleVelocity){
-		State s = new MutableState();
-		ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSPENDULUM), CLASSPENDULUM);
+		State s = new CMutableState();
+		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSPENDULUM), CLASSPENDULUM);
 		o.setValue(ATTANGLE, angle);
 		o.setValue(ATTANGLEV, angleVelocity);
 		s.addObject(o);
@@ -338,7 +335,7 @@ public class InvertedPendulum implements DomainGenerator {
 		@Override
 		public boolean isTerminal(State s) {
 			
-			ObjectInstance pendulum = s.getFirstObjectOfClass(CLASSPENDULUM);
+			OldObjectInstance pendulum = s.getFirstObjectOfClass(CLASSPENDULUM);
 			double a = pendulum.getRealValForAttribute(ATTANGLE);
 			
 			if(Math.abs(a) >= maxAbsoluteAngle){
@@ -384,7 +381,7 @@ public class InvertedPendulum implements DomainGenerator {
 			
 			double failReward = -1;
 			
-			ObjectInstance pendulum = sprime.getFirstObjectOfClass(CLASSPENDULUM);
+			OldObjectInstance pendulum = sprime.getFirstObjectOfClass(CLASSPENDULUM);
 			double ang = pendulum.getRealValForAttribute(ATTANGLE);
 			
 			if(Math.abs(ang) >= maxAbsoluteAngle){

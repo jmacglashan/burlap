@@ -1,6 +1,6 @@
 package burlap.oomdp.visualizer;
 
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 
 import java.awt.*;
@@ -126,8 +126,8 @@ public class StateRenderLayer implements RenderLayer{
 		
 		//draw each object by class order and if there is not a specific painter for
 		for(ObjectPainterAndClassNamePair op : this.objectClassPainterList){
-			List <ObjectInstance> objects = curState.getObjectsOfClass(op.className);
-			for(ObjectInstance o : objects){
+			List <OldObjectInstance> objects = curState.getObjectsOfClass(op.className);
+			for(OldObjectInstance o : objects){
 				if(!this.specificObjectPainters.containsKey(o.getName())){
 					List<String> unsetAttributes = o.unsetAttributes();
 					if(!unsetAttributes.isEmpty()){
@@ -143,8 +143,8 @@ public class StateRenderLayer implements RenderLayer{
 		}
 		
 		//draw each object if there is a painter to do so
-		List <ObjectInstance> objects = curState.getAllObjects();
-		for(ObjectInstance o : objects){
+		List <OldObjectInstance> objects = curState.getAllObjects();
+		for(OldObjectInstance o : objects){
 			
 			//is there a specific object painter for this object?
 			if(specificObjectPainters.containsKey(o.getName())){

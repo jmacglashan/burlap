@@ -8,8 +8,7 @@ import java.util.Map;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StatePolicyPainter;
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.Attribute.AttributeType;
 
@@ -224,8 +223,8 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 
 	@Override
 	public void paintStatePolicy(Graphics2D g2, State s, Policy policy, float cWidth, float cHeight) {
-		ObjectInstance xOb = this.xObjectInstance(s);
-		ObjectInstance yOb = this.yObjectInstance(s);
+		OldObjectInstance xOb = this.xObjectInstance(s);
+		OldObjectInstance yOb = this.yObjectInstance(s);
 		
 		Attribute xAtt = xOb.getObjectClass().getAttribute(xAttName);
 		Attribute yAtt = yOb.getObjectClass().getAttribute(yAttName);
@@ -336,7 +335,7 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 	 * @param s the state for which to get the x-position
 	 * @return the object instance in a state that holds the x-position information.
 	 */
-	protected ObjectInstance xObjectInstance(State s){
+	protected OldObjectInstance xObjectInstance(State s){
 		if(this.xClassName != null){
 			return s.getFirstObjectOfClass(xClassName);
 		}
@@ -349,7 +348,7 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 	 * @param s the state for which to get the y-position
 	 * @return the object instance in a state that holds the y-position information.
 	 */
-	protected ObjectInstance yObjectInstance(State s){
+	protected OldObjectInstance yObjectInstance(State s){
 		if(this.yClassName != null){
 			return s.getFirstObjectOfClass(yClassName);
 		}

@@ -3,8 +3,7 @@ package burlap.domain.singleagent.blockdude;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -36,8 +35,8 @@ import java.util.Set;
  * to launch an interactive visualizer for the first level with keys: w, a, d, s, x for
  * the actions up, west, east, pickup, putdown, respectively.
  * <p>
- * By default this domain's actions will use a {@link burlap.oomdp.core.states.MutableState#semiDeepCopy(java.util.Set)} instead of a
- * {@link burlap.oomdp.core.states.State#copy()}. The semi-deep copy only copies {@link burlap.oomdp.core.objects.ObjectInstance}
+ * By default this domain's actions will use a {@link CMutableState#semiDeepCopy(java.util.Set)} instead of a
+ * {@link burlap.oomdp.core.states.State#copy()}. The semi-deep copy only copies {@link OldObjectInstance}
  * in the previous state that will have its values modified by the action execution:
  * typically, the agent and a moved block are deep copied, with the un moved block objects and brick objects
  * shallow copied to the new state. This is much more memory efficient, but you should avoid directly modifying
@@ -147,7 +146,7 @@ public class BlockDude implements DomainGenerator{
 
 	/**
 	 * Domain parameter specifying whether actions create semi-deep copies of states or fully deep copies of states.
-	 * The default is true. If true, then actions only deep copy {@link burlap.oomdp.core.objects.ObjectInstance} between
+	 * The default is true. If true, then actions only deep copy {@link OldObjectInstance} between
 	 * states that have their values change from the action execution
 	 * (typically the agent or a specifically moved block). If false,
 	 * then the states are completely deep copied by action execution.
@@ -278,18 +277,18 @@ public class BlockDude implements DomainGenerator{
 	 * @return a {@link burlap.oomdp.core.states.State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
 	 */
 	public static State getUninitializedState(Domain domain, int nb){
-		State s = new MutableState();
-		ObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
+		State s = new CMutableState();
+		OldObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
 		s.addObject(agent);
 
-		ObjectInstance exit = new MutableObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0);
+		OldObjectInstance exit = new MutableObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0);
 		s.addObject(exit);
 
-		ObjectInstance bricks = new MutableObjectInstance(domain.getObjectClass(CLASSBRICKS), CLASSBRICKS);
+		OldObjectInstance bricks = new MutableObjectInstance(domain.getObjectClass(CLASSBRICKS), CLASSBRICKS);
 		s.addObject(bricks);
 
 		for(int i = 0; i < nb; i++){
-			ObjectInstance block = new MutableObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i);
+			OldObjectInstance block = new MutableObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i);
 			s.addObject(block);
 		}
 
@@ -306,7 +305,7 @@ public class BlockDude implements DomainGenerator{
 	 * @param holding whether the agent is holding a block or not
 	 */
 	public static void setAgent(State s, int x, int y, int dir, boolean holding){
-		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
+		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTY, y);
 		agent.setValue(ATTDIR, dir);
@@ -322,7 +321,7 @@ public class BlockDude implements DomainGenerator{
 	 * @param y the y position of the exit
 	 */
 	public static void setExit(State s, int x, int y){
-		ObjectInstance exit = s.getObjectsOfClass(CLASSEXIT).get(0);
+		OldObjectInstance exit = s.getObjectsOfClass(CLASSEXIT).get(0);
 		exit.setValue(ATTX, x);
 		exit.setValue(ATTY, y);
 	}
@@ -336,11 +335,11 @@ public class BlockDude implements DomainGenerator{
 	 * @param y the y position of the block
 	 */
 	public static void setBlock(State s, int i, int x, int y){
-		List<ObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
+		List<OldObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
 		if(blocks.size() <= i){
 			throw new RuntimeException("Cannot modify the " + i + "th block, because there are only " + blocks.size() + "blocks in the state");
 		}
-		ObjectInstance block = s.getObjectsOfClass(CLASSBLOCK).get(i);
+		OldObjectInstance block = s.getObjectsOfClass(CLASSBLOCK).get(i);
 		block.setValue(ATTX, x);
 		block.setValue(ATTY, y);
 	}
@@ -354,7 +353,7 @@ public class BlockDude implements DomainGenerator{
 	 * @param v if 1, then a brick will be at position x,y; if false then no brick will be present.
 	 */
 	public static void setBrickValue(State s, int x, int y, int v){
-		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
+		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
 		//get max x dimension
@@ -373,7 +372,7 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public static void setBrickMap(State s, int [][] map){
 
-		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
+		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int xWidth = (int)bricks.getObjectClass().domain.getAttribute(ATTX).upperLim;
 		int yWidth = (int)bricks.getObjectClass().domain.getAttribute(ATTY).upperLim;
 
@@ -415,8 +414,8 @@ public class BlockDude implements DomainGenerator{
 			throw new RuntimeException("Agent horizontal movement can only be a difference of +1 (east) or -1 (west).");
 		}
 
-		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
+		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
+		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
 		//always set direction
@@ -468,8 +467,8 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public static void moveUp(State s, int maxx){
 
-		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
+		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
+		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
 		int ax = agent.getIntValForAttribute(ATTX);
@@ -513,8 +512,8 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public static void pickupBlock(State s, int maxx){
 
-		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
+		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
+		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
 		int holding = agent.getIntValForAttribute(ATTHOLD);
@@ -532,12 +531,12 @@ public class BlockDude implements DomainGenerator{
 
 		//can only pick up blocks one unit away in agent facing direction and at same height as agent
 		int bx = ax+dir;
-		ObjectInstance block = getBlockAt(s, bx, ay);
+		OldObjectInstance block = getBlockAt(s, bx, ay);
 
 		if(block != null){
 
 			//make sure that block is the top of the world, otherwise something is stacked above it and you cannot pick it up
-			ObjectInstance blockAbove = getBlockAt(s, bx, ay+1);
+			OldObjectInstance blockAbove = getBlockAt(s, bx, ay+1);
 			if(blockAbove != null){
 				return;
 			}
@@ -564,8 +563,8 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public static void putdownBlock(State s, int maxx){
 
-		ObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		ObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
+		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
+		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
 		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
 
 		int holding = agent.getIntValForAttribute(ATTHOLD);
@@ -589,7 +588,7 @@ public class BlockDude implements DomainGenerator{
 			return; //cannot drop block if walled off from throw position
 		}
 
-		ObjectInstance block = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
+		OldObjectInstance block = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
 		block.setValue(ATTX, nx);
 		block.setValue(ATTY, heightAtNX+1); //stacked on top of this position
 
@@ -601,17 +600,17 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * Moves a carried block to a new position of the agent
 	 * @param s the state to modify
-	 * @param agent the agent {@link burlap.oomdp.core.objects.ObjectInstance}
+	 * @param agent the agent {@link OldObjectInstance}
 	 * @param ax the previous x position of the agent
 	 * @param ay the previous y position of the agent
 	 * @param nx the new x position of the *agent*
 	 * @param ny the new y position of the *agent*
 	 */
-	protected static void moveCarriedBlockToNewAgentPosition(State s, ObjectInstance agent, int ax, int ay, int nx, int ny){
+	protected static void moveCarriedBlockToNewAgentPosition(State s, OldObjectInstance agent, int ax, int ay, int nx, int ny){
 		int holding = agent.getIntValForAttribute(ATTHOLD);
 		if(holding == 1){
 			//then move the box being carried too
-			ObjectInstance carriedBlock = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
+			OldObjectInstance carriedBlock = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
 			carriedBlock.setValue(ATTX, nx);
 			carriedBlock.setValue(ATTY, ny+1);
 		}
@@ -620,16 +619,16 @@ public class BlockDude implements DomainGenerator{
 
 	/**
 	 * Finds a block object in the {@link State} located at the provided position and returns its
-	 * {@link burlap.oomdp.core.objects.ObjectInstance}. If not block at the location exists, then null is returned.
+	 * {@link OldObjectInstance}. If not block at the location exists, then null is returned.
 	 * @param s the state to check
 	 * @param x the x position
 	 * @param y the y position
-	 * @return the {@link burlap.oomdp.core.objects.ObjectInstance} for the corresponding block object in the state at the given position or null if one does not exist.
+	 * @return the {@link OldObjectInstance} for the corresponding block object in the state at the given position or null if one does not exist.
 	 */
-	protected static ObjectInstance getBlockAt(State s, int x, int y){
+	protected static OldObjectInstance getBlockAt(State s, int x, int y){
 
-		List<ObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
-		for(ObjectInstance block : blocks){
+		List<OldObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
+		for(OldObjectInstance block : blocks){
 			int bx = block.getIntValForAttribute(ATTX);
 			int by = block.getIntValForAttribute(ATTY);
 			if(bx == x && by == y){
@@ -664,8 +663,8 @@ public class BlockDude implements DomainGenerator{
 
 		if(maxHeight < maxY){
 			//then check the blocks
-			List<ObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
-			for(ObjectInstance b : blocks){
+			List<OldObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
+			for(OldObjectInstance b : blocks){
 				int bx = b.getIntValForAttribute(ATTX);
 				if(bx == x){
 					int by = b.getIntValForAttribute(ATTY);
@@ -708,10 +707,10 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep && s instanceof MutableState){
-				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			if(useSemiDeep && s instanceof CMutableState){
+				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
 
-				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
 				deepCopiedObjects.add(agent);
 				int ah = agent.getIntValForAttribute(ATTHOLD);
 
@@ -719,14 +718,14 @@ public class BlockDude implements DomainGenerator{
 					int ax = agent.getIntValForAttribute(ATTX);
 					int ay = agent.getIntValForAttribute(ATTY);
 
-					ObjectInstance block = getBlockAt(s, ax, ay+1);
+					OldObjectInstance block = getBlockAt(s, ax, ay+1);
 					if(block != null){
 						deepCopiedObjects.add(block);
 					}
 
 				}
 
-				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
+				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, groundedAction);
 			}
@@ -762,10 +761,10 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep && s instanceof MutableState){
-				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			if(useSemiDeep && s instanceof CMutableState){
+				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
 
-				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
 				deepCopiedObjects.add(agent);
 				int ah = agent.getIntValForAttribute(ATTHOLD);
 
@@ -773,14 +772,14 @@ public class BlockDude implements DomainGenerator{
 					int ax = agent.getIntValForAttribute(ATTX);
 					int ay = agent.getIntValForAttribute(ATTY);
 
-					ObjectInstance block = getBlockAt(s, ax, ay+1);
+					OldObjectInstance block = getBlockAt(s, ax, ay+1);
 					if(block != null){
 						deepCopiedObjects.add(block);
 					}
 
 				}
 
-				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
+				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, groundedAction);
 			}
@@ -817,10 +816,10 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep && s instanceof MutableState){
-				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			if(useSemiDeep && s instanceof CMutableState){
+				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
 
-				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
 				deepCopiedObjects.add(agent);
 				int ah = agent.getIntValForAttribute(ATTHOLD);
 
@@ -833,14 +832,14 @@ public class BlockDude implements DomainGenerator{
 						dir = -1;
 					}
 
-					ObjectInstance block = getBlockAt(s, ax+dir, ay);
+					OldObjectInstance block = getBlockAt(s, ax+dir, ay);
 					if(block != null){
 						deepCopiedObjects.add(block);
 					}
 
 				}
 
-				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
+				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, groundedAction);
 			}
@@ -876,10 +875,10 @@ public class BlockDude implements DomainGenerator{
 		public State performAction(State s, GroundedAction groundedAction){
 
 
-			if(useSemiDeep && s instanceof MutableState){
-				Set<ObjectInstance> deepCopiedObjects = new HashSet<ObjectInstance>(2);
+			if(useSemiDeep && s instanceof CMutableState){
+				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
 
-				ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
 				deepCopiedObjects.add(agent);
 				int ah = agent.getIntValForAttribute(ATTHOLD);
 
@@ -887,14 +886,14 @@ public class BlockDude implements DomainGenerator{
 					int ax = agent.getIntValForAttribute(ATTX);
 					int ay = agent.getIntValForAttribute(ATTY);
 
-					ObjectInstance block = getBlockAt(s, ax, ay+1);
+					OldObjectInstance block = getBlockAt(s, ax, ay+1);
 					if(block != null){
 						deepCopiedObjects.add(block);
 					}
 
 				}
 
-				State copid = ((MutableState)s).semiDeepCopy(deepCopiedObjects);
+				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
 
 				return performActionHelper(copid, groundedAction);
 			}
@@ -925,8 +924,8 @@ public class BlockDude implements DomainGenerator{
 		@Override
 		public boolean isTrue(State st, String... params) {
 
-			ObjectInstance agent = st.getObject(params[0]);
-			ObjectInstance block = st.getObject(params[1]);
+			OldObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance block = st.getObject(params[1]);
 
 			int ax = agent.getIntValForAttribute(ATTX);
 			int ay = agent.getIntValForAttribute(ATTY);
@@ -962,8 +961,8 @@ public class BlockDude implements DomainGenerator{
 		@Override
 		public boolean isTrue(State st, String... params) {
 
-			ObjectInstance agent = st.getObject(params[0]);
-			ObjectInstance exit = st.getObject(params[1]);
+			OldObjectInstance agent = st.getObject(params[0]);
+			OldObjectInstance exit = st.getObject(params[1]);
 
 			int ax = agent.getIntValForAttribute(ATTX);
 			int ay = agent.getIntValForAttribute(ATTY);

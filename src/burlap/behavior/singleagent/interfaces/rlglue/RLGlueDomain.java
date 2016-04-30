@@ -3,10 +3,8 @@ package burlap.behavior.singleagent.interfaces.rlglue;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.MutableState;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
@@ -110,10 +108,10 @@ public class RLGlueDomain implements DomainGenerator {
 	 */
 	public static State stateFromObservation(Domain domain, Observation obsv){
 
-		State s = new MutableState();
+		State s = new CMutableState();
 
 		if(obsv.intArray != null && obsv.intArray.length > 0){
-			ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(DISCRETECLASS), "discreteVals");
+			OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(DISCRETECLASS), "discreteVals");
 			s.addObject(o);
 			for(int i = 0; i < obsv.intArray.length; i++){
 				o.setValue(DISCATT+i, obsv.intArray[i]);
@@ -121,7 +119,7 @@ public class RLGlueDomain implements DomainGenerator {
 		}
 
 		if(obsv.doubleArray != null && obsv.doubleArray.length > 0){
-			ObjectInstance o = new MutableObjectInstance(domain.getObjectClass(REALCLASS), "realVals");
+			OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(REALCLASS), "realVals");
 			s.addObject(o);
 			for(int i = 0; i < obsv.doubleArray.length; i++){
 				o.setValue(REALATT+i, obsv.doubleArray[i]);

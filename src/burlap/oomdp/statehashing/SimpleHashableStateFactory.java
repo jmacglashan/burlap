@@ -1,9 +1,7 @@
 package burlap.oomdp.statehashing;
 
-import burlap.oomdp.core.Attribute;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.states.ImmutableState;
 import burlap.oomdp.core.values.Value;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -112,7 +110,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 				hashCodes[i] = computeHashCode(sTimm.getObject(i));
 			}
 		} else {
-			List<ObjectInstance> objects = s.getAllObjects();
+			List<OldObjectInstance> objects = s.getAllObjects();
 			
 			for(int i = 0; i < hashCodes.length; i++){
 				hashCodes[i] = computeHashCode(objects.get(i));
@@ -127,11 +125,11 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 
 
 	/**
-	 * Computes the hash code for an individual {@link burlap.oomdp.core.objects.ObjectInstance}.
-	 * @param o the {@link burlap.oomdp.core.objects.ObjectInstance} whose hash code will be computed.
-	 * @return the hash code for the {@link burlap.oomdp.core.objects.ObjectInstance}.
+	 * Computes the hash code for an individual {@link OldObjectInstance}.
+	 * @param o the {@link OldObjectInstance} whose hash code will be computed.
+	 * @return the hash code for the {@link OldObjectInstance}.
 	 */
-	protected int computeHashCode(ObjectInstance o){
+	protected int computeHashCode(OldObjectInstance o){
 
 		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
 		if(!this.identifierIndependent){
@@ -242,17 +240,17 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 		}
 
 		Set<String> matchedObjects = new HashSet<String>();
-		for(List<ObjectInstance> objects : s1.getAllObjectsByClass()){
+		for(List<OldObjectInstance> objects : s1.getAllObjectsByClass()){
 
 			String oclass = objects.get(0).getClassName();
-			List <ObjectInstance> oobjects = s2.getObjectsOfClass(oclass);
+			List <OldObjectInstance> oobjects = s2.getObjectsOfClass(oclass);
 			if(objects.size() != oobjects.size()){
 				return false;
 			}
 
-			for(ObjectInstance o : objects){
+			for(OldObjectInstance o : objects){
 				boolean foundMatch = false;
-				for(ObjectInstance oo : oobjects){
+				for(OldObjectInstance oo : oobjects){
 					String ooname = oo.getName();
 					if(matchedObjects.contains(ooname)){
 						continue;
@@ -289,12 +287,12 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 			return false;
 		}
 
-		List<ObjectInstance> theseObjects = s1.getAllObjects();
+		List<OldObjectInstance> theseObjects = s1.getAllObjects();
 		if(theseObjects.size() != s2.numTotalObjects()){
 			return false;
 		}
-		for(ObjectInstance ob : theseObjects){
-			ObjectInstance oByName = s2.getObject(ob.getName());
+		for(OldObjectInstance ob : theseObjects){
+			OldObjectInstance oByName = s2.getObject(ob.getName());
 			if(oByName == null){
 				return false;
 			}
@@ -309,12 +307,12 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 
 
 	/**
-	 * Evaluates whether the values of two {@link burlap.oomdp.core.objects.ObjectInstance}s are equal.
-	 * @param o1 the first {@link burlap.oomdp.core.objects.ObjectInstance} to compare
-	 * @param o2 the second {@link burlap.oomdp.core.objects.ObjectInstance} to compare
+	 * Evaluates whether the values of two {@link OldObjectInstance}s are equal.
+	 * @param o1 the first {@link OldObjectInstance} to compare
+	 * @param o2 the second {@link OldObjectInstance} to compare
 	 * @return true if the values of o1 = o2; false otherwise.
 	 */
-	protected boolean objectValuesEqual(ObjectInstance o1, ObjectInstance o2){
+	protected boolean objectValuesEqual(OldObjectInstance o1, OldObjectInstance o2){
 		if (o1 == o2) {
 			return true;
 		}

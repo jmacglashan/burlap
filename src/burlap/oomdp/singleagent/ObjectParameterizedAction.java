@@ -1,9 +1,10 @@
 package burlap.oomdp.singleagent;
 
 import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.states.oo.OOState;
+import burlap.oomdp.core.states.oo.OOStateUtilities;
 import burlap.oomdp.singleagent.common.SimpleGroundedAction;
 
 import java.util.ArrayList;
@@ -11,14 +12,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * If your {@link burlap.oomdp.singleagent.Action} implementation is paramerterized to OO-MDP {@link burlap.oomdp.core.objects.ObjectInstance}
+ * If your {@link burlap.oomdp.singleagent.Action} implementation is paramerterized to OO-MDP {@link burlap.oomdp.core.states.oo.ObjectInstance}
  * references, you can subclass this {@link burlap.oomdp.singleagent.Action} subclass to easily provide that functionality. The {@link burlap.oomdp.singleagent.GroundedAction}
  * instance associated with this action is {@link burlap.oomdp.singleagent.ObjectParameterizedAction.ObjectParameterizedGroundedAction},
  * which implements the {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}, since its parameters refer to
- * OO-MDP {@link burlap.oomdp.core.objects.ObjectInstance} references.
+ * OO-MDP {@link burlap.oomdp.core.states.oo.ObjectInstance} references.
  * <p>
  * The string array in the {@link #ObjectParameterizedAction(String, burlap.oomdp.core.Domain, String[])} constructor
- * specifies the valid type of {@link burlap.oomdp.core.ObjectClass}
+ * specifies the valid class name of the {@link burlap.oomdp.core.states.oo.ObjectInstance}
  * to which the parameters must belong. For example, in {@link burlap.domain.singleagent.blocksworld.BlocksWorld},
  * we might define a "stack" {@link burlap.oomdp.singleagent.ObjectParameterizedAction} that takes two parameters
  * that each must be instances of the BLOCK class. In such a case, the String array passed to the constructor of the stack
@@ -130,10 +131,12 @@ public abstract class ObjectParameterizedAction extends Action {
 			return res; //no parameters to ground
 		}
 
-
+		if(!(s instanceof OOState)){
+			throw new RuntimeException("Cannot get object-parameterized grounded actions in state, because " + s.getClass().getName() + " does not implement OOState");
+		}
 
 		//otherwise need to do parameter binding
-		List <List <String>> bindings = s.getPossibleBindingsGivenParamOrderGroups(this.getParameterClasses(), this.getParameterOrderGroups());
+		List <List <String>> bindings = OOStateUtilities.getPossibleBindingsGivenParamOrderGroups((OOState)s, this.getParameterClasses(), this.getParameterOrderGroups());
 
 		for(List <String> params : bindings){
 			String [] aprams = params.toArray(new String[params.size()]);

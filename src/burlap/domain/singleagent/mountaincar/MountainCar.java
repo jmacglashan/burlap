@@ -1,14 +1,11 @@
 package burlap.domain.singleagent.mountaincar;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.ObjectClass;
-import burlap.oomdp.core.objects.ObjectInstance;
+import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.states.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.states.MutableState;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -176,7 +173,7 @@ public class MountainCar implements DomainGenerator {
 	public static State move(State s, int dir, MCPhysicsParams physParms){
 		
 		
-		ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+		OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
 		
 		double p0 = agent.getRealValForAttribute(ATTX);
 		double v0 = agent.getRealValForAttribute(ATTV);
@@ -228,8 +225,8 @@ public class MountainCar implements DomainGenerator {
 	 * @return a new state with the agent in the bottom of the hill valley not moving.
 	 */
 	public static State getCleanState(Domain domain, MCPhysicsParams physParms){
-		State s = new MutableState();
-		ObjectInstance a = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
+		State s = new CMutableState();
+		OldObjectInstance a = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
 		s.addObject(a);
 		setAgent(s, -(Math.PI/2) / physParms.cosScale, 0.);
 		return s;
@@ -256,7 +253,7 @@ public class MountainCar implements DomainGenerator {
 	 * @param v the velocity of the agent.
 	 */
 	public static void setAgent(State s, double x, double v){
-		ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+		OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
 		agent.setValue(ATTX, x);
 		agent.setValue(ATTV, v);
 	}
@@ -344,7 +341,7 @@ public class MountainCar implements DomainGenerator {
 		@Override
 		public boolean isTerminal(State s) {
 
-			ObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
+			OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
 			double x = agent.getRealValForAttribute(ATTX);
 
 			double threshold = this.threshold;
