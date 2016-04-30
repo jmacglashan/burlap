@@ -542,7 +542,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 */
 	protected void updatePropTextArea(State s){
 		
-		StringBuffer buf = new StringBuffer();
+	    StringBuilder buf = new StringBuilder();
 		
 		List <PropositionalFunction> props = domain.getPropFunctions();
 		for(PropositionalFunction pf : props){

@@ -814,7 +814,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			if(this.profile.length == 0){
 				return "";
 			}
-			StringBuffer buf = new StringBuffer(3*this.profile.length);
+			StringBuilder buf = new StringBuilder(3*this.profile.length);
 			buf.append(this.profile[0]);
 			
 			for(int i = 1; i < this.profile.length; i++){

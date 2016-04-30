@@ -380,7 +380,7 @@ public class GameSequenceVisualizer extends JFrame {
 	
 	private void updatePropTextArea(State s){
 		
-		StringBuffer buf = new StringBuffer();
+	    StringBuilder buf = new StringBuilder();
 		
 		List <PropositionalFunction> props = domain.getPropFunctions();
 		for(PropositionalFunction pf : props){

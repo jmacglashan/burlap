@@ -72,7 +72,7 @@ public class SerializableFrostbiteStateFactory implements SerializableStateFacto
 
 
 	public static String stateToString(State s){
-		StringBuffer buf = new StringBuffer(256);
+	    StringBuilder buf = new StringBuilder(256);
 
 		ObjectInstance agent = s.getObjectsOfClass(FrostbiteDomain.AGENTCLASS).get(0);
 		ObjectInstance igloo = s.getObjectsOfClass(FrostbiteDomain.IGLOOCLASS).get(0);

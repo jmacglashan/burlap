@@ -167,7 +167,7 @@ public abstract class ObParamSGAgentAction extends SGAgentAction {
 		 */
 		@Override
 		public String justActionString(){
-			StringBuffer buf = new StringBuffer();
+		    StringBuilder buf = new StringBuilder();
 			buf.append(action.actionName);
 			for(int i = 0; i < params.length; i++){
 				buf.append(" ").append(params[i]);
@@ -179,7 +179,7 @@ public abstract class ObParamSGAgentAction extends SGAgentAction {
 
 		@Override
 		public String toString(){
-			StringBuffer buf = new StringBuffer();
+		    StringBuilder buf = new StringBuilder();
 			buf.append(actingAgent).append(":");
 			buf.append(action.actionName);
 			for(int i = 0; i < params.length; i++){

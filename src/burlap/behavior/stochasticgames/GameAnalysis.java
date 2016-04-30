@@ -512,7 +512,7 @@ public class GameAnalysis {
 	 * @return a string representation of the joint reward
 	 */
 	private static String jointRewardStringRep(Map<String, Double> jointReward){
-		StringBuffer buf = new StringBuffer();
+	    StringBuilder buf = new StringBuilder();
 		boolean doneFirst = false;
 		for(Map.Entry<String, Double> e : jointReward.entrySet()){
 			if(doneFirst){
