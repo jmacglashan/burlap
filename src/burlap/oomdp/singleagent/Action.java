@@ -322,6 +322,9 @@ public abstract class Action{
 	
 	@Override
 	public boolean equals(Object obj){
+	    if (obj == null || this.getClass() != obj.getClass()) {
+            return false;   
+        }
 		Action op = (Action)obj;
 		if(op.name.equals(name))
 			return true;

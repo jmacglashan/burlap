@@ -373,6 +373,9 @@ public class Attribute {
 		if (this == obj) {
 			return true;
 		}
+		if (obj == null || this.getClass() != obj.getClass()) {
+            return false;   
+        }
 		Attribute op = (Attribute)obj;
 		if(op.name.equals(name))
 			return true;

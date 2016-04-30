@@ -59,6 +59,9 @@ public class SearchNode {
 	
 	@Override
 	public boolean equals(Object o){
+	    if (o == null || this.getClass() != o.getClass()) {
+	        return false;   
+	    }
 		SearchNode so = (SearchNode)o;
 		return s.equals(so.s);
 	}
