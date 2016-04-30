@@ -1,17 +1,5 @@
 package burlap.testing;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.junit.Before;
-import org.junit.Test;
-
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.objects.ObjectInstance;
@@ -23,6 +11,13 @@ import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class TestHashing {
 	TestGridWorld gridWorldTest;
@@ -65,7 +60,7 @@ public class TestHashing {
 	public void testSimpleHashFactoryIdentifierDependent() {
 		SADomain domain = (SADomain)this.gridWorldTest.getDomain();
 		State startState = this.gridWorldTest.generateState();
-		HashableStateFactory factory = new SimpleHashableStateFactory(true);
+		HashableStateFactory factory = new SimpleHashableStateFactory(false);
 		Set<HashableState> hashedStates = this.getReachableHashedStates(startState, domain, factory);
 		assert(hashedStates.size() == 104);
 		
@@ -102,7 +97,7 @@ public class TestHashing {
 	public void testImmutableSimpleHashFactoryIdentifierDependentCached() {
 		SADomain domain = (SADomain)this.gridWorldTest.getDomain();
 		State startState = this.gridWorldTest.generateState();
-		HashableStateFactory factory = new SimpleHashableStateFactory(true, true);
+		HashableStateFactory factory = new SimpleHashableStateFactory(false, true);
 		Set<HashableState> hashedStates = this.getReachableHashedStates(new ImmutableState(startState), domain, factory);
 		assert(hashedStates.size() == 104);
 	}
@@ -115,12 +110,10 @@ public class TestHashing {
 		testSimpleHashFactoryLargeState(factory, 50, 1000, false);
 		testSimpleHashFactoryLargeState(factory, 100, 10000, false);
 		testSimpleHashFactoryLargeState(factory, 200,100000, false);
-		testSimpleHashFactoryLargeState(factory, 500,100000, false);
 		
 		testSimpleHashFactoryLargeState(factory, 10, 100, true);
-		testSimpleHashFactoryLargeState(factory, 20, 1000, true);
-		testSimpleHashFactoryLargeState(factory, 50, 10000, true);
-		testSimpleHashFactoryLargeState(factory, 100,100000, true);
+		testSimpleHashFactoryLargeState(factory, 50, 1000, true);
+
 	}
 	
 	public void testSimpleHashFactoryLargeState(HashableStateFactory factory, int width, int numRandomStates, boolean moveLocObjects) {
@@ -171,11 +164,11 @@ public class TestHashing {
 		System.out.println("3 N: " + n*n + ", " + hashes3.size());
 	}
 	
-	//@Test
+	@Test
 	public void testSimpleHashFactoryLargeStateIdentifierDependent() {
 		SADomain domain = (SADomain)this.gridWorldTest.getDomain();
 		State startState = this.generateLargeGW(domain, 100);
-		HashableStateFactory factory = new SimpleHashableStateFactory();
+		HashableStateFactory factory = new SimpleHashableStateFactory(false);
 		Set<HashableState> hashedStates = this.getReachableHashedStates(startState, domain, factory);
 		int size = hashedStates.size();
 		Set<Integer> hashes = new HashSet<Integer>();
