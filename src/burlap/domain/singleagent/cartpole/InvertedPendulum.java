@@ -320,7 +320,7 @@ public class InvertedPendulum implements DomainGenerator {
 		/**
 		 * The maximum pole angle to cause termination/failure.
 		 */
-		double maxAbsoluteAngle = (Math.PI / 2.);
+		double maxAbsoluteAngle = Math.PI / 2.;
 		
 		public InvertedPendulumTerminalFunction() {
 
@@ -364,7 +364,7 @@ public class InvertedPendulum implements DomainGenerator {
 		/**
 		 * The maximum pole angle to cause termination/failure.
 		 */
-		double maxAbsoluteAngle = (Math.PI / 2.);
+		double maxAbsoluteAngle = Math.PI / 2.;
 		
 		public InvertedPendulumRewardFunction() {
 

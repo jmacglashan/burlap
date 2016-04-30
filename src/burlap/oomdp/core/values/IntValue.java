@@ -73,7 +73,7 @@ public class IntValue extends OOMDPValue implements Value {
 	
 	@Override
 	public Value setValue(boolean v) {
-		return new IntValue(this.attribute, (v) ? 1 : 0);
+		return new IntValue(this.attribute, v ? 1 : 0);
 	}
 
 	@Override

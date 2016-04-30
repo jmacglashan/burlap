@@ -532,7 +532,7 @@ public class CorrelatedEquilibriumSolver {
 			int r = rc[0];
 			int c = rc[1];
 			
-			objective[i] = (payoffRow[r][c] + payoffCol[r][c]);
+			objective[i] = payoffRow[r][c] + payoffCol[r][c];
 		}
 		
 		

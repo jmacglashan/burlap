@@ -166,10 +166,10 @@ public class MountainCarVisualizer {
 				double nx1 = (p1.x - this.physParams.xmin) / (range);
 				double ny1 = (p1.y + 1) / 2;
 				
-				double sx0 = (nx0 * cWidth);
+				double sx0 = nx0 * cWidth;
 				double sy0 = (cHeight) - (ny0 * (cHeight-30)+15);
 				
-				double sx1 = (nx1 * cWidth);
+				double sx1 = nx1 * cWidth;
 				double sy1 = (cHeight) - (ny1 * (cHeight-30)+15);
 				
 				g2.draw(new Line2D.Double(sx0, sy0, sx1, sy1));

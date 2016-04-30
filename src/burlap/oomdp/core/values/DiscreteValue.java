@@ -66,7 +66,7 @@ public class DiscreteValue extends OOMDPValue implements Value{
 	
 	@Override
 	public Value setValue(boolean v) {
-		int intV = (v) ? 1 : 0;
+		int intV = v ? 1 : 0;
 		return new DiscreteValue(this.attribute, intV);
 	}
 	
