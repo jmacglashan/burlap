@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
@@ -204,9 +205,9 @@ public class Tournament {
 			}
 			
 			//record results
-			for(String aname : agentNameToId.keySet()){
-				int aId = agentNameToId.get(aname);
-				double gameCumR = w.getCumulativeRewardForAgent(aname);
+			for(Entry<String, Integer> an : agentNameToId.entrySet()){
+				int aId = an.getValue();
+				double gameCumR = w.getCumulativeRewardForAgent(an.getKey());
 				double tournCumR = tournamentCumulatedReward.get(aId);
 				tournamentCumulatedReward.set(aId, gameCumR+tournCumR);
 			}
