@@ -180,7 +180,7 @@ public class ApprenticeshipLearning {
 		}
 
 		Planner planner = request.getPlanner();
-		TerminalFunction terminalFunction = planner.getTF();
+		TerminalFunction terminalFunction = planner.getTf();
 		HashableStateFactory stateHashingFactory = planner.getHashingFactory();
 
 		// (1). Randomly generate policy pi^(0)
@@ -281,7 +281,7 @@ public class ApprenticeshipLearning {
 
 		//Planning objects
 		Planner planner = request.getPlanner();
-		TerminalFunction terminalFunction = planner.getTF();
+		TerminalFunction terminalFunction = planner.getTf();
 		HashableStateFactory stateHashingFactory = planner.getHashingFactory();
 
 		//(0) set up policy array; exper feature expectation
