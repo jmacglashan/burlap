@@ -452,7 +452,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		String actionName = comps[0];
 
 		//construct parameter list as all that remains
-		String params[];
+		String[] params;
 		if(comps.length > 1){
 			params = new String[comps.length-1];
 			for(int i = 1; i < comps.length; i++){
@@ -488,7 +488,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		String actionName = comps[0];
 
 		//construct parameter list as all that remains
-		String params[];
+		String[] params;
 		if(comps.length > 1){
 			params = new String[comps.length-1];
 			for(int i = 1; i < comps.length; i++){
