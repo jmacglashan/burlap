@@ -695,6 +695,7 @@ public class GridWorldDomain implements DomainGenerator {
 			
 		case 3:
 			result = new int[]{-1,0};
+			break;
 
 		default:
 			break;
