@@ -2,20 +2,22 @@ package burlap.behavior.singleagent.learning.modellearning;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.SADomain;
 
 import java.util.List;
 
 
 
 /**
- * Use this class when an action model is being modeled. It will create a new domain object that is a reflection of the input domain,
- *  Actions are created using instances of
+ * Use this class when an action model is being modeled. It will create a new domain object with correpsonding actions
+ * to actions for an input domain, but which use a learned
+ * model instead of the actual definition.
+ * Actions are created using instances of
  * the {@link ModeledAction} class and their execution and transition dynamics should be defined by
  * the given model that was learned by some {@link Model} class. To retrieve the Domain object that
  * was created, make a call to the {@link #generateDomain()} method.
@@ -42,22 +44,13 @@ public class ModeledDomainGenerator implements DomainGenerator{
 	public ModeledDomainGenerator(Domain sourceDomain, Model model){
 		
 		//model domain copies object classes
-		modelDomain = sourceDomain.getNewDomainWithCopiedObjectClasses();
+		modelDomain = new SADomain();
 
 		
 		for(Action srcA : sourceDomain.getActions()){
 			new ModeledAction(modelDomain, srcA, model);
 		}
-		
-		
-		
-		//model domain take same object pointers to propositional functions in the source domain;
-		//note that the propositional functions will still belong to the original source domain
-		for(PropositionalFunction pf : sourceDomain.getPropFunctions()){
-			modelDomain.addPropositionalFunction(pf);
-		}
-		
-		
+
 	}
 	
 	

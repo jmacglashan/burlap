@@ -1,21 +1,14 @@
 package burlap.behavior.singleagent.learning.modellearning.models;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import burlap.behavior.singleagent.learning.modellearning.Model;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.*;
-import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 
 /**
@@ -53,7 +46,7 @@ public class TabularModel extends Model {
 	protected int								nConfident;
 	
 	/**
-	 * The modeled terminal funciton.
+	 * The modeled terminal function.
 	 */
 	protected TerminalFunction					modeledTF;
 	
