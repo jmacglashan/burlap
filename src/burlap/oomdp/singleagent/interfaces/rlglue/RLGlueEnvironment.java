@@ -1,11 +1,10 @@
 package burlap.oomdp.singleagent.interfaces.rlglue;
 
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import org.rlcommunity.rlglue.codec.EnvironmentInterface;
@@ -24,16 +23,9 @@ import java.util.Map;
 
 /**
  * This class can be used to take a BURLAP domain and task with discrete actions and turn it into an RLGlue environment with which other RLGlue agents
- * can interact. Because of the nature of RLGlue there are a few limitations: 
- * <p>
- * (1) the same actions available in one state must be available everywhere<p>
- * (2) the environment cannot represent object identifier independence and will fill in RLGlue feature vectors by object class and in the order the objects appear for each class;<p>
- * (3) while single target relational domains can be used, multi-target relational domains cannot.
- * <p>
- * Because a fixed number of objects for each class is assumed, action parameterization is supported by multiplying out all the possible parameterizations. In order
- * for action parameterization and relational domains to work consistently for RLGlue, the state generator should always add objects of each class to the state object
- * in the same order. For instance, in a grid world, the state generator should always add the agent object instance to the state first and then all location objects (or always
- * do it in the reverse order). Object instance names, however, can vary between generated states.
+ * can interact. Because RLGLue requires flat vector representations of states, you must provide a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}
+ * to flatten the BURLAP states; it should always return arrays of the same length for all visitable states.
+ * Additionally, RLGlue does not support action preconditions, so each action must be available everywhere.
  * <p>
  * Note that RLGlue does not support observations of terminal states; it only gives the final reward upon entering a terminal state.
  * Therefore, this class will not terminate in a terminal state indicated by the provided {@link burlap.oomdp.core.TerminalFunction}.
@@ -44,7 +36,6 @@ import java.util.Map;
  */
 public class RLGlueEnvironment implements EnvironmentInterface {
 
-	
 	/**
 	 * The BURLAP domain
 	 */
@@ -54,7 +45,19 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 * The state generator for generating states for each episode
 	 */
 	protected StateGenerator stateGenerator;
-	
+
+	/**
+	 * Used to flatten states into a vector representation
+	 */
+	protected StateToFeatureVectorGenerator stateFlattener;
+
+
+	/**
+	 * The value ranges for the vector representation of the state
+	 */
+	protected DoubleRange[] valueRanges;
+
+
 	/**
 	 * The reward function
 	 */
@@ -87,20 +90,8 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 * The discount factor of the task
 	 */
 	protected double discount;
-	
-	
-	/**
-	 * The number of objects of each object class that will appear in all states.
-	 */
-	protected Map<String, Integer> numObjectsOfEachClass;
-	
-	
-	/**
-	 * The total number of objects that will appear in all states
-	 */
-	protected int numObjects;
-	
-	
+
+
 	/**
 	 * The current state of the environment
 	 */
@@ -112,15 +103,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 */
 	protected Map<Integer, GroundedAction> actionMap = new HashMap<Integer, GroundedAction>();
 	
-	/**
-	 * The number of RLGlue discrete attributes that will be used
-	 */
-	protected int numDiscreteAtts = 0;
-	
-	/**
-	 * The number of RLGlue continuous attributes that will be used
-	 */
-	protected int numContinuousAtts = 0;
+
 	
 	
 	/**
@@ -136,44 +119,36 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 * Constructs with all the BURLAP information necessary for generating an RLGlue Environment.
 	 * @param domain the BURLAP domain
 	 * @param stateGenerator a generated for generating states at the start of each episode.
+	 * @param stateFlattener used to flatten states into a numeric representation
+	 * @param valueRanges the value ranges of the flattened vector state
 	 * @param rf the reward function
-	 * @param tf the terminal funciton
+	 * @param tf the terminal function
 	 * @param rewardRange the reward function value range
 	 * @param isEpisodic whether the task is episodic or continuing
 	 * @param discount the discount factor to use for the task
 	 */
-	public RLGlueEnvironment(Domain domain, StateGenerator stateGenerator, RewardFunction rf, TerminalFunction tf,
-			DoubleRange rewardRange, boolean isEpisodic, double discount){
+	public RLGlueEnvironment(Domain domain, StateGenerator stateGenerator, StateToFeatureVectorGenerator stateFlattener,
+							 DoubleRange[] valueRanges, RewardFunction rf, TerminalFunction tf,
+							 DoubleRange rewardRange, boolean isEpisodic, double discount){
 		
 		this.domain = domain;
 		this.stateGenerator = stateGenerator;
+		this.stateFlattener = stateFlattener;
+		this.valueRanges = valueRanges;
 		this.rf = rf;
 		this.tf = tf;
 		this.rewardRange = rewardRange;
 		this.isEpisodic = isEpisodic;
 		this.discount = discount;
-		this.numObjectsOfEachClass = new HashMap<String, Integer>();
-		
-		this.numObjects = 0;
-		for(Integer n : this.numObjectsOfEachClass.values()){
-			numObjects += n;
-		}
 		
 		State exampleState = this.stateGenerator.generateState();
 		int actionInd = 0;
 		for(burlap.oomdp.singleagent.Action a : this.domain.getActions()){
 			List<GroundedAction> gas = a.getAllApplicableGroundedActions(exampleState);
 			for(GroundedAction ga : gas){
-				//ActionIndexParameterization ap = new ActionIndexParameterization(ga, exampleState);
 				this.actionMap.put(actionInd, ga);
 				actionInd++;
 			}
-		}
-		
-		List<List<OldObjectInstance>> obsByClass = exampleState.getAllObjectsByClass();
-		for(List<OldObjectInstance> obs : obsByClass){
-			String className = obs.get(0).getClassName();
-			this.numObjectsOfEachClass.put(className, obs.size());
 		}
 		
 		//set this to be the first state returned
@@ -221,49 +196,18 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		theTaskSpecObject.setRewardRange(this.rewardRange);
 		theTaskSpecObject.addDiscreteAction(new IntRange(0, this.actionMap.size()-1));
 		
-		
-		for(Map.Entry<String, Integer> e : this.numObjectsOfEachClass.entrySet()){
-			int n = e.getValue();
-			List<Attribute> atts = this.domain.getObjectClass(e.getKey()).attributeList;
-			for(int i = 0; i < n; i++){
-				for(Attribute att: atts){
-					this.addAttribute(theTaskSpecObject, att);
-				}
-			}
+
+		for(int i = 0; i < this.valueRanges.length; i++){
+			theTaskSpecObject.addContinuousObservation(this.valueRanges[i]);
 		}
 		
 		return theTaskSpecObject.toTaskSpec();
 	}
-	
-	/**
-	 * Adss a BURLAP attribute to the RLGlue task specification.
-	 * BURLAP multi-target relational attributes are not supported and will cause a runtime exception to be thrown.
-	 * @param theTaskSpecObject the RLGlue task specification
-	 * @param att the BURLAP attribute to add to the spec
-	 */
-	protected void addAttribute(TaskSpecVRLGLUE3 theTaskSpecObject, Attribute att){
-		Attribute.AttributeType type = att.type;
-		if(type == AttributeType.DISC || type == AttributeType.BOOLEAN || type == AttributeType.INT){
-			theTaskSpecObject.addDiscreteObservation(new IntRange((int)att.lowerLim, (int)att.upperLim));
-			this.numDiscreteAtts++;
-		}
-		else if(type == AttributeType.RELATIONAL){
-			theTaskSpecObject.addDiscreteObservation(new IntRange(0, this.numObjects-1));
-			this.numDiscreteAtts++;
-		}
-		else if(type == AttributeType.REAL || type == AttributeType.REALUNBOUND){
-			theTaskSpecObject.addContinuousObservation(new DoubleRange(att.lowerLim, att.upperLim));
-			this.numContinuousAtts++;
-		}
-		else{
-			throw new RuntimeException("Cannot create RLGlue Attribute for BURLAP att type: " + type);
-		}
-		
-	}
+
 
 	@Override
 	public String env_message(String arg0) {
-		return "Messages not supportd by default BURLAP RLGlueEnvironment"; 
+		return "Messages not supported by default BURLAP RLGlueEnvironment";
 	}
 
 	@Override
@@ -310,54 +254,14 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 */
 	protected Observation convertIntoObservation(State s){
 		
-		Observation o = new Observation(numDiscreteAtts, numContinuousAtts);
-		
-		int discCounter = 0;
-		int contCounter = 0;
-		for(Map.Entry<String, Integer> e : this.numObjectsOfEachClass.entrySet()){
-			List<OldObjectInstance> obs = s.getObjectsOfClass(e.getKey());
-			List<Attribute> atts = this.domain.getObjectClass(e.getKey()).attributeList;
-			for(int i = 0; i < obs.size(); i++){
-				OldObjectInstance oi = obs.get(i);
-				for(Attribute att : atts){
-					if(att.type == AttributeType.DISC || att.type == AttributeType.INT || att.type == AttributeType.BOOLEAN){
-						o.setInt(discCounter, oi.getIntValForAttribute(att.name));
-						discCounter++;
-					}
-					else if(att.type == AttributeType.REAL || att.type == AttributeType.REALUNBOUND){
-						o.setDouble(contCounter, oi.getRealValForAttribute(att.name));
-						contCounter++;
-					}
-					else if(att.type == AttributeType.RELATIONAL){
-						o.setDouble(discCounter, this.objectIndex(s, oi.getName()));
-						discCounter++;
-					}
-					
-				}
-			}
+		Observation o = new Observation(0, this.valueRanges.length);
+
+		double [] flatRep = this.stateFlattener.generateFeatureVectorFrom(s);
+		for(int i = 0; i < flatRep.length; i++){
+			o.setDouble(i, flatRep[i]);
 		}
 		
 		return o;
-	}
-	
-	
-	/**
-	 * Returns the index of the object instance with name obName in state s.
-	 * @param s the state holding the object
-	 * @param obName the name of the object
-	 * @return the index of obName in state s
-	 */
-	protected int objectIndex(State s, String obName){
-		List<OldObjectInstance> obs = s.getAllObjects();
-		int i = 0;
-		for(OldObjectInstance o : obs){
-			if(o.getName().equals(obName)){
-				return i;
-			}
-			i++;
-		}
-		
-		throw new RuntimeException("Could not find object " + obName);
 	}
 
 
