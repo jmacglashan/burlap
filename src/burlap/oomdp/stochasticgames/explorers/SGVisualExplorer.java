@@ -1,6 +1,7 @@
 package burlap.oomdp.stochasticgames.explorers;
 
 import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.core.State;
@@ -385,12 +386,15 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 
 	
 	protected void updatePropTextArea(State s){
-		
+
+		if(!(domain instanceof OODomain)){
+			return;
+		}
+
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = domain.getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
 		for(PropositionalFunction pf : props){
-			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
 				if(gp.isTrue(s)){
@@ -425,7 +429,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 			params[i-1] = actionAndParams[i];
 		}
 
-		SGAgentAction sa = domain.getSingleAction(singleActionName);
+		SGAgentAction sa = domain.getSGAgentAction(singleActionName);
 		if(sa == null){
 			return null;
 		}
