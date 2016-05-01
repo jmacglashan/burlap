@@ -1,11 +1,13 @@
 package burlap.behavior.singleagent.vfa.fourier;
 
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
-import burlap.behavior.singleagent.vfa.*;
-import burlap.behavior.singleagent.vfa.common.ConcatenatedObjectFeatureVectorGenerator;
+import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
+import burlap.behavior.singleagent.vfa.FeatureDatabase;
+import burlap.behavior.singleagent.vfa.StateFeature;
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
@@ -15,9 +17,8 @@ import java.util.Map;
 
 
 /**
- * An implementation of Fourier Basis functions [1]. This class expects a normalized state variable/feature vector of input states, if it is not normalized, behavior is not well defined. Therefore consider using the 
- * {@link ConcatenatedObjectFeatureVectorGenerator}
- * generator with the normalization flag set to convert the OO-MDP {@link State} objects into the necessary input vector.
+ * An implementation of Fourier Basis functions [1]. This class expects a normalized state variable/feature vector of input states, if it is not normalized, behavior is not well defined. Therefore,
+ * you may want to consider using the {@link burlap.behavior.singleagent.vfa.common.NormalizedVariablesVectorGenerator}.
  * The higher order the basis functions, the higher the VFA resolution is. Typically, order n will produce (n+1)^d state basis functions (and a copy for each action), where d is the number of state variables. Since this grows quickly,
  * a way to manage the complexity is to simplify the number of coefficient vectors. That is, each basis function is a function of the dot product of the input state variable vector and a coefficient vector {0...n}^d 
  * and normally all possible coefficient vectors (and their corresponding basis functions) for
