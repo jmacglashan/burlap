@@ -1,14 +1,10 @@
 package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.State;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -16,6 +12,9 @@ import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -67,17 +66,6 @@ public class SGToSADomain implements DomainGenerator {
 
 		SADomain domainWrapper = new SADomain();
 
-		for(Attribute a : srcDomain.getAttributes()){
-			domainWrapper.addAttribute(a);
-		}
-
-		for(ObjectClass c : srcDomain.getObjectClasses()){
-			domainWrapper.addObjectClass(c);
-		}
-
-		for(PropositionalFunction pf : srcDomain.getPropFunctions()){
-			domainWrapper.addPropositionalFunction(pf);
-		}
 
 		for(SGAgentAction sa : useableActions){
 			new SAActionWrapper(sa, domainWrapper);
