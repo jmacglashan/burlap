@@ -1,13 +1,9 @@
 package burlap.oomdp.statehashing;
 
 
-import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.State;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -52,6 +48,18 @@ public abstract class HashableState implements State{
 		return this.s;
 	}
 
+
+	@Override
+	public List<Object> variableKeys() {
+		return s.variableKeys();
+	}
+
+	@Override
+	public Object get(Object variableKey) {
+		return s.get(variableKey);
+	}
+
+
 	@Override
 	public abstract int hashCode();
 
@@ -59,105 +67,7 @@ public abstract class HashableState implements State{
 	public abstract boolean equals(Object obj);
 
 
-	@Override
-	public State addObject(OldObjectInstance o) {
-		return s.addObject(o);
-	}
 
-	@Override
-	public State addAllObjects(Collection<OldObjectInstance> objects) {
-		return s.addAllObjects(objects);
-	}
-
-	@Override
-	public State removeObject(String oname) {
-		return s.removeObject(oname);
-	}
-
-	@Override
-	public State removeObject(OldObjectInstance o) {
-		return s.removeObject(o);
-	}
-
-	@Override
-	public State removeAllObjects(Collection<OldObjectInstance> objects) {
-		return s.removeAllObjects(objects);
-	}
-
-	@Override
-	public State renameObject(String originalName, String newName) {
-		return s.renameObject(originalName, newName);
-	}
-
-	@Override
-	public State renameObject(OldObjectInstance o, String newName) {
-		return s.renameObject(o, newName);
-	}
-
-	@Override
-	public Map<String, String> getObjectMatchingTo(State so, boolean enforceStateExactness) {
-		return s.getObjectMatchingTo(so, enforceStateExactness);
-	}
-
-	@Override
-	public int numTotalObjects() {
-		return s.numTotalObjects();
-	}
-
-	@Override
-	public OldObjectInstance getObject(String oname) {
-		return s.getObject(oname);
-	}
-
-	@Override
-	public List<OldObjectInstance> getAllObjects() {
-		return s.getAllObjects();
-	}
-
-	@Override
-	public List<OldObjectInstance> getObjectsOfClass(String oclass) {
-		return s.getObjectsOfClass(oclass);
-	}
-
-	@Override
-	public OldObjectInstance getFirstObjectOfClass(String oclass) {
-		return s.getFirstObjectOfClass(oclass);
-	}
-
-	@Override
-	public Set<String> getObjectClassesPresent() {
-		return s.getObjectClassesPresent();
-	}
-
-	@Override
-	public List<List<OldObjectInstance>> getAllObjectsByClass() {
-		return s.getAllObjectsByClass();
-	}
-
-
-	@Override
-	public String getCompleteStateDescription() {
-		return s.getCompleteStateDescription();
-	}
-
-	@Override
-	public Map<String, List<String>> getAllUnsetAttributes() {
-		return s.getAllUnsetAttributes();
-	}
-
-	@Override
-	public String getCompleteStateDescriptionWithUnsetAttributesAsNull() {
-		return s.getCompleteStateDescriptionWithUnsetAttributesAsNull();
-	}
-
-	@Override
-	public List<List<String>> getPossibleBindingsGivenParamOrderGroups(String[] paramClasses, String[] paramOrderGroups) {
-		return s.getPossibleBindingsGivenParamOrderGroups(paramClasses, paramOrderGroups);
-	}
-	
-	public <T> State setObjectsValue(String objectName, String attName, T value) {
-		return s.setObjectsValue(objectName, attName, value);
-	}
 
 	/**
 	 * A hash code cached abstract implementation of {@link HashableState}.

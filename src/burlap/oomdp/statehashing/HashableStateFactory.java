@@ -19,10 +19,18 @@ public interface HashableStateFactory {
 	 */
 	HashableState hashState(State s);
 
-	/**
-	 * Returns true if the {@link burlap.oomdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
-	 * @return true if the {@link burlap.oomdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
-	 */
-	boolean objectIdentifierIndependent();
+
+
+
+	interface OOHashableStateFactory extends HashableStateFactory{
+
+		/**
+		 * Returns true if the {@link burlap.oomdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
+		 * @return true if the {@link burlap.oomdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
+		 */
+		boolean objectIdentifierIndependent();
+
+	}
+
 	
 }

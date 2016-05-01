@@ -1,25 +1,25 @@
 package burlap.oomdp.statehashing;
 
-import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.State;
-import burlap.oomdp.core.values.Value;
-
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.OOStateUtilities;
+import burlap.oomdp.core.oo.state.ObjectInstance;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A straightforward factory for creating {@link burlap.oomdp.statehashing.HashableState} objects from
- * {@link State} instances. By default, this factory will be object identifier independent
- * (the names of objects don't affect the state definition). However, you can make it object identifier dependent
- * with the either of the constructors {@link #SimpleHashableStateFactory(boolean)} or
- * {@link #SimpleHashableStateFactory(boolean, boolean)}.
+ * {@link State} instances. The general approach is that hash values are computed by iterating through each
+ * variable key in the order returned by {@link State#variableKeys()} and the has code for values returned by
+ * {@link State#get(Object)} are combined. Similarly, two states are evaluated as equal when the values returned by
+ * {@link State#get(Object)} satisfy their implemented {@link Object#equals(Object)} method.
  * <p>
- * This factory is capable of hashing states with any kind of values. However, if you wish to hash states
- * that have relational attributes, you must set the factory to be object identifier dependent.
+ * This class also automatically provides special treatment for OO-MDP states (states that implement
+ * {@link burlap.oomdp.core.oo.state.OOState}) by being object identifier independent
+ * (the names of objects don't affect the state identity). However, you may disable identifier independence
+ * by using the constructor {@link #SimpleHashableStateFactory(boolean)}. If your domain is relational, it may be
+ * important to be identifier *dependent* (that is, set the parameter in the constructor to false).
  * <p>
  * Optionally, this factory can be set to produce {@link burlap.oomdp.statehashing.HashableState} instances
  * that cache the hash code so that it does not need to be recomputed on multiple calls of the hashCode method.
@@ -30,10 +30,10 @@ import java.util.Set;
  * by other forms of equality checking and have each method override only what it needs to override.
  * @author James MacGlashan.
  */
-public class SimpleHashableStateFactory implements HashableStateFactory {
+public class SimpleHashableStateFactory implements HashableStateFactory.OOHashableStateFactory {
 
 	/**
-	 * Whether state evaluations are object identifier independent (the names of objects don't matter). By
+	 * Whether state evaluations of OO-MDPs are object identifier independent (the names of objects don't matter). By
 	 * default it is independent.
 	 */
 	protected boolean identifierIndependent = true;
@@ -44,10 +44,6 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 */
 	protected boolean useCached = false;
 
-	/**
-	 * Classes of {@link burlap.oomdp.core.Attribute.AttributeType} that affect how hashing will be performed
-	 */
-	protected static enum AttClass {INT, DOUBLE, INTARRAY, DOUBLEARRAY, STRING, RELATIONAL}
 
 
 	/**
@@ -59,7 +55,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 
 	/**
 	 * Initializes with no hash code caching.
-	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
+	 * @param identifierIndependent if true then state evaluations for {@link burlap.oomdp.core.oo.state.OOState}s are object identifier independent; if false then dependent.
 	 */
 	public SimpleHashableStateFactory(boolean identifierIndependent){
 		this.identifierIndependent = identifierIndependent;
@@ -67,7 +63,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 
 	/**
 	 * Initializes.
-	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
+	 * @param identifierIndependent if true then state evaluations for {@link burlap.oomdp.core.oo.state.OOState}s  are object identifier independent; if false then dependent.
 	 * @param useCached if true then the hash code for each produced {@link burlap.oomdp.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 */
 	public SimpleHashableStateFactory(boolean identifierIndependent, boolean useCached) {
@@ -101,109 +97,51 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @param s the input state for which a hash code is to be computed
 	 * @return the hash code
 	 */
-	protected int computeHashCode(State s){
+	protected final int computeHashCode(State s){
+
+		if(s instanceof OOState){
+			return computeOOHashCode((OOState)s);
+		}
+		return computeFlatHashCode(s);
+
+	}
+
+	protected int computeOOHashCode(OOState s){
 
 		int [] hashCodes = new int[s.numTotalObjects()];
-		if (s instanceof ImmutableState) {
-			ImmutableState sTimm = (ImmutableState)s;
-			for(int i = 0; i < hashCodes.length; i++){
-				hashCodes[i] = computeHashCode(sTimm.getObject(i));
-			}
-		} else {
-			List<OldObjectInstance> objects = s.getAllObjects();
-			
-			for(int i = 0; i < hashCodes.length; i++){
-				hashCodes[i] = computeHashCode(objects.get(i));
-			}
+		List<ObjectInstance> objects = s.objects();
+		for(int i = 0; i < hashCodes.length; i++){
+			ObjectInstance o = objects.get(i);
+			int oHash = this.computeFlatHashCode(o);
+			int classNameHash = o.className().hashCode();
+			int nameHash = this.objectIdentifierIndependent() ? 0 : o.getName().hashCode();
+			int totalHash = oHash + 31*classNameHash + 31*31*nameHash;
+			hashCodes[i] = totalHash;
 		}
+
 		//sort for invariance to order
 		Arrays.sort(hashCodes);
 		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
 		hashCodeBuilder.append(hashCodes);
 		return hashCodeBuilder.toHashCode();
+
 	}
 
-
-	/**
-	 * Computes the hash code for an individual {@link OldObjectInstance}.
-	 * @param o the {@link OldObjectInstance} whose hash code will be computed.
-	 * @return the hash code for the {@link OldObjectInstance}.
-	 */
-	protected int computeHashCode(OldObjectInstance o){
+	protected int computeFlatHashCode(State s){
 
 		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
-		if(!this.identifierIndependent){
-			hashCodeBuilder.append(o.getName());
-		}
-		
-		hashCodeBuilder.append(o.getClassName());
 
-		List<Value> values = o.getValues();
-		for(Value v : values){
-			this.appendHashcodeForValue(hashCodeBuilder, v);
+		List<Object> keys = s.variableKeys();
+		for(Object key : keys){
+			Object value = s.get(key);
+			this.appendHashCodeForValue(hashCodeBuilder, key, value);
 		}
 
 		return hashCodeBuilder.toHashCode();
 	}
 
-	/**
-	 * Appends the hash code for the given {@link burlap.oomdp.core.values.Value} to the {@link org.apache.commons.lang3.builder.HashCodeBuilder}
-	 * @param hashCodeBuilder the {@link org.apache.commons.lang3.builder.HashCodeBuilder} to which the value's hash code will be appended
-	 * @param v the {@link burlap.oomdp.core.values.Value} whose hash code should be appended.
-	 */
-	protected void appendHashcodeForValue(HashCodeBuilder hashCodeBuilder, Value v){
-		hashCodeBuilder.append(0).append(0);
-		AttClass attClass = getAttClass(v.getAttribute());
-		switch(attClass) {
-		case INT:
-			hashCodeBuilder.append(v.getDiscVal());
-			break;
-		case DOUBLE:
-			hashCodeBuilder.append(v.getNumericRepresentation());
-			break;
-		case INTARRAY:
-			hashCodeBuilder.append(v.getIntArray());
-			break;
-		case DOUBLEARRAY:
-			hashCodeBuilder.append(v.getDoubleArray());
-			break;
-		case STRING:
-			hashCodeBuilder.append(v.getStringVal());
-			break;
-		case RELATIONAL:
-			if(identifierIndependent){
-				throw new RuntimeException("SimpleHashableStateFactory is set to be identifier independent, but attribute " + v.attName() + " is " +
-						"relational which require identifier dependence. Instead, set SimpleHashableStateFactory to be idenitifer dependent.");
-			}
-			Set<String> targets = v.getAllRelationalTargets();
-			for(String t : targets){
-				hashCodeBuilder.append(t);
-			}
-			break;
-		}
-	}
-
-
-	protected AttClass getAttClass(Attribute att){
-		if(att.type == Attribute.AttributeType.INT || att.type == Attribute.AttributeType.DISC || att.type == Attribute.AttributeType.BOOLEAN){
-			return AttClass.INT;
-		}
-		else if(att.type == Attribute.AttributeType.REAL || att.type == Attribute.AttributeType.REALUNBOUND){
-			return AttClass.DOUBLE;
-		}
-		else if(att.type == Attribute.AttributeType.STRING){
-			return AttClass.STRING;
-		}
-		else if(att.type == Attribute.AttributeType.INTARRAY){
-			return AttClass.INTARRAY;
-		}
-		else if(att.type == Attribute.AttributeType.DOUBLEARRAY){
-			return AttClass.DOUBLEARRAY;
-		}
-		else if(att.type == Attribute.AttributeType.RELATIONAL || att.type == Attribute.AttributeType.MULTITARGETRELATIONAL){
-			return AttClass.RELATIONAL;
-		}
-		throw new RuntimeException("SimpleHashableStateFactory cannot hash value for attribute of type " + att.type);
+	protected void appendHashCodeForValue(HashCodeBuilder hashCodeBuilder, Object key, Object value){
+		hashCodeBuilder.append(value);
 	}
 
 
@@ -215,6 +153,17 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @return true if s1 equals s2, false otherwise.
 	 */
 	protected boolean statesEqual(State s1, State s2) {
+
+		if(s1 instanceof OOState && s2 instanceof OOState){
+			return ooStatesEqual((OOState)s1, (OOState)s2);
+		}
+		return flatStatesEqual(s1, s2);
+
+
+	}
+
+
+	protected boolean ooStatesEqual(OOState s1, OOState s2){
 		if(this.identifierIndependent){
 			return identifierIndependentEquals(s1, s2);
 		}
@@ -223,39 +172,64 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 		}
 	}
 
+	protected boolean flatStatesEqual(State s1, State s2){
 
-	/**
-	 * Evaluates whether two states are equal when equality is independent of object identifiers/names being equal
-	 * @param s1 the first {@link State} to compare
-	 * @param s2 the second {@link State} to compare
-	 * @return true if s1 = s2; false otherwise
-	 */
-	protected boolean identifierIndependentEquals(State s1, State s2){
-		if (s1 == s2) {
+		if(s1 == s2){
 			return true;
 		}
-		
+
+		List<Object> keys1 = s1.variableKeys();
+		List<Object> keys2 = s2.variableKeys();
+
+		if(keys1.size() != keys2.size()){
+			return false;
+		}
+
+		for(Object key : keys1){
+			Object v1 = s1.get(key);
+			Object v2 = s2.get(key);
+			if(!this.valuesEqual(key, v1, v2)){
+				return false;
+			}
+		}
+		return true;
+
+	}
+
+
+
+	/**
+	 * Evaluates whether two {@link OOState}s are equal when equality is independent of object identifiers/names being equal
+	 * @param s1 the first {@link OOState} to compare
+	 * @param s2 the second {@link OOState} to compare
+	 * @return true if s1 = s2; false otherwise
+	 */
+	protected boolean identifierIndependentEquals(OOState s1, OOState s2){
+		if(s1 == s2){
+			return true;
+		}
 		if(s1.numTotalObjects() != s2.numTotalObjects()){
 			return false;
 		}
 
 		Set<String> matchedObjects = new HashSet<String>();
-		for(List<OldObjectInstance> objects : s1.getAllObjectsByClass()){
+		for(Map.Entry<String, List<ObjectInstance>> e1 : OOStateUtilities.objectsByClass(s1).entrySet()){
+			String oclass = e1.getKey();
+			List<ObjectInstance> objects = e1.getValue();
 
-			String oclass = objects.get(0).getClassName();
-			List <OldObjectInstance> oobjects = s2.getObjectsOfClass(oclass);
+			List<ObjectInstance> oobjects = s2.objectsOfClass(oclass);
 			if(objects.size() != oobjects.size()){
 				return false;
 			}
 
-			for(OldObjectInstance o : objects){
+			for(ObjectInstance o : objects){
 				boolean foundMatch = false;
-				for(OldObjectInstance oo : oobjects){
+				for(ObjectInstance oo : oobjects){
 					String ooname = oo.getName();
 					if(matchedObjects.contains(ooname)){
 						continue;
 					}
-					if(objectValuesEqual(o, oo)){
+					if(flatStatesEqual(o, oo)){
 						foundMatch = true;
 						matchedObjects.add(ooname);
 						break;
@@ -268,7 +242,6 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 
 		}
 
-
 		return true;
 
 	}
@@ -279,7 +252,8 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @param s2 the second {@link State} to compare
 	 * @return true if s1 = s2; false otherwise
 	 */
-	protected boolean identifierDependentEquals(State s1, State s2){
+	protected boolean identifierDependentEquals(OOState s1, OOState s2){
+
 		if (s1 == s2) {
 			return true;
 		}
@@ -287,16 +261,13 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 			return false;
 		}
 
-		List<OldObjectInstance> theseObjects = s1.getAllObjects();
-		if(theseObjects.size() != s2.numTotalObjects()){
-			return false;
-		}
-		for(OldObjectInstance ob : theseObjects){
-			OldObjectInstance oByName = s2.getObject(ob.getName());
+		List<ObjectInstance> theseObjects = s1.objects();
+		for(ObjectInstance ob : theseObjects){
+			ObjectInstance oByName = s2.object(ob.getName());
 			if(oByName == null){
 				return false;
 			}
-			if(!objectValuesEqual(ob, oByName)){
+			if(!flatStatesEqual(ob, oByName)){
 				return false;
 			}
 		}
@@ -304,34 +275,6 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 		return true;
 
 	}
-
-
-	/**
-	 * Evaluates whether the values of two {@link OldObjectInstance}s are equal.
-	 * @param o1 the first {@link OldObjectInstance} to compare
-	 * @param o2 the second {@link OldObjectInstance} to compare
-	 * @return true if the values of o1 = o2; false otherwise.
-	 */
-	protected boolean objectValuesEqual(OldObjectInstance o1, OldObjectInstance o2){
-		if (o1 == o2) {
-			return true;
-		}
-		
-		if (o1.getObjectClass() != o2.getObjectClass()) {
-			return false;
-		}
-		
-		List<Value> values1 = o1.getValues();
-		List<Value> values2 = o2.getValues();
-		
-		for (int i = 0; i < values1.size(); i++) {
-			if (!valuesEqual(values1.get(i), values2.get(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 
 	/**
 	 * Returns whether two values are equal.
@@ -339,9 +282,10 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * @param v2 the second value to compare
 	 * @return true if v1 = v2; false otherwise
 	 */
-	protected boolean valuesEqual(Value v1, Value v2){
+	protected boolean valuesEqual(Object key, Object v1, Object v2){
 		return v1.equals(v2);
 	}
+
 
 
 	/**
@@ -350,7 +294,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	 * for checking that the parent factory is the same and is used for both cached and non-cached
 	 * hash code {@link burlap.oomdp.statehashing.HashableState} instances.
 	 */
-	public static interface SimpleHashableStateInterface{
+	public interface SimpleHashableStateInterface{
 		HashableStateFactory getParentHashingFactory();
 	}
 

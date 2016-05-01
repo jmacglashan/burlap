@@ -8,6 +8,7 @@ import java.util.*;
 public class OOStateUtilities {
 
 
+
 	public static Map<String, List<ObjectInstance>> objectsByClass(OOState s){
 
 		Set<String> classes = objectClassesPresent(s);

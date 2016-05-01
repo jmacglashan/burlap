@@ -1,7 +1,6 @@
 package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.State;
-import burlap.oomdp.core.values.Value;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.HashMap;
@@ -10,27 +9,27 @@ import java.util.Map;
 /**
  * A class for producing {@link burlap.oomdp.statehashing.HashableState} objects that computes hash codes and tests
  * for {@link State} equality by discretizing real-valued attributes and by masking (ignoring)
- * either {@link burlap.oomdp.core.Attribute}s and/or {@link burlap.oomdp.core.ObjectClass}es. For more information
+ * either state variables and/or {@link burlap.oomdp.core.oo.state.OOState} clasees. For more information
  * on how discretization is performed, see the {@link DiscretizingHashableStateFactory}
- * class documentation and for more information on how {@link burlap.oomdp.core.Attribute}/{@link burlap.oomdp.core.ObjectClass}
+ * class documentation and for more information on how
  * masking is performed see the {@link MaskedHashableStateFactory} class
  * documentation.
  * <p>
  * This class extends {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
  * to be object identifier/name independent or dependent and can be set to use {@link burlap.oomdp.statehashing.HashableState}
- * instances that hash their hash code or not. See the {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}
+ * instances that cache their hash code or not. See the {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}
  * class documentation for more information on those features.
  * @author James MacGlashan.
  */
 public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateFactory {
 
 	/**
-	 * The multiples to use for specific attributes
+	 * The multiples to use for specific variable keys
 	 */
-	protected Map<String, Double> attributeWiseMultiples = new HashMap<String, Double>();
+	protected Map<Object, Double> keyWiseMultiples = new HashMap<Object, Double>();
 
 	/**
-	 * The default multiple to use for any continuous attributes that have not been specifically set.
+	 * The default multiple to use for any continuous variables that have not been specifically set.
 	 */
 	protected double defaultMultiple;
 
@@ -39,7 +38,7 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 
 	/**
 	 * Initializes with object identifier independence, no hash code caching and object class or attribute masks.
-	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set. The default is 1.0, which
+	 * @param defaultMultiple The default multiple to use for any continuous variables that have not been specifically set. The default is 1.0, which
 	 * corresponds to integer floor discretization.
 	 */
 	public DiscretizingMaskedHashableStateFactory(double defaultMultiple) {
@@ -50,7 +49,7 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 	/**
 	 * Initializes with non hash code caching and object class or attribute masks
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
-	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set. The default is 1.0, which
+	 * @param defaultMultiple The default multiple to use for any continuous variables that have not been specifically set. The default is 1.0, which
 	 * corresponds to integer floor discretization.
 	 */
 	public DiscretizingMaskedHashableStateFactory(boolean identifierIndependent, double defaultMultiple) {
@@ -63,7 +62,7 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 	 * Initializes.
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
 	 * @param useCached if true then the hash code for each produced {@link burlap.oomdp.statehashing.HashableState} will be cached; if false then they will not be cached.
-	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
+	 * @param defaultMultiple The default multiple to use for any continuous variables that have not been specifically set.
 	 * corresponds to integer floor discretization.
 	 */
 	public DiscretizingMaskedHashableStateFactory(boolean identifierIndependent, boolean useCached, double defaultMultiple) {
@@ -77,28 +76,27 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
 	 * @param useCached if true then the hash code for each produced {@link burlap.oomdp.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
-	 * @param maskNamesAreForAttributes whether the specified masks are masks for attributes or object classes. True for attributes, false for object classes.
-	 * @param masks the names of the {@link burlap.oomdp.core.Attribute}s or {@link burlap.oomdp.core.ObjectClass} that will be masks (ignored from state hashing and equality checks)
+	 * @param maskNamesAreForVariables whether the specified masks are masks for variables or object classes. True for variables, false for object classes.
+	 * @param masks the names of the variable keys or object classes that will be masked (ignored from state hashing and equality checks)
 	 */
-	public DiscretizingMaskedHashableStateFactory(boolean identifierIndependent, boolean useCached, double defaultMultiple, boolean maskNamesAreForAttributes, String... masks) {
-		super(identifierIndependent, useCached, maskNamesAreForAttributes, masks);
+	public DiscretizingMaskedHashableStateFactory(boolean identifierIndependent, boolean useCached, double defaultMultiple, boolean maskNamesAreForVariables, String... masks) {
+		super(identifierIndependent, useCached, maskNamesAreForVariables, masks);
 		this.defaultMultiple = defaultMultiple;
 	}
 
 	/**
-	 * Sets the multiple to use for discretization for the attribute with the specified name. See the documentation
-	 * of this class for more information on how the multiple works. In short, continuous values will be floored
-	 * to the greatest value that is a multiple of the multiple given and less than or equal to the true value.
-	 * @param attributeName the name of the attribute whose discretization multiple is being set.
+	 * Sets the multiple to use for discretization for the given key. See the class documentation
+	 * for more information on how the multiple works.
+	 * @param key the name of the state variable key whose discretization multiple is being set.
 	 * @param nearestMultipleValue the multiple to which values are floored.
 	 */
-	public void addFloorDiscretizingMultipleFor(String attributeName, double nearestMultipleValue){
-		this.attributeWiseMultiples.put(attributeName, nearestMultipleValue);
+	public void addFloorDiscretizingMultipleFor(Object key, double nearestMultipleValue){
+		this.keyWiseMultiples.put(key, nearestMultipleValue);
 	}
 
 
 	/**
-	 * Sets the default multiple to use for continuous attributes that do not have specific multiples set
+	 * Sets the default multiple to use for continuous values that do not have specific multiples set
 	 * for them. See the documentation
 	 * of this class for more information on how the multiple works. In short, continuous values will be floored
 	 * to the greatest value that is a multiple of the multiple given and less than or equal to the true value.
@@ -110,68 +108,97 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 
 
 	@Override
-	protected void appendHashcodeForValue(HashCodeBuilder hashCodeBuilder, Value v) {
-		AttClass attClass = getAttClass(v.getAttribute());
-		if(attClass == AttClass.DOUBLE){
-			Double mult = attributeWiseMultiples.get(v.attName());
-			if(mult != null){
-				hashCodeBuilder.append(intMultiples(mult, v.getRealVal()));
-			}
-			else{
-				hashCodeBuilder.append(intMultiples(this.defaultMultiple, v.getRealVal()));
-			}
-		}
-		else if(attClass == AttClass.DOUBLEARRAY){
-			Double multPointer = attributeWiseMultiples.get(v.attName());
-			double mult = multPointer == null ? this.defaultMultiple : multPointer;
-			double [] vals = v.getDoubleArray();
-			for(int i = 0; i < vals.length; i++){
-				hashCodeBuilder.append(intMultiples(mult, vals[i]));
-			}
-		}
-		else {
-			super.appendHashcodeForValue(hashCodeBuilder, v);
-		}
-	}
+	protected void appendHashCodeForValue(HashCodeBuilder hashCodeBuilder, Object key, Object value) {
 
-
-	/**
-	 * Returns whether two values are equal. If the values are real-valued, they are discretized before
-	 * comparison.
-	 * @param v1 the first value to compare
-	 * @param v2 the second value to compare
-	 * @return true if v1 = v2 after accounting for discretization; false otherwise.
-	 */
-	@Override
-	protected boolean valuesEqual(Value v1, Value v2){
-		//check if real valued or not
-		AttClass attClass = this.getAttClass(v1.getAttribute());
-		if(attClass == AttClass.DOUBLE){
-			Double multP = attributeWiseMultiples.get(v1.attName());
-			double mult = multP == null ? this.defaultMultiple : multP;
-			return intMultiples(mult, v1.getRealVal()) == intMultiples(mult, v2.getRealVal());
+		if(this.maskedVariables.contains(key)){
+			return ; //no need to incorporate hash codes for masked values
 		}
-		else if(attClass == AttClass.DOUBLEARRAY) {
-			Double multP = attributeWiseMultiples.get(v1.attName());
-			double mult = multP == null ? this.defaultMultiple : multP;
-			double [] array1 = v1.getDoubleArray();
-			double [] array2 = v2.getDoubleArray();
-			if(array1.length != array2.length){
-				return  false;
-			}
-			for(int i = 0; i < array1.length; i++){
-				if(intMultiples(mult, array1[i]) != intMultiples(mult, array2[i])){
-					return false;
+
+		Double mult = keyWiseMultiples.get(key);
+		if(mult == null){
+			mult = this.defaultMultiple;
+		}
+
+		if(value instanceof Double || value instanceof Float){
+			hashCodeBuilder.append(intMultiples(mult, ((Number)value).doubleValue()));
+		}
+		else if(value.getClass().isArray()){
+			if(value instanceof double[]){
+				double [] vals = (double[])value;
+				for(int i = 0; i < vals.length; i++){
+					hashCodeBuilder.append(intMultiples(mult, vals[i]));
 				}
 			}
-			return true;
-
+			else if(value instanceof float[]){
+				float [] vals = (float[])value;
+				for(int i = 0; i < vals.length; i++){
+					hashCodeBuilder.append(intMultiples(mult, vals[i]));
+				}
+			}
+			else{
+				super.appendHashCodeForValue(hashCodeBuilder, key, value);
+			}
 		}
 		else{
-			return v1.equals(v2);
+			super.appendHashCodeForValue(hashCodeBuilder, key, value);
+		}
+	}
+
+	@Override
+	protected boolean valuesEqual(Object key, Object v1, Object v2) {
+		if(this.maskedVariables.contains(key)){
+			return true;
 		}
 
+		Double mult = keyWiseMultiples.get(key);
+		if(mult == null){
+			mult = this.defaultMultiple;
+		}
+
+		if(v1 instanceof Double || v1 instanceof Float){
+
+			Double dv1 = ((Number)v1).doubleValue();
+			Double dv2 = ((Number)v2).doubleValue();
+
+			return intMultiples(mult, dv1) == intMultiples(mult, dv2);
+
+		}
+		else if(v1.getClass().isArray()){
+			if(v1 instanceof double[]){
+				double [] vals1 = (double[])v1;
+				double [] vals2 = (double[])v2;
+				if(vals1.length != vals2.length){
+					return false;
+				}
+				for(int i = 0; i < vals1.length; i++){
+					if(intMultiples(mult, vals1[i]) != intMultiples(mult, vals2[i])){
+						return false;
+					}
+				}
+				return true;
+			}
+			else if(v1 instanceof float[]){
+				float [] vals1 = (float[])v1;
+				float [] vals2 = (float[])v2;
+				if(vals1.length != vals2.length){
+					return false;
+				}
+				for(int i = 0; i < vals1.length; i++){
+					if(intMultiples(mult, vals1[i]) != intMultiples(mult, vals2[i])){
+						return false;
+					}
+				}
+				return true;
+			}
+			else{
+				return super.valuesEqual(key, v1, v2);
+			}
+		}
+		else{
+			return super.valuesEqual(key, v1, v2);
+		}
 	}
+
 
 	/**
 	 * Returns int result of num / mult; that is, (int)(num / mult).
