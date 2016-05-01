@@ -18,7 +18,6 @@ public class NullAction extends SimpleAction.SimpleDeterministicAction implement
 	
 	public NullAction(String name){
 		this.name = name;
-		this.domain = null;
 	}
 	
 	public NullAction(String name, Domain domain){

@@ -3,6 +3,7 @@ package burlap.oomdp.singleagent.explorer;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.core.State;
@@ -541,24 +542,17 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 * @param s the input state on which propositional functions are to be evaluated.
 	 */
 	protected void updatePropTextArea(State s){
-		
+
+		if(!(domain instanceof OODomain)){
+			return ;
+		}
+
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = domain.getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
 		for(PropositionalFunction pf : props){
-			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
-				boolean needsContinue = false;
-				for(String oname : gp.params){
-					if(s.getObject(oname).unsetAttributes().size() > 0){
-						needsContinue = true;
-						break;
-					}
-				}
-				if(needsContinue){
-					continue;
-				}
 				if(gp.isTrue(s)){
 					buf.append(gp.toString()).append("\n");
 				}
