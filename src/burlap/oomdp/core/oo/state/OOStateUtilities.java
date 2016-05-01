@@ -8,6 +8,17 @@ import java.util.*;
 public class OOStateUtilities {
 
 
+	public static List<Object> flatStateKeys(OOState s){
+		List<Object> flatKeys = new ArrayList<Object>();
+		for(ObjectInstance o : s.objects()){
+			List<Object> keys = o.variableKeys();
+			for(Object key : keys){
+				OOVariableKey fkey = new OOVariableKey(o.getName(), key);
+				flatKeys.add(fkey);
+			}
+		}
+		return flatKeys;
+	}
 
 	public static Map<String, List<ObjectInstance>> objectsByClass(OOState s){
 
