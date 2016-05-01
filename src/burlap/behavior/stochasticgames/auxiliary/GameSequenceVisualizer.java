@@ -1,31 +1,24 @@
 package burlap.behavior.stochasticgames.auxiliary;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.TextArea;
+import burlap.behavior.stochasticgames.GameAnalysis;
+import burlap.datastructures.AlphanumericSorting;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.OODomain;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.visualizer.Visualizer;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import burlap.behavior.stochasticgames.GameAnalysis;
-import burlap.datastructures.AlphanumericSorting;
-import burlap.oomdp.core.oo.propositional.GroundedProp;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.visualizer.Visualizer;
 
 
 
@@ -333,7 +326,7 @@ public class GameSequenceVisualizer extends JFrame {
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
 				
-				painter.updateState(new CMutableState()); //clear screen
+				painter.updateState(State.NullState.instance); //clear screen
 				this.setIterationListData();
 				
 			}
@@ -375,10 +368,14 @@ public class GameSequenceVisualizer extends JFrame {
 	
 	
 	private void updatePropTextArea(State s){
-		
+
+		if(!(domain instanceof OODomain)){
+			return ;
+		}
+
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = domain.getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
 		for(PropositionalFunction pf : props){
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
