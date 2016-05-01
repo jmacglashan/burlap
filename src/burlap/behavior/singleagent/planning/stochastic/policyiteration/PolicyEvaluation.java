@@ -7,7 +7,7 @@ import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbabili
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.statehashing.HashableStateFactory;
@@ -20,14 +20,14 @@ import java.util.Set;
 /**
  * This class is used to compute the value function under some specified policy. The value function is computed using tabular
  * Value Iteration with the Bellman operator being fixed to the specified policy. After constructing an instance
- * use the {@link #evaluatePolicy(burlap.behavior.policy.Policy, burlap.oomdp.core.states.State)} method to evaluate a
+ * use the {@link #evaluatePolicy(burlap.behavior.policy.Policy, State)} method to evaluate a
  * policy from some initial seed state. You can reuse this class to evaluate different subsequent policies, but doing so
  * will overwrite the value function. If you want to save the value function that was computed for some policy,
  * use the {@link #getCopyOfValueFunction()} method.
  * <p>
  * Alternatively, you can also evaluate a policy with the {@link #evaluatePolicy(burlap.behavior.policy.Policy)} method,
- * but you should have already seeded the state space by having called the {@link #evaluatePolicy(burlap.behavior.policy.Policy, burlap.oomdp.core.states.State)}
- * method or the {@link #performReachabilityFrom(burlap.oomdp.core.states.State)} method at least once previously,
+ * but you should have already seeded the state space by having called the {@link #evaluatePolicy(burlap.behavior.policy.Policy, State)}
+ * method or the {@link #performReachabilityFrom(State)} method at least once previously,
  * a runtime exception will be thrown.
  *
  * @author James MacGlashan.

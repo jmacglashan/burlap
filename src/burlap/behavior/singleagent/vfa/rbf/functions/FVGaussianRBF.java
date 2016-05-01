@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.rbf.FVDistanceMetric;
 import burlap.behavior.singleagent.vfa.rbf.FVRBF;
 import burlap.behavior.singleagent.vfa.rbf.metrics.FVEuclideanDistance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +60,8 @@ public class FVGaussianRBF extends FVRBF {
 
 	/**
 	 * Creates a {@link java.util.List} of {@link burlap.behavior.singleagent.vfa.rbf.functions.FVGaussianRBF} units
-	 * for each {@link burlap.oomdp.core.states.State} provided using the given {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}, metric, and epsilon value.
-	 * @param states the {@link burlap.oomdp.core.states.State} objects around which a {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} will be created
+	 * for each {@link State} provided using the given {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}, metric, and epsilon value.
+	 * @param states the {@link State} objects around which a {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} will be created
 	 * @param fvGen the {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert states to a double array usable by {@link burlap.behavior.singleagent.vfa.rbf.FVRBF} units.
 	 * @param metric the {@link burlap.behavior.singleagent.vfa.rbf.DistanceMetric} to use
 	 * @param epsilon the bandwidth parameter.
@@ -81,9 +81,9 @@ public class FVGaussianRBF extends FVRBF {
 
 	/**
 	 * Creates a {@link java.util.List} of {@link burlap.behavior.singleagent.vfa.rbf.functions.FVGaussianRBF} units
-	 * for each {@link burlap.oomdp.core.states.State} provided using the given {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}, and epsilon value
+	 * for each {@link State} provided using the given {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}, and epsilon value
 	 * and using a default {@link burlap.behavior.singleagent.vfa.rbf.metrics.FVEuclideanDistance} metric for all units.
-	 * @param states the {@link burlap.oomdp.core.states.State} objects around which a {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} will be created
+	 * @param states the {@link State} objects around which a {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} will be created
 	 * @param fvGen the {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert states to a double array usable by {@link burlap.behavior.singleagent.vfa.rbf.FVRBF} units.
 	 * @param epsilon the bandwidth parameter.
 	 * @return a {@link java.util.List} of {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} units.

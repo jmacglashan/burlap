@@ -40,7 +40,7 @@ public class GenerateStateCommand implements ShellCommand {
 		w.generateNewCurrentState();
 
 		if(oset.has("v")){
-			os.println(w.getCurrentWorldState().getCompleteStateDescriptionWithUnsetAttributesAsNull());
+			os.println(w.getCurrentWorldState().toString());
 		}
 
 		return 1;

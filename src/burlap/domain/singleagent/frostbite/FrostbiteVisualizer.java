@@ -1,9 +1,9 @@
 package burlap.domain.singleagent.frostbite;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
-import burlap.oomdp.visualizer.StaticPainter;
+import burlap.oomdp.visualizer.StatePainter;
 import burlap.oomdp.visualizer.Visualizer;
 
 import java.awt.*;
@@ -33,7 +33,7 @@ public class FrostbiteVisualizer {
 
 		Visualizer v = new Visualizer();
 
-		v.addStaticPainter(new StaticPainter() {
+		v.addStaticPainter(new StatePainter() {
 			@Override
 			public void paint(Graphics2D g2, State s, float cWidth, float cHeight) {
 				g2.setColor(waterColor);

@@ -1,6 +1,6 @@
 package burlap.oomdp.singleagent.explorer;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.environment.Environment;
 
 
@@ -15,7 +15,7 @@ public class StateResetSpecialAction implements SpecialExplorerAction {
 	
 	/**
 	 * Initializes.
-	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} which will be reset by the {@link #applySpecialAction(burlap.oomdp.core.states.State)} method.
+	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} which will be reset by the {@link #applySpecialAction(State)} method.
 	 */
 	public StateResetSpecialAction(Environment env){
 		this.env = env;

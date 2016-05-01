@@ -1,6 +1,9 @@
-package burlap.oomdp.core;
+package burlap.oomdp.core.oo.propositional;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.OODomain;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.OOStateUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +32,7 @@ public abstract class PropositionalFunction {
 	 * name of the propositional function
 	 */
 	protected String					name;
-	
-	/*
-	 * domain that hosts this function
-	 */
-	protected Domain					domain;
+
 	
 	/*
 	 * list of class names for each parameter of the function
@@ -60,7 +59,7 @@ public abstract class PropositionalFunction {
 	 * @param domain the domain to which this propositional function should be connected.
 	 * @param parameterClasses a comma delineated string specifying the name of object classes that the parameters must satisfy.
 	 */
-	public PropositionalFunction(String name, Domain domain, String parameterClasses){
+	public PropositionalFunction(String name, OODomain domain, String parameterClasses){
 		
 		String [] pClassArray;
 		if(parameterClasses.equals("")){
@@ -88,7 +87,7 @@ public abstract class PropositionalFunction {
 	 * @param parameterClasses a comma delineated string specifying the name of object classes that the parameters must satisfy.
 	 * @param pfClassName the name of the propositional function class to which this PF belongs.
 	 */
-	public PropositionalFunction(String name, Domain domain, String parameterClasses, String pfClassName){
+	public PropositionalFunction(String name, OODomain domain, String parameterClasses, String pfClassName){
 		
 		String [] pClassArray;
 		if(parameterClasses.equals("")){
@@ -116,7 +115,7 @@ public abstract class PropositionalFunction {
 	 * @param domain the domain to which this propositional function should be connected.
 	 * @param parameterClasses an array of strings specifying the name of object classes that the parameters must satisfy.
 	 */
-	public PropositionalFunction(String name, Domain domain, String [] parameterClasses){
+	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses){
 		
 		String [] rcn = new String[parameterClasses.length];
 		for(int i = 0; i < rcn.length; i++){
@@ -137,7 +136,7 @@ public abstract class PropositionalFunction {
 	 * @param parameterClasses an array of strings specifying the name of object classes that the parameters must satisfy.
 	 * @param pfClassName the name of the propositional function class to which this PF belongs.
 	 */
-	public PropositionalFunction(String name, Domain domain, String [] parameterClasses, String pfClassName){
+	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses, String pfClassName){
 		
 		String [] rcn = new String[parameterClasses.length];
 		for(int i = 0; i < rcn.length; i++){
@@ -157,7 +156,7 @@ public abstract class PropositionalFunction {
 	 * @param parameterClasses an array of strings specifying the name of object classes that the parameters must satisfy.
 	 * @param parameterOrderGroup an array of strings specifying order group names for the parameters
 	 */
-	public PropositionalFunction(String name, Domain domain, String [] parameterClasses, String [] parameterOrderGroup){
+	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses, String [] parameterOrderGroup){
 		this.init(name, domain, parameterClasses, parameterOrderGroup, name);
 	}
 	
@@ -172,15 +171,14 @@ public abstract class PropositionalFunction {
 	 * @param parameterOrderGroup an array of strings specifying order group names for the parameters
 	 * @param pfClassName the name of the propositional function class to which this PF belongs.
 	 */
-	public PropositionalFunction(String name, Domain domain, String [] parameterClasses, String [] parameterOrderGroup, String pfClassName){
+	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses, String [] parameterOrderGroup, String pfClassName){
 		this.init(name, domain, parameterClasses, parameterOrderGroup, pfClassName);
 	}
 	
 	
-	protected final void init(String name, Domain domain, String [] parameterClasses, String [] parameterOrderGroup, String pfClass){
+	protected final void init(String name, OODomain domain, String [] parameterClasses, String [] parameterOrderGroup, String pfClass){
 		this.name = name;
-		this.domain = domain;
-		this.domain.addPropositionalFunction(this);
+		domain.addPropFunction(this);
 		this.parameterClasses = parameterClasses;
 		this.parameterOrderGroup = parameterOrderGroup;
 		this.pfClass = pfClass;
@@ -270,8 +268,12 @@ public abstract class PropositionalFunction {
 			res.add(new GroundedProp(this, new String[]{}));
 			return res; //no parameters so just the single gp without params
 		}
-		
-		List <List <String>> bindings = s.getPossibleBindingsGivenParamOrderGroups(this.getParameterClasses(), this.getParameterOrderGroups());
+
+		if(!(s instanceof OOState)){
+			throw new RuntimeException("Cannot generate all GroundedProp objects for state " + s.getClass().getName() + " because it does not implement OOState");
+		}
+
+		List <List <String>> bindings = OOStateUtilities.getPossibleBindingsGivenParamOrderGroups((OOState)s, this.getParameterClasses(), this.getParameterOrderGroups());
 		
 		for(List <String> params : bindings){
 			String [] aprams = params.toArray(new String[params.size()]);

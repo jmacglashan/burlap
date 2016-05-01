@@ -1,8 +1,8 @@
 package burlap.oomdp.stochasticgames;
 
-import java.util.List;
-
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.List;
 
 
 /**
@@ -14,19 +14,16 @@ import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 public class SGAgentType {
 
 	public String						typeName;
-	public ObjectClass					oclass;
 	public List<SGAgentAction>			actions;
 	
 	
 	/**
-	 * Creates a new agent type with a given name, object class describing the agent's world state, and actions available to the agent.
+	 * Creates a new agent type with a given name, and actions available to the agent.
 	 * @param typeName the type name
-	 * @param oclass the object class that represents the agent's world state information
 	 * @param actionsAvailableToType the available actions that this agent can take in the world.
 	 */
-	public SGAgentType(String typeName, ObjectClass oclass, List<SGAgentAction> actionsAvailableToType){
+	public SGAgentType(String typeName, List<SGAgentAction> actionsAvailableToType){
 		this.typeName = typeName;
-		this.oclass = oclass;
 		this.actions = actionsAvailableToType;
 	}
 	

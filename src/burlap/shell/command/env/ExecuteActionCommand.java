@@ -85,7 +85,7 @@ public class ExecuteActionCommand implements ShellCommand {
 				else{
 					os.println("is NOT terminal");
 				}
-				os.println(o.op.getCompleteStateDescription());
+				os.println(o.op.toString());
 			}
 			return 1;
 		}

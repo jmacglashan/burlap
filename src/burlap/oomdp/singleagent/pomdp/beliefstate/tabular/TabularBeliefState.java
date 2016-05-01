@@ -2,15 +2,13 @@ package burlap.oomdp.singleagent.pomdp.beliefstate.tabular;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.MutableState;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.ObservationFunction;
 import burlap.oomdp.singleagent.pomdp.PODomain;
+import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.DenseBeliefVector;
 import burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
 
@@ -21,35 +19,14 @@ import java.util.*;
  * identifier using a {@link burlap.behavior.singleagent.auxiliary.StateEnumerator} and this class uses a {@link java.util.Map}
  * to associated the probability mass with each state. MDP states that have zero mass are not stored in the map.
  * <p>
- * The OO-MDP representation of this state associates with a singleton {@link burlap.oomdp.singleagent.SADomain} that has
- * one {@link burlap.oomdp.core.ObjectClass} named belief, that has one double array attribute named belief. When
- * An OO-MDP state representation is request, an {@link burlap.oomdp.core.objects.MutableObjectInstance} belonging to class
- * belief is created with its belief attribute set to the dense (non-sparse) belief vector that this BeliefState represents.
- * <p>
  * If using a BeliefMDP solver with a {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState},
  * it is recommended that you use {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory}
  * which will compute hash codes and perform state equality checks with the sparse Map representation
  * (rather than the dense OO-MDP representation)
  * @author James MacGlashan.
  */
-public class TabularBeliefState implements BeliefState, EnumerableBeliefState, DenseBeliefVector{
+public class TabularBeliefState implements BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState{
 
-	public static final String BELIEFCLASSNAME = "belief";
-	public static final String BELIEFATTNAME = "belief";
-
-	private static SADomain tabularBeliefStateDomain = null;
-
-	public static SADomain getTabularBeliefMDPDomain(){
-		if(tabularBeliefStateDomain != null){
-			return tabularBeliefStateDomain;
-		}
-		tabularBeliefStateDomain = new SADomain();
-		Attribute att = new Attribute(tabularBeliefStateDomain, BELIEFATTNAME, Attribute.AttributeType.DOUBLEARRAY);
-		ObjectClass oclass = new ObjectClass(tabularBeliefStateDomain, BELIEFCLASSNAME);
-		oclass.addAttribute(att);
-
-		return tabularBeliefStateDomain;
-	}
 
 	/**
 	 * A state enumerator for determining the index of MDP states in the belief vector.
@@ -68,6 +45,8 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	 */
 	protected PODomain domain;
 
+	public TabularBeliefState() {
+	}
 
 	/**
 	 * Constructs a new {@link burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState} from a source
@@ -104,6 +83,30 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	public TabularBeliefState(PODomain domain, StateEnumerator stateEnumerator){
 		this.domain = domain;
 		this.stateEnumerator = stateEnumerator;
+	}
+
+	public StateEnumerator getStateEnumerator() {
+		return stateEnumerator;
+	}
+
+	public void setStateEnumerator(StateEnumerator stateEnumerator) {
+		this.stateEnumerator = stateEnumerator;
+	}
+
+	public Map<Integer, Double> getBeliefValues() {
+		return beliefValues;
+	}
+
+	public void setBeliefValues(Map<Integer, Double> beliefValues) {
+		this.beliefValues = beliefValues;
+	}
+
+	public PODomain getDomain() {
+		return domain;
+	}
+
+	public void setDomain(PODomain domain) {
+		this.domain = domain;
 	}
 
 	@Override
@@ -163,7 +166,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 
 		if(sum == 0. || Double.isNaN(sum)){
 			throw new RuntimeException("getUpdatedBeliefState for TaubularBeliefState failed because the probability normalization is " + sum + "." +
-					"\nFailed for action: " + ga.toString() + "\nAnd observation:\n" + observation.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+					"\nFailed for action: " + ga.toString() + "\nAnd observation:\n" + observation.toString());
 		}
 
 		TabularBeliefState newBeliefState = new TabularBeliefState(this.domain, this.stateEnumerator);
@@ -198,7 +201,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	/**
 	 * Returns the corresponding MDP state for the provided unique identifier.
 	 * @param id the MDP state identifier
-	 * @return the corresponding MDP state, defined by a {@link burlap.oomdp.core.states.State}, for the provided unique identifier.
+	 * @return the corresponding MDP state, defined by a {@link State}, for the provided unique identifier.
 	 */
 	public State stateForId(int id){
 		return this.stateEnumerator.getStateForEnumerationId(id);
@@ -210,7 +213,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	 * a unique identifier to the provided MDP state, then it will first create one. Note that using this method
 	 * will not ensure that the total probability mass across this belief state sums to 1, so other changes will have
 	 * to be specified manually.
-	 * @param s the underlying MDP state defined as a {@link burlap.oomdp.core.states.State}
+	 * @param s the underlying MDP state defined as a {@link State}
 	 * @param b the probability mass to assigned to the underlying MDP state.
 	 */
 	public void setBelief(State s, double b){
@@ -242,9 +245,9 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 
 	/**
 	 * Returns the probability that the underlying MDP will transition from state s to sp when taking action a in state s.
-	 * @param s the previous MDP state defined by a {@link burlap.oomdp.core.states.State}
+	 * @param s the previous MDP state defined by a {@link State}
 	 * @param ga the taken action defined by a {@link burlap.oomdp.singleagent.GroundedAction}
-	 * @param sp The next MDP state observed defined by a {@link burlap.oomdp.core.states.State}.
+	 * @param sp The next MDP state observed defined by a {@link State}.
 	 * @return the probability that the underlying MDP will transition from state s to sp when taking action a in state s.
 	 */
 	protected double getTransitionProb(State s, GroundedAction ga, State sp){
@@ -336,165 +339,73 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 
+	@Override
+	public MutableState set(Object variableKey, Object value) {
 
+		if(!(value instanceof Double)){
+			throw new RuntimeException("Cannot set belief state value, because the value is a " + value.getClass().getName() + " not a Double");
+		}
+
+		Double val = (Double)value;
+
+		if(variableKey instanceof Integer){
+			this.setBelief((Integer)variableKey, val);
+		}
+		else if(variableKey instanceof State){
+			this.setBelief((State)variableKey, val);
+		}
+		else if(variableKey instanceof String){
+			try{
+				int key = Integer.parseInt((String)variableKey);
+				this.setBelief(key, val);
+			}catch(Exception e){
+				throw new RuntimeException("Could not set belief for TabularBeliefState because the key is a String, but does not parse into an int; it is " + variableKey);
+			}
+		}
+		else{
+			throw new RuntimeException("Cannot set belief for TabularBeliefState because they is a " + variableKey.getClass().getName() + " rather than a, Integer, State, or String representation of an int");
+		}
+
+
+		return this;
+	}
+
+	@Override
+	public List<Object> variableKeys() {
+		int max = this.stateEnumerator.numStatesEnumerated();
+		List<Object> keys = new ArrayList<Object>(max);
+		for(int i = 0; i < max; i++){
+			keys.add(i);
+		}
+		return keys;
+	}
+
+	@Override
+	public Object get(Object variableKey) {
+
+		if(variableKey instanceof Integer){
+			return this.belief((Integer)variableKey);
+		}
+		else if(variableKey instanceof State){
+			return this.belief((State)variableKey);
+		}
+		else if(variableKey instanceof String){
+			try{
+				int key = Integer.parseInt((String)variableKey);
+				return this.belief(key);
+			}catch(Exception e){
+				throw new RuntimeException("Could not return belief for TabularBeliefState because the key is a String, but does not parse into an int; it is " + variableKey);
+			}
+		}
+
+		throw new RuntimeException("Cound not return belief value for key, because it is a " + variableKey.getClass().getName() + " rather than an Integer, State, or String representation of an integer");
+	}
 
 	@Override
 	public State copy() {
 		return new TabularBeliefState(this);
 	}
 
-	@Override
-	public State addObject(OldObjectInstance o) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects added to it.");
-	}
-
-	@Override
-	public State addAllObjects(Collection<OldObjectInstance> objects) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects added to it.");
-	}
-
-	@Override
-	public State removeObject(String oname) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects removed from it.");
-	}
-
-	@Override
-	public State removeObject(OldObjectInstance o) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects removed from it.");
-	}
-
-	@Override
-	public State removeAllObjects(Collection<OldObjectInstance> objects) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects removed from it.");
-	}
-
-	@Override
-	public State renameObject(String originalName, String newName) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects renamed");
-	}
-
-	@Override
-	public State renameObject(OldObjectInstance o, String newName) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects renamed");
-	}
-
-	@Override
-	public Map<String, String> getObjectMatchingTo(State so, boolean enforceStateExactness) {
-
-		Map<String, String> matching = new HashMap<String, String>(1);
-
-		if(so instanceof TabularBeliefState){
-			TabularBeliefState otb = (TabularBeliefState)so;
-			if(this.beliefValues.size() == otb.beliefValues.size()) {
-				boolean match = true;
-				for(Map.Entry<Integer, Double> e : this.beliefValues.entrySet()) {
-					if(Math.abs(otb.beliefValues.get(e.getKey()) - e.getValue()) > 1e-10){
-						match = false;
-						break;
-					}
-				}
-				if(match){
-					matching.put(BELIEFCLASSNAME, BELIEFCLASSNAME);
-				}
-			}
-		}
-		else {
-			OldObjectInstance obelief = so.getFirstObjectOfClass(BELIEFCLASSNAME);
-			if(obelief != null) {
-				double [] vec = obelief.getDoubleArrayValForAttribute(BELIEFATTNAME);
-				if(vec.length >= this.beliefValues.size()){
-					boolean match = true;
-					for(int i = 0; i < vec.length; i++){
-						if(Math.abs(vec[i] - this.belief(i)) > 1e-10){
-							match = false;
-							break;
-						}
-					}
-					if(match){
-						matching.put(BELIEFCLASSNAME, BELIEFCLASSNAME);
-					}
-				}
-			}
-		}
-
-		return matching;
-	}
-
-	@Override
-	public int numTotalObjects() {
-		return 1;
-	}
-
-	@Override
-	public OldObjectInstance getObject(String oname) {
-		if(oname.equals(BELIEFCLASSNAME)){
-			OldObjectInstance o = new MutableObjectInstance(getTabularBeliefMDPDomain().getObjectClass(BELIEFCLASSNAME), BELIEFCLASSNAME);
-			o.setValue(BELIEFATTNAME, this.getBeliefVector());
-			return o;
-		}
-
-		return null;
-	}
-
-	@Override
-	public List<OldObjectInstance> getAllObjects() {
-		return Arrays.asList(this.getObject(BELIEFCLASSNAME));
-	}
-
-	@Override
-	public List<OldObjectInstance> getObjectsOfClass(String oclass) {
-		if(oclass.equals(BELIEFCLASSNAME)){
-			return this.getAllObjects();
-		}
-		return new ArrayList<OldObjectInstance>();
-	}
-
-	@Override
-	public OldObjectInstance getFirstObjectOfClass(String oclass) {
-		if(oclass.equals(BELIEFCLASSNAME)){
-			return this.getObject(BELIEFCLASSNAME);
-		}
-		return null;
-	}
-
-	@Override
-	public Set<String> getObjectClassesPresent() {
-		Set <String> set = new HashSet<String>();
-		set.add(BELIEFCLASSNAME);
-		return set;
-	}
-
-	@Override
-	public List<List<OldObjectInstance>> getAllObjectsByClass() {
-		return Arrays.asList(this.getAllObjects());
-	}
-
-
-	@Override
-	public String getCompleteStateDescription() {
-		return this.beliefValues.toString();
-	}
-
-	@Override
-	public Map<String, List<String>> getAllUnsetAttributes() {
-		return new HashMap<String, List<String>>();
-	}
-
-	@Override
-	public String getCompleteStateDescriptionWithUnsetAttributesAsNull() {
-		return this.getCompleteStateDescription();
-	}
-
-	@Override
-	public List<List<String>> getPossibleBindingsGivenParamOrderGroups(String[] paramClasses, String[] paramOrderGroups) {
-		if(paramClasses.length > 1){
-			return new ArrayList<List<String>>();
-		}
-		if(!paramClasses[0].equals(BELIEFCLASSNAME)){
-			return new ArrayList<List<String>>();
-		}
-		return Arrays.asList(Arrays.asList(BELIEFCLASSNAME));
-	}
 
 
 	@Override

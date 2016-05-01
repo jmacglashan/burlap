@@ -10,10 +10,10 @@ import java.util.List;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
-import burlap.oomdp.visualizer.StaticPainter;
+import burlap.oomdp.visualizer.StatePainter;
 import burlap.oomdp.visualizer.Visualizer;
 
 
@@ -104,7 +104,7 @@ public class GridWorldVisualizer {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class MapPainter implements StaticPainter{
+	public static class MapPainter implements StatePainter {
 
 		protected int 				dwidth;
 		protected int 				dheight;

@@ -4,10 +4,12 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.ObjectParameterizedAction;
+import burlap.oomdp.singleagent.oo.ObjectParameterizedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
@@ -363,7 +365,7 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class OnBlockPF extends PropositionalFunction{
+	public class OnBlockPF extends PropositionalFunction {
 
 		public OnBlockPF(String name, Domain domain) {
 			super(name, domain, new String[]{CLASSBLOCK,CLASSBLOCK});

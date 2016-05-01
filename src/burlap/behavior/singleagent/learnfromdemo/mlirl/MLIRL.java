@@ -10,7 +10,7 @@ import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.List;

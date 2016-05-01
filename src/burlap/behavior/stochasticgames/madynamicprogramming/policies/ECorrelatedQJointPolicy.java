@@ -11,7 +11,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgen
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;

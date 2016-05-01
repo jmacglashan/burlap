@@ -1,7 +1,7 @@
 package burlap.oomdp.singleagent.common;
 
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 

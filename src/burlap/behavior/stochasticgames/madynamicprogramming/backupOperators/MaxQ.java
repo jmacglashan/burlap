@@ -6,7 +6,7 @@ import java.util.Map;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.JointAction;
 

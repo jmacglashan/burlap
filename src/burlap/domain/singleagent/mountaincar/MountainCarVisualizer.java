@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
-import burlap.oomdp.visualizer.StaticPainter;
+import burlap.oomdp.visualizer.StatePainter;
 import burlap.oomdp.visualizer.Visualizer;
 
 
@@ -124,7 +124,7 @@ public class MountainCarVisualizer {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class HillPainter implements StaticPainter{
+	public static class HillPainter implements StatePainter {
 
 		MountainCar.MCPhysicsParams physParams;
 		

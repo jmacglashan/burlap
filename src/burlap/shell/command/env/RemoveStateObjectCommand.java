@@ -1,6 +1,7 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.state.MutableOOState;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentDelegation;
 import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
@@ -16,7 +17,7 @@ import java.util.Scanner;
 
 /**
  * A {@link burlap.shell.command.ShellCommand} for removing an OO-MDP object from the current {@link burlap.oomdp.singleagent.environment.Environment}
- * {@link burlap.oomdp.core.states.State}. Use the -h option for help information.
+ * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class RemoveStateObjectCommand implements ShellCommand {
@@ -53,11 +54,17 @@ public class RemoveStateObjectCommand implements ShellCommand {
 		}
 
 		State s = env.getCurrentObservation();
-		s.removeObject(args.get(0));
+
+		if(!(s instanceof MutableOOState)){
+			os.println("Cannot remove object from state, because state is not a MutableOOState");
+			return 0;
+		}
+
+		((MutableOOState)s).removeObject(args.get(0));
 		senv.setCurStateTo(s);
 
 		if(oset.has("v")){
-			os.println(env.getCurrentObservation().getCompleteStateDescriptionWithUnsetAttributesAsNull());
+			os.println(env.getCurrentObservation().toString());
 		}
 
 		return 1;

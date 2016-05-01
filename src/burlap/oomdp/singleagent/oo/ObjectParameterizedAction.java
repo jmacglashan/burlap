@@ -1,10 +1,13 @@
-package burlap.oomdp.singleagent;
+package burlap.oomdp.singleagent.oo;
 
-import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.states.oo.OOState;
-import burlap.oomdp.core.states.oo.OOStateUtilities;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.OOStateUtilities;
+import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.common.SimpleGroundedAction;
 
 import java.util.ArrayList;
@@ -12,20 +15,20 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * If your {@link burlap.oomdp.singleagent.Action} implementation is paramerterized to OO-MDP {@link burlap.oomdp.core.states.oo.ObjectInstance}
+ * If your {@link burlap.oomdp.singleagent.Action} implementation is paramerterized to OO-MDP {@link ObjectInstance}
  * references, you can subclass this {@link burlap.oomdp.singleagent.Action} subclass to easily provide that functionality. The {@link burlap.oomdp.singleagent.GroundedAction}
- * instance associated with this action is {@link burlap.oomdp.singleagent.ObjectParameterizedAction.ObjectParameterizedGroundedAction},
- * which implements the {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}, since its parameters refer to
- * OO-MDP {@link burlap.oomdp.core.states.oo.ObjectInstance} references.
+ * instance associated with this action is {@link ObjectParameterizedAction.ObjectParameterizedGroundedAction},
+ * which implements the {@link AbstractObjectParameterizedGroundedAction}, since its parameters refer to
+ * OO-MDP {@link ObjectInstance} references.
  * <p>
  * The string array in the {@link #ObjectParameterizedAction(String, burlap.oomdp.core.Domain, String[])} constructor
- * specifies the valid class name of the {@link burlap.oomdp.core.states.oo.ObjectInstance}
+ * specifies the valid class name of the {@link ObjectInstance}
  * to which the parameters must belong. For example, in {@link burlap.domain.singleagent.blocksworld.BlocksWorld},
- * we might define a "stack" {@link burlap.oomdp.singleagent.ObjectParameterizedAction} that takes two parameters
+ * we might define a "stack" {@link ObjectParameterizedAction} that takes two parameters
  * that each must be instances of the BLOCK class. In such a case, the String array passed to the constructor of the stack
- * {@link burlap.oomdp.singleagent.ObjectParameterizedAction} would be new String[]{"BLOCK", "BLOCK"}.
+ * {@link ObjectParameterizedAction} would be new String[]{"BLOCK", "BLOCK"}.
  * <p>
- * It may also be the case that the order of parameters for an {@link burlap.oomdp.singleagent.ObjectParameterizedAction} is unimportant.
+ * It may also be the case that the order of parameters for an {@link ObjectParameterizedAction} is unimportant.
  * For example, a cooking domain might have a "combine"
  * action that combines two INGREDIENT objects. In such a case, the effect of combine(ing1, ing2) would be the same as combine(ing2, ing1).
  * Our action definition can include this parameter symmetry information by assigning parameters to the same <i>parameter order group</i>.
@@ -35,8 +38,8 @@ import java.util.List;
  * by using the {@link #ObjectParameterizedAction(String, burlap.oomdp.core.Domain, String[], String[])} method, each parameter can also be set
  * to a parameter order group. For example, the parameterClasses of the combine action would be new String[]{INGREDIENT, INGREDIENT}, and
  * the parameterOrderGroups would be new String[]{g1, g1}, thereby placing them in the same group to indicate that their order
- * is unimportant. Specifying parameter order groups is useful because it allows the list of {@link burlap.oomdp.singleagent.ObjectParameterizedAction.ObjectParameterizedGroundedAction}
- * instances returned by the {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)} method to exclude
+ * is unimportant. Specifying parameter order groups is useful because it allows the list of {@link ObjectParameterizedAction.ObjectParameterizedGroundedAction}
+ * instances returned by the {@link #getAllApplicableGroundedActions(State)} method to exclude
  * multiple parameterizations that have the same effect.
  * @author James MacGlashan.
  */

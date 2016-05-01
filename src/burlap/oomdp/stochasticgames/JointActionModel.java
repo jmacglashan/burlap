@@ -1,11 +1,11 @@
 package burlap.oomdp.stochasticgames;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This abstract class provides the interface and comment mechanisms for defining
@@ -22,7 +22,7 @@ public abstract class JointActionModel {
 
 	
 	/**
-	 * Performs {@link JointAction} ja in {@link burlap.oomdp.core.states.State} s and returns the result.
+	 * Performs {@link JointAction} ja in {@link State} s and returns the result.
 	 * The input state is not modified by this operation.
 	 * @param s the state in which the joint action is performed.
 	 * @param ja the joint action to be performed
@@ -56,7 +56,7 @@ public abstract class JointActionModel {
 	
 	
 	/**
-	 * This method is what determines the state when {@link JointAction} ja is executed in {@link burlap.oomdp.core.states.State} s.
+	 * This method is what determines the state when {@link JointAction} ja is executed in {@link State} s.
 	 * The input state should be directly modified.
 	 * @param s the state in which the joint action is performed.
 	 * @param ja the joint action to be performed.

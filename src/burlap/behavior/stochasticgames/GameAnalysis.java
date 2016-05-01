@@ -17,7 +17,7 @@ import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.legacy.StateParser;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stateserialization.SerializableState;
 import burlap.oomdp.stateserialization.SerializableStateFactory;
 import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;

@@ -1,7 +1,7 @@
 package burlap.oomdp.stochasticgames.explorers;
 
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.World;
 import burlap.oomdp.stochasticgames.common.NullJointReward;

@@ -7,12 +7,12 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
-import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -229,7 +229,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 
 	/**
 	 * Takes a source GroundedAction and a matching between object instances of two different states and returns a GroundedAction
-	 * with parameters using the matched parameters if the GroundedAction is an instance of {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}.
+	 * with parameters using the matched parameters if the GroundedAction is an instance of {@link AbstractObjectParameterizedGroundedAction}.
 	 * This method is useful a stored state and action pair in the valueFunction data structure has different
 	 * object name identifiers than a query state that is otherwise identical. The matching is from the state in which the source action is applied
 	 * to some target state that is not provided to this method.

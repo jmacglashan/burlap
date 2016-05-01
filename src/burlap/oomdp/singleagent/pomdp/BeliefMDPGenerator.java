@@ -1,10 +1,10 @@
 package burlap.oomdp.singleagent.pomdp;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
@@ -62,7 +62,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 	/**
 	 * A Belief MDP action. (transitions between belief states). This requires that the input states on which the action
 	 * operates be an instance of {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState} and
-	 * {@link burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.  The {@link #getTransitions(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method
+	 * {@link burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.  The {@link #getTransitions(State, burlap.oomdp.singleagent.GroundedAction)} method
 	 * (used by planning algorithms that require the full transition dynamics)
 	 * operates by iterating over all possible observations.
 	 */
@@ -308,7 +308,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 
 	/**
 	 * A {@link burlap.oomdp.singleagent.GroundedAction} implementation for a Belief MDP that curries
-	 * an {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction} {@link burlap.oomdp.singleagent.GroundedAction} for the underlying POMDP.
+	 * an {@link AbstractObjectParameterizedGroundedAction} {@link burlap.oomdp.singleagent.GroundedAction} for the underlying POMDP.
 	 */
 	public static class ObjectParameterizedGroundedBeliefAction extends GroundedBeliefAction implements AbstractObjectParameterizedGroundedAction{
 

@@ -5,7 +5,8 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -262,7 +263,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 	/**
 	 * Creates a state with one agent, one igloo, and 4 rows of 4 platforms. The object values are uninitialised and will
-	 * have to be set manually or with methods like {@link #setAgent(burlap.oomdp.core.states.State, int, int)}.
+	 * have to be set manually or with methods like {@link #setAgent(State, int, int)}.
 	 *
 	 * @param domain the domain of the state to generate
 	 * @return a state object

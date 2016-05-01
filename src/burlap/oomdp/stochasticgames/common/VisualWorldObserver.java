@@ -10,9 +10,9 @@ import java.util.Map;
 import javax.swing.JFrame;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.WorldObserver;

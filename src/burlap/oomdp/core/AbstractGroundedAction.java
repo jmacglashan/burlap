@@ -35,16 +35,16 @@ public interface AbstractGroundedAction {
 
 
 	/**
-	 * Initializes the parameter values of this {@link burlap.oomdp.core.AbstractGroundedAction} according
+	 * Initializes the parameter values of this {@link AbstractGroundedAction} according
 	 * to the provided string representation of their values.
-	 * @param params an array in which each element is the string representation of one of this {@link burlap.oomdp.core.AbstractGroundedAction}'s values
+	 * @param params an array in which each element is the string representation of one of this {@link AbstractGroundedAction}'s values
 	 */
 	void initParamsWithStringRep(String [] params);
 
 
 	/**
-	 * Returns an array of string representations of this {@link burlap.oomdp.core.AbstractGroundedAction}'s parameters
-	 * @return an array of string representations of this {@link burlap.oomdp.core.AbstractGroundedAction}'s parameters
+	 * Returns an array of string representations of this {@link AbstractGroundedAction}'s parameters
+	 * @return an array of string representations of this {@link AbstractGroundedAction}'s parameters
 	 */
 	String [] getParametersAsString();
 

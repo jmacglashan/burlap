@@ -1,5 +1,6 @@
 package burlap.oomdp.statehashing;
 
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.values.Value;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -8,7 +9,7 @@ import java.util.Map;
 
 /**
  * A class for producing {@link burlap.oomdp.statehashing.HashableState} objects that computes hash codes and tests
- * for {@link burlap.oomdp.core.states.State} equality by discretizing real-valued attributes and by masking (ignoring)
+ * for {@link State} equality by discretizing real-valued attributes and by masking (ignoring)
  * either {@link burlap.oomdp.core.Attribute}s and/or {@link burlap.oomdp.core.ObjectClass}es. For more information
  * on how discretization is performed, see the {@link DiscretizingHashableStateFactory}
  * class documentation and for more information on how {@link burlap.oomdp.core.Attribute}/{@link burlap.oomdp.core.ObjectClass}

@@ -1,7 +1,7 @@
 package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.BitSet;
 import java.util.Iterator;

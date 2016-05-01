@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;

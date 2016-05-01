@@ -12,7 +12,7 @@ import burlap.behavior.singleagent.planning.deterministic.SearchNode;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
@@ -77,7 +77,7 @@ public class LimitedMemoryDFS extends DFS {
 
 	/**
 	 * Plans and returns a {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy}. If
-	 * a {@link burlap.oomdp.core.states.State} is not in the solution path of this planner, then
+	 * a {@link State} is not in the solution path of this planner, then
 	 * the {@link burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy} will throw
 	 * a runtime exception. If you want a policy that will dynamically replan for unknown states,
 	 * you should create your own {@link burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy}.

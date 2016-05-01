@@ -1,11 +1,12 @@
-package burlap.oomdp.core.states;
+package burlap.oomdp.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A State instance is used to define the state of an environment or an observation from the environment. Creating
  * a state requires implementing three methods to ensure compatibility with all BURLAP tools. First, the
- * {@link #getVariableKeys()} method should return a list of objects that represent the possible keys that are used
+ * {@link #variableKeys()} method should return a list of objects that represent the possible keys that are used
  * to reference state variables in your state. In general, a state variable is any value that when changed alters
  * the identification of the state. That is, two states with different state variables would not be equal and transition
  * dynamics and reward functions from them may be different as a result.
@@ -45,5 +46,46 @@ public interface State {
 	 * @return a copy of this state.
 	 */
 	State copy();
+
+
+	/**
+	 * A null state that contains no information.
+	 */
+	class NullState implements State{
+
+		public final static NullState instance = new NullState();
+
+		private NullState(){}
+
+		@Override
+		public List<Object> variableKeys() {
+			return new ArrayList<Object>();
+		}
+
+		@Override
+		public Object get(Object variableKey) {
+			return null;
+		}
+
+		@Override
+		public State copy() {
+			return this;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj instanceof NullState;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
+		@Override
+		public String toString() {
+			return "";
+		}
+	}
 		
 }

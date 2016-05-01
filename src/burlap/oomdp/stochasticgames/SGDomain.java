@@ -14,17 +14,13 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class SGDomain extends Domain{
+public class SGDomain implements Domain{
 
-	/**
-	 * The full set of actions that could be taken by any agent.
-	 */
-	protected Set <SGAgentAction> agentActions;
 
 	/**
 	 * A map from action names to their corresponding {@link SGAgentAction}
 	 */
-	protected Map <String, SGAgentAction>				singleActionMap;
+	protected Map <String, SGAgentAction>				singleActionMap = new HashMap<String, SGAgentAction>();
 
 
 	/**
@@ -32,13 +28,6 @@ public class SGDomain extends Domain{
 	 */
 	protected JointActionModel							jam;
 	
-	public SGDomain() {
-		super();
-		
-		agentActions = new HashSet<SGAgentAction>();
-		singleActionMap = new HashMap<String, SGAgentAction>();
-	}
-
 
 	/**
 	 * Sets the joint action model associated with this domain.
@@ -58,24 +47,16 @@ public class SGDomain extends Domain{
 
 	@Override
 	public void addSGAgentAction(SGAgentAction sa){
-		if(!this.singleActionMap.containsKey(sa.actionName)){
-			agentActions.add(sa);
-			singleActionMap.put(sa.actionName, sa);
-		}
+		singleActionMap.put(sa.actionName, sa);
 	}
 
 	
 	
 	@Override
 	public List <SGAgentAction> getAgentActions(){
-		return new ArrayList<SGAgentAction>(agentActions);
+		return new ArrayList<SGAgentAction>(this.singleActionMap.values());
 	}
-	
-	
-	@Override
-	public SGAgentAction getSingleAction(String name){
-		return singleActionMap.get(name);
-	}
+
 
 	@Override
 	public SGAgentAction getSGAgentAction(String name) {
@@ -101,12 +82,6 @@ public class SGDomain extends Domain{
 		throw new UnsupportedOperationException("Stochastic Games domain does not contain any action for single agent formalisms");
 	}
 
-
-
-	@Override
-	protected Domain newInstance() {
-		return new SGDomain();
-	}
 	
 	
 

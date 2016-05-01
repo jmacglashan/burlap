@@ -34,7 +34,7 @@ public class WorldObservationCommand implements ShellCommand {
 		}
 
 		World world = ((SGWorldShell)shell).getWorld();
-		os.println(world.getCurrentWorldState().getCompleteStateDescriptionWithUnsetAttributesAsNull());
+		os.println(world.getCurrentWorldState().toString());
 
 		return 0;
 	}

@@ -2,10 +2,10 @@ package burlap.domain.singleagent.lunarlander;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.PropositionalFunction;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -674,7 +674,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	/**
 	 * Creates a state with one agent/lander, one landing pad, and no number of obstacles. The attribute values
 	 * of these objects will be uninitialized and will need to be set either manually or with this class's methods
-	 * like {@link #setAgent(burlap.oomdp.core.states.State, double, double, double)}.
+	 * like {@link #setAgent(State, double, double, double)}.
 	 * @param domain the domain of the state to generate
 	 * @param no the number of obstacle objects to create
 	 * @return a state object

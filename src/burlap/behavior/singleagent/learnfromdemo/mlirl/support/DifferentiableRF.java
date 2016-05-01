@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.singleagent.vfa.ParametricFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 

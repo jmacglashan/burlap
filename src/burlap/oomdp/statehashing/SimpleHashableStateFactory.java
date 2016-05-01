@@ -1,7 +1,7 @@
 package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.values.Value;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  * A straightforward factory for creating {@link burlap.oomdp.statehashing.HashableState} objects from
- * {@link burlap.oomdp.core.states.State} instances. By default, this factory will be object identifier independent
+ * {@link State} instances. By default, this factory will be object identifier independent
  * (the names of objects don't affect the state definition). However, you can make it object identifier dependent
  * with the either of the constructors {@link #SimpleHashableStateFactory(boolean)} or
  * {@link #SimpleHashableStateFactory(boolean, boolean)}.
@@ -210,8 +210,8 @@ public class SimpleHashableStateFactory implements HashableStateFactory {
 	/**
 	 * Returns true if the two input states are equal. Equality respect this hashing factory's identifier independence
 	 * setting.
-	 * @param s1 a {@link burlap.oomdp.core.states.State}
-	 * @param s2 another {@link burlap.oomdp.core.states.State} with which to compare
+	 * @param s1 a {@link State}
+	 * @param s2 another {@link State} with which to compare
 	 * @return true if s1 equals s2, false otherwise.
 	 */
 	protected boolean statesEqual(State s1, State s2) {

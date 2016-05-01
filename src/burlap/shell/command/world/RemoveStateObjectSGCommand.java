@@ -1,6 +1,7 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.state.MutableOOState;
 import burlap.oomdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
@@ -14,7 +15,7 @@ import java.util.Scanner;
 
 /**
  * A {@link burlap.shell.command.ShellCommand} for removing an OO-MDP object from the current {@link burlap.oomdp.stochasticgames.World}
- * {@link burlap.oomdp.core.states.State}. Use the -h option for help information.
+ * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class RemoveStateObjectSGCommand implements ShellCommand {
@@ -51,11 +52,16 @@ public class RemoveStateObjectSGCommand implements ShellCommand {
 		}
 
 		State s = w.getCurrentWorldState().copy();
-		s.removeObject(args.get(0));
+		if(!(s instanceof MutableOOState)){
+			os.println("Cannot remove object from state, because state is not a MutableOOState");
+			return 0;
+		}
+
+		((MutableOOState)s).removeObject(args.get(0));
 		w.setCurrentState(s);
 
 		if(oset.has("v")){
-			os.println(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+			os.println(s.toString());
 		}
 
 		return 1;

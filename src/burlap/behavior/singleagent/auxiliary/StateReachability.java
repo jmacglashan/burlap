@@ -6,7 +6,7 @@ import burlap.debugtools.MyTimer;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -36,11 +36,11 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * Returns the list of {@link State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @return the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * @return the list of {@link State} objects that are reachable from a source state.
 	 */
 	public static List <State> getReachableStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
 		return getReachableStates(from, inDomain, usingHashFactory, new NullTermination());
@@ -48,12 +48,12 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * Returns the list of {@link State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the list of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * @return the list of {@link State} objects that are reachable from a source state.
 	 */
 	public static List <State> getReachableStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
 		Set <HashableState> hashedStates = getReachableHashedStates(from, inDomain, usingHashFactory, tf);
@@ -67,11 +67,11 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * Returns the set of {@link State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @return the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * @return the set of {@link State} objects that are reachable from a source state.
 	 */
 	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
 		return getReachableHashedStates(from, inDomain, usingHashFactory, new NullTermination());
@@ -80,12 +80,12 @@ public class StateReachability {
 	
 	
 	/**
-	 * Returns the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * Returns the set of {@link State} objects that are reachable from a source state.
 	 * @param from the source state
 	 * @param inDomain the domain of the state
 	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
 	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the set of {@link burlap.oomdp.core.states.State} objects that are reachable from a source state.
+	 * @return the set of {@link State} objects that are reachable from a source state.
 	 */
 	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
 		
@@ -138,9 +138,9 @@ public class StateReachability {
 	 * that the space of actions considered are those that have non-zero probability of being selected by the
 	 * policy and all possible outcomes of those states are considered.
 	 * @param p the policy that must be followed
-	 * @param from the source {@link burlap.oomdp.core.states.State} from which the policy would be initiated.
+	 * @param from the source {@link State} from which the policy would be initiated.
 	 * @param usingHashFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} used to hash states and test equality.
-	 * @return a {@link java.util.List} of {@link burlap.oomdp.core.states.State} objects that could be reached.
+	 * @return a {@link java.util.List} of {@link State} objects that could be reached.
 	 */
 	public static List<State> getPolicyReachableStates(Policy p, State from, HashableStateFactory usingHashFactory){
 		return getPolicyReachableStates(p, from, usingHashFactory, new NullTermination());
@@ -152,10 +152,10 @@ public class StateReachability {
 	 * that the space of actions considered are those that have non-zero probability of being selected by the
 	 * policy and all possible outcomes of those states are considered.
 	 * @param p the policy that must be followed
-	 * @param from the source {@link burlap.oomdp.core.states.State} from which the policy would be initiated.
+	 * @param from the source {@link State} from which the policy would be initiated.
 	 * @param usingHashFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} used to hash states and test equality.
 	 * @param tf a {@link burlap.oomdp.core.TerminalFunction} that prevents further state expansion from states that are terminal states.
-	 * @return a {@link java.util.List} of {@link burlap.oomdp.core.states.State} objects that could be reached.
+	 * @return a {@link java.util.List} of {@link State} objects that could be reached.
 	 */
 	public static List<State> getPolicyReachableStates(Policy p, State from, HashableStateFactory usingHashFactory, TerminalFunction tf){
 		Set<HashableState> hashedStates = getPolicyReachableHashedStates(p, from, usingHashFactory, tf);
@@ -174,7 +174,7 @@ public class StateReachability {
 	 * that the space of actions considered are those that have non-zero probability of being selected by the
 	 * policy and all possible outcomes of those states are considered.
 	 * @param p the policy that must be followed
-	 * @param from the source {@link burlap.oomdp.core.states.State} from which the policy would be initiated.
+	 * @param from the source {@link State} from which the policy would be initiated.
 	 * @param usingHashFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} used to hash states and test equality.
 	 * @return a {@link java.util.Set} of {@link burlap.oomdp.statehashing.HashableState} objects that could be reached.
 	 */
@@ -188,7 +188,7 @@ public class StateReachability {
 	 * that the space of actions considered are those that have non-zero probability of being selected by the
 	 * policy and all possible outcomes of those states are considered.
 	 * @param p the policy that must be followed
-	 * @param from the source {@link burlap.oomdp.core.states.State} from which the policy would be initiated.
+	 * @param from the source {@link State} from which the policy would be initiated.
 	 * @param usingHashFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} used to hash states and test equality.
 	 * @param tf a {@link burlap.oomdp.core.TerminalFunction} that prevents further state expansion from states that are terminal states.
 	 * @return a {@link java.util.Set} of {@link burlap.oomdp.statehashing.HashableState} objects that could be reached.

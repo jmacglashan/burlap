@@ -1,13 +1,13 @@
 package burlap.domain.singleagent.graphdefined;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 
 /**
  * An abstract class for more easily defining {@link burlap.oomdp.singleagent.RewardFunction}s for {@link burlap.domain.singleagent.graphdefined.GraphDefinedDomain}
- * {@link burlap.oomdp.core.Domain}s. This class implements the standard {@link #reward(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction, burlap.oomdp.core.states.State)}
- * method by converting the {@link burlap.oomdp.core.states.State} objects to their graph node integer representation and the {@link burlap.oomdp.singleagent.GroundedAction} to its
+ * {@link burlap.oomdp.core.Domain}s. This class implements the standard {@link #reward(State, burlap.oomdp.singleagent.GroundedAction, State)}
+ * method by converting the {@link State} objects to their graph node integer representation and the {@link burlap.oomdp.singleagent.GroundedAction} to its
  * integer representation and then returning the value of {@link #reward(int, int, int)}, which is an abstract method
  * that the client must implement.
  * @author James MacGlashan.

@@ -2,7 +2,7 @@ package burlap.oomdp.singleagent.explorer;
 
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.common.NullRewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
@@ -26,7 +26,7 @@ public class TerminalExplorer {
 	 * Initializes the explorer  shell with the specified domain using a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment} with
 	 * a {@link burlap.oomdp.singleagent.common.NullRewardFunction} and {@link burlap.oomdp.auxiliary.common.NullTermination}
 	 * @param domain the domain to explore
-	 * @param baseState the initial {@link burlap.oomdp.core.states.State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
+	 * @param baseState the initial {@link State} of the {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}
 	 */
 	public TerminalExplorer(Domain domain, State baseState){
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), baseState);

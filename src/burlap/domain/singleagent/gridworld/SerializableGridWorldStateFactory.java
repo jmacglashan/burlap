@@ -2,7 +2,7 @@ package burlap.domain.singleagent.gridworld;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.stateserialization.SerializableState;
 import burlap.oomdp.stateserialization.SerializableStateFactory;

@@ -5,7 +5,7 @@ import java.util.Random;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -61,7 +61,7 @@ public abstract class Model {
 	/**
 	 * Returns a list specifying the actions for which the transition dynamics are not yet "known."
 	 * @param s the state for which the un-modeled actions should be returned.
-	 * @return a {@link java.util.List} of {@link burlap.oomdp.core.AbstractGroundedAction} objects
+	 * @return a {@link java.util.List} of {@link AbstractGroundedAction} objects
 	 */
 	public abstract List<AbstractGroundedAction> getUnmodeledActionsForState(State s);
 

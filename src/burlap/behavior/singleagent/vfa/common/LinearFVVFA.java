@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.vfa.DifferentiableStateValue;
 import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
  * <p>
  * This class can be used for either state-value functions or state-action-value functions, but only one of them.
  * Which one is used is determined implicitly by whether the first function input is set with the
- * {@link #evaluate(burlap.oomdp.core.states.State)} method or the {@link #evaluate(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)}
+ * {@link #evaluate(State)} method or the {@link #evaluate(State, AbstractGroundedAction)}
  * method.
  * @author James MacGlashan.
  */
@@ -63,8 +63,8 @@ public class LinearFVVFA implements DifferentiableStateValue, DifferentiableStat
 
 	/**
 	 * Initializes. This object will be set to perform either state value function approximation or state-action
-	 * function approximation once a call to either {@link #evaluate(burlap.oomdp.core.states.State)}
-	 * or {@link #evaluate(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} is made.
+	 * function approximation once a call to either {@link #evaluate(State)}
+	 * or {@link #evaluate(State, AbstractGroundedAction)} is made.
 	 * If the former method is called
 	 * first, then this object will be tasked with state value function approximation. If the latter
 	 * method is called first, then this object will be tasked with state-action value function approximation.

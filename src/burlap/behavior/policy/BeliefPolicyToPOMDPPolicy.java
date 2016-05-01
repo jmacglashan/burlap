@@ -1,7 +1,7 @@
 package burlap.behavior.policy;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;
 
@@ -55,7 +55,7 @@ public class BeliefPolicyToPOMDPPolicy extends Policy{
 	}
 
 	/**
-	 * Unpacks and returns the pomdp action from an input {@link burlap.oomdp.core.AbstractGroundedAction} that is an instance of
+	 * Unpacks and returns the pomdp action from an input {@link AbstractGroundedAction} that is an instance of
 	 * {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.GroundedBeliefAction}.
 	 * @param beliefAction the input {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.GroundedBeliefAction}.
 	 * @return the input belief action's corresponding POMDP action.

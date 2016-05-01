@@ -10,7 +10,8 @@ import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.statehashing.HashableState;
@@ -214,7 +215,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	
 	/**
 	 * Use this method to set which value function--the lower bound or upper bound--to use after a planning rollout is complete. Setting this
-	 * value affects which values the {@link #value(State)}, {@link #getQs(State)}, and {@link #getQ(State, burlap.oomdp.core.AbstractGroundedAction)} methods returns.
+	 * value affects which values the {@link #value(State)}, {@link #getQs(State)}, and {@link #getQ(State, AbstractGroundedAction)} methods returns.
 	 * Using the lower bound results in anytime performance.
 	 * @param useLowerBound if true, then the value function is set to use the lower bound after planning. If false, then the upper bound is used.
 	 */

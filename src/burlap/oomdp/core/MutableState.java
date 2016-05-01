@@ -1,4 +1,4 @@
-package burlap.oomdp.core.states;
+package burlap.oomdp.core;
 
 /**
  * A {@link State} interface extension for mutable states whose values can be directly modified. Requires implementing

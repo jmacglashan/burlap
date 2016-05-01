@@ -8,7 +8,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -26,9 +26,9 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * which is returned in a {@link CritiqueResult} object and then passed along to the {@link Actor} so that the actor may
  * update is behavior accordingly.
  * <p>
- * In addition to learning, this algorithm can also be used for planning using the {@link #planFromState(burlap.oomdp.core.states.State)}
+ * In addition to learning, this algorithm can also be used for planning using the {@link #planFromState(State)}
  * method. If you plan to use it for planning, you should call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
- * method before calling the {@link #planFromState(burlap.oomdp.core.states.State)}.
+ * method before calling the {@link #planFromState(State)}.
  * 
  * @author James MacGlashan
  *
@@ -108,9 +108,9 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	/**
 	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
 	 * and the number of simulated episodes to use for planning when
-	 * the {@link #planFromState(burlap.oomdp.core.states.State)} method is called. If the
+	 * the {@link #planFromState(State)} method is called. If the
 	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
-	 * are not set, the {@link #planFromState(burlap.oomdp.core.states.State)} method will throw a runtime exception.
+	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
 	 * @param rf the reward function to use for planning
 	 * @param tf the terminal function to use for planning
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.

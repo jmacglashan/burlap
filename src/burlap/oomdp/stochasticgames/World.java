@@ -7,7 +7,7 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 
 import java.util.ArrayList;
@@ -303,7 +303,7 @@ public class World {
 	/**
 	 * Runs a game starting in the input state until a terminal state is hit.
 	 * @param maxStages the maximum number of stages to play in the game before its forced to end. If set to -1, then run until a terminal state is hit.
-	 * @param s the input {@link burlap.oomdp.core.states.State} from which the game will start
+	 * @param s the input {@link State} from which the game will start
 	 * @return a {@link burlap.behavior.stochasticgames.GameAnalysis} of the game.
 	 */
 	public GameAnalysis runGame(int maxStages, State s){
@@ -337,7 +337,7 @@ public class World {
 			wob.gameEnding(this.currentState);
 		}
 
-		DPrint.cl(debugId, currentState.getCompleteStateDescription());
+		DPrint.cl(debugId, currentState.toString());
 
 		this.isRecordingGame = false;
 

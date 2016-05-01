@@ -2,7 +2,7 @@ package burlap.oomdp.statehashing;
 
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,17 +11,17 @@ import java.util.Set;
 
 
 /**
- * This class provides a hash value for {@link burlap.oomdp.core.states.State} objects. This is useful for tabular
+ * This class provides a hash value for {@link State} objects. This is useful for tabular
  * planning and learning algorithms that make use of hash-backed sets or maps for fast retrieval. You can
- * access the state it hashes from the public data member {@link #s}. If the {@link burlap.oomdp.core.states.State}
+ * access the state it hashes from the public data member {@link #s}. If the {@link State}
  * delegate {@link #s} is a {@link burlap.oomdp.statehashing.HashableState} itself, and you wish
- * to get the underlying {@link burlap.oomdp.core.states.State}, then you should use the
- * {@link #getSourceState()} method, which will recursively descend and return the base source {@link burlap.oomdp.core.states.State}.
+ * to get the underlying {@link State}, then you should use the
+ * {@link #getSourceState()} method, which will recursively descend and return the base source {@link State}.
  * <p>
  * Implementing this class requires implementing
  * the {@link #hashCode()} and {@link #equals(Object)} method.
  * <p>
- * Note that this class implements the {@link burlap.oomdp.core.states.State} interface; however,
+ * Note that this class implements the {@link State} interface; however,
  * because the purpose of this class is to used with hashed data structures, it is not recommended that
  * you modify the state.
  *
@@ -31,7 +31,7 @@ import java.util.Set;
 public abstract class HashableState implements State{
 
 	/**
-	 * The source {@link burlap.oomdp.core.states.State} to be hashed and evaluated by the {@link #hashCode()} and {@link #equals(Object)} method.
+	 * The source {@link State} to be hashed and evaluated by the {@link #hashCode()} and {@link #equals(Object)} method.
 	 */
 	public State s;
 
@@ -40,10 +40,10 @@ public abstract class HashableState implements State{
 	}
 
 	/**
-	 * Returns the underlying source state is hashed. If the delegate {@link burlap.oomdp.core.states.State}
+	 * Returns the underlying source state is hashed. If the delegate {@link State}
 	 * of this {@link burlap.oomdp.statehashing.HashableState} is also a {@link burlap.oomdp.statehashing.HashableState},
 	 * then it recursively returns its {@link #getSourceState()}.
-	 * @return The underlying source {@link burlap.oomdp.core.states.State} that this object hashes and evaluates.
+	 * @return The underlying source {@link State} that this object hashes and evaluates.
 	 */
 	public State getSourceState(){
 		if(this.s instanceof HashableState){
@@ -172,7 +172,7 @@ public abstract class HashableState implements State{
 
 
 		/**
-		 * Initializes the StateHashTuple with the given {@link burlap.oomdp.core.states.State} object.
+		 * Initializes the StateHashTuple with the given {@link State} object.
 		 * @param s the state object this object will wrap
 		 */
 		public CachedHashableState(State s){

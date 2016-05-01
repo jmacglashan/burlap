@@ -1,4 +1,4 @@
-package burlap.oomdp.core.states.oo;
+package burlap.oomdp.core.oo.state;
 
 /**
  * @author James MacGlashan.

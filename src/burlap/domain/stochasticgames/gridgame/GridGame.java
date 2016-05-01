@@ -4,7 +4,9 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGAgentType;
@@ -670,7 +672,7 @@ public class GridGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	static class AgentInUGoal extends PropositionalFunction{
+	static class AgentInUGoal extends PropositionalFunction {
 
 		
 		/**

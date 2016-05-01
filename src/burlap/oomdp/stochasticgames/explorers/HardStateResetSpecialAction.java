@@ -2,7 +2,7 @@ package burlap.oomdp.stochasticgames.explorers;
 
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.auxiliary.common.ConstantStateGenerator;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.explorer.SpecialExplorerAction;
 
 /**

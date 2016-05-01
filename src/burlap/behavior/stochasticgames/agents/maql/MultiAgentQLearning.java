@@ -18,7 +18,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgen
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent.HashBackedQSource;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyMaxWellfare;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;

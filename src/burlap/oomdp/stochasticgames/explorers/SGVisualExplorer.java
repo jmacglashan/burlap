@@ -1,9 +1,9 @@
 package burlap.oomdp.stochasticgames.explorers;
 
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.explorer.TextAreaStreams;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;

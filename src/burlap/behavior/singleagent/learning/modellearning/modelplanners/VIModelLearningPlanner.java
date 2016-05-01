@@ -5,17 +5,14 @@ import java.util.List;
 import java.util.Set;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
-import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
-import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 

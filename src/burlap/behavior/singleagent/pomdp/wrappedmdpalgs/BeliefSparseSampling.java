@@ -18,7 +18,7 @@ import burlap.domain.singleagent.pomdp.tiger.TigerDomain;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;

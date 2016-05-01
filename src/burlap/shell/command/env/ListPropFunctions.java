@@ -1,8 +1,9 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.oo.OODomain;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.shell.BurlapShell;
@@ -45,8 +46,13 @@ public class ListPropFunctions implements ShellCommand {
 		}
 
 
+		if(!(shell.getDomain() instanceof OODomain)){
+			os.println("cannot query propositional functions because the domain is not an OODomain");
+			return 0;
+		}
+
 		if(oset.has("n")){
-			for(PropositionalFunction pf : shell.getDomain().getPropFunctions()){
+			for(PropositionalFunction pf : ((OODomain)shell.getDomain()).getPropFunctions()){
 				os.println(pf.getName());
 			}
 			return 0;
@@ -63,7 +69,7 @@ public class ListPropFunctions implements ShellCommand {
 			qs = ((SimulatedPOEnvironment)env).getCurrentHiddenState();
 		}
 
-		List<GroundedProp> gps = PropositionalFunction.getAllGroundedPropsFromPFList(shell.getDomain().getPropFunctions(), qs);
+		List<GroundedProp> gps = PropositionalFunction.getAllGroundedPropsFromPFList(((OODomain)shell.getDomain()).getPropFunctions(), qs);
 		for(GroundedProp gp : gps){
 			if(gp.isTrue(qs) == !oset.has("f")){
 				os.println(gp.toString());

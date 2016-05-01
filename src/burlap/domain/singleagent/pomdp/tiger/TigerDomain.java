@@ -13,7 +13,7 @@ import burlap.oomdp.core.*;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -426,7 +426,7 @@ public class TigerDomain implements DomainGenerator {
 
 		/**
 		 * Returns the observation of hearing the tiger behind the left door
-		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of hearing the tiger behind the left door
+		 * @return a {@link State} specifying the observation of hearing the tiger behind the left door
 		 */
 		protected State observationLeft(){
 			State hearLeft = new CMutableState();
@@ -439,7 +439,7 @@ public class TigerDomain implements DomainGenerator {
 
 		/**
 		 * Returns the observation of hearing the tiger behind the right door
-		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of hearing the tiger behind the right door
+		 * @return a {@link State} specifying the observation of hearing the tiger behind the right door
 		 */
 		protected State observationRight(){
 			State hearRight = new CMutableState();
@@ -452,7 +452,7 @@ public class TigerDomain implements DomainGenerator {
 
 		/**
 		 * Returns the observation of approaching a new pair of doors
-		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of approaching a new pair of doors
+		 * @return a {@link State} specifying the observation of approaching a new pair of doors
 		 */
 		protected State observationReset(){
 			State reset = new CMutableState();
@@ -465,7 +465,7 @@ public class TigerDomain implements DomainGenerator {
 
 		/**
 		 * Returns the observation of hearing nothing; occurs when the do nothing action is selected
-		 * @return a {@link burlap.oomdp.core.states.State} specifying the observation of hearing nothing; occurs when the do nothing action is selected
+		 * @return a {@link State} specifying the observation of hearing nothing; occurs when the do nothing action is selected
 		 */
 		protected State observationNothing(){
 			State nothing = new CMutableState();

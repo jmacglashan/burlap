@@ -2,9 +2,11 @@ package burlap.oomdp.singleagent;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.oomdp.singleagent.oo.ObjectParameterizedAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,21 +29,21 @@ import java.util.List;
  * for example, {@link #Action(String, burlap.oomdp.core.Domain)}.
  * <p>
  * Defining an action requires implementing the following abstract methods.<p>
- * {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)},<p>
- * {@link #applicableInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)},<p>
+ * {@link #performActionHelper(State, burlap.oomdp.singleagent.GroundedAction)},<p>
+ * {@link #applicableInState(State, burlap.oomdp.singleagent.GroundedAction)},<p>
  * {@link #isPrimitive},<p>
  * {@link #isParameterized()} <p>
  * {@link #getAssociatedGroundedAction()} and <p>
- * {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)}. <p>
+ * {@link #getAllApplicableGroundedActions(State)}. <p>
  * The first thing to note about many of these methods is that a {@link burlap.oomdp.singleagent.GroundedAction} is provided
  * as a method argument. The provided {@link burlap.oomdp.singleagent.GroundedAction} is how an {@link burlap.oomdp.singleagent.Action}
  * implementation is told with which parameters it is being applied. If your action is is not parameterized, then this method argument
  * can be ignored.
  * <p>
- * The {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method should have the affect of sampling a transition from applying this {@link Action} in the input {@link State}
- * with the specified parameters and returning the sampled outcome. This method is always called indirectly by the {@link #performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
- * method, which first makes a copy of the input state to be passed to {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}.
- * Therefore, you can directly modify the input state of {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} and return it if that is easiest.
+ * The {@link #performActionHelper(State, burlap.oomdp.singleagent.GroundedAction)} method should have the affect of sampling a transition from applying this {@link Action} in the input {@link State}
+ * with the specified parameters and returning the sampled outcome. This method is always called indirectly by the {@link #performAction(State, burlap.oomdp.singleagent.GroundedAction)}
+ * method, which first makes a copy of the input state to be passed to {@link #performActionHelper(State, burlap.oomdp.singleagent.GroundedAction)}.
+ * Therefore, you can directly modify the input state of {@link #performActionHelper(State, burlap.oomdp.singleagent.GroundedAction)} and return it if that is easiest.
  * This method will be used by planning
  * algorithms that use sampled transitions instead of enumerating the full transition dynamics or by deterministic planning
  * algorithms where there is not expected to ever be more than on possible outcome of an action. In general this method should always
@@ -52,15 +54,15 @@ import java.util.List;
  * which should know how to execute it (for example, by telling a robot to execute the action in the real world).
  * <p>
  * <p>
- * Implementing the {@link #applicableInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is how preconditions can be specified.
+ * Implementing the {@link #applicableInState(State, burlap.oomdp.singleagent.GroundedAction)} method is how preconditions can be specified.
  * If you do not override this method, then the default behavior is that the action will have no preconditions and can be applied
- * in any state. This method takes as input a {@link burlap.oomdp.core.states.State} and the parameters for this action (if any),
+ * in any state. This method takes as input a {@link State} and the parameters for this action (if any),
  * and returns true if the action can be applied in that state and false otherwise.
  * <p>
  * The {@link #isPrimitive()} method should usually return true and should only return false for special hierarchical actions like an {@link burlap.behavior.singleagent.options.Option}.
  * <p>
  * The other three methods are important for parameterized actions. If your action is not parameterized, consider subclassing {@link burlap.oomdp.singleagent.common.SimpleAction},
- * which is useful for defining non-parameterized primitive actions without preconditions, because it implements every abstract method except {@link #performActionHelper(burlap.oomdp.core.states.State, GroundedAction)}.
+ * which is useful for defining non-parameterized primitive actions without preconditions, because it implements every abstract method except {@link #performActionHelper(State, GroundedAction)}.
  * Otherwise these methods will need to be implemented to define the parameterization of your action.
  * <p>
  * If your action is parameterized, first, the {@link #isParameterized()} method should be overriden and set to return true. Next, as noted previously, an {@link burlap.oomdp.singleagent.GroundedAction} implementation
@@ -71,18 +73,18 @@ import java.util.List;
  * pointing to this {@link burlap.oomdp.singleagent.Action}. The parameter assignments in the returned {@link burlap.oomdp.singleagent.GroundedAction}
  * do not need to be specified; this method serves as a means for simply generating an instance of the associated {@link burlap.oomdp.singleagent.GroundedAction}.
  * <p>
- * The {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State)} method should return a list of {@link burlap.oomdp.singleagent.GroundedAction}
- * instances that cover the space of all possible parameterizations of the action for in the input {@link burlap.oomdp.core.states.State}. However,
+ * The {@link #getAllApplicableGroundedActions(State)} method should return a list of {@link burlap.oomdp.singleagent.GroundedAction}
+ * instances that cover the space of all possible parameterizations of the action for in the input {@link State}. However,
  * the returned list should only include {@link burlap.oomdp.singleagent.GroundedAction} instances that satisfy the
- * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedAction)} method. Do *NOT* include {@link burlap.oomdp.singleagent.GroundedAction} objects
+ * {@link #applicableInState(State, GroundedAction)} method. Do *NOT* include {@link burlap.oomdp.singleagent.GroundedAction} objects
  * that are not applicable in the input list.
  * <p>
  * By allowing you to
  * define your own subclass of {@link burlap.oomdp.singleagent.GroundedAction} that is returned by these methods, you can have any kind of {@link burlap.oomdp.singleagent.Action}
  * parametrization that you'd like. That said, A common form of {@link burlap.oomdp.singleagent.Action} parameterization is an action that operates on OO-MDP
- * {@link burlap.oomdp.core.states.oo.ObjectInstance} references in a state (for example, stacking on block on another
+ * {@link ObjectInstance} references in a state (for example, stacking on block on another
  * in {@link burlap.domain.singleagent.blocksworld.BlocksWorld}. Therefore, if you would like to have a OO-MDP object parameterization,
- * rather than define your own subclass, you should consider subclassing the {@link burlap.oomdp.singleagent.ObjectParameterizedAction}
+ * rather than define your own subclass, you should consider subclassing the {@link ObjectParameterizedAction}
  * class. See it's documentation for more details.
  * <p>
  *
@@ -105,11 +107,6 @@ public abstract class Action{
 	 * The name of the action that can uniquely identify it
 	 */
 	protected String					name;									
-	
-	/**
-	 * The domain with which this action is associated
-	 */
-	protected Domain					domain;
 
 	
 	/**
@@ -125,8 +122,7 @@ public abstract class Action{
 
 	public Action(String name, Domain domain){
 		this.name = name;
-		this.domain = domain;
-		this.domain.addAction(this);
+		domain.addAction(this);
 	}
 
 	
@@ -139,15 +135,10 @@ public abstract class Action{
 		return name;
 	}
 
-	
-	/**
-	 * Returns the domain to which this action belongs.
-	 * @return the domain to which this action belongs.
-	 */
-	public final Domain getDomain(){
-		return domain;
+	public void setName(String name) {
+		this.name = name;
 	}
-	
+
 	/**
 	 * Sets an action observer for this action. Set to null to specify no observer or to disable observaiton.
 	 * @param observer the observer that will be told of each event when this action is executed.
@@ -236,11 +227,11 @@ public abstract class Action{
 
 	/**
 	 * Returns the transition dynamics by assuming the action to be deterministic and wrapping the result of a
-	 * {@link #performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method with a 1.0 probable {@link TransitionProbability}
+	 * {@link #performAction(State, burlap.oomdp.singleagent.GroundedAction)} method with a 1.0 probable {@link TransitionProbability}
 	 * object and inserting it in the returned list.
 	 * @param s the state from which the transition probabilities when applying this action will be returned.
 	 * @param groundedAction the {@link burlap.oomdp.singleagent.GroundedAction} specifying the parameters to use
-	 * @return a List of one element of type {@link burlap.oomdp.core.TransitionProbability} whose state is the outcome of the {@link #performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method.
+	 * @return a List of one element of type {@link burlap.oomdp.core.TransitionProbability} whose state is the outcome of the {@link #performAction(State, burlap.oomdp.singleagent.GroundedAction)} method.
 	 */
 	protected List<TransitionProbability> deterministicTransition(State s, GroundedAction groundedAction){
 		List <TransitionProbability> transition = new ArrayList<TransitionProbability>();
@@ -309,7 +300,7 @@ public abstract class Action{
 	
 	/**
 	 * This method determines what happens when an action is applied in the given state with the given parameters. The State
-	 * object s may be directly modified in this method since the parent method ({@link #performAction(burlap.oomdp.core.states.State, GroundedAction)}
+	 * object s may be directly modified in this method since the parent method ({@link #performAction(State, GroundedAction)}
 	 * first copies the input state to pass
 	 * to this helper method. The resulting state (which may be s) should then be returned.
 	 * @param s the state to perform the action on

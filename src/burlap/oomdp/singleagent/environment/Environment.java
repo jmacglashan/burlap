@@ -1,11 +1,11 @@
 package burlap.oomdp.singleagent.environment;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 
 /**
- * Environments define a current observation represetned with a {@link burlap.oomdp.core.states.State} and manage state and reward transitions when an action is executed in the environment through
+ * Environments define a current observation represetned with a {@link State} and manage state and reward transitions when an action is executed in the environment through
  * the {@link #executeAction(burlap.oomdp.singleagent.GroundedAction)} method. {@link burlap.oomdp.singleagent.environment.Environment}
  * instances are what learning algorithms implementing {@link burlap.behavior.singleagent.learning.LearningAgent} interact with.
  * Maintaining an Environment ensures that transitions are protected from an agent manipulating the state
@@ -26,8 +26,8 @@ public interface Environment {
 
 	
 	/**
-	 * Returns the current observation of the environment as a {@link burlap.oomdp.core.states.State}.
-	 * @return the current observation of the environment as a {@link burlap.oomdp.core.states.State}.
+	 * Returns the current observation of the environment as a {@link State}.
+	 * @return the current observation of the environment as a {@link State}.
 	 */
 	State getCurrentObservation();
 

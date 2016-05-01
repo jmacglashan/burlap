@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.vfa;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
  * An extension of {@link ParametricFunction.ParametricStateActionFunction} that
@@ -13,8 +13,8 @@ public interface DifferentiableStateActionValue extends ParametricFunction.Param
 
 	/**
 	 * Returns the gradient of this function.
-	 * @param s the input {@link burlap.oomdp.core.states.State}
-	 * @param a the input {@link burlap.oomdp.core.AbstractGroundedAction}
+	 * @param s the input {@link State}
+	 * @param a the input {@link AbstractGroundedAction}
 	 * @return the {@link burlap.behavior.singleagent.vfa.FunctionGradient} of this function at the input
 	 */
 	FunctionGradient gradient(State s, AbstractGroundedAction a);

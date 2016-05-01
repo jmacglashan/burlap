@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGAgentType;
@@ -121,7 +121,7 @@ public class ManualAgentsCommands {
 				}
 			}
 
-			SGAgentType type = new SGAgentType("manual", shell.getDomain().getObjectClass(aclass), actions);
+			SGAgentType type = new SGAgentType("manual", actions);
 
 			for(int i = 0; i < times; i++){
 				ManualSGAgent agent = new ManualSGAgent();

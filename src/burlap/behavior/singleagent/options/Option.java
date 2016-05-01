@@ -17,7 +17,7 @@ import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
@@ -56,7 +56,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * As a result, the transition dynamics computation will stop searching for states at given
  * horizons that are less than some small probability of occurring (by default set to
  * 0.001). This threshold hold may be modified. However, if these transition dynamics can be specified
- * a priori, it is recommended that the {@link #getTransitions(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is overridden
+ * a priori, it is recommended that the {@link #getTransitions(State, burlap.oomdp.singleagent.GroundedAction)} method is overridden
  * and specified by hand rather than requiring this class to have to enumerate the results. Finally,
  * note that the {@link #getTransitions(State, burlap.oomdp.singleagent.GroundedAction)} returns {@link burlap.oomdp.core.TransitionProbability}
  * elements, where each {@link burlap.oomdp.core.TransitionProbability} holds the probability of transitioning to a state discounted
@@ -208,7 +208,7 @@ public abstract class Option extends Action implements FullActionModel{
 	public abstract double probabilityOfTermination(State s, GroundedAction groundedAction);
 	
 	/**
-	 * This method is always called when an option is initiated and begins execution. Specifically, it is called from the {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
+	 * This method is always called when an option is initiated and begins execution. Specifically, it is called from the {@link #performActionHelper(State, burlap.oomdp.singleagent.GroundedAction)}
 	 * For Markov options, this method probably does not need to do anything, but for non-Markov options, like Macro actions, it may need
 	 * to initialize some structures for determining termination and action selection.
 	 * @param s the state in which the option was initiated
@@ -219,7 +219,7 @@ public abstract class Option extends Action implements FullActionModel{
 	
 	/**
 	 * This method causes the option to select a single step in the given state, when the option was initiated with the provided parameters.
-	 * This method will be called by the {@link #performActionHelper(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}  method until it is determined that the option terminates.
+	 * This method will be called by the {@link #performActionHelper(State, burlap.oomdp.singleagent.GroundedAction)}  method until it is determined that the option terminates.
 	 * @param s the state in which an action should be selected.
 	 * @param groundedAction the parameters in which this option was initiated
 	 * @return the action the option has selected to take in State <code>s</code>
@@ -485,7 +485,7 @@ public abstract class Option extends Action implements FullActionModel{
 	}
 
 	/**
-	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
+	 * Performs one step of execution of the option. This method assumes that the {@link #initiateInState(State, burlap.oomdp.singleagent.GroundedAction)}
 	 * method was called previously for the state in which this option was initiated.
 	 * @param s the state in which a single step of the option is to be taken.
 	 * @param groundedAction the parameters in which this option was initiated
@@ -518,7 +518,7 @@ public abstract class Option extends Action implements FullActionModel{
 
 	/**
 	 * Performs one step of execution of the option in the provided {@link burlap.oomdp.singleagent.environment.Environment}.
-	 * This method assuems that the {@link #initiateInState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method
+	 * This method assuems that the {@link #initiateInState(State, burlap.oomdp.singleagent.GroundedAction)} method
 	 * was called previously for the state in which this option was initiated.
 	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this option is to be applied
 	 * @param groundedAction the parameters in which this option was initiated

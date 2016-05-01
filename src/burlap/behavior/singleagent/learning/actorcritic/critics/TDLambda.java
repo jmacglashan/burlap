@@ -14,7 +14,7 @@ import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;

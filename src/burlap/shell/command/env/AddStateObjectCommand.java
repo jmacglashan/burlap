@@ -1,9 +1,10 @@
 package burlap.shell.command.env;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.OODomain;
+import burlap.oomdp.core.oo.state.MutableOOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentDelegation;
 import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
@@ -19,16 +20,18 @@ import java.util.Scanner;
 
 /**
  * A {@link burlap.shell.command.ShellCommand} for adding an OO-MDP object to the current {@link burlap.oomdp.singleagent.environment.Environment}
- * {@link burlap.oomdp.core.states.State}. Use the -h option for help information.
+ * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class AddStateObjectCommand implements ShellCommand {
 
 	protected OptionParser parser = new OptionParser("vh*");
-	protected Domain domain;
+	protected OODomain domain = null;
 
 	public AddStateObjectCommand(Domain domain) {
-		this.domain = domain;
+		if(domain instanceof OODomain) {
+			this.domain = (OODomain) domain;
+		}
 	}
 
 	@Override
@@ -59,13 +62,38 @@ public class AddStateObjectCommand implements ShellCommand {
 			return -1;
 		}
 
-		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(args.get(0)), args.get(1));
+		if(domain == null){
+			os.println("Cannot add object to state, because input domain is not an OODomain");
+			return 0;
+		}
+
+		Class<?> oclass = domain.stateClass(args.get(0));
+		if(oclass == null){
+			os.println("Cannot add object to state, because the domain does not know about any OO-MDP object class named " + args.get(0));
+		}
+
+
+		ObjectInstance o = null;
+		try {
+			o = (ObjectInstance)oclass.newInstance();
+			o.setName(args.get(1));
+		} catch(InstantiationException e) {
+			return 0;
+		} catch(IllegalAccessException e) {
+			return 0;
+		}
+
 		State s = env.getCurrentObservation();
-		s.addObject(o);
+
+		if(!(s instanceof MutableOOState)){
+			os.println("Cannot add object to state, because the state of the environment does not implement MutableOOState");
+		}
+
+		((MutableOOState)s).addObject(o);
 		senv.setCurStateTo(s);
 
 		if(oset.has("v")){
-			os.println(senv.getCurrentObservation().getCompleteStateDescriptionWithUnsetAttributesAsNull());
+			os.println(senv.getCurrentObservation().toString());
 		}
 
 		return 1;

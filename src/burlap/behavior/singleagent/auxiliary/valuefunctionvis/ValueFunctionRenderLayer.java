@@ -6,11 +6,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.RenderLayer;
 
 

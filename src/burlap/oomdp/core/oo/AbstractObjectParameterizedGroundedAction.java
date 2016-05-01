@@ -1,44 +1,45 @@
-package burlap.oomdp.core;
+package burlap.oomdp.core.oo;
 
-import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.states.oo.OOState;
-import burlap.oomdp.core.states.oo.ObjectInstance;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * An interface extension to the {@link burlap.oomdp.core.AbstractGroundedAction} interface for grounded actions whose
- * parameter included references to OO-MDP {@link burlap.oomdp.core.states.oo.ObjectInstance}s. This is a special
- * interface because grounded actions that have parameters references to OO-MDO {@link burlap.oomdp.core.states.oo.ObjectInstance}s
+ * An interface extension to the {@link AbstractGroundedAction} interface for grounded actions whose
+ * parameter included references to OO-MDP {@link ObjectInstance}s. This is a special
+ * interface because grounded actions that have parameters references to OO-MDO {@link ObjectInstance}s
  * may require special care by a planning or learning algorithm since the names of object references can change between states
  * that are otherwise equal (that is, states that are object identifier independent).
  * <p>
- * This interface also includes the inner class {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction.Helper}
- * which provides the static method {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction.Helper#translateParameters(AbstractGroundedAction, burlap.oomdp.core.states.State, burlap.oomdp.core.states.State)}
- * that can be used to reparameterize a {@link burlap.oomdp.core.AbstractObjectParameterizedGroundedAction}'s object references
- * to equivalent {@link burlap.oomdp.core.states.oo.ObjectInstance} objects in separate state with different names. See its
+ * This interface also includes the inner class {@link AbstractObjectParameterizedGroundedAction.Helper}
+ * which provides the static method {@link AbstractObjectParameterizedGroundedAction.Helper#translateParameters(AbstractGroundedAction, State, State)}
+ * that can be used to reparameterize a {@link AbstractObjectParameterizedGroundedAction}'s object references
+ * to equivalent {@link ObjectInstance} objects in separate state with different names. See its
  * method documentation for more information.
  * @author James MacGlashan.
  */
 public interface AbstractObjectParameterizedGroundedAction extends AbstractGroundedAction{
 
 	/**
-	 * Returns the parameters of this {@link burlap.oomdp.core.AbstractGroundedAction} that correspond to OO-MDP objects.
-	 * @return the parameters of this {@link burlap.oomdp.core.AbstractGroundedAction} that correspond to OO-MDP objects.
+	 * Returns the parameters of this {@link AbstractGroundedAction} that correspond to OO-MDP objects.
+	 * @return the parameters of this {@link AbstractGroundedAction} that correspond to OO-MDP objects.
 	 */
 	String [] getObjectParameters();
 
 	/**
-	 * Sets the object parameters for this {@link burlap.oomdp.core.AbstractGroundedAction}.
+	 * Sets the object parameters for this {@link AbstractGroundedAction}.
 	 * @param params the object parameters to use.
 	 */
 	void setObjectParameters(String [] params);
 
 	/**
-	 * Returns true if this {@link burlap.oomdp.core.AbstractGroundedAction} is for a domain in which states are identifier independent; false if dependent
-	 * @return true if this {@link burlap.oomdp.core.AbstractGroundedAction} is for a domain in which states are identifier independent; false if dependent
+	 * Returns true if this {@link AbstractGroundedAction} is for a domain in which states are identifier independent; false if dependent
+	 * @return true if this {@link AbstractGroundedAction} is for a domain in which states are identifier independent; false if dependent
 	 */
 	boolean actionDomainIsObjectIdentifierIndependent();
 

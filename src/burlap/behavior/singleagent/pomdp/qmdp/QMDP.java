@@ -14,7 +14,7 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -72,7 +72,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	}
 
 	/**
-	 * Calls the {@link burlap.behavior.singleagent.planning.Planner#planFromState(burlap.oomdp.core.states.State)} method
+	 * Calls the {@link burlap.behavior.singleagent.planning.Planner#planFromState(State)} method
 	 * on all states defined in the POMDP. Calling this method requires that the PODomain provides a {@link burlap.behavior.singleagent.auxiliary.StateEnumerator},
 	 * otherwise an exception will be thrown.
 	 */

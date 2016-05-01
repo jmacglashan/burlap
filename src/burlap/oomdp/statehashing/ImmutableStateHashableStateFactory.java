@@ -2,7 +2,7 @@ package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.objects.ImmutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.statehashing.ImmutableHashableObjectFactory.ImmutableHashableObject;
 import com.google.common.collect.ImmutableList;
 import gnu.trove.list.array.TIntArrayList;

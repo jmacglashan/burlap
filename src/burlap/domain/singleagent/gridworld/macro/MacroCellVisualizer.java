@@ -2,9 +2,9 @@ package burlap.domain.singleagent.gridworld.macro;
 
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.StateRenderLayer;
-import burlap.oomdp.visualizer.StaticPainter;
+import burlap.oomdp.visualizer.StatePainter;
 import burlap.oomdp.visualizer.Visualizer;
 
 import java.awt.*;
@@ -59,7 +59,7 @@ public class MacroCellVisualizer {
 	 * @author Stephen Brawner and Mark Ho; modified by James MacGlashan
 	 *
 	 */
-	public static class MacroCellRewardWeightPainter implements StaticPainter{
+	public static class MacroCellRewardWeightPainter implements StatePainter {
 
 		protected int 				dwidth;
 		protected int 				dheight;

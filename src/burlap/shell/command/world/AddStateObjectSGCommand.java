@@ -1,10 +1,11 @@
 package burlap.shell.command.world;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.state.MutableOOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.stochasticgames.World;
+import burlap.oomdp.stochasticgames.oo.OOSGDomain;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -17,16 +18,18 @@ import java.util.Scanner;
 
 /**
  * A {@link burlap.shell.command.ShellCommand} for adding an OO-MDP object to the current {@link burlap.oomdp.stochasticgames.World}
- * {@link burlap.oomdp.core.states.State}. Use the -h option for help information.
+ * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class AddStateObjectSGCommand implements ShellCommand {
 
 	protected OptionParser parser = new OptionParser("vh*");
-	protected Domain domain;
+	protected OOSGDomain domain = null;
 
 	public AddStateObjectSGCommand(Domain domain) {
-		this.domain = domain;
+		if(domain instanceof OOSGDomain) {
+			this.domain = (OOSGDomain)domain;
+		}
 	}
 
 	@Override
@@ -47,6 +50,11 @@ public class AddStateObjectSGCommand implements ShellCommand {
 			return 0;
 		}
 
+		if(domain == null){
+			os.println("Cannot add object to state, because input domain is not an OODomain");
+			return 0;
+		}
+
 		World w = ((SGWorldShell)shell).getWorld();
 
 		if(w.gameIsRunning()){
@@ -58,13 +66,34 @@ public class AddStateObjectSGCommand implements ShellCommand {
 			return -1;
 		}
 
-		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(args.get(0)), args.get(1));
+
+		Class<?> oclass = domain.stateClass(args.get(0));
+		if(oclass == null){
+			os.println("Cannot add object to state, because the domain does not know about any OO-MDP object class named " + args.get(0));
+		}
+
+
+		ObjectInstance o = null;
+		try {
+			o = (ObjectInstance)oclass.newInstance();
+			o.setName(args.get(1));
+		} catch(InstantiationException e) {
+			return 0;
+		} catch(IllegalAccessException e) {
+			return 0;
+		}
+
 		State s = w.getCurrentWorldState().copy();
-		s.addObject(o);
+		if(!(s instanceof MutableOOState)){
+			os.println("Cannot add object to state, because the state of the environment does not implement MutableOOState");
+		}
+		((MutableOOState)s).addObject(o);
+
+
 		w.setCurrentState(s);
 
 		if(oset.has("v")){
-			os.println(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+			os.println(s.toString());
 		}
 
 		return 1;

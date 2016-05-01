@@ -8,7 +8,8 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -802,7 +803,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class AtLocationPF extends PropositionalFunction{
+	public class AtLocationPF extends PropositionalFunction {
 
 		
 		/**

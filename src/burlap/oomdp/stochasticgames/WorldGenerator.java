@@ -11,5 +11,5 @@ public interface WorldGenerator {
 	 * Generates a new {@link World} instance.
 	 * @return a new {@link World} instance.
 	 */
-	public World generateWorld();
+	World generateWorld();
 }

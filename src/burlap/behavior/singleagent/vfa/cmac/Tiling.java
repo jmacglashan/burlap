@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.vfa.cmac;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.*;
 import java.util.Map.Entry;

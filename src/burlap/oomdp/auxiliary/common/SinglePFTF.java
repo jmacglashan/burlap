@@ -2,9 +2,9 @@ package burlap.oomdp.auxiliary.common;
 
 import java.util.List;
 
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 
 

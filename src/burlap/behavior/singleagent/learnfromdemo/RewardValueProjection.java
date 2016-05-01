@@ -6,7 +6,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -29,15 +29,15 @@ import java.util.List;
  * STATEACTION: when the reward function only depends on the state-action pair<p>
  * ONESTEP: when the reward function depends on a transition of some sort (e.g., from a source state to a target state)<p>
  * The default assumption is DESTINATIONSTATE.<p>
- * When the {@link #value(burlap.oomdp.core.states.State)} of a state is queried, it returns the value of the
+ * When the {@link #value(State)} of a state is queried, it returns the value of the
  * {@link burlap.oomdp.singleagent.RewardFunction} using the most minimal information. For example, if the projection
  * type is DESTINATIONSTATE, then the value returned is rf.reward(null, null, s), where rf is the input {@link burlap.oomdp.singleagent.RewardFunction}
- * and s is the input {@link burlap.oomdp.core.states.State} to the {@link #value(burlap.oomdp.core.states.State)} method.
+ * and s is the input {@link State} to the {@link #value(State)} method.
  * If it's SOURCESTATE, then it returns rf.reward(s, null, null). If it is STATEACTION or ONESTEP,
  * then the {@link burlap.oomdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(burlap.oomdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.oomdp.core.Domain)}
  * constructor so that the actions can be enumerated (and in the case of ONESTEP, the transitions enumerated) and the max reward taken.
- * Similarly, the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and
- * {@link #getQs(burlap.oomdp.core.states.State)} methods may need the {@link Domain} provided to properly answer the query.
+ * Similarly, the {@link #getQ(State, AbstractGroundedAction)} and
+ * {@link #getQs(State)} methods may need the {@link Domain} provided to properly answer the query.
  *
  *
  * @author James MacGlashan.

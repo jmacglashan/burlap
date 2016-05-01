@@ -3,7 +3,7 @@ package burlap.oomdp.singleagent.pomdp;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
@@ -26,7 +26,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	/**
 	 * The current observation from the POMDP environment
 	 */
-	protected State curObservation = new CMutableState();
+	protected State curObservation = State.NullState.instance;
 
 
 
@@ -73,7 +73,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 
 	/**
 	 * Returns the current hidden state of this {@link burlap.oomdp.singleagent.environment.Environment}.
-	 * @return a {@link burlap.oomdp.core.states.State} representing the current hidden state of the environment.
+	 * @return a {@link State} representing the current hidden state of the environment.
 	 */
 	public State getCurrentHiddenState(){
 		return this.curState;
@@ -82,7 +82,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	@Override
 	public EnvironmentOutcome executeAction(GroundedAction ga) {
 
-		GroundedAction simGA = (GroundedAction)ga.copy();
+		GroundedAction simGA = ga.copy();
 		simGA.action = this.domain.getAction(ga.actionName());
 		if(simGA.action == null){
 			throw new RuntimeException("Cannot execute action " + ga.toString() + " in this SimulatedEnvironment because the action is to known in this Environment's domain");
@@ -110,6 +110,6 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	@Override
 	public void resetEnvironment() {
 		super.resetEnvironment();
-		this.curObservation = new CMutableState();
+		this.curObservation = State.NullState.instance;
 	}
 }

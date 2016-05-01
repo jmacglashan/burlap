@@ -2,7 +2,7 @@ package burlap.oomdp.singleagent;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +12,16 @@ import java.util.List;
  * Action transition dynamics. Many planning algorithms, such as Dynamic programming methods, require the full transition dynamics,
  * so if you wish to use such an algorithm and it is possible to fully enumerate the transition dynamics, your {@link burlap.oomdp.singleagent.Action}
  * implementation should implement this interface.
- * The required {@link #getTransitions(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method provides the full transition dynamics of
- * an {@link burlap.oomdp.singleagent.Action}.  This method should return a list of all transitions from the input {@link burlap.oomdp.core.states.State}
+ * The required {@link #getTransitions(State, burlap.oomdp.singleagent.GroundedAction)} method provides the full transition dynamics of
+ * an {@link burlap.oomdp.singleagent.Action}.  This method should return a list of all transitions from the input {@link State}
  * that have non-zero probability of occurring. These transitions are specified with a {@link burlap.oomdp.core.TransitionProbability}
- * object that is a pair consisting of the next {@link burlap.oomdp.core.states.State} and a double specifying the probability
+ * object that is a pair consisting of the next {@link State} and a double specifying the probability
  * of transitioning to that state.
  * <p>
  * Also defined is a an inner static helper class called {@link burlap.oomdp.singleagent.FullActionModel.FullActionModelHelper}
  * that has static helper methods that may be useful for working with an {@link burlap.oomdp.singleagent.Action} that implements
  * {@link burlap.oomdp.singleagent.FullActionModel}. Specifically, it includes a method for sampling a state
- * from the transition distribution defined with {@link #getTransitions(burlap.oomdp.core.states.State, GroundedAction)}
+ * from the transition distribution defined with {@link #getTransitions(State, GroundedAction)}
  * and it includes a method for removing {@link burlap.oomdp.core.TransitionProbability} elements from a list
  * that are assigned zero probability.
  * @author James MacGlashan.
@@ -51,12 +51,12 @@ public interface FullActionModel {
 
 		/**
 		 * Samples a state from fully enumerated transition dynamics that are defined with the {@link burlap.oomdp.singleagent.FullActionModel}
-		 * {@link burlap.oomdp.singleagent.FullActionModel#getTransitions(burlap.oomdp.core.states.State, GroundedAction)} method.
+		 * {@link burlap.oomdp.singleagent.FullActionModel#getTransitions(State, GroundedAction)} method.
 		 * This method is implement by first getting the enumerated transitions, rolling a random number, and selecting a next
 		 * state transition from the enumerated transitions according to their assigned probability.
-		 * @param previousState the {@link burlap.oomdp.core.states.State} in which an action is to be performed
+		 * @param previousState the {@link State} in which an action is to be performed
 		 * @param action the {@link burlap.oomdp.singleagent.GroundedAction} to apply to previousState
-		 * @return a sampled {@link burlap.oomdp.core.states.State}
+		 * @return a sampled {@link State}
 		 */
 		public static State sampleTransitionFromEnumeratedDistribution(State previousState, GroundedAction action){
 
@@ -80,7 +80,7 @@ public interface FullActionModel {
 
 
 		/**
-		 * Takes a list of fully enumerated {@link burlap.oomdp.core.states.State} transitions specified with {@link burlap.oomdp.core.TransitionProbability}
+		 * Takes a list of fully enumerated {@link State} transitions specified with {@link burlap.oomdp.core.TransitionProbability}
 		 * objects, and returns a new list of {@link burlap.oomdp.core.TransitionProbability} objects that excludes any objects assigned probability 0.
 		 * @param sourceTransitions the original list of state transitions
 		 * @return a new list of {@link burlap.oomdp.core.TransitionProbability} objects without any with probability 0.

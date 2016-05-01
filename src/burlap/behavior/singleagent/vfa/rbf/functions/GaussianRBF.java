@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.vfa.rbf.functions;
 
 import burlap.behavior.singleagent.vfa.rbf.DistanceMetric;
 import burlap.behavior.singleagent.vfa.rbf.RBF;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class GaussianRBF extends RBF {
 
 	/**
 	 * Creates a {@link java.util.List} of {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} units
-	 * for each {@link burlap.oomdp.core.states.State} provided using the given metric and epsilon value.
+	 * for each {@link State} provided using the given metric and epsilon value.
 	 * @param states the {@link State} objects around which a {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} will be created
 	 * @param metric the {@link burlap.behavior.singleagent.vfa.rbf.DistanceMetric} to use
 	 * @param epsilon the bandwidth parameter.

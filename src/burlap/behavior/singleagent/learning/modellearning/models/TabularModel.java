@@ -8,10 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.singleagent.learning.modellearning.Model;
+import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.*;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

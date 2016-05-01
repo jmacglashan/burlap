@@ -2,7 +2,7 @@ package burlap.oomdp.visualizer;
 
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.awt.*;
 
@@ -97,29 +97,11 @@ public class Visualizer extends MultiLayerRenderer{
 	 * Adds a static painter for the domain.
 	 * @param sp the static painter to add.
 	 */
-	public void addStaticPainter(StaticPainter sp){
-		this.srender.addStaticPainter(sp);
+	public void addStatePainter(StatePainter sp){
+		this.srender.addStatePainter(sp);
 	}
 	
-	
-	/**
-	 * Adds a class that will paint objects that belong to a given OO-MDPclass.
-	 * @param className the name of the class that the provided painter can paint
-	 * @param op the painter
-	 */
-	public void addObjectClassPainter(String className, ObjectPainter op){
-		this.srender.addObjectClassPainter(className, op);
-	}
-	
-	
-	/**
-	 * Adds a painter that will be used to paint a specific object in states
-	 * @param objectName the name of the object this painter is used to paint
-	 * @param op the painter
-	 */
-	public void addSpecificObjectPainter(String objectName, ObjectPainter op){
-		this.srender.addSpecificObjectPainter(objectName, op);
-	}
+
 	
 	/**
 	 * Returns the {@link StateRenderLayer} instance for visualizing OO-MDP states.
@@ -145,8 +127,8 @@ public class Visualizer extends MultiLayerRenderer{
 
 	/**
 	 * Updates the state and action for the {@link burlap.oomdp.visualizer.StateRenderLayer} and {@link burlap.oomdp.visualizer.StateActionRenderLayer}; then repaints.
-	 * @param s the {@link burlap.oomdp.core.states.State} to be painted.
-	 * @param a the {@link burlap.oomdp.core.AbstractGroundedAction} to be painted.
+	 * @param s the {@link State} to be painted.
+	 * @param a the {@link AbstractGroundedAction} to be painted.
 	 */
 	public void updateStateAction(State s, AbstractGroundedAction a){
 		this.srender.updateState(s);

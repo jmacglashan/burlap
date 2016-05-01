@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * objects, runs a regression algorithm, and returns the learned function, which is an interface of {@link burlap.behavior.valuefunction.ValueFunction}.
  * <p>
  * A {@link burlap.behavior.singleagent.planning.vfa.fittedvi.SupervisedVFA.SupervisedVFAInstance} is a pair consisting
- * of a {@link burlap.oomdp.core.states.State} and the target state value that is to be learned.
+ * of a {@link State} and the target state value that is to be learned.
  * @author James MacGlashan.
  */
 public interface SupervisedVFA {

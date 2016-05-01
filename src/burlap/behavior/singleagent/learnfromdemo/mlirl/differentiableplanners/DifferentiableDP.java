@@ -9,7 +9,7 @@ import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.statehashing.HashableState;
 
@@ -124,9 +124,9 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 
 	/**
-	 * Returns the value function gradient for the given {@link burlap.oomdp.core.states.State}
+	 * Returns the value function gradient for the given {@link State}
 	 * @param s the state for which the gradient is be returned.
-	 * @return the value function gradient for the given {@link burlap.oomdp.core.states.State}
+	 * @return the value function gradient for the given {@link State}
 	 */
 	public FunctionGradient getValueGradient(State s){
 		//returns deriviate value
@@ -164,7 +164,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 
 	/**
-	 * Computes the Q-value gradient for the given {@link burlap.oomdp.core.states.State} and {@link burlap.oomdp.singleagent.GroundedAction}.
+	 * Computes the Q-value gradient for the given {@link State} and {@link burlap.oomdp.singleagent.GroundedAction}.
 	 * @param s the state
 	 * @param ga the grounded action.
 	 * @return the Q-value gradient that was computed.

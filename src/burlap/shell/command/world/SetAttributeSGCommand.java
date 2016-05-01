@@ -1,7 +1,7 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.MutableState;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 /**
  * A {@link burlap.shell.command.ShellCommand} for setting attribute values for the current {@link burlap.oomdp.stochasticgames.World}
- * {@link burlap.oomdp.core.states.State}. Use the -h option for help information.
+ * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class SetAttributeSGCommand implements ShellCommand {
@@ -33,8 +33,8 @@ public class SetAttributeSGCommand implements ShellCommand {
 		OptionSet oset = this.parser.parse(argString.split(" "));
 		List<String> args = (List<String>)oset.nonOptionArguments();
 		if(oset.has("h")){
-			os.println("[-v] objectName [attribute value]+ \nSets the values for one or more attributes in a " +
-					"world state. First argument is the name of the object, then a list of attribute value pairs." +
+			os.println("[-v] [key value]+ \nSets the values for one or more state variables in a " +
+					"world state.  Requires 1 or more key value pairs." +
 					"\n\n" +
 					"-v print the new world state after completion.");
 			return 0;
@@ -52,22 +52,22 @@ public class SetAttributeSGCommand implements ShellCommand {
 		}
 
 		State s = w.getCurrentWorldState().copy();
-		OldObjectInstance o = s.getObject(args.get(0));
-		if(o == null){
-			os.println("Unknown object " + args.get(0));
-			return 0;
+		if(!(s instanceof MutableState)){
+			os.println("Cannot modify state values, because the state does not implement MutableState");
 		}
-		for(int i = 1; i < args.size(); i+=2){
+
+
+		for(int i = 0; i < args.size(); i+=2){
 			try{
-				o.setValue(args.get(i), args.get(i+1));
+				((MutableState)s).set(args.get(i), args.get(i+1));
 			}catch(Exception e){
-				os.println("Could not set attribute " + args.get(i) + " to value " + args.get(i+1) + ". Aborting.");
+				os.println("Could not set key " + args.get(i) + " to value " + args.get(i+1) + ". Aborting.");
 				return 0;
 			}
 		}
 		w.setCurrentState(s);
 		if(oset.has("v")){
-			os.println(s.getCompleteStateDescriptionWithUnsetAttributesAsNull());
+			os.println(s.toString());
 		}
 
 		return 1;

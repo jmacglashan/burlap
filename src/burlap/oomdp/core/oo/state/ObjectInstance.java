@@ -1,6 +1,6 @@
-package burlap.oomdp.core.states.oo;
+package burlap.oomdp.core.oo.state;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
  * @author James MacGlashan.

@@ -1,7 +1,7 @@
 package burlap.oomdp.statehashing;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.values.Value;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 

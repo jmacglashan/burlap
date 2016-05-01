@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 
 /**

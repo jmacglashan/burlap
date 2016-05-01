@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 
 /**

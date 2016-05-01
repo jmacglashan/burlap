@@ -5,8 +5,8 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.State;
 
 import javax.management.RuntimeErrorException;
 import java.util.ArrayList;

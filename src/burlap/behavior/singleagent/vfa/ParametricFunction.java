@@ -1,14 +1,14 @@
 package burlap.behavior.singleagent.vfa;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
  * An interface for defining a parametric function. This interface is often used
  * for value function approximation implementations. This highest-level of the interface does not define the input
  * domain, which is left to subclasses of this interface. For example, the {@link ParametricStateFunction} operates
- * on {@link burlap.oomdp.core.states.State} inputs and the {@link ParametricFunction.ParametricStateActionFunction}
- * operates on {@link burlap.oomdp.core.states.State}-{@link burlap.oomdp.core.AbstractGroundedAction} inputs.
+ * on {@link State} inputs and the {@link ParametricFunction.ParametricStateActionFunction}
+ * operates on {@link State}-{@link AbstractGroundedAction} inputs.
  *
  *
  * @author James MacGlashan.
@@ -61,10 +61,10 @@ public interface ParametricFunction {
 
 
 		/**
-		 * Sets the input of this function to the given {@link burlap.oomdp.core.states.State} and returns
+		 * Sets the input of this function to the given {@link State} and returns
 		 * the value of it.
-		 * @param s the {@link burlap.oomdp.core.states.State} to input to the function
-		 * @return the value of this function evaluated on the input {@link burlap.oomdp.core.states.State}
+		 * @param s the {@link State} to input to the function
+		 * @return the value of this function evaluated on the input {@link State}
 		 */
 		double evaluate(State s);
 
@@ -78,11 +78,11 @@ public interface ParametricFunction {
 
 
 		/**
-		 * Sets the input of this function to the given {@link burlap.oomdp.core.states.State} and
-		 * {@link burlap.oomdp.core.AbstractGroundedAction} and returns the value of it.
-		 * @param s the input {@link burlap.oomdp.core.states.State}
+		 * Sets the input of this function to the given {@link State} and
+		 * {@link AbstractGroundedAction} and returns the value of it.
+		 * @param s the input {@link State}
 		 * @param a the input action
-		 * @return the value of this function evaluated on the {@link burlap.oomdp.core.states.State} and {@link burlap.oomdp.core.AbstractGroundedAction}
+		 * @return the value of this function evaluated on the {@link State} and {@link AbstractGroundedAction}
 		 */
 		double evaluate(State s, AbstractGroundedAction a);
 

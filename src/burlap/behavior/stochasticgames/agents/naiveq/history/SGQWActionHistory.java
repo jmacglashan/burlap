@@ -5,7 +5,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;

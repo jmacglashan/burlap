@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.vfa.rbf;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
- * An interface for defining distant metrics between OO-MDP {@link burlap.oomdp.core.states.State} objects.
+ * An interface for defining distant metrics between OO-MDP {@link State} objects.
  * @author Anubhav Malhotra and Daniel Fernandez and Spandan Dutta
  *
  */

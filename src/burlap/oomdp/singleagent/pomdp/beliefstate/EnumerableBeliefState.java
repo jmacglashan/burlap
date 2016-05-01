@@ -1,6 +1,6 @@
 package burlap.oomdp.singleagent.pomdp.beliefstate;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * An interface to be used by {@link BeliefState} implementations that also can enumerate
  * the set of states that have probability mass. The probability mass of a state is specified by the
  * {@link burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState.StateBelief} class which is a pair
- * consisting of an MDP state defined by a {@link burlap.oomdp.core.states.State} instance, and its probability mass, defined by
+ * consisting of an MDP state defined by a {@link State} instance, and its probability mass, defined by
  * a double.
  * @author James MacGlashan.
  */
@@ -25,10 +25,10 @@ public interface EnumerableBeliefState {
 	/**
 	 * A class for specifying the probability mass of an MDP state in a {@link BeliefState}.
 	 */
-	public static class StateBelief{
+	class StateBelief{
 
 		/**
-		 * The MDP state defined by a {@link burlap.oomdp.core.states.State} instance.
+		 * The MDP state defined by a {@link State} instance.
 		 */
 		public State s;
 
@@ -40,7 +40,7 @@ public interface EnumerableBeliefState {
 
 		/**
 		 * Initializes
-		 * @param s the MDP state defined by a {@link burlap.oomdp.core.states.State} instance.
+		 * @param s the MDP state defined by a {@link State} instance.
 		 * @param belief the probability mass of the state.
 		 */
 		public StateBelief(State s, double belief){

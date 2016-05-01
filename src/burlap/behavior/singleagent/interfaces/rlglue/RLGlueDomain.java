@@ -4,7 +4,7 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
@@ -19,7 +19,7 @@ import org.rlcommunity.rlglue.codec.types.Observation;
  * Real (double) attributes. The domain can only support RLGlue problems that have discrete actions. The created BURLAP
  * {@link burlap.oomdp.singleagent.Action} objects that correspond to the RLGlue actions cannot be applied to states since
  * RLGlue does not provide action transition dynamics; as a consequence a runtime exception will be thrown is the action
- * {@link burlap.oomdp.singleagent.Action#performAction(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method is called. Instead,
+ * {@link burlap.oomdp.singleagent.Action#performAction(State, burlap.oomdp.singleagent.GroundedAction)} method is called. Instead,
  * only the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, burlap.oomdp.singleagent.GroundedAction)}
  * method may be used to use an action.
  * @author James MacGlashan.
@@ -101,10 +101,10 @@ public class RLGlueDomain implements DomainGenerator {
 
 
 	/**
-	 * Creates a BURLAP {@link burlap.oomdp.core.states.State} from a RLGlue {@link org.rlcommunity.rlglue.codec.types.Observation}.
+	 * Creates a BURLAP {@link State} from a RLGlue {@link org.rlcommunity.rlglue.codec.types.Observation}.
 	 * @param domain the domain to which the state {@link burlap.oomdp.core.ObjectClass} instances belong.
 	 * @param obsv the RLGlue {@link org.rlcommunity.rlglue.codec.types.Observation}
-	 * @return the corresponding BURLAP {@link burlap.oomdp.core.states.State}.
+	 * @return the corresponding BURLAP {@link State}.
 	 */
 	public static State stateFromObservation(Domain domain, Observation obsv){
 

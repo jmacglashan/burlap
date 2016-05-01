@@ -2,7 +2,7 @@ package burlap.oomdp.auxiliary.common;
 
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;

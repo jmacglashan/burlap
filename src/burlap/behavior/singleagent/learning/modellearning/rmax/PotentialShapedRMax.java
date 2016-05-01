@@ -15,7 +15,7 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

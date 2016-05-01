@@ -2,7 +2,7 @@ package burlap.shell.command.env;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.*;
 import burlap.shell.BurlapShell;
@@ -308,7 +308,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 						os.println("Cannot print state " + i + " because the episode only has " + ea.maxTimeStep() + " time steps.");
 					}
 					else{
-						os.println(ea.getState(i).getCompleteStateDescriptionWithUnsetAttributesAsNull());
+						os.println(ea.getState(i).toString());
 					}
 				}
 			}

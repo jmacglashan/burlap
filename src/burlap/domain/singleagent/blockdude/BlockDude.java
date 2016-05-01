@@ -4,7 +4,8 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -36,13 +37,13 @@ import java.util.Set;
  * the actions up, west, east, pickup, putdown, respectively.
  * <p>
  * By default this domain's actions will use a {@link CMutableState#semiDeepCopy(java.util.Set)} instead of a
- * {@link burlap.oomdp.core.states.State#copy()}. The semi-deep copy only copies {@link OldObjectInstance}
+ * {@link State#copy()}. The semi-deep copy only copies {@link OldObjectInstance}
  * in the previous state that will have its values modified by the action execution:
  * typically, the agent and a moved block are deep copied, with the un moved block objects and brick objects
  * shallow copied to the new state. This is much more memory efficient, but you should avoid directly modifying
  * any single state outside of state construction to avoid changes to other states that may be in memory that use the
  * same shallow copy. Instead, if you wish to directly modify states, always make a
- * {@link burlap.oomdp.core.states.State#copy()} first. Alternatively, you can set Actions to always make deep copies
+ * {@link State#copy()} first. Alternatively, you can set Actions to always make deep copies
  * by setting this class's {@link #useSemiDeep} parameter to false with with the {@link #setUseSemiDeep(boolean)} method.
  *
  * @author James MacGlashan.
@@ -267,14 +268,14 @@ public class BlockDude implements DomainGenerator{
 	 * Returns an uninitialized state that contains the specified number of block objects. Specifically,
 	 * the state will have one agent object, one exit object, one bricks object (specifying the entire landscape in
 	 * an int array attribute), and nb block objects. Their values will need to be set before being used
-	 * either manually or with methods like {@link #setAgent(burlap.oomdp.core.states.State, int, int, int, boolean)},
-	 * {@link #setExit(burlap.oomdp.core.states.State, int, int)}, {@link #setBlock(burlap.oomdp.core.states.State, int, int, int)},
-	 * and {@link #setBrickMap(burlap.oomdp.core.states.State, int[][])} or
-	 * {@link #setBrickValue(burlap.oomdp.core.states.State, int, int, int)}. If you want pre-generated states,
+	 * either manually or with methods like {@link #setAgent(State, int, int, int, boolean)},
+	 * {@link #setExit(State, int, int)}, {@link #setBlock(State, int, int, int)},
+	 * and {@link #setBrickMap(State, int[][])} or
+	 * {@link #setBrickValue(State, int, int, int)}. If you want pre-generated states,
 	 * see the {@link burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor}
 	 * @param domain the generated Block Dude domain to which the state will belong
 	 * @param nb the number of blocks to include in the state
-	 * @return a {@link burlap.oomdp.core.states.State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
+	 * @return a {@link State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
 	 */
 	public static State getUninitializedState(Domain domain, int nb){
 		State s = new CMutableState();
@@ -911,7 +912,7 @@ public class BlockDude implements DomainGenerator{
 
 
 	/**
-	 * A {@link burlap.oomdp.core.PropositionalFunction} that takes as arguments an agent object and a block objects and evaluates whether
+	 * A {@link PropositionalFunction} that takes as arguments an agent object and a block objects and evaluates whether
 	 * the agent is holding the block.
 	 */
 	public class HoldingBlockPF extends PropositionalFunction{
@@ -947,7 +948,7 @@ public class BlockDude implements DomainGenerator{
 
 
 	/**
-	 * A {@link burlap.oomdp.core.PropositionalFunction} that takes as arguments an agent object and an exit object
+	 * A {@link PropositionalFunction} that takes as arguments an agent object and an exit object
 	 * and evaluates whether the agent is at the exit.
 	 */
 	public class AtExitPF extends PropositionalFunction{

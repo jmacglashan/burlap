@@ -1,8 +1,8 @@
 package burlap.oomdp.visualizer;
 
-import java.awt.Graphics2D;
+import burlap.oomdp.core.State;
 
-import burlap.oomdp.core.states.State;
+import java.awt.*;
 
 
 
@@ -14,7 +14,7 @@ import burlap.oomdp.core.states.State;
  * @author James MacGlashan
  *
  */
-public interface StaticPainter {
+public interface StatePainter {
 	
 	
 	/** 
@@ -24,6 +24,6 @@ public interface StaticPainter {
 	 * @param cWidth the width of the canvas
 	 * @param cHeight the height of the canvas
 	 */
-	public void paint(Graphics2D g2, State s, float cWidth, float cHeight);
+	void paint(Graphics2D g2, State s, float cWidth, float cHeight);
 
 }

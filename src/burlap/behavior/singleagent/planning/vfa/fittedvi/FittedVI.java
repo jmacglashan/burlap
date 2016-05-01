@@ -11,7 +11,7 @@ import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSamp
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
@@ -30,7 +30,7 @@ import java.util.List;
  *
  * <p>
  * To perform planning after specifying the state samples to use (either in the constructor or with the {@link #setSamples(java.util.List)} method,
- * you can perform planning with the {@link #runVI()} method. You can also use the standard {@link #planFromState(burlap.oomdp.core.states.State)} method,
+ * you can perform planning with the {@link #runVI()} method. You can also use the standard {@link #planFromState(State)} method,
  * but specifying the state does not change behavior; the method just calls the {@link #runVI()} method itself.
  *
  * <p>
@@ -88,7 +88,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 	/**
 	 * The {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} depth used when
-	 * computing Q-values for the {@link #getQs(burlap.oomdp.core.states.State)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)}
+	 * computing Q-values for the {@link #getQs(State)} and {@link #getQ(State, AbstractGroundedAction)}
 	 * methods used for control.
 	 */
 	protected int controlDepth = 1;
@@ -114,7 +114,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 	/**
 	 * Initializes. Note that you will need to set the state samples to use for planning with the {@link #setSamples(java.util.List)} method before
-	 * calling {@link #planFromState(burlap.oomdp.core.states.State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
+	 * calling {@link #planFromState(State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
 	 * will be thrown.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
@@ -139,7 +139,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 	/**
 	 * Initializes. Note that you will need to set the state samples to use for planning with the {@link #setSamples(java.util.List)} method before
-	 * calling {@link #planFromState(burlap.oomdp.core.states.State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
+	 * calling {@link #planFromState(State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
 	 * will be thrown.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
@@ -202,8 +202,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	}
 
 	/**
-	 * Returns the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
-	 * @return the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * Returns the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
+	 * @return the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
 	 */
 	public int getControlDepth() {
 		return controlDepth;
@@ -211,8 +211,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 
 	/**
-	 * Sets the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
-	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * Sets the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
+	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
 	 */
 	public void setControlDepth(int controlDepth) {
 		this.controlDepth = controlDepth;
@@ -220,8 +220,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 
 	/**
-	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
-	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} and {@link #getQ(burlap.oomdp.core.states.State, burlap.oomdp.core.AbstractGroundedAction)} methods).
+	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
+	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
 	 */
 	public void setPlanningAndControlDepth(int depth){
 		this.planningDepth = depth;

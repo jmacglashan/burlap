@@ -51,8 +51,8 @@ public class SGWorldShell extends BurlapShell {
 		return Arrays.<ShellCommand>asList(new WorldObservationCommand(), macs.getRegCommand(), macs.getLsActions(),
 				macs.getLsAgents(), macs.getSetAction(), new GameCommand(), new JointActionCommand(),
 				new RewardsCommand(), new LastJointActionCommand(), new IsTerminalSGCommand(),
-				new GenerateStateCommand(), new AddRelationSGCommand(), new AddStateObjectSGCommand(domain),
-				new RemoveRelationSGCommand(), new RemoveStateObjectSGCommand(), new SetAttributeSGCommand());
+				new GenerateStateCommand(), new AddStateObjectSGCommand(domain),
+				new RemoveStateObjectSGCommand(), new SetAttributeSGCommand());
 	}
 
 

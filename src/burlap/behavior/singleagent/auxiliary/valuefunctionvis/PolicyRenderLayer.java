@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.util.Collection;
 
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.visualizer.RenderLayer;
 
 public class PolicyRenderLayer implements RenderLayer{

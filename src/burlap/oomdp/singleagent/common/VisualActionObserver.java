@@ -2,9 +2,9 @@ package burlap.oomdp.singleagent.common;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.GroundedProp;
-import burlap.oomdp.core.PropositionalFunction;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.ActionObserver;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
@@ -82,7 +82,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 
 	/**
-	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
+	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(State, burlap.oomdp.singleagent.GroundedAction)}
 	 * so long as the input {@link burlap.oomdp.visualizer.Visualizer} has a set {@link burlap.oomdp.visualizer.StateActionRenderLayer}. Default value is false.
 	 */
 	protected boolean			repaintOnActionInitiation = false;
@@ -136,7 +136,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 	/**
 	 * Sets whether the state should be updated on environment interactions events (the {@link #observeEnvironmentInteraction(burlap.oomdp.singleagent.environment.EnvironmentOutcome)}
-	 * or only with state-actions in the {@link #observeEnvironmentActionInitiation(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}.
+	 * or only with state-actions in the {@link #observeEnvironmentActionInitiation(State, burlap.oomdp.singleagent.GroundedAction)}.
 	 * @param repaintStateOnEnvironmentInteraction if true, then update states with environment interactions; if false then only with environment action initiation.
 	 */
 	public void setRepaintStateOnEnvironmentInteraction(boolean repaintStateOnEnvironmentInteraction) {
@@ -146,7 +146,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 	/**
 	 * Sets whether the state-action should be updated when an action is initiated in an {@link burlap.oomdp.singleagent.environment.Environment} via the
-	 * {@link #observeEnvironmentActionInitiation(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)} method.
+	 * {@link #observeEnvironmentActionInitiation(State, burlap.oomdp.singleagent.GroundedAction)} method.
 	 * @param repaintOnActionInitiation if true, then state-action's are painted on action initiation; if false, they are not.
 	 */
 	public void setRepaintOnActionInitiation(boolean repaintOnActionInitiation) {

@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.vfa.rbf;
 
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 
 /**
  * An abstract class for defining RBF units. An RBF unit is defined by a centered state and a distance metric that can be used

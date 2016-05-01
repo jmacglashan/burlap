@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.oo.ObParamSGAgentAction;
 
 
 /**
@@ -21,11 +22,11 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * includes parameter assignment information necessary for the agent to execute the action.
  * <p>
  * Implementing this class requires subclassing the following abstract methods:<p>
- * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedSGAgentAction)}, <p>
+ * {@link #applicableInState(State, GroundedSGAgentAction)}, <p>
  * {@link #isParameterized()}, <p>
  * {@link #getAssociatedGroundedAction(String)}, and<p>
- * {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State, String)}. <p>
- * The {@link #applicableInState(burlap.oomdp.core.states.State, GroundedSGAgentAction)}
+ * {@link #getAllApplicableGroundedActions(State, String)}. <p>
+ * The {@link #applicableInState(State, GroundedSGAgentAction)}
  * method defines the preconditions of the action definition. The latter three methods are important
  * for defining parameterized actions. Note that if you If you are defining a parameter-less action that has no
  * preconditions (can be executed in any state), then you may simply use the {@link SimpleSGAgentAction}
@@ -41,10 +42,10 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * data member pointing to the actingAgent argument. The parameter assignments in the returned {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}
  * do not need to be specified; this method serves as a means for simply generating an instance of the associated {@link burlap.oomdp.singleagent.GroundedAction}.
  * <p>
- * The {@link #getAllApplicableGroundedActions(burlap.oomdp.core.states.State, String)} method should return a list of {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
+ * The {@link #getAllApplicableGroundedActions(State, String)} method should return a list of {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}
  * instances, covering all possible parameterizations of this action for the acting agent in the given state. However,
  * the returned list should only include {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} instances that satisfy the
- * {@link #applicableInState(burlap.oomdp.core.states.State, GroundedSGAgentAction)} method.
+ * {@link #applicableInState(State, GroundedSGAgentAction)} method.
  * <p>
  * Overriding these two methods and having them return a custom {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} subclass
  * is all that is required to implement a parameterized {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} and by allowing you to
@@ -53,7 +54,7 @@ import burlap.oomdp.stochasticgames.SGDomain;
  * parametrization that you'd like.
  * That said, a common form of {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} parameterization is an action that operates on OO-MDP
  * {@link OldObjectInstance} references in a state. If you would like to have a OO-MDP object parameterization,
- * rather than define your own subclass, you should consider subclassing the {@link burlap.oomdp.stochasticgames.agentactions.ObParamSGAgentAction}
+ * rather than define your own subclass, you should consider subclassing the {@link ObParamSGAgentAction}
  * class. See it's documentation for more details.
  *
  * @author James MacGlashan

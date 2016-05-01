@@ -18,5 +18,5 @@ public interface DenseBeliefVector extends EnumerableBeliefState{
 	 * this objects dimensionality then a runtime exception will be thrown.
 	 * @param b the belief vector to set this belief state to.
 	 */
-	public void setBeliefVector(double [] b);
+	void setBeliefVector(double [] b);
 }

@@ -85,7 +85,7 @@ public class JointActionCommand implements ShellCommand{
 
 				if(oset.has("v")){
 
-					os.println(w.getCurrentWorldState().getCompleteStateDescriptionWithUnsetAttributesAsNull());
+					os.println(w.getCurrentWorldState().toString());
 					os.println(w.getLastRewards());
 					if(w.worldStateIsTerminal()){
 						os.println("IS a terminal state.");

@@ -16,18 +16,12 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class SADomain extends Domain {
+public class SADomain implements Domain {
 
-	protected List <Action>							actions;				//list of actions
-	protected Map <String, Action>					actionMap;				//lookup actions by name
-	
-	public SADomain() {
-		super();
-		actions = new ArrayList <Action>();
-		actionMap = new HashMap <String, Action>();
-	}
+	protected List <Action>							actions = new ArrayList<Action>();
+	protected Map <String, Action>					actionMap = new HashMap<String, Action>();
 
-	
+
 	/**
 	 * Clears all action observers for all actions in this domain and then sets them to have the single action observer provided
 	 * @param observer the single action observer to set all actions to use.
@@ -40,7 +34,7 @@ public class SADomain extends Domain {
 	}
 	
 	/**
-	 * Adss the action observer to all actions associated with this domain. Actions added to this domain after this method is called
+	 * Adds the action observer to all actions associated with this domain. Actions added to this domain after this method is called
 	 * will have to have the observer set for them independently or by a subsequent call to this method.
 	 * @param observer the observer to set all actions to use.
 	 */
@@ -94,18 +88,8 @@ public class SADomain extends Domain {
 
 
 	@Override
-	public SGAgentAction getSingleAction(String name) {
-		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stochastic game formalisms");
-	}
-
-	@Override
 	public SGAgentAction getSGAgentAction(String name) {
 		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stochastic game formalisms");
-	}
-
-	@Override
-	protected Domain newInstance() {
-		return new SADomain();
 	}
 
 	

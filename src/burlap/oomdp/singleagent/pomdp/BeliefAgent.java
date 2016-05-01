@@ -1,6 +1,7 @@
 package burlap.oomdp.singleagent.pomdp;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
@@ -65,7 +66,7 @@ public abstract class BeliefAgent {
 	/**
 	 * Causes the agent to act until the environment reaches a termination condition. The agent's belief is automatically
 	 * updated by this method using the the current {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState}'s
-	 * {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
+	 * {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, burlap.oomdp.singleagent.GroundedAction)}
 	 * method. The agent's action selection for the current belief state is defend by
 	 * the {@link #getAction(burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
 	 * sequence is saved and {@link burlap.behavior.singleagent.EpisodeAnalysis} object and returned.
@@ -90,7 +91,7 @@ public abstract class BeliefAgent {
 	/**
 	 * Causes the agent to act for some fixed number of steps. The agent's belief is automatically
 	 * updated by this method using the the current {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState}'s
-	 * {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(burlap.oomdp.core.states.State, burlap.oomdp.singleagent.GroundedAction)}
+	 * {@link burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, burlap.oomdp.singleagent.GroundedAction)}
 	 * method. The agent's action selection for the current belief state is defend by
 	 * the {@link #getAction(burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
 	 * sequence is saved and {@link burlap.behavior.singleagent.EpisodeAnalysis} object and returned.

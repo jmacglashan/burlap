@@ -11,7 +11,7 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
@@ -21,7 +21,7 @@ import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
  * Tabular SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
  * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
- * method before calling {@link #planFromState(burlap.oomdp.core.states.State)}. The number of episodes used for planning can be determined
+ * method before calling {@link #planFromState(State)}. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
  * <p>
  * By default, this agent will use an epsilon-greedy policy with epsilon=0.1. You can change the learning policy to

@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
@@ -224,7 +224,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 
 	/**
-	 *  A wrapper that maintains a reference to a {@link burlap.oomdp.core.states.State} or null.
+	 *  A wrapper that maintains a reference to a {@link State} or null.
 	 */
 	protected static class StateReference{
 		protected State val = null;
