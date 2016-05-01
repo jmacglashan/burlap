@@ -4,6 +4,7 @@ package burlap.behavior.singleagent.auxiliary;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.datastructures.AlphanumericSorting;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.core.State;
@@ -335,7 +336,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
 				
-				painter.updateState(new CMutableState()); //clear screen
+				painter.updateState(State.NullState.instance); //clear screen
 				this.setIterationListData();
 				
 			}
@@ -377,10 +378,14 @@ public class EpisodeSequenceVisualizer extends JFrame{
 
 
 	protected void updatePropTextArea(State s){
-		
+
+		if(!(domain instanceof OODomain)){
+			return ;
+		}
+
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = domain.getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
 		for(PropositionalFunction pf : props){
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
