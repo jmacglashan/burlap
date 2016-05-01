@@ -1,13 +1,13 @@
 package burlap.behavior.singleagent.vfa.common;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.State;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.State;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class PFFeatureVectorGenerator implements StateToFeatureVectorGenerator {
 
@@ -18,7 +18,7 @@ public class PFFeatureVectorGenerator implements StateToFeatureVectorGenerator {
 	 * Initializes using all propositional functions that belong to the domain
 	 * @param domain the domain containing all the propositional functions to use
 	 */
-	public PFFeatureVectorGenerator(Domain domain){
+	public PFFeatureVectorGenerator(OODomain domain){
 		
 		this.pfsToUse = new PropositionalFunction[domain.getPropFunctions().size()];
 		int i = 0;
