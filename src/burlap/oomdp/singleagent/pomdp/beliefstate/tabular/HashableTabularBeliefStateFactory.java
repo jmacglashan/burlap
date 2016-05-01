@@ -23,11 +23,6 @@ public class HashableTabularBeliefStateFactory implements HashableStateFactory{
 		return new HashableTabularBeliefState(s);
 	}
 
-	@Override
-	public boolean objectIdentifierIndependent() {
-		return true;
-	}
-
 
 	public static class HashableTabularBeliefState extends HashableState{
 
