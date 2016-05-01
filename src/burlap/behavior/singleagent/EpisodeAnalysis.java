@@ -1,17 +1,9 @@
 package burlap.behavior.singleagent;
 
-import java.beans.IntrospectionException;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.util.*;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.RandomPolicy;
 import burlap.datastructures.AlphanumericSorting;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.oomdp.legacy.StateParser;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
@@ -19,15 +11,23 @@ import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.common.NullAction;
 import burlap.oomdp.singleagent.common.NullRewardFunction;
-import burlap.oomdp.stateserialization.SerializableState;
-import burlap.oomdp.stateserialization.SerializableStateFactory;
-import burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.nodes.*;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 
 /**
@@ -272,7 +272,7 @@ public class EpisodeAnalysis {
 	/**
 	 * Takes a {@link java.util.List} of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects and writes them to a directory.
 	 * The format of the file names will be "baseFileName{index}.episode" where {index} represents the index of the
-	 * episode in the list. States will be serialized with a {@link burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory}
+	 * episode in the list. States must be serializable.
 	 * @param episodes the list of episodes to write to disk
 	 * @param directoryPath the directory path in which the episodes will be written
 	 * @param baseFileName the base file name to use for the episode files
@@ -292,34 +292,10 @@ public class EpisodeAnalysis {
 	}
 
 
-	/**
-	 * Takes a {@link java.util.List} of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects and writes them to a directory.
-	 * The format of the file names will be "baseFileName{index}.episode" where {index} represents the index of the
-	 * episode in the list. States will be serialized with a {@link burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory}
-	 * @param episodes the list of episodes to write to disk
-	 * @param directoryPath the directory path in which the episodes will be written
-	 * @param baseFileName the base file name to use for the episode files
-	 */
-	public static void writeEpisodesToDisk(List<EpisodeAnalysis> episodes, String directoryPath, String baseFileName, SerializableStateFactory serializableStateFactory){
-
-
-		if(!directoryPath.endsWith("/")){
-			directoryPath += "/";
-		}
-
-		for(int i = 0; i < episodes.size(); i++){
-			EpisodeAnalysis ea = episodes.get(i);
-			ea.writeToFile(directoryPath + baseFileName + i, serializableStateFactory);
-		}
-
-	}
-
-
-
 
 	/**
 	 * Writes this episode to a file. If the the directory for the specified file path do not exist, then they will be created.
-	 * If the file extension is not ".episode" will automatically be added. States will be serialized with a {@link burlap.oomdp.stateserialization.simple.SimpleSerializableStateFactory}.
+	 * If the file extension is not ".episode" will automatically be added. States must be serializable.
 	 * @param path the path to the file in which to write this episode.
 	 */
 	public void writeToFile(String path){
@@ -336,7 +312,7 @@ public class EpisodeAnalysis {
 
 		try{
 
-			String str = this.serialize(new SimpleSerializableStateFactory());
+			String str = this.serialize();
 			BufferedWriter out = new BufferedWriter(new FileWriter(path));
 			out.write(str);
 			out.close();
@@ -348,39 +324,6 @@ public class EpisodeAnalysis {
 
 	}
 
-
-
-	/**
-	 * Writes this episode to a file. If the the directory for the specified file path do not exist, then they will be created.
-	 * If the file extension is not ".episode" will automatically be added.
-	 * @param path the path to the file in which to write this episode.
-	 * @param serializableStateFactory the {@link burlap.oomdp.stateserialization.SerializableStateFactory} that defines how states are to be serialized.
-	 */
-	public void writeToFile(String path, SerializableStateFactory serializableStateFactory){
-		
-		if(!path.endsWith(".episode")){
-			path = path + ".episode";
-		}
-		
-		File f = (new File(path)).getParentFile();
-		if(f != null){
-			f.mkdirs();
-		}
-		
-		
-		try{
-			
-			String str = this.serialize(serializableStateFactory);
-			BufferedWriter out = new BufferedWriter(new FileWriter(path));
-			out.write(str);
-			out.close();
-			
-			
-		}catch(Exception e){
-			System.out.println(e);
-		}
-		
-	}
 
 
 	/**
@@ -444,41 +387,21 @@ public class EpisodeAnalysis {
 	
 
 	public String serialize(){
-		return serialize(new SimpleSerializableStateFactory());
-	}
 
-	public String serialize(SerializableStateFactory serializableStateFactory){
-
-		Yaml yaml = new Yaml(new EpisodeAnalysisYamlRepresenter(serializableStateFactory));
+		Yaml yaml = new Yaml(new EpisodeAnalysisYamlRepresenter());
 		String yamlOut = yaml.dump(this);
 		return yamlOut;
 	}
 
-	private class EpisodeAnalysisYamlRepresenter extends Representer{
-		SerializableStateFactory serializableStateFactory;
 
-		public EpisodeAnalysisYamlRepresenter(SerializableStateFactory serializableStateFactory) {
+	private class EpisodeAnalysisYamlRepresenter extends Representer{
+
+		public EpisodeAnalysisYamlRepresenter() {
 			super();
-			this.serializableStateFactory = serializableStateFactory;
-			for(State s : stateSequence) {
-				this.representers.put(s.getClass(), new StateYamlRepresent());
-			}
 			for(GroundedAction ga : actionSequence){
 				this.representers.put(ga.getClass(), new ActionYamlRepresent());
 			}
 
-		}
-
-		private class StateYamlRepresent implements Represent{
-
-			@Override
-			public Node representData(Object o) {
-				try {
-					return representJavaBean(getProperties(serializableStateFactory.getGeneratedClass()), serializableStateFactory.serialize((State)o));
-				} catch(IntrospectionException e) {
-					throw new RuntimeException("EpisodeAnalysis could not serialize one of the states. Got this error:\n" + e.getMessage());
-				}
-			}
 		}
 
 		private class ActionYamlRepresent implements Represent{
@@ -504,31 +427,6 @@ public class EpisodeAnalysis {
 		public EpisodeAnalysisConstructor(Domain domain) {
 			this.domain = domain;
 			yamlConstructors.put(new Tag("!action"), new ActionConstruct());
-			yamlClassConstructors.put(NodeId.mapping, new EpisodeAnalysisConstruct());
-		}
-
-
-		private class EpisodeAnalysisConstruct extends Constructor.ConstructMapping{
-
-			@Override
-			protected Object constructJavaBean2ndStep(MappingNode node, Object object) {
-
-				Class type = node.getType();
-				if(type.equals(EpisodeAnalysis.class)){
-					Map map = constructMapping(node);
-					List<GroundedAction> actionList = (List<GroundedAction>)map.get("actionSequence");
-					List<Double> rewardList = (List<Double>)map.get("rewardSequence");
-					List<SerializableState> stateList = (List<SerializableState>)map.get("stateSequence");
-					EpisodeAnalysis ea = new EpisodeAnalysis();
-					ea.actionSequence = actionList;
-					ea.rewardSequence = rewardList;
-					ea.stateSequence = SerializableState.deserializeStates(stateList, domain);
-					return ea;
-				}
-				else {
-					return super.constructJavaBean2ndStep(node, object);
-				}
-			}
 		}
 
 		private class ActionConstruct extends AbstractConstruct{
@@ -542,108 +440,6 @@ public class EpisodeAnalysis {
 		}
 	}
 
-
-
-
-	/**
-	 * Parses episode files using the legacy BURLAP 1.0 string representation.
-	 * Takes a path to a directory containing .episode files and reads them all into a {@link java.util.List}
-	 * of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
-	 * @param directoryPath the path to the directory containing the episode files
-	 * @param d the domain to which the episode states and actions belong
-	 * @param sp a state parser that can parse the state string representation in each file
-	 * @return a {@link java.util.List} of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
-	 */
-	public static List<EpisodeAnalysis> legacyParseFilesIntoEAList(String directoryPath, Domain d, StateParser sp){
-
-		if(!directoryPath.endsWith("/")){
-			directoryPath = directoryPath + "/";
-		}
-
-		File dir = new File(directoryPath);
-		final String ext = ".episode";
-
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				if(name.endsWith(ext)){
-					return true;
-				}
-				return false;
-			}
-		};
-		String[] children = dir.list(filter);
-		Arrays.sort(children, new AlphanumericSorting());
-
-		List<EpisodeAnalysis> eas = new ArrayList<EpisodeAnalysis>(children.length);
-
-		for(int i = 0; i < children.length; i++){
-			String episodeFile = directoryPath + children[i];
-			EpisodeAnalysis ea = legacyParseFileIntoEA(episodeFile, d, sp);
-			eas.add(ea);
-		}
-
-		return eas;
-	}
-
-	
-	/**
-	 * Parses a legacy BURLAP 1.0 string representation from a file and turns it into an EpisodeAnalysis object.
-	 * @param path the path to the episode file.
-	 * @param d the domain to which the states and actions belong
-	 * @param sp a state parser that can parse the state string representation in the file
-	 * @return an EpisodeAnalysis object.
-	 */
-	public static EpisodeAnalysis legacyParseFileIntoEA(String path, Domain d, StateParser sp){
-		
-		//read whole file into string first
-		String fcont = null;
-		try{
-			fcont = new Scanner(new File(path)).useDelimiter("\\Z").next();
-		}catch(Exception E){
-			System.out.println(E);
-		}
-		
-		return legacyParseStringIntoEA(fcont, d, sp);
-	}
-	
-	
-	/**
-	 * Parses a legacy BURLAP 1.0 string representation and turns it into an EpisodeAnalysis object.
-	 * @param str a string representation of the episode.
-	 * @param d the domain to which the states and actions belong
-	 * @param sp a state parser that can parse the state string representation in the file
-	 * @return an EpisodeAnalysis object.
-	 */
-	public static EpisodeAnalysis legacyParseStringIntoEA(String str, Domain d, StateParser sp){
-		
-		EpisodeAnalysis ea = new EpisodeAnalysis();
-		
-		String [] elComps = str.split("#EL#\n");
-		
-		//System.out.println("--" + elComps[0] + "--");
-		
-		for(int i = 1; i < elComps.length; i++){
-			
-			String spToken = "\n#ES#";
-			if(!elComps[i].endsWith(spToken)){
-				spToken += "\n";
-			}
-			
-			String [] parts = elComps[i].split(spToken);
-			
-			State s = sp.stringToState(parts[0]);
-			if(i < elComps.length-1){
-				String [] ars = parts[1].split("\n");
-				ea.recordTransitionTo(getGAFromSpaceDelimGAString(d, ars[0]), s, Double.parseDouble(ars[1]));
-			}
-			else{
-				ea.addState(s);
-			}
-		}
-		
-		
-		return ea;
-	}
 	
 	
 	private static GroundedAction getGAFromSpaceDelimGAString(Domain d, String str){
