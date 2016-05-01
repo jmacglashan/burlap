@@ -14,18 +14,14 @@ import java.util.Map;
 /**
  *
  * A feature database of RBF units that can be used for linear value function approximation.
- * Unlike, {@link burlap.behavior.singleagent.vfa.rbf.RBFFeatureDatabase}, this version takes as input
+ * This class takes as input
  * a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} object so that states are first converted
- * to a double array and then provided to {@link burlap.behavior.singleagent.vfa.rbf.FVRBF} objects that operate
- * directly on the feature vector of the state. This can improve performance over the
- * {@link burlap.behavior.singleagent.vfa.rbf.RBFFeatureDatabase} which may require generating a feature vector
- * for states for each RBF unit. Therefore, for RBFs like ones that  use Gaussian functions over
- * Euclidean distance metrics, this class is recommended. However, the standard {@link burlap.behavior.singleagent.vfa.rbf.RBFFeatureDatabase}
- * may have the advantage of using RBF units that exploit the OO-MDP state representation for distance measures.
+ * to a double array and then provided to {@link RBF} objects that operate
+ * directly on the feature vector of the state.
  *
  * @author James MacGlashan.
  */
-public class FVRBFFeatureDatabase implements FeatureDatabase{
+public class RBFFeatures implements FeatureDatabase{
 
 	/**
 	 * The state feature vector generator to supply to the RBFs
@@ -35,7 +31,7 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 	/**
 	 * The list of RBF units in this database
 	 */
-	protected List<FVRBF> rbfs;
+	protected List<RBF> rbfs;
 
 	/**
 	 * The number of RBF units, not including an offset unit.
@@ -66,8 +62,8 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 	 * @param fvGen the state feature vector generator to use to generate the feature vectors provided to RBFs
 	 * @param hasOffset if true, an offset RBF unit with a constant response value is included in the feature set.
 	 */
-	public FVRBFFeatureDatabase(StateToFeatureVectorGenerator fvGen, boolean hasOffset){
-		rbfs = new ArrayList<FVRBF>();
+	public RBFFeatures(StateToFeatureVectorGenerator fvGen, boolean hasOffset){
+		rbfs = new ArrayList<RBF>();
 		this.hasOffset = hasOffset;
 		this.fvGen = fvGen;
 
@@ -81,7 +77,7 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 	 * Adds the specified RBF unit to the list of RBF units.
 	 * @param rbf the RBF unit to add.
 	 */
-	public void addRBF(FVRBF rbf)
+	public void addRBF(RBF rbf)
 	{
 		this.rbfs.add(rbf);
 		nRbfs++;
@@ -91,7 +87,7 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 	 * Adds all of the specified RBF units to this object's list of RBF units.
 	 * @param rbfs the RBF units to add.
 	 */
-	public void addRBFs(List<FVRBF> rbfs){
+	public void addRBFs(List<RBF> rbfs){
 		this.nRbfs += rbfs.size();
 		this.rbfs.addAll(rbfs);
 	}
@@ -105,7 +101,7 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 
 		double [] svars = this.fvGen.generateFeatureVectorFrom(s);
 
-		for(FVRBF r : rbfs)
+		for(RBF r : rbfs)
 		{
 			double value = r.responseFor(svars);
 			StateFeature sf = new StateFeature(id, value);
@@ -197,10 +193,10 @@ public class FVRBFFeatureDatabase implements FeatureDatabase{
 	}
 
 	@Override
-	public FVRBFFeatureDatabase copy() {
+	public RBFFeatures copy() {
 
-		FVRBFFeatureDatabase rbf = new FVRBFFeatureDatabase(this.fvGen, this.hasOffset);
-		rbf.rbfs = new ArrayList<FVRBF>(this.rbfs);
+		RBFFeatures rbf = new RBFFeatures(this.fvGen, this.hasOffset);
+		rbf.rbfs = new ArrayList<RBF>(this.rbfs);
 		rbf.nRbfs = this.nRbfs;
 		rbf.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);
 		rbf.nextActionMultiplier = this.nextActionMultiplier;
