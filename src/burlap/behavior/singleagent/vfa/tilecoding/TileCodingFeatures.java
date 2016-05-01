@@ -1,7 +1,9 @@
-package burlap.behavior.singleagent.vfa.cmac;
+package burlap.behavior.singleagent.vfa.tilecoding;
 
-import burlap.behavior.singleagent.vfa.*;
-import burlap.behavior.singleagent.vfa.cmac.CMACFeatureDatabase.TilingArrangement;
+import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
+import burlap.behavior.singleagent.vfa.FeatureDatabase;
+import burlap.behavior.singleagent.vfa.StateFeature;
+import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.State;
@@ -12,16 +14,14 @@ import java.util.*;
 
 /**
  * A feature database using CMACs [1] AKA Tiling Coding for states that are first converted into a feature vector. Because States are converted into a feature vector
- * before tiling them, this feature database causes the states to be object identifier *dependent*. If your domain would benefit from object identifier invariance,
- * use the {@link CMACFeatureDatabase} class instead, otherwise, this implementation is slightly more efficient.
- * 
+ * before tiling them.
  * <p>
  * Different tilings can be created over different dimensions of the converted state feature vector and different tiling widths for each dimension can be specified. Each tiling
  * over the same dimensions can either be randomly jittered from each other or uniformly distributed across the space, which is specified using the {@link TilingArrangement}
  * enumerator.
  * <p>
- * To specify the tiling used, use the {@link #addTilingsForAllDimensionsWithWidths(double[], int, CMACFeatureDatabase.TilingArrangement)} or 
- * {@link #addTilingsForDimensionsAndWidths(boolean[], double[], int, CMACFeatureDatabase.TilingArrangement)} method.
+ * To specify the tiling used, use the {@link #addTilingsForAllDimensionsWithWidths(double[], int, TilingArrangement)} or
+ * {@link #addTilingsForDimensionsAndWidths(boolean[], double[], int, TilingArrangement)} method.
  * 
  * 
  * <p>
@@ -31,7 +31,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class FVCMACFeatureDatabase implements FeatureDatabase {
+public class TileCodingFeatures implements FeatureDatabase {
 
 	/**
 	 * The generator that turns OO-MDP state objects into state feature vectors.
@@ -48,19 +48,19 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	/**
 	 * A list of all the tilings used.
 	 */
-	List<FVTiling>														tilings;
+	List<Tiling>														tilings;
 	
 	
 	/**
 	 * Mapping to state features
 	 */
-	List<Map<FVTiling.FVTile, Integer>>	 								stateFeatures;
+	List<Map<Tiling.FVTile, Integer>>	 								stateFeatures;
 	
 	
 	/**
 	 * Mapping to state-action features
 	 */
-	List<Map<FVTiling.FVTile, List<ActionFeatureID>>>	 				stateActionFeatures;
+	List<Map<Tiling.FVTile, List<ActionFeatureID>>>	 				stateActionFeatures;
 	
 	
 	/**
@@ -75,21 +75,21 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 
 
 	@Override
-	public FVCMACFeatureDatabase copy() {
-		FVCMACFeatureDatabase cmac = new FVCMACFeatureDatabase(this.featureVectorGenerator);
+	public TileCodingFeatures copy() {
+		TileCodingFeatures cmac = new TileCodingFeatures(this.featureVectorGenerator);
 		cmac.rand = this.rand;
-		cmac.tilings = new ArrayList<FVTiling>(this.tilings);
+		cmac.tilings = new ArrayList<Tiling>(this.tilings);
 
-		cmac.stateFeatures = new ArrayList<Map<FVTiling.FVTile, Integer>>(this.stateFeatures.size());
-		for(Map<FVTiling.FVTile, Integer> el : this.stateFeatures){
-			Map<FVTiling.FVTile, Integer> nel = new HashMap<FVTiling.FVTile, Integer>(el);
+		cmac.stateFeatures = new ArrayList<Map<Tiling.FVTile, Integer>>(this.stateFeatures.size());
+		for(Map<Tiling.FVTile, Integer> el : this.stateFeatures){
+			Map<Tiling.FVTile, Integer> nel = new HashMap<Tiling.FVTile, Integer>(el);
 			cmac.stateFeatures.add(nel);
 		}
 
-		cmac.stateActionFeatures = new ArrayList<Map<FVTiling.FVTile, List<ActionFeatureID>>>(this.stateActionFeatures.size());
-		for(Map<FVTiling.FVTile, List<ActionFeatureID>> el : this.stateActionFeatures){
-			Map<FVTiling.FVTile, List<ActionFeatureID>> nel = new HashMap<FVTiling.FVTile, List<ActionFeatureID>>(el.size());
-			for(Map.Entry<FVTiling.FVTile, List<ActionFeatureID>> e : el.entrySet()){
+		cmac.stateActionFeatures = new ArrayList<Map<Tiling.FVTile, List<ActionFeatureID>>>(this.stateActionFeatures.size());
+		for(Map<Tiling.FVTile, List<ActionFeatureID>> el : this.stateActionFeatures){
+			Map<Tiling.FVTile, List<ActionFeatureID>> nel = new HashMap<Tiling.FVTile, List<ActionFeatureID>>(el.size());
+			for(Map.Entry<Tiling.FVTile, List<ActionFeatureID>> e : el.entrySet()){
 				nel.put(e.getKey(), new ArrayList<ActionFeatureID>(e.getValue()));
 			}
 			cmac.stateActionFeatures.add(nel);
@@ -105,12 +105,12 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * The resulting feature vectors are what is tiled by this class.
 	 * @param featureVectorGenerator the OO-MDP state to feature vector generator to use
 	 */
-	public FVCMACFeatureDatabase(StateToFeatureVectorGenerator featureVectorGenerator){
+	public TileCodingFeatures(StateToFeatureVectorGenerator featureVectorGenerator){
 		
 		this.featureVectorGenerator = featureVectorGenerator;
-		this.tilings = new ArrayList<FVTiling>();
-		this.stateFeatures = new ArrayList<Map<FVTiling.FVTile,Integer>>();
-		this.stateActionFeatures = new ArrayList<Map<FVTiling.FVTile,List<ActionFeatureID>>>();
+		this.tilings = new ArrayList<Tiling>();
+		this.stateFeatures = new ArrayList<Map<Tiling.FVTile,Integer>>();
+		this.stateActionFeatures = new ArrayList<Map<Tiling.FVTile,List<ActionFeatureID>>>();
 		
 		
 	}
@@ -126,19 +126,19 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * @param nTilings the number of tilings over the specified dimensions to create
 	 * @param tileArrangement whether the created tiles are uniformally spaced or randomly spaced.
 	 */
-	public void addTilingsForDimensionsAndWidths(boolean [] dimensionMask, double [] widths, int nTilings, CMACFeatureDatabase.TilingArrangement tileArrangement){
+	public void addTilingsForDimensionsAndWidths(boolean [] dimensionMask, double [] widths, int nTilings, TilingArrangement tileArrangement){
 		
 		for(int i = 0; i < nTilings; i++){
-			this.stateFeatures.add(new HashMap<FVTiling.FVTile, Integer>());
-			this.stateActionFeatures.add(new HashMap<FVTiling.FVTile, List<ActionFeatureID>>());
+			this.stateFeatures.add(new HashMap<Tiling.FVTile, Integer>());
+			this.stateActionFeatures.add(new HashMap<Tiling.FVTile, List<ActionFeatureID>>());
 			double [] offset;
-			if(tileArrangement == CMACFeatureDatabase.TilingArrangement.RANDOMJITTER){
+			if(tileArrangement == TilingArrangement.RANDOMJITTER){
 				offset = this.produceRandomOffset(dimensionMask, widths);
 			}
 			else{
 				offset = this.produceUniformTilingsOffset(dimensionMask, widths, i, nTilings);
 			}
-			FVTiling tiling = new FVTiling(widths, offset, dimensionMask);
+			Tiling tiling = new Tiling(widths, offset, dimensionMask);
 			this.tilings.add(tiling);
 		}
 		
@@ -154,7 +154,7 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * @param nTilings the number of tilings over the specified dimensions to create.
 	 * @param tileArrangement whether the created tiles are uniformally spaced or randomly spaced.
 	 */
-	public void addTilingsForAllDimensionsWithWidths(double [] widths, int nTilings, CMACFeatureDatabase.TilingArrangement tileArrangement){
+	public void addTilingsForAllDimensionsWithWidths(double [] widths, int nTilings, TilingArrangement tileArrangement){
 		
 		boolean [] dimensionMask = new boolean[widths.length];
 		for(int i = 0; i < dimensionMask.length; i++){
@@ -170,10 +170,10 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 		double [] input = this.featureVectorGenerator.generateFeatureVectorFrom(s);
 		List<StateFeature> features = new ArrayList<StateFeature>();
 		for(int i = 0; i < this.tilings.size(); i++){
-			FVTiling tiling = this.tilings.get(i);
-			Map<FVTiling.FVTile, Integer> tileFeatureMap = this.stateFeatures.get(i);
+			Tiling tiling = this.tilings.get(i);
+			Map<Tiling.FVTile, Integer> tileFeatureMap = this.stateFeatures.get(i);
 			
-			FVTiling.FVTile tile = tiling.getFVTile(input);
+			Tiling.FVTile tile = tiling.getFVTile(input);
 			int f = this.getOrGenerateFeature(tileFeatureMap, tile);
 			StateFeature sf = new StateFeature(f, 1.);
 			features.add(sf);
@@ -197,7 +197,7 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * @param tile the tile for which a feature id is returned.
 	 * @return the feature id for the tile.
 	 */
-	protected int getOrGenerateFeature(Map<FVTiling.FVTile, Integer> tileFeatureMap, FVTiling.FVTile tile){
+	protected int getOrGenerateFeature(Map<Tiling.FVTile, Integer> tileFeatureMap, Tiling.FVTile tile){
 		Integer stored = tileFeatureMap.get(tile);
 		if(stored == null){
 			stored = this.nextStateFeatureId;
@@ -218,9 +218,9 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 		}
 		
 		for(int i = 0; i < this.tilings.size(); i++){
-			FVTiling tiling = this.tilings.get(i);
-			Map<FVTiling.FVTile, List<ActionFeatureID>> tileFeatureMap = this.stateActionFeatures.get(i);
-			FVTiling.FVTile tile = tiling.getFVTile(input);
+			Tiling tiling = this.tilings.get(i);
+			Map<Tiling.FVTile, List<ActionFeatureID>> tileFeatureMap = this.stateActionFeatures.get(i);
+			Tiling.FVTile tile = tiling.getFVTile(input);
 			
 			List<ActionFeatureID> storedActionFeatures = this.getOrGenerateActionFeatureList(tileFeatureMap, tile);
 			for(int j = 0; j < actions.size(); j++){
@@ -244,11 +244,11 @@ public class FVCMACFeatureDatabase implements FeatureDatabase {
 	 * @param tile the tile for which the list of action features is returned.
 	 * @return the list of action features.
 	 */
-	protected List<ActionFeatureID> getOrGenerateActionFeatureList(Map<FVTiling.FVTile, List<ActionFeatureID>> tileFeatureMap, FVTiling.FVTile tile){
+	protected List<ActionFeatureID> getOrGenerateActionFeatureList(Map<Tiling.FVTile, List<ActionFeatureID>> tileFeatureMap, Tiling.FVTile tile){
 		
 		List<ActionFeatureID> stored = tileFeatureMap.get(tile);
 		if(stored == null){
-			stored = new ArrayList<FVCMACFeatureDatabase.ActionFeatureID>();
+			stored = new ArrayList<TileCodingFeatures.ActionFeatureID>();
 			tileFeatureMap.put(tile, stored);
 		}
 		return stored;

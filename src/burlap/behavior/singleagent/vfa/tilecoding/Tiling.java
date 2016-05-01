@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa.cmac;
+package burlap.behavior.singleagent.vfa.tilecoding;
 
 /**
  * This class provides a tiling of a provided feature vector. Unlike the {@link Tiling} class, this tiling method does not take OO-MDP states as input; instead
@@ -6,7 +6,7 @@ package burlap.behavior.singleagent.vfa.cmac;
  * @author James MacGlashan
  *
  */
-public class FVTiling {
+public class Tiling {
 
 	/**
 	 * The width of each dimension in this tiling
@@ -29,7 +29,7 @@ public class FVTiling {
 	 * @param widths the widths of each dimension's tiling
 	 * @param offset the offset of the tiling for each dimension (should be a faction of the width).
 	 */
-	public FVTiling(double [] widths, double [] offset){
+	public Tiling(double [] widths, double [] offset){
 		this.widths = widths.clone();
 		this.offset = offset.clone();
 		this.dimensionMask = new boolean[this.widths.length];
@@ -45,7 +45,7 @@ public class FVTiling {
 	 * @param offset the offset of the tiling for each dimension (should be a faction of the width).
 	 * @param dimensionMask specifies which dimensions are used in the tiling
 	 */
-	public FVTiling(double [] widths, double [] offset, boolean [] dimensionMask){
+	public Tiling(double [] widths, double [] offset, boolean [] dimensionMask){
 		this.widths = widths.clone();
 		this.offset = offset.clone();
 		this.dimensionMask = dimensionMask.clone();
@@ -94,7 +94,7 @@ public class FVTiling {
 			this.tiledVector = tiledVector;
 			this.hashCode = 0;
 			for(int i = 0; i < tiledVector.length; i++){
-				if(FVTiling.this.dimensionMask[i]){
+				if(Tiling.this.dimensionMask[i]){
 					this.hashCode = 31*this.hashCode + tiledVector[i];
 				}
 			}
