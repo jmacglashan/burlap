@@ -1,30 +1,26 @@
 package burlap.behavior.singleagent.options;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.options.support.DirectOptionTerminateMapper;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.oomdp.auxiliary.StateMapping;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 
 /**
@@ -255,7 +251,6 @@ public abstract class Option extends Action implements FullActionModel{
 	 */
 	public Option(String name, Domain domain){
 		this.name = name;
-		this.domain = domain;
 	}
 
 	
