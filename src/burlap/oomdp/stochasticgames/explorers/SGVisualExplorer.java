@@ -382,9 +382,6 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	}
 
 
-
-
-	
 	protected void updatePropTextArea(State s){
 
 		if(!(domain instanceof OODomain)){
