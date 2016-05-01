@@ -236,7 +236,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 		synchronized (nextStateReference) {
 			this.curStateIsTerminal = false;
 			this.lastReward = 0.;
-			final State s = RLGlueDomain.stateFromObservation(domain, observation);
+			final State s = RLGlueDomain.stateFromObservation(observation);
 			this.curState = s;
 			this.nextStateReference.val = s;
 			nextStateReference.notifyAll();
@@ -268,7 +268,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 
 		DPrint.cl(this.debugCode, "Got agent step message");
 		synchronized (nextStateReference) {
-			nextStateReference.val = RLGlueDomain.stateFromObservation(this.domain, observation);
+			nextStateReference.val = RLGlueDomain.stateFromObservation(observation);
 			this.lastReward = v;
 			this.curState = nextStateReference.val;
 			nextStateReference.notifyAll();

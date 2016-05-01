@@ -1,51 +1,24 @@
 package burlap.behavior.singleagent.interfaces.rlglue;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
+import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpec;
-import org.rlcommunity.rlglue.codec.taskspec.ranges.DoubleRange;
-import org.rlcommunity.rlglue.codec.taskspec.ranges.IntRange;
 import org.rlcommunity.rlglue.codec.types.Observation;
 
 /**
  * A class for generating a BURLAP {@link burlap.oomdp.core.Domain} for an RLGlue {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec}.
- * The representation consists of up to two objects. One object contains all RLGlue discrete attributes and the other all
- * Real (double) attributes. The domain can only support RLGlue problems that have discrete actions. The created BURLAP
- * {@link burlap.oomdp.singleagent.Action} objects that correspond to the RLGlue actions cannot be applied to states since
- * RLGlue does not provide action transition dynamics; as a consequence a runtime exception will be thrown is the action
- * {@link burlap.oomdp.singleagent.Action#performAction(State, burlap.oomdp.singleagent.GroundedAction)} method is called. Instead,
- * only the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, burlap.oomdp.singleagent.GroundedAction)}
- * method may be used to use an action.
+ * This class also provides a state generator for RLGLue {@link Observation} objects, using the {@link RLGlueState},
+ * which wraps the observation and provides the relevant key values for it so normal BURLAP code and interact with it.
+ * <p>
+ * Since RLGlue is an RL environment, the created actions, which currently are only supported for 1 dimensional discrete actions,
+ * do not support performAction, which would require knowledge of the transition dynamics.
  * @author James MacGlashan.
  */
 public class RLGlueDomain implements DomainGenerator {
-
-
-	/**
-	 * The object class name for the object that holds the RLGlue discrete attributes
-	 */
-	public static final String				DISCRETECLASS = "discrete";
-
-	/**
-	 * The object class name for the object that holds the RLGlue real-valued (double) attributes
-	 */
-	public static final String				REALCLASS = "real";
-
-	/**
-	 * The base name of a discrete attribute. The ith discrete attribute will be named DISCATTi
-	 */
-	public static final String				DISCATT = "disc";
-
-	/**
-	 * The base name of a real (double) attribute. The ith real attribute will be named REALATTi
-	 */
-	public static final String				REALATT = "real";
 
 
 	/**
@@ -70,24 +43,6 @@ public class RLGlueDomain implements DomainGenerator {
 
 		Domain domain = new SADomain();
 
-
-		ObjectClass discObClass = new ObjectClass(domain, DISCRETECLASS);
-		for(int i = 0; i < theTaskSpec.getNumDiscreteObsDims(); i++){
-			Attribute a = new Attribute(domain, DISCATT+i, Attribute.AttributeType.INT);
-			IntRange rng = theTaskSpec.getDiscreteObservationRange(i);
-			a.setLims(rng.getMin(), rng.getMax());
-			discObClass.addAttribute(a);
-		}
-
-		ObjectClass realObClass = new ObjectClass(domain, REALCLASS);
-		for(int i = 0; i < theTaskSpec.getNumContinuousObsDims(); i++){
-			Attribute a = new Attribute(domain, REALATT+i, Attribute.AttributeType.REAL);
-			DoubleRange rng = theTaskSpec.getContinuousObservationRange(i);
-			a.setLims(rng.getMin(), rng.getMax());
-			realObClass.addAttribute(a);
-		}
-
-
 		if(theTaskSpec.getNumDiscreteActionDims() != 1 || theTaskSpec.getNumContinuousActionDims() > 0){
 			throw new RuntimeException("Can only create domains with one discrete action dimension");
 		}
@@ -102,31 +57,12 @@ public class RLGlueDomain implements DomainGenerator {
 
 	/**
 	 * Creates a BURLAP {@link State} from a RLGlue {@link org.rlcommunity.rlglue.codec.types.Observation}.
-	 * @param domain the domain to which the state {@link burlap.oomdp.core.ObjectClass} instances belong.
 	 * @param obsv the RLGlue {@link org.rlcommunity.rlglue.codec.types.Observation}
 	 * @return the corresponding BURLAP {@link State}.
 	 */
-	public static State stateFromObservation(Domain domain, Observation obsv){
+	public static State stateFromObservation(Observation obsv){
 
-		State s = new CMutableState();
-
-		if(obsv.intArray != null && obsv.intArray.length > 0){
-			OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(DISCRETECLASS), "discreteVals");
-			s.addObject(o);
-			for(int i = 0; i < obsv.intArray.length; i++){
-				o.setValue(DISCATT+i, obsv.intArray[i]);
-			}
-		}
-
-		if(obsv.doubleArray != null && obsv.doubleArray.length > 0){
-			OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(REALCLASS), "realVals");
-			s.addObject(o);
-			for(int i = 0; i < obsv.doubleArray.length; i++){
-				o.setValue(REALATT+i, obsv.doubleArray[i]);
-			}
-		}
-
-		return s;
+		return new RLGlueState(obsv);
 	}
 
 
