@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
 import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;

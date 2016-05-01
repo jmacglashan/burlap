@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.oo.ObParamSGAgentAction;
 

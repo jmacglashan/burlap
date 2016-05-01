@@ -1,6 +1,6 @@
 package burlap.oomdp.statehashing;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.OOStateUtilities;
 import burlap.oomdp.core.oo.state.ObjectInstance;

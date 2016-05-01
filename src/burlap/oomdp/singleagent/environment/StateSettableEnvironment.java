@@ -1,6 +1,6 @@
 package burlap.oomdp.singleagent.environment;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 /**
  * An interface to be used with {@link burlap.oomdp.singleagent.environment.Environment} instances that allows

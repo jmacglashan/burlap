@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learning.modellearning;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.FullActionModel;

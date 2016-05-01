@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.auxiliary.valuefunctionvis;
 import java.awt.Graphics2D;
 
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 /**
  * An interface for painting a representation of the policy for a specific state onto a 2D Graphics context.

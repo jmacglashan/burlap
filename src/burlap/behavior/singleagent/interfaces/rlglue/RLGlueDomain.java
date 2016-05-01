@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.interfaces.rlglue;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;

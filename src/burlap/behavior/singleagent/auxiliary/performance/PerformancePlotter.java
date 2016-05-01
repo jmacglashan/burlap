@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.auxiliary.performance;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentObserver;

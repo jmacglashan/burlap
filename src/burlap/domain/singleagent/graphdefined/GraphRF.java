@@ -1,6 +1,6 @@
 package burlap.domain.singleagent.graphdefined;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 

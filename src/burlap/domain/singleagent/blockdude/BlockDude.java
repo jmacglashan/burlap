@@ -4,7 +4,7 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.*;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;

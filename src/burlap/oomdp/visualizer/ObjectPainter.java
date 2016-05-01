@@ -1,6 +1,6 @@
 package burlap.oomdp.visualizer;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 
 import java.awt.*;

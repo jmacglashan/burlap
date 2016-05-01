@@ -1,7 +1,7 @@
 package burlap.behavior.policy;
 
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;
 

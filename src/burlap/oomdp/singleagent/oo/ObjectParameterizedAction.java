@@ -2,7 +2,7 @@ package burlap.oomdp.singleagent.oo;
 
 import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.OOStateUtilities;

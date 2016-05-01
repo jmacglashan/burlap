@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGAgentType;

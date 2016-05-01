@@ -5,7 +5,7 @@ import java.util.Map;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.MAQSourcePolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;

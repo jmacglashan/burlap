@@ -6,7 +6,7 @@ import java.util.Map;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 
 

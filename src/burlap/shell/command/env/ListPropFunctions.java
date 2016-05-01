@@ -3,7 +3,7 @@ package burlap.shell.command.env;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.shell.BurlapShell;

@@ -1,6 +1,6 @@
 package burlap.oomdp.stochasticgames;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 import java.util.List;
 

@@ -19,7 +19,7 @@ import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 

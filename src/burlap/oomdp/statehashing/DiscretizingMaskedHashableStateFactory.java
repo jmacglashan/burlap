@@ -1,6 +1,6 @@
 package burlap.oomdp.statehashing;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.HashMap;

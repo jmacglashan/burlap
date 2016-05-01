@@ -2,7 +2,7 @@ package burlap.oomdp.singleagent.common;
 
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

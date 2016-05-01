@@ -3,7 +3,7 @@ package burlap.oomdp.singleagent.pomdp;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;

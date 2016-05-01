@@ -1,22 +1,24 @@
 package burlap.behavior.singleagent.learning.actorcritic.actor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -154,14 +156,16 @@ public class BoltzmannActor extends Actor {
 
 
 		
-		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
-			//then convert back to this states space
-			Map <String, String> matching = node.sh.s.getObjectMatchingTo(s, false);
+		if(this.containsParameterizedActions && s instanceof OOState){
+
 
 			List <ActionProb> translated = new ArrayList<ActionProb>(probs.size());
 
 			for(ActionProb ap : probs){
-				ActionProb tap = new ActionProb(((GroundedAction)ap.ga).translateParameters(node.sh.s, s), ap.pSelection);
+
+				GroundedAction nga = (GroundedAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(ap.ga, node.sh.s, s);
+
+				ActionProb tap = new ActionProb(nga, ap.pSelection);
 				translated.add(tap);
 			}
 

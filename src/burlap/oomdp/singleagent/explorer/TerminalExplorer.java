@@ -2,7 +2,7 @@ package burlap.oomdp.singleagent.explorer;
 
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.common.NullRewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;

@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 /**
  * A class for the default condition when a value function initialization returns an unparameterized  value

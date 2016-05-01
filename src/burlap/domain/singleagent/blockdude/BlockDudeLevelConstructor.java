@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.blockdude;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 /**
  * A class for generating the initial states for {@link burlap.domain.singleagent.blockdude.BlockDude} from levels

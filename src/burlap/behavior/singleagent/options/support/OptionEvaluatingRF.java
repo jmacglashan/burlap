@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.options.support;
 
 import burlap.behavior.singleagent.options.Option;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 

@@ -1,7 +1,7 @@
 package burlap.oomdp.auxiliary.common;
 
 import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 /**
  * This class takes a source state as input as returns copies of it for every call of generateState().

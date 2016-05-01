@@ -6,7 +6,7 @@ import burlap.debugtools.MyTimer;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;

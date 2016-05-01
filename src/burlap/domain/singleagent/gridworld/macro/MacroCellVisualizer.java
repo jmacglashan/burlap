@@ -2,7 +2,7 @@ package burlap.domain.singleagent.gridworld.macro;
 
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.StatePainter;
 import burlap.oomdp.visualizer.Visualizer;

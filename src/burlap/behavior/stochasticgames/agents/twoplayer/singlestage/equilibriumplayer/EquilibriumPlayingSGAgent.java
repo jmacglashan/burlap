@@ -6,7 +6,7 @@ import java.util.Random;
 
 import burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriumplayer.equilibriumsolvers.MaxMax;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;

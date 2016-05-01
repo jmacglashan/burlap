@@ -1,6 +1,8 @@
 package burlap.oomdp.core;
 
 
+import burlap.oomdp.core.state.State;
+
 /**
  * Represents the probability of transition to a given state.
  * @author James MacGlashan

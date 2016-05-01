@@ -19,7 +19,7 @@ import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.Environment;

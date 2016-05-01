@@ -1,7 +1,7 @@
 package burlap.oomdp.singleagent.common;
 
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 

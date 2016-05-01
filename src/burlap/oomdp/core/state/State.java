@@ -1,4 +1,4 @@
-package burlap.oomdp.core;
+package burlap.oomdp.core.state;
 
 import java.util.ArrayList;
 import java.util.List;

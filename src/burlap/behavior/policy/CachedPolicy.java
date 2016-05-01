@@ -3,7 +3,7 @@ package burlap.behavior.policy;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 import java.util.HashMap;
 import java.util.List;

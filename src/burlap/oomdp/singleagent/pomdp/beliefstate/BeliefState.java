@@ -1,6 +1,6 @@
 package burlap.oomdp.singleagent.pomdp.beliefstate;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 /**

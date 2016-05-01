@@ -1,6 +1,6 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.state.MutableOOState;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentDelegation;

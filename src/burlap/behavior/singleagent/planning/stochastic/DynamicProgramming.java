@@ -20,7 +20,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 /**
  * An interface for value function initialization that is differentiable with respect to some parameters. This

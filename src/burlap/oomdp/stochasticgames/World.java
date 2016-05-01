@@ -7,7 +7,7 @@ import burlap.debugtools.DPrint;
 import burlap.oomdp.auxiliary.StateAbstraction;
 import burlap.oomdp.auxiliary.common.NullAbstraction;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
 
 import java.util.ArrayList;

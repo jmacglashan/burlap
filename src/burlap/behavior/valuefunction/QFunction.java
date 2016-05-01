@@ -4,7 +4,7 @@ import java.util.List;
 
 import burlap.behavior.policy.Policy;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
 
 /**

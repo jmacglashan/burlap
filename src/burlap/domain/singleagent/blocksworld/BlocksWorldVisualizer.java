@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.Visualizer;
 

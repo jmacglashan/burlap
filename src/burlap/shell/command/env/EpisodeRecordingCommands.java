@@ -2,7 +2,7 @@ package burlap.shell.command.env;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.environment.*;
 import burlap.shell.BurlapShell;

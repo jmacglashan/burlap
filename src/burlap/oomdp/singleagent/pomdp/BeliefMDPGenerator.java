@@ -4,7 +4,7 @@ import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.*;
 import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;

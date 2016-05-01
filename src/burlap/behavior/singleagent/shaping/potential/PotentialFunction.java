@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.shaping.potential;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 
 /**

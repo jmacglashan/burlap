@@ -9,7 +9,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.SGAgentType;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.JointAction;

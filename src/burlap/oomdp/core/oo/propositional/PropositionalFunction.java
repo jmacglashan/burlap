@@ -1,6 +1,6 @@
 package burlap.oomdp.core.oo.propositional;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.OOStateUtilities;

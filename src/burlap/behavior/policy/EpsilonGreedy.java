@@ -12,7 +12,7 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 
 /**

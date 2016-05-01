@@ -2,7 +2,7 @@ package burlap.oomdp.singleagent;
 
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 import java.util.ArrayList;
 import java.util.List;

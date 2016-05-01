@@ -9,7 +9,7 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.stochasticgames.SGAgentType;

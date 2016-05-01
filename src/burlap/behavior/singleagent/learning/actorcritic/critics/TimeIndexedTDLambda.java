@@ -10,7 +10,7 @@ import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

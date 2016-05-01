@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgames;
 import burlap.behavior.stochasticgames.agents.RandomSGAgent;
 import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;

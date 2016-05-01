@@ -4,7 +4,7 @@ import java.util.List;
 
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 /**
  * A state condition class that returns true when ever any grounded version of a specified

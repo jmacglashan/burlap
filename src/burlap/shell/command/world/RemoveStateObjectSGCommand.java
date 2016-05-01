@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.state.MutableOOState;
 import burlap.oomdp.stochasticgames.World;
 import burlap.shell.BurlapShell;

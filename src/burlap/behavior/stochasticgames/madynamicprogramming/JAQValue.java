@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 
 

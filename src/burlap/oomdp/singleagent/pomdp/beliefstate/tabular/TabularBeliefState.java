@@ -2,8 +2,8 @@ package burlap.oomdp.singleagent.pomdp.beliefstate.tabular;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.MutableState;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.MutableState;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.pomdp.ObservationFunction;

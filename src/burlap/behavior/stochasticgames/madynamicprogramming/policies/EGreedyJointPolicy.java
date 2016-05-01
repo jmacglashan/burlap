@@ -13,7 +13,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.MultiAgentQSourcePro
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 
 

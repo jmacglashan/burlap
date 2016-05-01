@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;

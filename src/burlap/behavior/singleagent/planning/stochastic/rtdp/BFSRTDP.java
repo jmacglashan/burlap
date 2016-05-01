@@ -14,7 +14,7 @@ import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.RewardFunction;
 

@@ -1,7 +1,7 @@
 package burlap.oomdp.core.oo.propositional;
 
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 import java.util.Arrays;
 

@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.planning.vfa.fittedvi;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.datastructures.WekaInterfaces;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import weka.classifiers.Classifier;
 import weka.classifiers.lazy.IBk;
 import weka.core.Instance;

@@ -21,7 +21,7 @@ import burlap.oomdp.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.debugtools.DPrint;
 import burlap.oomdp.core.*;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 import java.util.*;

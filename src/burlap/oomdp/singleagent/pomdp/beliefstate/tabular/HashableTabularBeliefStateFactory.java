@@ -1,6 +1,6 @@
 package burlap.oomdp.singleagent.pomdp.beliefstate.tabular;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.statehashing.HashableState;
 import burlap.oomdp.statehashing.HashableStateFactory;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

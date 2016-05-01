@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.rbf.DistanceMetric;
 import burlap.behavior.singleagent.vfa.rbf.RBF;
 import burlap.behavior.singleagent.vfa.rbf.metrics.EuclideanDistance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 import java.util.ArrayList;
 import java.util.List;

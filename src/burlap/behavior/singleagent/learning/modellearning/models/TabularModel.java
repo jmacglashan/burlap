@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.learning.modellearning.models;
 
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.oomdp.core.*;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

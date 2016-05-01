@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.planning.stochastic;
 
 import burlap.oomdp.statehashing.HashableStateFactory;
 import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TransitionProbability;
 
 /**

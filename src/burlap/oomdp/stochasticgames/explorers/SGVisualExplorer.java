@@ -4,7 +4,7 @@ import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.explorer.TextAreaStreams;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;

@@ -8,6 +8,8 @@
 package burlap.oomdp.core;
 
 
+import burlap.oomdp.core.state.State;
+
 /**
  * And interface for defining terminal states of an MDP.
  * @author James MacGlashan

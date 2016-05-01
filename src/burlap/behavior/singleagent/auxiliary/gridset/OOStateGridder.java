@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.auxiliary.gridset;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.state.MutableOOState;
 import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.OOVariableKey;

@@ -1,6 +1,6 @@
 package burlap.oomdp.auxiliary.stateconditiontest;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 
 
 /**

@@ -1,29 +1,29 @@
 package burlap.behavior.stochasticgames.agents.naiveq;
 
+import burlap.behavior.learningrate.ConstantLR;
+import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.EpsilonGreedy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.oomdp.auxiliary.StateAbstraction;
+import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
+import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.oomdp.stochasticgames.JointAction;
+import burlap.oomdp.stochasticgames.SGAgent;
+import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.behavior.learningrate.ConstantLR;
-import burlap.behavior.learningrate.LearningRate;
-import burlap.behavior.policy.Policy;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.policy.EpsilonGreedy;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.auxiliary.StateAbstraction;
-import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 
 /**
  * A Tabular Q-learning [1] algorithm for stochastic games formalisms. This algorithm ignores the actions of other agents and treats the outcomes
@@ -301,10 +301,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			GroundedSGAgentAction transgsa = gsa;
 
 			if(gsa instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
-				if(matching == null){
-					matching = shq.s.getObjectMatchingTo(storedRep, false);
-				}
-				transgsa = this.translateAction(gsa, matching);
+				transgsa = (GroundedSGAgentAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(gsa, shq.s, storedRep);
 			}
 			
 			//find matching action in entry list
@@ -361,8 +358,8 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		
 		if(gsa instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
 			//then we'll need to translate this action to match the internal state representation
-			Map <String, String> matching = shq.s.getObjectMatchingTo(storedRep, false);
-			gsa = this.translateAction(gsa, matching);
+			gsa = (GroundedSGAgentAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(gsa, shq.s, storedRep);
+
 		}
 		
 		List <QValue> entries = qMap.get(shq);

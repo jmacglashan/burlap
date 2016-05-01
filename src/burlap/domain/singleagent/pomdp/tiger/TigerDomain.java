@@ -13,7 +13,7 @@ import burlap.oomdp.core.*;
 import burlap.oomdp.core.Attribute.AttributeType;
 import burlap.oomdp.core.objects.MutableObjectInstance;
 import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;

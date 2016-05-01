@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.WorldObserver;

@@ -1,6 +1,6 @@
 package burlap.oomdp.stochasticgames.agentactions;
 
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.SGDomain;
 
 import java.util.ArrayList;

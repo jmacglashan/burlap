@@ -2,7 +2,7 @@ package burlap.oomdp.stochasticgames;
 
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 

@@ -1,7 +1,7 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.MutableState;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.MutableState;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;

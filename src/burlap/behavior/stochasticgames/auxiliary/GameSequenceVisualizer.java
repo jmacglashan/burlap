@@ -2,7 +2,7 @@ package burlap.behavior.stochasticgames.auxiliary;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.datastructures.AlphanumericSorting;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;

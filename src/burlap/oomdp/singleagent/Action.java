@@ -2,7 +2,7 @@ package burlap.oomdp.singleagent;
 
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.environment.EnvironmentOutcome;

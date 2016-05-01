@@ -9,7 +9,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 
 

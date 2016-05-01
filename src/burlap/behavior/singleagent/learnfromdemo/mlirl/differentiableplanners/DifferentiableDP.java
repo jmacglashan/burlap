@@ -9,7 +9,7 @@ import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.statehashing.HashableState;
 
