@@ -1,5 +1,7 @@
 package burlap.oomdp.core.oo.state;
 
+import burlap.oomdp.core.state.StateUtilities;
+
 import java.util.*;
 
 /**
@@ -50,6 +52,23 @@ public class OOStateUtilities {
 			classes.add(ob.className());
 		}
 		return classes;
+	}
+
+	public static String ooStateToString(OOState s){
+		StringBuilder buf = new StringBuilder();
+		buf.append("{\n");
+		for(ObjectInstance o : s.objects()){
+			buf.append(objectInstanceToString(o)).append("\n");
+		}
+		buf.append("}");
+		return buf.toString();
+	}
+
+	public static String objectInstanceToString(ObjectInstance o){
+		StringBuilder buf = new StringBuilder();
+		buf.append(o.name()).append(" (").append(o.className()).append("): ")
+				.append(StateUtilities.stateToString(o));
+		return buf.toString();
 	}
 
 	public static List <List<String>> getPossibleBindingsGivenParamOrderGroups(OOState s, String [] paramClasses, String [] paramOrderGroups){
