@@ -1,21 +1,17 @@
 package burlap.domain.singleagent.gridworld;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.core.state.State;
+import burlap.oomdp.visualizer.*;
+
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.ObjectPainter;
-import burlap.oomdp.visualizer.StateRenderLayer;
-import burlap.oomdp.visualizer.StatePainter;
-import burlap.oomdp.visualizer.Visualizer;
-
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.*;
 
 
 /**
@@ -73,9 +69,11 @@ public class GridWorldVisualizer {
 		
 		StateRenderLayer r = new StateRenderLayer();
 		
-		r.addStaticPainter(new MapPainter(map));
-		r.addObjectClassPainter(GridWorldDomain.CLASSLOCATION, new LocationPainter(map));
-		r.addObjectClassPainter(GridWorldDomain.CLASSAGENT, new CellPainter(1, Color.gray, map));
+		r.addStatePainter(new MapPainter(map));
+		OOStatePainter oopainter = new OOStatePainter();
+		oopainter.addObjectClassPainter(GridWorldDomain.CLASS_LOCATION, new LocationPainter(map));
+		oopainter.addObjectClassPainter(GridWorldDomain.CLASS_AGENT, new CellPainter(1, Color.gray, map));
+		r.addStatePainter(oopainter);
 		
 		return r;
 		
@@ -90,9 +88,11 @@ public class GridWorldVisualizer {
 		
 		StateRenderLayer r = new StateRenderLayer();
 		
-		r.addStaticPainter(new MapPainter(map));
-		r.addObjectClassPainter(GridWorldDomain.CLASSLOCATION, new LocationPainter(map));
-		r.addObjectClassPainter(GridWorldDomain.CLASSAGENT, new CellPainter(1, Color.gray, map));
+		r.addStatePainter(new MapPainter(map));
+		OOStatePainter oopainter = new OOStatePainter();
+		oopainter.addObjectClassPainter(GridWorldDomain.CLASS_LOCATION, new LocationPainter(map));
+		oopainter.addObjectClassPainter(GridWorldDomain.CLASS_AGENT, new CellPainter(1, Color.gray, map));
+		r.addStatePainter(oopainter);
 		
 		return r;
 		
@@ -224,7 +224,7 @@ public class GridWorldVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			
 			//set the color of the object
@@ -236,9 +236,9 @@ public class GridWorldVisualizer {
 			//determine then normalized width
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
-			
-			float rx = ob.getIntValForAttribute(GridWorldDomain.ATTX)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(GridWorldDomain.ATTY)*height;
+
+			float rx = (Integer)ob.get(ATT_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(ATT_Y)*height;
 			
 			if(this.shape == 0){
 				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
@@ -286,9 +286,9 @@ public class GridWorldVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
 			
-			int type = ob.getIntValForAttribute(GridWorldDomain.ATTLOCTYPE);
+			int type = (Integer)ob.get(ATT_TYPE);
 			int multiplier = type / this.baseColors.size();
 			int colIndex = type % this.baseColors.size();
 			
@@ -306,9 +306,10 @@ public class GridWorldVisualizer {
 			//determine then normalized width
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
-			
-			float rx = ob.getIntValForAttribute(GridWorldDomain.ATTX)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(GridWorldDomain.ATTY)*height;
+
+			float rx = (Integer)ob.get(ATT_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(ATT_Y)*height;
+
 			
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 			

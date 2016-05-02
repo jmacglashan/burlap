@@ -1,7 +1,5 @@
 package burlap.domain.singleagent.gridworld;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -47,30 +45,7 @@ public class GridWorldRewardFunction implements RewardFunction {
 	public GridWorldRewardFunction(int width, int height){
 		this(width, height, 0.);
 	}
-	
-	
-	/**
-	 * Initializes the reward function for a grid world with a size defined by the attributes of the domain object to initializingReward.
-	 * The reward returned from specific agent positions may be changed with the {@link #setReward(int, int, double)} method.
-	 * @param domain the domain whose x and y attributes will be used to determine the size of the grid world.
-	 * @param initializingReward the reward to which all agent position transitions are initialized to return.
-	 */
-	public GridWorldRewardFunction(Domain domain, double initializingReward){
-		Attribute xatt = domain.getAttribute(GridWorldDomain.ATTX);
-		Attribute yatt = domain.getAttribute(GridWorldDomain.ATTY);
-		int width = (int)xatt.upperLim + 1;
-		int height = (int)yatt.upperLim + 1;
-		this.initialize(width, height, initializingReward);
-	}
-	
-	/**
-	 * Initializes the reward function for a grid world with a size defined by the attributes of the domain object to 0.
-	 * The reward returned from specific agent positions may be changed with the {@link #setReward(int, int, double)} method.
-	 * @param domain the domain whose x and y attributes will be used to determine the size of the grid world.
-	 */
-	public GridWorldRewardFunction(Domain domain){
-		this(domain, 0.);
-	}
+
 	
 	
 	/**
@@ -121,9 +96,9 @@ public class GridWorldRewardFunction implements RewardFunction {
 	
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
-		OldObjectInstance agent = sprime.getFirstObjectOfClass(GridWorldDomain.CLASSAGENT);
-		int x = agent.getIntValForAttribute(GridWorldDomain.ATTX);
-		int y = agent.getIntValForAttribute(GridWorldDomain.ATTY);
+
+		int x = ((GridWorldState)s).agent.x;
+		int y = ((GridWorldState)s).agent.y;
 		
 		if(x >= this.width || x < 0 || y >= this.height || y < 0){
 			throw new RuntimeException("GridWorld reward matrix is only defined for a " + this.width + "x" + 

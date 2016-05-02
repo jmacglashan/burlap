@@ -57,6 +57,22 @@ public class GridWorldDomain implements DomainGenerator {
 
 
 	/**
+	 * Constant for x attribute name
+	 */
+	public static final String ATT_X = "x";
+
+	/**
+	 * Constant for y attribute name
+	 */
+	public static final String ATT_Y = "x";
+
+	/**
+	 * Constant for location type attribute name
+	 */
+	public static final String ATT_TYPE = "type";
+
+
+	/**
 	 * Constant OO-MDP class name for agent
 	 */
 	public static final String CLASS_AGENT = "agent";
