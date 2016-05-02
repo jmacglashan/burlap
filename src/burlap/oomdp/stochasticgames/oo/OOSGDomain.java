@@ -29,8 +29,9 @@ public class OOSGDomain extends SGDomain implements OODomain {
 	}
 
 	@Override
-	public void addStateClass(String className, Class<?> stateClass) {
+	public OOSGDomain addStateClass(String className, Class<?> stateClass) {
 		this.stateClassesMap.put(className, stateClass);
+		return this;
 	}
 
 	@Override

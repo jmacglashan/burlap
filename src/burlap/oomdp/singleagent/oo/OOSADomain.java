@@ -30,8 +30,9 @@ public class OOSADomain extends SADomain implements OODomain {
 	}
 
 	@Override
-	public void addStateClass(String className, Class<?> stateClass) {
+	public OOSADomain addStateClass(String className, Class<?> stateClass) {
 		this.stateClassesMap.put(className, stateClass);
+		return this;
 	}
 
 	@Override

@@ -20,6 +20,16 @@ public class OOStateUtilities {
 		return flatKeys;
 	}
 
+	public static OOVariableKey generateKey(Object key){
+		if(key instanceof OOVariableKey){
+			return (OOVariableKey)key;
+		}
+		else if(key instanceof String){
+			return new OOVariableKey((String)key);
+		}
+		throw new RuntimeException("An OOState variable Key must either be a OOVariableKey or String that can be parsed into an OOVariableKey, but key was of type " + key.getClass().getName());
+	}
+
 	public static Map<String, List<ObjectInstance>> objectsByClass(OOState s){
 
 		Set<String> classes = objectClassesPresent(s);

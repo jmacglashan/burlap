@@ -235,7 +235,7 @@ public abstract class PropositionalFunction {
 	 * @param params the parameters being passed in to the propositional function
 	 * @return whether the propositional function is true
 	 */
-	public abstract boolean isTrue(State s, String... params);
+	public abstract boolean isTrue(OOState s, String... params);
 	
 	
 	
