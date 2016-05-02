@@ -1,14 +1,11 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StateValuePainter;
-import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.Attribute.AttributeType;
+import burlap.oomdp.core.state.VariableRange;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 
 /**
@@ -18,38 +15,40 @@ import burlap.oomdp.core.Attribute.AttributeType;
  */
 public class StateValuePainter2D extends StateValuePainter {
 
-	
+
 	/**
-	 * The name of the attribute that is used for determining the x-position on the canvas
+	 * variable key for the x variable
 	 */
-	protected String							xAttName;
-	
+	protected Object xKey;
+
+
 	/**
-	 * The name of the attribute that is used for determining the y-position on the canvas
+	 * variable key for the y variable
 	 */
-	protected String							yAttName;
-	
-	
+	protected Object yKey;
+
+
 	/**
-	 * The name of the class that holds the x-attribute used for determining the x-position on the canvas
+	 * Range of the x key
 	 */
-	protected String							xClassName;
-	
+	protected VariableRange xRange;
+
+
 	/**
-	 * The name of the class that holds the y-attribute used for determining the y-position on the canvas
+	 * Range of the y key
 	 */
-	protected String							yClassName;
-	
-	
+	protected VariableRange yRange;
+
 	/**
-	 * The name of the object that holds the x-attribute used for determining the x-position on the canvas
+	 * Width of x cells
 	 */
-	protected String							xObjectName;
-	
+	protected double xWidth;
+
+
 	/**
-	 * The name of the object that holds the y-attribute used for determining the y-position on the canvas
+	 * width of y cells
 	 */
-	protected String							yObjectName;
+	protected double yWidth;
 	
 	
 	/**
@@ -69,8 +68,7 @@ public class StateValuePainter2D extends StateValuePainter {
 	 */
 	protected int								numYCells = -1;
 	
-	
-	//TODO: setters for the below
+
 	
 	/**
 	 * Whether the numeric string for the value of the state should be rendered in its cell or not.
@@ -135,40 +133,22 @@ public class StateValuePainter2D extends StateValuePainter {
 	}
 
 	/**
-	 * Will set the x-y attributes to use for cell rendering to the x y attributes of the first object in the state of the designated classes.
-	 * @param xClassName the object class name containing the render x-axis attribute
-	 * @param xAttName the render x-axis attribute name
-	 * @param yClassName the object class name containing the render y-axis attribute
-	 * @param yAttName the render y-axis attribute name
+	 * Sets the variable keys for the x and y variables in the state and the width of cells along those domains.
+	 * The widths along the x dimension are how much of the variable space each rendered state will take.
+	 * @param xKey the x variable key
+	 * @param yKey the y variable key
+	 * @param xRange the range of the x values
+	 * @param yRange the range of the y values
+	 * @param xWidth the width of a state along the x domain
+	 * @param yWidth the width of a state alone the y domain
 	 */
-	public void setXYAttByObjectClass(String xClassName, String xAttName, String yClassName, String yAttName){
-		this.xClassName = xClassName;
-		this.xAttName = xAttName;
-		
-		this.yClassName = yClassName;
-		this.yAttName = yAttName;
-		
-		this.xObjectName = null;
-		this.yObjectName = null;
-	}
-	
-	
-	/**
-	 * Will set the x-y attributes to use for cell rendering to the x y attributes of the designated object references.
-	 * @param xObjectName the object name reference that contains the render x-axis attribute
-	 * @param xAttName the render x-axis attribute name
-	 * @param yObjectName the object name reference that contains the render y-axis attribute
-	 * @param yAttName the render y-axis attribute name
-	 */
-	public void setXYAttByObjectReference(String xObjectName, String xAttName, String yObjectName, String yAttName){
-		this.xObjectName = xObjectName;
-		this.xAttName = xAttName;
-		
-		this.yObjectName = yObjectName;
-		this.yAttName = yAttName;
-		
-		this.xClassName = null;
-		this.yClassName = null;
+	public void setXYKeys(Object xKey, Object yKey, VariableRange xRange, VariableRange yRange, double xWidth, double yWidth){
+		this.xKey = xKey;
+		this.yKey = yKey;
+		this.xRange = xRange;
+		this.yRange = yRange;
+		this.xWidth = xWidth;
+		this.yWidth = yWidth;
 	}
 
 	
@@ -229,60 +209,24 @@ public class StateValuePainter2D extends StateValuePainter {
 
 	@Override
 	public void paintStateValue(Graphics2D g2, State s, double value, float cWidth, float cHeight) {
-		
-		OldObjectInstance xOb = this.xObjectInstance(s);
-		OldObjectInstance yOb = this.yObjectInstance(s);
-		
-		Attribute xAtt = xOb.getObjectClass().getAttribute(xAttName);
-		Attribute yAtt = yOb.getObjectClass().getAttribute(yAttName);
-		
-		float domainXScale;
-		float domainYScale;
+
+		Number x = (Number)s.get(xKey);
+		Number y = (Number)s.get(yKey);
+
 		float xval;
 		float yval;
 		float width;
 		float height;
 		
 
-		if(xAtt.type == Attribute.AttributeType.DISC){
-			domainXScale = xAtt.discValues.size();
-		}
-		else if(xAtt.type == AttributeType.INT){
-			domainXScale = (float)(xAtt.upperLim - xAtt.lowerLim + 1);
-		}
-		else {
-			domainXScale = (float)(xAtt.upperLim - xAtt.lowerLim);
-		}
+		width = cWidth / (float)(xRange.span() / xWidth);
+		height = cHeight / (float)(yRange.span() / yWidth);
 
-		if(this.numXCells != -1){
-			width = cWidth / this.numXCells;
-		}
-		else{
-			width = cWidth / domainXScale;
-		}
-
-		float normX = (float)(xOb.getNumericValForAttribute(xAttName) - xAtt.lowerLim) / domainXScale;
+		float normX = (float)xRange.norm(x.doubleValue());
 		xval = normX * cWidth;
-		
 
-		if(yAtt.type == AttributeType.DISC){
-			domainYScale = yAtt.discValues.size();
-		}
-		else if(yAtt.type == AttributeType.INT){
-			domainYScale = (float)(yAtt.upperLim - yAtt.lowerLim + 1);
-		}
-		else{
-			domainYScale = (float)(yAtt.upperLim - yAtt.lowerLim);
-		}
 
-		if(this.numYCells != -1){
-			height = cHeight / this.numYCells;
-		}
-		else{
-			height = cHeight / domainYScale;
-		}
-
-		float normY = (float)(yOb.getNumericValForAttribute(yAttName) - yAtt.lowerLim) / domainYScale;
+		float normY = (float)yRange.norm(y.doubleValue());
 		yval = cHeight - height - normY*cHeight;
 		
 		
@@ -307,35 +251,6 @@ public class StateValuePainter2D extends StateValuePainter {
 		
 
 	}
-	
-	
-	/**
-	 * Returns the object instance in a state that holds the x-position information.
-	 * @param s the state for which to get the x-position
-	 * @return the object instance in a state that holds the x-position information.
-	 */
-	protected OldObjectInstance xObjectInstance(State s){
-		if(this.xClassName != null){
-			return s.getFirstObjectOfClass(xClassName);
-		}
-		return s.getObject(xObjectName);
-	}
-	
-	
-	/**
-	 * Returns the object instance in a state that holds the y-position information.
-	 * @param s the state for which to get the y-position
-	 * @return the object instance in a state that holds the y-position information.
-	 */
-	protected OldObjectInstance yObjectInstance(State s){
-		if(this.yClassName != null){
-			return s.getFirstObjectOfClass(yClassName);
-		}
-		return s.getObject(yObjectName);
-	}
 
-
-	
-	
 
 }
