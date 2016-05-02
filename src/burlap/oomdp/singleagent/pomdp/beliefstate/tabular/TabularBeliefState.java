@@ -433,8 +433,10 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 		return false;
 
 	}
-	
-	public <T> State setObjectsValue(String objectName, String attName, T value) {
-		throw new UnsupportedOperationException("TabularBeliefState cannot have OO-MDP objects added to it.");
+
+
+	@Override
+	public String toString() {
+		return this.beliefValues.toString();
 	}
 }
