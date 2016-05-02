@@ -1,13 +1,11 @@
 package burlap.domain.singleagent.mountaincar;
 
-import java.util.Random;
-
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.OldObjectInstance;
 import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.objects.MutableObjectInstance;
+
+import java.util.Random;
 
 
 /**
@@ -18,7 +16,6 @@ import burlap.oomdp.core.objects.MutableObjectInstance;
  */
 public class MCRandomStateGenerator implements StateGenerator {
 
-	private Domain domain;
 	private double xmin;
 	private double xmax;
 	private double vmin;
@@ -30,31 +27,27 @@ public class MCRandomStateGenerator implements StateGenerator {
 	/**
 	 * Initializes for the {@link MountainCar} {@link Domain} object for which states will be generated. By default, the random x and velocity ranges will be
 	 * the full range used by the domain.
-	 * @param domain the {@link MountainCar} {@link Domain} object for which states will be generated
+	 * @param params the mountain car physics parameters specifying the boundaries
 	 */
-	public MCRandomStateGenerator(Domain domain){
-		this.domain = domain;
-		Attribute xatt = domain.getAttribute(MountainCar.ATTX);
-		Attribute vatt = domain.getAttribute(MountainCar.ATTV);
-		
-		this.xmin = xatt.lowerLim;
-		this.xmax = xatt.upperLim;
-		this.vmin = vatt.lowerLim;
-		this.vmax = vatt.upperLim;
+	public MCRandomStateGenerator(MountainCar.MCPhysicsParams params){
+
+		this.xmin = params.xmin;
+		this.xmax = params.xmax;
+		this.vmin = params.vmin;
+		this.vmax = params.vmax;
+
 		
 		this.rand = RandomFactory.getMapped(0);
 	}
 	
 	/**
-	 * Initializes for the {@link MountainCar} {@link Domain} object for which states will be generated.
-	 * @param domain the {@link MountainCar} {@link Domain} object for which states will be generated
+	 * Initializes for the given boundaries in which random states will be created
 	 * @param xmin the minimum x position value
 	 * @param xmax the maximum x position value
 	 * @param vmin the minimum velocity value
 	 * @param vmax the maximum velocity value
 	 */
-	public MCRandomStateGenerator(Domain domain, double xmin, double xmax, double vmin, double vmax){
-		this.domain = domain;
+	public MCRandomStateGenerator(double xmin, double xmax, double vmin, double vmax){
 		this.xmin = xmin;
 		this.xmax = xmax;
 		this.vmin = vmin;
@@ -170,16 +163,12 @@ public class MCRandomStateGenerator implements StateGenerator {
 
 	@Override
 	public State generateState() {
-		
-		State s = new CMutableState();
-		OldObjectInstance agent = new MutableObjectInstance(this.domain.getObjectClass(MountainCar.CLASSAGENT), MountainCar.CLASSAGENT);
-		s.addObject(agent);
+
 		
 		double rx = this.rand.nextDouble() * (this.xmax - this.xmin) + this.xmin;
 		double rv = this.rand.nextDouble() * (this.vmax - this.vmin) + this.vmin;
 		
-		agent.setValue(MountainCar.ATTX, rx);
-		agent.setValue(MountainCar.ATTV, rv);
+		MCState s = new MCState(rx, rv);
 		
 		return s;
 	}

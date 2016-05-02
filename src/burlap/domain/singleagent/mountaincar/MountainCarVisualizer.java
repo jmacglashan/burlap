@@ -1,19 +1,17 @@
 package burlap.domain.singleagent.mountaincar;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
+import burlap.oomdp.core.state.State;
+import burlap.oomdp.visualizer.StatePainter;
+import burlap.oomdp.visualizer.StateRenderLayer;
+import burlap.oomdp.visualizer.Visualizer;
+
+import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.ObjectPainter;
-import burlap.oomdp.visualizer.StateRenderLayer;
-import burlap.oomdp.visualizer.StatePainter;
-import burlap.oomdp.visualizer.Visualizer;
+import static burlap.domain.singleagent.mountaincar.MountainCar.ATT_X;
 
 
 /**
@@ -62,25 +60,19 @@ public class MountainCarVisualizer {
 	public static StateRenderLayer getStateRenderLayer(MountainCar.MCPhysicsParams physParams){
 
 		StateRenderLayer slr = new StateRenderLayer();
-		slr.addStaticPainter(new HillPainter(physParams));
-		slr.addObjectClassPainter(MountainCar.CLASSAGENT, new AgentPainter(physParams));
+		slr.addStatePainter(new HillPainter(physParams));
+		slr.addStatePainter(new AgentPainter(physParams));
 
 		return slr;
 
 	}
 	
-	
-	
-	/**
-	 * Class for paining the agent in the mountain car domain. The car will be rendered as a red square.
-	 * @author James MacGlashan
-	 *
-	 */
-	public static class AgentPainter implements ObjectPainter{
+
+
+	public static class AgentPainter implements StatePainter{
 
 		MountainCar.MCPhysicsParams physParams;
-		
-		
+
 		/**
 		 * Initializes with the mountain car physics used
 		 * @param physParams the mountain car physics used
@@ -88,33 +80,27 @@ public class MountainCarVisualizer {
 		public AgentPainter(MountainCar.MCPhysicsParams physParams){
 			this.physParams = physParams;
 		}
-		
-		
+
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
-				float cWidth, float cHeight) {
-			
+		public void paint(Graphics2D g2, State s, float cWidth, float cHeight) {
 			double worldWidth = physParams.xmax - physParams.xmin;
-			
+
 			double renderAgentWidth = 0.04*cWidth;
-			
-			double ox = ob.getRealValForAttribute(MountainCar.ATTX);
+
+			double ox = (Double)s.get(ATT_X);
 			double oy = Math.sin(this.physParams.cosScale*ox);
-			
+
 			double nx = (ox - this.physParams.xmin) / worldWidth;
 			double ny = (oy + 1) / 2;
-			
+
 			double sx = (nx * cWidth) - (renderAgentWidth / 2);
 			double sy = cHeight - (ny * (cHeight-30)+15) - (renderAgentWidth / 2);
-			
-			
+
+
 			g2.setColor(Color.red);
-			
+
 			g2.fill(new Rectangle2D.Double(sx, sy, renderAgentWidth, renderAgentWidth));
-			
 		}
-		
-		
 	}
 	
 	
