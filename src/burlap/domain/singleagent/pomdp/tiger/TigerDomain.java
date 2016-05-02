@@ -1,18 +1,14 @@
 package burlap.domain.singleagent.pomdp.tiger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.Attribute.AttributeType;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.state.MutableState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -27,6 +23,10 @@ import burlap.oomdp.singleagent.pomdp.PODomain;
 import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -45,76 +45,66 @@ public class TigerDomain implements DomainGenerator {
 	/**
 	 * The attribute name that defines which door the tiger is behind
 	 */
-	public static final String				ATTTIGERDOOR = "behindDoor";
+	public static final String ATT_DOOR = "behindDoor";
 
 	/**
 	 * The attribute name for an observation
 	 */
-	public static final String				ATTOBSERVATION = "observation";
+	public static final String ATT_HEAR = "observation";
 
-
-	/**
-	 * The class name for the object class that specifies where the tiger is
-	 */
-	public static final String				CLASSTIGER = "tiger";
-
-	/**
-	 * The class name for observation objects
-	 */
-	public static final String				CLASSOBSERVATION = "observation";
 
 
 	/**
 	 * The open left door action name
 	 */
-	public static final String				ACTIONLEFT = "openLeft";
+	public static final String ACTION_LEFT = "openLeft";
 
 	/**
 	 * The open right door action name
 	 */
-	public static final String				ACTIONRIGHT = "openRight";
+	public static final String ACTION_RIGHT = "openRight";
 
 	/**
 	 * The listen action name
 	 */
-	public static final String				ACTIONLISTEN = "listen";
+	public static final String ACTION_LISTEN = "listen";
 
 	/**
 	 * The do nothing action name
 	 */
-	public static final String				ACTIONDONOTHING = "doNothing";
+	public static final String ACTION_DO_NOTHING = "doNothing";
 
 
 	/**
 	 * The discrete attribute value for the tiger being behind the left door
 	 */
-	public static final String				VALLEFT = "behindLeft";
+	public static final String VAL_LEFT = "behindLeft";
 
 	/**
 	 * The discrete attribtue value for the tiger being behind the right door
 	 */
-	public static final String				VALRIGHT = "behindRight";
+	public static final String VAL_RIGHT = "behindRight";
 
 
 	/**
 	 * The observation attribute value for hearing the tiger behind the left door.
 	 */
-	public static final String				OBHEARLEFT = "hearLeft";
+	public static final String HEAR_LEFT = "hearLeft";
 
 	/**
 	 * The observation attribute value for hearing the tiger behind the right door
 	 */
-	public static final String				OBHEARRIGHT = "hearRight";
+	public static final String HEAR_RIGHT = "hearRight";
 
 	/**
 	 * The observation value for when reaching a new pair of doors (occurs after opening a door)
 	 */
-	public static final String				OBRESET = "reset";
+	public static final String DOOR_RESET = "reset";
 
 	/**
 	 * The observation of hearing nothing (occurs when taking the do nothing action)
 	 */
-	public static final String				OBNOTHING = "hearNothing";
+	public static final String HEAR_NOTHING = "hearNothing";
 
 
 	/**
@@ -156,64 +146,26 @@ public class TigerDomain implements DomainGenerator {
 	public Domain generateDomain() {
 		
 		PODomain domain = new PODomain();
+
 		
-		
-		Attribute tigerAtt = new Attribute(domain, ATTTIGERDOOR, AttributeType.DISC);
-		tigerAtt.setDiscValues(new String[]{VALLEFT, VALRIGHT});
-		
-		Attribute obAtt = new Attribute(domain, ATTOBSERVATION, AttributeType.DISC);
-		obAtt.setDiscValues(new String[]{OBHEARLEFT,OBHEARRIGHT,OBRESET,OBNOTHING});
-		
-		ObjectClass tigerClass = new ObjectClass(domain, CLASSTIGER);
-		tigerClass.addAttribute(tigerAtt);
-		
-		ObjectClass obClass = new ObjectClass(domain, CLASSOBSERVATION);
-		obClass.addAttribute(obAtt);
-		
-		new OpenAction(ACTIONLEFT, domain);
-		new OpenAction(ACTIONRIGHT, domain);
-		new NullAction(ACTIONLISTEN, domain);
+		new OpenAction(ACTION_LEFT, domain);
+		new OpenAction(ACTION_RIGHT, domain);
+		new NullAction(ACTION_LISTEN, domain);
 		if(this.includeDoNothing){
-			new NullAction(ACTIONDONOTHING, domain);
+			new NullAction(ACTION_DO_NOTHING, domain);
 		}
 		
 		new TigerObservations(domain, this.listenAccuracy);
 		
 		StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
-		senum.getEnumeratedID(tigerLeftState(domain));
-		senum.getEnumeratedID(tigerRightState(domain));
+		senum.getEnumeratedID(new TigerState(VAL_LEFT));
+		senum.getEnumeratedID(new TigerState(VAL_RIGHT));
 		
 		domain.setStateEnumerator(senum);
 		
 		return domain;
 	}
 
-	/**
-	 * Returns the hidden state for when the tiger is behind the left door
-	 * @param domain the domain
-	 * @return the hidden state for when the tiger is behind the left door
-	 */
-	public static State tigerLeftState(PODomain domain){
-		State s = new CMutableState();
-		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSTIGER), CLASSTIGER);
-		o.setValue(ATTTIGERDOOR, VALLEFT);
-		s.addObject(o);
-		return s;
-	}
-
-
-	/**
-	 * Returns the hidden state for when the tiger is behind the right door
-	 * @param domain the domain
-	 * @return the hidden state for when the tiger is behind the right door
-	 */
-	public static State tigerRightState(PODomain domain){
-		State s = new CMutableState();
-		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSTIGER), CLASSTIGER);
-		o.setValue(ATTTIGERDOOR, VALRIGHT);
-		s.addObject(o);
-		return s;
-	}
 
 	/**
 	 * Returns a {@link burlap.oomdp.auxiliary.StateGenerator} that 50% of the time generates an hidden tiger state with the tiger on the
@@ -237,7 +189,7 @@ public class TigerDomain implements DomainGenerator {
 			@Override
 			public State generateState() {
 				double roll = RandomFactory.getMapped(0).nextDouble();
-				return roll < probLeft ? tigerLeftState(domain) : tigerRightState(domain);
+				return roll < probLeft ? new TigerState(VAL_LEFT) : new TigerState(VAL_RIGHT);
 			}
 		};
 	}
@@ -270,12 +222,14 @@ public class TigerDomain implements DomainGenerator {
 			
 			Random random = RandomFactory.getMapped(0);
 			double r = random.nextDouble();
-			
+
+
+
 			if(r < 0.5){
-				s.getFirstObjectOfClass(CLASSTIGER).setValue(ATTTIGERDOOR, VALLEFT);
+				((MutableState)s).set(ATT_DOOR, VAL_LEFT);
 			}
 			else{
-				s.getFirstObjectOfClass(CLASSTIGER).setValue(ATTTIGERDOOR, VALRIGHT);
+				((MutableState)s).set(ATT_DOOR, VAL_RIGHT);
 			}
 			
 			return s;
@@ -286,11 +240,11 @@ public class TigerDomain implements DomainGenerator {
 			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(2);
 			
 			State left = s.copy();
-			left.getFirstObjectOfClass(CLASSTIGER).setValue(ATTTIGERDOOR, VALLEFT);
+			((MutableState)left).set(ATT_DOOR, VAL_LEFT);
 			tps.add(new TransitionProbability(left, 0.5));
 			
 			State right = s.copy();
-			right.getFirstObjectOfClass(CLASSTIGER).setValue(ATTTIGERDOOR, VALRIGHT);
+			((MutableState)right).set(ATT_DOOR, VAL_RIGHT);
 			tps.add(new TransitionProbability(right, 0.5));
 			
 			return tps;
@@ -335,14 +289,14 @@ public class TigerDomain implements DomainGenerator {
 		@Override
 		public State sampleObservation(State state, GroundedAction action){
 			//override for faster sampling
-			if(action.actionName().equals(ACTIONLEFT) || action.actionName().equals(ACTIONRIGHT)){
+			if(action.actionName().equals(ACTION_LEFT) || action.actionName().equals(ACTION_RIGHT)){
 				return this.observationReset();
 			}
-			else if(action.actionName().equals(ACTIONLISTEN)){
-				String tigerVal = state.getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
+			else if(action.actionName().equals(ACTION_LISTEN)){
+				String tigerVal = (String)state.get(ATT_DOOR);
 				double r = RandomFactory.getMapped(0).nextDouble();
 				if(r < this.listenAccuracy){
-					if(tigerVal.equals(VALLEFT)){
+					if(tigerVal.equals(VAL_LEFT)){
 						return this.observationLeft();
 					}
 					else{
@@ -351,7 +305,7 @@ public class TigerDomain implements DomainGenerator {
 				}
 				else{
 					//then nosiy listen; reverse direction
-					if(tigerVal.equals(VALLEFT)){
+					if(tigerVal.equals(VAL_LEFT)){
 						return this.observationRight();
 					}
 					else{
@@ -359,11 +313,11 @@ public class TigerDomain implements DomainGenerator {
 					}
 				}
 			}
-			else if(action.actionName().equals(ACTIONDONOTHING)){
+			else if(action.actionName().equals(ACTION_DO_NOTHING)){
 				return this.observationNothing();
 			}
 			
-			throw new RuntimeException("Unknown aciton " + action.actionName() + "; cannot return observation sample.");
+			throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
 		}
 
 		@Override
@@ -371,22 +325,22 @@ public class TigerDomain implements DomainGenerator {
 				GroundedAction action) {
 			
 			
-			String oVal = observation.getFirstObjectOfClass(CLASSOBSERVATION).getStringValForAttribute(ATTOBSERVATION);
-			String tigerVal = state.getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
+			String oVal = (String)observation.get(ATT_HEAR);
+			String tigerVal = (String)state.get(ATT_DOOR);
 			
-			if(action.actionName().equals(ACTIONLEFT) || action.actionName().equals(ACTIONRIGHT)){
-				if(oVal.equals(OBRESET)){
+			if(action.actionName().equals(ACTION_LEFT) || action.actionName().equals(ACTION_RIGHT)){
+				if(oVal.equals(DOOR_RESET)){
 					return 1.;
 				}
 				return 0.;
 			}
 			
-			if(action.actionName().equals(ACTIONLISTEN)){
-				if(tigerVal.equals(VALLEFT)){
-					if(oVal.equals(OBHEARLEFT)){
+			if(action.actionName().equals(ACTION_LISTEN)){
+				if(tigerVal.equals(VAL_LEFT)){
+					if(oVal.equals(HEAR_LEFT)){
 						return this.listenAccuracy;
 					}
-					else if(oVal.equals(OBHEARRIGHT)){
+					else if(oVal.equals(HEAR_RIGHT)){
 						return 1.-this.listenAccuracy;
 					}
 					else{
@@ -394,10 +348,10 @@ public class TigerDomain implements DomainGenerator {
 					}
 				}
 				else{
-					if(oVal.equals(OBHEARLEFT)){
+					if(oVal.equals(HEAR_LEFT)){
 						return 1.-this.listenAccuracy;
 					}
-					else if(oVal.equals(OBHEARRIGHT)){
+					else if(oVal.equals(HEAR_RIGHT)){
 						return this.listenAccuracy;
 					}
 					else{
@@ -407,8 +361,8 @@ public class TigerDomain implements DomainGenerator {
 			}
 			
 			//otherwise we're in the noop
-			if(action.actionName().equals(ACTIONDONOTHING)){
-				if(oVal.equals(OBNOTHING)){
+			if(action.actionName().equals(ACTION_DO_NOTHING)){
+				if(oVal.equals(HEAR_NOTHING)){
 					return 1.;
 				}
 				else{
@@ -429,11 +383,7 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link State} specifying the observation of hearing the tiger behind the left door
 		 */
 		protected State observationLeft(){
-			State hearLeft = new CMutableState();
-			OldObjectInstance obL = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
-			obL.setValue(ATTOBSERVATION, OBHEARLEFT);
-			hearLeft.addObject(obL);
-			return hearLeft;
+			return new TigerObservation(HEAR_LEFT);
 		}
 
 
@@ -442,11 +392,7 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link State} specifying the observation of hearing the tiger behind the right door
 		 */
 		protected State observationRight(){
-			State hearRight = new CMutableState();
-			OldObjectInstance obR = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
-			obR.setValue(ATTOBSERVATION, OBHEARRIGHT);
-			hearRight.addObject(obR);
-			return hearRight;
+			return new TigerObservation(HEAR_RIGHT);
 		}
 
 
@@ -455,11 +401,7 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link State} specifying the observation of approaching a new pair of doors
 		 */
 		protected State observationReset(){
-			State reset = new CMutableState();
-			OldObjectInstance obReset = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
-			obReset.setValue(ATTOBSERVATION, OBRESET);
-			reset.addObject(obReset);
-			return reset;
+			return new TigerObservation(DOOR_RESET);
 		}
 
 
@@ -468,11 +410,7 @@ public class TigerDomain implements DomainGenerator {
 		 * @return a {@link State} specifying the observation of hearing nothing; occurs when the do nothing action is selected
 		 */
 		protected State observationNothing(){
-			State nothing = new CMutableState();
-			OldObjectInstance obNothing = new MutableObjectInstance(this.domain.getObjectClass(CLASSOBSERVATION), CLASSOBSERVATION);
-			obNothing.setValue(ATTOBSERVATION, OBNOTHING);
-			nothing.addObject(obNothing);
-			return nothing;
+			return new TigerObservation(HEAR_NOTHING);
 		}
 		
 		
@@ -510,29 +448,29 @@ public class TigerDomain implements DomainGenerator {
 		public double reward(State s, GroundedAction a, State sprime) {
 			
 			
-			if(a.actionName().equals(ACTIONLEFT)){
-				String tigerVal = s.getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
+			if(a.actionName().equals(ACTION_LEFT)){
+				String tigerVal = (String)s.get(ATT_DOOR);
 				
-				if(tigerVal.equals(VALLEFT)){
+				if(tigerVal.equals(VAL_LEFT)){
 					return wrongDoor;
 				}
 				else{
 					return correctDoor;
 				}
 			}
-			else if(a.actionName().equals(ACTIONRIGHT)){
-				String tigerVal = s.getFirstObjectOfClass(CLASSTIGER).getStringValForAttribute(ATTTIGERDOOR);
-				if(tigerVal.equals(VALRIGHT)){
+			else if(a.actionName().equals(ACTION_RIGHT)){
+				String tigerVal = (String)s.get(ATT_DOOR);
+				if(tigerVal.equals(VAL_RIGHT)){
 					return wrongDoor;
 				}
 				else{
 					return correctDoor;
 				}
 			}
-			else if(a.actionName().equals(ACTIONLISTEN)){
+			else if(a.actionName().equals(ACTION_LISTEN)){
 				return listen;
 			}
-			else if(a.actionName().equals(ACTIONDONOTHING)){
+			else if(a.actionName().equals(ACTION_DO_NOTHING)){
 				return nothing;
 			}
 			
