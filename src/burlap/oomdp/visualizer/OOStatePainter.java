@@ -63,7 +63,7 @@ public class OOStatePainter implements StatePainter {
 		for(ObjectPainterAndClassNamePair op : this.objectClassPainterList){
 			List <ObjectInstance> objects = os.objectsOfClass(op.className);
 			for(ObjectInstance o : objects){
-				if(!this.specificObjectPainters.containsKey(o.getName())){
+				if(!this.specificObjectPainters.containsKey(o.name())){
 					op.painter.paintObject(g2, os, o, cWidth, cHeight);
 				}
 			}
@@ -74,8 +74,8 @@ public class OOStatePainter implements StatePainter {
 		for(ObjectInstance o : objects){
 
 			//is there a specific object painter for this object?
-			if(specificObjectPainters.containsKey(o.getName())){
-				specificObjectPainters.get(o.getName()).paintObject(g2, os, o, cWidth, cHeight);
+			if(specificObjectPainters.containsKey(o.name())){
+				specificObjectPainters.get(o.name()).paintObject(g2, os, o, cWidth, cHeight);
 			}
 
 		}

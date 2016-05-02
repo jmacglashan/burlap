@@ -28,7 +28,7 @@ public class OOStateConcrete implements MutableOOState{
 		List<Object> keys = new ArrayList<Object>();
 		for(ObjectInstance ob : this.objects()){
 			for(Object varKey : ob.variableKeys()){
-				OOVariableKey ookey = new OOVariableKey(ob.getName(), varKey);
+				OOVariableKey ookey = new OOVariableKey(ob.name(), varKey);
 				keys.add(ookey);
 			}
 		}
@@ -58,7 +58,7 @@ public class OOStateConcrete implements MutableOOState{
 		}
 		ObjectInstance touchedOb = (ObjectInstance)ob.copy();
 		if(!(touchedOb instanceof MutableState)){
-			throw new RuntimeException("Cannot set value for object " + touchedOb.getName() + " because it does not implement MutableState");
+			throw new RuntimeException("Cannot set value for object " + touchedOb.name() + " because it does not implement MutableState");
 		}
 		((MutableState)ob).set(key.obVarKey, value);
 		this.addObject(touchedOb);
@@ -73,10 +73,10 @@ public class OOStateConcrete implements MutableOOState{
 
 	@Override
 	public State addObject(ObjectInstance o) {
-		this.removeObject(o.getName());
+		this.removeObject(o.name());
 		List<ObjectInstance> obs = this.getOrGenerateObjectClassList(o.className());
 		obs.add(o);
-		this.objectsMap.put(o.getName(), o);
+		this.objectsMap.put(o.name(), o);
 
 		return this;
 	}
@@ -101,9 +101,9 @@ public class OOStateConcrete implements MutableOOState{
 	public State renameObject(String objectName, String newName) {
 		ObjectInstance stored = this.objectsMap.get(objectName);
 		if(stored != null){
-			this.removeObject(stored.getName());
+			this.removeObject(stored.name());
 			ObjectInstance copied = (ObjectInstance)stored.copy();
-			copied.setName(newName);
+			copied.copyWithName(newName);
 			this.addObject(copied);
 
 		}

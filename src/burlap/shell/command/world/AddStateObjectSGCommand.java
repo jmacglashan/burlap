@@ -76,7 +76,7 @@ public class AddStateObjectSGCommand implements ShellCommand {
 		ObjectInstance o = null;
 		try {
 			o = (ObjectInstance)oclass.newInstance();
-			o.setName(args.get(1));
+			o = o.copyWithName(args.get(1));
 		} catch(InstantiationException e) {
 			return 0;
 		} catch(IllegalAccessException e) {

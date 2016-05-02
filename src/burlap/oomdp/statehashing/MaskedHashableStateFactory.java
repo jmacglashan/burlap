@@ -154,7 +154,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 			if(!this.maskedObjectClasses.contains(o.className())) {
 				int oHash = this.computeFlatHashCode(o);
 				int classNameHash = o.className().hashCode();
-				int nameHash = this.objectIdentifierIndependent() ? 0 : o.getName().hashCode();
+				int nameHash = this.objectIdentifierIndependent() ? 0 : o.name().hashCode();
 				int totalHash = oHash + 31 * classNameHash + 31 * 31 * nameHash;
 				hashCodes.add(totalHash);
 			}
@@ -204,7 +204,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 			for(ObjectInstance o : objects){
 				boolean foundMatch = false;
 				for(ObjectInstance oo : oobjects){
-					String ooname = oo.getName();
+					String ooname = oo.name();
 					if(matchedObjects.contains(ooname)){
 						continue;
 					}
@@ -248,7 +248,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 			}
 
 			for(ObjectInstance o : objects){
-				ObjectInstance oo = s2.object(o.getName());
+				ObjectInstance oo = s2.object(o.name());
 				if(oo == null || !flatStatesEqual(o, oo)){
 					return false;
 				}

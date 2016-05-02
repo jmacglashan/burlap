@@ -114,7 +114,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 			ObjectInstance o = objects.get(i);
 			int oHash = this.computeFlatHashCode(o);
 			int classNameHash = o.className().hashCode();
-			int nameHash = this.objectIdentifierIndependent() ? 0 : o.getName().hashCode();
+			int nameHash = this.objectIdentifierIndependent() ? 0 : o.name().hashCode();
 			int totalHash = oHash + 31*classNameHash + 31*31*nameHash;
 			hashCodes[i] = totalHash;
 		}
@@ -225,7 +225,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 			for(ObjectInstance o : objects){
 				boolean foundMatch = false;
 				for(ObjectInstance oo : oobjects){
-					String ooname = oo.getName();
+					String ooname = oo.name();
 					if(matchedObjects.contains(ooname)){
 						continue;
 					}
@@ -263,7 +263,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 
 		List<ObjectInstance> theseObjects = s1.objects();
 		for(ObjectInstance ob : theseObjects){
-			ObjectInstance oByName = s2.object(ob.getName());
+			ObjectInstance oByName = s2.object(ob.name());
 			if(oByName == null){
 				return false;
 			}

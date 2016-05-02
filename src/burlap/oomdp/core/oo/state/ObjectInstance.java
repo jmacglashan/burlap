@@ -17,10 +17,10 @@ public interface ObjectInstance extends State {
 	 * Returns the name of this object instance
 	 * @return the name of this object instance
 	 */
-	String getName();
+	String name();
 
 	/**
-	 * Sets the name of this object instance
+	 * Returns a copy of this {@link ObjectInstance} with the specified name
 	 */
-	void setName(String objectName);
+	ObjectInstance copyWithName(String objectName);
 }

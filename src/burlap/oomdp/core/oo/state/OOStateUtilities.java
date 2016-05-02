@@ -13,7 +13,7 @@ public class OOStateUtilities {
 		for(ObjectInstance o : s.objects()){
 			List<Object> keys = o.variableKeys();
 			for(Object key : keys){
-				OOVariableKey fkey = new OOVariableKey(o.getName(), key);
+				OOVariableKey fkey = new OOVariableKey(o.name(), key);
 				flatKeys.add(fkey);
 			}
 		}
@@ -212,7 +212,7 @@ public class OOStateUtilities {
 	private static List <String> getListOfBindingsFromCombination(List <ObjectInstance> objects, int [] comb){
 		List <String> res = new ArrayList <String>(comb.length);
 		for(int i = 0; i < comb.length; i++){
-			res.add(objects.get(comb[i]).getName());
+			res.add(objects.get(comb[i]).name());
 		}
 		return res;
 	}
@@ -221,7 +221,7 @@ public class OOStateUtilities {
 	private static List <ObjectInstance> objectListDifference(List <ObjectInstance> objects, List <String> toRemove){
 		List <ObjectInstance> remaining = new ArrayList<ObjectInstance>(objects.size());
 		for(ObjectInstance oi : objects){
-			String oname = oi.getName();
+			String oname = oi.name();
 			if(!toRemove.contains(oname)){
 				remaining.add(oi);
 			}

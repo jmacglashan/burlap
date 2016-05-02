@@ -88,12 +88,12 @@ public interface AbstractObjectParameterizedGroundedAction extends AbstractGroun
 				ObjectInstance o = ooSource.object(oname);
 				List<ObjectInstance> cands = ooTarget.objectsOfClass(o.className());
 				for(ObjectInstance cand : cands) {
-					if(matchedObjects.contains(cand.getName())) {
+					if(matchedObjects.contains(cand.name())) {
 						continue;
 					}
 					if(o.equals(cand)) {
-						nparams[i] = o.getName();
-						matchedObjects.add(o.getName());
+						nparams[i] = o.name();
+						matchedObjects.add(o.name());
 						break;
 					}
 				}

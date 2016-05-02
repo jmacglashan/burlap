@@ -59,7 +59,7 @@ public class OOStateGridder {
 			List<ObjectInstance> objects = s.objectsOfClass(classGird.getKey());
 			for(ObjectInstance o : objects){
 				for(Map.Entry<Object, VariableGridSpec> spec : classGird.getValue().specs()){
-					OOVariableKey okey = new OOVariableKey(o.getName(), spec.getKey());
+					OOVariableKey okey = new OOVariableKey(o.name(), spec.getKey());
 					flatGridder.gridDimension(okey, spec.getValue());
 				}
 			}
