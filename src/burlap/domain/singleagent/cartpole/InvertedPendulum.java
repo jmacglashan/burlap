@@ -1,19 +1,24 @@
 package burlap.domain.singleagent.cartpole;
 
-import java.util.List;
-
 import burlap.debugtools.RandomFactory;
+import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.singleagent.*;
+import burlap.oomdp.core.state.State;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 import burlap.oomdp.visualizer.Visualizer;
+
+import java.util.List;
+
+import static burlap.domain.singleagent.cartpole.CartPoleDomain.ACTION_LEFT;
+import static burlap.domain.singleagent.cartpole.CartPoleDomain.ACTION_RIGHT;
 
 
 /**
@@ -35,38 +40,11 @@ import burlap.oomdp.visualizer.Visualizer;
 public class InvertedPendulum implements DomainGenerator {
 
 	
-	/**
-	 * A constant for the name of the angle attribute
-	 */
-	public static final String				ATTANGLE = "angleAtt";
-	
-	/**
-	 * A constant for the name of the angle velocity
-	 */
-	public static final String				ATTANGLEV = "angleVAtt";
-	
-	
-	/**
-	 * The object class for the pendulum.
-	 */
-	public static final String				CLASSPENDULUM = "pendulum";
-	
-	
-	/**
-	 * A constant for the name of the left action
-	 */
-	public static final String				ACTIONLEFT = "left";
-	
-	/**
-	 * A constant for the name of the right action
-	 */
-	public static final String				ACTIONRIGHT = "right";
-	
 	
 	/**
 	 * A constant for the name of the no force action (which due to stochasticity may include a small force)
 	 */
-	public static final String				ACTIONNOFORCE = "noForce";
+	public static final String ACTION_NO_FORCE = "noForce";
 	
 	
 	public IPPhysicsParams					physParams = new IPPhysicsParams();
@@ -117,7 +95,7 @@ public class InvertedPendulum implements DomainGenerator {
 
 
 		/**
-		 * The maximum speed (manitude) of the change in angle. The default sets it to 1
+		 * The maximum speed (magnitude) of the change in angle. The default sets it to 1
 		 */
 		public double							maxAngleSpeed = 1.;
 
@@ -157,23 +135,13 @@ public class InvertedPendulum implements DomainGenerator {
 	public Domain generateDomain() {
 		
 		SADomain domain = new SADomain();
-		
-		Attribute angleatt = new Attribute(domain, ATTANGLE, Attribute.AttributeType.REAL);
-		angleatt.setLims(-this.physParams.angleRange, this.physParams.angleRange);
-		
-		Attribute anglevatt = new Attribute(domain, ATTANGLEV, Attribute.AttributeType.REAL);
-		anglevatt.setLims(-this.physParams.maxAngleSpeed, this.physParams.maxAngleSpeed);
-		
-		
-		ObjectClass pendulum = new ObjectClass(domain, CLASSPENDULUM);
-		pendulum.addAttribute(angleatt);
-		pendulum.addAttribute(anglevatt);
+
 
 		IPPhysicsParams cphys = this.physParams.copy();
 
-		new ForceAction(ACTIONLEFT, domain, -this.physParams.actionForce, cphys);
-		new ForceAction(ACTIONRIGHT, domain, this.physParams.actionForce, cphys);
-		new ForceAction(ACTIONNOFORCE, domain, 0., cphys);
+		new ForceAction(ACTION_LEFT, domain, -this.physParams.actionForce, cphys);
+		new ForceAction(ACTION_RIGHT, domain, this.physParams.actionForce, cphys);
+		new ForceAction(ACTION_NO_FORCE, domain, 0., cphys);
 		
 		return domain;
 	}
@@ -187,10 +155,11 @@ public class InvertedPendulum implements DomainGenerator {
 	 * @param physParams the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.IPPhysicsParams} object specifying the physics to use for movement
 	 */
 	public static void updateState(State s, double controlForce, IPPhysicsParams physParams){
-		
-		OldObjectInstance pend = s.getFirstObjectOfClass(CLASSPENDULUM);
-		double a0 = pend.getRealValForAttribute(ATTANGLE);
-		double av0 = pend.getRealValForAttribute(ATTANGLEV);
+
+		InvertedPendulumState is = (InvertedPendulumState)s;
+		double a0 = is.angle;
+		double av0 = is.angleV;
+
 		
 		double alpha = 1./ (physParams.cartMass + physParams.poleMass);
 		
@@ -220,38 +189,10 @@ public class InvertedPendulum implements DomainGenerator {
 		}
 		
 		//set it
-		pend.setValue(ATTANGLE, af);
-		pend.setValue(ATTANGLEV, avf);
-		
+		is.angle = a0;
+		is.angleV = av0;
 	}
-	
-	
-	/**
-	 * Returns an initial state with 0 angle (perfectly vertical) and 0 angle velocity.
-	 * @param domain the domain object to which the state will be belong.
-	 * @return an initial state with 0 angle (perfectly vertical) and 0 angle velocity.
-	 */
-	public static State getInitialState(Domain domain){
-		return getInitialState(domain, 0., 0.);
-	}
-	
-	
-	/**
-	 * Returns an initial state with the pole at the given angle and with the given angular velocity of the pole.
-	 * @param domain the domain object to which the state will belong.
-	 * @param angle the angle of the pole from the vertical axis.
-	 * @param angleVelocity the angular velocity of the pole.
-	 * @return an initial state with the pole at the given angle and with the given angular velocity of the pole.
-	 */
-	public static State getInitialState(Domain domain, double angle, double angleVelocity){
-		State s = new CMutableState();
-		OldObjectInstance o = new MutableObjectInstance(domain.getObjectClass(CLASSPENDULUM), CLASSPENDULUM);
-		o.setValue(ATTANGLE, angle);
-		o.setValue(ATTANGLEV, angleVelocity);
-		s.addObject(o);
-		return s;
-	}
-	
+
 	
 	/**
 	 * An action that applies a given force to the cart + uniform random noise in the range defined in the {@link InvertedPendulum#physParams} data member.
@@ -334,9 +275,9 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		@Override
 		public boolean isTerminal(State s) {
-			
-			OldObjectInstance pendulum = s.getFirstObjectOfClass(CLASSPENDULUM);
-			double a = pendulum.getRealValForAttribute(ATTANGLE);
+
+			InvertedPendulumState is = (InvertedPendulumState)s;
+			double a = is.angle;
 			
 			if(Math.abs(a) >= maxAbsoluteAngle){
 				return true;
@@ -380,9 +321,9 @@ public class InvertedPendulum implements DomainGenerator {
 		public double reward(State s, GroundedAction a, State sprime) {
 			
 			double failReward = -1;
-			
-			OldObjectInstance pendulum = sprime.getFirstObjectOfClass(CLASSPENDULUM);
-			double ang = pendulum.getRealValForAttribute(ATTANGLE);
+
+			InvertedPendulumState is = (InvertedPendulumState)s;
+			double ang = is.angle;
 			
 			if(Math.abs(ang) >= maxAbsoluteAngle){
 				return failReward;
@@ -406,15 +347,15 @@ public class InvertedPendulum implements DomainGenerator {
 		InvertedPendulum ivp = new InvertedPendulum();
 		Domain domain = ivp.generateDomain();
 		
-		State s = InvertedPendulum.getInitialState(domain);
+		State s = new InvertedPendulumState();
 		
 		Visualizer v = InvertedPendulumVisualizer.getInvertedPendulumVisualizer();
 		
 		VisualExplorer exp = new VisualExplorer(domain, v, s);
 		
-		exp.addKeyAction("a", ACTIONLEFT);
-		exp.addKeyAction("d", ACTIONRIGHT);
-		exp.addKeyAction("s", ACTIONNOFORCE);
+		exp.addKeyAction("a", ACTION_LEFT);
+		exp.addKeyAction("d", ACTION_RIGHT);
+		exp.addKeyAction("s", ACTION_NO_FORCE);
 		
 		exp.initGUI();
 

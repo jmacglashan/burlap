@@ -1,20 +1,19 @@
 package burlap.domain.singleagent.cartpole;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-
-import burlap.oomdp.core.objects.OldObjectInstance;
+import burlap.domain.singleagent.cartpole.states.CartPoleState;
+import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.ObjectPainter;
+import burlap.oomdp.visualizer.StatePainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.Visualizer;
 
+import java.awt.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+
 
 /**
- * Class for returning cart pole visualizer objects.
+ * Class for returning cart pole visualizer objects. Works for all instances of {@link InvertedPendulumState}.
  * @author James MacGlashan
  *
  */
@@ -39,7 +38,7 @@ public class CartPoleVisualizer {
 	 */
 	public static StateRenderLayer getCartPoleStateRenderLayer(){
 		StateRenderLayer rl = new StateRenderLayer();
-		rl.addObjectClassPainter(CartPoleDomain.CLASSCARTPOLE, new CartPoleObjectPainter());
+		rl.addStatePainter(new CartPolePainter());
 		return rl;
 	}
 	
@@ -50,20 +49,22 @@ public class CartPoleVisualizer {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class CartPoleObjectPainter implements ObjectPainter{
+	public static class CartPolePainter implements StatePainter{
+
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paint(Graphics2D g2, State s,
 				float cWidth, float cHeight) {
+
+
+			InvertedPendulumState is = (InvertedPendulumState)s;
+			double x = is instanceof CartPoleState ? ((CartPoleState)is).x : 0.;
+
+			double a = is.angle;
+
 			
-			
-			double x = ob.getRealValForAttribute(CartPoleDomain.VAR_X);
-			double a = ob.getRealValForAttribute(CartPoleDomain.VAR_ANGLE);
-			
-			Attribute xatt = ob.getObjectClass().getAttribute(CartPoleDomain.VAR_X);
-			
-			double xmin = xatt.lowerLim;
-			double xmax = xatt.upperLim;
+			double xmin = -2.4;
+			double xmax = 2.4;
 			double xrange = xmax-xmin;
 			
 			
