@@ -1,10 +1,10 @@
 package burlap.behavior.stochasticgames.agents.naiveq.history;
 
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.policy.EpsilonGreedy;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.AgentFactory;
+import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGDomain;
 
 
@@ -45,12 +45,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	 * The maximum number of players that can be in the game
 	 */
 	protected int														maxPlayers;
-	
-	/**
-	 * An action mapping to map from actions to int values
-	 */
-	protected ActionIdMap												actionMap = null;
-	
+
 	/**
 	 * A default Q-value initializer
 	 */
@@ -63,26 +58,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	protected double													epsilon = -1.;
 	
 	
-	
-	/**
-	 * Initializes the factory
-	 * @param d the stochastic games domain in which the agent will act
-	 * @param discount The discount rate the Q-learning algorithm will use
-	 * @param learningRate The learning rate the Q-learning algorithm will use
-	 * @param stateHash The state hashing factory the Q-learning algorithm will use
-	 * @param historySize How much history the agent should remember
-	 * @param maxPlayers The maximum number of players that can be in the game
-	 * @param actionMap An action mapping to map from actions to int values
-	 */
-	public SGQWActionHistoryFactory(SGDomain d, double discount, double learningRate, HashableStateFactory stateHash, int historySize, int maxPlayers, ActionIdMap actionMap) {
-		this.domain = d;
-		this.learningRate = learningRate;
-		this.stateHash = stateHash;
-		this.historySize = historySize;
-		this.maxPlayers = maxPlayers;
-		this.actionMap = actionMap;
-	}
-	
+
 	/**
 	 * Initializes the factory
 	 * @param d the stochastic games domain in which the agent will act
@@ -116,13 +92,8 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 
 	@Override
 	public SGAgent generateAgent() {
-		SGQWActionHistory agent;
-		if(this.actionMap != null){
-			agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize, maxPlayers, actionMap);
-		}
-		else{
-			agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize);
-		}
+		SGQWActionHistory agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize);
+
 		if(this.qinit != null){
 			agent.setQValueInitializer(qinit);
 		}
