@@ -5,23 +5,24 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisua
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TransitionProbability;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
+import burlap.oomdp.singleagent.oo.OOSADomain;
 import burlap.oomdp.visualizer.Visualizer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 
 
 /**
@@ -57,78 +58,63 @@ import java.util.Random;
  */
 public class GridWorldDomain implements DomainGenerator {
 
+
 	/**
-	 * Constant for the name of the x attribute
+	 * Constant OO-MDP class name for agent
 	 */
-	public static final String							ATTX = "x";
-	
+	public static final String CLASS_AGENT = "agent";
+
 	/**
-	 * Constant for the name of the y attribute
+	 * Constant OO-MDP class name for a location
 	 */
-	public static final String							ATTY = "y";
-	
-	/**
-	 * Constant for the name of attribute for location object type
-	 */
-	public static final String							ATTLOCTYPE = "locType";
-	
-	/**
-	 * Constant for the name of the agent class
-	 */
-	public static final String							CLASSAGENT = "agent";
-	
-	/**
-	 * Constant for the name of the location class
-	 */
-	public static final String							CLASSLOCATION = "location";
-	
-	
+	public static final String CLASS_LOCATION = "location";
+
 	/**
 	 * Constant for the name of the north action
 	 */
-	public static final String							ACTIONNORTH = "north";
+	public static final String ACTION_NORTH = "north";
 	
 	/**
 	 * Constant for the name of the south action
 	 */
-	public static final String							ACTIONSOUTH = "south";
+	public static final String ACTION_SOUTH = "south";
 	
 	/**
 	 * Constant for the name of the east action
 	 */
-	public static final String							ACTIONEAST = "east";
+	public static final String ACTION_EAST = "east";
 	
 	/**
 	 * Constant for the name of the west action
 	 */
-	public static final String							ACTIONWEST = "west";
+	public static final String ACTION_WEST = "west";
 	
 	
 	
 	/**
 	 * Constant for the name of the at location propositional function
 	 */
-	public static final String							PFATLOCATION = "atLocation";
+	public static final String PF_AT_LOCATION = "atLocation";
 	
 	/**
 	 * Constant for the name of the wall to north propositional function
 	 */
-	public static final String							PFWALLNORTH = "wallToNorth";
+	public static final String PF_WALL_NORTH = "wallToNorth";
 	
 	/**
 	 * Constant for the name of the wall to south propositional function
 	 */
-	public static final String							PFWALLSOUTH = "wallToSouth";
+	public static final String PF_WALL_SOUTH = "wallToSouth";
 	
 	/**
 	 * Constant for the name of the wall to east propositional function
 	 */
-	public static final String							PFWALLEAST = "wallToEast";
+	public static final String PF_WALL_EAST = "wallToEast";
 	
 	/**
 	 * Constant for the name of the wall to west propositional function
 	 */
-	public static final String							PFWALLWEST = "wallToWest";
+	public static final String PF_WALL_WEST = "wallToWest";
 	
 	
 	
@@ -458,43 +444,23 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	@Override
 	public Domain generateDomain() {
-		
-		Domain domain = new SADomain();
-		
-		//Creates a new Attribute object
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.INT);
-		xatt.setLims(0, this.width-1);
-		
-		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.INT);
-		yatt.setLims(0., this.height-1);
-		
-		Attribute ltatt = new Attribute(domain, ATTLOCTYPE, Attribute.AttributeType.DISC);
-		ltatt.setDiscValuesForRange(0, numLocationTypes-1, 1);
-		
-		
-		ObjectClass agentClass = new ObjectClass(domain, CLASSAGENT);
-		agentClass.addAttribute(xatt);
-		agentClass.addAttribute(yatt);
-		
-		ObjectClass locationClass = new ObjectClass(domain, CLASSLOCATION);
-		locationClass.addAttribute(xatt);
-		locationClass.addAttribute(yatt);
-		locationClass.addAttribute(ltatt);
+
+		OOSADomain domain = new OOSADomain();
 
 		int [][] cmap = this.getMap();
 
-		new MovementAction(ACTIONNORTH, domain, this.transitionDynamics[0], cmap);
-		new MovementAction(ACTIONSOUTH, domain, this.transitionDynamics[1], cmap);
-		new MovementAction(ACTIONEAST, domain, this.transitionDynamics[2], cmap);
-		new MovementAction(ACTIONWEST, domain, this.transitionDynamics[3], cmap);
+		new MovementAction(ACTION_NORTH, domain, this.transitionDynamics[0], cmap);
+		new MovementAction(ACTION_SOUTH, domain, this.transitionDynamics[1], cmap);
+		new MovementAction(ACTION_EAST, domain, this.transitionDynamics[2], cmap);
+		new MovementAction(ACTION_WEST, domain, this.transitionDynamics[3], cmap);
 		
 		
-		new AtLocationPF(PFATLOCATION, domain, new String[]{CLASSAGENT, CLASSLOCATION});
+		new AtLocationPF(PF_AT_LOCATION, domain, new String[]{CLASS_AGENT, CLASS_LOCATION});
 		
-		new WallToPF(PFWALLNORTH, domain, new String[]{CLASSAGENT}, 0);
-		new WallToPF(PFWALLSOUTH, domain, new String[]{CLASSAGENT}, 1);
-		new WallToPF(PFWALLEAST, domain, new String[]{CLASSAGENT}, 2);
-		new WallToPF(PFWALLWEST, domain, new String[]{CLASSAGENT}, 3);
+		new WallToPF(PF_WALL_NORTH, domain, new String[]{CLASS_AGENT}, 0);
+		new WallToPF(PF_WALL_SOUTH, domain, new String[]{CLASS_AGENT}, 1);
+		new WallToPF(PF_WALL_EAST, domain, new String[]{CLASS_AGENT}, 2);
+		new WallToPF(PF_WALL_WEST, domain, new String[]{CLASS_AGENT}, 3);
 		
 		return domain;
 	}
@@ -502,121 +468,7 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 
-	/**
-	 * Will return a state object with a single agent object and no location objects
-	 * @param d the domain object that is used to specify the min/max dimensions
-	 * @return a state object with a single agent object and no location objects
-	 */
-	public static State getOneAgentNoLocationState(Domain d){
-		
-		State s = new CMutableState();
 
-		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
-				
-		return s;
-		
-	}
-
-	/**
-	 * Will return a state object with a single agent object and no location objects
-	 * @param d the domain object that is used to specify the min/max dimensions
-	 * @param ax the starting x position of the agent
-	 * @param ay the starting y position of the agent
-	 * @return a state object with a single agent object and no location objects
-	 */
-	public static State getOneAgentNoLocationState(Domain d, int ax, int ay){
-
-		State s = new CMutableState();
-
-		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
-		GridWorldDomain.setAgent(s, ax, ay);
-
-		return s;
-
-	}
-	
-	
-	
-	/**
-	 * Will return a state object with a single agent object and a single location object
-	 * @param d the domain object that is used to specify the min/max dimensions
-	 * @return a state object with a single agent object and a single location object
-	 */
-	public static State getOneAgentOneLocationState(Domain d){
-		
-		State s = new CMutableState();
-		
-		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+0));
-		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
-		
-		
-		return s;
-		
-	}
-	
-	/**
-	 * Will return a state object with a single agent object and n location objects
-	 * @param d the domain object that is used to specify the min/max dimensions
-	 * @param n the number of location objects
-	 * @return a state object with a single agent object and n location objects
-	 */
-	public static State getOneAgentNLocationState(Domain d, int n){
-		
-		State s = new CMutableState();
-		
-		s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT+0));
-		
-		for(int i = 0; i < n; i++){
-			s.addObject(new MutableObjectInstance(d.getObjectClass(CLASSLOCATION), CLASSLOCATION+i));
-		}
-		
-		return s;
-	}
-	
-	
-	/**
-	 * Sets the first agent object in s to the specified x and y position.
-	 * @param s the state with the agent whose position to set
-	 * @param x the x position of the agent
-	 * @param y the y position of the agent
-	 */
-	public static void setAgent(State s, int x, int y){
-		OldObjectInstance o = s.getObjectsOfClass(CLASSAGENT).get(0);
-		
-		o.setValue(ATTX, x);
-		o.setValue(ATTY, y);
-	}
-	
-	/**
-	 * Sets the i'th location object to the specified x and y position. The location type will be set to 0.
-	 * @param s the state with the location object
-	 * @param i specifies which location object index to set
-	 * @param x the x position of the location
-	 * @param y the y position of the location
-	 */
-	public static void setLocation(State s, int i, int x, int y){
-		OldObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
-		
-		o.setValue(ATTX, x);
-		o.setValue(ATTY, y);
-		o.setValue(ATTLOCTYPE, 0);
-	}
-	
-	/**
-	 * Sets the i'th location object to the specified x and y position and location type.
-	 * @param s the state with the location object
-	 * @param i specifies which location object index to set
-	 * @param x the x position of the location
-	 * @param y the y position of the location
-	 * @param locType the location type of the location
-	 */
-	public static void setLocation(State s, int i, int x, int y, int locType){
-		OldObjectInstance o = s.getObjectsOfClass(CLASSLOCATION).get(i);
-		
-		o.setValue(ATTX, x);
-		o.setValue(ATTY, y);
-		o.setValue(ATTLOCTYPE, locType);
-	}
 
 
 	/**
@@ -634,8 +486,8 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, ValueFunction valueFunction, Policy p){
 		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, valueFunction, p,
-				CLASSAGENT, ATTX, ATTY,
-				ACTIONNORTH, ACTIONSOUTH, ACTIONEAST, ACTIONWEST);
+				CLASS_AGENT, "x", "y",
+				ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST);
 	}
 	
 	
@@ -648,10 +500,11 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param yd the attempted new Y position of the agent
 	 */
 	protected State move(State s, int xd, int yd, int [][] map){
-		
-		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		int ax = agent.getIntValForAttribute(ATTX);
-		int ay = agent.getIntValForAttribute(ATTY);
+
+		GridWorldState gws = (GridWorldState)s;
+
+		int ax = gws.agent.x;
+		int ay = gws.agent.y;
 		
 		int nx = ax+xd;
 		int ny = ay+yd;
@@ -663,10 +516,12 @@ public class GridWorldDomain implements DomainGenerator {
 			nx = ax;
 			ny = ay;
 		}
+
+		GridAgent nagent = gws.agent.copy();
+		nagent.x = nx;
+		nagent.y = ny;
 		
-		
-		s = s.setObjectsValue(agent.getName(), ATTX, nx);
-		s = s.setObjectsValue(agent.getName(), ATTY, ny);
+		gws.agent = nagent;
 
 		return s;
 	}
@@ -812,21 +667,21 @@ public class GridWorldDomain implements DomainGenerator {
 		 * @param domain the domain of the function
 		 * @param parameterClasses the object class types for the parameters
 		 */
-		public AtLocationPF(String name, Domain domain, String[] parameterClasses) {
+		public AtLocationPF(String name, OODomain domain, String[] parameterClasses) {
 			super(name, domain, parameterClasses);
 		}
 
 		@Override
-		public boolean isTrue(State st, String... params) {
+		public boolean isTrue(OOState st, String... params) {
 			
-			OldObjectInstance agent = st.getObject(params[0]);
-			OldObjectInstance location = st.getObject(params[1]);
+			ObjectInstance agent = st.object(params[0]);
+			ObjectInstance location = st.object(params[1]);
 			
-			int ax = agent.getIntValForAttribute(ATTX);
-			int ay = agent.getIntValForAttribute(ATTY);
+			int ax = (Integer)agent.get("x");
+			int ay = (Integer)agent.get("y");
 			
-			int lx = location.getIntValForAttribute(ATTX);
-			int ly = location.getIntValForAttribute(ATTY);
+			int lx = (Integer)location.get("x");
+			int ly = (Integer)location.get("y");
 			
 			if(ax == lx && ay == ly){
 				return true;
@@ -866,7 +721,7 @@ public class GridWorldDomain implements DomainGenerator {
 		 * @param parameterClasses the object class parameter types
 		 * @param direction the unit distance direction from the agent to check for a wall (0,1,2,3 corresponds to north,south,east,west).
 		 */
-		public WallToPF(String name, Domain domain, String[] parameterClasses, int direction) {
+		public WallToPF(String name, OODomain domain, String[] parameterClasses, int direction) {
 			super(name, domain, parameterClasses);
 			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(direction);
 			xdelta = dcomps[0];
@@ -874,12 +729,12 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		public boolean isTrue(State st, String... params) {
+		public boolean isTrue(OOState st, String... params) {
 			
-			OldObjectInstance agent = st.getObject(params[0]);
+			ObjectInstance agent = st.object(params[0]);
 			
-			int ax = agent.getIntValForAttribute(ATTX);
-			int ay = agent.getIntValForAttribute(ATTY);
+			int ax = (Integer)agent.get("x");
+			int ay = (Integer)agent.get("y");
 			
 			int cx = ax + xdelta;
 			int cy = ay + ydelta;
@@ -914,9 +769,8 @@ public class GridWorldDomain implements DomainGenerator {
 		Domain d = gwdg.generateDomain();
 
 
-		State s = getOneAgentOneLocationState(d);
-		setAgent(s, 0, 0);
-		setLocation(s, 0, 10, 10, 0);
+		GridWorldState s = new GridWorldState(new GridAgent(0, 0), new GridLocation(10, 10, "loc0"));
+
 		
 		int expMode = 1;
 		if(args.length > 0){
@@ -941,10 +795,10 @@ public class GridWorldDomain implements DomainGenerator {
 			VisualExplorer exp = new VisualExplorer(d, v, s);
 			
 			//use w-s-a-d-x
-			exp.addKeyAction("w", ACTIONNORTH);
-			exp.addKeyAction("s", ACTIONSOUTH);
-			exp.addKeyAction("a", ACTIONWEST);
-			exp.addKeyAction("d", ACTIONEAST);
+			exp.addKeyAction("w", ACTION_NORTH);
+			exp.addKeyAction("s", ACTION_SOUTH);
+			exp.addKeyAction("a", ACTION_WEST);
+			exp.addKeyAction("d", ACTION_EAST);
 			
 			exp.initGUI();
 		}
