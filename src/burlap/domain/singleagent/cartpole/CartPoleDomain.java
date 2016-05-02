@@ -1,12 +1,15 @@
 package burlap.domain.singleagent.cartpole;
 
+import burlap.domain.singleagent.cartpole.states.CartPoleFullState;
+import burlap.domain.singleagent.cartpole.states.CartPoleState;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.singleagent.*;
+import burlap.oomdp.core.state.State;
+import burlap.oomdp.singleagent.FullActionModel;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
 
@@ -54,44 +57,40 @@ public class CartPoleDomain implements DomainGenerator {
 	/**
 	 * A constant for the name of the position attribute
 	 */
-	public static final String				ATTX = "xAtt";
+	public static final String VAR_X = "xAtt";
 	
 	/**
 	 * A constant for the name of the position velocity
 	 */
-	public static final String				ATTV = "xvAtt";
+	public static final String VAR_V = "xvAtt";
 	
 	/**
 	 * A constant for the name of the angle attribute
 	 */
-	public static final String				ATTANGLE = "angleAtt";
+	public static final String VAR_ANGLE = "angleAtt";
 	
 	/**
 	 * A constant for the name of the angle velocity
 	 */
-	public static final String				ATTANGLEV = "angleVAtt";
+	public static final String VAR_ANGLEV = "angleVAtt";
 	
 
 	/**
 	 * Attribute name for maintaining the direction sign of the force normal.
 	 * This attribute will only be included if the correct model is being used.
 	 */
-	public static final String				ATTNORMSGN = "normalSign";
-	
-	/**
-	 * A constant for the name of the cart and pole object to be moved
-	 */
-	public static final String				CLASSCARTPOLE = "cartPole";
+	public static final String VAR_NORM_SGN = "normalSign";
+
 	
 	/**
 	 * A constant for the name of the left action
 	 */
-	public static final String				ACTIONLEFT = "left";
+	public static final String ACTION_LEFT = "left";
 	
 	/**
 	 * A constant for the name of the right action
 	 */
-	public static final String				ACTIONRIGHT = "right";
+	public static final String ACTION_RIGHT = "right";
 
 	/**
 	 * An object specifying the physics parameters for the cart pole domain.
@@ -220,39 +219,11 @@ public class CartPoleDomain implements DomainGenerator {
 	public Domain generateDomain() {
 		
 		SADomain domain = new SADomain();
-		
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.REAL);
-		xatt.setLims(-physParams.halfTrackLength, physParams.halfTrackLength);
-		
-		Attribute xvatt = new Attribute(domain, ATTV, Attribute.AttributeType.REAL);
-		xvatt.setLims(-this.physParams.maxCartSpeed, this.physParams.maxCartSpeed);
-		
-		Attribute angleatt = new Attribute(domain, ATTANGLE, Attribute.AttributeType.REAL);
-		angleatt.setLims(-this.physParams.angleRange, this.physParams.angleRange);
-		
-		Attribute anglevatt = new Attribute(domain, ATTANGLEV, Attribute.AttributeType.REAL);
-		anglevatt.setLims(-this.physParams.maxAngleSpeed, this.physParams.maxAngleSpeed);
-		
-		Attribute normAtt = null;
-		if(this.physParams.useCorrectModel){
-			normAtt = new Attribute(domain, ATTNORMSGN, Attribute.AttributeType.REAL);
-			normAtt.setLims(-1., 1.);
-			
-		}
-		
-		ObjectClass cartPoleClass = new ObjectClass(domain, CLASSCARTPOLE);
-		cartPoleClass.addAttribute(xatt);
-		cartPoleClass.addAttribute(xvatt);
-		cartPoleClass.addAttribute(angleatt);
-		cartPoleClass.addAttribute(anglevatt);
-		if(this.physParams.useCorrectModel){
-			cartPoleClass.addAttribute(normAtt);
-		}
 
 		CPPhysicsParams cphys = this.physParams.copy();
 
-		new MovementAction(ACTIONLEFT, domain, -1., cphys);
-		new MovementAction(ACTIONRIGHT, domain, 1., cphys);
+		new MovementAction(ACTION_LEFT, domain, -1., cphys);
+		new MovementAction(ACTION_RIGHT, domain, 1., cphys);
 		
 		
 		return domain;
@@ -304,42 +275,7 @@ public class CartPoleDomain implements DomainGenerator {
 		
 		return vf;
 	}
-	
-	
-	/**
-	 * Returns the default initial state: the cart centered on the track, not moving, with the pole perfectly vertical.
-	 * @param domain the domain object to which the state will be associated.
-	 * @return an initial task state.
-	 */
-	public static State getInitialState(Domain domain){
-		return getInitialState(domain, 0., 0., 0., 0.);
-	}
-	
-	
-	/**
-	 * Returns an initial state with the given initial values for the cart and pole.
-	 * @param domain the domain object to which the state will be associated.
-	 * @param x the position of cart.
-	 * @param xv the velocity of the cart.
-	 * @param a the angle between the pole and the vertical axis
-	 * @param av the velocity of the angle
-	 * @return the corresponding initial state object
-	 */
-	public static State getInitialState(Domain domain, double x, double xv, double a, double av){
-		OldObjectInstance cartPole = new MutableObjectInstance(domain.getObjectClass(CLASSCARTPOLE), CLASSCARTPOLE);
-		cartPole.setValue(ATTX, x);
-		cartPole.setValue(ATTV, xv);
-		cartPole.setValue(ATTANGLE, a);
-		cartPole.setValue(ATTANGLEV, av);
-		if(domain.getAttribute(ATTNORMSGN) != null){
-			cartPole.setValue(ATTNORMSGN, 1.);
-		}
-		
-		State s = new CMutableState();
-		s.addObject(cartPole);
-		
-		return s;
-	}
+
 	
 	
 	/**
@@ -353,12 +289,12 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @return the input state, which has been modified to the next state after one time step of simulation.
 	 */
 	public static State moveClassicModel(State s, double dir, CPPhysicsParams physParams){
-		
-		OldObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
-		double x0 = cartPole.getRealValForAttribute(ATTX);
-		double xv0 = cartPole.getRealValForAttribute(ATTV);
-		double a0 = cartPole.getRealValForAttribute(ATTANGLE);
-		double av0 = cartPole.getRealValForAttribute(ATTANGLEV);
+
+		CartPoleState cs = (CartPoleState)s;
+		double x0 = cs.x;
+		double xv0 = cs.v;
+		double a0 = cs.angle;
+		double av0 = cs.angleV;
 		
 		double f = dir * physParams.movementForceMag;
 		
@@ -423,11 +359,11 @@ public class CartPoleDomain implements DomainGenerator {
 		
 		//set new values
 		if(physParams.isFiniteTrack){
-			cartPole.setValue(ATTX, xf);
+			cs.x = xf;
 		}
-		cartPole.setValue(ATTV, xvf);
-		cartPole.setValue(ATTANGLE, af);
-		cartPole.setValue(ATTANGLEV, avf);
+		cs.v = xvf;
+		cs.angle = af;
+		cs.angleV = avf;
 		
 		
 		return s;
@@ -444,13 +380,13 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @return the input state, which has been modified to the next state after one time step of simulation.
 	 */
 	public static State moveCorrectModel(State s, double dir, CPPhysicsParams physParams){
-		
-		OldObjectInstance cartPole = s.getFirstObjectOfClass(CLASSCARTPOLE);
-		double x0 = cartPole.getRealValForAttribute(ATTX);
-		double xv0 = cartPole.getRealValForAttribute(ATTV);
-		double a0 = cartPole.getRealValForAttribute(ATTANGLE);
-		double av0 = cartPole.getRealValForAttribute(ATTANGLEV);
-		double nsgn0 = cartPole.getRealValForAttribute(ATTNORMSGN);
+
+		CartPoleFullState cs = (CartPoleFullState)s;
+		double x0 = cs.x;
+		double xv0 = cs.v;
+		double a0 = cs.angle;
+		double av0 = cs.angleV;
+		double nsgn0 = cs.normSign;
 		
 		double f = dir * physParams.movementForceMag;
 		
@@ -489,16 +425,16 @@ public class CartPoleDomain implements DomainGenerator {
 		if(Math.abs(avf) > physParams.maxAngleSpeed){
 			avf = Math.signum(avf) * physParams.maxAngleSpeed;
 		}
-		
-		
+
+
 		//set new values
 		if(physParams.isFiniteTrack){
-			cartPole.setValue(ATTX, xf);
+			cs.x = xf;
 		}
-		cartPole.setValue(ATTV, xvf);
-		cartPole.setValue(ATTANGLE, af);
-		cartPole.setValue(ATTANGLEV, avf);
-		cartPole.setValue(ATTNORMSGN, n);
+		cs.v = xvf;
+		cs.angle = af;
+		cs.angleV = avf;
+		cs.normSign = n;
 		
 		
 		
@@ -653,6 +589,8 @@ public class CartPoleDomain implements DomainGenerator {
 		 * The maximum pole angle to cause termination/failure.
 		 */
 		double maxAbsoluteAngle = 12. * (Math.PI / 180.);
+
+		double halfTrackLength = 2.4;
 		
 		
 		/**
@@ -670,21 +608,34 @@ public class CartPoleDomain implements DomainGenerator {
 		public CartPoleTerminalFunction(double maxAbsoluteAngleInRadians){
 			this.maxAbsoluteAngle = maxAbsoluteAngleInRadians;
 		}
-		
+
+		public double getMaxAbsoluteAngle() {
+			return maxAbsoluteAngle;
+		}
+
+		public void setMaxAbsoluteAngle(double maxAbsoluteAngle) {
+			this.maxAbsoluteAngle = maxAbsoluteAngle;
+		}
+
+		public double getHalfTrackLength() {
+			return halfTrackLength;
+		}
+
+		public void setHalfTrackLength(double halfTrackLength) {
+			this.halfTrackLength = halfTrackLength;
+		}
+
 		@Override
 		public boolean isTerminal(State s) {
+
+			CartPoleState cs = (CartPoleState)s;
+			double x = cs.x;
 			
-			OldObjectInstance cartpole = s.getFirstObjectOfClass(CLASSCARTPOLE);
-			double x = cartpole.getRealValForAttribute(ATTX);
-			Attribute xatt = cartpole.getObjectClass().getAttribute(ATTX);
-			double xmin = xatt.lowerLim;
-			double xmax = xatt.upperLim;
-			
-			if(x <= xmin || x >= xmax){
+			if(x <= -halfTrackLength || x >= halfTrackLength){
 				return true;
 			}
 			
-			double a = cartpole.getRealValForAttribute(ATTANGLE);
+			double a = cs.angle;
 			if(Math.abs(a) >= maxAbsoluteAngle){
 				return true;
 			}
@@ -708,6 +659,8 @@ public class CartPoleDomain implements DomainGenerator {
 		 * The maximum pole angle to cause failure.
 		 */
 		double maxAbsoluteAngle = 12. * (Math.PI / 180.);
+
+		double halfTrackLength = 2.4;
 		
 		
 		/**
@@ -725,24 +678,36 @@ public class CartPoleDomain implements DomainGenerator {
 		public CartPoleRewardFunction(double maxAbsoluteAngleInRadians){
 			this.maxAbsoluteAngle = maxAbsoluteAngleInRadians;
 		}
-		
-		
+
+		public double getMaxAbsoluteAngle() {
+			return maxAbsoluteAngle;
+		}
+
+		public void setMaxAbsoluteAngle(double maxAbsoluteAngle) {
+			this.maxAbsoluteAngle = maxAbsoluteAngle;
+		}
+
+		public double getHalfTrackLength() {
+			return halfTrackLength;
+		}
+
+		public void setHalfTrackLength(double halfTrackLength) {
+			this.halfTrackLength = halfTrackLength;
+		}
+
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
-			
-			OldObjectInstance cartpole = sprime.getFirstObjectOfClass(CLASSCARTPOLE);
-			double x = cartpole.getRealValForAttribute(ATTX);
-			Attribute xatt = cartpole.getObjectClass().getAttribute(ATTX);
-			double xmin = xatt.lowerLim;
-			double xmax = xatt.upperLim;
+
+			CartPoleState cs = (CartPoleState)s;
+			double x = cs.x;
 			
 			double failReward = -1;
 			
-			if(x <= xmin || x >= xmax){
+			if(x <= -halfTrackLength || x >= halfTrackLength){
 				return failReward;
 			}
 			
-			double ang = cartpole.getRealValForAttribute(ATTANGLE);
+			double ang = cs.angle;
 			if(Math.abs(ang) >= maxAbsoluteAngle){
 				return failReward;
 			}
@@ -766,11 +731,11 @@ public class CartPoleDomain implements DomainGenerator {
 
 		Domain domain = dgen.generateDomain();
 		
-		State s = CartPoleDomain.getInitialState(domain);
+		State s = new CartPoleState();
 		
 		VisualExplorer exp = new VisualExplorer(domain, CartPoleVisualizer.getCartPoleVisualizer(), s);
-		exp.addKeyAction("a", ACTIONLEFT);
-		exp.addKeyAction("d", ACTIONRIGHT);
+		exp.addKeyAction("a", ACTION_LEFT);
+		exp.addKeyAction("d", ACTION_RIGHT);
 		
 		exp.initGUI();
 		

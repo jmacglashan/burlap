@@ -57,10 +57,10 @@ public class CartPoleVisualizer {
 				float cWidth, float cHeight) {
 			
 			
-			double x = ob.getRealValForAttribute(CartPoleDomain.ATTX);
-			double a = ob.getRealValForAttribute(CartPoleDomain.ATTANGLE);
+			double x = ob.getRealValForAttribute(CartPoleDomain.VAR_X);
+			double a = ob.getRealValForAttribute(CartPoleDomain.VAR_ANGLE);
 			
-			Attribute xatt = ob.getObjectClass().getAttribute(CartPoleDomain.ATTX);
+			Attribute xatt = ob.getObjectClass().getAttribute(CartPoleDomain.VAR_X);
 			
 			double xmin = xatt.lowerLim;
 			double xmax = xatt.upperLim;
