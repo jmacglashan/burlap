@@ -4,8 +4,7 @@ import burlap.debugtools.RandomFactory;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
+import burlap.oomdp.core.state.MutableState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -35,19 +34,15 @@ public class GraphDefinedDomain implements DomainGenerator {
 
 	
 	/**
-	 * Constant for the name of the graph node attribute
+	 * the variable key for the single graph node values of a state
 	 */
-	public static final String												ATTNODE = "node";
-	
-	/**
-	 * Constant for the name of the agent class
-	 */
-	public static final String												CLASSAGENT = "agent";
+	public static final String VAR = "node";
+
 	
 	/**
 	 * Constant for the base name of each action
 	 */
-	public static final String												BASEACTIONNAME = "action";
+	public static final String BASE_ACTION_NAME = "action";
 	
 	
 	/**
@@ -345,12 +340,6 @@ public class GraphDefinedDomain implements DomainGenerator {
 	public Domain generateDomain() {
 		
 		Domain domain = new SADomain();
-		
-		Attribute na = new Attribute(domain, ATTNODE, Attribute.AttributeType.DISC);
-		na.setDiscValuesForRange(0, this.numNodes-1, 1);
-		
-		ObjectClass aclass = new ObjectClass(domain, CLASSAGENT);
-		aclass.addAttribute(na);
 
 		Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> ctd = this.copyTransitionDynamics();
 
@@ -362,37 +351,8 @@ public class GraphDefinedDomain implements DomainGenerator {
 		return domain;
 	}
 	
-	
-	
-	/**
-	 * Returns a new state in which the agent is in the specified source node number.
-	 * @param d the domain object for the graph domain
-	 * @param sNode the state node number in which the agent will be.
-	 * @return a new state object where the agent is in the specified state node number.
-	 */
-	public static State getState(Domain d, int sNode){
-		State s = new CMutableState();
-		
-		OldObjectInstance o = new MutableObjectInstance(d.getObjectClass(CLASSAGENT), CLASSAGENT);
-		o.setValue(ATTNODE, sNode);
-		
-		s.addObject(o);
-		
-		return s;
-	}
-	
-	
-	/**
-	 * Returns the state node number where the agent of the provided state is
-	 * @param s the state object to query
-	 * @return the state node number where the agent of the provided state is
-	 */
-	public static int getNodeId(State s){
-		return s.getFirstObjectOfClass(CLASSAGENT).getIntValForAttribute(ATTNODE);
-	}
-	
-	
-	
+
+
 	/**
 	 * A class for specifying transition probabilities to result node states.
 	 * @author James MacGlashan
@@ -481,7 +441,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 * @param aId the action identifier number
 		 */
 		public GraphAction(Domain domain, int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics){
-			super(BASEACTIONNAME+aId, domain);
+			super(BASE_ACTION_NAME +aId, domain);
 			this.aId = aId;
 			rand = RandomFactory.getMapped(0);
 			this.transitionDynamics = transitionDynamics;
@@ -490,9 +450,8 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		@Override
 		public boolean applicableInState(State st, GroundedAction groundedAction){
-			
-			OldObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
-			int n = o.getIntValForAttribute(ATTNODE);
+
+			int n = (Integer)st.get("node");
 			
 			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
@@ -509,9 +468,8 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		@Override
 		protected State performActionHelper(State st, GroundedAction groundedAction) {
-			
-			OldObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
-			int n = o.getIntValForAttribute(ATTNODE);
+
+			int n = (Integer)st.get(VAR);
 			
 			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
@@ -527,7 +485,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 				}
 			}
 			
-			o.setValue(ATTNODE, selection);
+			((MutableState)st).set(VAR, selection);
 			
 			return st;
 		}
@@ -537,9 +495,8 @@ public class GraphDefinedDomain implements DomainGenerator {
 		public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction){
 			
 			List <TransitionProbability> result = new ArrayList<TransitionProbability>();
-			
-			OldObjectInstance o = st.getObjectsOfClass(CLASSAGENT).get(0);
-			int n = o.getIntValForAttribute(ATTNODE);
+
+			int n = (Integer)st.get(VAR);
 			
 			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
 			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
@@ -547,8 +504,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 			for(NodeTransitionProbability ntp : transitions){
 				
 				State ns = st.copy();
-				OldObjectInstance no = ns.getObjectsOfClass(CLASSAGENT).get(0);
-				no.setValue(ATTNODE, ntp.transitionTo);
+				((MutableState)ns).set(VAR, ntp.transitionTo);
 				
 				TransitionProbability tp = new TransitionProbability(ns, ntp.probability);
 				result.add(tp);
@@ -572,6 +528,66 @@ public class GraphDefinedDomain implements DomainGenerator {
 	}
 
 
+	public static class GraphStateNode implements MutableState{
+
+		protected int id;
+
+		protected static List<Object> keys;
+
+		public GraphStateNode() {
+			if(keys == null) {
+				keys = new ArrayList<Object>();
+				keys.add("node");
+			}
+		}
+
+		public GraphStateNode(int id) {
+			super();
+			this.id = id;
+		}
+
+		@Override
+		public MutableState set(Object variableKey, Object value) {
+			if(value instanceof Number){
+				id = ((Number)value).intValue();
+			}
+			else if(value instanceof String){
+				try {
+					id = Integer.parseInt((String) value);
+				} catch(Exception e){
+					throw new RuntimeException("Could not parse string value " + value + " into an int. Cannot set GraphState value.");
+				}
+			}
+			else{
+				throw new RuntimeException("Cannot set graph value to value of type " + value.getClass().getName() + ". Use int or String.");
+			}
+			return this;
+		}
+
+		@Override
+		public List<Object> variableKeys() {
+			return keys;
+		}
+
+		@Override
+		public Object get(Object variableKey) {
+			return id;
+		}
+
+		@Override
+		public State copy() {
+			return new GraphStateNode(id);
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+	}
+
 	public static void main(String[] args) {
 
 		GraphDefinedDomain gdd = new GraphDefinedDomain(3);
@@ -588,7 +604,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 
 
 
-		State s = GraphDefinedDomain.getState(domain, 0);
+		State s = new GraphStateNode(0);
 		TerminalExplorer exp = new TerminalExplorer(domain, s);
 		exp.explore();
 	}
