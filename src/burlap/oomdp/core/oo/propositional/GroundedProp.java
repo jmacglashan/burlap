@@ -1,7 +1,7 @@
 package burlap.oomdp.core.oo.propositional;
 
 
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.oo.state.OOState;
 
 import java.util.Arrays;
 
@@ -40,7 +40,7 @@ public class GroundedProp implements Cloneable{
 	 * @param s the state on which to evaluate the grounded propositional function
 	 * @return true if the propositional function bounded to this groundedProp's parameters is true in the specified state.
 	 */
-	public boolean isTrue(State s){
+	public boolean isTrue(OOState s){
 		return pf.isTrue(s, params);
 	}
 	

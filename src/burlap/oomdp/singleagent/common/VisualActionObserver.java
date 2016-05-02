@@ -5,6 +5,7 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.ActionObserver;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -300,7 +301,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 	
 	private void updatePropTextArea(State s){
 
-		if(!(domain instanceof OODomain)){
+		if(!(domain instanceof OODomain) || !(s instanceof OOState)){
 			return ;
 		}
 
@@ -310,7 +311,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 		for(PropositionalFunction pf : props){
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					buf.append(gp.toString()).append("\n");
 				}
 			}

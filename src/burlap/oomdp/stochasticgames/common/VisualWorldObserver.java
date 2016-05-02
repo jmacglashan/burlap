@@ -1,22 +1,20 @@
 package burlap.oomdp.stochasticgames.common;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.TextArea;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JFrame;
-
 import burlap.behavior.stochasticgames.GameAnalysis;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.WorldObserver;
 import burlap.oomdp.visualizer.Visualizer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -199,15 +197,19 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 	
 	
 	private void updatePropTextArea(State s){
-		
+
+		if(!(domain instanceof OODomain) || !(s instanceof OOState)){
+			return ;
+		}
+
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = domain.getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
 		for(PropositionalFunction pf : props){
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					buf.append(gp.toString()).append("\n");
 				}
 			}

@@ -1,11 +1,12 @@
 package burlap.oomdp.auxiliary.common;
 
-import java.util.List;
-
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
+
+import java.util.List;
 
 
 /**
@@ -58,14 +59,14 @@ public class SinglePFTF implements TerminalFunction {
 		List<GroundedProp> gps = this.pf.getAllGroundedPropsForState(s);
 		if(terminateOnTrue){
 			for(GroundedProp gp : gps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					return true;
 				}
 			}
 		}
 		else{
 			for(GroundedProp gp : gps){
-				if(!gp.isTrue(s)){
+				if(!gp.isTrue((OOState)s)){
 					return true;
 				}
 			}

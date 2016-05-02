@@ -3,6 +3,7 @@ package burlap.shell.command.env;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.environment.Environment;
 import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
@@ -71,7 +72,7 @@ public class ListPropFunctions implements ShellCommand {
 
 		List<GroundedProp> gps = PropositionalFunction.getAllGroundedPropsFromPFList(((OODomain)shell.getDomain()).getPropFunctions(), qs);
 		for(GroundedProp gp : gps){
-			if(gp.isTrue(qs) == !oset.has("f")){
+			if(gp.isTrue((OOState)qs) == !oset.has("f")){
 				os.println(gp.toString());
 			}
 		}

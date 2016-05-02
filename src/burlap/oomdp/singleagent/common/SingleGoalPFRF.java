@@ -1,6 +1,7 @@
 package burlap.oomdp.singleagent.common;
 
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -49,7 +50,7 @@ public class SingleGoalPFRF implements RewardFunction {
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
 		
-		if(this.pf.somePFGroundingIsTrue(sprime)){
+		if(this.pf.somePFGroundingIsTrue((OOState)sprime)){
 			return goalReward;
 		}
 		return nonGoalReward;

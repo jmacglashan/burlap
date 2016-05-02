@@ -72,7 +72,7 @@ public class OOStateConcrete implements MutableOOState{
 	}
 
 	@Override
-	public State addObject(ObjectInstance o) {
+	public MutableOOState addObject(ObjectInstance o) {
 		this.removeObject(o.name());
 		List<ObjectInstance> obs = this.getOrGenerateObjectClassList(o.className());
 		obs.add(o);
@@ -82,7 +82,7 @@ public class OOStateConcrete implements MutableOOState{
 	}
 
 	@Override
-	public State removeObject(String oname) {
+	public MutableOOState removeObject(String oname) {
 
 		ObjectInstance stored = this.objectsMap.get(oname);
 		if(stored != null){
@@ -98,7 +98,7 @@ public class OOStateConcrete implements MutableOOState{
 	}
 
 	@Override
-	public State renameObject(String objectName, String newName) {
+	public MutableOOState renameObject(String objectName, String newName) {
 		ObjectInstance stored = this.objectsMap.get(objectName);
 		if(stored != null){
 			this.removeObject(stored.name());

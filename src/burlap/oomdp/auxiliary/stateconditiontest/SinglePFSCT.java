@@ -1,10 +1,11 @@
 package burlap.oomdp.auxiliary.stateconditiontest;
 
-import java.util.List;
-
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
+
+import java.util.List;
 
 /**
  * A state condition class that returns true when ever any grounded version of a specified
@@ -31,7 +32,7 @@ public class SinglePFSCT implements StateConditionTest {
 		List<GroundedProp> gps = this.pf.getAllGroundedPropsForState(s);
 		
 		for(GroundedProp gp : gps){
-			if(gp.isTrue(s)){
+			if(gp.isTrue((OOState)s)){
 				return true;
 			}
 		}

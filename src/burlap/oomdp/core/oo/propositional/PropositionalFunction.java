@@ -290,7 +290,7 @@ public abstract class PropositionalFunction {
 	 * @param s the {@link State} to test.
 	 * @return true if there existing a {@link GroundedProp} for the provided {@link State} that is in true in the {@link State}; false otherwise.
 	 */
-	public boolean somePFGroundingIsTrue(State s){
+	public boolean somePFGroundingIsTrue(OOState s){
 		List<GroundedProp> gps = this.getAllGroundedPropsForState(s);
 		for(GroundedProp gp : gps){
 			if(gp.isTrue(s)){
