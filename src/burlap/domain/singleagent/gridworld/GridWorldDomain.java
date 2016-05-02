@@ -31,12 +31,9 @@ import java.util.Random;
  * classic north, south, east, west movement actions that may be either deterministic
  * or stochastic with user defined stochastic failures.
  * <p>
- * The domain consists of only
+ * The domain is an {@link OODomain} that consists of only
  * two object classes: an agent class and a location class, each of which is defined by
  * and x and y position. Locations also have an attribute defining which type of location it is.
- * The number of
- * possible types can be set using the {@link #setNumberOfLocationTypes(int)} method.
- * Setting location types may be useful if terminating "pits" and goal locations exist in the world
  * <p> 
  * Walls are not considered objects. Instead walls are
  * considered part of the transition dynamics. There are 2 types of walls supported. Walls that are more like obstacles
@@ -448,6 +445,9 @@ public class GridWorldDomain implements DomainGenerator {
 		OOSADomain domain = new OOSADomain();
 
 		int [][] cmap = this.getMap();
+
+		domain.addStateClass(CLASS_AGENT, GridAgent.class).addStateClass(CLASS_LOCATION, GridLocation.class);
+
 
 		new MovementAction(ACTION_NORTH, domain, this.transitionDynamics[0], cmap);
 		new MovementAction(ACTION_SOUTH, domain, this.transitionDynamics[1], cmap);
