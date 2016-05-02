@@ -1,7 +1,6 @@
 package burlap.oomdp.core.oo.state;
 
 import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
 
 /**
  * @author James MacGlashan.
@@ -13,7 +12,7 @@ public interface MutableOOState extends OOState, MutableState{
 	 * @param o the object instance to be added to this state.
 	 * @return the modified state
 	 */
-	State addObject(ObjectInstance o);
+	MutableOOState addObject(ObjectInstance o);
 
 
 	/**
@@ -21,7 +20,7 @@ public interface MutableOOState extends OOState, MutableState{
 	 * @param oname the name of the object instance to remove.
 	 * @return the modified state
 	 */
-	State removeObject(String oname);
+	MutableOOState removeObject(String oname);
 
 
 	/**
@@ -30,6 +29,6 @@ public interface MutableOOState extends OOState, MutableState{
 	 * @param newName the new name of the object instance
 	 * @return the modified state
 	 */
-	State renameObject(String objectName, String newName);
+	MutableOOState renameObject(String objectName, String newName);
 
 }

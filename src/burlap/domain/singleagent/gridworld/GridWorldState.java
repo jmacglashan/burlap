@@ -34,7 +34,7 @@ public class GridWorldState implements MutableOOState {
 	}
 
 	@Override
-	public State addObject(ObjectInstance o) {
+	public MutableOOState addObject(ObjectInstance o) {
 		if(!(o instanceof GridLocation)){
 			throw new RuntimeException("Can only add GridLocation objects to a GridWorldState.");
 		}
@@ -48,7 +48,7 @@ public class GridWorldState implements MutableOOState {
 	}
 
 	@Override
-	public State removeObject(String oname) {
+	public MutableOOState removeObject(String oname) {
 		if(oname.equals(agent.name())){
 			throw new RuntimeException("Cannot remove agent object from state");
 		}
@@ -65,7 +65,7 @@ public class GridWorldState implements MutableOOState {
 	}
 
 	@Override
-	public State renameObject(String objectName, String newName) {
+	public MutableOOState renameObject(String objectName, String newName) {
 
 		if(objectName.equals(agent.name())){
 			GridAgent nagent = agent.copy();
