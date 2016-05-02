@@ -1,20 +1,21 @@
 package burlap.domain.singleagent.blocksworld;
 
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.oo.ObjectParameterizedAction;
-import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
+import burlap.oomdp.singleagent.oo.OOSADomain;
+import burlap.oomdp.singleagent.oo.ObjectParameterizedAction;
 
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -30,192 +31,99 @@ public class BlocksWorld implements DomainGenerator {
 	/**
 	 * Constant for the relational "on" attribute name.
 	 */
-	public static final String							ATTONBLOCK = "on";
-	/**
-	 * Constant for the binary "on table" attribute name.
-	 */
-	public static final String							ATTONTABLE = "onTable";
-	
+	public static final String ATT_ON = "on";
+
 	/**
 	 * Constant for the binary "clear" attribute name.
 	 */
-	public static final String							ATTCLEAR = "clear";
+	public static final String ATT_CLEAR = "clear";
 	
 	/**
 	 * Constant for the categorical "color" attribute name.
 	 */
-	public static final String							ATTCOLOR = "color";
-	
-	
+	public static final String ATT_COLOR = "color";
+
+
 	/**
-	 * Constant for the color value "red"
+	 * Value for being on the table
 	 */
-	public static final String							COLORRED = "red";
+	public static final String TABLE_VAL = "__table__";
 	
-	/**
-	 * Constant for the color value "green"
-	 */
-	public static final String							COLORGREEN = "green";
-	
-	/**
-	 * Constant for the color value "blue"
-	 */
-	public static final String							COLORBLUE = "blue";
-	
+
 	
 	/**
 	 * Constant for the name of the block class.
 	 */
-	public static final String							CLASSBLOCK = "block";
+	public static final String CLASS_BLOCK = "block";
 	
 	/**
 	 * Constant for the stack action name
 	 */
-	public static final String							ACTIONSTACK = "stack";
+	public static final String ACTION_STACK = "stack";
 	
 	/**
 	 * Constant for the unstack action name
 	 */
-	public static final String							ACTIONUNSTACK = "unstack";
+	public static final String ACTION_UNSTACK = "unstack";
 	
 	
 	/**
 	 * Constant for the propositional function "on" name
 	 */
-	public static final String							PFONBLOCK = "on";
+	public static final String PF_ON_BLOCK = "on";
 	
 	/**
 	 * Constant for the propositional function "on table" name
 	 */
-	public static final String							PFONTABLE = "onTable";
+	public static final String PF_ON_TABLE = "onTable";
 	
 	/**
 	 * Constant for the propositional function "clear" name
 	 */
-	public static final String							PFCLEAR = "clear";
-	
-	
-	//probability of dropping moved block onto table?
-	//probability of knocking over stack when placing block on it?
-	//move stack action?
-	
-	
+	public static final String PF_CLEAR = "clear";
+
+
+	protected NamedColor[]  colors = new NamedColor[]{new NamedColor("red", Color.red), new NamedColor("blue", Color.blue), new NamedColor("green", Color.green)};
 	
 	@Override
 	public Domain generateDomain() {
+
+		OOSADomain domain = new OOSADomain();
 		
-		Domain domain = new SADomain();
-		domain.setObjectIdentiferDependence(true);
-		
-		List <String> colNames = new ArrayList<String>();
-		colNames.add(COLORRED);
-		colNames.add(COLORGREEN);
-		colNames.add(COLORBLUE);
-		
-		Attribute attonblock = new Attribute(domain, ATTONBLOCK, Attribute.AttributeType.RELATIONAL);
-		
-		Attribute attontable = new Attribute(domain, ATTONTABLE, Attribute.AttributeType.BOOLEAN);
-		
-		Attribute attclear = new Attribute(domain, ATTCLEAR, Attribute.AttributeType.BOOLEAN);
-		
-		Attribute attcolor = new Attribute(domain, ATTCOLOR, Attribute.AttributeType.DISC);
-		attcolor.setDiscValues(colNames);
+		domain.addStateClass(CLASS_BLOCK, BlocksWorldBlock.class);
 		
 		
-		ObjectClass blockClass = new ObjectClass(domain, CLASSBLOCK);
-		blockClass.addAttribute(attonblock);
-		blockClass.addAttribute(attontable);
-		blockClass.addAttribute(attclear);
-		blockClass.addAttribute(attcolor);
+		new StackAction(ACTION_STACK, domain);
+		new UnstackAction(ACTION_UNSTACK, domain);
 		
 		
-		new StackAction(ACTIONSTACK, domain);
-		new UnstackAction(ACTIONUNSTACK, domain);
-		
-		
-		new OnBlockPF(PFONBLOCK, domain);
-		new OnTablePF(PFONTABLE, domain);
-		new ClearPF(PFCLEAR, domain);
-		for(String col : colNames){
+		new OnBlockPF(PF_ON_BLOCK, domain);
+		new OnTablePF(PF_ON_TABLE, domain);
+		new ClearPF(PF_CLEAR, domain);
+		for(NamedColor col : colors){
 			new ColorPF(col, domain);
 		}
 		
 		return domain;
 	}
-	
+
+	public void setColorsForPFs(NamedColor...colors){
+		this.colors = colors;
+	}
 	
 	/**
-	 * Creates a new state with nBlocks block objects in it. Values for created objects are unset, so be sure to set them after call thing method.
-	 * @param d the blocks world domain
+	 * Creates a new state with nBlocks block objects in it.
 	 * @param nBlocks the number of block objects to create
 	 * @return a new state with nBlocks block objects
 	 */
-	public static State getNewState(Domain d, int nBlocks){
-		State s = new CMutableState();
-		ObjectClass oc = d.getObjectClass(CLASSBLOCK);
+	public static State getNewState(int nBlocks){
+		BlocksWorldState s = new BlocksWorldState();
 		for(int i = 0; i < nBlocks; i++){
-			OldObjectInstance o = new MutableObjectInstance(oc, CLASSBLOCK+i);
-			setBlock(o, "", 1, 1, COLORRED);
-			s.addObject(o);
+			s.addObject(new BlocksWorldBlock("block" + i));
 		}
 		return s;
 	}
-	
-	
-	/**
-	 * Use this method to quickly set the color of a block
-	 * @param s the state in which the block object exists
-	 * @param blockInd the index of the block object whose color value should be set 
-	 * @param color the categorical color value (either "red", "green", or "blue")
-	 */
-	public static void setBlockColor(State s, int blockInd, String color){
-		OldObjectInstance b = s.getObjectsOfClass(CLASSBLOCK).get(blockInd);
-		b.setValue(ATTCOLOR, color);
-	}
-	
-	/**
-	 * Use this method to quickly set the various values of a block
-	 * @param s the state in which the block object should be set
-	 * @param blockInd the index of the block object whose values should be set
-	 * @param onBlock the relational on block value
-	 * @param onTable the binary on table value
-	 * @param clear the binary clear value
-	 * @param color the categorical color value (either "red", "green", or "blue")
-	 */
-	public static void setBlock(State s, int blockInd, String onBlock, int onTable, int clear, String color){
-		setBlock(s.getAllObjects().get(blockInd), onBlock, onTable, clear, color);
-	}
-	
-	
-	/**
-	 * Use this method to quickly set the various values of a block
-	 * @param s the state in which the block object should be set
-	 * @param blockName the name identifier of the block object whose values are to be set.
-	 * @param onBlock the relational on block value
-	 * @param onTable the binary on table value
-	 * @param clear the binary clear value
-	 * @param color the categorical color value (either "red", "green", or "blue")
-	 */
-	public static void setBlock(State s, String blockName, String onBlock, int onTable, int clear, String color){
-		setBlock(s.getObject(blockName), onBlock, onTable, clear, color);
-	}
-	
-	
-	/**
-	 * Use this method to quickly set the various values of a block
-	 * @param block the block object instance to whose values should be set
-	 * @param onBlock the relational on block value
-	 * @param onTable the binary on table value
-	 * @param clear the binary clear value
-	 * @param color the categorical color value (either "red", "green", or "blue")
-	 */
-	public static void setBlock(OldObjectInstance block, String onBlock, int onTable, int clear, String color){
-		block.setValue(ATTONBLOCK, onBlock);
-		block.setValue(ATTONTABLE, onTable);
-		block.setValue(ATTCLEAR, clear);
-		block.setValue(ATTCOLOR, color);
-	}
-	
+
 	
 	
 	/**
@@ -226,7 +134,7 @@ public class BlocksWorld implements DomainGenerator {
 	public class StackAction extends ObjectParameterizedAction implements FullActionModel{
 
 		public StackAction(String name, Domain domain){
-			super(name, domain, new String[]{CLASSBLOCK, CLASSBLOCK});
+			super(name, domain, new String[]{CLASS_BLOCK, CLASS_BLOCK});
 		}
 		
 		@Override
@@ -234,16 +142,12 @@ public class BlocksWorld implements DomainGenerator {
 
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
-			//blocks must be clear
+			//block must be clear
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
+			BlocksWorldBlock target = (BlocksWorldBlock)s.object(params[1]);
 			
-			OldObjectInstance src = st.getObject(params[0]);
-			
-			if(src.getIntValForAttribute(ATTCLEAR) == 0){
-				return false;
-			}
-			
-			OldObjectInstance target = st.getObject(params[1]);
-			if(target.getIntValForAttribute(ATTCLEAR) == 0){
+			if(!src.clear || !target.clear){
 				return false;
 			}
 			
@@ -256,19 +160,23 @@ public class BlocksWorld implements DomainGenerator {
 
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
-			OldObjectInstance src = st.getObject(params[0]);
-			OldObjectInstance target = st.getObject(params[1]);
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
+			BlocksWorldBlock target = (BlocksWorldBlock)s.object(params[1]);
 			
-			String srcOnName = src.getStringValForAttribute(ATTONBLOCK);
+			String srcOnName = src.on;
+
+			BlocksWorldBlock nsrc = src.copy();
+			nsrc.on = target.name;
+			BlocksWorldBlock ntarget = target.copy();
+			target.clear = false;
+
+			s.addObject(nsrc).addObject(ntarget);
 			
-			src.setValue(ATTONBLOCK, target.getName());
-			src.setValue(ATTONTABLE, 0); //may not have been on table to start, but make sure it's not set now
-			
-			target.setValue(ATTCLEAR, 0);
-			
-			if(!srcOnName.equals("")){
-				OldObjectInstance oldTarget = st.getObject(srcOnName);
-				oldTarget.setValue(ATTCLEAR, 1);
+			if(!srcOnName.equals(TABLE_VAL)){
+				BlocksWorldBlock oldTarget = (BlocksWorldBlock)s.object(srcOnName).copy();
+				oldTarget.clear = true;
+				s.addObject(oldTarget);
 			}
 			
 			return st;
@@ -301,7 +209,7 @@ public class BlocksWorld implements DomainGenerator {
 	public class UnstackAction extends ObjectParameterizedAction implements FullActionModel{
 		
 		public UnstackAction(String name, Domain domain){
-			super(name, domain, new String[]{CLASSBLOCK});
+			super(name, domain, new String[]{CLASS_BLOCK});
 		}
 		
 		public boolean applicableInState(State st, GroundedAction groundedAction){
@@ -309,15 +217,13 @@ public class BlocksWorld implements DomainGenerator {
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
 			//block must be clear
-			
-			OldObjectInstance src = st.getObject(params[0]);
-			
-			if(src.getIntValForAttribute(ATTCLEAR) == 0){
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
+
+			if(src.clear || src.onTable()){
 				return false;
 			}
-			if(src.getIntValForAttribute(ATTONTABLE) == 1){
-				return false; //cannot unstack a block already on the table
-			}
+
 			
 			return true; 
 		}
@@ -327,17 +233,16 @@ public class BlocksWorld implements DomainGenerator {
 
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
-			OldObjectInstance src = st.getObject(params[0]);
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
 			
-			String srcOnName = src.getStringValForAttribute(ATTONBLOCK);
-			
-			src.clearRelationalTargets(ATTONBLOCK);
-			src.setValue(ATTONTABLE, 1);
-			
-			if(!srcOnName.equals("")){
-				OldObjectInstance oldTarget = st.getObject(srcOnName);
-				oldTarget.setValue(ATTCLEAR, 1);
+			String srcOnName = src.on;
+
+			s.set(src.name() + ":" + ATT_ON, TABLE_VAL);
+			if(!srcOnName.equals(TABLE_VAL)) {
+				s.set(srcOnName + ":" + ATT_CLEAR, true);
 			}
+
 			
 			return st;
 		}
@@ -367,18 +272,17 @@ public class BlocksWorld implements DomainGenerator {
 	 */
 	public class OnBlockPF extends PropositionalFunction {
 
-		public OnBlockPF(String name, Domain domain) {
-			super(name, domain, new String[]{CLASSBLOCK,CLASSBLOCK});
+		public OnBlockPF(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_BLOCK, CLASS_BLOCK});
 		}
 
 		@Override
-		public boolean isTrue(State st, String... params) {
-			OldObjectInstance src = st.getObject(params[0]);
-			OldObjectInstance target = st.getObject(params[1]);
-			if(src.getStringValForAttribute(ATTONBLOCK).equals(target.getName())){
-				return true;
-			}
-			return false;
+		public boolean isTrue(OOState st, String... params) {
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
+			BlocksWorldBlock target = (BlocksWorldBlock)s.object(params[1]);
+			return src.on.equals(target.name());
+
 		}
 		
 	}
@@ -391,17 +295,15 @@ public class BlocksWorld implements DomainGenerator {
 	 */
 	public class OnTablePF extends PropositionalFunction{
 		
-		public OnTablePF(String name, Domain domain) {
-			super(name, domain, new String[]{CLASSBLOCK});
+		public OnTablePF(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_BLOCK});
 		}
 
 		@Override
-		public boolean isTrue(State st, String... params) {
-			OldObjectInstance src = st.getObject(params[0]);
-			if(src.getIntValForAttribute(ATTONTABLE) == 1){
-				return true;
-			}
-			return false;
+		public boolean isTrue(OOState st, String... params) {
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
+			return src.onTable();
 		}
 		
 	}
@@ -414,17 +316,15 @@ public class BlocksWorld implements DomainGenerator {
 	 */
 	public class ClearPF extends PropositionalFunction{
 		
-		public ClearPF(String name, Domain domain) {
-			super(name, domain, new String[]{CLASSBLOCK});
+		public ClearPF(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_BLOCK});
 		}
 
 		@Override
-		public boolean isTrue(State st, String... params) {
-			OldObjectInstance src = st.getObject(params[0]);
-			if(src.getIntValForAttribute(ATTCLEAR) == 1){
-				return true;
-			}
-			return false;
+		public boolean isTrue(OOState st, String... params) {
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
+			return src.clear;
 		}
 		
 	}
@@ -437,20 +337,34 @@ public class BlocksWorld implements DomainGenerator {
 	 *
 	 */
 	public class ColorPF extends PropositionalFunction{
-		
-		public ColorPF(String name, Domain domain) {
-			super(name, domain, new String[]{CLASSBLOCK});
+
+		protected NamedColor color;
+
+		public ColorPF(NamedColor color, OODomain domain) {
+			super(color.name, domain, new String[]{CLASS_BLOCK});
+			this.color = color;
 		}
 
 		@Override
-		public boolean isTrue(State st, String... params) {
-			OldObjectInstance src = st.getObject(params[0]);
-			if(src.getStringValForAttribute(ATTCOLOR).equals(this.name)){
-				return true;
-			}
-			return false;
+		public boolean isTrue(OOState st, String... params) {
+			BlocksWorldState s = (BlocksWorldState)st;
+			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
+			return color.equals(src.color);
 		}
 		
+	}
+
+	public static class NamedColor{
+		public String name;
+		public Color col;
+
+		public NamedColor() {
+		}
+
+		public NamedColor(String name, Color col) {
+			this.name = name;
+			this.col = col;
+		}
 	}
 	
 	
@@ -464,7 +378,7 @@ public class BlocksWorld implements DomainGenerator {
 		BlocksWorld bw = new BlocksWorld();
 		Domain domain = bw.generateDomain();
 		
-		State s = getNewState(domain, 3);
+		State s = getNewState(3);
 		
 		int expMode = 1;
 		if(args.length > 0){
