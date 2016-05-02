@@ -2,6 +2,7 @@ package burlap.domain.singleagent.mountaincar;
 
 import burlap.oomdp.core.state.MutableState;
 import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.state.StateUtilities;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,5 +98,10 @@ public class MCState implements MutableState {
 	@Override
 	public State copy() {
 		return new MCState(x, v);
+	}
+
+	@Override
+	public String toString() {
+		return StateUtilities.stateToString(this);
 	}
 }

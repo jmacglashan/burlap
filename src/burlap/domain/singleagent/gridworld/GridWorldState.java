@@ -199,4 +199,9 @@ public class GridWorldState implements MutableOOState {
 		}
 		return ind;
 	}
+
+	@Override
+	public String toString() {
+		return OOStateUtilities.ooStateToString(this);
+	}
 }

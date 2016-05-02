@@ -54,4 +54,9 @@ public class TigerState implements MutableState{
 	public TigerState copy() {
 		return new TigerState(door);
 	}
+
+	@Override
+	public String toString() {
+		return door;
+	}
 }

@@ -1,5 +1,6 @@
 package burlap.domain.singleagent.gridworld;
 
+import burlap.oomdp.core.oo.state.OOStateUtilities;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 
 import java.util.Arrays;
@@ -88,5 +89,10 @@ public class GridAgent implements ObjectInstance {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return OOStateUtilities.objectInstanceToString(this);
 	}
 }

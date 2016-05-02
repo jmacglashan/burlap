@@ -56,4 +56,9 @@ public class TigerObservation implements MutableState {
 	public TigerObservation copy() {
 		return new TigerObservation(hear);
 	}
+
+	@Override
+	public String toString() {
+		return hear;
+	}
 }
