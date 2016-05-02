@@ -2,7 +2,6 @@ package burlap.domain.singleagent.blocksworld;
 
 import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.core.state.State;
 import burlap.oomdp.visualizer.OOStatePainter;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
@@ -80,9 +79,9 @@ public class BlocksWorldVisualizer {
 
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 
-			List <ObjectInstance> objects = ((OOState)s).objects();
+			List <ObjectInstance> objects = s.objects();
 			List <String> obNames = new ArrayList<String>(objects.size());
 			for(ObjectInstance o : objects){
 				obNames.add(o.name());
@@ -102,7 +101,7 @@ public class BlocksWorldVisualizer {
 			g2.setColor(((BlocksWorldBlock)ob).color);
 
 			float rx = ind*blockWidth;
-			float ry = cHeight - blockHeight - this.getHeight((OOState)s, (BlocksWorldBlock)ob)*blockHeight;
+			float ry = cHeight - blockHeight - this.getHeight(s, (BlocksWorldBlock)ob)*blockHeight;
 
 			g2.fill(new Rectangle2D.Float(rx + (hGap), ry, blockWidth - 2*hGap, blockHeight));
 

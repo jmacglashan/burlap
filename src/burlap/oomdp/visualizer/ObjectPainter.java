@@ -1,6 +1,6 @@
 package burlap.oomdp.visualizer;
 
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 
 import java.awt.*;
@@ -21,7 +21,7 @@ public interface ObjectPainter {
 	 * @param cWidth width of the canvas size
 	 * @param cHeight height of the canvas size
 	 */
-	public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight);
+	public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight);
 	
 	
 }

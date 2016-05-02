@@ -1,6 +1,7 @@
 package burlap.domain.singleagent.gridworld;
 
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.visualizer.*;
@@ -224,7 +225,7 @@ public class GridWorldVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			
 			//set the color of the object
@@ -286,7 +287,7 @@ public class GridWorldVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, ObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			int type = (Integer)ob.get(ATT_TYPE);
 			int multiplier = type / this.baseColors.size();
