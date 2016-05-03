@@ -1,21 +1,21 @@
 package burlap.domain.singleagent.blockdude;
 
+import burlap.domain.singleagent.blockdude.states.BlockDudeAgent;
+import burlap.domain.singleagent.blockdude.states.BlockDudeCell;
+import burlap.domain.singleagent.blockdude.states.BlockDudeMap;
+import burlap.domain.singleagent.blockdude.states.BlockDudeState;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
+import burlap.oomdp.singleagent.oo.OOSADomain;
 import burlap.oomdp.visualizer.Visualizer;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * An implementation of the Block Dude Texas Instruments calculator puzzle game. The goal is for the player to reach
@@ -35,16 +35,7 @@ import java.util.Set;
  * {@link burlap.domain.singleagent.blockdude.BlockDudeVisualizer}. You can run this class' main method
  * to launch an interactive visualizer for the first level with keys: w, a, d, s, x for
  * the actions up, west, east, pickup, putdown, respectively.
- * <p>
- * By default this domain's actions will use a {@link CMutableState#semiDeepCopy(java.util.Set)} instead of a
- * {@link State#copy()}. The semi-deep copy only copies {@link OldObjectInstance}
- * in the previous state that will have its values modified by the action execution:
- * typically, the agent and a moved block are deep copied, with the un moved block objects and brick objects
- * shallow copied to the new state. This is much more memory efficient, but you should avoid directly modifying
- * any single state outside of state construction to avoid changes to other states that may be in memory that use the
- * same shallow copy. Instead, if you wish to directly modify states, always make a
- * {@link State#copy()} first. Alternatively, you can set Actions to always make deep copies
- * by setting this class's {@link #useSemiDeep} parameter to false with with the {@link #setUseSemiDeep(boolean)} method.
+ *
  *
  * @author James MacGlashan.
  */
@@ -54,84 +45,84 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * X position attribute name
 	 */
-	public static final String							ATTX = "x";
+	public static final String VAR_X = "x";
 
 	/**
 	 * Y position attribute name
 	 */
-	public static final String							ATTY = "y";
+	public static final String VAR_Y = "y";
 
 	/**
 	 * Direction attribute name
 	 */
-	public static final String							ATTDIR = "dir";
+	public static final String VAR_DIR = "dir";
 
 	/**
 	 * Name for the boolean attribute that indicates whether the agent is holding a block
 	 */
-	public static final String							ATTHOLD = "holding";
+	public static final String VAR_HOLD = "holding";
 
 	/**
 	 * Name for the attribute that holds the brick map
 	 */
-	public static final String							ATTMAP = "map";
+	public static final String VAR_MAP = "map";
 
 
 	/**
 	 * Name for the agent OO-MDP class
 	 */
-	public static final String							CLASSAGENT = "agent";
+	public static final String CLASS_AGENT = "agent";
 
 	/**
 	 * Name for the block OO-MDP class
 	 */
-	public static final String							CLASSBLOCK = "block";
+	public static final String CLASS_BLOCK = "block";
 
 	/**
 	 * Name for the bricks OO-MDP class
 	 */
-	public static final String							CLASSBRICKS = "bricks";
+	public static final String CLASS_MAP = "map";
 
 	/**
 	 * Name for the exit OO-MDP class
 	 */
-	public static final String							CLASSEXIT = "exit";
+	public static final String CLASS_EXIT = "exit";
 
 
 	/**
 	 * Name for the up action
 	 */
-	public static final String							ACTIONUP = "up";
+	public static final String ACTION_UP = "up";
 
 	/**
 	 * Name for the east action
 	 */
-	public static final String							ACTIONEAST = "east";
+	public static final String ACTION_EAST = "east";
 
 	/**
 	 * Name for the west action
 	 */
-	public static final String							ACTIONWEST = "west";
+	public static final String ACTION_WEST = "west";
 
 	/**
 	 * Name for the pickup action
 	 */
-	public static final String							ACTIONPICKUP = "pickup";
+	public static final String ACTION_PICKUP = "pickup";
 
 	/**
 	 * Name for the put down action
 	 */
-	public static final String							ACTIONPUTDOWN = "putdown";
+	public static final String ACTION_PUT_DOWN = "putdown";
 
 	/**
 	 * Name for the propositional function that tests whether the agent is holding a block.
 	 */
-	public static final String							PFHOLDINGBLOCK = "holdingBlock";
+	public static final String PF_HOLDING_BLOCK = "holdingBlock";
 
 	/**
 	 * Name for the propositional function that tests whether the agent is at an exit
 	 */
-	public static final String							PFATEXIT = "atExit";
+	public static final String PF_AT_EXIT = "atExit";
 
 
 	/**
@@ -144,15 +135,6 @@ public class BlockDude implements DomainGenerator{
 	 */
 	protected int										maxy = 25;
 
-
-	/**
-	 * Domain parameter specifying whether actions create semi-deep copies of states or fully deep copies of states.
-	 * The default is true. If true, then actions only deep copy {@link OldObjectInstance} between
-	 * states that have their values change from the action execution
-	 * (typically the agent or a specifically moved block). If false,
-	 * then the states are completely deep copied by action execution.
-	 */
-	protected  boolean									useSemiDeep = true;
 
 
 	/**
@@ -178,48 +160,19 @@ public class BlockDude implements DomainGenerator{
 	@Override
 	public Domain generateDomain() {
 
-		Domain domain = new SADomain();
+		OOSADomain domain = new OOSADomain();
 
-		//setup attributes
-		Attribute xAtt = new Attribute(domain, ATTX, Attribute.AttributeType.INT);
-		xAtt.setDiscValuesForRange(0, maxx, 1);
-
-		Attribute yAtt = new Attribute(domain, ATTY, Attribute.AttributeType.INT);
-		yAtt.setDiscValuesForRange(0, maxy, 1);
-
-		Attribute dirAtt = new Attribute(domain, ATTDIR, Attribute.AttributeType.DISC);
-		dirAtt.setDiscValues(new String[]{"west", "east"});
-
-		Attribute holdAtt = new Attribute(domain, ATTHOLD, Attribute.AttributeType.BOOLEAN);
-
-		Attribute map = new Attribute(domain, ATTMAP, Attribute.AttributeType.INTARRAY);
+		domain.addStateClass(CLASS_AGENT, BlockDudeAgent.class)
+				.addStateClass(CLASS_MAP, BlockDudeMap.class)
+				.addStateClass(CLASS_EXIT, BlockDudeCell.class)
+				.addStateClass(CLASS_BLOCK, BlockDudeCell.class);
 
 
-
-		//setup object classes
-		ObjectClass aclass = new ObjectClass(domain, CLASSAGENT);
-		aclass.addAttribute(xAtt);
-		aclass.addAttribute(yAtt);
-		aclass.addAttribute(dirAtt);
-		aclass.addAttribute(holdAtt);
-
-		ObjectClass bclass = new ObjectClass(domain, CLASSBLOCK);
-		bclass.addAttribute(xAtt);
-		bclass.addAttribute(yAtt);
-
-		ObjectClass brickclass = new ObjectClass(domain, CLASSBRICKS);
-		brickclass.addAttribute(map);
-
-		ObjectClass eclass = new ObjectClass(domain, CLASSEXIT);
-		eclass.addAttribute(xAtt);
-		eclass.addAttribute(yAtt);
-
-
-		new MoveAction(ACTIONEAST, domain, 1);
-		new MoveAction(ACTIONWEST, domain, -1);
-		new MoveUpAction(domain);
-		new PickupAction(domain);
-		new PutdownAction(domain);
+		new MoveAction(ACTION_EAST, domain, 1, maxx);
+		new MoveAction(ACTION_WEST, domain, -1, maxx);
+		new MoveUpAction(domain, maxx);
+		new PickupAction(domain, maxx);
+		new PutdownAction(domain, maxx);
 
 		new HoldingBlockPF(domain);
 		new AtExitPF(domain);
@@ -229,24 +182,6 @@ public class BlockDude implements DomainGenerator{
 	}
 
 
-	/**
-	 * Returns whether generated domain's actions use semi-deep state copies or full deep copies..
-	 * See this class's documentation for more information.
-	 * @return true if actions' use semi-deep state copies; false otherwise.
-	 */
-	public boolean getUseSemiDeep() {
-		return useSemiDeep;
-	}
-
-
-	/**
-	 * Sets whether generated domain's actions use semi-deep state copies or full deep copies. see this class's
-	 * documentation for more information.
-	 * @param useSemiDeep if true, then use semi-deep; if false use full deep.
-	 */
-	public void setUseSemiDeep(boolean useSemiDeep) {
-		this.useSemiDeep = useSemiDeep;
-	}
 
 	public int getMaxx() {
 		return maxx;
@@ -264,142 +199,6 @@ public class BlockDude implements DomainGenerator{
 		this.maxy = maxy;
 	}
 
-	/**
-	 * Returns an uninitialized state that contains the specified number of block objects. Specifically,
-	 * the state will have one agent object, one exit object, one bricks object (specifying the entire landscape in
-	 * an int array attribute), and nb block objects. Their values will need to be set before being used
-	 * either manually or with methods like {@link #setAgent(State, int, int, int, boolean)},
-	 * {@link #setExit(State, int, int)}, {@link #setBlock(State, int, int, int)},
-	 * and {@link #setBrickMap(State, int[][])} or
-	 * {@link #setBrickValue(State, int, int, int)}. If you want pre-generated states,
-	 * see the {@link burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor}
-	 * @param domain the generated Block Dude domain to which the state will belong
-	 * @param nb the number of blocks to include in the state
-	 * @return a {@link State} with 1 agent object, 1 exit object, 1 bricks object and nb block objects.
-	 */
-	public static State getUninitializedState(Domain domain, int nb){
-		State s = new CMutableState();
-		OldObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(CLASSAGENT), CLASSAGENT);
-		s.addObject(agent);
-
-		OldObjectInstance exit = new MutableObjectInstance(domain.getObjectClass(CLASSEXIT), CLASSEXIT+0);
-		s.addObject(exit);
-
-		OldObjectInstance bricks = new MutableObjectInstance(domain.getObjectClass(CLASSBRICKS), CLASSBRICKS);
-		s.addObject(bricks);
-
-		for(int i = 0; i < nb; i++){
-			OldObjectInstance block = new MutableObjectInstance(domain.getObjectClass(CLASSBLOCK), CLASSBLOCK+i);
-			s.addObject(block);
-		}
-
-		return s;
-	}
-
-
-	/**
-	 * Sets the agent object's x, y, direction, and holding attribute to the specified values.
-	 * @param s the state whose agent object should be modified
-	 * @param x the x position of the agent
-	 * @param y the y position of the agent
-	 * @param dir the direction the agent is facing
-	 * @param holding whether the agent is holding a block or not
-	 */
-	public static void setAgent(State s, int x, int y, int dir, boolean holding){
-		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		agent.setValue(ATTX, x);
-		agent.setValue(ATTY, y);
-		agent.setValue(ATTDIR, dir);
-		agent.setValue(ATTHOLD, holding);
-	}
-
-
-	/**
-	 * Sets the x and y position of the first exit object in the state. The first exit object is selected since
-	 * states tend to only have one exit.
-	 * @param s the state to modify
-	 * @param x the x position of the exit
-	 * @param y the y position of the exit
-	 */
-	public static void setExit(State s, int x, int y){
-		OldObjectInstance exit = s.getObjectsOfClass(CLASSEXIT).get(0);
-		exit.setValue(ATTX, x);
-		exit.setValue(ATTY, y);
-	}
-
-
-	/**
-	 * Sets the ith block's x and y position in a state.
-	 * @param s the state to modify
-	 * @param i which block ot modify
-	 * @param x the x position of the block
-	 * @param y the y position of the block
-	 */
-	public static void setBlock(State s, int i, int x, int y){
-		List<OldObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
-		if(blocks.size() <= i){
-			throw new RuntimeException("Cannot modify the " + i + "th block, because there are only " + blocks.size() + "blocks in the state");
-		}
-		OldObjectInstance block = s.getObjectsOfClass(CLASSBLOCK).get(i);
-		block.setValue(ATTX, x);
-		block.setValue(ATTY, y);
-	}
-
-	/**
-	 * Sets the brick value in grid location x, y. If value 1 one, then a brick is set to be present at x,y. If the value
-	 * is 0 then no brick is present at x,y and the agent or blocks may be moved there.
-	 * @param s the state to modify
-	 * @param x the x position of the brick value to set
-	 * @param y the y position of the brick value to set
-	 * @param v if 1, then a brick will be at position x,y; if false then no brick will be present.
-	 */
-	public static void setBrickValue(State s, int x, int y, int v){
-		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
-		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
-
-		//get max x dimension
-		int xWidth = (int)bricks.getObjectClass().domain.getAttribute(ATTX).upperLim;
-
-		map[oneDMapIndex(x, y, xWidth)] = v;
-		bricks.setValue(ATTMAP, map);
-	}
-
-
-	/**
-	 * Sets the state to use the provided brick map. The first coordinate of the int matrix is the x position; the second
-	 * the y position.
-	 * @param s the state to modify
-	 * @param map the brick map to set.
-	 */
-	public static void setBrickMap(State s, int [][] map){
-
-		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
-		int xWidth = (int)bricks.getObjectClass().domain.getAttribute(ATTX).upperLim;
-		int yWidth = (int)bricks.getObjectClass().domain.getAttribute(ATTY).upperLim;
-
-		int [] oneDMap = new int[xWidth*yWidth];
-
-		for(int i = 0; i < map.length; i++){
-			for(int j = 0; j < map[0].length; j++){
-				oneDMap[oneDMapIndex(i, j, xWidth)] = map[i][j];
-			}
-		}
-
-		bricks.setValue(ATTMAP, oneDMap);
-	}
-
-
-	/**
-	 * Returns the single dimensional array index for the brick map for 2D coordinates x, y.
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param xWidth the maximum x dimensionality of the world.
-	 * @return the single dimensional array index into a brick map for 2D coordinates x,y.
-	 */
-	public static int oneDMapIndex(int x, int y, int xWidth){
-		return y*xWidth + x;
-	}
-
 
 	/**
 	 * Modifies state s to be the result of a horizontal movement. This method will also move any held blocks
@@ -409,27 +208,28 @@ public class BlockDude implements DomainGenerator{
 	 * @param dx the change in x direction; should only be +1 (east) or -1 (west).
 	 * @param maxx the maximum x dimensionality of the world
 	 */
-	public static void moveHorizontally(State s, int dx, int maxx){
+	public static void moveHorizontally(BlockDudeState s, int dx, int maxx){
 
 		if(dx != 1 && dx != -1){
 			throw new RuntimeException("Agent horizontal movement can only be a difference of +1 (east) or -1 (west).");
 		}
 
-		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
-		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
+		BlockDudeAgent agent = s.agent.copy();
+		s.agent = agent;
+
+		int [][] map = s.map.map;
 
 		//always set direction
 		if(dx > 0){
-			agent.setValue(ATTDIR, 1);
+			agent.dir = 1;
 		}
 		else{
-			agent.setValue(ATTDIR, 0);
+			agent.dir = 0;
 		}
 
 
-		int ax = agent.getIntValForAttribute(ATTX);
-		int ay = agent.getIntValForAttribute(ATTY);
+		int ax = agent.x;
+		int ay = agent.y;
 
 		int nx = ax+dx;
 
@@ -447,10 +247,8 @@ public class BlockDude implements DomainGenerator{
 
 		int ny = heightAtNX + 1; //stand on top of stack
 
-
-		agent.setValue(ATTX, nx);
-		agent.setValue(ATTY, ny);
-
+		agent.x = nx;
+		agent.y = ny;
 
 
 		moveCarriedBlockToNewAgentPosition(s, agent, ax, ay, nx, ny);
@@ -466,16 +264,17 @@ public class BlockDude implements DomainGenerator{
 	 * @param s the state to modify.
 	 * @param maxx the maximum x dimensionality of the world
 	 */
-	public static void moveUp(State s, int maxx){
+	public static void moveUp(BlockDudeState s, int maxx){
 
-		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
-		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
+		BlockDudeAgent agent = s.agent.copy();
+		s.agent = agent;
 
-		int ax = agent.getIntValForAttribute(ATTX);
-		int ay = agent.getIntValForAttribute(ATTY);
-		int dir = agent.getIntValForAttribute(ATTDIR);
-		boolean holding = agent.getBooleanValForAttribute(ATTHOLD);
+		int [][] map = s.map.map;
+
+		int ax = agent.x;
+		int ay = agent.y;
+		int dir = agent.dir;
+		boolean holding = agent.holding;
 
 		if(dir == 0){
 			dir = -1;
@@ -497,8 +296,8 @@ public class BlockDude implements DomainGenerator{
 			return ; //not a viable move up condition, so do nothing
 		}
 
-		agent.setValue(ATTX, nx);
-		agent.setValue(ATTY, ny);
+		agent.x = nx;
+		agent.y = ny;
 
 		moveCarriedBlockToNewAgentPosition(s, agent, ax, ay, nx, ny);
 
@@ -511,20 +310,20 @@ public class BlockDude implements DomainGenerator{
 	 * @param s the state to modify.
 	 * @param maxx the maximum x dimensionality of the world
 	 */
-	public static void pickupBlock(State s, int maxx){
+	public static void pickupBlock(BlockDudeState s, int maxx){
 
-		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
-		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
+		BlockDudeAgent agent = s.agent.copy();
+		s.agent = agent;
 
-		int holding = agent.getIntValForAttribute(ATTHOLD);
-		if(holding == 1){
+		int [][] map = s.map.map;
+
+		if(agent.holding){
 			return; //already holding a block
 		}
 
-		int ax = agent.getIntValForAttribute(ATTX);
-		int ay = agent.getIntValForAttribute(ATTY);
-		int dir = agent.getIntValForAttribute(ATTDIR);
+		int ax = agent.x;
+		int ay = agent.y;
+		int dir = agent.dir;
 
 		if(dir == 0){
 			dir = -1;
@@ -532,24 +331,30 @@ public class BlockDude implements DomainGenerator{
 
 		//can only pick up blocks one unit away in agent facing direction and at same height as agent
 		int bx = ax+dir;
-		OldObjectInstance block = getBlockAt(s, bx, ay);
+		BlockDudeCell block = getBlockAt(s, bx, ay);
 
 		if(block != null){
 
 			//make sure that block is the top of the world, otherwise something is stacked above it and you cannot pick it up
-			OldObjectInstance blockAbove = getBlockAt(s, bx, ay+1);
+			BlockDudeCell blockAbove = getBlockAt(s, bx, ay+1);
 			if(blockAbove != null){
 				return;
 			}
 
-			if(map[oneDMapIndex(bx, ay+1, maxx)] == 1){
-				return;
+			if(map[bx][ay+1] == 1){
+				return ;
 			}
 
-			block.setValue(ATTX, ax);
-			block.setValue(ATTY, ay+1);
+			s.copyBlocks();
+			s.blocks.remove(block);
+			block = block.copy();
+			s.blocks.add(block);
 
-			agent.setValue(ATTHOLD, 1);
+
+			block.x = ax;
+			block.y = ay+1;
+
+			agent.holding = true;
 
 		}
 
@@ -562,20 +367,20 @@ public class BlockDude implements DomainGenerator{
 	 * @param s the state to modify
 	 * @param maxx the maximum x dimensionality of the world
 	 */
-	public static void putdownBlock(State s, int maxx){
+	public static void putdownBlock(BlockDudeState s, int maxx){
 
-		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(0);
-		OldObjectInstance bricks = s.getFirstObjectOfClass(CLASSBRICKS);
-		int [] map = bricks.getIntArrayValForAttribute(ATTMAP);
+		BlockDudeAgent agent = s.agent.copy();
+		s.agent = agent;
 
-		int holding = agent.getIntValForAttribute(ATTHOLD);
-		if(holding == 0){
+		int [][] map = s.map.map;
+
+		if(!agent.holding){
 			return; //not holding a block
 		}
 
-		int ax = agent.getIntValForAttribute(ATTX);
-		int ay = agent.getIntValForAttribute(ATTY);
-		int dir = agent.getIntValForAttribute(ATTDIR);
+		int ax = agent.x;
+		int ay = agent.y;
+		int dir = agent.dir;
 
 		if(dir == 0){
 			dir = -1;
@@ -589,11 +394,16 @@ public class BlockDude implements DomainGenerator{
 			return; //cannot drop block if walled off from throw position
 		}
 
-		OldObjectInstance block = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
-		block.setValue(ATTX, nx);
-		block.setValue(ATTY, heightAtNX+1); //stacked on top of this position
+		BlockDudeCell block = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
+		s.copyBlocks();
+		s.blocks.remove(block);
+		block = block.copy();
+		s.blocks.add(block);
 
-		agent.setValue(ATTHOLD, 0);
+		block.x = nx;
+		block.y = heightAtNX+1;
+		agent.holding = false;
+
 
 	}
 
@@ -601,39 +411,40 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * Moves a carried block to a new position of the agent
 	 * @param s the state to modify
-	 * @param agent the agent {@link OldObjectInstance}
+	 * @param agent the agent
 	 * @param ax the previous x position of the agent
 	 * @param ay the previous y position of the agent
 	 * @param nx the new x position of the *agent*
 	 * @param ny the new y position of the *agent*
 	 */
-	protected static void moveCarriedBlockToNewAgentPosition(State s, OldObjectInstance agent, int ax, int ay, int nx, int ny){
-		int holding = agent.getIntValForAttribute(ATTHOLD);
-		if(holding == 1){
-			//then move the box being carried too
-			OldObjectInstance carriedBlock = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
-			carriedBlock.setValue(ATTX, nx);
-			carriedBlock.setValue(ATTY, ny+1);
+	protected static void moveCarriedBlockToNewAgentPosition(BlockDudeState s, BlockDudeAgent agent, int ax, int ay, int nx, int ny){
+		if(agent.holding){
+			//then move the box being carried too; make sure to copy data to prevent contamination
+			BlockDudeCell carriedBlock = getBlockAt(s, ax, ay+1); //carried block is one unit above agent
+
+			s.copyBlocks();
+			s.blocks.remove(carriedBlock);
+
+			carriedBlock = carriedBlock.copy();
+			carriedBlock.x = nx;
+			carriedBlock.y = ny+1;
+			s.blocks.add(carriedBlock);
 		}
 	}
 
 
 	/**
-	 * Finds a block object in the {@link State} located at the provided position and returns its
-	 * {@link OldObjectInstance}. If not block at the location exists, then null is returned.
+	 * Finds a block object in the {@link State} located at the provided position and returns it
 	 * @param s the state to check
 	 * @param x the x position
 	 * @param y the y position
-	 * @return the {@link OldObjectInstance} for the corresponding block object in the state at the given position or null if one does not exist.
+	 * @return the {@link BlockDudeCell} for the corresponding block object in the state at the given position or null if one does not exist.
 	 */
-	protected static OldObjectInstance getBlockAt(State s, int x, int y){
+	protected static BlockDudeCell getBlockAt(BlockDudeState s, int x, int y){
 
-		List<OldObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
-		for(OldObjectInstance block : blocks){
-			int bx = block.getIntValForAttribute(ATTX);
-			int by = block.getIntValForAttribute(ATTY);
-			if(bx == x && by == y){
-				return block;
+		for(BlockDudeCell b : s.blocks){
+			if(b.x == x && b.y == y){
+				return b;
 			}
 		}
 
@@ -652,11 +463,11 @@ public class BlockDude implements DomainGenerator{
 	 * @param maxY the y position under which the highest point is searched
 	 * @return the maximum height or zero if there are no bricks or blocks at x, y &lt;= maxY.
 	 */
-	public static int greatestHeightBelow(State s, int [] map, int xWidth, int x, int maxY){
+	public static int greatestHeightBelow(BlockDudeState s, int [][] map, int xWidth, int x, int maxY){
 
 		int maxHeight = 0;
 		for(int y = maxY; y >= 0; y--){
-			if(map[oneDMapIndex(x, y, xWidth)] == 1){
+			if(map[x][y] == 1){
 				maxHeight = y;
 				break;
 			}
@@ -664,13 +475,10 @@ public class BlockDude implements DomainGenerator{
 
 		if(maxHeight < maxY){
 			//then check the blocks
-			List<OldObjectInstance> blocks = s.getObjectsOfClass(CLASSBLOCK);
-			for(OldObjectInstance b : blocks){
-				int bx = b.getIntValForAttribute(ATTX);
-				if(bx == x){
-					int by = b.getIntValForAttribute(ATTY);
-					if(by > maxHeight && by <= maxY){
-						maxHeight = by;
+			for(BlockDudeCell b : s.blocks){
+				if(b.x == x){
+					if(b.y > maxHeight && b.y <= maxY){
+						maxHeight = b.y;
 					}
 				}
 			}
@@ -684,10 +492,9 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * A class for performing a horizontal movement either east or west.
 	 */
-	public class MoveAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class MoveAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected int dir;
-		protected boolean useSemiDeep;
 		protected int maxx;
 
 		/**
@@ -696,47 +503,15 @@ public class BlockDude implements DomainGenerator{
 		 * @param domain the domain to which it will be associated
 		 * @param dir the direction of movement: +1 for east; -1 for west.
 		 */
-		public MoveAction(String name, Domain domain, int dir){
+		public MoveAction(String name, Domain domain, int dir, int maxx){
 			super(name, domain);
 			this.dir = dir;
-			this.useSemiDeep = BlockDude.this.useSemiDeep;
-			this.maxx = BlockDude.this.maxx;
+			this.maxx = maxx;
 		}
-
-
-		@Override
-		public State performAction(State s, GroundedAction groundedAction){
-
-
-			if(useSemiDeep && s instanceof CMutableState){
-				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
-
-				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
-				deepCopiedObjects.add(agent);
-				int ah = agent.getIntValForAttribute(ATTHOLD);
-
-				if(ah == 1){
-					int ax = agent.getIntValForAttribute(ATTX);
-					int ay = agent.getIntValForAttribute(ATTY);
-
-					OldObjectInstance block = getBlockAt(s, ax, ay+1);
-					if(block != null){
-						deepCopiedObjects.add(block);
-					}
-
-				}
-
-				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
-
-				return performActionHelper(copid, groundedAction);
-			}
-			return super.performAction(s, groundedAction);
-		}
-
 
 		@Override
 		protected State performActionHelper(State s, GroundedAction groundedAction) {
-			moveHorizontally(s, dir, maxx);
+			moveHorizontally((BlockDudeState)s, dir, maxx);
 			return s;
 		}
 
@@ -747,50 +522,20 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * And action class for performing an up movement action.
 	 */
-	public class MoveUpAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class MoveUpAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
-		public MoveUpAction(Domain domain){
-			super(ACTIONUP, domain);
-			this.useSemiDeep = BlockDude.this.useSemiDeep;
-			this.maxx = BlockDude.this.maxx;
-		}
-
-		@Override
-		public State performAction(State s, GroundedAction groundedAction){
-
-
-			if(useSemiDeep && s instanceof CMutableState){
-				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
-
-				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
-				deepCopiedObjects.add(agent);
-				int ah = agent.getIntValForAttribute(ATTHOLD);
-
-				if(ah == 1){
-					int ax = agent.getIntValForAttribute(ATTX);
-					int ay = agent.getIntValForAttribute(ATTY);
-
-					OldObjectInstance block = getBlockAt(s, ax, ay+1);
-					if(block != null){
-						deepCopiedObjects.add(block);
-					}
-
-				}
-
-				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
-
-				return performActionHelper(copid, groundedAction);
-			}
-			return super.performAction(s, groundedAction);
+		public MoveUpAction(Domain domain, int maxx){
+			super(ACTION_UP, domain);
+			this.maxx = maxx;
 		}
 
 
 		@Override
 		protected State performActionHelper(State s, GroundedAction groundedAction) {
-			moveUp(s, maxx);
+			moveUp((BlockDudeState)s, maxx);
 			return s;
 		}
 
@@ -801,56 +546,20 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * An action class for performing a pickup action.
 	 */
-	public class PickupAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class PickupAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
-		public PickupAction(Domain domain){
-			super(ACTIONPICKUP, domain);
-			this.useSemiDeep = BlockDude.this.useSemiDeep;
-			this.maxx = BlockDude.this.maxx;
-		}
-
-
-		@Override
-		public State performAction(State s, GroundedAction groundedAction){
-
-
-			if(useSemiDeep && s instanceof CMutableState){
-				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
-
-				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
-				deepCopiedObjects.add(agent);
-				int ah = agent.getIntValForAttribute(ATTHOLD);
-
-				if(ah == 0){
-					int ax = agent.getIntValForAttribute(ATTX);
-					int ay = agent.getIntValForAttribute(ATTY);
-					int dir = agent.getIntValForAttribute(ATTDIR);
-
-					if(dir == 0){
-						dir = -1;
-					}
-
-					OldObjectInstance block = getBlockAt(s, ax+dir, ay);
-					if(block != null){
-						deepCopiedObjects.add(block);
-					}
-
-				}
-
-				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
-
-				return performActionHelper(copid, groundedAction);
-			}
-			return super.performAction(s, groundedAction);
+		public PickupAction(Domain domain, int maxx){
+			super(ACTION_PICKUP, domain);
+			this.maxx = maxx;
 		}
 
 
 		@Override
 		protected State performActionHelper(State s, GroundedAction groundedAction) {
-			pickupBlock(s, maxx);
+			pickupBlock((BlockDudeState)s, maxx);
 			return s;
 		}
 
@@ -860,51 +569,20 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * An action class for performing a put down action.
 	 */
-	public class PutdownAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class PutdownAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
-		public PutdownAction(Domain domain){
-			super(ACTIONPUTDOWN, domain);
-			this.useSemiDeep = BlockDude.this.useSemiDeep;
-			this.maxx = BlockDude.this.maxx;
-		}
-
-
-		@Override
-		public State performAction(State s, GroundedAction groundedAction){
-
-
-			if(useSemiDeep && s instanceof CMutableState){
-				Set<OldObjectInstance> deepCopiedObjects = new HashSet<OldObjectInstance>(2);
-
-				OldObjectInstance agent = s.getFirstObjectOfClass(CLASSAGENT);
-				deepCopiedObjects.add(agent);
-				int ah = agent.getIntValForAttribute(ATTHOLD);
-
-				if(ah == 1){
-					int ax = agent.getIntValForAttribute(ATTX);
-					int ay = agent.getIntValForAttribute(ATTY);
-
-					OldObjectInstance block = getBlockAt(s, ax, ay+1);
-					if(block != null){
-						deepCopiedObjects.add(block);
-					}
-
-				}
-
-				State copid = ((CMutableState)s).semiDeepCopy(deepCopiedObjects);
-
-				return performActionHelper(copid, groundedAction);
-			}
-			return super.performAction(s, groundedAction);
+		public PutdownAction(Domain domain, int maxx){
+			super(ACTION_PUT_DOWN, domain);
+			this.maxx = maxx;
 		}
 
 
 		@Override
 		protected State performActionHelper(State s, GroundedAction groundedAction) {
-			putdownBlock(s, maxx);
+			putdownBlock((BlockDudeState) s, maxx);
 			return s;
 		}
 
@@ -917,25 +595,19 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public class HoldingBlockPF extends PropositionalFunction{
 
-		public HoldingBlockPF(Domain domain) {
-			super(PFHOLDINGBLOCK, domain, new String[]{CLASSAGENT, CLASSBLOCK});
+		public HoldingBlockPF(OODomain domain) {
+			super(PF_HOLDING_BLOCK, domain, new String[]{CLASS_AGENT, CLASS_BLOCK});
 		}
 
 
 		@Override
-		public boolean isTrue(State st, String... params) {
+		public boolean isTrue(OOState st, String... params) {
 
-			OldObjectInstance agent = st.getObject(params[0]);
-			OldObjectInstance block = st.getObject(params[1]);
+			BlockDudeAgent a = (BlockDudeAgent)st.object(params[0]);
+			BlockDudeCell b = (BlockDudeCell)st.object(params[1]);
 
-			int ax = agent.getIntValForAttribute(ATTX);
-			int ay = agent.getIntValForAttribute(ATTY);
-			int ah = agent.getIntValForAttribute(ATTHOLD);
 
-			int bx = block.getIntValForAttribute(ATTX);
-			int by = block.getIntValForAttribute(ATTY);
-
-			if(ax == bx && ay == by-1 && ah == 1){
+			if(a.x == b.x && a.y == b.y-1 && a.holding){
 				return true;
 			}
 
@@ -953,26 +625,19 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public class AtExitPF extends PropositionalFunction{
 
-		public AtExitPF(Domain domain) {
-			super(PFATEXIT, domain, new String[]{CLASSAGENT,CLASSEXIT});
+		public AtExitPF(OODomain domain) {
+			super(PF_AT_EXIT, domain, new String[]{CLASS_AGENT, CLASS_EXIT});
 		}
 
 
 
 		@Override
-		public boolean isTrue(State st, String... params) {
+		public boolean isTrue(OOState st, String... params) {
 
-			OldObjectInstance agent = st.getObject(params[0]);
-			OldObjectInstance exit = st.getObject(params[1]);
+			BlockDudeAgent a = (BlockDudeAgent)st.object(params[0]);
+			BlockDudeCell e = (BlockDudeCell)st.object(params[1]);
 
-			int ax = agent.getIntValForAttribute(ATTX);
-			int ay = agent.getIntValForAttribute(ATTY);
-
-
-			int ex = exit.getIntValForAttribute(ATTX);
-			int ey = exit.getIntValForAttribute(ATTY);
-
-			if(ax == ex && ay == ey){
+			if(a.x == e.x && a.y == e.y){
 				return true;
 			}
 
@@ -1001,11 +666,11 @@ public class BlockDude implements DomainGenerator{
 
 		VisualExplorer exp = new VisualExplorer(domain, v, s);
 
-		exp.addKeyAction("w", ACTIONUP);
-		exp.addKeyAction("d", ACTIONEAST);
-		exp.addKeyAction("a", ACTIONWEST);
-		exp.addKeyAction("s", ACTIONPICKUP);
-		exp.addKeyAction("x", ACTIONPUTDOWN);
+		exp.addKeyAction("w", ACTION_UP);
+		exp.addKeyAction("d", ACTION_EAST);
+		exp.addKeyAction("a", ACTION_WEST);
+		exp.addKeyAction("s", ACTION_PICKUP);
+		exp.addKeyAction("x", ACTION_PUT_DOWN);
 
 		exp.initGUI();
 

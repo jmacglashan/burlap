@@ -1,7 +1,12 @@
 package burlap.domain.singleagent.blockdude;
 
+import burlap.domain.singleagent.blockdude.states.BlockDudeAgent;
+import burlap.domain.singleagent.blockdude.states.BlockDudeCell;
+import burlap.domain.singleagent.blockdude.states.BlockDudeState;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.state.State;
+
+import static burlap.domain.singleagent.blockdude.BlockDude.CLASS_EXIT;
 
 /**
  * A class for generating the initial states for {@link burlap.domain.singleagent.blockdude.BlockDude} from levels
@@ -34,12 +39,14 @@ public class BlockDudeLevelConstructor {
 		map[11][2] = 1;
 
 
-		State s = BlockDude.getUninitializedState(domain, 2);
-		BlockDude.setAgent(s, 15, 1, 1, false);
-		BlockDude.setExit(s, 0, 1);
-		BlockDude.setBlock(s, 0, 9, 1);
-		BlockDude.setBlock(s, 1, 13, 1);
-		BlockDude.setBrickMap(s, map);
+		BlockDudeState s = new BlockDudeState(25, 3, 2);
+		s.agent = new BlockDudeAgent(15, 1, 1, false);
+		s.exit.setXY(0, 1);
+
+		s.blocks.get(0).setXY(9, 1);
+		s.blocks.get(1).setXY(13, 1);
+
+		s.map.map = map;
 
 		return s;
 	}

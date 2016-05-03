@@ -40,10 +40,10 @@ public class BlockDudeVisualizer {
 	public static StateRenderLayer getStateRenderLayer(int maxx, int maxy){
 
 		StateRenderLayer srl = new StateRenderLayer();
-		srl.addObjectClassPainter(BlockDude.CLASSBRICKS, new BricksPainter(maxx, maxy));
-		srl.addObjectClassPainter(BlockDude.CLASSAGENT, new AgentPainter(maxx, maxy));
-		srl.addObjectClassPainter(BlockDude.CLASSEXIT, new ExitPainter(maxx, maxy));
-		srl.addObjectClassPainter(BlockDude.CLASSBLOCK, new BlockPainter(maxx, maxy));
+		srl.addObjectClassPainter(BlockDude.CLASS_MAP, new BricksPainter(maxx, maxy));
+		srl.addObjectClassPainter(BlockDude.CLASS_AGENT, new AgentPainter(maxx, maxy));
+		srl.addObjectClassPainter(BlockDude.CLASS_EXIT, new ExitPainter(maxx, maxy));
+		srl.addObjectClassPainter(BlockDude.CLASS_BLOCK, new BlockPainter(maxx, maxy));
 
 		return srl;
 	}
@@ -83,8 +83,8 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = ob.getIntValForAttribute(BlockDude.ATTX)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.ATTY)*height;
+			float rx = ob.getIntValForAttribute(BlockDude.VAR_X)*width;
+			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.VAR_Y)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -95,7 +95,7 @@ public class BlockDudeVisualizer {
 			float eyeHeight = height*0.25f;
 
 			float ex = rx;
-			if(ob.getIntValForAttribute(BlockDude.ATTDIR) == 1){
+			if(ob.getIntValForAttribute(BlockDude.VAR_DIR) == 1){
 				ex = (rx+width) - eyeWidth;
 			}
 
@@ -144,8 +144,8 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = ob.getIntValForAttribute(BlockDude.ATTX)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.ATTY)*height;
+			float rx = ob.getIntValForAttribute(BlockDude.VAR_X)*width;
+			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.VAR_Y)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -191,8 +191,8 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = ob.getIntValForAttribute(BlockDude.ATTX)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.ATTY)*height;
+			float rx = ob.getIntValForAttribute(BlockDude.VAR_X)*width;
+			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.VAR_Y)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -238,7 +238,7 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			int [] map = ob.getIntArrayValForAttribute(BlockDude.ATTMAP);
+			int [] map = ob.getIntArrayValForAttribute(BlockDude.VAR_MAP);
 
 			for(int i = 0; i < map.length; i++){
 

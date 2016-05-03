@@ -22,6 +22,12 @@ public class OOStateUtilities {
 		return flatKeys;
 	}
 
+	public static Object get(OOState s, Object variableKey){
+		OOVariableKey key = generateKey(variableKey);
+		ObjectInstance o = s.object(key.obName);
+		return o.get(key.obVarKey);
+	}
+
 	public static OOVariableKey generateKey(Object key){
 		if(key instanceof OOVariableKey){
 			return (OOVariableKey)key;

@@ -16,16 +16,16 @@ public class BlockDudeTF implements TerminalFunction {
 	@Override
 	public boolean isTerminal(State s) {
 
-		OldObjectInstance agent = s.getFirstObjectOfClass(BlockDude.CLASSAGENT);
-		List<OldObjectInstance> exits = s.getObjectsOfClass(BlockDude.CLASSEXIT);
+		OldObjectInstance agent = s.getFirstObjectOfClass(BlockDude.CLASS_AGENT);
+		List<OldObjectInstance> exits = s.getObjectsOfClass(BlockDude.CLASS_EXIT);
 
-		int ax = agent.getIntValForAttribute(BlockDude.ATTX);
-		int ay = agent.getIntValForAttribute(BlockDude.ATTY);
+		int ax = agent.getIntValForAttribute(BlockDude.VAR_X);
+		int ay = agent.getIntValForAttribute(BlockDude.VAR_Y);
 
 		for(OldObjectInstance e : exits){
-			int ex = e.getIntValForAttribute(BlockDude.ATTX);
+			int ex = e.getIntValForAttribute(BlockDude.VAR_X);
 			if(ex == ax){
-				int ey = e.getIntValForAttribute(BlockDude.ATTY);
+				int ey = e.getIntValForAttribute(BlockDude.VAR_Y);
 				if(ey == ay){
 					return true;
 				}
