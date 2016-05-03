@@ -14,7 +14,7 @@ BURLAP now fully supports Maven and is indexed on Maven Central, so all you need
 <dependency>
   <groupId>edu.brown.cs.burlap</groupId>
   <artifactId>burlap</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
 </dependency>
 ```
 
