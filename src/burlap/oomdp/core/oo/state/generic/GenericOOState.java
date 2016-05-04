@@ -1,74 +1,64 @@
-package burlap.oomdp.core.oo.state;
+package burlap.oomdp.core.oo.state.generic;
 
+import burlap.oomdp.core.oo.state.*;
+import burlap.oomdp.core.oo.state.exceptions.UnknownObjectException;
 import burlap.oomdp.core.state.MutableState;
 import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.state.annotations.ShallowCopyState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author James MacGlashan.
  */
-public class OOStateConcrete implements MutableOOState{
+@ShallowCopyState
+public class GenericOOState implements MutableOOState {
 
 
 	protected Map<String, List<ObjectInstance>> objectsByClass = new HashMap<String, List<ObjectInstance>>();
 	protected Map<String, ObjectInstance> objectsMap = new HashMap<String, ObjectInstance>();
 
-	public OOStateConcrete() {
+	public GenericOOState() {
 	}
 
-	public OOStateConcrete(OOState srcOOState){
+	public GenericOOState(OOState srcOOState){
 		for(ObjectInstance o : srcOOState.objects()){
-			this.addObject((ObjectInstance)o.copy());
+			this.addObject(o);
 		}
 	}
 
 	@Override
 	public List<Object> variableKeys() {
-		List<Object> keys = new ArrayList<Object>();
-		for(ObjectInstance ob : this.objects()){
-			for(Object varKey : ob.variableKeys()){
-				OOVariableKey ookey = new OOVariableKey(ob.name(), varKey);
-				keys.add(ookey);
-			}
-		}
-		return keys;
+		return OOStateUtilities.flatStateKeys(this);
 	}
 
 	@Override
 	public Object get(Object variableKey) {
-
-		OOVariableKey key = this.constructKey(variableKey);
-
-		ObjectInstance ob = this.objectsMap.get(key.obName);
-		if(ob != null) {
-			return ob.get(key.obVarKey);
-		}
-
-		throw new RuntimeException("Cannot return value for key " + key.toString() + " because there is no object with the specified name.");
+		return OOStateUtilities.get(this, variableKey);
 	}
 
 	@Override
 	public MutableState set(Object variableKey, Object value) {
 
-		OOVariableKey key = this.constructKey(variableKey);
-		ObjectInstance ob = this.objectsMap.get(key);
+		OOVariableKey key = OOStateUtilities.generateKey(variableKey);
+		ObjectInstance ob = this.touch(key.obName);
 		if(ob == null){
-			throw new RuntimeException("Cannot set value for key " + key.toString() + " because there is no object with the specified name.");
+			throw new UnknownObjectException(key.obName);
 		}
-		ObjectInstance touchedOb = (ObjectInstance)ob.copy();
-		if(!(touchedOb instanceof MutableState)){
-			throw new RuntimeException("Cannot set value for object " + touchedOb.name() + " because it does not implement MutableState");
+		if(!(ob instanceof MutableState)){
+			throw new RuntimeException("Cannot set value for object " + ob.name() + " because it does not implement MutableState");
 		}
 		((MutableState)ob).set(key.obVarKey, value);
-		this.addObject(touchedOb);
 
 		return this;
 	}
 
 	@Override
 	public State copy() {
-		return new OOStateConcrete(this);
+		return new GenericOOState(this);
 	}
 
 	@Override
@@ -102,8 +92,7 @@ public class OOStateConcrete implements MutableOOState{
 		ObjectInstance stored = this.objectsMap.get(objectName);
 		if(stored != null){
 			this.removeObject(stored.name());
-			ObjectInstance copied = (ObjectInstance)stored.copy();
-			copied.copyWithName(newName);
+			ObjectInstance copied = stored.copyWithName(newName);
 			this.addObject(copied);
 
 		}
@@ -132,12 +121,35 @@ public class OOStateConcrete implements MutableOOState{
 
 	@Override
 	public String toString() {
-		StringBuilder buf = new StringBuilder();
-		for(ObjectInstance o : this.objects()){
-			buf.append(o.toString());
-		}
-		return buf.toString();
+		return OOStateUtilities.ooStateToString(this);
 	}
+
+
+	/**
+	 * Copies the object with the given name, and updates its index in this state. Use this method if you
+	 * are going to directly modify the {@link ObjectInstance} to ensure that you do not contaminate any states
+	 * from which this state was copied.
+	 * @param obname the name of the object to be modified.
+	 * @return a copy of the {@link ObjectInstance} with the given name. Null if this state contains no object with that name
+	 */
+	public ObjectInstance touch(String obname){
+		ObjectInstance original = this.object(obname);
+		if(original != null){
+			this.removeObject(obname);
+
+			ObjectInstance next = (ObjectInstance)original.copy();
+
+			List<ObjectInstance> obs = this.getOrGenerateObjectClassList(next.className());
+			obs.add(next);
+			this.objectsMap.put(next.name(), next);
+
+			return next;
+
+		}
+
+		return null;
+	}
+
 
 
 	/**
@@ -156,6 +168,23 @@ public class OOStateConcrete implements MutableOOState{
 		this.objectsByClass = objectsByClass;
 	}
 
+
+	/**
+	 * Getter method for underlying data to support serialization.
+	 * @return the underlying Map from object names to {@link ObjectInstance} objects for objects in this state.
+	 */
+	public Map<String, ObjectInstance> getObjectsMap() {
+		return objectsMap;
+	}
+
+	/**
+	 * Setter method for underlying data to support serialization
+	 * @param objectsMap the underlying Map from object names to {@link ObjectInstance} objects for objects in this state.
+	 */
+	public void setObjectsMap(Map<String, ObjectInstance> objectsMap) {
+		this.objectsMap = objectsMap;
+	}
+
 	protected List<ObjectInstance> getOrGenerateObjectClassList(String className){
 		List<ObjectInstance> obs = this.objectsByClass.get(className);
 		if(obs == null){
@@ -165,19 +194,4 @@ public class OOStateConcrete implements MutableOOState{
 		return obs;
 	}
 
-	protected OOVariableKey constructKey(Object variableKey){
-
-		if(variableKey instanceof OOVariableKey) {
-
-			OOVariableKey key = (OOVariableKey) variableKey;
-			return key;
-
-		}
-		else if(variableKey instanceof String){
-			OOVariableKey key = new OOVariableKey((String)variableKey);
-			return key;
-		}
-
-		throw new RuntimeException("Cannot construct OOVariable key from object that is already a OOVariableKey, or a String.");
-	}
 }
