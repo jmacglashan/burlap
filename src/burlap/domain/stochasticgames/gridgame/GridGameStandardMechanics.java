@@ -1,22 +1,18 @@
 package burlap.domain.stochasticgames.gridgame;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.core.oo.state.generic.GenericOOState;
+import burlap.oomdp.core.state.MutableState;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointActionModel;
+import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+
+import java.util.*;
 
 
 /**
@@ -69,9 +65,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		
 		for(GroundedSGAgentAction gsa : gsas){
-			Location2 loc = this.getLocation(s, gsa.actingAgent);
+			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent);
 			previousLocations.add(loc);
-			if(gsa.action.actionName.equals(GridGame.ACTIONNOOP)){
+			if(gsa.action.actionName.equals(GridGame.ACTION_NOOP)){
 				noopLocations.add(loc);
 			}
 		}
@@ -80,7 +76,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
 			GroundedSGAgentAction gsa = gsas.get(i);
-			possibleOutcomes.add(this.getPossibleLocationsFromWallCollisions(s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
+			possibleOutcomes.add(this.getPossibleLocationsFromWallCollisions((OOState)s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
 		}
 		
 		List <LocationSetProb> outcomeSets = this.getAllLocationSets(possibleOutcomes);
@@ -95,15 +91,15 @@ public class GridGameStandardMechanics extends JointActionModel {
 			
 			//turn them into states with probabilities
 			for(LocationSetProb csp : cOutcomeSets){
-				
-				State ns = s.copy();
+
+				GenericOOState ns = (GenericOOState)s.copy();
 				for(int i = 0; i < csp.locs.size(); i++){
 					GroundedSGAgentAction gsa = gsas.get(i);
 					Location2 loc = csp.locs.get(i);
 					
-					OldObjectInstance agent = ns.getObject(gsa.actingAgent);
-					agent.setValue(GridGame.ATTX, loc.x);
-					agent.setValue(GridGame.ATTY, loc.y);
+					ObjectInstance agent = ns.touch(gsa.actingAgent);
+					((MutableState)agent).set(GridGame.VAR_X, loc.x);
+					((MutableState)agent).set(GridGame.VAR_Y, loc.y);
 				}
 				
 				double totalProb = sp.p * csp.p;
@@ -130,9 +126,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		
 		for(GroundedSGAgentAction gsa : gsas){
-			Location2 loc = this.getLocation(s, gsa.actingAgent);
+			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent);
 			previousLocations.add(loc);
-			if(gsa.action.actionName.equals(GridGame.ACTIONNOOP)){
+			if(gsa.action.actionName.equals(GridGame.ACTION_NOOP)){
 				noopLocations.add(loc);
 			}
 		}
@@ -141,7 +137,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
 			GroundedSGAgentAction gsa = gsas.get(i);
-			basicMoveResults.add(this.sampleBasicMovement(s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
+			basicMoveResults.add(this.sampleBasicMovement((OOState)s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
 		}
 		
 		//resolve swaps
@@ -152,9 +148,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 			GroundedSGAgentAction gsa = gsas.get(i);
 			Location2 loc = finalPositions.get(i);
 			
-			OldObjectInstance agent = s.getObject(gsa.actingAgent);
-			agent.setValue(GridGame.ATTX, loc.x);
-			agent.setValue(GridGame.ATTY, loc.y);
+			ObjectInstance agent = ((GenericOOState)s).touch(gsa.actingAgent);
+			((MutableState)agent).set(GridGame.VAR_X, loc.x);
+			((MutableState)agent).set(GridGame.VAR_Y, loc.y);
 			
 		}
 		
@@ -169,10 +165,10 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param agentName the name of the agent.
 	 * @return a {@link GridGameStandardMechanics.Location2} object containing the agents position in the world.
 	 */
-	protected Location2 getLocation(State s, String agentName){
+	protected Location2 getLocation(OOState s, String agentName){
 		
-		OldObjectInstance a = s.getObject(agentName);
-		Location2 loc = new Location2(a.getIntValForAttribute(GridGame.ATTX), a.getIntValForAttribute(GridGame.ATTY));
+		ObjectInstance a = s.object(agentName);
+		Location2 loc = new Location2((Integer)a.get(GridGame.VAR_X), (Integer)a.get(GridGame.VAR_Y));
 		
 		return loc;
 	}
@@ -186,19 +182,19 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 */
 	protected Location2 attemptedDelta(String actionName){
 		
-		if(actionName.equals(GridGame.ACTIONNORTH)){
+		if(actionName.equals(GridGame.ACTION_NORTH)){
 			return new Location2(0, 1);
 		}
-		else if(actionName.equals(GridGame.ACTIONSOUTH)){
+		else if(actionName.equals(GridGame.ACTION_SOUTH)){
 			return new Location2(0, -1);
 		}
-		else if(actionName.equals(GridGame.ACTIONEAST)){
+		else if(actionName.equals(GridGame.ACTION_EAST)){
 			return new Location2(1, 0);
 		}
-		else if(actionName.equals(GridGame.ACTIONWEST)){
+		else if(actionName.equals(GridGame.ACTION_WEST)){
 			return new Location2(-1, 0);
 		}
-		else if(actionName.equals(GridGame.ACTIONNOOP)){
+		else if(actionName.equals(GridGame.ACTION_NOOP)){
 			return new Location2(0, 0);
 		}
 		
@@ -474,7 +470,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param agentNoOpLocs the locations occupied by agents who are not moving.
 	 * @return The resulting location of this agents movement.
 	 */
-	protected Location2 sampleBasicMovement(State s, Location2 p0, Location2 delta, List <Location2> agentNoOpLocs){
+	protected Location2 sampleBasicMovement(OOState s, Location2 p0, Location2 delta, List <Location2> agentNoOpLocs){
 		
 		Location2 p1 = p0.add(delta);
 		
@@ -488,11 +484,11 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		if(delta.x != 0 && !reset){
-			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL), true);
+			reset = this.sampleWallCollision(p0, delta, s.objectsOfClass(GridGame.CLASS_DIM_V_WALL), true);
 		}
 		
 		if(delta.y != 0 && !reset){
-			reset = this.sampleWallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL), false);
+			reset = this.sampleWallCollision(p0, delta, s.objectsOfClass(GridGame.CLASS_DIM_H_WALL), false);
 		}
 		
 		
@@ -513,7 +509,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param agentNoOpLocs the locations occupied by agents who are not moving
 	 * @return the list of possible outcome locations in which the agent could wind up
 	 */
-	protected List <Location2Prob> getPossibleLocationsFromWallCollisions(State s, Location2 p0, Location2 delta, List <Location2> agentNoOpLocs){
+	protected List <Location2Prob> getPossibleLocationsFromWallCollisions(OOState s, Location2 p0, Location2 delta, List <Location2> agentNoOpLocs){
 		
 		List <Location2Prob> locs = new ArrayList<GridGameStandardMechanics.Location2Prob>(2);
 		
@@ -528,7 +524,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		}
 		
 		if(delta.x != 0){
-			int wc = this.wallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMVWALL), true);
+			int wc = this.wallCollision(p0, delta, s.objectsOfClass(GridGame.CLASS_DIM_V_WALL), true);
 			if(wc == 0){
 				locs.add(new Location2Prob(p1, 1.)); //agent freely moves
 			}
@@ -543,7 +539,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 			}
 		}
 		else if(delta.y != 0){
-			int wc = this.wallCollision(p0, delta, s.getObjectsOfClass(GridGame.CLASSDIMHWALL), false);
+			int wc = this.wallCollision(p0, delta, s.objectsOfClass(GridGame.CLASS_DIM_H_WALL), false);
 			if(wc == 0){
 				locs.add(new Location2Prob(p1, 1.)); //agent freely moves
 			}
@@ -579,12 +575,12 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param vertical whether the list of provided walls are vertical or horizontal walls
 	 * @return true if the agent is able to move in the desired location; false otherwise
 	 */
-	protected boolean sampleWallCollision(Location2 p0, Location2 delta, List <OldObjectInstance> walls, boolean vertical){
+	protected boolean sampleWallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
 		
 		for(int i = 0; i < walls.size(); i++){
-			OldObjectInstance w = walls.get(i);
+			ObjectInstance w = walls.get(i);
 			if(this.crossesWall(p0, delta, w, vertical)){
-				int wt = w.getIntValForAttribute(GridGame.ATTWT);
+				int wt = (Integer)w.get(GridGame.VAR_WT);
 				if(wt == 0){ //solid wall
 					return true;
 				}
@@ -610,12 +606,12 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param vertical true if the wall objects are vertical; false if they are horizontal
 	 * @return 0 if there is no collision with a wall, 1 if there is a collision with a solid wall, 2 if there is a potential collision with a semi-wall
 	 */
-	protected int wallCollision(Location2 p0, Location2 delta, List <OldObjectInstance> walls, boolean vertical){
+	protected int wallCollision(Location2 p0, Location2 delta, List <ObjectInstance> walls, boolean vertical){
 		
 		for(int i = 0; i < walls.size(); i++){
-			OldObjectInstance w = walls.get(i);
+			ObjectInstance w = walls.get(i);
 			if(this.crossesWall(p0, delta, w, vertical)){
-				int wt = w.getIntValForAttribute(GridGame.ATTWT);
+				int wt = (Integer)w.get(GridGame.VAR_WT);
 				if(wt == 0){ //solid wall
 					return 1;
 				}
@@ -639,7 +635,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param vertical true if the wall is a vertical wall; false if the wall is a horizontal wall
 	 * @return whether the agent's movement would cross a wall
 	 */
-	protected boolean crossesWall(Location2 p0, Location2 delta, OldObjectInstance w, boolean vertical){
+	protected boolean crossesWall(Location2 p0, Location2 delta, ObjectInstance w, boolean vertical){
 		
 		int a0, a1, d;
 		if(vertical){
@@ -653,9 +649,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 			d = delta.y;
 		}
 		
-		int wp = w.getIntValForAttribute(GridGame.ATTP);
-		int we1 = w.getIntValForAttribute(GridGame.ATTE1);
-		int we2 = w.getIntValForAttribute(GridGame.ATTE2);
+		int wp = (Integer)w.get(GridGame.VAR_POS);
+		int we1 = (Integer)w.get(GridGame.VAR_E1);
+		int we2 = (Integer)w.get(GridGame.VAR_E2);
 
 		if(d < 0){
 			//check crosses "before" agent if decreasing movement
@@ -816,7 +812,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 					continue;
 				}
 				TransitionProbability cmpTP = srcTPs.get(j);
-				if(this.agentsEqual(tp.s, cmpTP.s)){
+				if(this.agentsEqual((OOState)tp.s, (OOState)cmpTP.s)){
 					sumP += cmpTP.p;
 					marked.add(j);
 				}
@@ -840,17 +836,17 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param s2 the second state
 	 * @return true if the agent objects between these two states are equal
 	 */
-	protected boolean agentsEqual(State s1, State s2){
+	protected boolean agentsEqual(OOState s1, OOState s2){
 		
-		List<OldObjectInstance> agents1 = s1.getObjectsOfClass(GridGame.CLASSAGENT);
-		for(OldObjectInstance a1 : agents1){
-			OldObjectInstance a2 = s2.getObject(a1.getName());
+		List<ObjectInstance> agents1 = s1.objectsOfClass(GridGame.CLASS_AGENT);
+		for(ObjectInstance a1 : agents1){
+			ObjectInstance a2 = s2.object(a1.name());
 			
-			int x1 = a1.getIntValForAttribute(GridGame.ATTX);
-			int x2 = a2.getIntValForAttribute(GridGame.ATTX);
+			int x1 = (Integer)a1.get(GridGame.VAR_X);
+			int x2 = (Integer)a2.get(GridGame.VAR_X);
 			
-			int y1 = a1.getIntValForAttribute(GridGame.ATTY);
-			int y2 = a2.getIntValForAttribute(GridGame.ATTY);
+			int y1 = (Integer)a1.get(GridGame.VAR_Y);
+			int y2 = (Integer)a2.get(GridGame.VAR_Y);
 			
 			if(x1 != x2 || y1 != y2){
 				return false;

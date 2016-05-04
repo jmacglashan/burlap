@@ -1,18 +1,24 @@
 package burlap.domain.stochasticgames.gridgame;
 
+import burlap.domain.stochasticgames.gridgame.state.GGAgent;
+import burlap.domain.stochasticgames.gridgame.state.GGGoal;
+import burlap.domain.stochasticgames.gridgame.state.GGWall;
 import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.core.oo.state.generic.GenericOOState;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.JointAction;
 import burlap.oomdp.stochasticgames.JointReward;
 import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.SGDomain;
 import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.oomdp.stochasticgames.explorers.SGVisualExplorer;
+import burlap.oomdp.stochasticgames.oo.OOSGDomain;
 import burlap.oomdp.visualizer.Visualizer;
 
 import java.util.HashMap;
@@ -45,103 +51,103 @@ public class GridGame implements DomainGenerator {
 	/**
 	 * A constant for the name of the x position attribute
 	 */
-	public static final String				ATTX = "x";
+	public static final String VAR_X = "x";
 	
 	/**
 	 * A constant for the name of the y position attribute
 	 */
-	public static final String				ATTY = "y";
+	public static final String VAR_Y = "y";
 	
 	/**
 	 * A constant for the name of the player number attribute. The first player number is 0.
 	 */
-	public static final String				ATTPN = "playerNum";
+	public static final String VAR_PN = "playerNum";
 	
 	/**
 	 * A constant for the name of the goal type attribute. Type 0 corresponds to a universal goal. Type i corresponds to a personal goal for player i-1.
 	 */
-	public static final String				ATTGT = "gt";
+	public static final String VAR_GT = "gt";
 	
 	/**
 	 * A constant for the name of the first wall end position attribute. For a horizontal wall,
 	 * this attribute represents the left end point; for a vertical wall, the bottom end point.
 	 */
-	public static final String				ATTE1 = "end1";
+	public static final String VAR_E1 = "end1";
 	
 	/**
 	 * A constant for the name of the second wall end position attribute. For a horizontal wall,
 	 * this attribute represents the right end point; for a vertical wall, the top end point.
 	 */
-	public static final String				ATTE2 = "end2";
+	public static final String VAR_E2 = "end2";
 	
 	/**
 	 * A constant for the name of the attribute for defining the walls position along its orthogonal direction.
 	 * For a horizontal wall, this attribute represents the y position of the wall; for a vertical wall,
 	 * the x position.
 	 */
-	public static final String				ATTP = "pos";
+	public static final String VAR_POS = "pos";
 	
 	/**
 	 * A constant for the name of the wall type attribute.
 	 */
-	public static final String				ATTWT = "wallType";
+	public static final String VAR_WT = "wallType";
 	
 	
 	/**
 	 * A constant for the name of the agent class.
 	 */
-	public static final String				CLASSAGENT = "agent";
+	public static final String CLASS_AGENT = "agent";
 	
 	/**
 	 * A constant for the name of the goal class.
 	 */
-	public static final String				CLASSGOAL = "goal";
+	public static final String CLASS_GOAL = "goal";
 	
 	/**
 	 * A constant for the name of the horizontal wall class.
 	 */
-	public static final String				CLASSDIMHWALL = "dimensionlessHorizontalWall";
+	public static final String CLASS_DIM_H_WALL = "dimensionlessHorizontalWall";
 	
 	/**
 	 * A constant for the name of the vertical wall class.
 	 */
-	public static final String				CLASSDIMVWALL = "dimensionlessVerticalWall";
+	public static final String CLASS_DIM_V_WALL = "dimensionlessVerticalWall";
 	
 	
 	/**
 	 * A constant for the name of the north action.
 	 */
-	public static final String				ACTIONNORTH = "north";
+	public static final String ACTION_NORTH = "north";
 	
 	/**
 	 * A constant for the name of the south action.
 	 */
-	public static final String				ACTIONSOUTH = "south";
+	public static final String ACTION_SOUTH = "south";
 	
 	/**
 	 * A constant for the name of the east action.
 	 */
-	public static final String				ACTIONEAST = "east";
+	public static final String ACTION_EAST = "east";
 	/**
 	 * A constant for the name of the west action.
 	 */
-	public static final String				ACTIONWEST = "west";
+	public static final String ACTION_WEST = "west";
 	
 	/**
 	 * A constant for the name of the no operation (do nothing) action.
 	 */
-	public static final String				ACTIONNOOP = "noop";
+	public static final String ACTION_NOOP = "noop";
 	
 	
 	/**
 	 * A constant for the name of a propositional function that evaluates whether an agent is in a universal goal location.
 	 */
-	public static final String				PFINUGOAL = "agentInUniversalGoal";
+	public static final String PF_IN_U_GOAL = "inUniversalGoal";
 	
 	/**
 	 * A constant for the name of a propositional function that evaluates whether an agent is in a personal goal location for just them.
 	 */
-	public static final String				PFINPGOAL = "agentInPersonalGoal";
+	public static final String PF_IN_P_GOAL = "inPersonalGoal";
 	
 	
 	
@@ -189,44 +195,29 @@ public class GridGame implements DomainGenerator {
 	public static void main(String [] args){
 		
 		GridGame gg = new GridGame();
-		
-		SGDomain d = (SGDomain)gg.generateDomain();
-		
-		/*
-		State s = getCleanState(d, 2, 3, 3, 2, 5, 5);
-		
-		setAgent(s, 0, 0, 0, 0);
-		setAgent(s, 1, 4, 0, 1);
-		
-		setGoal(s, 0, 0, 4, 1);
-		setGoal(s, 1, 2, 4, 0);
-		setGoal(s, 2, 4, 4, 2);
-		
-		setHorizontalWall(s, 2, 4, 1, 3, 1);
-		*/
+
+		OOSGDomain d = gg.generateDomain();
+
 		
 		//State s = GridGame.getCorrdinationGameInitialState(d);
 		State s = GridGame.getTurkeyInitialState(d);
-		
-		//System.out.println(s.getCompleteStateDescription());
-		
 
 		
 		Visualizer v = GGVisualizer.getVisualizer(9, 9);
 		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
 
 		
-		exp.addKeyAction("w", CLASSAGENT+"0:"+ACTIONNORTH);
-		exp.addKeyAction("s", CLASSAGENT+"0:"+ACTIONSOUTH);
-		exp.addKeyAction("d", CLASSAGENT+"0:"+ACTIONEAST);
-		exp.addKeyAction("a", CLASSAGENT+"0:"+ACTIONWEST);
-		exp.addKeyAction("q", CLASSAGENT+"0:"+ACTIONNOOP);
+		exp.addKeyAction("w", CLASS_AGENT +"0:"+ ACTION_NORTH);
+		exp.addKeyAction("s", CLASS_AGENT +"0:"+ ACTION_SOUTH);
+		exp.addKeyAction("d", CLASS_AGENT +"0:"+ ACTION_EAST);
+		exp.addKeyAction("a", CLASS_AGENT +"0:"+ ACTION_WEST);
+		exp.addKeyAction("q", CLASS_AGENT +"0:"+ ACTION_NOOP);
 		
-		exp.addKeyAction("i", CLASSAGENT+"1:"+ACTIONNORTH);
-		exp.addKeyAction("k", CLASSAGENT+"1:"+ACTIONSOUTH);
-		exp.addKeyAction("l", CLASSAGENT+"1:"+ACTIONEAST);
-		exp.addKeyAction("j", CLASSAGENT+"1:"+ACTIONWEST);
-		exp.addKeyAction("u", CLASSAGENT+"1:"+ACTIONNOOP);
+		exp.addKeyAction("i", CLASS_AGENT +"1:"+ ACTION_NORTH);
+		exp.addKeyAction("k", CLASS_AGENT +"1:"+ ACTION_SOUTH);
+		exp.addKeyAction("l", CLASS_AGENT +"1:"+ ACTION_EAST);
+		exp.addKeyAction("j", CLASS_AGENT +"1:"+ ACTION_WEST);
+		exp.addKeyAction("u", CLASS_AGENT +"1:"+ ACTION_NOOP);
 		
 		exp.initGUI();
 		
@@ -324,69 +315,26 @@ public class GridGame implements DomainGenerator {
 	
 
 	@Override
-	public Domain generateDomain() {
+	public OOSGDomain generateDomain() {
 		
-		SGDomain domain = new SGDomain();
-		
-		
-		Attribute xatt = new Attribute(domain, ATTX, Attribute.AttributeType.INT);
-		xatt.setLims(0, maxDim);
-		
-		Attribute yatt = new Attribute(domain, ATTY, Attribute.AttributeType.INT);
-		yatt.setLims(0, maxDim);
-		
-		Attribute e1att = new Attribute(domain, ATTE1, Attribute.AttributeType.INT);
-		e1att.setLims(0, maxDim);
-		
-		Attribute e2att = new Attribute(domain, ATTE2, Attribute.AttributeType.INT);
-		e2att.setLims(0, maxDim);
-		
-		Attribute patt = new Attribute(domain, ATTP, Attribute.AttributeType.INT);
-		patt.setLims(0, maxDim);
-		
-		Attribute pnatt = new Attribute(domain, ATTPN, Attribute.AttributeType.INT);
-		patt.setLims(0, maxPlyrs);
-		
-		Attribute gtatt = new Attribute(domain, ATTGT, Attribute.AttributeType.INT);
-		gtatt.setLims(0, maxGT);
-		
-		Attribute wtatt = new Attribute(domain, ATTWT, Attribute.AttributeType.INT);
-		wtatt.setLims(0, maxWT);
+		OOSGDomain domain = new OOSGDomain();
 		
 		
-		
-		ObjectClass agentClass = new ObjectClass(domain, CLASSAGENT);
-		agentClass.addAttribute(xatt);
-		agentClass.addAttribute(yatt);
-		agentClass.addAttribute(pnatt);
-		
-		ObjectClass goalClass = new ObjectClass(domain, CLASSGOAL);
-		goalClass.addAttribute(xatt);
-		goalClass.addAttribute(yatt);
-		goalClass.addAttribute(gtatt);
-		
-		ObjectClass horWall = new ObjectClass(domain, CLASSDIMHWALL);
-		horWall.addAttribute(e1att);
-		horWall.addAttribute(e2att);
-		horWall.addAttribute(patt);
-		horWall.addAttribute(wtatt);
-		
-		ObjectClass vertWall = new ObjectClass(domain, CLASSDIMVWALL);
-		vertWall.addAttribute(e1att);
-		vertWall.addAttribute(e2att);
-		vertWall.addAttribute(patt);
-		vertWall.addAttribute(wtatt);
+		domain.addStateClass(CLASS_AGENT, GGAgent.class)
+				.addStateClass(CLASS_GOAL, GGGoal.class)
+				.addStateClass(CLASS_DIM_H_WALL, GGWall.GGHorizontalWall.class)
+				.addStateClass(CLASS_DIM_V_WALL, GGWall.GGVerticalWall.class);
 		
 		
-		new SimpleSGAgentAction(domain, ACTIONNORTH);
-		new SimpleSGAgentAction(domain, ACTIONSOUTH);
-		new SimpleSGAgentAction(domain, ACTIONEAST);
-		new SimpleSGAgentAction(domain, ACTIONWEST);
-		new SimpleSGAgentAction(domain, ACTIONNOOP);
+		new SimpleSGAgentAction(domain, ACTION_NORTH);
+		new SimpleSGAgentAction(domain, ACTION_SOUTH);
+		new SimpleSGAgentAction(domain, ACTION_EAST);
+		new SimpleSGAgentAction(domain, ACTION_WEST);
+		new SimpleSGAgentAction(domain, ACTION_NOOP);
 		
 		
-		new AgentInUGoal(PFINUGOAL, domain);
-		new AgentInPGoal(PFINPGOAL, domain);
+		new AgentInUGoal(PF_IN_U_GOAL, domain);
+		new AgentInPGoal(PF_IN_P_GOAL, domain);
 
 		domain.setJointActionModel(new GridGameStandardMechanics(domain, this.semiWallProb));
 		
@@ -394,32 +342,8 @@ public class GridGame implements DomainGenerator {
 	}
 
 	
-	
-	/**
-	 * Returns a state with with the specified number of objects for each object class and with the specified boundary of
-	 * the playing area. The number of walls *MUST* include the world boundary walls; that is, there must be at least 2 horizontal walls and 2 vertical walls.
-	 * @param d the domain object of the grid world
-	 * @param na the number of agents/players
-	 * @param ng the number of goal objects
-	 * @param nhw the number of horizontal walls
-	 * @param nvw the number of vertical walls
-	 * @param width the width of the playing area
-	 * @param height the height of the playing area
-	 * @return A state with the specified number of objects
-	 */
-	public static State getCleanState(Domain d, int na, int ng, int nhw, int nvw, int width, int height){
-		
-		State s = new CMutableState();
-		addNObjects(d, s, CLASSGOAL, ng);
-		addNObjects(d, s, CLASSAGENT, na);
-		addNObjects(d, s, CLASSDIMHWALL, nhw);
-		addNObjects(d, s, CLASSDIMVWALL, nvw);
-		
-		setBoundaryWalls(s, width, height);
-		
-		
-		return s;
-	}
+
+
 
 
 	/**
@@ -428,13 +352,15 @@ public class GridGame implements DomainGenerator {
 	 * @return the simple game initial state
 	 */
 	public static State getSimpleGameInitialState(Domain d){
-		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 3, 3);
 
-		GridGame.setAgent(s, 0, 0, 0, 0);
-		GridGame.setAgent(s, 1, 2, 0, 1);
+		GenericOOState s = new GenericOOState(
+				new GGAgent(0, 0, 0, "p0"),
+				new GGAgent(2, 0, 1, "p1"),
+				new GGGoal(0, 2, 1, "g0"),
+				new GGGoal(2, 2, 2, "g1")
+		);
 
-		GridGame.setGoal(s, 0, 0, 2, 1);
-		GridGame.setGoal(s, 1, 2, 2, 2);
+		setBoundaryWalls(s, 3, 3);
 
 		return s;
 	}
@@ -446,14 +372,16 @@ public class GridGame implements DomainGenerator {
 	 * @return the coordination game initial state
 	 */
 	public static State getCorrdinationGameInitialState(Domain d){
-		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 3, 3);
-		
-		GridGame.setAgent(s, 0, 0, 0, 0);
-		GridGame.setAgent(s, 1, 2, 0, 1);
-		
-		GridGame.setGoal(s, 0, 0, 2, 2);
-		GridGame.setGoal(s, 1, 2, 2, 1);
-		
+
+		GenericOOState s = new GenericOOState(
+				new GGAgent(0, 0, 0, "p0"),
+				new GGAgent(2, 0, 1, "p1"),
+				new GGGoal(0, 2, 2, "g0"),
+				new GGGoal(2, 2, 1, "g1")
+		);
+
+		setBoundaryWalls(s, 3, 3);
+
 		return s;
 	}
 	
@@ -464,15 +392,17 @@ public class GridGame implements DomainGenerator {
 	 * @return the grid game prisoner's dilemma initial state
 	 */
 	public static State getPrisonersDilemmaInitialState(Domain d){
-		State s = GridGame.getCleanState(d, 2, 3, 2, 2, 9, 1);
-		
-		GridGame.setAgent(s, 0, 3, 0, 0);
-		GridGame.setAgent(s, 1, 5, 0, 1);
-		
-		GridGame.setGoal(s, 0, 0, 0, 1);
-		GridGame.setGoal(s, 1, 4, 0, 0);
-		GridGame.setGoal(s, 2, 8, 0, 2);
-		
+
+		GenericOOState s = new GenericOOState(
+				new GGAgent(3, 0, 0, "p0"),
+				new GGAgent(5, 0, 1, "p1"),
+				new GGGoal(0, 0, 1, "g0"),
+				new GGGoal(4, 0, 0, "g1"),
+				new GGGoal(8, 0, 2, "g2")
+		);
+
+		setBoundaryWalls(s, 9, 1);
+
 		return s;
 	}
 	
@@ -483,15 +413,17 @@ public class GridGame implements DomainGenerator {
 	 * @return the initial state for Friend Foe
 	 */
 	public static State getFriendFoeInitialState(Domain d){
-		
-		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 8, 1);
-		
-		GridGame.setAgent(s, 0, 3, 0, 0);
-		GridGame.setAgent(s, 1, 6, 0, 1);
-		
-		GridGame.setGoal(s, 0, 0, 0, 1);
-		GridGame.setGoal(s, 1, 4, 0, 0);
-		
+
+		GenericOOState s = new GenericOOState(
+				new GGAgent(3, 0 ,0, "p0"),
+				new GGAgent(6, 0, 1, "p1"),
+				new GGGoal(0, 0, 1, "g0"),
+				new GGGoal(4, 0, 0, "g1")
+		);
+
+
+		setBoundaryWalls(s, 8, 1);
+
 		return s;
 	}
 	
@@ -502,14 +434,15 @@ public class GridGame implements DomainGenerator {
 	 * @return the initial state for the Incredible game.
 	 */
 	public static State getIncredibleInitialState(Domain d){
-		
-		State s = GridGame.getCleanState(d, 2, 2, 2, 2, 4, 1);
-		
-		GridGame.setAgent(s, 0, 2, 0, 0);
-		GridGame.setAgent(s, 1, 3, 0, 1);
-		
-		GridGame.setGoal(s, 0, 0, 0, 1);
-		GridGame.setGoal(s, 1, 1, 0, 2);
+
+		GenericOOState s = new GenericOOState(
+				new GGAgent(2, 0, 0, "p0"),
+				new GGAgent(3, 0, 1, "p1"),
+				new GGGoal(0, 0, 1, "g0"),
+				new GGGoal(1, 0, 2, "g1")
+		);
+
+		setBoundaryWalls(s, 4, 1);
 		
 		return s;
 		
@@ -517,68 +450,26 @@ public class GridGame implements DomainGenerator {
 	
 	
 	public static State getTurkeyInitialState(Domain d){
-		
-		State s = GridGame.getCleanState(d, 2, 3, 4, 2, 3, 4);
-		
-		GridGame.setHorizontalWall(s, 2, 1, 0, 0, 1);
-		GridGame.setHorizontalWall(s, 3, 1, 2, 2, 1);
-		
-		GridGame.setAgent(s, 0, 0, 0, 0);
-		GridGame.setAgent(s, 1, 2, 0, 1);
-		
-		GridGame.setGoal(s, 0, 0, 3, 1);
-		GridGame.setGoal(s, 1, 1, 2, 0);
-		GridGame.setGoal(s, 2, 2, 3, 2);
+
+		GenericOOState s = new GenericOOState(
+				new GGAgent(0, 0, 0, "p0"),
+				new GGAgent(2, 0, 1, "p1"),
+				new GGGoal(0, 3, 1, "g0"),
+				new GGGoal(1, 2, 0, "g1"),
+				new GGGoal(2, 3, 2, "g2"),
+				new GGWall.GGHorizontalWall(1, 0, 0, 1, "w0"),
+				new GGWall.GGHorizontalWall(1, 2, 2, 1, "w1")
+
+		);
+
+		setBoundaryWalls(s, 3, 4);
 		
 		return s;
 		
 	}
 	
 	/**
-	 * AddsN objects of a specific object class to a state object
-	 * @param d the domain of the object classes
-	 * @param s the state to which the objects of the specified class should be added
-	 * @param className the name of the object class for which to create object instances
-	 * @param n the number of object instances to create
-	 */
-	protected static void addNObjects(Domain d, State s, String className, int n){
-		for(int i = 0; i < n; i++){
-			OldObjectInstance o = new MutableObjectInstance(d.getObjectClass(className), className+i);
-			s.addObject(o);
-		}
-	}
-	
-	
-	/**
-	 * Sets an agent's attribute values
-	 * @param s the state in which the agent exists
-	 * @param i indicates the ith agent object whose values should be set
-	 * @param x the x position of the agent
-	 * @param y the y position of the agent
-	 * @param pn the player number of the agent
-	 */
-	public static void setAgent(State s, int i, int x, int y, int pn){
-		OldObjectInstance agent = s.getObjectsOfClass(CLASSAGENT).get(i);
-		agent.setValue(ATTX, x);
-		agent.setValue(ATTY, y);
-		agent.setValue(ATTPN, pn);
-	}
-	
-	
-	/**
-	 * Sets a goal objects attribute values
-	 * @param s the state in which the goal exists
-	 * @param i indicates the ith goal object whose values should be set
-	 * @param x the x position of the goal
-	 * @param y the y position of the goal
-	 * @param gt the goal type
-	 */
-	public static void setGoal(State s, int i, int x, int y, int gt){
-		OldObjectInstance goal = s.getObjectsOfClass(CLASSGOAL).get(i);
-		goal.setValue(ATTX, x);
-		goal.setValue(ATTY, y);
-		goal.setValue(ATTGT, gt);
-	}
+
 	
 	
 	/**
@@ -588,69 +479,20 @@ public class GridGame implements DomainGenerator {
 	 * @param w the width of the playing field
 	 * @param h the height of the playing field
 	 */
-	public static void setBoundaryWalls(State s, int w, int h){
+	public static void setBoundaryWalls(GenericOOState s, int w, int h){
+
+		int numV = s.objectsOfClass(CLASS_DIM_V_WALL).size();
+		int numH = s.objectsOfClass(CLASS_DIM_H_WALL).size();
 		
-		List<OldObjectInstance> verticalWalls = s.getObjectsOfClass(CLASSDIMVWALL);
-		List<OldObjectInstance> horizontalWalls = s.getObjectsOfClass(CLASSDIMHWALL);
-		
-		OldObjectInstance leftWall = verticalWalls.get(0);
-		OldObjectInstance rightWall = verticalWalls.get(1);
-		
-		OldObjectInstance bottomWall = horizontalWalls.get(0);
-		OldObjectInstance topWall = horizontalWalls.get(1);
-		
-		setWallInstance(leftWall, 0, 0, h-1, 0);
-		setWallInstance(rightWall, w, 0, h-1, 0);
-		setWallInstance(bottomWall, 0, 0, w-1, 0);
-		setWallInstance(topWall, h, 0, w-1, 0);
+		s.addObject(new GGWall.GGHorizontalWall(0, h-1, 0, 0, "h"+numH))
+				.addObject(new GGWall.GGHorizontalWall(0, h-1, w, 0, "h"+(numH+1)))
+				.addObject(new GGWall.GGVerticalWall(0, w-1, 0, 0, "v"+numV))
+				.addObject(new GGWall.GGVerticalWall(0, w-1, h, 0, "v"+(numV+1)) );
+
 		
 		
-	}
-	
-	
-	/**
-	 * Sets the attribute values for a wall instance
-	 * @param w the wall instance to set
-	 * @param p the orthogonal position of the wall instance
-	 * @param e1 the first end point of the wall
-	 * @param e2 the second end point of the wall
-	 * @param wt the type of the wall
-	 */
-	public static void setWallInstance(OldObjectInstance w, int p, int e1, int e2, int wt){
-		w.setValue(ATTP, p);
-		w.setValue(ATTE1, e1);
-		w.setValue(ATTE2, e2);
-		w.setValue(ATTWT, wt);
 	}
 
-	
-	/**
-	 * Sets the attribute values for a vertical wall
-	 * @param s the state in which the wall exits
-	 * @param i indicates the ith vertical wall instance whose values should be set
-	 * @param p the x position of the vertical wall
-	 * @param e1 the bottom end point of the wall
-	 * @param e2 the top end point of the wall
-	 * @param wt the type of the wall
-	 */
-	public static void setVerticalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfClass(CLASSDIMVWALL).get(i), p, e1, e2, wt);
-	}
-	
-	
-	
-	/**
-	 * Sets the attribute values for a horizontal wall
-	 * @param s the state in which the wall exits
-	 * @param i indicates the ith horizontal wall instance whose values should be set
-	 * @param p the y position of the vertical wall
-	 * @param e1 the left end point of the wall
-	 * @param e2 the right end point of the wall
-	 * @param wt the type of the wall (0 is solid, 1 is semi)
-	 */
-	public static void setHorizontalWall(State s, int i, int p, int e1, int e2, int wt){
-		setWallInstance(s.getObjectsOfClass(CLASSDIMHWALL).get(i), p, e1, e2, wt);
-	}
 
 
 	/**
@@ -662,7 +504,7 @@ public class GridGame implements DomainGenerator {
 	 * @return An {@link burlap.oomdp.stochasticgames.SGAgentType} that typically all {@link burlap.oomdp.stochasticgames.SGAgent}'s of the grid game should play as.
 	 */
 	public static SGAgentType getStandardGridGameAgentType(Domain domain){
-		return new SGAgentType(GridGame.CLASSAGENT, domain.getObjectClass(GridGame.CLASSAGENT), domain.getAgentActions());
+		return new SGAgentType(GridGame.CLASS_AGENT, domain.getAgentActions());
 	}
 	
 	
@@ -680,27 +522,27 @@ public class GridGame implements DomainGenerator {
 		 * @param name the name of the propositional function
 		 * @param domain the domain for this propositional function
 		 */
-		public AgentInUGoal(String name, Domain domain) {
-			super(name, domain, new String[]{CLASSAGENT});
+		public AgentInUGoal(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_AGENT});
 		}
 
 		@Override
-		public boolean isTrue(State s, String... params) {
+		public boolean isTrue(OOState s, String... params) {
 			
-			OldObjectInstance agent = s.getObject(params[0]);
-			int ax = agent.getIntValForAttribute(ATTX);
-			int ay = agent.getIntValForAttribute(ATTY);
+			ObjectInstance agent = s.object(params[0]);
+			int ax = (Integer)agent.get(VAR_X);
+			int ay = (Integer)agent.get(VAR_Y);
 			
 			
 			//find all universal goals
-			List <OldObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
-			for(OldObjectInstance goal : goals){
+			List <ObjectInstance> goals = s.objectsOfClass(CLASS_GOAL);
+			for(ObjectInstance goal : goals){
 				
-				int gt = goal.getIntValForAttribute(ATTGT);
+				int gt = (Integer)goal.get(VAR_GT);
 				if(gt == 0){
 				
-					int gx = goal.getIntValForAttribute(ATTX);
-					int gy = goal.getIntValForAttribute(ATTY);
+					int gx = (Integer)goal.get(VAR_X);
+					int gy = (Integer)goal.get(VAR_Y);
 					if(gx == ax && gy == ay){
 						return true;
 					}
@@ -730,27 +572,27 @@ public class GridGame implements DomainGenerator {
 		 * @param name the name of the propositional function
 		 * @param domain the domain for this propositional function
 		 */
-		public AgentInPGoal(String name, Domain domain) {
-			super(name, domain, new String[]{CLASSAGENT});
+		public AgentInPGoal(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_AGENT});
 		}
 
 		@Override
-		public boolean isTrue(State s, String... params) {
+		public boolean isTrue(OOState s, String... params) {
 			
-			OldObjectInstance agent = s.getObject(params[0]);
-			int ax = agent.getIntValForAttribute(ATTX);
-			int ay = agent.getIntValForAttribute(ATTY);
-			int apn = agent.getIntValForAttribute(ATTPN);
+			ObjectInstance agent = s.object(params[0]);
+			int ax = (Integer)agent.get(VAR_X);
+			int ay = (Integer)agent.get(VAR_Y);
+			int apn = (Integer)agent.get(VAR_PN);
 			
 			//find all universal goals
-			List <OldObjectInstance> goals = s.getObjectsOfClass(CLASSGOAL);
-			for(OldObjectInstance goal : goals){
+			List <ObjectInstance> goals = s.objectsOfClass(CLASS_GOAL);
+			for(ObjectInstance goal : goals){
 				
-				int gt = goal.getIntValForAttribute(ATTGT);
+				int gt = (Integer)goal.get(VAR_GT);
 				if(gt == apn+1){
 				
-					int gx = goal.getIntValForAttribute(ATTX);
-					int gy = goal.getIntValForAttribute(ATTY);
+					int gx = (Integer)goal.get(VAR_X);
+					int gy = (Integer)goal.get(VAR_Y);
 					if(gx == ax && gy == ay){
 						return true;
 					}
@@ -788,9 +630,9 @@ public class GridGame implements DomainGenerator {
 		 * Initializes for a given domain. Defaults rewards to 0 reward everywhere except transition to unviersal or personal goals which return a reward 1.
 		 * @param ggDomain the domain
 		 */
-		public GGJointRewardFunction(Domain ggDomain){
-			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
-			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+		public GGJointRewardFunction(OODomain ggDomain){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 		}
 		
 		/**
@@ -800,9 +642,9 @@ public class GridGame implements DomainGenerator {
 		 * @param goalReward the reward returned for transitioning to a personal or universal goal
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 */
-		public GGJointRewardFunction(Domain ggDomain, double stepCost, double goalReward, boolean noopIncursStepCost){
-			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
-			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double goalReward, boolean noopIncursStepCost){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 			this.stepCost = stepCost;
 			this.pGoalReward = this.uGoalReward = goalReward;
 			this.noopIncursCost = noopIncursStepCost;
@@ -817,9 +659,9 @@ public class GridGame implements DomainGenerator {
 		 * @param universalGoalReward the reward returned for transitions to a universal goal
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 */
-		public GGJointRewardFunction(Domain ggDomain, double stepCost, double personalGoalReward, double universalGoalReward, boolean noopIncursStepCost){
-			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
-			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double personalGoalReward, double universalGoalReward, boolean noopIncursStepCost){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 			this.stepCost = stepCost;
 			this.pGoalReward = personalGoalReward;
 			this.uGoalReward = universalGoalReward;
@@ -834,10 +676,10 @@ public class GridGame implements DomainGenerator {
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 * @param personalGoalRewards a map from player numbers to their personal goal reward (the first player number is 0)
 		 */
-		public GGJointRewardFunction(Domain ggDomain, double stepCost, double universalGoalReward, boolean noopIncursStepCost, Map<Integer, Double> personalGoalRewards){
+		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double universalGoalReward, boolean noopIncursStepCost, Map<Integer, Double> personalGoalRewards){
 			
-			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
-			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 			this.stepCost = stepCost;
 			this.uGoalReward = universalGoalReward;
 			this.noopIncursCost = noopIncursStepCost;
@@ -847,13 +689,15 @@ public class GridGame implements DomainGenerator {
 		
 		@Override
 		public Map<String, Double> reward(State s, JointAction ja, State sp) {
-			
+
+			OOState osp = (OOState)sp;
+
 			Map <String, Double> rewards = new HashMap<String, Double>();
 			
 			//get all agents and initialize reward to default
-			List <OldObjectInstance> obs = sp.getObjectsOfClass(GridGame.CLASSAGENT);
-			for(OldObjectInstance o : obs){
-				rewards.put(o.getName(), this.defaultCost(o.getName(), ja));
+			List <ObjectInstance> obs = osp.objectsOfClass(GridGame.CLASS_AGENT);
+			for(ObjectInstance o : obs){
+				rewards.put(o.name(), this.defaultCost(o.name(), ja));
 			}
 			
 			
@@ -862,7 +706,7 @@ public class GridGame implements DomainGenerator {
 			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(sp);
 			for(GroundedProp gp : upgps){
 				String agentName = gp.params[0];
-				if(gp.isTrue(sp)){
+				if(gp.isTrue(osp)){
 					rewards.put(agentName, uGoalReward);
 				}
 			}
@@ -873,8 +717,8 @@ public class GridGame implements DomainGenerator {
 			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(sp);
 			for(GroundedProp gp : ipgps){
 				String agentName = gp.params[0];
-				if(gp.isTrue(sp)){
-					rewards.put(agentName, this.getPersonalGoalReward(sp, agentName));
+				if(gp.isTrue(osp)){
+					rewards.put(agentName, this.getPersonalGoalReward(osp, agentName));
 				}
 			}
 			
@@ -895,7 +739,7 @@ public class GridGame implements DomainGenerator {
 			if(this.noopIncursCost){
 				return this.stepCost;
 			}
-			else if(ja.action(aname) == null || ja.action(aname).action.actionName.equals(GridGame.ACTIONNOOP)){
+			else if(ja.action(aname) == null || ja.action(aname).action.actionName.equals(GridGame.ACTION_NOOP)){
 				return 0.;
 			}
 			return this.stepCost;
@@ -909,12 +753,12 @@ public class GridGame implements DomainGenerator {
 		 * @param agentName the agent name for which the person goal reward is to be returned
 		 * @return the personal goal reward for the specified agent.
 		 */
-		protected double getPersonalGoalReward(State s, String agentName){
+		protected double getPersonalGoalReward(OOState s, String agentName){
 			if(this.personalGoalRewards == null){
 				return this.pGoalReward;
 			}
 			
-			int pn = s.getObject(agentName).getIntValForAttribute(GridGame.ATTPN);
+			int pn = (Integer)s.object(agentName).get(GridGame.VAR_PN);
 			return this.personalGoalRewards.get(pn);
 			
 		}
@@ -937,9 +781,9 @@ public class GridGame implements DomainGenerator {
 		 * Initializes for the given domain
 		 * @param ggDomain the specific grid world domain.
 		 */
-		public GGTerminalFunction(Domain ggDomain){
-			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PFINPGOAL);
-			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PFINUGOAL);
+		public GGTerminalFunction(OODomain ggDomain){
+			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
+			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 		}
 		
 		
@@ -950,7 +794,7 @@ public class GridGame implements DomainGenerator {
 			//List<GroundedProp> ipgps = s.getAllGroundedPropsFor(agentInPersonalGoal);
 			List<GroundedProp> ipgps = agentInPersonalGoal.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : ipgps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					return true;
 				}
 			}
@@ -960,7 +804,7 @@ public class GridGame implements DomainGenerator {
 			//List<GroundedProp> upgps = s.getAllGroundedPropsFor(agentInUniversalGoal);
 			List<GroundedProp> upgps = agentInUniversalGoal.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : upgps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					return true;
 				}
 			}

@@ -1,18 +1,17 @@
 package burlap.domain.stochasticgames.gridgame;
 
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.visualizer.OOStatePainter;
+import burlap.oomdp.visualizer.ObjectPainter;
+import burlap.oomdp.visualizer.Visualizer;
+
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.ObjectPainter;
-import burlap.oomdp.visualizer.Visualizer;
 
 
 /**
@@ -53,11 +52,14 @@ public class GGVisualizer {
 		for(Color c : agentColors){
 			goalColors.add(c.darker().darker());
 		}
-		
-		v.addObjectClassPainter(GridGame.CLASSGOAL, new CellPainter(maxX, maxY, goalColors, 0));
-		v.addObjectClassPainter(GridGame.CLASSAGENT, new CellPainter(maxX, maxY, agentColors, 1));
-		v.addObjectClassPainter(GridGame.CLASSDIMVWALL, new WallPainter(maxX, maxY, true));
-		v.addObjectClassPainter(GridGame.CLASSDIMHWALL, new WallPainter(maxX, maxY, false));
+
+		OOStatePainter ooStatePainter = new OOStatePainter();
+		v.addStatePainter(ooStatePainter);
+
+		ooStatePainter.addObjectClassPainter(GridGame.CLASS_GOAL, new CellPainter(maxX, maxY, goalColors, 0));
+		ooStatePainter.addObjectClassPainter(GridGame.CLASS_AGENT, new CellPainter(maxX, maxY, agentColors, 1));
+		ooStatePainter.addObjectClassPainter(GridGame.CLASS_DIM_V_WALL, new WallPainter(maxX, maxY, true));
+		ooStatePainter.addObjectClassPainter(GridGame.CLASS_DIM_H_WALL, new WallPainter(maxX, maxY, false));
 		
 		return v;
 	}
@@ -107,14 +109,14 @@ public class GGVisualizer {
 		}
 		
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			int colInd = 0;
-			if(ob.getClassName().equals(GridGame.CLASSAGENT)){
-				colInd = ob.getIntValForAttribute(GridGame.ATTPN);
+			if(ob.className().equals(GridGame.CLASS_AGENT)){
+				colInd = (Integer)ob.get(GridGame.VAR_PN);
 			}
-			else if(ob.getClassName().equals(GridGame.CLASSGOAL)){
-				colInd = ob.getIntValForAttribute(GridGame.ATTGT);
+			else if(ob.className().equals(GridGame.CLASS_GOAL)){
+				colInd = (Integer)ob.get(GridGame.VAR_GT);
 			}
 			
 			g2.setColor(this.cols.get(colInd));
@@ -126,8 +128,8 @@ public class GGVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 			
-			float rx = ob.getIntValForAttribute(GridGame.ATTX)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(GridGame.ATTY)*height;
+			float rx = (Integer)ob.get(GridGame.VAR_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(GridGame.VAR_Y)*height;
 			
 			if(shape == 0){
 				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
@@ -181,13 +183,13 @@ public class GGVisualizer {
 		}
 		
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			int p0x, p0y, p1x, p1y;
 			
-			int wp = ob.getIntValForAttribute(GridGame.ATTP);
-			int e1 = ob.getIntValForAttribute(GridGame.ATTE1);
-			int e2 = ob.getIntValForAttribute(GridGame.ATTE2);
+			int wp = (Integer)ob.get(GridGame.VAR_POS);
+			int e1 = (Integer)ob.get(GridGame.VAR_E1);
+			int e2 = (Integer)ob.get(GridGame.VAR_E2);
 			
 			if(vertical){
 				p0x = p1x = wp;
@@ -209,7 +211,7 @@ public class GGVisualizer {
 			
 			g2.setColor(Color.black);
 			
-			int wt = ob.getIntValForAttribute(GridGame.ATTWT);
+			int wt = (Integer)ob.get(GridGame.VAR_WT);
 			if(wt == 0){
 				g2.setStroke(new BasicStroke(10));
 			}
