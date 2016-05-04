@@ -1,7 +1,8 @@
 package burlap.domain.singleagent.blockdude;
 
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.visualizer.OOStatePainter;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.Visualizer;
@@ -40,10 +41,14 @@ public class BlockDudeVisualizer {
 	public static StateRenderLayer getStateRenderLayer(int maxx, int maxy){
 
 		StateRenderLayer srl = new StateRenderLayer();
-		srl.addObjectClassPainter(BlockDude.CLASS_MAP, new BricksPainter(maxx, maxy));
-		srl.addObjectClassPainter(BlockDude.CLASS_AGENT, new AgentPainter(maxx, maxy));
-		srl.addObjectClassPainter(BlockDude.CLASS_EXIT, new ExitPainter(maxx, maxy));
-		srl.addObjectClassPainter(BlockDude.CLASS_BLOCK, new BlockPainter(maxx, maxy));
+
+		OOStatePainter oopainter = new OOStatePainter();
+		srl.addStatePainter(oopainter);
+
+		oopainter.addObjectClassPainter(BlockDude.CLASS_MAP, new BricksPainter(maxx, maxy));
+		oopainter.addObjectClassPainter(BlockDude.CLASS_AGENT, new AgentPainter(maxx, maxy));
+		oopainter.addObjectClassPainter(BlockDude.CLASS_EXIT, new ExitPainter(maxx, maxy));
+		oopainter.addObjectClassPainter(BlockDude.CLASS_BLOCK, new BlockPainter(maxx, maxy));
 
 		return srl;
 	}
@@ -71,7 +76,7 @@ public class BlockDudeVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 								float cWidth, float cHeight) {
 
 			g2.setColor(Color.blue);
@@ -83,8 +88,8 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = ob.getIntValForAttribute(BlockDude.VAR_X)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.VAR_Y)*height;
+			float rx = (Integer)ob.get(BlockDude.VAR_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(BlockDude.VAR_Y)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -95,7 +100,7 @@ public class BlockDudeVisualizer {
 			float eyeHeight = height*0.25f;
 
 			float ex = rx;
-			if(ob.getIntValForAttribute(BlockDude.VAR_DIR) == 1){
+			if((Integer)ob.get(BlockDude.VAR_DIR) == 1){
 				ex = (rx+width) - eyeWidth;
 			}
 
@@ -132,7 +137,7 @@ public class BlockDudeVisualizer {
 
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 								float cWidth, float cHeight) {
 
 			g2.setColor(Color.gray);
@@ -144,8 +149,8 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = ob.getIntValForAttribute(BlockDude.VAR_X)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.VAR_Y)*height;
+			float rx = (Integer)ob.get(BlockDude.VAR_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(BlockDude.VAR_Y)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -179,7 +184,7 @@ public class BlockDudeVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 								float cWidth, float cHeight) {
 
 			g2.setColor(Color.black);
@@ -191,8 +196,8 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = ob.getIntValForAttribute(BlockDude.VAR_X)*width;
-			float ry = cHeight - height - ob.getIntValForAttribute(BlockDude.VAR_Y)*height;
+			float rx = (Integer)ob.get(BlockDude.VAR_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(BlockDude.VAR_Y)*height;
 
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 
@@ -227,7 +232,7 @@ public class BlockDudeVisualizer {
 
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 
 			g2.setColor(Color.green);
 
@@ -238,22 +243,16 @@ public class BlockDudeVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			int [] map = ob.getIntArrayValForAttribute(BlockDude.VAR_MAP);
 
-			for(int i = 0; i < map.length; i++){
+			int [][] map = (int[][])ob.get(BlockDude.VAR_MAP);
 
-				if(map[i] == 1) {
-
-					int x = i % this.maxx;
-					int y = i / this.maxx;
-
+			for(int x = 0; x < map.length; x++){
+				for(int y = 0; y < map[0].length; y++){
 					float rx = x * width;
 					float ry = cHeight - height - y * height;
 
 					g2.fill(new Rectangle2D.Float(rx, ry, width, height));
-
 				}
-
 			}
 
 		}

@@ -604,10 +604,15 @@ public class BlockDude implements DomainGenerator{
 		public boolean isTrue(OOState st, String... params) {
 
 			BlockDudeAgent a = (BlockDudeAgent)st.object(params[0]);
+
+			if(!a.holding){
+				return false;
+			}
+
 			BlockDudeCell b = (BlockDudeCell)st.object(params[1]);
 
 
-			if(a.x == b.x && a.y == b.y-1 && a.holding){
+			if(a.x == b.x && a.y == b.y-1){
 				return true;
 			}
 

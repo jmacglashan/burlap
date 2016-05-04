@@ -211,6 +211,10 @@ public class BlockDudeState implements MutableOOState {
 		return new BlockDudeState(agent, map, exit, blocks);
 	}
 
+	public BlockDudeCell block(int i){
+		return this.blocks.get(i);
+	}
+
 	protected int blockForName(String ob){
 		int i = 0;
 		for(BlockDudeCell b : this.blocks){

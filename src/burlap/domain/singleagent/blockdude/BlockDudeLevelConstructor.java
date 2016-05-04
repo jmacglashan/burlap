@@ -2,11 +2,10 @@ package burlap.domain.singleagent.blockdude;
 
 import burlap.domain.singleagent.blockdude.states.BlockDudeAgent;
 import burlap.domain.singleagent.blockdude.states.BlockDudeCell;
+import burlap.domain.singleagent.blockdude.states.BlockDudeMap;
 import burlap.domain.singleagent.blockdude.states.BlockDudeState;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.state.State;
-
-import static burlap.domain.singleagent.blockdude.BlockDude.CLASS_EXIT;
 
 /**
  * A class for generating the initial states for {@link burlap.domain.singleagent.blockdude.BlockDude} from levels
@@ -39,14 +38,13 @@ public class BlockDudeLevelConstructor {
 		map[11][2] = 1;
 
 
-		BlockDudeState s = new BlockDudeState(25, 3, 2);
-		s.agent = new BlockDudeAgent(15, 1, 1, false);
-		s.exit.setXY(0, 1);
-
-		s.blocks.get(0).setXY(9, 1);
-		s.blocks.get(1).setXY(13, 1);
-
-		s.map.map = map;
+		BlockDudeState s = new BlockDudeState(
+				new BlockDudeAgent(15, 1, 1, false),
+				new BlockDudeMap(map),
+				BlockDudeCell.exit(0, 1),
+				BlockDudeCell.block("b0", 9, 1),
+				BlockDudeCell.block("b1", 13, 1)
+		);
 
 		return s;
 	}
@@ -69,17 +67,17 @@ public class BlockDudeLevelConstructor {
 		floorSegment(map, 8, 24, 2);
 		wallSegment(map, 2, 4, 12);
 
-		State s = BlockDude.getUninitializedState(domain, 5);
-		BlockDude.setAgent(s, 17, 3, 0, false);
-		BlockDude.setExit(s, 0, 6);
+		BlockDudeState s = new BlockDudeState(
+				new BlockDudeAgent(17, 3, 0, false),
+				new BlockDudeMap(map),
+				BlockDudeCell.exit(0, 6),
+				BlockDudeCell.block("b0", 7, 1),
+				BlockDudeCell.block("b1", 13, 3),
+				BlockDudeCell.block("b2", 15, 3),
+				BlockDudeCell.block("b3", 14, 4),
+				BlockDudeCell.block("b4", 16, 3)
+		);
 
-		BlockDude.setBlock(s, 0, 7, 1);
-		BlockDude.setBlock(s, 1, 13, 3);
-		BlockDude.setBlock(s, 2, 15, 3);
-		BlockDude.setBlock(s, 3, 15, 4);
-		BlockDude.setBlock(s, 4, 16, 3);
-
-		BlockDude.setBrickMap(s, map);
 
 		return s;
 	}
@@ -110,18 +108,16 @@ public class BlockDudeLevelConstructor {
 		map[16][4] = 1;
 		wallSegment(map, 5, 8, 17);
 
-		State s = BlockDude.getUninitializedState(domain, 6);
-		BlockDude.setAgent(s, 8, 4, 0, false);
-		BlockDude.setExit(s, 0, 1);
-
-		BlockDude.setBlock(s, 0, 4, 2);
-		BlockDude.setBlock(s, 1, 5, 2);
-		BlockDude.setBlock(s, 2, 13, 4);
-		BlockDude.setBlock(s, 3, 15, 5);
-		BlockDude.setBlock(s, 4, 16, 5);
-		BlockDude.setBlock(s, 5, 16, 6);
-
-		BlockDude.setBrickMap(s, map);
+		BlockDudeState s = new BlockDudeState(
+				new BlockDudeAgent(8, 4, 0, false),
+				new BlockDudeMap(map),
+				BlockDudeCell.exit(0, 1),
+				BlockDudeCell.block("b0", 4, 2),
+				BlockDudeCell.block("b1", 5, 2),
+				BlockDudeCell.block("b2", 13, 4),
+				BlockDudeCell.block("b3", 15, 5),
+				BlockDudeCell.block("b4", 16, 5),
+				BlockDudeCell.block("b5", 16, 6));
 
 		return s;
 	}

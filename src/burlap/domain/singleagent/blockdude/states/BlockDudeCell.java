@@ -6,8 +6,7 @@ import burlap.oomdp.core.oo.state.ObjectInstance;
 import java.util.Arrays;
 import java.util.List;
 
-import static burlap.domain.singleagent.blockdude.BlockDude.VAR_X;
-import static burlap.domain.singleagent.blockdude.BlockDude.VAR_Y;
+import static burlap.domain.singleagent.blockdude.BlockDude.*;
 
 /**
  * @author James MacGlashan.
@@ -21,6 +20,15 @@ public class BlockDudeCell implements ObjectInstance {
 	protected String name;
 
 	private final List<Object> keys = Arrays.<Object>asList(VAR_X, VAR_Y);
+
+
+	public static BlockDudeCell exit(int x, int y){
+		return new BlockDudeCell(x, y, CLASS_EXIT, CLASS_EXIT);
+	}
+
+	public static BlockDudeCell block(String name, int x, int y){
+		return new BlockDudeCell(x, y, CLASS_BLOCK, name);
+	}
 
 	public BlockDudeCell() {
 	}
