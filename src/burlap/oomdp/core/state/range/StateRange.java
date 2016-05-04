@@ -1,4 +1,6 @@
-package burlap.oomdp.core.state;
+package burlap.oomdp.core.state.range;
+
+import burlap.oomdp.core.state.State;
 
 /**
  * @author James MacGlashan.
