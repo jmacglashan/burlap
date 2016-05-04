@@ -456,7 +456,7 @@ public class GridWorldDomain implements DomainGenerator {
 	
 	
 	@Override
-	public Domain generateDomain() {
+	public OOSADomain generateDomain() {
 
 		OOSADomain domain = new OOSADomain();
 

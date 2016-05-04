@@ -92,4 +92,12 @@ public class GridLocation implements ObjectInstance {
 	public String toString() {
 		return OOStateUtilities.objectInstanceToString(this);
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

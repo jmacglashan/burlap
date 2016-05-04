@@ -1,10 +1,5 @@
 package burlap.testing;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
@@ -13,22 +8,28 @@ import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.dfs.DFS;
+import burlap.domain.singleagent.gridworld.GridAgent;
+import burlap.domain.singleagent.gridworld.GridLocation;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.domain.singleagent.gridworld.GridWorldState;
 import burlap.oomdp.auxiliary.common.SinglePFTF;
 import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
-import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.common.UniformCostRF;
+import burlap.oomdp.singleagent.oo.OOSADomain;
 import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TestPlanning {
 	public static final double delta = 0.000001;
 	GridWorldDomain gw;
-	Domain domain;
+	OOSADomain domain;
 	RewardFunction rf;
 	TerminalFunction tf;
 	StateConditionTest goalCondition;
@@ -39,17 +40,15 @@ public class TestPlanning {
 		this.gw.setMapToFourRooms(); 
 		this.domain = this.gw.generateDomain();
 		this.rf = new UniformCostRF();
-		this.tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PFATLOCATION));
+		this.tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PF_AT_LOCATION));
 		this.goalCondition = new TFGoalCondition(this.tf);
 		this.hashingFactory = new SimpleHashableStateFactory();
 	}
 	
 	@Test
 	public void testBFS() {
-		State initialState = GridWorldDomain.getOneAgentOneLocationState(domain);
-		GridWorldDomain.setAgent(initialState, 0, 0);
-		GridWorldDomain.setLocation(initialState, 0, 10, 10);
-		
+		GridWorldState initialState = new GridWorldState(new GridAgent(0, 0), new GridLocation(10, 10, 0, "loc0"));
+
 		DeterministicPlanner planner = new BFS(this.domain, this.goalCondition, this.hashingFactory);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
@@ -59,9 +58,7 @@ public class TestPlanning {
 	
 	@Test
 	public void testDFS() {
-		State initialState = GridWorldDomain.getOneAgentOneLocationState(domain);
-		GridWorldDomain.setAgent(initialState, 0, 0);
-		GridWorldDomain.setLocation(initialState, 0, 10, 10);
+		GridWorldState initialState = new GridWorldState(new GridAgent(0, 0), new GridLocation(10, 10, 0, "loc0"));
 		
 		DeterministicPlanner planner = new DFS(this.domain, this.goalCondition, this.hashingFactory, -1 , true);
 		planner.planFromState(initialState);
@@ -72,29 +69,23 @@ public class TestPlanning {
 	
 	@Test
 	public void testAStar() {
-		State initialState = GridWorldDomain.getOneAgentOneLocationState(domain);
-		GridWorldDomain.setAgent(initialState, 0, 0);
-		GridWorldDomain.setLocation(initialState, 0, 10, 10);
+		GridWorldState initialState = new GridWorldState(new GridAgent(0, 0), new GridLocation(10, 10, 0, "loc0"));
 		
 		Heuristic mdistHeuristic = new Heuristic() {
 			
 			@Override
 			public double h(State s) {
-				
-				String an = GridWorldDomain.CLASSAGENT;
-				String ln = GridWorldDomain.CLASSLOCATION;
 
-				ObjectInstance agent = s.getObjectsOfClass(an).get(0); 
-				ObjectInstance location = s.getObjectsOfClass(ln).get(0); 
+				GridAgent agent = ((GridWorldState)s).agent;
+				GridLocation location = ((GridWorldState)s).locations.get(0);
 
-				
 				//get agent position
-				int ax = agent.getIntValForAttribute(GridWorldDomain.ATTX);
-				int ay = agent.getIntValForAttribute(GridWorldDomain.ATTY);
+				int ax = agent.x;
+				int ay = agent.y;
 				
 				//get location position
-				int lx = location.getIntValForAttribute(GridWorldDomain.ATTX);
-				int ly = location.getIntValForAttribute(GridWorldDomain.ATTY);
+				int lx = location.x;
+				int ly = location.y;
 				
 				//compute Manhattan distance
 				double mdist = Math.abs(ax-lx) + Math.abs(ay-ly);

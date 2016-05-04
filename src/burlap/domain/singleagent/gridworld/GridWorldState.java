@@ -204,4 +204,23 @@ public class GridWorldState implements MutableOOState {
 	public String toString() {
 		return OOStateUtilities.ooStateToString(this);
 	}
+
+	public GridAgent touchAgent(){
+		this.agent = agent.copy();
+		return agent;
+	}
+
+	public List<GridLocation> touchLocations(){
+		this.locations = new ArrayList<GridLocation>(locations);
+		return locations;
+	}
+
+	public List<GridLocation> deepTouchLocations(){
+		List<GridLocation> nlocs = new ArrayList<GridLocation>(locations.size());
+		for(GridLocation loc : locations){
+			nlocs.add(loc.copy());
+		}
+		locations = nlocs;
+		return locations;
+	}
 }

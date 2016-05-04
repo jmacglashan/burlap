@@ -1,10 +1,11 @@
 package burlap.testing;
 
+import burlap.domain.singleagent.gridworld.GridAgent;
+import burlap.domain.singleagent.gridworld.GridLocation;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.domain.singleagent.gridworld.GridWorldState;
 import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.objects.ObjectInstance;
-import burlap.oomdp.core.states.ImmutableState;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.SADomain;
@@ -48,7 +49,7 @@ public class TestHashing {
 		Set<HashableState> renamedStates = new HashSet<HashableState>();
 		for (HashableState state : hashedStates) {
 			State source = state.getSourceState();
-			State renamed = this.renameObjects(source.copy());
+			State renamed = this.renameObjects((GridWorldState)source.copy());
 			HashableState renamedHashed = factory.hashState(renamed);
 			renamedStates.add(renamedHashed);
 		}
@@ -67,7 +68,7 @@ public class TestHashing {
 		Set<HashableState> renamedStates = new HashSet<HashableState>();
 		for (HashableState state : hashedStates) {
 			State source = state.getSourceState();
-			State renamed = this.renameObjects(source.copy());
+			State renamed = this.renameObjects((GridWorldState)source.copy());
 			HashableState renamedHashed = factory.hashState(renamed);
 			renamedStates.add(renamedHashed);
 		}
@@ -92,15 +93,7 @@ public class TestHashing {
 		Set<HashableState> hashedStates = this.getReachableHashedStates(startState, domain, factory);
 		assert(hashedStates.size() == 104);
 	}
-	
-	@Test
-	public void testImmutableSimpleHashFactoryIdentifierDependentCached() {
-		SADomain domain = (SADomain)this.gridWorldTest.getDomain();
-		State startState = this.gridWorldTest.generateState();
-		HashableStateFactory factory = new SimpleHashableStateFactory(false, true);
-		Set<HashableState> hashedStates = this.getReachableHashedStates(new ImmutableState(startState), domain, factory);
-		assert(hashedStates.size() == 104);
-	}
+
 	
 	@Test
 	public void testSimpleHashFactoryLargeState() {
@@ -183,7 +176,7 @@ public class TestHashing {
 		Set<HashableState> renamedStates = new HashSet<HashableState>();
 		for (HashableState state : hashedStates) {
 			State source = state.getSourceState();
-			State renamed = this.renameObjects(source.copy());
+			State renamed = this.renameObjects((GridWorldState)source.copy());
 			HashableState renamedHashed = factory.hashState(renamed);
 			renamedStates.add(renamedHashed);
 		}
@@ -196,9 +189,9 @@ public class TestHashing {
 		Set<HashableState> hashedStates = new HashSet<HashableState>();
 		for (int i = 0; i < width; ++i) {
 			for (int j =0 ; j < width; ++j) {
-				State copy = state.copy();
-				copy.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0).setValue(GridWorldDomain.ATTX, i);
-				copy.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0).setValue(GridWorldDomain.ATTY, j);
+				GridWorldState copy = (GridWorldState)state.copy();
+				copy.touchAgent().x = i;
+				copy.agent.y = j;
 				hashedStates.add(factory.hashState(copy));
 			}
 		}
@@ -221,14 +214,16 @@ public class TestHashing {
 			if (prevSize > 0 && prevSize % 10000 == 0) {
 				System.out.println("\t" + prevSize);
 			}
-			State copy = state.copy();
-			copy.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0).setValue(GridWorldDomain.ATTX, random.nextInt(width));
-			copy.getObjectsOfClass(GridWorldDomain.CLASSAGENT).get(0).setValue(GridWorldDomain.ATTY, random.nextInt(width));
+			GridWorldState copy = (GridWorldState)state.copy();
+			copy.touchAgent().x = random.nextInt(width);
+			copy.agent.y = random.nextInt(width);
+
 			
 			if (moveLocations) {
-				for (ObjectInstance loc : copy.getObjectsOfClass(GridWorldDomain.CLASSLOCATION)){
-					loc.setValue(GridWorldDomain.ATTX, random.nextInt(width));
-					loc.setValue(GridWorldDomain.ATTY, random.nextInt(width));
+				List<GridLocation> locations = copy.deepTouchLocations();
+				for(GridLocation loc : locations){
+					loc.x = random.nextInt(width);
+					loc.y = random.nextInt(width);
 				}
 			}
 			hashedStates.add(factory.hashState(copy));
@@ -237,19 +232,21 @@ public class TestHashing {
 	}
 	
 	public State generateLargeGW(SADomain domain, int width) {
-		State state = GridWorldDomain.getOneAgentNLocationState(domain, width);
-		
+
+		GridWorldState state = new GridWorldState(new GridAgent());
+
 		for (int i = 0; i < width; i++) {
-			GridWorldDomain.setLocation(state, i, i, width - 1 - i);
+			state.locations.add(new GridLocation(i, width - 1 - i, "loc"+i));
 		}
 		return state;
 	}
 	
-	public State renameObjects(State s) {
+	public State renameObjects(GridWorldState s) {
 		SecureRandom random = new SecureRandom();
-		for (ObjectInstance obj : s.getAllObjects()) {
+		List<GridLocation> locations = s.deepTouchLocations();
+		for (GridLocation obj : locations) {
 			String newName = new BigInteger(130, random).toString(32);
-			s = s.renameObject(obj, newName);
+			obj.setName(newName);
 		}
 		return s;
 	}

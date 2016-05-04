@@ -4,9 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import burlap.oomdp.core.states.FixedSizeImmutableState;
-import burlap.oomdp.core.states.ImmutableState;
-import burlap.oomdp.core.states.State;
+import burlap.oomdp.core.state.State;
 
 public class TestImmutableState {
 	TestGridWorld gridWorldTest;
