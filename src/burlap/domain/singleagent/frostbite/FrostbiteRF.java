@@ -1,8 +1,10 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.objects.OldObjectInstance;
+import burlap.domain.singleagent.frostbite.state.FrostbitePlatform;
+import burlap.domain.singleagent.frostbite.state.FrostbiteState;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -22,28 +24,28 @@ public class FrostbiteRF implements RewardFunction{
 	private PropositionalFunction inWater;
 	private PropositionalFunction iglooBuilt;
 
-	public FrostbiteRF(Domain domain) {
-		this.inWater = domain.getPropFunction(FrostbiteDomain.PFINWATER);
-		this.onIce = domain.getPropFunction(FrostbiteDomain.PFONICE);
-		this.iglooBuilt = domain.getPropFunction(FrostbiteDomain.PFIGLOOBUILT);
+	public FrostbiteRF(OODomain domain) {
+		this.inWater = domain.getPropFunction(FrostbiteDomain.PF_IN_WATER);
+		this.onIce = domain.getPropFunction(FrostbiteDomain.PF_ON_ICE);
+		this.iglooBuilt = domain.getPropFunction(FrostbiteDomain.PF_IGLOO_BUILT);
 	}
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
-		if (inWater.somePFGroundingIsTrue(sprime))
+		if (inWater.somePFGroundingIsTrue((OOState)sprime))
 			return lostReward;
-		if (iglooBuilt.somePFGroundingIsTrue(sprime) && onIce.somePFGroundingIsTrue(s))
+		if (iglooBuilt.somePFGroundingIsTrue((OOState)sprime) && onIce.somePFGroundingIsTrue((OOState)s))
 			return goalReward;
-		if (numberPlatformsActive(s) != numberPlatformsActive(sprime))
+		if (numberPlatformsActive((FrostbiteState)s) != numberPlatformsActive((FrostbiteState)sprime))
 			return activatedPlatformReward;
 		return defaultReward;
 	}
 
-	private int numberPlatformsActive(State s) {
-		List<OldObjectInstance> platforms = s.getObjectsOfClass(FrostbiteDomain.PLATFORMCLASS);
+	private int numberPlatformsActive(FrostbiteState s) {
+		List<FrostbitePlatform> platforms = s.platforms;
 		int nb = 0;
-		for (OldObjectInstance platform : platforms)
-			if (platform.getBooleanValForAttribute(FrostbiteDomain.ACTIVATEDATTNAME))
+		for (FrostbitePlatform platform : platforms)
+			if (platform.activated)
 				nb++;
 		return nb;
 	}

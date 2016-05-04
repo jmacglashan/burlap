@@ -1,7 +1,9 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.core.objects.OldObjectInstance;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.core.state.State;
+import burlap.oomdp.visualizer.OOStatePainter;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StatePainter;
 import burlap.oomdp.visualizer.Visualizer;
@@ -33,7 +35,7 @@ public class FrostbiteVisualizer {
 
 		Visualizer v = new Visualizer();
 
-		v.addStaticPainter(new StatePainter() {
+		v.addStatePainter(new StatePainter() {
 			@Override
 			public void paint(Graphics2D g2, State s, float cWidth, float cHeight) {
 				g2.setColor(waterColor);
@@ -43,9 +45,12 @@ public class FrostbiteVisualizer {
 			}
 		});
 
-		v.addObjectClassPainter(FrostbiteDomain.PLATFORMCLASS, new PlatformPainter(fd));
-		v.addObjectClassPainter(FrostbiteDomain.IGLOOCLASS, new IglooPainter(fd));
-		v.addObjectClassPainter(FrostbiteDomain.AGENTCLASS, new AgentPainter(fd));
+		OOStatePainter ooStatePainter = new OOStatePainter();
+		v.addStatePainter(ooStatePainter);
+
+		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_PLATFORM, new PlatformPainter(fd));
+		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_IGLOO, new IglooPainter(fd));
+		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_AGENT, new AgentPainter(fd));
 
 		return v;
 	}
@@ -59,14 +64,15 @@ public class FrostbiteVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 								float cWidth, float cHeight) {
 
 
-			int x = ob.getIntValForAttribute(FrostbiteDomain.XATTNAME);
-			int y = ob.getIntValForAttribute(FrostbiteDomain.YATTNAME);
-			int size = ob.getIntValForAttribute(FrostbiteDomain.SIZEATTNAME);
-			boolean activated = ob.getBooleanValForAttribute(FrostbiteDomain.ACTIVATEDATTNAME);
+
+			int x = (Integer)ob.get(FrostbiteDomain.VAR_X);
+			int y = (Integer)ob.get(FrostbiteDomain.VAR_Y);
+			int size = (Integer)ob.get(FrostbiteDomain.VAR_SIZE);
+			boolean activated = (Boolean)ob.get(FrostbiteDomain.VAR_ACTIVATED);
 			if (activated)
 				g2.setColor(activatedPlatformColor);
 			else
@@ -90,13 +96,13 @@ public class FrostbiteVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 								float cWidth, float cHeight) {
 
 			g2.setColor(Color.black);
 
-			int x = ob.getIntValForAttribute(FrostbiteDomain.XATTNAME);
-			int y = ob.getIntValForAttribute(FrostbiteDomain.YATTNAME);
+			int x = (Integer)ob.get(FrostbiteDomain.VAR_X);
+			int y = (Integer)ob.get(FrostbiteDomain.VAR_Y);
 			int size = fd.getAgentSize();
 
 			g2.fill(new Rectangle2D.Double(x, y, size, size));
@@ -112,12 +118,12 @@ public class FrostbiteVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 								float cWidth, float cHeight) {
 
 			g2.setColor(iglooColor);
 
-			int building = ob.getIntValForAttribute(FrostbiteDomain.BUILDINGATTNAME);
+			int building = (Integer)ob.get(FrostbiteDomain.VAR_BUILDING);
 
 			int layer = -1; // just because ;)
 			int maxLayer = fd.buildingStepsToWin;
