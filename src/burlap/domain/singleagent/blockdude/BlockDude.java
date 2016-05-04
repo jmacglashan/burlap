@@ -1,9 +1,9 @@
 package burlap.domain.singleagent.blockdude;
 
-import burlap.domain.singleagent.blockdude.states.BlockDudeAgent;
-import burlap.domain.singleagent.blockdude.states.BlockDudeCell;
-import burlap.domain.singleagent.blockdude.states.BlockDudeMap;
-import burlap.domain.singleagent.blockdude.states.BlockDudeState;
+import burlap.domain.singleagent.blockdude.state.BlockDudeAgent;
+import burlap.domain.singleagent.blockdude.state.BlockDudeCell;
+import burlap.domain.singleagent.blockdude.state.BlockDudeMap;
+import burlap.domain.singleagent.blockdude.state.BlockDudeState;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.oo.OODomain;

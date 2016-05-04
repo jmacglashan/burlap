@@ -2,6 +2,7 @@ package burlap.behavior.stochasticgames.auxiliary;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.datastructures.AlphanumericSorting;
+import burlap.oomdp.core.state.NullState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
@@ -326,7 +327,7 @@ public class GameSequenceVisualizer extends JFrame {
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
 				
-				painter.updateState(State.NullState.instance); //clear screen
+				painter.updateState(NullState.instance); //clear screen
 				this.setIterationListData();
 				
 			}

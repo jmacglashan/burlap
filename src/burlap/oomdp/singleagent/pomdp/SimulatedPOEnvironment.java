@@ -3,6 +3,7 @@ package burlap.oomdp.singleagent.pomdp;
 import burlap.oomdp.auxiliary.StateGenerator;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.state.NullState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -26,7 +27,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	/**
 	 * The current observation from the POMDP environment
 	 */
-	protected State curObservation = State.NullState.instance;
+	protected State curObservation = NullState.instance;
 
 
 
@@ -110,6 +111,6 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	@Override
 	public void resetEnvironment() {
 		super.resetEnvironment();
-		this.curObservation = State.NullState.instance;
+		this.curObservation = NullState.instance;
 	}
 }

@@ -1,4 +1,4 @@
-package burlap.domain.singleagent.blockdude.states;
+package burlap.domain.singleagent.blockdude.state;
 
 import burlap.oomdp.core.oo.state.MutableOOState;
 import burlap.oomdp.core.oo.state.OOStateUtilities;

@@ -1,6 +1,6 @@
 package burlap.domain.singleagent.blockdude;
 
-import burlap.domain.singleagent.blockdude.states.BlockDudeState;
+import burlap.domain.singleagent.blockdude.state.BlockDudeState;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.state.State;
 

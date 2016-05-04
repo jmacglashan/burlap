@@ -7,6 +7,7 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.state.NullState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.visualizer.Visualizer;
@@ -336,7 +337,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
 				
-				painter.updateState(State.NullState.instance); //clear screen
+				painter.updateState(NullState.instance); //clear screen
 				this.setIterationListData();
 				
 			}

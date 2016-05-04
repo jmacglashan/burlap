@@ -1,5 +1,6 @@
 package burlap.oomdp.visualizer;
 
+import burlap.oomdp.core.state.NullState;
 import burlap.oomdp.core.state.State;
 
 import java.awt.*;
@@ -28,7 +29,7 @@ public class StateRenderLayer implements RenderLayer{
 
 	
 	public StateRenderLayer(){
-		curState = State.NullState.instance;
+		curState = NullState.instance;
 		
 		statePainters = new ArrayList <StatePainter>();
 	}
