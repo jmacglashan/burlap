@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A null state that contains no information.
+ * A null state that contains no information. Access it via the singleton {@link #instance} field.
  */
 @ShallowStateCopy
 public final class NullState implements State{
 
-	public final static burlap.oomdp.core.state.NullState instance = new burlap.oomdp.core.state.NullState();
+	public final static NullState instance = new burlap.oomdp.core.state.NullState();
 
 	private NullState(){}
 
