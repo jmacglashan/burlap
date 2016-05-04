@@ -3,5 +3,5 @@ package burlap.oomdp.core.state.annotations;
 /**
  * @author James MacGlashan.
  */
-public @interface ShallowStateCopy {
+public @interface ShallowCopyState {
 }

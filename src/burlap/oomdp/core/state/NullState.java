@@ -1,6 +1,6 @@
 package burlap.oomdp.core.state;
 
-import burlap.oomdp.core.state.annotations.ShallowStateCopy;
+import burlap.oomdp.core.state.annotations.ShallowCopyState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * A null state that contains no information. Access it via the singleton {@link #instance} field.
  */
-@ShallowStateCopy
+@ShallowCopyState
 public final class NullState implements State{
 
 	public final static NullState instance = new burlap.oomdp.core.state.NullState();

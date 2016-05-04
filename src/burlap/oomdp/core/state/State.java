@@ -1,9 +1,8 @@
 package burlap.oomdp.core.state;
 
-import burlap.oomdp.core.state.annotations.DeepStateCopy;
-import burlap.oomdp.core.state.annotations.ShallowStateCopy;
+import burlap.oomdp.core.state.annotations.DeepCopyState;
+import burlap.oomdp.core.state.annotations.ShallowCopyState;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,11 +22,11 @@ import java.util.List;
  * State copy operations are often performed when generating state transitions, or when a copy of the information
  * needs to be held by some other data structure. The copy may be a shallow copy
  * or deep copy and is domain/implementation specific. For clarity, the State implementation may indicate its copy depth level with the
- * {@link DeepStateCopy} or {@link ShallowStateCopy} annotations. If it is a shallow copy, you should not *directly*
+ * {@link DeepCopyState} or {@link ShallowCopyState} annotations. If it is a shallow copy, you should not *directly*
  * modify any fields of a copied state without copying the fields first, or it could contaminate the state from
  * which the copy was made. Alternatively, use the {@link MutableState#set(Object, Object)} method to modify
- * {@link ShallowStateCopy} copied states,
- * which for {@link ShallowStateCopy} instances should perform a safe copy-on-write operation.
+ * {@link ShallowCopyState} copied states,
+ * which for {@link ShallowCopyState} instances should perform a safe copy-on-write operation.
  *
  *
  * If the state
@@ -57,11 +56,11 @@ public interface State {
 	/**
 	 * Returns a copy of this state suitable for creating state transitions. This copy may be a shallow copy
 	 * or deep copy and is domain specific. The State implementation may indicate its copy level with the
-	 * {@link DeepStateCopy} or {@link ShallowStateCopy} annotations. If it is a shallow copy, you should not *directly*
+	 * {@link DeepCopyState} or {@link ShallowCopyState} annotations. If it is a shallow copy, you should not *directly*
 	 * modify any fields of a copied state without copying the fields first, or it could contaminate the state from
 	 * which the copy was made. Alternatively, use the {@link MutableState#set(Object, Object)} method to modify
-	 * {@link ShallowStateCopy} copied states,
-	 * which for {@link ShallowStateCopy} instances should perform a safe copy-on-write operation.
+	 * {@link ShallowCopyState} copied states,
+	 * which for {@link ShallowCopyState} instances should perform a safe copy-on-write operation.
 	 * @return a copy of this state.
 	 */
 	State copy();
