@@ -30,6 +30,12 @@ public class GenericOOState implements MutableOOState {
 		}
 	}
 
+	public GenericOOState(ObjectInstance...objects){
+		for(ObjectInstance o : objects){
+			this.addObject(o);
+		}
+	}
+
 	@Override
 	public List<Object> variableKeys() {
 		return OOStateUtilities.flatStateKeys(this);

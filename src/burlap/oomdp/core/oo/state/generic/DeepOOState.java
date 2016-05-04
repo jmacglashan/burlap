@@ -24,6 +24,11 @@ public class DeepOOState extends GenericOOState {
 		}
 	}
 
+	public DeepOOState(ObjectInstance... objects) {
+		for(ObjectInstance o : objects){
+			this.addObject((ObjectInstance)o.copy());
+		}
+	}
 
 	@Override
 	public MutableState set(Object variableKey, Object value) {
