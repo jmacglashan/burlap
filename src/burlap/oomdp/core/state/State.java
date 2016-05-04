@@ -67,45 +67,4 @@ public interface State {
 	State copy();
 
 
-	/**
-	 * A null state that contains no information.
-	 */
-	@ShallowStateCopy
-	class NullState implements State{
-
-		public final static NullState instance = new NullState();
-
-		private NullState(){}
-
-		@Override
-		public List<Object> variableKeys() {
-			return new ArrayList<Object>();
-		}
-
-		@Override
-		public Object get(Object variableKey) {
-			return null;
-		}
-
-		@Override
-		public State copy() {
-			return this;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return obj instanceof NullState;
-		}
-
-		@Override
-		public int hashCode() {
-			return 0;
-		}
-
-		@Override
-		public String toString() {
-			return "";
-		}
-	}
-		
 }
