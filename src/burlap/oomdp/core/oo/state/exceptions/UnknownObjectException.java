@@ -1,4 +1,4 @@
-package burlap.oomdp.core.oo.state;
+package burlap.oomdp.core.oo.state.exceptions;
 
 /**
  * An exception for when an OOState is queried for an unknown object.
