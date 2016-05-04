@@ -10,6 +10,25 @@ import java.util.*;
 public class OOStateUtilities {
 
 
+	public static <T extends ObjectInstance> T objectWithName(List<T> objects, String name){
+		for(T ob : objects){
+			if(ob.name().equals(name)){
+				return ob;
+			}
+		}
+		return null;
+	}
+
+	public static <T extends ObjectInstance> int objectIndexWithName(List<T> objects, String name){
+		for(int i = 0; i < objects.size(); i++){
+			T ob = objects.get(i);
+			if(ob.name().equals(name)){
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public static List<Object> flatStateKeys(OOState s){
 		List<Object> flatKeys = new ArrayList<Object>();
 		for(ObjectInstance o : s.objects()){
