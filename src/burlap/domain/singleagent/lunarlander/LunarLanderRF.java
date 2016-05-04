@@ -1,7 +1,8 @@
 package burlap.domain.singleagent.lunarlander;
 
-import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
@@ -41,11 +42,11 @@ public class LunarLanderRF implements RewardFunction{
 	 * Initializes with default reward values (move through air = -1; collision = -100; land on pad = +1000)
 	 * @param domain a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} generated {@link burlap.oomdp.core.Domain}.
 	 */
-	public LunarLanderRF(Domain domain){
-		this.onGround = domain.getPropFunction(LunarLanderDomain.PFONGROUND);
-		this.touchingSurface = domain.getPropFunction(LunarLanderDomain.PFTOUCHSURFACE);
-		this.touchingPad = domain.getPropFunction(LunarLanderDomain.PFTPAD);
-		this.onPad = domain.getPropFunction(LunarLanderDomain.PFONPAD);
+	public LunarLanderRF(OODomain domain){
+		this.onGround = domain.getPropFunction(LunarLanderDomain.PF_ON_GROUND);
+		this.touchingSurface = domain.getPropFunction(LunarLanderDomain.PF_TOUCH_SURFACE);
+		this.touchingPad = domain.getPropFunction(LunarLanderDomain.PF_TOUTCH_PAD);
+		this.onPad = domain.getPropFunction(LunarLanderDomain.PF_ON_PAD);
 	}
 
 
@@ -57,7 +58,7 @@ public class LunarLanderRF implements RewardFunction{
 	 * @param collisionReward the reward for a collision.
 	 * @param defaultReward the default reward for all other states (i.e., moving through the air)
 	 */
-	public LunarLanderRF(Domain domain, double goalReward, double collisionReward, double defaultReward){
+	public LunarLanderRF(OODomain domain, double goalReward, double collisionReward, double defaultReward){
 		this(domain);
 		this.goalReward = goalReward;
 		this.collisionReward = collisionReward;
@@ -66,11 +67,11 @@ public class LunarLanderRF implements RewardFunction{
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
-		if(onPad.somePFGroundingIsTrue(sprime)){
+		if(onPad.somePFGroundingIsTrue((OOState)sprime)){
 			return goalReward;
 		}
 
-		if(this.onGround.somePFGroundingIsTrue(sprime) || this.touchingPad.somePFGroundingIsTrue(sprime) || this.touchingSurface.somePFGroundingIsTrue(sprime)){
+		if(this.onGround.somePFGroundingIsTrue((OOState)sprime) || this.touchingPad.somePFGroundingIsTrue((OOState)sprime) || this.touchingSurface.somePFGroundingIsTrue((OOState)sprime)){
 			return collisionReward;
 		}
 

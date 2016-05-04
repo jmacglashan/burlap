@@ -1,16 +1,15 @@
 package burlap.domain.singleagent.lunarlander;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
-
-import burlap.oomdp.core.objects.OldObjectInstance;
-import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.oomdp.visualizer.OOStatePainter;
 import burlap.oomdp.visualizer.ObjectPainter;
 import burlap.oomdp.visualizer.StateRenderLayer;
 import burlap.oomdp.visualizer.Visualizer;
 
+import java.awt.*;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 
 
 /**
@@ -61,9 +60,12 @@ public class LLVisualizer {
 	public static StateRenderLayer getStateRenderLayer(LunarLanderDomain.LLPhysicsParams physParams){
 		StateRenderLayer slr = new StateRenderLayer();
 
-		slr.addObjectClassPainter(LunarLanderDomain.AGENTCLASS, new AgentPainter(physParams));
-		slr.addObjectClassPainter(LunarLanderDomain.OBSTACLECLASS, new ObstaclePainter(physParams));
-		slr.addObjectClassPainter(LunarLanderDomain.PADCLASS, new PadPainter(physParams));
+		OOStatePainter ooStatePainter = new OOStatePainter();
+		slr.addStatePainter(ooStatePainter);
+
+		ooStatePainter.addObjectClassPainter(LunarLanderDomain.CLASS_AGENT, new AgentPainter(physParams));
+		ooStatePainter.addObjectClassPainter(LunarLanderDomain.CLASS_OBSTACLE, new ObstaclePainter(physParams));
+		ooStatePainter.addObjectClassPainter(LunarLanderDomain.CLASS_PAD, new PadPainter(physParams));
 
 		return slr;
 	}
@@ -83,19 +85,19 @@ public class LLVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob, float cWidth, float cHeight) {
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 			
 			g2.setColor(Color.red);
-			
+
 			
 			
 			double width = 30.;
 			double height = 40.;
 			
-			double ox = ob.getRealValForAttribute(LunarLanderDomain.XATTNAME);
-			double oy = ob.getRealValForAttribute(LunarLanderDomain.YATTNAME);
+			double ox = (Double)ob.get(LunarLanderDomain.VAR_X);
+			double oy = (Double)ob.get(LunarLanderDomain.VAR_Y);
 			
-			double ang = ob.getRealValForAttribute(LunarLanderDomain.AATTNAME);
+			double ang = (Double)ob.get(LunarLanderDomain.VAR_ANGLE);
 			
 			double nx = (ox - lld.getXmin()) / (lld.getXmax() - lld.getXmin());
 			double ny = (oy - lld.getYmin()) / (lld.getYmax() - lld.getYmin());
@@ -185,15 +187,15 @@ public class LLVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 				float cWidth, float cHeight) {
 			
 			g2.setColor(Color.black);
 			
-			double ol = ob.getRealValForAttribute(LunarLanderDomain.LATTNAME);
-			double or = ob.getRealValForAttribute(LunarLanderDomain.RATTNAME);
-			double obb = ob.getRealValForAttribute(LunarLanderDomain.BATTNAME);
-			double ot = ob.getRealValForAttribute(LunarLanderDomain.TATTNAME);
+			double ol = (Double)ob.get(LunarLanderDomain.VAR_LEFT);
+			double or = (Double)ob.get(LunarLanderDomain.VAR_RIGHT);
+			double obb = (Double)ob.get(LunarLanderDomain.VAR_BOTTOM);
+			double ot = (Double)ob.get(LunarLanderDomain.VAR_TOP);
 			
 			double ow = or - ol;
 			double oh = ot - obb;
@@ -237,15 +239,15 @@ public class LLVisualizer {
 		}
 
 		@Override
-		public void paintObject(Graphics2D g2, State s, OldObjectInstance ob,
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob,
 				float cWidth, float cHeight) {
 			
 			g2.setColor(Color.blue);
 			
-			double ol = ob.getRealValForAttribute(LunarLanderDomain.LATTNAME);
-			double or = ob.getRealValForAttribute(LunarLanderDomain.RATTNAME);
-			double obb = ob.getRealValForAttribute(LunarLanderDomain.BATTNAME);
-			double ot = ob.getRealValForAttribute(LunarLanderDomain.TATTNAME);
+			double ol = (Double)ob.get(LunarLanderDomain.VAR_LEFT);
+			double or = (Double)ob.get(LunarLanderDomain.VAR_RIGHT);
+			double obb = (Double)ob.get(LunarLanderDomain.VAR_BOTTOM);
+			double ot = (Double)ob.get(LunarLanderDomain.VAR_TOP);
 			
 			double ow = or - ol;
 			double oh = ot - obb;

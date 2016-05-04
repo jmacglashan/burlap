@@ -1,17 +1,20 @@
 package burlap.domain.singleagent.lunarlander;
 
+import burlap.domain.singleagent.lunarlander.state.LLAgent;
+import burlap.domain.singleagent.lunarlander.state.LLBlock;
+import burlap.domain.singleagent.lunarlander.state.LLState;
 import burlap.oomdp.auxiliary.DomainGenerator;
 import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.objects.MutableObjectInstance;
-import burlap.oomdp.core.objects.OldObjectInstance;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.explorer.TerminalExplorer;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
+import burlap.oomdp.singleagent.oo.OOSADomain;
 import burlap.oomdp.visualizer.Visualizer;
 
 import java.util.ArrayList;
@@ -56,111 +59,111 @@ public class LunarLanderDomain implements DomainGenerator {
 	/**
 	 * Constant for the name of the x position attribute.
 	 */
-	public static final String				XATTNAME = "xAtt";
+	public static final String VAR_X = "x";
 	
 	/**
 	 * Constant for the name of the y position attribute.
 	 */
-	public static final String				YATTNAME = "yAtt";
+	public static final String VAR_Y = "y";
 	
 	
 	/**
 	 * Constant for the name of the x velocity attribute.
 	 */
-	public static final String				VXATTNAME = "vxAtt";
+	public static final String VAR_VX = "vx";
 	
 	/**
 	 * Constant for the name of the y velocity attribute.
 	 */
-	public static final String				VYATTNAME = "vyAtt";
+	public static final String VAR_VY = "vy";
 	
 	
 	/**
 	 * Constant for the name of the angle of orientation attribute.
 	 */
-	public static final String				AATTNAME = "angAtt"; //angle of lander
+	public static final String VAR_ANGLE = "angle"; //angle of lander
 	
 	
 	/**
 	 * Constant for the name of the left boundary attribute for rectangular obstacles and landing pads
 	 */
-	public static final String				LATTNAME = "lAtt";
+	public static final String VAR_LEFT = "left";
 	
 	/**
 	 * Constant for the name of the right boundary attribute for rectangular obstacles and landing pads
 	 */
-	public static final String				RATTNAME = "rAtt";
+	public static final String VAR_RIGHT = "right";
 	
 	/**
 	 * Constant for the name of the bottom boundary attribute for rectangular obstacles and landing pads
 	 */
-	public static final String				BATTNAME = "bAtt";
+	public static final String VAR_BOTTOM = "bottom";
 	
 	/**
 	 * Constant for the name of the top boundary attribute for rectangular obstacles and landing pads
 	 */
-	public static final String				TATTNAME = "tAtt"; //top boundary
+	public static final String VAR_TOP = "top"; //top boundary
 	
 	
 	/**
 	 * Constant for the name of the agent OO-MDP class
 	 */
-	public static final String				AGENTCLASS = "agent";
+	public static final String CLASS_AGENT = "agent";
 	
 	/**
 	 * Constant for the name of the obstacle OO-MDP class
 	 */
-	public static final String				OBSTACLECLASS = "obstacle";
+	public static final String CLASS_OBSTACLE = "obstacle";
 	
 	/**
 	 * Constant for the name of the goal landing pad OO-MDP class
 	 */
-	public static final String				PADCLASS = "goal";
+	public static final String CLASS_PAD = "goal";
 	
 	
 	/**
 	 * Constant for the name of the turn/rotate left/counterclockwise action
 	 */
-	public static final String				ACTIONTURNL = "turnLeft";
+	public static final String ACTION_TURN_LEFT = "turnLeft";
 	
 	/**
 	 * Constant for the name of the turn/rotate right/clockwise action
 	 */
-	public static final String				ACTIONTURNR = "turnRight";
+	public static final String ACTION_TURN_RIGHT = "turnRight";
 	
 	/**
 	 * Constant for the base name of thrust actions. Each thrust action will have a number appended to this name to indicate which thrust action it is.
 	 */
-	public static final String				ACTIONTHRUST = "thrust";
+	public static final String ACTION_THRUST = "thrust";
 	
 	/**
 	 * Constant for the name of the idle action which causes the agent to do nothing by drift for a time step
 	 */
-	public static final String				ACTIONIDLE = "idle";
+	public static final String ACTION_IDLE = "idle";
 	
 	
 	/**
 	 * Constant for the name of the propositional function that indicates whether the agent/lander is on a landing pad
 	 */
-	public static final String				PFONPAD = "onLandingPad";
+	public static final String PF_ON_PAD = "onLandingPad";
 	
 	/**
 	 * Constant for the name of the propositional function that indicates whether the agent/lander is *touching* a landing pad.
 	 * Note that the agent may be touching the pad on the side of its boundaries and therefore not be landed on it. However
 	 * if the agent is landed on the pad, then they will also be touching it.
 	 */
-	public static final String				PFTPAD = "touchingLandingPad";
+	public static final String PF_TOUTCH_PAD = "touchingLandingPad";
 	
 	/**
 	 * Constant for the name of the propositional function that indicates whether the agent/lander is touching
 	 * an obstacle surface.
 	 */
-	public static final String				PFTOUCHSURFACE = "touchingSurface";
+	public static final String PF_TOUCH_SURFACE = "touchingSurface";
 	
 	/**
 	 * Constant for the name of the propositional function that indicates whether the agent/lander is on the ground
 	 */
-	public static final String				PFONGROUND = "onGround"; //landed on ground
+	public static final String PF_ON_GROUND = "onGround"; //landed on ground
 
 	/**
 	 * List of the thrust forces for each thrust action
@@ -302,91 +305,7 @@ public class LunarLanderDomain implements DomainGenerator {
 			this.anginc = anginc;
 		}
 	}
-	
-	
-	/**
-	 * Sets the agent/lander position/orientation and zeros out the lander velocity.
-	 * @param s the state in which to set the agent
-	 * @param a the angle of the lander
-	 * @param x the x position
-	 * @param y the y position
-	 */
-	public static void setAgent(State s, double a, double x, double y){
-		setAgent(s, a, x, y, 0., 0.);
-	}
-	
-	
-	/**
-	 * Sets the agent/lander position/orientation and the velocity.
-	 * @param s the state in which to set the agent
-	 * @param a the angle of the lander
-	 * @param x the x position of the lander
-	 * @param y the y position of the lander
-	 * @param vx the x velocity component of the lander
-	 * @param vy the y velocity component of the lander
-	 */
-	public static void setAgent(State s, double a, double x, double y, double vx, double vy){
-		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
-		
-		agent.setValue(AATTNAME, a);
-		agent.setValue(XATTNAME, x);
-		agent.setValue(YATTNAME, y);
-		agent.setValue(VXATTNAME, vx);
-		agent.setValue(VYATTNAME, vy);
-	}
-	
-	
-	/**
-	 * Sets an obstacles boundaries/position
-	 * @param s the state in which the obstacle should be set
-	 * @param i specifies the ith landing pad object to be set to these values
-	 * @param l the left boundary
-	 * @param r the right boundary
-	 * @param b the bottom boundary
-	 * @param t the top boundary
-	 */
-	public static void setObstacle(State s, int i, double l, double r, double b, double t){
-		OldObjectInstance obst = s.getObjectsOfClass(OBSTACLECLASS).get(i);
-		
-		obst.setValue(LATTNAME, l);
-		obst.setValue(RATTNAME, r);
-		obst.setValue(BATTNAME, b);
-		obst.setValue(TATTNAME, t);
-	}
-	
-	
-	/**
-	 * Sets the first landing pad's boundaries/position
-	 * @param s the state in which the obstacle should be set
-	 * @param l the left boundary
-	 * @param r the right boundary
-	 * @param b the bottom boundary
-	 * @param t the top boundary
-	 */
-	public static void setPad(State s, double l, double r, double b, double t){
-		setPad(s, 0, l, r, b, t);
-	}
-	
-	
-	/**
-	 * Sets a landing pad's boundaries/position
-	 * @param s the state in which the obstacle should be set
-	 * @param i specifies the ith landing pad object to be set to these values
-	 * @param l the left boundary
-	 * @param r the right boundary
-	 * @param b the bottom boundary
-	 * @param t the top boundary
-	 */
-	public static void setPad(State s, int i, double l, double r, double b, double t){
-		OldObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(i);
-		
-		pad.setValue(LATTNAME, l);
-		pad.setValue(RATTNAME, r);
-		pad.setValue(BATTNAME, b);
-		pad.setValue(TATTNAME, t);
-	}
-	
-	
+
 	
 	/**
 	 * Initializes with no thrust actions set.
@@ -582,7 +501,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	@Override
 	public Domain generateDomain() {
 		
-		Domain domain = new SADomain();
+		OOSADomain domain = new OOSADomain();
 		
 		List <Double> thrustValuesTemp = this.thrustValues;
 		if(thrustValuesTemp.isEmpty()){
@@ -590,79 +509,29 @@ public class LunarLanderDomain implements DomainGenerator {
 			thrustValuesTemp.add(-physParams.gravity);
 		}
 		
-		
-		//create attributes
-		Attribute xatt = new Attribute(domain, XATTNAME, Attribute.AttributeType.REAL);
-		xatt.setLims(physParams.xmin, physParams.xmax);
-		
-		Attribute yatt = new Attribute(domain, YATTNAME, Attribute.AttributeType.REAL);
-		yatt.setLims(physParams.ymin, physParams.ymax);
-		
-		Attribute vxatt = new Attribute(domain, VXATTNAME, Attribute.AttributeType.REAL);
-		vxatt.setLims(-physParams.vmax, physParams.vmax);
-		
-		Attribute vyatt = new Attribute(domain, VYATTNAME, Attribute.AttributeType.REAL);
-		vyatt.setLims(-physParams.vmax, physParams.vmax);
-		
-		Attribute aatt = new Attribute(domain, AATTNAME, Attribute.AttributeType.REAL);
-		aatt.setLims(-physParams.angmax, physParams.angmax);
-		
-		Attribute latt = new Attribute(domain, LATTNAME, Attribute.AttributeType.REAL);
-		latt.setLims(physParams.xmin, physParams.xmax);
-		
-		Attribute ratt = new Attribute(domain, RATTNAME, Attribute.AttributeType.REAL);
-		ratt.setLims(physParams.xmin, physParams.xmax);
-		
-		Attribute batt = new Attribute(domain, BATTNAME, Attribute.AttributeType.REAL);
-		batt.setLims(physParams.ymin, physParams.ymax);
-		
-		Attribute tatt = new Attribute(domain, TATTNAME, Attribute.AttributeType.REAL);
-		tatt.setLims(physParams.ymin, physParams.ymax);
-		
-		
-		
-		
-		
-		//create classes
-		ObjectClass agentclass = new ObjectClass(domain, AGENTCLASS);
-		agentclass.addAttribute(xatt);
-		agentclass.addAttribute(yatt);
-		agentclass.addAttribute(vxatt);
-		agentclass.addAttribute(vyatt);
-		agentclass.addAttribute(aatt);
-		
-		ObjectClass obstclss = new ObjectClass(domain, OBSTACLECLASS);
-		obstclss.addAttribute(latt);
-		obstclss.addAttribute(ratt);
-		obstclss.addAttribute(batt);
-		obstclss.addAttribute(tatt);
-		
-		
-		ObjectClass padclass = new ObjectClass(domain, PADCLASS);
-		padclass.addAttribute(latt);
-		padclass.addAttribute(ratt);
-		padclass.addAttribute(batt);
-		padclass.addAttribute(tatt);
+		domain.addStateClass(CLASS_AGENT, LLAgent.class)
+				.addStateClass(CLASS_PAD, LLBlock.LLPad.class)
+				.addStateClass(CLASS_OBSTACLE, LLBlock.LLObstacle.class);
 
 		//make copy of physics parameters
 		LLPhysicsParams cphys = this.physParams.copy();
 		
 		//add actions
-		new ActionTurn(ACTIONTURNL, domain, -1., cphys);
-		new ActionTurn(ACTIONTURNR, domain, 1., cphys);
-		new ActionIdle(ACTIONIDLE, domain, cphys);
+		new ActionTurn(ACTION_TURN_LEFT, domain, -1., cphys);
+		new ActionTurn(ACTION_TURN_RIGHT, domain, 1., cphys);
+		new ActionIdle(ACTION_IDLE, domain, cphys);
 		
 		for(int i = 0; i < thrustValuesTemp.size(); i++){
 			double t = thrustValuesTemp.get(i);
-			new ActionThrust(ACTIONTHRUST+i, domain, t, cphys);
+			new ActionThrust(ACTION_THRUST +i, domain, t, cphys);
 		}
 		
 		
 		//add pfs
-		new OnPadPF(PFONPAD, domain);
-		new TouchPadPF(PFTPAD, domain);
-		new TouchSurfacePF(PFTOUCHSURFACE, domain);
-		new TouchGroundPF(PFONGROUND, domain);
+		new OnPadPF(PF_ON_PAD, domain);
+		new TouchPadPF(PF_TOUTCH_PAD, domain);
+		new TouchSurfacePF(PF_TOUCH_SURFACE, domain);
+		new TouchGroundPF(PF_ON_GROUND, domain, physParams.ymin);
 		
 		
 		
@@ -670,33 +539,6 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 	}
 	
-	
-	/**
-	 * Creates a state with one agent/lander, one landing pad, and no number of obstacles. The attribute values
-	 * of these objects will be uninitialized and will need to be set either manually or with this class's methods
-	 * like {@link #setAgent(State, double, double, double)}.
-	 * @param domain the domain of the state to generate
-	 * @param no the number of obstacle objects to create
-	 * @return a state object
-	 */
-	public static State getCleanState(Domain domain, int no){
-		
-		State s = new CMutableState();
-		
-		OldObjectInstance agent = new MutableObjectInstance(domain.getObjectClass(AGENTCLASS), AGENTCLASS + "0");
-		s.addObject(agent);
-		
-		OldObjectInstance pad = new MutableObjectInstance(domain.getObjectClass(PADCLASS), PADCLASS + "0");
-		s.addObject(pad);
-		
-		for(int i = 0; i < no; i++){
-			OldObjectInstance obst = new MutableObjectInstance(domain.getObjectClass(OBSTACLECLASS), OBSTACLECLASS + i);
-			s.addObject(obst);
-		}
-
-		return s;
-		
-	}
 
 	
 	/**
@@ -704,10 +546,11 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param s the state in which the lander's angle should be changed
 	 * @param dir the direction to turn; +1 is clockwise, -1 is counterclockwise
 	 */
-	protected static void incAngle(State s, double dir, LLPhysicsParams physParams){
-		
-		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
-		double curA = agent.getRealValForAttribute(AATTNAME);
+	protected static void incAngle(LLState s, double dir, LLPhysicsParams physParams){
+
+		LLAgent agent = s.touchAgent();
+
+		double curA = agent.angle;
 		
 		double newa = curA + (dir * physParams.anginc);
 		if(newa > physParams.angmax){
@@ -716,8 +559,8 @@ public class LunarLanderDomain implements DomainGenerator {
 		else if(newa < -physParams.angmax){
 			newa = -physParams.angmax;
 		}
-		
-		agent.setValue(AATTNAME, newa);
+
+		agent.angle = newa;
 		
 	}
 	
@@ -727,17 +570,18 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @param s the state in which the agent/lander should be modified
 	 * @param thrust the amount of thrust force exerted by the lander.
 	 */
-	protected static void updateMotion(State s, double thrust, LLPhysicsParams physParams){
+	protected static void updateMotion(LLState s, double thrust, LLPhysicsParams physParams){
 		
 		double ti = 1.;
 		double tt = ti*ti;
-		
-		OldObjectInstance agent = s.getObjectsOfClass(AGENTCLASS).get(0);
-		double ang = agent.getRealValForAttribute(AATTNAME);
-		double x = agent.getRealValForAttribute(XATTNAME);
-		double y = agent.getRealValForAttribute(YATTNAME);
-		double vx = agent.getRealValForAttribute(VXATTNAME);
-		double vy = agent.getRealValForAttribute(VYATTNAME);
+
+		LLAgent agent = s.touchAgent();
+
+		double ang = agent.angle;
+		double x = agent.x;
+		double y = agent.y;
+		double vx = agent.vx;
+		double vy = agent.vy;
 		
 		double worldAngle = (Math.PI/2.) - ang;
 		
@@ -793,12 +637,12 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		//check for collisions
-		List <OldObjectInstance> obstacles = s.getObjectsOfClass(OBSTACLECLASS);
-		for(OldObjectInstance o : obstacles){
-			double l = o.getRealValForAttribute(LATTNAME);
-			double r = o.getRealValForAttribute(RATTNAME);
-			double b = o.getRealValForAttribute(BATTNAME);
-			double t = o.getRealValForAttribute(TATTNAME);
+		List <LLBlock.LLObstacle> obstacles = s.obstacles;
+		for(LLBlock.LLObstacle o : obstacles){
+			double l = o.left;
+			double r = o.right;
+			double b = o.bottom;
+			double t = o.top;
 			
 			//are we intersecting?
 			if(nx > l && nx < r && ny >= b && ny < t){
@@ -836,50 +680,47 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		//check the pad collision
-		OldObjectInstance pad = s.getObjectsOfClass(PADCLASS).get(0);
-		double l = pad.getRealValForAttribute(LATTNAME);
-		double r = pad.getRealValForAttribute(RATTNAME);
-		double b = pad.getRealValForAttribute(BATTNAME);
-		double t = pad.getRealValForAttribute(TATTNAME);
-		
-		//did we collide?
-		if(nx > l && nx < r && ny >= b && ny < t){
-			//intersection!
-			
-			//from which direction did we hit it (check previous position)?
-			if(x <= l){
-				nx = l;
-				nvx = 0.;
-			}
-			else if(x >= r){
-				nx = r;
-				nvx = 0.;
-			}
-			
-			if(y <= b){
-				ny = b;
-				nvy = 0.;
-			}
-			else if(y >= t){
-				ny = t;
-				nvy = 0.;
-				nang = 0.;
-				nvx = 0.;
-			}
+		LLBlock.LLPad pad = s.pad;
+		if(pad != null) {
+			double l = pad.left;
+			double r = pad.right;
+			double b = pad.bottom;
+			double t = pad.top;
 
-			
+			//did we collide?
+			if(nx > l && nx < r && ny >= b && ny < t) {
+				//intersection!
+
+				//from which direction did we hit it (check previous position)?
+				if(x <= l) {
+					nx = l;
+					nvx = 0.;
+				} else if(x >= r) {
+					nx = r;
+					nvx = 0.;
+				}
+
+				if(y <= b) {
+					ny = b;
+					nvy = 0.;
+				} else if(y >= t) {
+					ny = t;
+					nvy = 0.;
+					nang = 0.;
+					nvx = 0.;
+				}
+
+
+			}
 		}
 		
-		
-		
-		
+
 		//now set the new values
-		agent.setValue(XATTNAME, nx);
-		agent.setValue(YATTNAME, ny);
-		agent.setValue(VXATTNAME, nvx);
-		agent.setValue(VYATTNAME, nvy);
-		agent.setValue(AATTNAME, nang);
-		
+		agent.x = nx;
+		agent.y = ny;
+		agent.vx = nvx;
+		agent.vy = nvy;
+		agent.angle = nang;
 		
 	}
 	
@@ -911,8 +752,8 @@ public class LunarLanderDomain implements DomainGenerator {
 
 		@Override
 		protected State performActionHelper(State st, GroundedAction groundedAction) {
-			incAngle(st, dir, this.physParams);
-			updateMotion(st, 0.0, this.physParams);
+			incAngle((LLState)st, dir, this.physParams);
+			updateMotion((LLState)st, 0.0, this.physParams);
 			return st;
 		}
 
@@ -950,7 +791,7 @@ public class LunarLanderDomain implements DomainGenerator {
 
 		@Override
 		protected State performActionHelper(State st, GroundedAction groundedAction) {
-			updateMotion(st, 0.0, this.physParams);
+			updateMotion((LLState)st, 0.0, this.physParams);
 			return st;
 		}
 
@@ -992,7 +833,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		@Override
 		protected State performActionHelper(State st, GroundedAction groundedAction) {
-			updateMotion(st, thrustValue, this.physParams);
+			updateMotion((LLState)st, thrustValue, this.physParams);
 			return st;
 		}
 
@@ -1032,24 +873,24 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param name the name of the propositional function
 		 * @param domain the domain of the propositional function
 		 */
-		public OnPadPF(String name, Domain domain) {
-			super(name, domain, new String[]{AGENTCLASS, PADCLASS});
+		public OnPadPF(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_AGENT, CLASS_PAD});
 		}
 		
 
 		@Override
-		public boolean isTrue(State st, String... params) {
-	
-			OldObjectInstance agent = st.getObject(params[0]);
-			OldObjectInstance pad = st.getObject(params[1]);
-			
-			
-			double l = pad.getRealValForAttribute(LATTNAME);
-			double r = pad.getRealValForAttribute(RATTNAME);
-			double t = pad.getRealValForAttribute(TATTNAME);
-			
-			double x = agent.getRealValForAttribute(XATTNAME);
-			double y = agent.getRealValForAttribute(YATTNAME);
+		public boolean isTrue(OOState st, String... params) {
+
+			LLAgent agent = (LLAgent)st.object(params[0]);
+			LLBlock.LLPad pad = (LLBlock.LLPad)st.object(params[1]);
+
+
+			double l = pad.left;
+			double r = pad.right;
+			double t = pad.top;
+
+			double x = agent.x;
+			double y = agent.y;
 			
 			//on pad means landed on surface, so y should be equal to top
 			if(x > l && x < r && y == t){
@@ -1081,25 +922,25 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param name the name of the propositional function
 		 * @param domain the domain of the propositional function
 		 */
-		public TouchPadPF(String name, Domain domain) {
-			super(name, domain, new String[]{AGENTCLASS, PADCLASS});
+		public TouchPadPF(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_AGENT, CLASS_PAD});
 		}
 		
 
 		@Override
-		public boolean isTrue(State st, String... params) {
-	
-			OldObjectInstance agent = st.getObject(params[0]);
-			OldObjectInstance pad = st.getObject(params[1]);
+		public boolean isTrue(OOState st, String... params) {
+
+			LLAgent agent = (LLAgent)st.object(params[0]);
+			LLBlock.LLPad pad = (LLBlock.LLPad)st.object(params[1]);
 			
 			
-			double l = pad.getRealValForAttribute(LATTNAME);
-			double r = pad.getRealValForAttribute(RATTNAME);
-			double b = pad.getRealValForAttribute(BATTNAME);
-			double t = pad.getRealValForAttribute(TATTNAME);
+			double l = pad.left;
+			double r = pad.right;
+			double b = pad.bottom;
+			double t = pad.top;
 			
-			double x = agent.getRealValForAttribute(XATTNAME);
-			double y = agent.getRealValForAttribute(YATTNAME);
+			double x = agent.x;
+			double y = agent.y;
 			
 			//on pad means landed on surface, so y should be equal to top
 			if(x >= l && x < r && y >= b && y <= t){
@@ -1131,24 +972,24 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param name the name of the propositional function
 		 * @param domain the domain of the propositional function
 		 */
-		public TouchSurfacePF(String name, Domain domain) {
-			super(name, domain, new String[]{AGENTCLASS, OBSTACLECLASS});
+		public TouchSurfacePF(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_AGENT, CLASS_OBSTACLE});
 		}
 		
 
 		@Override
-		public boolean isTrue(State st, String... params) {
+		public boolean isTrue(OOState st, String... params) {
 			
 			
-			OldObjectInstance agent = st.getObject(params[0]);
-			OldObjectInstance o = st.getObject(params[1]);
-			double x = agent.getRealValForAttribute(XATTNAME);
-			double y = agent.getRealValForAttribute(YATTNAME);
-			
-			double l = o.getRealValForAttribute(LATTNAME);
-			double r = o.getRealValForAttribute(RATTNAME);
-			double b = o.getRealValForAttribute(BATTNAME);
-			double t = o.getRealValForAttribute(TATTNAME);
+			LLAgent agent = (LLAgent)st.object(params[0]);
+			LLBlock o = (LLBlock)st.object(params[1]);
+			double x = agent.x;
+			double y = agent.x;
+
+			double l = o.left;
+			double r = o.right;
+			double b = o.bottom;
+			double t = o.top;
 			
 			if(x >= l && x <= r && y >= b && y <= t){
 				return true;
@@ -1170,22 +1011,24 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	public class TouchGroundPF extends PropositionalFunction{
 
+		protected double ymin;
+
 		/**
 		 * Initializes to be evaluated on an agent object.
 		 * @param name the name of the propositional function
 		 * @param domain the domain of the propositional function
 		 */
-		public TouchGroundPF(String name, Domain domain) {
-			super(name, domain, new String[]{AGENTCLASS});
+		public TouchGroundPF(String name, OODomain domain, double ymin) {
+			super(name, domain, new String[]{CLASS_AGENT});
+			this.ymin = ymin;
 		}
 		
 
 		@Override
-		public boolean isTrue(State st, String... params) {
-			
-			OldObjectInstance agent = st.getObject(params[0]);
-			double y = agent.getRealValForAttribute(YATTNAME);
-			double ymin = agent.getObjectClass().domain.getAttribute(YATTNAME).lowerLim;
+		public boolean isTrue(OOState st, String... params) {
+
+			LLAgent agent = (LLAgent)st.object(params[0]);
+			double y = agent.y;
 			
 			if(y == ymin){
 				return true;
@@ -1218,24 +1061,11 @@ public class LunarLanderDomain implements DomainGenerator {
 		Domain domain = lld.generateDomain();
 
 
-		State clean = getCleanState(domain, 0);
 
-		/*//these commented items just have different task configuration; just choose one
-		lld.setAgent(clean, 0., 5, 0.);
-		lld.setObstacle(clean, 0, 30., 45., 0., 20.);
-		lld.setPad(clean, 75., 95., 0., 10.);
-		*/
-
-		/*
-		lld.setAgent(clean, 0., 5, 0.);
-		lld.setObstacle(clean, 0, 20., 40., 0., 20.);
-		lld.setPad(clean, 65., 85., 0., 10.);
-		*/
-
-
-		setAgent(clean, 0., 5, 0.);
-		//setObstacle(clean, 0, 20., 50., 0., 20.);
-		setPad(clean, 80., 95., 0., 10.);
+		LLState clean = new LLState(
+				new LLAgent(0, 5, 0),
+				new LLBlock.LLPad(80, 95, 0, 10, "pad")
+		);
 
 
 		int expMode = 1;
@@ -1261,11 +1091,11 @@ public class LunarLanderDomain implements DomainGenerator {
 			Visualizer vis = LLVisualizer.getVisualizer(lld);
 			VisualExplorer exp = new VisualExplorer(domain, vis, clean);
 
-			exp.addKeyAction("w", ACTIONTHRUST + 0);
-			exp.addKeyAction("s", ACTIONTHRUST + 1);
-			exp.addKeyAction("a", ACTIONTURNL);
-			exp.addKeyAction("d", ACTIONTURNR);
-			exp.addKeyAction("x", ACTIONIDLE);
+			exp.addKeyAction("w", ACTION_THRUST + 0);
+			exp.addKeyAction("s", ACTION_THRUST + 1);
+			exp.addKeyAction("a", ACTION_TURN_LEFT);
+			exp.addKeyAction("d", ACTION_TURN_RIGHT);
+			exp.addKeyAction("x", ACTION_IDLE);
 
 			exp.initGUI();
 

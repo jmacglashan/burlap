@@ -27,6 +27,13 @@ public class LLAgent implements ObjectInstance {
 	public LLAgent() {
 	}
 
+
+	public LLAgent(double x, double y, double angle) {
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+	}
+
 	public LLAgent(double x, double y, double vx, double vy, double angle) {
 		this.x = x;
 		this.y = y;
