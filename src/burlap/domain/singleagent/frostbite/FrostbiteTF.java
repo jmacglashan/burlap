@@ -1,10 +1,10 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.State;
 
 /**
  * @author Phillipe Morere

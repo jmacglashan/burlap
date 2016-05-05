@@ -6,10 +6,10 @@ import java.util.List;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.common.SimpleGroundedAction;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.common.SimpleGroundedAction;
 
 
 /**

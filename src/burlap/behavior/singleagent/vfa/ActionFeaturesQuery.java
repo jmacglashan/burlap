@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.vfa;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

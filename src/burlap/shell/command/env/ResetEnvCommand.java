@@ -1,6 +1,6 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.Environment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for resetting the {@link burlap.oomdp.singleagent.environment.Environment}.
+ * A {@link burlap.shell.command.ShellCommand} for resetting the {@link burlap.mdp.singleagent.environment.Environment}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

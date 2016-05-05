@@ -6,12 +6,12 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

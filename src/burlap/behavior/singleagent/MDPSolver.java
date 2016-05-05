@@ -7,16 +7,16 @@ import java.util.Map;
 
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * The abstract super class to use for various MDP solving algorithms, including both planning and learning algorithms.
@@ -60,7 +60,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	protected List <Action>											actions;
 	
 	/**
-	 * A mapping to internal stored hashed states ({@link burlap.oomdp.statehashing.HashableState}) that are stored.
+	 * A mapping to internal stored hashed states ({@link burlap.mdp.statehashing.HashableState}) that are stored.
 	 * Useful since two identical states may have different object instance name identifiers
 	 * that can affect the parameters in GroundedActions.
 	 */

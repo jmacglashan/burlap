@@ -3,15 +3,15 @@ package burlap.behavior.singleagent.auxiliary;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.datastructures.AlphanumericSorting;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.GroundedProp;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.NullState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.GroundedProp;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.NullState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.visualizer.Visualizer;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

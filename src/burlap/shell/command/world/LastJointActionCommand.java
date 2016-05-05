@@ -1,8 +1,8 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -13,7 +13,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for printing the last joint action taken in a {@link burlap.oomdp.stochasticgames.World}.
+ * A {@link burlap.shell.command.ShellCommand} for printing the last joint action taken in a {@link burlap.mdp.stochasticgames.World}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

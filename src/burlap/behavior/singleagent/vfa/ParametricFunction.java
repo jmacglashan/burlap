@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.vfa;
 
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
 
 /**
  * An interface for defining a parametric function. This interface is often used

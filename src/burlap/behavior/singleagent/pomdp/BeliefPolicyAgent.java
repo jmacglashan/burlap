@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.pomdp;
 
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.pomdp.BeliefAgent;
-import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
-import burlap.oomdp.singleagent.pomdp.PODomain;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.pomdp.BeliefAgent;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
+import burlap.mdp.singleagent.pomdp.PODomain;
 
 
 /**

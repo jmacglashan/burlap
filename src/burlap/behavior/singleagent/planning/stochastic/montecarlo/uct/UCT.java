@@ -10,20 +10,20 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.*;
 
 /**
- * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest})
+ * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.mdp.auxiliary.stateconditiontest.StateConditionTest})
  * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
  * <p>
  * The class also implements the {@link burlap.behavior.valuefunction.QFunction} interface. However, it will only return the Q-value
@@ -115,7 +115,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	
 	/**
 	 * Tells the valueFunction to stop planning if a goal state is ever found.
-	 * @param gc a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
+	 * @param gc a {@link burlap.mdp.auxiliary.stateconditiontest.StateConditionTest} object used to specify goal states (whereever it evaluates as true).
 	 */
 	public void useGoalConditionStopCriteria(StateConditionTest gc){
 		this.goalCondition = gc;

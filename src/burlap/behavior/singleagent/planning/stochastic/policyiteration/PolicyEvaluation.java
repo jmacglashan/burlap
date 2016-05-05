@@ -5,12 +5,12 @@ import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -52,7 +52,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 	 * @param rf the reward function
 	 * @param tf the terminal function
 	 * @param gamma the discount factor
-	 * @param hashingFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} used to index states and perform state equality
+	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to index states and perform state equality
 	 * @param maxEvalDelta the minimum change in the value function that will cause policy evaluation to terminate
 	 * @param maxEvalIterations the maximum number of evaluation iterations to perform before terminating policy evaluation
 	 */

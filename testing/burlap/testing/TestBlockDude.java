@@ -13,14 +13,14 @@ import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.domain.singleagent.blockdude.BlockDude;
 import burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor;
 import burlap.domain.singleagent.blockdude.BlockDudeTF;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.common.UniformCostRF;
-import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.auxiliary.stateconditiontest.TFGoalCondition;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.common.UniformCostRF;
+import burlap.mdp.statehashing.SimpleHashableStateFactory;
 
 public class TestBlockDude {
 		Domain domain;

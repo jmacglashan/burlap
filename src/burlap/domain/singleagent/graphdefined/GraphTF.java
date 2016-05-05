@@ -1,13 +1,13 @@
 package burlap.domain.singleagent.graphdefined;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A {@link burlap.oomdp.core.TerminalFunction} for instances of {@link burlap.domain.singleagent.graphdefined.GraphDefinedDomain}.
+ * A {@link burlap.mdp.core.TerminalFunction} for instances of {@link burlap.domain.singleagent.graphdefined.GraphDefinedDomain}.
  * Lets the user specify the integer node ids of the terminal states in the graph.
  * @author James MacGlashan.
  */

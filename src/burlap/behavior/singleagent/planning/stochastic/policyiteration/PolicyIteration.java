@@ -7,12 +7,12 @@ import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;

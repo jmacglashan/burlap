@@ -1,9 +1,9 @@
 package burlap.domain.singleagent.mountaincar;
 
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.auxiliary.StateGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
 
 import java.util.Random;
 

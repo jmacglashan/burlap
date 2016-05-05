@@ -1,13 +1,13 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.state.MutableOOState;
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentDelegation;
-import burlap.oomdp.singleagent.environment.StateSettableEnvironment;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentDelegation;
+import burlap.mdp.singleagent.environment.StateSettableEnvironment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for adding an OO-MDP object to the current {@link burlap.oomdp.singleagent.environment.Environment}
+ * A {@link burlap.shell.command.ShellCommand} for adding an OO-MDP object to the current {@link burlap.mdp.singleagent.environment.Environment}
  * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */

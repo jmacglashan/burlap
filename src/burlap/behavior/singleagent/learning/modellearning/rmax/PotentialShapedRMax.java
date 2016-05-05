@@ -13,14 +13,14 @@ import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelL
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**

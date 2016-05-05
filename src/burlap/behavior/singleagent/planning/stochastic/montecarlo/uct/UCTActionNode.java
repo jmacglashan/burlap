@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.singleagent.GroundedAction;
 
 /**
  * UCT Action node that stores relevant action statics necessary for UCT.

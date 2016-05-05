@@ -8,13 +8,13 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * A model learning interface wrapper to VI that causes VI to be performed every time the model is updated or whenever a novel state is seen

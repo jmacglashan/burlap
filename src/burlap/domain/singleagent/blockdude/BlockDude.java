@@ -4,18 +4,18 @@ import burlap.domain.singleagent.blockdude.state.BlockDudeAgent;
 import burlap.domain.singleagent.blockdude.state.BlockDudeCell;
 import burlap.domain.singleagent.blockdude.state.BlockDudeMap;
 import burlap.domain.singleagent.blockdude.state.BlockDudeState;
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.common.SimpleAction;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-import burlap.oomdp.singleagent.oo.OOSADomain;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.mdp.visualizer.Visualizer;
 
 /**
  * An implementation of the Block Dude Texas Instruments calculator puzzle game. The goal is for the player to reach

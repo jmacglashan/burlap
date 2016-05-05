@@ -1,17 +1,17 @@
 package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +19,16 @@ import java.util.List;
 
 /**
  * This domain generator is used to produce single agent domain version of a stochastic games domain for an agent of a given type
- * (specified by an {@link burlap.oomdp.stochasticgames.SGAgentType} object or for a given list of stochastic games agent actions ({@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction}).
- * Each of the stochastic game agent actions is converted into a single agent {@link burlap.oomdp.singleagent.Action} object with the same
- * action name and parametrization. The created {@link burlap.oomdp.singleagent.SADomain}'s {@link burlap.oomdp.singleagent.Action} objects maintain the action specification of
- * the input {@link burlap.oomdp.stochasticgames.SGDomain}'s {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} (that is, their name and parameter types), but
- * the {@link burlap.oomdp.singleagent.Action#performAction(State, burlap.oomdp.singleagent.GroundedAction)}
+ * (specified by an {@link burlap.mdp.stochasticgames.SGAgentType} object or for a given list of stochastic games agent actions ({@link burlap.mdp.stochasticgames.agentactions.SGAgentAction}).
+ * Each of the stochastic game agent actions is converted into a single agent {@link burlap.mdp.singleagent.Action} object with the same
+ * action name and parametrization. The created {@link burlap.mdp.singleagent.SADomain}'s {@link burlap.mdp.singleagent.Action} objects maintain the action specification of
+ * the input {@link burlap.mdp.stochasticgames.SGDomain}'s {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} (that is, their name and parameter types), but
+ * the {@link burlap.mdp.singleagent.Action#performAction(State, burlap.mdp.singleagent.GroundedAction)}
  * method is undefined since the transition dynamics would depend on the action selection of other agents, which is unknown. Instead, actions can only
- * be executed through the {@link burlap.oomdp.singleagent.Action#performInEnvironment(burlap.oomdp.singleagent.environment.Environment, burlap.oomdp.singleagent.GroundedAction)} method only
- * in which the specified {@link burlap.oomdp.singleagent.environment.Environment} handles the decisions of the other agents. For example, this domain
+ * be executed through the {@link burlap.mdp.singleagent.Action#performInEnvironment(burlap.mdp.singleagent.environment.Environment, burlap.mdp.singleagent.GroundedAction)} method only
+ * in which the specified {@link burlap.mdp.singleagent.environment.Environment} handles the decisions of the other agents. For example, this domain
  * can typically be paired with the {@link LearningAgentToSGAgentInterface}, which will handle these calls
- * indirectly by simultaneously acting as a stochastic game {@link burlap.oomdp.stochasticgames.SGAgent}.
+ * indirectly by simultaneously acting as a stochastic game {@link burlap.mdp.stochasticgames.SGAgent}.
  * @author James MacGlashan
  *
  */
@@ -42,7 +42,7 @@ public class SGToSADomain implements DomainGenerator {
 	/**
 	 * Initializes.
 	 * @param srcDomain the source stochastic games domain
-	 * @param asAgentType the {@link burlap.oomdp.stochasticgames.SGAgentType} object specifying the actions that should be created in the single agent domain.
+	 * @param asAgentType the {@link burlap.mdp.stochasticgames.SGAgentType} object specifying the actions that should be created in the single agent domain.
 	 */
 	public SGToSADomain(SGDomain srcDomain, SGAgentType asAgentType){
 		this(srcDomain, asAgentType.actions);
@@ -79,7 +79,7 @@ public class SGToSADomain implements DomainGenerator {
 	/**
 	 * A single agent action wrapper for a stochastic game action. Calling this action will cause it to call the corresponding single interface to inform it
 	 * of the action selection. The constructed action will have the same name and object parametrization specification as the source stochastic game
-	 * {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} object.
+	 * {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} object.
 	 * @author James MacGlashan
 	 *
 	 */
@@ -90,7 +90,7 @@ public class SGToSADomain implements DomainGenerator {
 
 		/**
 		 * Initializes for a given stochastic games action.
-		 * @param srcAction the source stochastic games {@link burlap.oomdp.stochasticgames.agentactions.SGAgentAction} object.
+		 * @param srcAction the source stochastic games {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} object.
 		 */
 		public SAActionWrapper(SGAgentAction srcAction, Domain domainWrapper){
 			super(srcAction.actionName, domainWrapper);

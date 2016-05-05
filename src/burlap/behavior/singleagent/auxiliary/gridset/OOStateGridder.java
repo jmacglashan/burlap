@@ -1,10 +1,10 @@
 package burlap.behavior.singleagent.auxiliary.gridset;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.state.MutableOOState;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.oo.state.OOVariableKey;
-import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.OOVariableKey;
+import burlap.mdp.core.oo.state.ObjectInstance;
 
 import java.util.HashMap;
 import java.util.List;

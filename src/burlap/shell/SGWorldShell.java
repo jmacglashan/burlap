@@ -1,7 +1,7 @@
 package burlap.shell;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.stochasticgames.World;
+import burlap.mdp.core.Domain;
+import burlap.mdp.stochasticgames.World;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.world.*;
 

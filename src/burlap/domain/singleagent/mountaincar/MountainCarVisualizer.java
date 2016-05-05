@@ -1,9 +1,9 @@
 package burlap.domain.singleagent.mountaincar;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.StatePainter;
-import burlap.oomdp.visualizer.StateRenderLayer;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.core.state.State;
+import burlap.mdp.visualizer.StatePainter;
+import burlap.mdp.visualizer.StateRenderLayer;
+import burlap.mdp.visualizer.Visualizer;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -15,7 +15,7 @@ import static burlap.domain.singleagent.mountaincar.MountainCar.ATT_X;
 
 
 /**
- * A class for creating a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}.
+ * A class for creating a {@link burlap.mdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.mdp.core.Domain}.
  * The agent will be drawn as a red square and the shape of the hill in a black line.
  */
 public class MountainCarVisualizer {
@@ -26,10 +26,10 @@ public class MountainCarVisualizer {
 
 	
 	/**
-	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
-	 * using the hill design/physics defined in the {@link burlap.oomdp.auxiliary.DomainGenerator} for visualization
+	 * Returns a {@link burlap.mdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.mdp.core.Domain}
+	 * using the hill design/physics defined in the {@link burlap.mdp.auxiliary.DomainGenerator} for visualization
 	 * @param mcGen the generator for a given mountain car domain that is to be visualized.
-	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for the mountain car domain.
+	 * @return a {@link burlap.mdp.visualizer.Visualizer} for the mountain car domain.
 	 */
 	public static Visualizer getVisualizer(MountainCar mcGen){
 		
@@ -40,10 +40,10 @@ public class MountainCarVisualizer {
 
 
 	/**
-	 * Returns a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 * Returns a {@link burlap.mdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.mdp.core.Domain}
 	 * using the hill design/physics defined in the {@link burlap.domain.singleagent.mountaincar.MountainCar.MCPhysicsParams} for visualization
 	 * @param physParams the physics/hill design to be visualized
-	 * @return a {@link burlap.oomdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 * @return a {@link burlap.mdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.mdp.core.Domain}
 	 */
 	public static Visualizer getVisualizer(MountainCar.MCPhysicsParams physParams){
 		Visualizer v = new Visualizer(getStateRenderLayer(physParams));
@@ -52,10 +52,10 @@ public class MountainCarVisualizer {
 
 
 	/**
-	 * Returns a {@link burlap.oomdp.visualizer.StateRenderLayer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 * Returns a {@link burlap.mdp.visualizer.StateRenderLayer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.mdp.core.Domain}
 	 * using the hill design/physics defined in the {@link burlap.domain.singleagent.mountaincar.MountainCar.MCPhysicsParams} for visualization
 	 * @param physParams the physics/hill design to be visualized
-	 * @return a {@link burlap.oomdp.visualizer.StateRenderLayer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.oomdp.core.Domain}
+	 * @return a {@link burlap.mdp.visualizer.StateRenderLayer} for a {@link burlap.domain.singleagent.mountaincar.MountainCar} {@link burlap.mdp.core.Domain}
 	 */
 	public static StateRenderLayer getStateRenderLayer(MountainCar.MCPhysicsParams physParams){
 

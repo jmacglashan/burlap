@@ -12,16 +12,16 @@ import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
-import burlap.oomdp.singleagent.pomdp.PODomain;
-import burlap.oomdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
+import burlap.mdp.singleagent.pomdp.PODomain;
+import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 
 /**
@@ -60,7 +60,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	 * @param rf the POMDP hidden state reward function
 	 * @param tf the POMDP hidden state terminal function
 	 * @param discount the discount factor
-	 * @param hashingFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} to use for the {@link burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration} instance to use.
+	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for the {@link burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration} instance to use.
 	 * @param maxDelta the maximum value function change threshold that will cause planning to terminiate
 	 * @param maxIterations the maximum number of value iteration iterations.
 	 */

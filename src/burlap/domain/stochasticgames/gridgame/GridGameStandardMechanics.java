@@ -1,16 +1,16 @@
 package burlap.domain.stochasticgames.gridgame;
 
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.core.oo.state.generic.GenericOOState;
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.oo.state.generic.GenericOOState;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.JointActionModel;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 
 import java.util.*;
 

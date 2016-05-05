@@ -4,10 +4,10 @@ import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
 import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.WorldGenerator;
-import burlap.oomdp.stochasticgames.WorldObserver;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.WorldGenerator;
+import burlap.mdp.stochasticgames.WorldObserver;
 
 
 /**

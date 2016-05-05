@@ -3,10 +3,10 @@ package burlap.behavior.policy;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

@@ -3,14 +3,14 @@ package burlap.behavior.policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.Random;
  * {@link #isDefinedFor(State)}.
  * <p>
  * The {@link #getAction(State)} should return the action (specified by an
- * {@link AbstractGroundedAction}; e.g., a {@link burlap.oomdp.singleagent.GroundedAction} for
+ * {@link AbstractGroundedAction}; e.g., a {@link burlap.mdp.singleagent.GroundedAction} for
  * single agent domains) this policy defines for the
  * input {@link State}. If this {@link Policy} is a stochastic policy,
  * then the {@link #getAction(State)} method should sample an action from its probability distribution
@@ -60,8 +60,8 @@ import java.util.Random;
  * <b>Superclass method</b><p>
  * This class also has many superclass methods for interacting with policy. These include
  * {@link #getProbOfAction(State, AbstractGroundedAction)},
- * {@link #evaluateBehavior(State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction)}
- * (and other variants of the method signature), and {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment)} (and
+ * {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction)}
+ * (and other variants of the method signature), and {@link #evaluateBehavior(burlap.mdp.singleagent.environment.Environment)} (and
  * other variants of the method signature).
  * <p>
  * The {@link #getProbOfAction(State, AbstractGroundedAction)} method
@@ -72,28 +72,28 @@ import java.util.Random;
  * It may be possible to return this value in a more efficient way than enumerating the full probability distribution,
  * in which case you may want to consider overriding the method.
  * <p>
- * The {@link #evaluateBehavior(State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction)},
- * {@link #evaluateBehavior(State, burlap.oomdp.singleagent.RewardFunction, int)}, and
- * {@link #evaluateBehavior(State, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
+ * The {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction)},
+ * {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, int)}, and
+ * {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}
  * methods will all evaluate this policy by rolling it out from the input {@link State} or until
  * it reaches a terminal state or executes for the maximum number of steps (depending on which version of the method you use).
  * The resulting behavior will be saved in an {@link burlap.behavior.singleagent.EpisodeAnalysis} object that is returned.
  * Note that this method requires that the returned {@link AbstractGroundedAction} instances are
  * able to be executed using the action's defined transition dynamics. For single agent domains in which the actions
- * are {@link burlap.oomdp.singleagent.GroundedAction} instances, this will work as long as the corresponding
- * {@link burlap.oomdp.singleagent.Action#performAction(State, burlap.oomdp.singleagent.GroundedAction)} method is implemented. If this
- * policy defines the policy for an agent in a stochastic game, returning {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} instances
+ * are {@link burlap.mdp.singleagent.GroundedAction} instances, this will work as long as the corresponding
+ * {@link burlap.mdp.singleagent.Action#performAction(State, burlap.mdp.singleagent.GroundedAction)} method is implemented. If this
+ * policy defines the policy for an agent in a stochastic game, returning {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} instances
  * for the action, then the policy cannot be rolled out since the outcome state would depend on the action selection of
  * other agents.
  * <p>
- * The {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment)} and
- * {@link #evaluateBehavior(burlap.oomdp.singleagent.environment.Environment, int)}
- * methods will execute this policy in some input {@link burlap.oomdp.singleagent.environment.Environment} until either
- * the {@link burlap.oomdp.singleagent.environment.Environment} reaches a terminal state or the maximum number of
+ * The {@link #evaluateBehavior(burlap.mdp.singleagent.environment.Environment)} and
+ * {@link #evaluateBehavior(burlap.mdp.singleagent.environment.Environment, int)}
+ * methods will execute this policy in some input {@link burlap.mdp.singleagent.environment.Environment} until either
+ * the {@link burlap.mdp.singleagent.environment.Environment} reaches a terminal state or the maximum number of
  * steps are taken (depending on which method signature is used). This method is useful if a policy was computed
  * with a planning algorithm using some model of the world and then needs to be executed in an environment which may
  * have slightly different transitions; for example, planning a policy for a robot using a model of the world and then
- * executing it on the actual robot by following the policy in an {@link burlap.oomdp.singleagent.environment.Environment}.
+ * executing it on the actual robot by following the policy in an {@link burlap.mdp.singleagent.environment.Environment}.
  * <p>
  * All of the evaluateBehavior methods also know how to work with {@link burlap.behavior.singleagent.options.Option}s.
  * In particular, they also are able to record
@@ -352,9 +352,9 @@ public abstract class Policy {
 
 
 	/**
-	 * Evaluates this policy in the provided {@link burlap.oomdp.singleagent.environment.Environment}. The policy will stop being evaluated once a terminal state
+	 * Evaluates this policy in the provided {@link burlap.mdp.singleagent.environment.Environment}. The policy will stop being evaluated once a terminal state
 	 * in the environment is reached.
-	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this policy is to be evaluated.
+	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} in which this policy is to be evaluated.
 	 * @return An {@link burlap.behavior.singleagent.EpisodeAnalysis} object specifying the interaction with the environment.
 	 */
 	public EpisodeAnalysis evaluateBehavior(Environment env){
@@ -369,9 +369,9 @@ public abstract class Policy {
 	}
 
 	/**
-	 * Evaluates this policy in the provided {@link burlap.oomdp.singleagent.environment.Environment}. The policy will stop being evaluated once a terminal state
+	 * Evaluates this policy in the provided {@link burlap.mdp.singleagent.environment.Environment}. The policy will stop being evaluated once a terminal state
 	 * in the environment is reached or when the provided number of steps has been taken.
-	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this policy is to be evaluated.
+	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} in which this policy is to be evaluated.
 	 * @param numSteps the maximum number of steps to take in the environment.
 	 * @return An {@link burlap.behavior.singleagent.EpisodeAnalysis} object specifying the interaction with the environment.
 	 */
@@ -390,7 +390,7 @@ public abstract class Policy {
 
 
 	/**
-	 * Follows this policy for one time step in the provided {@link burlap.oomdp.singleagent.environment.Environment} and
+	 * Follows this policy for one time step in the provided {@link burlap.mdp.singleagent.environment.Environment} and
 	 * records the interaction in the provided {@link burlap.behavior.singleagent.EpisodeAnalysis} object. If the policy
 	 * selects an {@link burlap.behavior.singleagent.options.Option}, then how the option's interaction in the environment
 	 * is recorded depends on this object's {@link #evaluateDecomposesOptions} and {@link #annotateOptionDecomposition} flags.
@@ -398,7 +398,7 @@ public abstract class Policy {
 	 * the individual primitive actions selected by the environment are recorded. If {@link #annotateOptionDecomposition} is
 	 * also true, then each primitive action selected but the option is also given a unique name specifying the option
 	 * which controlled it and its step in the option's execution.
-	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} in which this policy should be followed.
+	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} in which this policy should be followed.
 	 * @param ea The {@link burlap.behavior.singleagent.EpisodeAnalysis} object to which the action selection will be recorded.
 	 */
 	protected void followAndRecordPolicy(Environment env, EpisodeAnalysis ea){
@@ -462,7 +462,7 @@ public abstract class Policy {
 	 * which controlled it and its step in the option's execution.
 	 * @param ea The {@link burlap.behavior.singleagent.EpisodeAnalysis} object to which the action selection will be recorded.
 	 * @param cur The {@link State} from which the policy will be followed
-	 * @param rf The {@link burlap.oomdp.singleagent.RewardFunction} to keep track of reward
+	 * @param rf The {@link burlap.mdp.singleagent.RewardFunction} to keep track of reward
 	 * @return the next {@link State} that is a consequence of following this policy for one action selection.
 	 */
 	protected State followAndRecordPolicy(EpisodeAnalysis ea, State cur, RewardFunction rf){
@@ -559,16 +559,16 @@ public abstract class Policy {
 
 
 	/**
-	 * A class for annotating an action selection, specified with a {@link burlap.oomdp.singleagent.GroundedAction}, with a string.
+	 * A class for annotating an action selection, specified with a {@link burlap.mdp.singleagent.GroundedAction}, with a string.
 	 * The resulting {@link #toString()} method will produce a string of the following form:<p>
 	 * "*annotation--action.toString()" where annotation is the user input annotation and action.toString()
-	 * is the result from the input {@link burlap.oomdp.singleagent.GroundedAction} that is being annotated. The
-	 * leading * character indicates to {@link burlap.oomdp.singleagent.GroundedAction} serializers (such as
-	 * the {@link burlap.behavior.singleagent.EpisodeAnalysis} serialization) that this {@link burlap.oomdp.singleagent.GroundedAction}
+	 * is the result from the input {@link burlap.mdp.singleagent.GroundedAction} that is being annotated. The
+	 * leading * character indicates to {@link burlap.mdp.singleagent.GroundedAction} serializers (such as
+	 * the {@link burlap.behavior.singleagent.EpisodeAnalysis} serialization) that this {@link burlap.mdp.singleagent.GroundedAction}
 	 * is an {@link burlap.behavior.policy.Policy.GroundedAnnotatedAction}.
 	 * <p>
-	 * All other {@link burlap.oomdp.singleagent.GroundedAction} methods are delegated to the inputted
-	 * {@link burlap.oomdp.singleagent.GroundedAction}.
+	 * All other {@link burlap.mdp.singleagent.GroundedAction} methods are delegated to the inputted
+	 * {@link burlap.mdp.singleagent.GroundedAction}.
 	 */
 	public static class GroundedAnnotatedAction extends GroundedAction{
 
@@ -578,7 +578,7 @@ public abstract class Policy {
 		public String annotation;
 
 		/**
-		 * The {@link burlap.oomdp.singleagent.GroundedAction} delegate to be annotated that handles all
+		 * The {@link burlap.mdp.singleagent.GroundedAction} delegate to be annotated that handles all
 		 * methods except the {@link #toString()} method.
 		 */
 		public GroundedAction delegate;
@@ -587,7 +587,7 @@ public abstract class Policy {
 		/**
 		 * Initializes.
 		 * @param annotation the String annotation to be returned by the {@link #toString()} method.
-		 * @param delegate the {@link burlap.oomdp.singleagent.GroundedAction} delegate to be annotated.
+		 * @param delegate the {@link burlap.mdp.singleagent.GroundedAction} delegate to be annotated.
 		 */
 		public GroundedAnnotatedAction(String annotation, GroundedAction delegate) {
 			super(delegate.action);

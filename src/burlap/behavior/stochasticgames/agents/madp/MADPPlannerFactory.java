@@ -3,15 +3,15 @@ package burlap.behavior.stochasticgames.agents.madp;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.dpplanners.MAValueIteration;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.JointReward;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.JointActionModel;
+import burlap.mdp.stochasticgames.JointReward;
+import burlap.mdp.stochasticgames.SGDomain;
 
 /**
  * An interface for generating {@link burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming} objects. This is useful for the

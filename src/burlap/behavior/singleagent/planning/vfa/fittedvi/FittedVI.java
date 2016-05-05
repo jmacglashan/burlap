@@ -9,12 +9,12 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.SimpleHashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;

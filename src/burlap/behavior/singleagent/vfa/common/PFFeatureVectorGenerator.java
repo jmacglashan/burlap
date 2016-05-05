@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.vfa.common;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.GroundedProp;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.GroundedProp;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
 
 import java.util.LinkedList;
 import java.util.List;

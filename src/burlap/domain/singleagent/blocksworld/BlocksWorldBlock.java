@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.blocksworld;
 
-import burlap.oomdp.core.oo.state.OOStateUtilities;
-import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.oo.state.OOStateUtilities;
+import burlap.mdp.core.oo.state.ObjectInstance;
 
 import java.awt.*;
 import java.util.Arrays;

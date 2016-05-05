@@ -1,6 +1,6 @@
 package burlap.domain.singleagent.pomdp.tiger;
 
-import burlap.oomdp.core.state.MutableState;
+import burlap.mdp.core.state.MutableState;
 
 import java.util.Arrays;
 import java.util.List;

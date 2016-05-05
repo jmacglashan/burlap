@@ -1,7 +1,7 @@
 package burlap.shell;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.singleagent.environment.Environment;
+import burlap.mdp.core.Domain;
+import burlap.mdp.singleagent.environment.Environment;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.env.*;
 
@@ -12,7 +12,7 @@ import java.util.Collection;
 
 /**
  * This is a subclass of {@link burlap.shell.BurlapShell} for a shell with shell commands that manipulate or read
- * an {@link burlap.oomdp.singleagent.environment.Environment}. The {@link burlap.oomdp.singleagent.environment.Environment}
+ * an {@link burlap.mdp.singleagent.environment.Environment}. The {@link burlap.mdp.singleagent.environment.Environment}
  * can be accessed with the {@link #getEnv()} method.
  * <p>
  * Use the cmds shell command to see all commands

@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.State;
 
 import java.util.List;
 

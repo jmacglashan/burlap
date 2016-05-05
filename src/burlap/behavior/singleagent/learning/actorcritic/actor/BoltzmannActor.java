@@ -5,15 +5,15 @@ import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * And Actor component whose policy is defined by a Boltzmann distribution over action preferences. This actor stores
- * state-action preferences tabularly and therefore requires a {@link burlap.oomdp.statehashing.HashableStateFactory} to perform lookups.
+ * state-action preferences tabularly and therefore requires a {@link burlap.mdp.statehashing.HashableStateFactory} to perform lookups.
  * @author James MacGlashan
  *
  */

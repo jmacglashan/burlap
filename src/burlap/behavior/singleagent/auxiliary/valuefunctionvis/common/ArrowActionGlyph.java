@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
-import burlap.oomdp.core.state.range.VariableRange;
+import burlap.mdp.core.state.range.VariableRange;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

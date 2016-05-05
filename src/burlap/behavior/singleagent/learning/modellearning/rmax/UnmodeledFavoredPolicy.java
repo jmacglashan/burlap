@@ -3,9 +3,9 @@ package burlap.behavior.singleagent.learning.modellearning.rmax;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.modellearning.Model;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
 
 import java.util.ArrayList;
 import java.util.List;

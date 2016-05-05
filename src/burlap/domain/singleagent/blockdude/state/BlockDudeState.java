@@ -1,11 +1,11 @@
 package burlap.domain.singleagent.blockdude.state;
 
-import burlap.oomdp.core.oo.state.MutableOOState;
-import burlap.oomdp.core.oo.state.OOStateUtilities;
-import burlap.oomdp.core.oo.state.OOVariableKey;
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.OOStateUtilities;
+import burlap.mdp.core.oo.state.OOVariableKey;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
 
 import java.util.ArrayList;
 import java.util.Arrays;

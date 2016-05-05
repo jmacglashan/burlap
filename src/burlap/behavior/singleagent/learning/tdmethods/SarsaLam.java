@@ -8,19 +8,19 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
  * Tabular SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. The implementation can either be used for learning or planning,
- * the latter of which is performed by running many learning episodes in succession in a {@link burlap.oomdp.singleagent.environment.SimulatedEnvironment}.
- * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
+ * the latter of which is performed by running many learning episodes in succession in a {@link burlap.mdp.singleagent.environment.SimulatedEnvironment}.
+ * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}
  * method before calling {@link #planFromState(State)}. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
  * <p>

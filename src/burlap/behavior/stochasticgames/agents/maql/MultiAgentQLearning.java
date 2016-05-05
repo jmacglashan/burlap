@@ -6,7 +6,7 @@ import java.util.Map;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
@@ -18,13 +18,13 @@ import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgen
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent.HashBackedQSource;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyMaxWellfare;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.World;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.World;
 
 
 /**

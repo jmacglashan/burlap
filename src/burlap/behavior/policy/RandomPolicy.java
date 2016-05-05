@@ -1,11 +1,11 @@
 package burlap.behavior.policy;
 
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Random;
  * A uniform random policy for single agent domains. You may set the actions between which it randomly
  * selects by providing a domain (from which the domains primitive actions are copied into an internal list)
  * or from a list of Action objects (from which the action references are copied into an internal list).
- * You may also add additional actions with the {@link #addAction(burlap.oomdp.singleagent.Action)} method
+ * You may also add additional actions with the {@link #addAction(burlap.mdp.singleagent.Action)} method
  * or remove or clear the actions.
  * <p>
  * Upon action selection, all applicable grounded actions for the state are generated and an action is selected

@@ -13,15 +13,15 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.core.*;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * An implementation of the Sparse Sampling (SS) [1] planning algorithm. SS's computational complexity is independent of the state space size, which makes it appealing
@@ -51,11 +51,11 @@ import burlap.oomdp.singleagent.RewardFunction;
  * <p>
  * This class will work with {@link Option}s, but including options will necessarily *increase* the computational complexity, so they are not recommended.
  * <p>
- * This class requires a {@link burlap.oomdp.statehashing.HashableStateFactory}.
+ * This class requires a {@link burlap.mdp.statehashing.HashableStateFactory}.
  * <p>
  * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is,
- * all {@link burlap.oomdp.singleagent.Action} instances implement the {@link burlap.oomdp.singleagent.FullActionModel} interface.). To set this class to compute the exact finite horizon value function, use the
+ * all {@link burlap.mdp.singleagent.Action} instances implement the {@link burlap.mdp.singleagent.FullActionModel} interface.). To set this class to compute the exact finite horizon value function, use the
  * {@link #setComputeExactValueFunction(boolean)} method. Note that you cannot use {@link Option}s when using the fully Bellman update, because that would
  * required factored access to the probability of each length of each transition, which is not available from Options (it's aggregated into the transition function
  * itself). An exception will be thrown if {@link Option}s are used with the full Bellman transitions.
@@ -126,7 +126,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	 * Initializes. Note that you can have h and c set to values that ensure epsilon optimality by using the {@link #setHAndCByMDPError(double, double, int)} method, but in
 	 * general this will result in very large values that will be intractable. If you set c = -1, then the full transition dynamics will be used. You should
 	 * only use the full transition dynamics if the number of possible transitions from each state is small and if the domain Action object's
-	 * implements the {@link burlap.oomdp.singleagent.FullActionModel} interface.
+	 * implements the {@link burlap.mdp.singleagent.FullActionModel} interface.
 	 * @param domain the planning domain
 	 * @param rf the reward function
 	 * @param tf the terminal function

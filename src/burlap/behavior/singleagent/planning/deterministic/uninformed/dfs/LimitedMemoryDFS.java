@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

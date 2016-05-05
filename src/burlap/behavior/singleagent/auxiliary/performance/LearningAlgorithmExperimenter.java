@@ -4,16 +4,16 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentServer;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentServer;
 
 
 /**
- * This class is used to simplify the comparison of different learning algorithms. It takes as input a test {@link burlap.oomdp.singleagent.environment.Environment}
+ * This class is used to simplify the comparison of different learning algorithms. It takes as input a test {@link burlap.mdp.singleagent.environment.Environment}
  * in which to perform the experiments,
  * a number of trials, the length of the trials, and an array of learning agent factories used to generated agent instances and compare their performance.
- * The {@link burlap.oomdp.singleagent.environment.Environment} may optionally implement the {@link burlap.behavior.singleagent.auxiliary.performance.ExperimentalEnvironment}
- * interface which will let this class to tell the {@link burlap.oomdp.singleagent.environment.Environment} whenever experiments with a new agent class (defined by
+ * The {@link burlap.mdp.singleagent.environment.Environment} may optionally implement the {@link burlap.behavior.singleagent.auxiliary.performance.ExperimentalEnvironment}
+ * interface which will let this class to tell the {@link burlap.mdp.singleagent.environment.Environment} whenever experiments with a new agent class (defined by
  * an {@link burlap.behavior.singleagent.learning.LearningAgentFactory} is begun).
  * The length of the trials by default is assumed to be in episodes, but it may also be changed to indicate length in total number of steps using the 
  * {@link #toggleTrialLengthInterpretation(boolean)} method.
@@ -37,13 +37,13 @@ public class LearningAlgorithmExperimenter {
 
 
 	/**
-	 * The test {@link burlap.oomdp.singleagent.environment.Environment} in which experiments will be performed.
+	 * The test {@link burlap.mdp.singleagent.environment.Environment} in which experiments will be performed.
 	 */
 	protected Environment 		testEnvironment;
 
 
 	/**
-	 * The {@link burlap.oomdp.singleagent.environment.EnvironmentServer} that wraps the test {@link burlap.oomdp.singleagent.environment.Environment}
+	 * The {@link burlap.mdp.singleagent.environment.EnvironmentServer} that wraps the test {@link burlap.mdp.singleagent.environment.Environment}
 	 * and tells a {@link burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter} about the individual interactions.
 	 */
 	protected EnvironmentServer environmentSever;
@@ -116,7 +116,7 @@ public class LearningAlgorithmExperimenter {
 	 * Initializes.
 	 * The trialLength will be interpreted as the number of episodes, but it can be reinterpreted as a total number of steps per trial using the
 	 * {@link #toggleTrialLengthInterpretation(boolean)}.
-	 * @param testEnvironment the test {@link burlap.oomdp.singleagent.environment.Environment} in which experiments will be performed.
+	 * @param testEnvironment the test {@link burlap.mdp.singleagent.environment.Environment} in which experiments will be performed.
 	 * @param nTrials the number of trials
 	 * @param trialLength the length of the trials (by default in episodes, but can be intereted as maximum step length)
 	 * @param agentFactories factories to generate the agents to be tested.

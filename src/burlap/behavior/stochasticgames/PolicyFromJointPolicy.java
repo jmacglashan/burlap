@@ -6,10 +6,10 @@ import java.util.Map;
 
 import burlap.behavior.policy.Policy;
 import burlap.datastructures.HashedAggregator;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
 
 
 /**

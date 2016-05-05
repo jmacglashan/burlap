@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learning.modellearning;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.State;
 
 
 /**

@@ -3,15 +3,15 @@ package burlap.behavior.singleagent.learning.lspi;
 import java.util.List;
 
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.auxiliary.StateGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
@@ -56,10 +56,10 @@ public abstract class SARSCollector {
 	public abstract SARSData collectDataFrom(State s, RewardFunction rf, int maxSteps, TerminalFunction tf, SARSData intoDataset);
 
 	/**
-	 * Collects data from an {@link burlap.oomdp.singleagent.environment.Environment}'s current state until either the maximum
+	 * Collects data from an {@link burlap.mdp.singleagent.environment.Environment}'s current state until either the maximum
 	 * number of steps is taken or a terminal state is reached.
 	 * Data is stored into the dataset intoDataset and returned. If intoDataset is null, then it is first created.
-	 * @param env the {@link burlap.oomdp.singleagent.environment.Environment} from which data will be collected.
+	 * @param env the {@link burlap.mdp.singleagent.environment.Environment} from which data will be collected.
 	 * @param maxSteps the maximum number of steps to take in the environment.
 	 * @param intoDataset the dataset into which data will be stored. If null, a dataset is created.
 	 * @return the resulting dataset with the newly collected data.
@@ -97,13 +97,13 @@ public abstract class SARSCollector {
 
 
 	/**
-	 * Collects nSamples of SARS tuples from an {@link burlap.oomdp.singleagent.environment.Environment} and returns it in a {@link burlap.behavior.singleagent.learning.lspi.SARSData} object.
-	 * Each sequence of samples is no longer than maxEpisodeSteps and samples are collected using this object's {@link #collectDataFrom(burlap.oomdp.singleagent.environment.Environment, int, SARSData)}
-	 * method. After each call to {@link #collectDataFrom(burlap.oomdp.singleagent.environment.Environment, int, SARSData)}, the provided {@link burlap.oomdp.singleagent.environment.Environment}
-	 * is sent the {@link burlap.oomdp.singleagent.environment.Environment#resetEnvironment()} message.
-	 * @param env The {@link burlap.oomdp.singleagent.environment.Environment} from which samples should be collected.
+	 * Collects nSamples of SARS tuples from an {@link burlap.mdp.singleagent.environment.Environment} and returns it in a {@link burlap.behavior.singleagent.learning.lspi.SARSData} object.
+	 * Each sequence of samples is no longer than maxEpisodeSteps and samples are collected using this object's {@link #collectDataFrom(burlap.mdp.singleagent.environment.Environment, int, SARSData)}
+	 * method. After each call to {@link #collectDataFrom(burlap.mdp.singleagent.environment.Environment, int, SARSData)}, the provided {@link burlap.mdp.singleagent.environment.Environment}
+	 * is sent the {@link burlap.mdp.singleagent.environment.Environment#resetEnvironment()} message.
+	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} from which samples should be collected.
 	 * @param nSamples The number of samples to generate.
-	 * @param maxEpisodeSteps the maximum number of steps to take from any initial state of the {@link burlap.oomdp.singleagent.environment.Environment}.
+	 * @param maxEpisodeSteps the maximum number of steps to take from any initial state of the {@link burlap.mdp.singleagent.environment.Environment}.
 	 * @param intoDataset the dataset into which the results will be collected. If null, a new dataset is created.
 	 * @return the intoDataset object, which is created if it is input as null.
 	 */

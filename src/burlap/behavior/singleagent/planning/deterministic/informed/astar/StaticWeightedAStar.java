@@ -1,13 +1,13 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.Domain;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * Statically weighted A* [1] implementation. Epsilon is a parameter &gt; 1. The larger the value the more greedy the search. The returned solution

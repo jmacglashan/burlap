@@ -7,9 +7,9 @@ import javax.management.RuntimeErrorException;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

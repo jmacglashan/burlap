@@ -1,10 +1,10 @@
 package burlap.behavior.stochasticgames.agents.naiveq;
 
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.auxiliary.StateAbstraction;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.auxiliary.StateAbstraction;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.SGDomain;
 
 
 /**

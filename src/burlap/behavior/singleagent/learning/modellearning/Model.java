@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Random;
 
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 /**
  * This abstract class is used by model learning algorithms to learn the transition dynamics, reward function, and terminal function, of the world through experience.
@@ -96,8 +96,8 @@ public abstract class Model {
 
 
 	/**
-	 * Updates this model with respect to the observed {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome}.
-	 * @param eo The {@link burlap.oomdp.singleagent.environment.EnvironmentOutcome} specifying the observed interaction with an {@link burlap.oomdp.singleagent.environment.Environment}.
+	 * Updates this model with respect to the observed {@link burlap.mdp.singleagent.environment.EnvironmentOutcome}.
+	 * @param eo The {@link burlap.mdp.singleagent.environment.EnvironmentOutcome} specifying the observed interaction with an {@link burlap.mdp.singleagent.environment.Environment}.
 	 */
 	public void updateModel(EnvironmentOutcome eo){
 		this.updateModel(eo.o, eo.a, eo.op, eo.r, eo.terminated);

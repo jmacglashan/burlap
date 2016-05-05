@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for printing the last joint rewards delivered by a {@link burlap.oomdp.stochasticgames.World}.
+ * A {@link burlap.shell.command.ShellCommand} for printing the last joint rewards delivered by a {@link burlap.mdp.stochasticgames.World}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

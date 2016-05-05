@@ -7,15 +7,15 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.*;
 

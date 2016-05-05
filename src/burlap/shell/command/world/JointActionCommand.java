@@ -1,9 +1,9 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for manually setting and executing a {@link burlap.oomdp.stochasticgames.JointAction}
- * for the shell's {@link burlap.oomdp.stochasticgames.World}. Use the -h option for help information.
+ * A {@link burlap.shell.command.ShellCommand} for manually setting and executing a {@link burlap.mdp.stochasticgames.JointAction}
+ * for the shell's {@link burlap.mdp.stochasticgames.World}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class JointActionCommand implements ShellCommand{
@@ -111,9 +111,9 @@ public class JointActionCommand implements ShellCommand{
 	}
 
 	/**
-	 * Adds a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} to the {@link burlap.oomdp.stochasticgames.JointAction}
+	 * Adds a {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} to the {@link burlap.mdp.stochasticgames.JointAction}
 	 * being built and to be executed.
-	 * @param action the {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} to add to the {@link burlap.oomdp.stochasticgames.JointAction}.
+	 * @param action the {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} to add to the {@link burlap.mdp.stochasticgames.JointAction}.
 	 */
 	public void addGroundedActionToJoint(GroundedSGAgentAction action){
 		this.ja.addAction(action);

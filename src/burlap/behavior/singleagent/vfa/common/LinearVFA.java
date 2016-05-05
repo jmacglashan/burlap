@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.vfa.common;
 
 import burlap.behavior.singleagent.vfa.*;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.Arrays;
 import java.util.HashMap;

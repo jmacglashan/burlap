@@ -2,9 +2,9 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.DifferentiableVI;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.TerminalFunction;
 
 /**
  * A factory for generating {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} objects.
@@ -32,7 +32,7 @@ public interface QGradientPlannerFactory {
 	public static class DifferentiableVIFactory implements QGradientPlannerFactory{
 
 		/**
-		 * The {@link burlap.oomdp.statehashing.HashableStateFactory} used by the valueFunction.
+		 * The {@link burlap.mdp.statehashing.HashableStateFactory} used by the valueFunction.
 		 */
 		protected HashableStateFactory hashingFactory;
 
@@ -48,16 +48,16 @@ public interface QGradientPlannerFactory {
 
 
 		/**
-		 * The terminal function that the valueFunction uses. Default is a a {@link burlap.oomdp.auxiliary.common.NullTermination}.
+		 * The terminal function that the valueFunction uses. Default is a a {@link burlap.mdp.auxiliary.common.NullTermination}.
 		 */
 		protected TerminalFunction tf = new NullTermination();
 
 
 		/**
-		 * Initializes the factory with the given {@link burlap.oomdp.statehashing.HashableStateFactory}.
-		 * The terminal function will be defaulted to a {@link burlap.oomdp.auxiliary.common.NullTermination};
+		 * Initializes the factory with the given {@link burlap.mdp.statehashing.HashableStateFactory}.
+		 * The terminal function will be defaulted to a {@link burlap.mdp.auxiliary.common.NullTermination};
 		 * value function change threshold to 0.01; and the max VI iterations to 500.
-		 * @param hashingFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} to use for planning.
+		 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for planning.
 		 */
 		public DifferentiableVIFactory(HashableStateFactory hashingFactory){
 			this.hashingFactory = hashingFactory;
@@ -66,7 +66,7 @@ public interface QGradientPlannerFactory {
 
 		/**
 		 * Initializes.
-		 * @param hashingFactory the {@link burlap.oomdp.statehashing.HashableStateFactory} to use for planning.
+		 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for planning.
 		 * @param tf The terminal function that the generated planners use.
 		 * @param maxDelta The value function change threshold to stop VI.
 		 * @param maxIterations The maximum allowed number of VI iterations

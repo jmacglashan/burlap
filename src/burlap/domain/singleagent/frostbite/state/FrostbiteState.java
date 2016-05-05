@@ -1,15 +1,15 @@
 package burlap.domain.singleagent.frostbite.state;
 
-import burlap.oomdp.core.oo.state.MutableOOState;
-import burlap.oomdp.core.oo.state.OOStateUtilities;
-import burlap.oomdp.core.oo.state.OOVariableKey;
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.core.oo.state.exceptions.UnknownClassException;
-import burlap.oomdp.core.oo.state.exceptions.UnknownObjectException;
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.state.UnknownKeyException;
-import burlap.oomdp.core.state.annotations.ShallowCopyState;
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.OOStateUtilities;
+import burlap.mdp.core.oo.state.OOVariableKey;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.oo.state.exceptions.UnknownClassException;
+import burlap.mdp.core.oo.state.exceptions.UnknownObjectException;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.UnknownKeyException;
+import burlap.mdp.core.state.annotations.ShallowCopyState;
 
 import java.util.ArrayList;
 import java.util.Arrays;

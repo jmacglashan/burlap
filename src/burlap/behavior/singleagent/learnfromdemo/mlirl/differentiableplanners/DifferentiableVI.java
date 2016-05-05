@@ -5,12 +5,12 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
 
 import java.util.*;
 

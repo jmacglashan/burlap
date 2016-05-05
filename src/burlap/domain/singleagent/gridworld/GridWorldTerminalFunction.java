@@ -1,8 +1,8 @@
 package burlap.domain.singleagent.gridworld;
 
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
 
 import java.util.HashSet;
 import java.util.Set;

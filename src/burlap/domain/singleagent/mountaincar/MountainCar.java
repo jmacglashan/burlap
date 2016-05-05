@@ -1,23 +1,23 @@
 package burlap.domain.singleagent.mountaincar;
 
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.common.SimpleAction;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.visualizer.Visualizer;
 
 
 /**
  * A domain generator for the classic mountain car domain with default dynamics follow those implemented by Singh and Sutton [1].
  * In this domain you can change the parameters for min/max position and velocity, the scale of the cosine curve on which the car travels,
  * the force of gravity, acceleration, and the amount of time that elapses between simulation/decision steps. If you
- * previously generated a {@link burlap.oomdp.core.Domain}, changing the physics parameters of this {@link burlap.oomdp.auxiliary.DomainGenerator} will
+ * previously generated a {@link burlap.mdp.core.Domain}, changing the physics parameters of this {@link burlap.mdp.auxiliary.DomainGenerator} will
  * not affect how the previously generated domain behaves, only future generated ones.
  * 
  * <p>

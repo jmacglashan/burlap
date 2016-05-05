@@ -4,8 +4,8 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,8 +23,8 @@ import java.util.Map;
  * Note that when the gradient is a vector of size |A||f|, since the feature vector is replicated for each action, and the gradient
  * for all entries associated with an action other than the one taken in the (s, a, s') query will have a gradient value of zero.
  * <p>
- * The set of possible grounded actions must be defined either in the {@link #LinearStateActionDifferentiableRF(burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator, int, burlap.oomdp.singleagent.GroundedAction...)}
- * constructor, or added iteratively with the {@link #addAction(burlap.oomdp.singleagent.GroundedAction)} method.
+ * The set of possible grounded actions must be defined either in the {@link #LinearStateActionDifferentiableRF(burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator, int, burlap.mdp.singleagent.GroundedAction...)}
+ * constructor, or added iteratively with the {@link #addAction(burlap.mdp.singleagent.GroundedAction)} method.
  * @author James MacGlashan.
  */
 public class LinearStateActionDifferentiableRF implements DifferentiableRF {
@@ -63,7 +63,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 
 	/**
 	 * Initializes. If not all possible grounded actions are provided, they can be defined/added later with the
-	 * {@link #addAction(burlap.oomdp.singleagent.GroundedAction)} method.
+	 * {@link #addAction(burlap.mdp.singleagent.GroundedAction)} method.
 	 * @param stateFeatures the state feature vector generator
 	 * @param numStateFeatures the dimensionality of the state feature vector
 	 * @param allPossibleActions the set of possible grounded actions.

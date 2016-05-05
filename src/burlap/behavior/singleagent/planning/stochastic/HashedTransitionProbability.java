@@ -1,12 +1,12 @@
 package burlap.behavior.singleagent.planning.stochastic;
 
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TransitionProbability;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TransitionProbability;
 
 /**
- * An analog to the {@link burlap.oomdp.core.TransitionProbability}, except it stores {@link burlap.oomdp.statehashing.HashableState} objects
+ * An analog to the {@link burlap.mdp.core.TransitionProbability}, except it stores {@link burlap.mdp.statehashing.HashableState} objects
  * instead of {@link State} objects.
  * @author James MacGlashan
  *
@@ -18,7 +18,7 @@ public class HashedTransitionProbability {
 	
 	
 	/**
-	 * Initializes with a {@link burlap.oomdp.statehashing.HashableState} and probability for the transition
+	 * Initializes with a {@link burlap.mdp.statehashing.HashableState} and probability for the transition
 	 * @param sh the hashed state that the agent transitions to
 	 * @param p the probability of the transition
 	 */
@@ -41,8 +41,8 @@ public class HashedTransitionProbability {
 	
 	
 	/**
-	 * Takes a {@link burlap.oomdp.core.TransitionProbability} and hashes its state using the hashingFactory object
-	 * @param tp the {@link burlap.oomdp.core.TransitionProbability} to hash
+	 * Takes a {@link burlap.mdp.core.TransitionProbability} and hashes its state using the hashingFactory object
+	 * @param tp the {@link burlap.mdp.core.TransitionProbability} to hash
 	 * @param hashingFactory the hashing factory to use.
 	 */
 	public HashedTransitionProbability(TransitionProbability tp, HashableStateFactory hashingFactory){

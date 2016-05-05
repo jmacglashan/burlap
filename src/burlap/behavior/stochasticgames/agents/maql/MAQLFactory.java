@@ -3,16 +3,16 @@ package burlap.behavior.stochasticgames.agents.maql;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.CoCoQ;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MaxQ;
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyMaxWellfare;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.SGDomain;
 
 
 /**
@@ -35,7 +35,7 @@ public class MAQLFactory implements AgentFactory {
 	
 	
 	/**
-	 * Empty constructor. All parameters will need to be set with the {@link #init(SGDomain, double, LearningRate, burlap.oomdp.statehashing.HashableStateFactory, ValueFunctionInitialization, SGBackupOperator, boolean, PolicyFromJointPolicy)} function
+	 * Empty constructor. All parameters will need to be set with the {@link #init(SGDomain, double, LearningRate, burlap.mdp.statehashing.HashableStateFactory, ValueFunctionInitialization, SGBackupOperator, boolean, PolicyFromJointPolicy)} function
 	 * after construction.
 	 */
 	public MAQLFactory(){

@@ -3,10 +3,10 @@ package burlap.behavior.singleagent.planning.stochastic;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**
@@ -23,7 +23,7 @@ public class ActionTransitions {
 	
 	
 	/**
-	 * Constructs the the ActionTransitions from the {@link burlap.oomdp.singleagent.GroundedAction} that generated the transitions and the 
+	 * Constructs the the ActionTransitions from the {@link burlap.mdp.singleagent.GroundedAction} that generated the transitions and the
 	 * set of transition probabilities.
 	 * @param ga the GroundedAction that generated the possible transitions
 	 * @param transitions the transition probabilities
@@ -48,9 +48,9 @@ public class ActionTransitions {
 	
 	
 	/**
-	 * Returns whether these action transitions are for the specified {@link burlap.oomdp.singleagent.GroundedAction}
-	 * @param oga the {@link burlap.oomdp.singleagent.GroundedAction} to check against
-	 * @return true if this object's transition probabilities were generated with {@link burlap.oomdp.singleagent.GroundedAction} oga; false otherwise.
+	 * Returns whether these action transitions are for the specified {@link burlap.mdp.singleagent.GroundedAction}
+	 * @param oga the {@link burlap.mdp.singleagent.GroundedAction} to check against
+	 * @return true if this object's transition probabilities were generated with {@link burlap.mdp.singleagent.GroundedAction} oga; false otherwise.
 	 */
 	public boolean matchingTransitions(GroundedAction oga){
 		return ga.equals(oga);

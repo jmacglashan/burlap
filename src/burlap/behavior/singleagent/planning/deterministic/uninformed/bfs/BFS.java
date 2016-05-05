@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Set;
 
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.common.UniformCostRF;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.common.UniformCostRF;
 
 /**
  * Implements Breadth-first search.

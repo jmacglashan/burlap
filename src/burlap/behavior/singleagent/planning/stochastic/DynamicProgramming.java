@@ -8,17 +8,17 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -31,7 +31,7 @@ import java.util.*;
  * <p>
  * Note that by default {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} instances
  * will cache the transition dynamics so that they do not have to be procedurally generated
- * by the {@link burlap.oomdp.singleagent.Action}. Transition dynamic caching can be disable by calling the {@link #toggleUseCachedTransitionDynamics(boolean)}
+ * by the {@link burlap.mdp.singleagent.Action}. Transition dynamic caching can be disable by calling the {@link #toggleUseCachedTransitionDynamics(boolean)}
  * method. This may be desirable if the transition dynamics are expected to change with time, such as when the model is being learned in model-based RL.
  * @author James MacGlashan
  *
@@ -71,7 +71,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	/**
 	 * Common init method for {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} instances. This will automatically call the
-	 * {@link burlap.behavior.singleagent.MDPSolver#solverInit(burlap.oomdp.core.Domain, burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, double, burlap.oomdp.statehashing.HashableStateFactory)}
+	 * {@link burlap.behavior.singleagent.MDPSolver#solverInit(burlap.mdp.core.Domain, burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, double, burlap.mdp.statehashing.HashableStateFactory)}
 	 * method.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
@@ -156,10 +156,10 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	/**
 	 * Sets whether this object should cache hashed transition dynamics for each for faster look up, or whether
-	 * to procedurally generate the transition dynamics as needed from the {@link burlap.oomdp.singleagent.Action} objects.
+	 * to procedurally generate the transition dynamics as needed from the {@link burlap.mdp.singleagent.Action} objects.
 	 * Letting the transition dynamics be procedurally generated may be useful if the transition dynamics can change over the time
 	 * such as when using a learned model.
-	 * @param useCachedTransitions true if the transition dynamics should be cached and stored; false if they should always be procedurally generated from the {@link burlap.oomdp.singleagent.Action} objects.
+	 * @param useCachedTransitions true if the transition dynamics should be cached and stored; false if they should always be procedurally generated from the {@link burlap.mdp.singleagent.Action} objects.
 	 */
 	public void toggleUseCachedTransitionDynamics(boolean useCachedTransitions){
 		this.useCachedTransitions = useCachedTransitions;

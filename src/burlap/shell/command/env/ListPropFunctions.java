@@ -1,12 +1,12 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.GroundedProp;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.GroundedProp;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;

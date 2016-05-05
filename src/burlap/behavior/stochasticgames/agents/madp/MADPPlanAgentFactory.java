@@ -2,9 +2,9 @@ package burlap.behavior.stochasticgames.agents.madp;
 
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.SGDomain;
 
 
 /**

@@ -11,18 +11,18 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.domain.singleagent.pomdp.tiger.TigerDomain;
 import burlap.domain.singleagent.pomdp.tiger.TigerState;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;
-import burlap.oomdp.singleagent.pomdp.PODomain;
-import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
-import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
-import burlap.oomdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
-import burlap.oomdp.statehashing.HashableStateFactory;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.pomdp.BeliefMDPGenerator;
+import burlap.mdp.singleagent.pomdp.PODomain;
+import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
+import burlap.mdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 	 * @param domain the POMDP domain
 	 * @param rf the POMDP reward function
 	 * @param discount the discount factor
-	 * @param hashingFactory the Belief MDP {@link burlap.oomdp.statehashing.HashableStateFactory} that {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} will use.
+	 * @param hashingFactory the Belief MDP {@link burlap.mdp.statehashing.HashableStateFactory} that {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} will use.
 	 * @param h the height of the {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} tree.
 	 * @param c the number of samples {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} will use. Set to -1 to use the full BeliefMDP transition dynamics.
 	 */

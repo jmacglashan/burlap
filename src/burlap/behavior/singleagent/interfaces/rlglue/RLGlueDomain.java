@@ -1,16 +1,16 @@
 package burlap.behavior.singleagent.interfaces.rlglue;
 
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.common.SimpleAction;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.SimpleAction;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpec;
 import org.rlcommunity.rlglue.codec.types.Observation;
 
 /**
- * A class for generating a BURLAP {@link burlap.oomdp.core.Domain} for an RLGlue {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec}.
+ * A class for generating a BURLAP {@link burlap.mdp.core.Domain} for an RLGlue {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec}.
  * This class also provides a state generator for RLGLue {@link Observation} objects, using the {@link RLGlueState},
  * which wraps the observation and provides the relevant key values for it so normal BURLAP code and interact with it.
  * <p>
@@ -22,7 +22,7 @@ public class RLGlueDomain implements DomainGenerator {
 
 
 	/**
-	 * The {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec} used to generate the BURLAP {@link burlap.oomdp.core.Domain}
+	 * The {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec} used to generate the BURLAP {@link burlap.mdp.core.Domain}
 	 */
 	protected TaskSpec theTaskSpec;
 
@@ -67,7 +67,7 @@ public class RLGlueDomain implements DomainGenerator {
 
 
 	/**
-	 * A BURLAP {@link burlap.oomdp.singleagent.Action} that corresponds to an RLGlue action that is defined by a single int value.
+	 * A BURLAP {@link burlap.mdp.singleagent.Action} that corresponds to an RLGlue action that is defined by a single int value.
 	 */
 	public static class RLGlueActionSpecification extends SimpleAction{
 

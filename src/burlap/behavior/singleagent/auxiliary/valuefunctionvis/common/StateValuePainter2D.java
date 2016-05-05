@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StateValuePainter;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.state.range.VariableRange;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.range.VariableRange;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

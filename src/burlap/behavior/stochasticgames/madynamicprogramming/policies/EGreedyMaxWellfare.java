@@ -12,9 +12,9 @@ import burlap.behavior.stochasticgames.madynamicprogramming.MAQSourcePolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.MultiAgentQSourceProvider;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.JointAction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
 
 
 /**

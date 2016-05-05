@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.planning.deterministic.informed;
 import java.util.Comparator;
 
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

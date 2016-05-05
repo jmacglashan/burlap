@@ -1,6 +1,6 @@
 package burlap.behavior.valuefunction;
 
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.State;
 
 /**
  * An interface for algorithms that can return the value for states.

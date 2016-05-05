@@ -1,7 +1,7 @@
 package burlap.behavior.stochasticgames.agents.naiveq.history;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.JointAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,14 +1,14 @@
 package burlap.behavior.policy;
 
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.pomdp.BeliefMDPGenerator;
 
 import java.util.List;
 
 /**
- * This policy takes as input a policy for a belief MDP generated with {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator}
+ * This policy takes as input a policy for a belief MDP generated with {@link burlap.mdp.singleagent.pomdp.BeliefMDPGenerator}
  * and when queried for an action, first queries the belief MDP policy and then translates its actions to the corresponding
  * POMDP actions that can be executed in a POMDP domain.
  * <p>
@@ -56,8 +56,8 @@ public class BeliefPolicyToPOMDPPolicy extends Policy{
 
 	/**
 	 * Unpacks and returns the pomdp action from an input {@link AbstractGroundedAction} that is an instance of
-	 * {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.GroundedBeliefAction}.
-	 * @param beliefAction the input {@link burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator.GroundedBeliefAction}.
+	 * {@link burlap.mdp.singleagent.pomdp.BeliefMDPGenerator.GroundedBeliefAction}.
+	 * @param beliefAction the input {@link burlap.mdp.singleagent.pomdp.BeliefMDPGenerator.GroundedBeliefAction}.
 	 * @return the input belief action's corresponding POMDP action.
 	 */
 	protected GroundedAction unpackPOMDPAction(AbstractGroundedAction beliefAction){

@@ -6,13 +6,13 @@ import java.util.Random;
 
 import burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriumplayer.equilibriumsolvers.MaxMax;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointActionModel;
-import burlap.oomdp.stochasticgames.JointReward;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.JointActionModel;
+import burlap.mdp.stochasticgames.JointReward;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**
@@ -85,7 +85,7 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	 * action set is determined by retreiving the corresponding agent object from the world. Similarly for the joint action model.
 	 * If this agent has an internal reward function, they use that; otherwise the world reward function is used.
 	 * @param s the state from which the joint rewards are based
-	 * @param myActions the set of {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction}s the agent can taken in s.
+	 * @param myActions the set of {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction}s the agent can taken in s.
 	 * @return a {@link BimatrixTuple} for the joint reward function.
 	 */
 	protected BimatrixTuple constructBimatrix(State s, List<GroundedSGAgentAction> myActions){
@@ -139,8 +139,8 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	
 	
 	/**
-	 * Returns the {@link burlap.oomdp.stochasticgames.SGAgent} object in the world for the opponent.
-	 * @return the {@link burlap.oomdp.stochasticgames.SGAgent} object in the world for the opponent.
+	 * Returns the {@link burlap.mdp.stochasticgames.SGAgent} object in the world for the opponent.
+	 * @return the {@link burlap.mdp.stochasticgames.SGAgent} object in the world for the opponent.
 	 */
 	protected SGAgent getOpponent(){
 		List<SGAgent> agents = this.world.getRegisteredAgents();

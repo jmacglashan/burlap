@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.valuefunction.QValue;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

@@ -1,12 +1,12 @@
 package burlap.domain.singleagent.frostbite;
 
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.OOStatePainter;
-import burlap.oomdp.visualizer.ObjectPainter;
-import burlap.oomdp.visualizer.StatePainter;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.State;
+import burlap.mdp.visualizer.OOStatePainter;
+import burlap.mdp.visualizer.ObjectPainter;
+import burlap.mdp.visualizer.StatePainter;
+import burlap.mdp.visualizer.Visualizer;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

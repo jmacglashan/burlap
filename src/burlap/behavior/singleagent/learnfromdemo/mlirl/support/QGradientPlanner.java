@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.valuefunction.QFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.List;
 

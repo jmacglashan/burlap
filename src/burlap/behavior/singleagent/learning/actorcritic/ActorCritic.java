@@ -7,15 +7,15 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.MDPSolver;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
-import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 
 
 /**
@@ -27,7 +27,7 @@ import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
  * update is behavior accordingly.
  * <p>
  * In addition to learning, this algorithm can also be used for planning using the {@link #planFromState(State)}
- * method. If you plan to use it for planning, you should call the {@link #initializeForPlanning(burlap.oomdp.singleagent.RewardFunction, burlap.oomdp.core.TerminalFunction, int)}
+ * method. If you plan to use it for planning, you should call the {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}
  * method before calling the {@link #planFromState(State)}.
  * 
  * @author James MacGlashan
@@ -106,10 +106,10 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	}
 
 	/**
-	 * Sets the {@link burlap.oomdp.singleagent.RewardFunction}, {@link burlap.oomdp.core.TerminalFunction},
+	 * Sets the {@link burlap.mdp.singleagent.RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
 	 * and the number of simulated episodes to use for planning when
 	 * the {@link #planFromState(State)} method is called. If the
-	 * {@link burlap.oomdp.singleagent.RewardFunction} and {@link burlap.oomdp.core.TerminalFunction}
+	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
 	 * @param rf the reward function to use for planning
 	 * @param tf the terminal function to use for planning

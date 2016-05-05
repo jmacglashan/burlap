@@ -9,9 +9,9 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner.PlanningFailedException;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 

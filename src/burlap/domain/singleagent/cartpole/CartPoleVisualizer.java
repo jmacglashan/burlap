@@ -2,10 +2,10 @@ package burlap.domain.singleagent.cartpole;
 
 import burlap.domain.singleagent.cartpole.states.CartPoleState;
 import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.StatePainter;
-import burlap.oomdp.visualizer.StateRenderLayer;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.core.state.State;
+import burlap.mdp.visualizer.StatePainter;
+import burlap.mdp.visualizer.StateRenderLayer;
+import burlap.mdp.visualizer.Visualizer;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

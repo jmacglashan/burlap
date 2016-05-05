@@ -2,15 +2,15 @@ package burlap.behavior.stochasticgames.auxiliary;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.datastructures.AlphanumericSorting;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.NullState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.GroundedProp;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.NullState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.GroundedProp;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.visualizer.Visualizer;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

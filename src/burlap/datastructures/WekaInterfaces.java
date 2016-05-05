@@ -1,7 +1,7 @@
 package burlap.datastructures;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.State;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.FastVector;

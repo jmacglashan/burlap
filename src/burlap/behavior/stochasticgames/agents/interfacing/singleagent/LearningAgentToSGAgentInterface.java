@@ -2,27 +2,27 @@ package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
-import burlap.oomdp.stochasticgames.*;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.stochasticgames.*;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 
 import java.util.Map;
 
 /**
- * A stochastic games {@link burlap.oomdp.stochasticgames.SGAgent} that takes as input a single agent {@link burlap.behavior.singleagent.learning.LearningAgent}
+ * A stochastic games {@link burlap.mdp.stochasticgames.SGAgent} that takes as input a single agent {@link burlap.behavior.singleagent.learning.LearningAgent}
  * to handle behavior. The interface from the single agent paradigm to the multi-agent paradigm is handled by this class
- * also implementing the {@link burlap.oomdp.singleagent.environment.Environment} interface. When a game starts, a new
+ * also implementing the {@link burlap.mdp.singleagent.environment.Environment} interface. When a game starts, a new
  * thread is launched in which the provided {@link burlap.behavior.singleagent.learning.LearningAgent} interacts with this
- * class's {@link burlap.oomdp.singleagent.environment.Environment} methods.
+ * class's {@link burlap.mdp.singleagent.environment.Environment} methods.
  * <p>
  * When constructing a {@link burlap.behavior.singleagent.learning.LearningAgent} to use with this class, you should
- * set its {@link burlap.oomdp.core.Domain} to null. Then, when this class joins a world through the {@link #joinWorld(burlap.oomdp.stochasticgames.World, burlap.oomdp.stochasticgames.SGAgentType)}
- * method, it will automatically use the {@link burlap.behavior.stochasticgames.agents.interfacing.singleagent.SGToSADomain} to create a {@link burlap.oomdp.singleagent.SADomain}
+ * set its {@link burlap.mdp.core.Domain} to null. Then, when this class joins a world through the {@link #joinWorld(burlap.mdp.stochasticgames.World, burlap.mdp.stochasticgames.SGAgentType)}
+ * method, it will automatically use the {@link burlap.behavior.stochasticgames.agents.interfacing.singleagent.SGToSADomain} to create a {@link burlap.mdp.singleagent.SADomain}
  * and will then set then {@link burlap.behavior.singleagent.learning.LearningAgent} to use it.
  * @author James MacGlashan.
  */
@@ -71,8 +71,8 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 	/**
 	 * Initializes.
-	 * @param domain The stochastic games {@link burlap.oomdp.stochasticgames.SGDomain} in which this agent will interact.
-	 * @param learningAgent the {@link burlap.behavior.singleagent.learning.LearningAgent} that will handle this {@link burlap.oomdp.stochasticgames.SGAgent}'s control.
+	 * @param domain The stochastic games {@link burlap.mdp.stochasticgames.SGDomain} in which this agent will interact.
+	 * @param learningAgent the {@link burlap.behavior.singleagent.learning.LearningAgent} that will handle this {@link burlap.mdp.stochasticgames.SGAgent}'s control.
 	 */
 	public LearningAgentToSGAgentInterface(SGDomain domain, LearningAgent learningAgent){
 		this.init(domain);
@@ -216,7 +216,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 
 	/**
-	 *  A wrapper that maintains a reference to a {@link burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction} or null.
+	 *  A wrapper that maintains a reference to a {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} or null.
 	 */
 	protected static class ActionReference{
 		protected GroundedSGAgentAction val;

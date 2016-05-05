@@ -7,18 +7,18 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.auxiliary.StateAbstraction;
-import burlap.oomdp.auxiliary.common.NullAbstractionNoCopy;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.auxiliary.StateAbstraction;
+import burlap.mdp.auxiliary.common.NullAbstractionNoCopy;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -238,7 +238,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	
 	
 	/**
-	 * First abstracts state s, and then returns the {@link burlap.oomdp.statehashing.HashableState} object for the abstracted state.
+	 * First abstracts state s, and then returns the {@link burlap.mdp.statehashing.HashableState} object for the abstracted state.
 	 * @param s the state for which the state hash should be returned.
 	 * @return the hashed state.
 	 */

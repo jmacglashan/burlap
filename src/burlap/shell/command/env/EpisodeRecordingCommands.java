@@ -2,9 +2,9 @@ package burlap.shell.command.env;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.*;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.*;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Two {@link burlap.shell.command.ShellCommand}s, rec and episode, for recording and browsing episodes of behavior that take place in the {@link burlap.oomdp.singleagent.environment.Environment}.
+ * Two {@link burlap.shell.command.ShellCommand}s, rec and episode, for recording and browsing episodes of behavior that take place in the {@link burlap.mdp.singleagent.environment.Environment}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

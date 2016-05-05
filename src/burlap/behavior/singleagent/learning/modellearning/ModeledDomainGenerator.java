@@ -1,13 +1,13 @@
 package burlap.behavior.singleagent.learning.modellearning;
 
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
 
 import java.util.List;
 

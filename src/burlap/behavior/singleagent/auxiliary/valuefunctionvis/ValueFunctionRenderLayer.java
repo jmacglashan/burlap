@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.RenderLayer;
+import burlap.mdp.core.state.State;
+import burlap.mdp.visualizer.RenderLayer;
 
 
 /**

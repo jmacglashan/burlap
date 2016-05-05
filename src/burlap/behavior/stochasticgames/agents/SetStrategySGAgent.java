@@ -3,12 +3,12 @@ package burlap.behavior.stochasticgames.agents;
 import java.util.Map;
 
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
 
 /**
  * A class for an agent who makes decisions by following a specified strategy and does not respond to the other player's actions.

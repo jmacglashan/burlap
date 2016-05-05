@@ -7,18 +7,18 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.World;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.World;
 
 
 /**
  * An abstract Policy object for defining a stochastic games joint policy; that is, a policy over joint actions taken by all agents in the world.
  * The primary extension of this object is a set of agent definitions which define the set of possible joint actions in any state.
- * An agent definition consists of an agent name and their {@link burlap.oomdp.stochasticgames.SGAgentType}, the latter of which specifies the set of individual actions
+ * An agent definition consists of an agent name and their {@link burlap.mdp.stochasticgames.SGAgentType}, the latter of which specifies the set of individual actions
  * that they can take and which object class represents their state.
  * <p>
  * It is not uncommon for some joint policies to be defined from a privledged agent's position. This class also contains an abstract method
@@ -66,7 +66,7 @@ public abstract class JointPolicy extends Policy {
 	
 	
 	/**
-	 * Sets the agent definitions by querying the agent names and {@link burlap.oomdp.stochasticgames.SGAgentType} objects from a list of agents.
+	 * Sets the agent definitions by querying the agent names and {@link burlap.mdp.stochasticgames.SGAgentType} objects from a list of agents.
 	 * @param agents the set of agents that will be involved in a joint aciton.
 	 */
 	public void setAgentsInJointPolicy(List<SGAgent> agents){

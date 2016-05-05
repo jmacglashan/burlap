@@ -6,8 +6,8 @@ import burlap.behavior.singleagent.vfa.StateFeature;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.behavior.singleagent.vfa.common.LinearVFA;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.*;
 

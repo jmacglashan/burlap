@@ -2,10 +2,10 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.SGDomain;
 
 
 /**

@@ -1,11 +1,11 @@
 package burlap.domain.singleagent.lunarlander;
 
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * A reward function for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}. By default, this
@@ -40,7 +40,7 @@ public class LunarLanderRF implements RewardFunction{
 
 	/**
 	 * Initializes with default reward values (move through air = -1; collision = -100; land on pad = +1000)
-	 * @param domain a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} generated {@link burlap.oomdp.core.Domain}.
+	 * @param domain a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} generated {@link burlap.mdp.core.Domain}.
 	 */
 	public LunarLanderRF(OODomain domain){
 		this.onGround = domain.getPropFunction(LunarLanderDomain.PF_ON_GROUND);
@@ -53,7 +53,7 @@ public class LunarLanderRF implements RewardFunction{
 
 	/**
 	 * Initializes with custom reward condition values.
-	 * @param domain a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} generated {@link burlap.oomdp.core.Domain}.
+	 * @param domain a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} generated {@link burlap.mdp.core.Domain}.
 	 * @param goalReward the reward for landing on the landing pad.
 	 * @param collisionReward the reward for a collision.
 	 * @param defaultReward the default reward for all other states (i.e., moving through the air)

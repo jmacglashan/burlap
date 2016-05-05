@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.vfa.fourier;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
 
 
 /**

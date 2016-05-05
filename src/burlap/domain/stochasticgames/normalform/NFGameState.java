@@ -1,9 +1,9 @@
 package burlap.domain.stochasticgames.normalform;
 
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.SGStateGenerator;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.SGStateGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;

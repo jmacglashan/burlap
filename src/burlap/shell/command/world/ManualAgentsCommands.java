@@ -1,11 +1,11 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -17,7 +17,7 @@ import java.util.*;
 
 /**
  * A controller for a set of {@link burlap.shell.command.ShellCommand} objects. These commands including
- * registering manually controlled agents with a {@link burlap.oomdp.stochasticgames.World}
+ * registering manually controlled agents with a {@link burlap.mdp.stochasticgames.World}
  * that can play games in the world. Listing
  * the manual agents. Setting the action selections of manual agents, and listing the currently selected
  * actions of the manual agents. Use the -h option for help information.

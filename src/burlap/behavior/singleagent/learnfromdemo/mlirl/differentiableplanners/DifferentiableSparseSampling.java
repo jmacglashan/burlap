@@ -14,15 +14,15 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.*;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.*;
 

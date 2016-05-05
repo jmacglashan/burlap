@@ -1,6 +1,6 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.Environment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for checking if the {@link burlap.oomdp.singleagent.environment.Environment}
+ * A {@link burlap.shell.command.ShellCommand} for checking if the {@link burlap.mdp.singleagent.environment.Environment}
  * is in a terminal state. Use the -h option for help information.
  * @author James MacGlashan.
  */

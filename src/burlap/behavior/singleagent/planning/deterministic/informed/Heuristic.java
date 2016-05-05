@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic.informed;
 
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.State;
 
 /**
  * An interface for defining heuristics. The heuristic function should return an estimate of the amount of *reward* that will be accumulated from that given

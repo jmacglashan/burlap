@@ -2,14 +2,14 @@ package burlap.behavior.stochasticgames.agents.twoplayer.repeatedsinglestage;
 
 import java.util.Map;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.SGAgent;
-import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.oomdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
 
 
 /**

@@ -3,10 +3,10 @@ package burlap.behavior.learningrate;
 import java.util.HashMap;
 import java.util.Map;
 
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
 
 
 /**

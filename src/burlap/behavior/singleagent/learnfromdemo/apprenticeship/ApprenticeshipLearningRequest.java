@@ -7,8 +7,8 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnfromdemo.IRLRequest;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.core.Domain;
+import burlap.mdp.auxiliary.StateGenerator;
+import burlap.mdp.core.Domain;
 
 
 /**

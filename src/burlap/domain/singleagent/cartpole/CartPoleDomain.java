@@ -2,16 +2,16 @@ package burlap.domain.singleagent.cartpole;
 
 import burlap.domain.singleagent.cartpole.states.CartPoleFullState;
 import burlap.domain.singleagent.cartpole.states.CartPoleState;
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.common.SimpleAction;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.explorer.VisualExplorer;
 
 
 /**

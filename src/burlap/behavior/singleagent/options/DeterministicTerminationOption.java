@@ -10,11 +10,11 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.common.SimpleGroundedAction;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTestIterable;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.common.SimpleGroundedAction;
 
 
 /**
@@ -64,7 +64,7 @@ public class DeterministicTerminationOption extends Option {
 	
 	/**
 	 * Initializes the option by creating the policy uses some provided option. The valueFunction is called repeatedly on each state in the
-	 * initiation state set (which needs to be a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable}) and then
+	 * initiation state set (which needs to be a {@link burlap.mdp.auxiliary.stateconditiontest.StateConditionTestIterable}) and then
 	 * sets this options policy to the valueFunction derived policy that is provided.
 	 * @param name the name of the option
 	 * @param init the iterable initiation states

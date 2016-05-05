@@ -1,10 +1,10 @@
 package burlap.domain.singleagent.gridworld;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.visualizer.*;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.State;
+import burlap.mdp.visualizer.*;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;

@@ -1,10 +1,10 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;

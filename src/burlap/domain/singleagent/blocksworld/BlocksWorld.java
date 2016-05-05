@@ -1,19 +1,19 @@
 package burlap.domain.singleagent.blocksworld;
 
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.explorer.TerminalExplorer;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-import burlap.oomdp.singleagent.oo.OOSADomain;
-import burlap.oomdp.singleagent.oo.ObjectParameterizedAction;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.explorer.TerminalExplorer;
+import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.mdp.singleagent.oo.ObjectParameterizedAction;
 
 import java.awt.*;
 import java.util.List;
@@ -21,8 +21,8 @@ import java.util.List;
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
  * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning,
- * the {@link burlap.oomdp.statehashing.HashableStateFactory} should be object identifier dependent. For example, if using a
- * {@link burlap.oomdp.statehashing.SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
+ * the {@link burlap.mdp.statehashing.HashableStateFactory} should be object identifier dependent. For example, if using a
+ * {@link burlap.mdp.statehashing.SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
  * @author James MacGlashan
  *
  */

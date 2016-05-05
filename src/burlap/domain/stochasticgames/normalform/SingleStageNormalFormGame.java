@@ -1,16 +1,16 @@
 package burlap.domain.stochasticgames.normalform;
 
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.*;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.agentactions.SimpleSGAgentAction;
-import burlap.oomdp.stochasticgames.common.StaticRepeatedGameActionModel;
-import burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.*;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SimpleSGAgentAction;
+import burlap.mdp.stochasticgames.common.StaticRepeatedGameActionModel;
+import burlap.mdp.stochasticgames.explorers.SGTerminalExplorer;
 
 import java.util.*;
 
@@ -20,9 +20,9 @@ import java.util.*;
  * one attribute, its player number. A state consists simply of an object instance for each player. Different players maybe have different numbers of available
  * actions and the actions available to each player may have different names. The SingleAction's are created such that a player can only execute a single
  * action if that action is available to that player. Therefore, when agents joint a world for one of these games, their 
- * {@link burlap.oomdp.stochasticgames.SGAgentType} can be specified to have
+ * {@link burlap.mdp.stochasticgames.SGAgentType} can be specified to have
  * all of the possible actions, because they will only be able to execute the relevant ones. The method {@link #getAgentTypeForAllPlayers(SGDomain)} will return
- * such an {@link burlap.oomdp.stochasticgames.SGAgentType} class that can be used for all agents.
+ * such an {@link burlap.mdp.stochasticgames.SGAgentType} class that can be used for all agents.
  * <p>
  * In addition to this generator being able to return the domain object, it may also be used to return the corresponding joint reward function. The method
  * {@link #getRepatedGameActionModel()} will return a joint action mode that always returns to the same state, which can be used for repeated game playing.
@@ -31,7 +31,7 @@ import java.util.*;
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
  * <p>
  * This class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
- * in the constructed game. For this use either the {@link #createRepeatedGameWorld(burlap.oomdp.stochasticgames.SGAgent...)} or {@link #createRepeatedGameWorld(SGDomain, burlap.oomdp.stochasticgames.SGAgent...)}
+ * in the constructed game. For this use either the {@link #createRepeatedGameWorld(burlap.mdp.stochasticgames.SGAgent...)} or {@link #createRepeatedGameWorld(SGDomain, burlap.mdp.stochasticgames.SGAgent...)}
  * method. The former method will create an new domain instance using the {@link #generateDomain()} method; the latter will
  * use an already generated version of the domain that you provide to it.
  * <p>
@@ -414,8 +414,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns a {@link burlap.oomdp.stochasticgames.JointReward} function for this game.
-	 * @return a {@link burlap.oomdp.stochasticgames.JointReward} function for this game.
+	 * Returns a {@link burlap.mdp.stochasticgames.JointReward} function for this game.
+	 * @return a {@link burlap.mdp.stochasticgames.JointReward} function for this game.
 	 */
 	public JointReward getJointRewardFunction(){
 		return new SingleStageNormalFormJointReward(this.nPlayers, ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex), AgentPayoutFunction.getDeepCopyOfPayoutArray(this.payouts));
@@ -438,11 +438,11 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an {@link burlap.oomdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
+	 * Returns an {@link burlap.mdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
 	 * This AgentType permits agents to use any action in the domain, but the action preconditions will prevent the agent from taking actions
 	 * that its player number cannot take.
 	 * @param domain the domain in which the the agents will be playing.
-	 * @return an {@link burlap.oomdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
+	 * @return an {@link burlap.mdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
 	 */
 	public static SGAgentType getAgentTypeForAllPlayers(SGDomain domain){
 		SGAgentType at = new SGAgentType("player", domain.getAgentActions());
@@ -851,7 +851,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	/**
 	 * A main method showing example code that would be used to create an instance of Prisoner's dilemma and begin playing it with a 
-	 * {@link burlap.oomdp.stochasticgames.explorers.SGTerminalExplorer}.
+	 * {@link burlap.mdp.stochasticgames.explorers.SGTerminalExplorer}.
 	 * @param args
 	 */
 	public static void main(String [] args){

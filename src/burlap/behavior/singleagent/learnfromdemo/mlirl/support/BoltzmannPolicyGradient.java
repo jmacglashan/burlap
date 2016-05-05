@@ -2,8 +2,8 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.HashSet;
 import java.util.List;

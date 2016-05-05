@@ -2,27 +2,27 @@ package burlap.domain.singleagent.pomdp.tiger;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.auxiliary.StateGenerator;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.common.NullAction;
-import burlap.oomdp.singleagent.common.SimpleAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
-import burlap.oomdp.singleagent.explorer.TerminalExplorer;
-import burlap.oomdp.singleagent.pomdp.ObservationFunction;
-import burlap.oomdp.singleagent.pomdp.PODomain;
-import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
-import burlap.oomdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
-import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.StateGenerator;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.common.NullAction;
+import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.explorer.TerminalExplorer;
+import burlap.mdp.singleagent.pomdp.ObservationFunction;
+import burlap.mdp.singleagent.pomdp.PODomain;
+import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
+import burlap.mdp.statehashing.SimpleHashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,21 +168,21 @@ public class TigerDomain implements DomainGenerator {
 
 
 	/**
-	 * Returns a {@link burlap.oomdp.auxiliary.StateGenerator} that 50% of the time generates an hidden tiger state with the tiger on the
+	 * Returns a {@link burlap.mdp.auxiliary.StateGenerator} that 50% of the time generates an hidden tiger state with the tiger on the
 	 * left side, and 50% time on the right.
 	 * @param domain the Tiger domain object
-	 * @return a {@link burlap.oomdp.auxiliary.StateGenerator}
+	 * @return a {@link burlap.mdp.auxiliary.StateGenerator}
 	 */
 	public static StateGenerator randomSideStateGenerator(final PODomain domain){
 		return randomSideStateGenerator(domain, 0.5);
 	}
 
 	/**
-	 * Returns a {@link burlap.oomdp.auxiliary.StateGenerator} that some of the of the time generates an hidden tiger state with the tiger on the
+	 * Returns a {@link burlap.mdp.auxiliary.StateGenerator} that some of the of the time generates an hidden tiger state with the tiger on the
 	 * left side, and others on the right. Probability of left side is specified with the argument probLeft
 	 * @param domain the Tiger domain object
 	 * @param probLeft the probability that a state with the tiger on the left side will be generated
-	 * @return a {@link burlap.oomdp.auxiliary.StateGenerator}
+	 * @return a {@link burlap.mdp.auxiliary.StateGenerator}
 	 */
 	public static StateGenerator randomSideStateGenerator(final PODomain domain, final double probLeft){
 		return new StateGenerator() {
@@ -484,8 +484,8 @@ public class TigerDomain implements DomainGenerator {
 
 
 	/**
-	 * Main method for interacting with the tiger domain via a {@link burlap.oomdp.singleagent.explorer.TerminalExplorer}.
-	 * By default, the TerminalExplorer interacts with the partially observable environment ({@link burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment}),
+	 * Main method for interacting with the tiger domain via a {@link burlap.mdp.singleagent.explorer.TerminalExplorer}.
+	 * By default, the TerminalExplorer interacts with the partially observable environment ({@link burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment}),
 	 * which means you only get to see the observations that the agent would. However, if you set the first command-line argument
 	 * to be "h", then the explorer will explorer the underlying fully observable MDP states.
 	 * @param args either empty or ["h"]; provide "h" to explorer the underlying fully observable tiger MDP.

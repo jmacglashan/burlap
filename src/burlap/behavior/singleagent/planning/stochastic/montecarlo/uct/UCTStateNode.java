@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
 
 /**
  * UCT State Node that wraps a hashed state object and provided additional state statistics necessary for UCT.

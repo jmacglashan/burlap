@@ -9,10 +9,10 @@ import java.util.Map;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 

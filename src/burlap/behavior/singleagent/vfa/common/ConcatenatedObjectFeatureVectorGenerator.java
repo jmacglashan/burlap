@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.vfa.common;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,11 +12,11 @@ import java.util.Map;
 
 
 /**
- * This class is used to produce a state feature vector from an {@link burlap.oomdp.core.oo.state.OOState} by iterating
+ * This class is used to produce a state feature vector from an {@link burlap.mdp.core.oo.state.OOState} by iterating
  * over the objects, generating a double array for each object, and concatenating the reslting vectors into one vector.
  * You specify the ordering of the vectorization by specifying the order of the OO-MDP object classes, and which
  * {@link StateToFeatureVectorGenerator} to use for objects of their class.
- * If multiple objects of a class exist, then they will be unpacked in the order defined by the {@link burlap.oomdp.core.oo.state.OOState}.
+ * If multiple objects of a class exist, then they will be unpacked in the order defined by the {@link burlap.mdp.core.oo.state.OOState}.
  *
  * @author James MacGlashan
  *

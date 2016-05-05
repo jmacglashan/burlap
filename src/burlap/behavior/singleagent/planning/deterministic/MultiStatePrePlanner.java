@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.planning.deterministic;
 import java.util.Collection;
 
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTestIterable;
+import burlap.mdp.core.state.State;
 
 
 /**
@@ -24,7 +24,7 @@ public class MultiStatePrePlanner {
 	/**
 	 * Runs a planning algorithm from multiple initial states to ensure that an adequate plan/policy exist for of the states.
 	 * @param planner the valueFunction to be used.
-	 * @param initialStates a {@link burlap.oomdp.auxiliary.stateconditiontest.StateConditionTestIterable} object that will iterate over the initial states from which to plan.
+	 * @param initialStates a {@link burlap.mdp.auxiliary.stateconditiontest.StateConditionTestIterable} object that will iterate over the initial states from which to plan.
 	 */
 	public static void runPlannerForAllInitStates(Planner planner, StateConditionTestIterable initialStates){
 		for(State s : initialStates){

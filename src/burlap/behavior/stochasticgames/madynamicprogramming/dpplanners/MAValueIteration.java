@@ -7,18 +7,18 @@ import java.util.Map;
 import java.util.Set;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.debugtools.DPrint;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.JointReward;
-import burlap.oomdp.stochasticgames.SGDomain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.JointReward;
+import burlap.mdp.stochasticgames.SGDomain;
 
 
 /**

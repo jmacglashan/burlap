@@ -3,14 +3,14 @@ package burlap.behavior.singleagent.learnfromdemo;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
-import burlap.oomdp.auxiliary.common.NullTermination;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.statehashing.SimpleHashableStateFactory;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.SimpleHashableStateFactory;
 
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * This class is a {@link burlap.behavior.valuefunction.QFunction}/{@link burlap.behavior.valuefunction.ValueFunction}
- * wrapper to provide the immediate reward signals for a source {@link burlap.oomdp.singleagent.RewardFunction}.
+ * wrapper to provide the immediate reward signals for a source {@link burlap.mdp.singleagent.RewardFunction}.
  * It is useful for analyzing learned reward function through IRL, for example, for passing a learned reward function
  * to a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} to visualize what
  * was learned. This class returns values based one of four possible reward projection types
@@ -30,11 +30,11 @@ import java.util.List;
  * ONESTEP: when the reward function depends on a transition of some sort (e.g., from a source state to a target state)<p>
  * The default assumption is DESTINATIONSTATE.<p>
  * When the {@link #value(State)} of a state is queried, it returns the value of the
- * {@link burlap.oomdp.singleagent.RewardFunction} using the most minimal information. For example, if the projection
- * type is DESTINATIONSTATE, then the value returned is rf.reward(null, null, s), where rf is the input {@link burlap.oomdp.singleagent.RewardFunction}
+ * {@link burlap.mdp.singleagent.RewardFunction} using the most minimal information. For example, if the projection
+ * type is DESTINATIONSTATE, then the value returned is rf.reward(null, null, s), where rf is the input {@link burlap.mdp.singleagent.RewardFunction}
  * and s is the input {@link State} to the {@link #value(State)} method.
  * If it's SOURCESTATE, then it returns rf.reward(s, null, null). If it is STATEACTION or ONESTEP,
- * then the {@link burlap.oomdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(burlap.oomdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.oomdp.core.Domain)}
+ * then the {@link burlap.mdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(burlap.mdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.mdp.core.Domain)}
  * constructor so that the actions can be enumerated (and in the case of ONESTEP, the transitions enumerated) and the max reward taken.
  * Similarly, the {@link #getQ(State, AbstractGroundedAction)} and
  * {@link #getQs(State)} methods may need the {@link Domain} provided to properly answer the query.
@@ -53,8 +53,8 @@ public class RewardValueProjection implements QFunction{
 
 
 	/**
-	 * Initializes for the given {@link burlap.oomdp.singleagent.RewardFunction} assuming that it only depends on the destination state.
-	 * @param rf the input {@link burlap.oomdp.singleagent.RewardFunction} to project for one step.
+	 * Initializes for the given {@link burlap.mdp.singleagent.RewardFunction} assuming that it only depends on the destination state.
+	 * @param rf the input {@link burlap.mdp.singleagent.RewardFunction} to project for one step.
 	 */
 	public RewardValueProjection(RewardFunction rf){
 		this.rf = rf;
@@ -62,10 +62,10 @@ public class RewardValueProjection implements QFunction{
 
 	/**
 	 * Initializes. Note that if projectionType is ONESTEP a runtime exception will be thrown because projecting a one step
-	 * value requires the {@link burlap.oomdp.core.Domain} to enumerate the actions and transition dynamics. Use the
-	 * {@link #RewardValueProjection(burlap.oomdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.oomdp.core.Domain)}
+	 * value requires the {@link burlap.mdp.core.Domain} to enumerate the actions and transition dynamics. Use the
+	 * {@link #RewardValueProjection(burlap.mdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.mdp.core.Domain)}
 	 * constructor instead.
-	 * @param rf the input {@link burlap.oomdp.singleagent.RewardFunction} to project for one step.
+	 * @param rf the input {@link burlap.mdp.singleagent.RewardFunction} to project for one step.
 	 * @param projectionType the type of reward projection to use.
 	 */
 	public RewardValueProjection(RewardFunction rf, RewardProjectionType projectionType){
@@ -80,9 +80,9 @@ public class RewardValueProjection implements QFunction{
 
 	/**
 	 * Initializes.
-	 * @param rf the input {@link burlap.oomdp.singleagent.RewardFunction} to project for one step.
+	 * @param rf the input {@link burlap.mdp.singleagent.RewardFunction} to project for one step.
 	 * @param projectionType the type of reward projection to use.
-	 * @param domain the {@link burlap.oomdp.core.Domain} in which the {@link burlap.oomdp.singleagent.RewardFunction} is evaluated.
+	 * @param domain the {@link burlap.mdp.core.Domain} in which the {@link burlap.mdp.singleagent.RewardFunction} is evaluated.
 	 */
 	public RewardValueProjection(RewardFunction rf, RewardProjectionType projectionType, Domain domain){
 		this.rf = rf;

@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.auxiliary.gridset;
 
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
 
 import java.util.*;
 

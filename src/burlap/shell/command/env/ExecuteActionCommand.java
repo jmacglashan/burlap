@@ -1,10 +1,10 @@
 package burlap.shell.command.env;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.core.Domain;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for executing an action in the {@link burlap.oomdp.singleagent.environment.Environment}
+ * A {@link burlap.shell.command.ShellCommand} for executing an action in the {@link burlap.mdp.singleagent.environment.Environment}
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

@@ -2,12 +2,12 @@ package burlap.domain.singleagent.frostbite;
 
 import burlap.domain.singleagent.frostbite.state.FrostbitePlatform;
 import burlap.domain.singleagent.frostbite.state.FrostbiteState;
-import burlap.oomdp.core.oo.OODomain;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.oo.state.OOState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
 
 import java.util.List;
 

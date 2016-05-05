@@ -4,9 +4,9 @@ import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.state.State;
 
 import javax.management.RuntimeErrorException;
 import java.util.ArrayList;

@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.JointAction;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
 
 
 

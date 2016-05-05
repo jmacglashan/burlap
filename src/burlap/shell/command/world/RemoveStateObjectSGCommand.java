@@ -1,8 +1,8 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.state.MutableOOState;
-import burlap.oomdp.stochasticgames.World;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for removing an OO-MDP object from the current {@link burlap.oomdp.stochasticgames.World}
+ * A {@link burlap.shell.command.ShellCommand} for removing an OO-MDP object from the current {@link burlap.mdp.stochasticgames.World}
  * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */

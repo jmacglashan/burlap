@@ -1,11 +1,11 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.oo.state.MutableOOState;
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.stochasticgames.World;
-import burlap.oomdp.stochasticgames.oo.OOSGDomain;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for adding an OO-MDP object to the current {@link burlap.oomdp.stochasticgames.World}
+ * A {@link burlap.shell.command.ShellCommand} for adding an OO-MDP object to the current {@link burlap.mdp.stochasticgames.World}
  * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */

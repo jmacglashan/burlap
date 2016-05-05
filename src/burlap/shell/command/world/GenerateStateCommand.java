@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.oomdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -11,8 +11,8 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for generating a new state in a {@link burlap.oomdp.stochasticgames.World}
- * according to the {@link burlap.oomdp.stochasticgames.World}'s assigned {@link burlap.oomdp.stochasticgames.SGStateGenerator}.
+ * A {@link burlap.shell.command.ShellCommand} for generating a new state in a {@link burlap.mdp.stochasticgames.World}
+ * according to the {@link burlap.mdp.stochasticgames.World}'s assigned {@link burlap.mdp.stochasticgames.SGStateGenerator}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

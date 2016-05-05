@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.learning.lspi;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
 
 
 /**

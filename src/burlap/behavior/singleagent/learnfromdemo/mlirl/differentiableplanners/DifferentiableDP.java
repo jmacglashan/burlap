@@ -8,10 +8,10 @@ import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.statehashing.HashableState;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ import java.util.*;
  * A class for performing dynamic programming with a differentiable value backup operator.
  * Specifically, all subclasses are assumed to use a Boltzmann backup operator and the reward functions
  * must be differentiable by subclassing the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}
- * class. The normal {@link #performBellmanUpdateOn(burlap.oomdp.statehashing.HashableState)} method
+ * class. The normal {@link #performBellmanUpdateOn(burlap.mdp.statehashing.HashableState)} method
  * of the {@link burlap.behavior.singleagent.planning.stochastic.DynamicProgramming} class is overridden
  * with a method that uses the Boltzmann backup operator.
  * @author James MacGlashan.
@@ -79,7 +79,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	}
 
 	/**
-	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.oomdp.statehashing.HashableState}.
+	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.mdp.statehashing.HashableState}.
 	 * Results are stored in this valueFunction's internal map.
 	 * @param sh the hashed state on which to perform the Boltzmann gradient update.
 	 * @return the gradient.
@@ -164,7 +164,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 
 	/**
-	 * Computes the Q-value gradient for the given {@link State} and {@link burlap.oomdp.singleagent.GroundedAction}.
+	 * Computes the Q-value gradient for the given {@link State} and {@link burlap.mdp.singleagent.GroundedAction}.
 	 * @param s the state
 	 * @param ga the grounded action.
 	 * @return the Q-value gradient that was computed.

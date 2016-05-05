@@ -1,8 +1,8 @@
 package burlap.domain.singleagent.mountaincar;
 
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.state.StateUtilities;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 
 import java.util.Arrays;
 import java.util.List;

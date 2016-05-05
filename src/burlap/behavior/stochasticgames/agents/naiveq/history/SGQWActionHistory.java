@@ -2,11 +2,11 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.stochasticgames.agents.naiveq.SGNaiveQLAgent;
 import burlap.behavior.valuefunction.QValue;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.SGDomain;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 
 import java.util.Map;
 

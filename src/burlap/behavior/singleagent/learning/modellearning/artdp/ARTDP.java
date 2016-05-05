@@ -16,14 +16,14 @@ import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.policy.BoltzmannQPolicy;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**

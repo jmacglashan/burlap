@@ -2,18 +2,18 @@ package burlap.domain.singleagent.cartpole;
 
 import burlap.debugtools.RandomFactory;
 import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TerminalFunction;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.common.SimpleAction;
-import burlap.oomdp.singleagent.explorer.VisualExplorer;
-import burlap.oomdp.visualizer.Visualizer;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.visualizer.Visualizer;
 
 import java.util.List;
 

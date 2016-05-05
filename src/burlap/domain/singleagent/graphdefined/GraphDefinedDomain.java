@@ -1,16 +1,16 @@
 package burlap.domain.singleagent.graphdefined;
 
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.auxiliary.DomainGenerator;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.TransitionProbability;
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.FullActionModel;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.SADomain;
-import burlap.oomdp.singleagent.common.SimpleAction;
-import burlap.oomdp.singleagent.explorer.TerminalExplorer;
+import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.FullActionModel;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.explorer.TerminalExplorer;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ import java.util.*;
  * sum to 1 (and their various edges) can be returned with the {@link #invalidMDPReport()} method.
  * <p>
  * Modifying the transition dynamics of a graph will not affect the transition dynamics of previously generated
- * {@link burlap.oomdp.core.Domain}, allowing you to reuse the same generator without affected previous domains.
+ * {@link burlap.mdp.core.Domain}, allowing you to reuse the same generator without affected previous domains.
  * @author James MacGlashan
  *
  */

@@ -1,8 +1,8 @@
 package burlap.domain.singleagent.gridworld.state;
 
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.oomdp.core.oo.state.OOStateUtilities;
-import burlap.oomdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.oo.state.OOStateUtilities;
+import burlap.mdp.core.oo.state.ObjectInstance;
 
 import java.util.Arrays;
 import java.util.List;

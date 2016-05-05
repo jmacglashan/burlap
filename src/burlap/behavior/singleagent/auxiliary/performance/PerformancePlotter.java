@@ -1,10 +1,10 @@
 package burlap.behavior.singleagent.auxiliary.performance;
 
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.environment.Environment;
-import burlap.oomdp.singleagent.environment.EnvironmentObserver;
-import burlap.oomdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentObserver;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jfree.chart.ChartFactory;

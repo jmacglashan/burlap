@@ -5,9 +5,9 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowAction
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.state.range.VariableRange;
-import burlap.oomdp.visualizer.MultiLayerRenderer;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.range.VariableRange;
+import burlap.mdp.visualizer.MultiLayerRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -149,8 +149,8 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 
 
 	/**
-	 * Returns the {@link burlap.oomdp.visualizer.MultiLayerRenderer} used in this GUI.
-	 * @return the {@link burlap.oomdp.visualizer.MultiLayerRenderer} used in this GUI.
+	 * Returns the {@link burlap.mdp.visualizer.MultiLayerRenderer} used in this GUI.
+	 * @return the {@link burlap.mdp.visualizer.MultiLayerRenderer} used in this GUI.
 	 */
 	public MultiLayerRenderer getMultiLayerRenderer(){
 		return this.visualizer;

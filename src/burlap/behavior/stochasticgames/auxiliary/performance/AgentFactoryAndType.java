@@ -1,7 +1,7 @@
 package burlap.behavior.stochasticgames.auxiliary.performance;
 
-import burlap.oomdp.stochasticgames.AgentFactory;
-import burlap.oomdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.SGAgentType;
 
 /**
  * A pair storing an agent factory and the agent type that the generated agent will join the world as.

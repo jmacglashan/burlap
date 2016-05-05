@@ -1,7 +1,7 @@
 package burlap.behavior.learningrate;
 
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
 
 
 /**

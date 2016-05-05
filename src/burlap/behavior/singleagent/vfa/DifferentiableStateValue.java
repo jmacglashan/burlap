@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.vfa;
 
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.State;
 
 /**
  * An extension of {@link ParametricFunction.ParametricStateFunction} that

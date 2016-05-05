@@ -10,9 +10,9 @@ import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.RandomFactory;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.state.State;
 
 
 

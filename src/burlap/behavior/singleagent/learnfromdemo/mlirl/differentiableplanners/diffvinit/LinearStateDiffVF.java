@@ -3,8 +3,8 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.d
 import burlap.behavior.singleagent.vfa.FunctionGradient;
 import burlap.behavior.singleagent.vfa.ParametricFunction;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
 
 /**
  * A class for defining a (differentiable) linear function over state features for value function initialization. This class is useful

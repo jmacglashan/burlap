@@ -8,11 +8,11 @@ import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgen
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.behavior.stochasticgames.solvers.MinMaxSolver;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.stochasticgames.SGAgentType;
-import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.oomdp.stochasticgames.JointAction;
-import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 
 /**

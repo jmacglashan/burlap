@@ -3,9 +3,9 @@ package burlap.behavior.valuefunction;
 import java.util.List;
 
 import burlap.behavior.policy.Policy;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.TerminalFunction;
+import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.core.TerminalFunction;
 
 /**
  * An interface for MDP solvers that can return/compute Q-values.

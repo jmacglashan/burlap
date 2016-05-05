@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.interfaces.rlglue;
 
-import burlap.oomdp.core.state.State;
+import burlap.mdp.core.state.State;
 import org.rlcommunity.rlglue.codec.types.Observation;
 
 import java.util.ArrayList;

@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.oomdp.core.Domain;
+import burlap.mdp.core.Domain;
 
 import java.util.ArrayList;
 import java.util.List;

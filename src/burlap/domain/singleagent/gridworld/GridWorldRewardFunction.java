@@ -1,9 +1,9 @@
 package burlap.domain.singleagent.gridworld;
 
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.GroundedAction;
-import burlap.oomdp.singleagent.RewardFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
 
 
 /**

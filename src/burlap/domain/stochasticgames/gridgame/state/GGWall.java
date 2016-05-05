@@ -1,9 +1,9 @@
 package burlap.domain.stochasticgames.gridgame.state;
 
-import burlap.oomdp.core.oo.state.ObjectInstance;
-import burlap.oomdp.core.state.MutableState;
-import burlap.oomdp.core.state.UnknownKeyException;
-import burlap.oomdp.core.state.annotations.DeepCopyState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.UnknownKeyException;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.util.Arrays;
 import java.util.List;
