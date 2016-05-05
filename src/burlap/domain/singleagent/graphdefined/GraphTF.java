@@ -33,7 +33,7 @@ public class GraphTF implements TerminalFunction {
 	@Override
 	public boolean isTerminal(State s) {
 
-		int sid = GraphDefinedDomain.getNodeId(s);
+		int sid = ((GraphStateNode)s).id;
 		return this.terminalStates.contains(sid);
 	}
 

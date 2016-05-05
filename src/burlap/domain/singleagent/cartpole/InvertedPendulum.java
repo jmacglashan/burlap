@@ -349,7 +349,7 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		State s = new InvertedPendulumState();
 		
-		Visualizer v = InvertedPendulumVisualizer.getInvertedPendulumVisualizer();
+		Visualizer v = CartPoleVisualizer.getCartPoleVisualizer();
 		
 		VisualExplorer exp = new VisualExplorer(domain, v, s);
 		

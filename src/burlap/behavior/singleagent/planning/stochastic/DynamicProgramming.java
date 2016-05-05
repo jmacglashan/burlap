@@ -1,29 +1,26 @@
 package burlap.behavior.singleagent.planning.stochastic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
-import burlap.oomdp.core.*;
-import burlap.oomdp.core.AbstractGroundedAction;
-import burlap.oomdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.oomdp.statehashing.HashableStateFactory;
-import burlap.oomdp.statehashing.HashableState;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.oomdp.auxiliary.common.NullTermination;
+import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.Action;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
+import burlap.oomdp.statehashing.HashableState;
+import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 /**
  * A class for performing dynamic programming operations: updating the value function using a Bellman backup.
@@ -172,35 +169,14 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	@Override
 	public List <QValue> getQs(State s){
 		
-		HashableState sh = this.stateHash(s);
-		Map<String,String> matching = null;
-		HashableState indexSH = mapToStateIndex.get(sh);
-		
-		if(indexSH == null){
-			//then this is an unexplored state
-			indexSH = sh;
-			mapToStateIndex.put(indexSH, indexSH);
+		List<GroundedAction> gas = this.getAllGroundedActions(s);
+		List<QValue> qs = new ArrayList<QValue>(gas.size());
+		for(GroundedAction ga : gas){
+			QValue q = this.getQ(s, ga);
+			qs.add(q);
 		}
-		
-		
-//		if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent()){
-//			matching = sh.s.getObjectMatchingTo(indexSH.s, false);
-//		}
-		
-		
-		List <QValue> res = new ArrayList<QValue>();
-		for(Action a : actions){
-			//List <GroundedAction> applications = s.getAllGroundedActionsFor(a);
-			List<GroundedAction> applications = a.getAllApplicableGroundedActions(s);
-			for(GroundedAction ga : applications){
-				if(matching == null && ga instanceof AbstractObjectParameterizedGroundedAction){
-					matching = sh.s.getObjectMatchingTo(indexSH.s, false);
-				}
-				res.add(this.getQ(sh, ga, matching));
-			}
-		}
-		
-		return res;
+
+		return qs;
 		
 	}
 	
@@ -208,37 +184,39 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	@Override
 	public QValue getQ(State s, AbstractGroundedAction a){
-		
+
+		HashableState sh = this.stateHash(s);
 		
 		if(this.useCachedTransitions){
-			HashableState sh = this.stateHash(s);
-			Map<String,String> matching = null;
-			HashableState indexSH = mapToStateIndex.get(sh);
-			
-			if(indexSH == null){
-				//then this is an unexplored state
-				indexSH = sh;
-				mapToStateIndex.put(indexSH, indexSH);
+
+			double q = 0.;
+			if(!this.tf.isTerminal(sh.s)){
+
+				//find ActionTransition for the designated GA
+				List <ActionTransitions> allTransitions = this.getActionsTransitions(sh);
+				ActionTransitions matchingAt = null;
+				for(ActionTransitions at : allTransitions){
+					if(at.matchingTransitions((GroundedAction)a)){
+						matchingAt = at;
+						break;
+					}
+				}
+
+				q = this.computeQ(sh.s, matchingAt);
 			}
-			
-//			if(this.containsParameterizedActions && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
-//				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
-//			}
-			if(a instanceof AbstractObjectParameterizedGroundedAction){
-				matching = sh.s.getObjectMatchingTo(indexSH.s, false);
-			}
-			return this.getQ(sh, (GroundedAction)a, matching);
-			
+
+
+			return new QValue(sh.s, a, q);
+
 		}
 		else{
-			
-			HashableState sh = this.stateHash(s);
+
 			double dq = this.computeQ(sh, (GroundedAction)a);
-			
+
 			QValue q = new QValue(s, a, dq);
-			
+
 			return q;
-			
+
 		}
 		
 		
@@ -273,40 +251,6 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		return dpCopy;
 	}
 
-	
-	/**
-	 * Gets a Q-Value for a hashed state, grounded action, and object instance matching from the hashed states an internally stored hashed transition dynamics.
-	 * If the input state is a terminal state, then the value 0 is returned.
-	 * @param sh the input state
-	 * @param a the action to get the Q-value for
-	 * @param matching the object instance matching from sh to the corresponding state stored in the value function
-	 * @return the Q-value
-	 */
-	protected QValue getQ(HashableState sh, GroundedAction a, Map <String, String> matching){
-		
-		//translate grounded action if necessary
-		GroundedAction ta = a;
-		if(a instanceof AbstractObjectParameterizedGroundedAction){
-			ta = this.translateAction(ta, matching);
-		}
-		
-		//find ActionTransition for the designated GA
-		List <ActionTransitions> allTransitions = this.getActionsTransitions(sh);
-		ActionTransitions matchingAt = null;
-		for(ActionTransitions at : allTransitions){
-			if(at.matchingTransitions(ta)){
-				matchingAt = at;
-				break;
-			}
-		}
-		
-		double q = 0.;
-		if(!this.tf.isTerminal(sh.s)){
-			q = this.computeQ(sh.s, matchingAt);
-		}
-		
-		return new QValue(sh.s, a, q);
-	}
 	
 	
 	
@@ -402,8 +346,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 			
 		}
 		else{
-			
-			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
+
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
 			for(GroundedAction ga : gas){
 				double q = this.computeQ(sh, ga);

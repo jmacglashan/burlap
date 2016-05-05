@@ -1,20 +1,16 @@
 package burlap.behavior.singleagent.pomdp.wrappedmdpalgs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.MDPSolver;
-
-
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.domain.singleagent.pomdp.tiger.TigerDomain;
+import burlap.domain.singleagent.pomdp.tiger.TigerState;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.AbstractGroundedAction;
 import burlap.oomdp.core.TerminalFunction;
@@ -22,11 +18,14 @@ import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
 import burlap.oomdp.singleagent.pomdp.BeliefMDPGenerator;
-import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.PODomain;
 import burlap.oomdp.singleagent.pomdp.SimulatedPOEnvironment;
+import burlap.oomdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.oomdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
 import burlap.oomdp.statehashing.HashableStateFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -136,7 +135,7 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 		Policy p = new GreedyQPolicy(bss);
 
 		SimulatedPOEnvironment env = new SimulatedPOEnvironment(domain, rf, tf);
-		env.setCurStateTo(TigerDomain.tigerLeftState(domain));
+		env.setCurStateTo(new TigerState(TigerDomain.VAL_LEFT));
 		
 		BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, env, p);
 		agent.setBeliefState(initialBelief);

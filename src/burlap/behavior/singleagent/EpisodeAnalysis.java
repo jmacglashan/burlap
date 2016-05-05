@@ -3,7 +3,9 @@ package burlap.behavior.singleagent;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.RandomPolicy;
 import burlap.datastructures.AlphanumericSorting;
+import burlap.domain.singleagent.gridworld.GridAgent;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.domain.singleagent.gridworld.GridWorldState;
 import burlap.oomdp.auxiliary.common.NullTermination;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.state.State;
@@ -476,7 +478,7 @@ public class EpisodeAnalysis {
 	public static void main(String[] args) {
 		GridWorldDomain gwd = new GridWorldDomain(11, 11);
 		Domain domain = gwd.generateDomain();
-		State s = GridWorldDomain.getOneAgentNoLocationState(domain, 1, 3);
+		State s = new GridWorldState(new GridAgent(1, 3));
 
 		Policy p = new RandomPolicy(domain);
 		EpisodeAnalysis ea = p.evaluateBehavior(s, new NullRewardFunction(), new NullTermination(), 30);

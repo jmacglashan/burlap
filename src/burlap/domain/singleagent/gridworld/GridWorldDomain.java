@@ -12,6 +12,7 @@ import burlap.oomdp.core.oo.propositional.PropositionalFunction;
 import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.state.range.VariableRange;
 import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.common.SimpleAction;
@@ -496,13 +497,15 @@ public class GridWorldDomain implements DomainGenerator {
 	 * {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI#initGUI()}
 	 * on the returned object to start it.
 	 * @param states the states whose value should be rendered.
+	 * @param maxX the maximum value in the x dimension
+	 * @param maxY the maximum value in the y dimension
 	 * @param valueFunction the value Function that can return the state values.
 	 * @param p the policy to render
 	 * @return a gridworld-based {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} object.
 	 */
-	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, ValueFunction valueFunction, Policy p){
+	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, int maxX, int maxY, ValueFunction valueFunction, Policy p){
 		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, valueFunction, p,
-				CLASS_AGENT, "x", "y",
+				ATT_X, ATT_Y, new VariableRange(0, maxX), new VariableRange(0, maxY), 1, 1,
 				ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST);
 	}
 	

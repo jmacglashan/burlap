@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.vfa.common;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
@@ -56,7 +57,7 @@ public class PFFeatureVectorGenerator implements StateToFeatureVectorGenerator {
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					featureValueList.add(1.);
 				}
 				else{

@@ -3,12 +3,13 @@ package burlap.behavior.stochasticgames;
 import burlap.behavior.stochasticgames.agents.RandomSGAgent;
 import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
-import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.TerminalFunction;
+import burlap.oomdp.core.state.State;
 import burlap.oomdp.stochasticgames.*;
 import burlap.oomdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.oomdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.oomdp.stochasticgames.common.ConstantSGStateGenerator;
+import burlap.oomdp.stochasticgames.oo.OOSGDomain;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -447,7 +448,7 @@ public class GameAnalysis {
 	public static void main(String[] args) {
 
 		GridGame gg = new GridGame();
-		SGDomain domain = (SGDomain)gg.generateDomain();
+		OOSGDomain domain = (OOSGDomain)gg.generateDomain();
 		State s = GridGame.getTurkeyInitialState(domain);
 
 		JointReward jr = new GridGame.GGJointRewardFunction(domain);

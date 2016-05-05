@@ -2,6 +2,7 @@ package burlap.behavior.stochasticgames.auxiliary;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.datastructures.AlphanumericSorting;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.NullState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.core.oo.OODomain;
@@ -370,7 +371,7 @@ public class GameSequenceVisualizer extends JFrame {
 	
 	private void updatePropTextArea(State s){
 
-		if(!(domain instanceof OODomain)){
+		if(!(domain instanceof OODomain) || !(s instanceof OOState)){
 			return ;
 		}
 
@@ -380,7 +381,7 @@ public class GameSequenceVisualizer extends JFrame {
 		for(PropositionalFunction pf : props){
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					buf.append(gp.toString()).append("\n");
 				}
 			}

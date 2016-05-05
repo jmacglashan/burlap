@@ -7,6 +7,7 @@ import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.oo.OODomain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.state.NullState;
 import burlap.oomdp.core.state.State;
 import burlap.oomdp.singleagent.GroundedAction;
@@ -380,7 +381,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 
 	protected void updatePropTextArea(State s){
 
-		if(!(domain instanceof OODomain)){
+		if(!(domain instanceof OODomain) || !(s instanceof OOState)){
 			return ;
 		}
 
@@ -391,7 +392,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
-				if(gp.isTrue(s)){
+				if(gp.isTrue((OOState)s)){
 					buf.append(gp.toString()).append("\n");
 				}
 			}

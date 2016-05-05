@@ -17,7 +17,7 @@ public abstract class GraphRF implements RewardFunction{
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
 		int actionId = Integer.parseInt(a.toString().replaceAll(GraphDefinedDomain.BASE_ACTION_NAME, ""));
-		return this.reward(GraphDefinedDomain.getNodeId(s), actionId, GraphDefinedDomain.getNodeId(sprime));
+		return this.reward(((GraphStateNode)s).id, actionId, ((GraphStateNode)sprime).id);
 	}
 
 	/**

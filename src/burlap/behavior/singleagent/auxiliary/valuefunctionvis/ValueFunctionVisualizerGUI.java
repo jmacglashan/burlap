@@ -1,23 +1,19 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.List;
-
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.oomdp.core.state.State;
+import burlap.oomdp.core.state.range.VariableRange;
 import burlap.oomdp.visualizer.MultiLayerRenderer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
 
 
 /**
@@ -89,9 +85,12 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @param states the states whose value should be rendered.
 	 * @param valueFunction the valueFunction that can return the state values.
 	 * @param p the policy to render
-	 * @param classWithPositionAtts the class which contains the x-y position information of the state
-	 * @param xAttName the name of the x attribute
-	 * @param yAttName the name of the y attribute
+	 * @param xVar the variable key for the x variable
+	 * @param yVar the variable key for the y variable
+	 * @param xRange xRange the range of the x variable
+	 * @param yRange the range of the y variable
+	 * @param xWidth the width of each rendered state within the x domain
+	 * @param yWidth the width of the each rendered state within the y domain
 	 * @param northActionName the name of the north action
 	 * @param southActionName the name of the south action
 	 * @param eastActionName the name of the east action
@@ -99,7 +98,11 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 * @return a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI}
 	 */
 	public static ValueFunctionVisualizerGUI createGridWorldBasedValueFunctionVisualizerGUI(List <State> states, ValueFunction valueFunction, Policy p,
-																 String classWithPositionAtts, String xAttName, String yAttName,
+																 Object xVar, Object yVar,
+																 VariableRange xRange,
+																 VariableRange yRange,
+																 double xWidth,
+																 double yWidth,
 																 String northActionName,
 																 String southActionName,
 																 String eastActionName,
@@ -107,10 +110,10 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 
 
 		StateValuePainter2D svp = new StateValuePainter2D();
-		svp.setXYAttByObjectClass(classWithPositionAtts, xAttName,
-				classWithPositionAtts, yAttName);
+		svp.setXYKeys(xVar, yVar, xRange, yRange, xWidth, yWidth);
 
-		PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(classWithPositionAtts, xAttName, yAttName,
+
+		PolicyGlyphPainter2D spp = ArrowActionGlyph.getNSEWPolicyGlyphPainter(xVar, yVar, xRange, yRange, xWidth, yWidth,
 				northActionName, southActionName, eastActionName, westActionName);
 
 		ValueFunctionVisualizerGUI gui = new ValueFunctionVisualizerGUI(states, svp, valueFunction);

@@ -1,5 +1,7 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
+import burlap.oomdp.core.state.range.VariableRange;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -33,16 +35,24 @@ public class ArrowActionGlyph implements ActionGlyphPainter {
 	 * classWithPositionAtts, and the north, south east, west actions have the corresponding names and
 	 * will be rendered using {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.ArrowActionGlyph}
 	 * objects.
-	 * @param classWithPositionAtts the class which contains the x-y position information of the state.
-	 * @param xAtt the name of the x attribute
-	 * @param yAtt the name of the y attribute
+	 * @param xVar the x variable key
+	 * @param yVar the y variable key
+	 * @param xRange the range of the x variable
+	 * @param yRange the range of the y variable
+	 * @param xWidth the width of each rendered state within the x domain
+	 * @param yWidth the width of the each rendered state within the y domain
 	 * @param northActionName the name of the north action
 	 * @param southActionName the name of the south action
 	 * @param eastActionName the name of the east action
 	 * @param westActionName the name of the west action
 	 * @return a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyphPainter2D} instance.
 	 */
-	public static PolicyGlyphPainter2D getNSEWPolicyGlyphPainter(String classWithPositionAtts, String xAtt,  String yAtt,
+	public static PolicyGlyphPainter2D getNSEWPolicyGlyphPainter(Object xVar,
+																 Object yVar,
+																 VariableRange xRange,
+																 VariableRange yRange,
+																 double xWidth,
+																 double yWidth,
 																 String northActionName,
 																 String southActionName,
 																 String eastActionName,
@@ -50,7 +60,7 @@ public class ArrowActionGlyph implements ActionGlyphPainter {
 
 
 		PolicyGlyphPainter2D spp = new PolicyGlyphPainter2D();
-		spp.setXYAttByObjectClass(classWithPositionAtts, xAtt, classWithPositionAtts, yAtt);
+		spp.setXYKeys(xVar, yVar, xRange, yRange, xWidth, yWidth);
 		spp.setActionNameGlyphPainter(northActionName, new ArrowActionGlyph(0));
 		spp.setActionNameGlyphPainter(southActionName, new ArrowActionGlyph(1));
 		spp.setActionNameGlyphPainter(eastActionName, new ArrowActionGlyph(2));
