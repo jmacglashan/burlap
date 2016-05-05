@@ -5,7 +5,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	TestTesting.class,
 	TestGridWorld.class,
 	TestPlanning.class,
 	TestBlockDude.class,
