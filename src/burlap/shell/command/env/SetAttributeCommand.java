@@ -49,7 +49,7 @@ public class SetAttributeCommand implements ShellCommand {
 			return 0;
 		}
 
-		if(args.size() % 2 != 1 && args.size() < 3){
+		if(args.size() % 2 != 0 && args.size() < 3){
 			return -1;
 		}
 

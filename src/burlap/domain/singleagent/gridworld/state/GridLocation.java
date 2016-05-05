@@ -26,6 +26,8 @@ public class GridLocation implements ObjectInstance {
 	private final static List<Object> keys = Arrays.<Object>asList(VAR_X, VAR_Y, VAR_TYPE);
 
 
+	public GridLocation() {
+	}
 
 	public GridLocation(int x, int y, String name) {
 		this.x = x;

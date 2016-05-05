@@ -6,6 +6,7 @@ import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,13 +135,13 @@ public class GridWorldState implements MutableOOState {
 	public MutableState set(Object variableKey, Object value) {
 
 		OOVariableKey key = OOStateUtilities.generateKey(variableKey);
+		int iv = StateUtilities.stringOrNumber(value).intValue();
 		if(key.obName.equals(agent.name())){
-			GridAgent nagent = agent.copy();
 			if(key.obVarKey.equals(VAR_X)){
-				nagent.x = ((Number)value).intValue();
+				touchAgent().x = iv;
 			}
 			else if(key.obVarKey.equals(VAR_Y)){
-				nagent.y = ((Number)value).intValue();
+				touchAgent().y = iv;
 			}
 			else{
 				throw new RuntimeException("Unknown variable key " + variableKey);
@@ -149,22 +150,19 @@ public class GridWorldState implements MutableOOState {
 		}
 		int ind = locationInd(key.obName);
 		if(ind != -1){
-			GridLocation nloc = locations.get(ind).copy();
 			if(key.obVarKey.equals(VAR_X)){
-				nloc.x = ((Number)value).intValue();
+				touchLocation(ind).x = iv;
 			}
 			else if(key.obVarKey.equals(VAR_Y)){
-				nloc.y = ((Number)value).intValue();
+				touchLocation(ind).y = iv;
 			}
 			else if(key.obVarKey.equals(VAR_TYPE)){
-				nloc.type = ((Number)value).intValue();
+				touchLocation(ind).type = iv;
 			}
 			else{
 				throw new RuntimeException("Unknown variable key " + variableKey);
 			}
-			this.locations = new ArrayList<GridLocation>(locations);
-			this.locations.remove(ind);
-			this.locations.add(ind, nloc);
+
 			return this;
 		}
 
@@ -227,5 +225,12 @@ public class GridWorldState implements MutableOOState {
 		}
 		locations = nlocs;
 		return locations;
+	}
+
+	public GridLocation touchLocation(int ind){
+		GridLocation n = locations.get(ind).copy();
+		touchLocations().remove(ind);
+		locations.add(ind, n);
+		return n;
 	}
 }
