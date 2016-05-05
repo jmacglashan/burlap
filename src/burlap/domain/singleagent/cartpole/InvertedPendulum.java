@@ -189,8 +189,8 @@ public class InvertedPendulum implements DomainGenerator {
 		}
 		
 		//set it
-		is.angle = a0;
-		is.angleV = av0;
+		is.angle = af;
+		is.angleV = avf;
 	}
 
 	
