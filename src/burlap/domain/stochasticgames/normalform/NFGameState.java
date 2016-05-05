@@ -2,7 +2,6 @@ package burlap.domain.stochasticgames.normalform;
 
 import burlap.oomdp.core.state.MutableState;
 import burlap.oomdp.core.state.State;
-import burlap.oomdp.core.state.StateUtilities;
 import burlap.oomdp.stochasticgames.SGAgent;
 import burlap.oomdp.stochasticgames.SGStateGenerator;
 
@@ -76,7 +75,7 @@ public class NFGameState implements MutableState, SGStateGenerator{
 
 	@Override
 	public String toString() {
-		return StateUtilities.stateToString(this);
+		return Arrays.toString(this.players);
 	}
 
 	public int playerIndex(String playerName){
@@ -101,4 +100,6 @@ public class NFGameState implements MutableState, SGStateGenerator{
 		}
 		return ind;
 	}
+
+
 }

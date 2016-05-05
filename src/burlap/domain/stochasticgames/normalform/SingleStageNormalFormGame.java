@@ -860,7 +860,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		SGDomain domain = (SGDomain)game.generateDomain();
 		JointReward r = game.getJointRewardFunction();
 
-		World w = new World(domain, r, new NullTermination(), (SGStateGenerator)new NFGameState());
+		World w = new World(domain, r, new NullTermination(), (State)new NFGameState(2));
 
 		SGTerminalExplorer exp = new SGTerminalExplorer(w);
 		exp.explore();
