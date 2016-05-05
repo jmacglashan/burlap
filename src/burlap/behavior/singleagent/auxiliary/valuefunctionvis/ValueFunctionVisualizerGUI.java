@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyph
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.VariableRange;
+import burlap.mdp.core.state.range.VariableDomain;
 import burlap.mdp.visualizer.MultiLayerRenderer;
 
 import javax.swing.*;
@@ -99,8 +99,8 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 	 */
 	public static ValueFunctionVisualizerGUI createGridWorldBasedValueFunctionVisualizerGUI(List <State> states, ValueFunction valueFunction, Policy p,
 																 Object xVar, Object yVar,
-																 VariableRange xRange,
-																 VariableRange yRange,
+																 VariableDomain xRange,
+																 VariableDomain yRange,
 																 double xWidth,
 																 double yWidth,
 																 String northActionName,

@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
-import burlap.mdp.core.state.range.VariableRange;
+import burlap.mdp.core.state.range.VariableDomain;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -49,8 +49,8 @@ public class ArrowActionGlyph implements ActionGlyphPainter {
 	 */
 	public static PolicyGlyphPainter2D getNSEWPolicyGlyphPainter(Object xVar,
 																 Object yVar,
-																 VariableRange xRange,
-																 VariableRange yRange,
+																 VariableDomain xRange,
+																 VariableDomain yRange,
 																 double xWidth,
 																 double yWidth,
 																 String northActionName,

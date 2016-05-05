@@ -15,7 +15,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.VariableRange;
+import burlap.mdp.core.state.range.VariableDomain;
 import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.common.SimpleAction;
@@ -508,7 +508,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, int maxX, int maxY, ValueFunction valueFunction, Policy p){
 		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, valueFunction, p,
-				VAR_X, VAR_Y, new VariableRange(0, maxX), new VariableRange(0, maxY), 1, 1,
+				VAR_X, VAR_Y, new VariableDomain(0, maxX), new VariableDomain(0, maxY), 1, 1,
 				ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST);
 	}
 	

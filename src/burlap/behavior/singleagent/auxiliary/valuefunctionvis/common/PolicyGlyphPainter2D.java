@@ -4,7 +4,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StatePolicyPainter;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.VariableRange;
+import burlap.mdp.core.state.range.VariableDomain;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -66,13 +66,13 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 	/**
 	 * Range of the x key
 	 */
-	protected VariableRange xRange;
+	protected VariableDomain xRange;
 
 
 	/**
 	 * Range of the y key
 	 */
-	protected VariableRange yRange;
+	protected VariableDomain yRange;
 
 	/**
 	 * Width of x cells
@@ -118,7 +118,7 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 	 * @param xWidth the width of a state along the x domain
 	 * @param yWidth the width of a state alone the y domain
 	 */
-	public void setXYKeys(Object xKey, Object yKey, VariableRange xRange, VariableRange yRange, double xWidth, double yWidth){
+	public void setXYKeys(Object xKey, Object yKey, VariableDomain xRange, VariableDomain yRange, double xWidth, double yWidth){
 		this.xKey = xKey;
 		this.yKey = yKey;
 		this.xRange = xRange;

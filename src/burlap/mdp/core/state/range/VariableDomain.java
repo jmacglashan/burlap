@@ -3,14 +3,14 @@ package burlap.mdp.core.state.range;
 /**
  * @author James MacGlashan.
  */
-public class VariableRange {
+public class VariableDomain {
 	public double lower;
 	public double upper;
 
-	public VariableRange() {
+	public VariableDomain() {
 	}
 
-	public VariableRange(double lower, double upper) {
+	public VariableDomain(double lower, double upper) {
 		this.lower = lower;
 		this.upper = upper;
 	}
