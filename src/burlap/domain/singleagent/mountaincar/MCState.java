@@ -33,11 +33,11 @@ public class MCState implements MutableState {
 	public MutableState set(Object variableKey, Object value) {
 		if(variableKey instanceof String){
 			if(variableKey.equals(ATT_X)){
-				this.x = ((Number)value).doubleValue();
+				this.x = StateUtilities.stringOrNumber(value).doubleValue();
 				return this;
 			}
 			else if(variableKey.equals(ATT_V)){
-				this.v = ((Number)value).doubleValue();
+				this.v = StateUtilities.stringOrNumber(value).doubleValue();
 				return this;
 			}
 			else{
@@ -46,11 +46,11 @@ public class MCState implements MutableState {
 		}
 		else if(variableKey instanceof Integer){
 			if((Integer)variableKey == 0){
-				this.x = ((Number)value).doubleValue();
+				this.x = StateUtilities.stringOrNumber(value).doubleValue();
 				return this;
 			}
 			else if((Integer)variableKey == 1){
-				this.v = ((Number)value).doubleValue();
+				this.v = StateUtilities.stringOrNumber(value).doubleValue();
 				return this;
 			}
 			else{

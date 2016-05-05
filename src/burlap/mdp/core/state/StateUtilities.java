@@ -16,7 +16,17 @@ public class StateUtilities {
 			Double d = Double.parseDouble((String)o);
 			return d;
 		}
-		throw new RuntimeException("Value is neither a number nor a String.");
+		throw new RuntimeException("Value is neither a Number nor a String.");
+	}
+
+	public static Boolean stringOrBoolean(Object o){
+		if(o instanceof Boolean){
+			return (Boolean)o;
+		}
+		else if(o instanceof String){
+			return Boolean.parseBoolean((String)o);
+		}
+		throw new RuntimeException("Value is neither a Boolean nor a String.");
 	}
 
 	public static String stateToString(State s){

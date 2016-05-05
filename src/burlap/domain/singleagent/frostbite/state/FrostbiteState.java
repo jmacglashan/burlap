@@ -8,6 +8,7 @@ import burlap.mdp.core.oo.state.exceptions.UnknownClassException;
 import burlap.mdp.core.oo.state.exceptions.UnknownObjectException;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 import burlap.mdp.core.state.UnknownKeyException;
 import burlap.mdp.core.state.annotations.ShallowCopyState;
 
@@ -169,13 +170,13 @@ public class FrostbiteState implements MutableOOState {
 		OOVariableKey key = OOStateUtilities.generateKey(variableKey);
 		if(key.obName.equals(agent.name())){
 			if(key.obVarKey.equals(VAR_X)){
-				touchAgent().x = (Integer)value;
+				touchAgent().x = StateUtilities.stringOrNumber(value).intValue();
 			}
 			else if(key.obVarKey.equals(VAR_Y)){
-				touchAgent().y = (Integer)value;
+				touchAgent().y = StateUtilities.stringOrNumber(value).intValue();
 			}
 			else if(key.obVarKey.equals(VAR_HEIGHT)){
-				touchAgent().height = (Integer)value;
+				touchAgent().height = StateUtilities.stringOrNumber(value).intValue();
 			}
 			else
 				throw new UnknownKeyException(key.obVarKey);
@@ -191,16 +192,16 @@ public class FrostbiteState implements MutableOOState {
 			int ind = OOStateUtilities.objectIndexWithName(platforms, key.obName);
 			if(ind != -1){
 				if(key.obVarKey.equals(VAR_X)){
-					touchPlatform(ind).x = (Integer)value;
+					touchPlatform(ind).x = StateUtilities.stringOrNumber(value).intValue();
 				}
 				else if(key.obVarKey.equals(VAR_Y)){
-					touchPlatform(ind).y = (Integer)value;
+					touchPlatform(ind).y = StateUtilities.stringOrNumber(value).intValue();
 				}
 				else if(key.obVarKey.equals(VAR_SIZE)){
-					touchPlatform(ind).size = (Integer)value;
+					touchPlatform(ind).size = StateUtilities.stringOrNumber(value).intValue();
 				}
 				else if(key.obVarKey.equals(VAR_ACTIVATED)){
-					touchPlatform(ind).activated = (Boolean)value;
+					touchPlatform(ind).activated = StateUtilities.stringOrBoolean(value);
 				}
 				else
 					throw new UnknownKeyException(key.obVarKey);

@@ -6,6 +6,7 @@ import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,16 +152,16 @@ public class BlockDudeState implements MutableOOState {
 		if(key.obName.equals(CLASS_AGENT)){
 			this.agent = this.agent.copy();
 			if(variableKey.equals(VAR_X)){
-				agent.x = (Integer)value;
+				agent.x = StateUtilities.stringOrNumber(value).intValue();
 			}
 			else if(variableKey.equals(VAR_Y)){
-				agent.y = (Integer)value;
+				agent.y = StateUtilities.stringOrNumber(value).intValue();
 			}
 			else if(variableKey.equals(VAR_DIR)) {
-				agent.dir = (Integer)value;
+				agent.dir = StateUtilities.stringOrNumber(value).intValue();
 			}
 			else if(variableKey.equals(VAR_HOLD)){
-				agent.holding = (Boolean)value;
+				agent.holding = StateUtilities.stringOrBoolean(value);
 			}
 		}
 		else if(key.obName.equals(CLASS_MAP)){
@@ -168,7 +169,7 @@ public class BlockDudeState implements MutableOOState {
 			this.map.map = (int[][])value;
 		}
 		else if(key.obName.equals(exit.name())){
-			Integer iv = (Integer)value;
+			Integer iv = StateUtilities.stringOrNumber(value).intValue();
 			if(variableKey.equals(VAR_X)){
 				exit.x = iv;
 			}
@@ -182,7 +183,7 @@ public class BlockDudeState implements MutableOOState {
 				BlockDudeCell block = this.blocks.get(ind).copy();
 				this.blocks = new ArrayList<BlockDudeCell>(blocks);
 				this.blocks.set(ind, block);
-				Integer iv = (Integer)value;
+				Integer iv = StateUtilities.stringOrNumber(value).intValue();
 				if(variableKey.equals(VAR_X)){
 					block.x = iv;
 				}

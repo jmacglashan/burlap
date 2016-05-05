@@ -8,6 +8,7 @@ import burlap.mdp.core.oo.state.exceptions.UnknownClassException;
 import burlap.mdp.core.oo.state.exceptions.UnknownObjectException;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 import burlap.mdp.core.state.UnknownKeyException;
 import burlap.mdp.core.state.annotations.ShallowCopyState;
 
@@ -154,7 +155,7 @@ public class LLState implements MutableOOState{
 	public MutableState set(Object variableKey, Object value) {
 
 		OOVariableKey key = OOStateUtilities.generateKey(variableKey);
-		Double d = (Double)value;
+		Double d = StateUtilities.stringOrNumber(value).doubleValue();
 
 		if(agent.name().equals(key.obName)){
 			if(key.obVarKey.equals(VAR_X)){

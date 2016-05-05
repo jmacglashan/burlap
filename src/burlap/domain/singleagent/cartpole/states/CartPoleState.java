@@ -31,7 +31,7 @@ public class CartPoleState extends InvertedPendulumState {
 
 	@Override
 	public MutableState set(Object variableKey, Object value) {
-		double d = ((Number)value).doubleValue();
+		double d = StateUtilities.stringOrNumber(value).doubleValue();
 
 		if(variableKey.equals(VAR_X)){
 			this.x = d;

@@ -33,7 +33,7 @@ public class InvertedPendulumState implements MutableState {
 			throw new RuntimeException("Variable key must be a String");
 		}
 
-		double d = ((Number)value).doubleValue();
+		double d = StateUtilities.stringOrNumber(value).doubleValue();
 
 		if(variableKey.equals(VAR_ANGLE)){
 			angle = d;

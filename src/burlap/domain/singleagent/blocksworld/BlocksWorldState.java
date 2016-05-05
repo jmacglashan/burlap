@@ -6,6 +6,7 @@ import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class BlocksWorldState implements MutableOOState{
 				ob.on = (String)value;
 			}
 			else if(key.obVarKey.equals(VAR_CLEAR)){
-				ob.clear = (Boolean)value;
+				ob.clear = StateUtilities.stringOrBoolean(value);
 			}
 			else if(key.obVarKey.equals(VAR_COLOR)){
 				ob.color = (Color)value;

@@ -2,6 +2,7 @@ package burlap.domain.singleagent.cartpole.states;
 
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +35,7 @@ public class CartPoleFullState extends CartPoleState {
 	@Override
 	public MutableState set(Object variableKey, Object value) {
 		if(variableKey.equals(VAR_NORM_SGN)){
-			this.normSign = ((Number)value).doubleValue();
+			this.normSign = StateUtilities.stringOrNumber(value).doubleValue();
 			return this;
 		}
 		return super.set(variableKey, value);
