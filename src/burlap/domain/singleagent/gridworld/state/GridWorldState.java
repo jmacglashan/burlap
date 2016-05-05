@@ -47,8 +47,7 @@ public class GridWorldState implements MutableOOState {
 		GridLocation loc = (GridLocation)o;
 
 		//copy on write
-		this.locations = new ArrayList<GridLocation>(locations);
-		this.locations.add(loc);
+		touchLocations().add(loc);
 
 		return this;
 	}
@@ -64,8 +63,7 @@ public class GridWorldState implements MutableOOState {
 		}
 
 		//copy on write
-		this.locations = new ArrayList<GridLocation>(locations);
-		this.locations.remove(ind);
+		touchLocations().remove(ind);
 
 		return this;
 	}
@@ -74,8 +72,7 @@ public class GridWorldState implements MutableOOState {
 	public MutableOOState renameObject(String objectName, String newName) {
 
 		if(objectName.equals(agent.name())){
-			GridAgent nagent = agent.copy();
-			agent.copyWithName(newName);
+			GridAgent nagent = agent.copyWithName(newName);
 			this.agent = nagent;
 		}
 		else{
@@ -85,10 +82,9 @@ public class GridWorldState implements MutableOOState {
 			}
 
 			//copy on write
-			this.locations = new ArrayList<GridLocation>(locations);
 			GridLocation nloc = this.locations.get(ind).copyWithName(newName);
-			this.locations.remove(ind);
-			this.locations.add(ind, nloc);
+			touchLocations().remove(ind);
+			locations.add(ind, nloc);
 
 		}
 
