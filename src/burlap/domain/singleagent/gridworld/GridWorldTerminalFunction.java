@@ -1,5 +1,6 @@
 package burlap.domain.singleagent.gridworld;
 
+import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.state.State;
 

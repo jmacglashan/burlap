@@ -1,4 +1,4 @@
-package burlap.domain.singleagent.gridworld;
+package burlap.domain.singleagent.gridworld.state;
 
 import burlap.oomdp.core.oo.state.MutableOOState;
 import burlap.oomdp.core.oo.state.OOStateUtilities;

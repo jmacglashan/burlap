@@ -1,48 +1,47 @@
-package burlap.domain.singleagent.gridworld;
+package burlap.domain.singleagent.gridworld.state;
 
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.core.oo.state.OOStateUtilities;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_TYPE;
 import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_X;
 import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_Y;
 
 /**
- * ObjectInstance for locations in a {@link GridWorldDomain}. Variable keys are string "x", "y", and "loc" of type int.
+ * Object instance for the agent in a {@link GridWorldDomain}. Variable keys are string "x" and "y" of type int.
  * @author James MacGlashan.
  */
-public class GridLocation implements ObjectInstance {
+public class GridAgent implements ObjectInstance {
 
 	public int x;
 	public int y;
-	public int type;
 
 	protected String name;
 
-	private final static List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_TYPE);
+	private final static List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y);
 
-
-
-	public GridLocation(int x, int y, String name) {
-		this.x = x;
-		this.y = y;
-		this.name = name;
+	public GridAgent() {
+		this.name = "agent";
 	}
 
-
-	public GridLocation(int x, int y, int type, String name) {
+	public GridAgent(int x, int y) {
+		this();
 		this.x = x;
 		this.y = y;
-		this.type = type;
+	}
+
+	public GridAgent(int x, int y, String name) {
+		this.x = x;
+		this.y = y;
 		this.name = name;
 	}
 
 	@Override
 	public String className() {
-		return GridWorldDomain.CLASS_LOCATION;
+		return GridWorldDomain.CLASS_AGENT;
 	}
 
 	@Override
@@ -51,10 +50,10 @@ public class GridLocation implements ObjectInstance {
 	}
 
 	@Override
-	public GridLocation copyWithName(String objectName) {
-		GridLocation nloc = this.copy();
-		nloc.name = objectName;
-		return nloc;
+	public GridAgent copyWithName(String objectName) {
+		GridAgent nagent = this.copy();
+		nagent.name = objectName;
+		return nagent;
 	}
 
 	@Override
@@ -75,22 +74,14 @@ public class GridLocation implements ObjectInstance {
 		else if(key.equals(ATT_Y)){
 			return y;
 		}
-		else if(key.equals(ATT_TYPE)){
-			return type;
-		}
 
 		throw new RuntimeException("Unknown key " + key);
 	}
 
 
 	@Override
-	public GridLocation copy() {
-		return new GridLocation(x, y, type, name);
-	}
-
-	@Override
-	public String toString() {
-		return OOStateUtilities.objectInstanceToString(this);
+	public GridAgent copy() {
+		return new GridAgent(x, y, name);
 	}
 
 	public String getName() {
@@ -99,5 +90,10 @@ public class GridLocation implements ObjectInstance {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return OOStateUtilities.objectInstanceToString(this);
 	}
 }
