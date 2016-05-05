@@ -7,8 +7,8 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.auxiliary.StateAbstraction;
-import burlap.mdp.auxiliary.common.NullAbstractionNoCopy;
+import burlap.mdp.auxiliary.StateMapping;
+import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
@@ -52,7 +52,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	/**
 	 * A state abstraction to use.
 	 */
-	protected StateAbstraction											storedMapAbstraction;
+	protected StateMapping storedMapAbstraction;
 	
 	/**
 	 * The discount factor
@@ -105,7 +105,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		stateRepresentations = new HashMap<HashableState, State>();
 		this.policy = new EpsilonGreedy(this, 0.1);
 		
-		this.storedMapAbstraction = new NullAbstractionNoCopy();
+		this.storedMapAbstraction = new ShallowIdentityStateMapping();
 	}
 	
 	
@@ -128,7 +128,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		stateRepresentations = new HashMap<HashableState, State>();
 		this.policy = new EpsilonGreedy(this, 0.1);
 		
-		this.storedMapAbstraction = new NullAbstractionNoCopy();
+		this.storedMapAbstraction = new ShallowIdentityStateMapping();
 	}
 	
 	/**
@@ -150,14 +150,14 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		stateRepresentations = new HashMap<HashableState, State>();
 		this.policy = new EpsilonGreedy(this, 0.1);
 		
-		this.storedMapAbstraction = new NullAbstractionNoCopy();
+		this.storedMapAbstraction = new ShallowIdentityStateMapping();
 	}
 	
 	/**
 	 * Sets the state abstraction that this agent will use
 	 * @param abstraction the state abstraction that this agent will use
 	 */
-	public void setStoredMapAbstraction(StateAbstraction abstraction){
+	public void setStoredMapAbstraction(StateMapping abstraction){
 		this.storedMapAbstraction = abstraction;
 	}
 	
@@ -243,7 +243,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @return the hashed state.
 	 */
 	protected HashableState stateHash(State s){
-		State abstracted = this.storedMapAbstraction.abstraction(s);
+		State abstracted = this.storedMapAbstraction.mapState(s);
 		return hashFactory.hashState(abstracted);
 	}
 	

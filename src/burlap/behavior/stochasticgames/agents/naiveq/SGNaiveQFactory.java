@@ -1,7 +1,7 @@
 package burlap.behavior.stochasticgames.agents.naiveq;
 
+import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.auxiliary.StateAbstraction;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.AgentFactory;
 import burlap.mdp.stochasticgames.SGDomain;
@@ -44,7 +44,7 @@ public class SGNaiveQFactory implements AgentFactory {
 	/**
 	 * The state abstract the Q-learning algorithm will use
 	 */
-	protected StateAbstraction											storedAbstraction;
+	protected StateMapping storedAbstraction;
 	
 	
 	
@@ -75,7 +75,7 @@ public class SGNaiveQFactory implements AgentFactory {
 	 * @param stateHash The state hashing factory the Q-learning algorithm will use
 	 * @param storedAbstraction the state abstraction the Q-learning algorithm will use
 	 */
-	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, HashableStateFactory stateHash, StateAbstraction storedAbstraction) {
+	public SGNaiveQFactory(SGDomain domain, double discount, double learningRate, double defaultQ, HashableStateFactory stateHash, StateMapping storedAbstraction) {
 		this.domain = domain;
 		this.discount = discount;
 		this.learningRate = learningRate;
@@ -89,7 +89,7 @@ public class SGNaiveQFactory implements AgentFactory {
 	 * Sets the factory to provide Q-learning algorithms with the given state abstraction.
 	 * @param abs the state abstraction to use
 	 */
-	public void setStoredAbstraction(StateAbstraction abs){
+	public void setStoredAbstraction(StateMapping abs){
 		this.storedAbstraction = abs;
 	}
 

@@ -4,8 +4,8 @@ import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
-import burlap.mdp.auxiliary.StateAbstraction;
-import burlap.mdp.auxiliary.common.NullAbstraction;
+import burlap.mdp.auxiliary.StateMapping;
+import burlap.mdp.auxiliary.common.IdentityStateMapping;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
@@ -21,7 +21,7 @@ import java.util.Map.Entry;
  * This class provides a means to have agents play against each other and synchronize all of their actions and observations.
  * Any number of agents can join a World instance and they will be told when a game is starting, when a game ends, when
  * they need to provide an action, and what happened to all agents after every agent made their action selection. The world
- * may also make use of an optional {@link burlap.mdp.auxiliary.StateAbstraction} object so that agents are provided an
+ * may also make use of an optional {@link burlap.mdp.auxiliary.StateMapping} object so that agents are provided an
  * abstract and simpler representation of the world. A game can be run until a terminal state is hit, or for a specific
  * number of stages, the latter of which is useful for repeated games.
  * @author James MacGlashan
@@ -41,7 +41,7 @@ public class World {
 	protected TerminalFunction					tf;
 	protected SGStateGenerator					initialStateGenerator;
 	
-	protected StateAbstraction					abstractionForAgents;
+	protected StateMapping					abstractionForAgents;
 	
 	
 	protected JointAction						lastJointAction;
@@ -68,7 +68,7 @@ public class World {
 	 * @param initialState the initial state of the world every time a new game starts
 	 */
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, State initialState){
-		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantSGStateGenerator(initialState), new NullAbstraction());
+		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantSGStateGenerator(initialState), new IdentityStateMapping());
 	}
 
 
@@ -80,7 +80,7 @@ public class World {
 	 * @param sg a state generator for generating initial states of a game
 	 */
 	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
-		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new NullAbstraction());
+		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new IdentityStateMapping());
 	}
 
 
@@ -92,11 +92,11 @@ public class World {
 	 * @param sg a state generator for generating initial states of a game
 	 * @param abstractionForAgents the abstract state representation that agents will be provided
 	 */
-	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
+	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
 		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents);
 	}
 	
-	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateAbstraction abstractionForAgents){
+	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
 		this.domain = domain;
 		this.worldModel = jam;
 		this.jointRewardModel = jr;
@@ -402,7 +402,7 @@ public class World {
 		}
 		
 		JointAction ja = new JointAction();
-		State abstractedCurrent = abstractionForAgents.abstraction(currentState);
+		State abstractedCurrent = abstractionForAgents.mapState(currentState);
 		for(SGAgent a : agents){
 			ja.addAction(a.getAction(abstractedCurrent));
 		}
@@ -414,7 +414,7 @@ public class World {
 		
 		//now that we have the joint action, perform it
 		State sp = worldModel.performJointAction(currentState, ja);
-		State abstractedPrime = this.abstractionForAgents.abstraction(sp);
+		State abstractedPrime = this.abstractionForAgents.mapState(sp);
 		Map<String, Double> jointReward = jointRewardModel.reward(currentState, ja, sp);
 		
 		DPrint.cl(debugId, jointReward.toString());

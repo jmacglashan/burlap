@@ -1,6 +1,6 @@
 package burlap.mdp.auxiliary.common;
 
-import burlap.mdp.auxiliary.StateAbstraction;
+import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.core.state.State;
 
 /**
@@ -8,10 +8,10 @@ import burlap.mdp.core.state.State;
  * @author James MacGlashan
  *
  */
-public class NullAbstractionNoCopy implements StateAbstraction{
+public class ShallowIdentityStateMapping implements StateMapping{
 
 	@Override
-	public State abstraction(State s) {
+	public State mapState(State s) {
 		return s;
 	}
 
