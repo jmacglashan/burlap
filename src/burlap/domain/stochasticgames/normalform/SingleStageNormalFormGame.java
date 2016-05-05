@@ -49,16 +49,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * it will be "actioni", since DEFAULTBIMATRIXACTIONBASENAME = "action"
 	 */
 	public static final String				DEFAULTBIMATRIXACTIONBASENAME = "action";
-	
-	/**
-	 * variable key for player number
-	 */
-	public static final String VAR_PN = "playerNum";
-	
-	/**
-	 * Class name for a player class
-	 */
-	public static final String CLASS_PLAYER = "player";
+
 	
 	/**
 	 * Number of players
