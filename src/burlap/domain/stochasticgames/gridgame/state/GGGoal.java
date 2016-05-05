@@ -4,6 +4,7 @@ import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.StateUtilities;
 import burlap.mdp.core.state.UnknownKeyException;
 import burlap.mdp.core.state.annotations.DeepCopyState;
 
@@ -54,7 +55,7 @@ public class GGGoal implements ObjectInstance, MutableState{
 
 	@Override
 	public MutableState set(Object variableKey, Object value) {
-		int i = (Integer)value;
+		int i = StateUtilities.stringOrNumber(value).intValue();
 
 		if(variableKey.equals(VAR_X)){
 			this.x = i;
