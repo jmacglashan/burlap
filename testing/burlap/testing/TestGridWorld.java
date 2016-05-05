@@ -1,9 +1,9 @@
 package burlap.testing;
 
-import burlap.domain.singleagent.gridworld.GridAgent;
-import burlap.domain.singleagent.gridworld.GridLocation;
+import burlap.domain.singleagent.gridworld.state.GridAgent;
+import burlap.domain.singleagent.gridworld.state.GridLocation;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.domain.singleagent.gridworld.GridWorldState;
+import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.oo.propositional.GroundedProp;
 import burlap.oomdp.core.oo.propositional.PropositionalFunction;
