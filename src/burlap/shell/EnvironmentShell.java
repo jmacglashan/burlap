@@ -1,7 +1,11 @@
 package burlap.shell;
 
+import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.common.NullRewardFunction;
 import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.env.*;
 
@@ -43,6 +47,24 @@ public class EnvironmentShell extends BurlapShell{
 				"ex - execute an action\n\n" +
 				"Usually, you can get help on an individual command by passing it the -h option.";
 
+	}
+
+	/**
+	 * Creates shell for std in and std out.
+	 * @param domain the BURLAP domain
+	 * @param env the {@link Environment} with which to interact
+	 */
+	public EnvironmentShell(Domain domain, Environment env){
+		this(domain, env, System.in, System.out);
+	}
+
+	/**
+	 * Creates a shell for a {@link SimulatedEnvironment} rooted at the input state using std in and std out.
+	 * @param domain the BURLAP domain
+	 * @param s the initial state for the simulated environment that will be created.
+	 */
+	public EnvironmentShell(Domain domain, State s){
+		this(domain, new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), s), System.in, System.out);
 	}
 
 
