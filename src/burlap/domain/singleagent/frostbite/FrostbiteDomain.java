@@ -401,7 +401,7 @@ public class FrostbiteDomain implements DomainGenerator{
 				if (pointInPlatform(ax, ay, platform.x, platform.y, platform.size)) {
 					for (int j = numberPlatformCol * (i / numberPlatformCol); j < numberPlatformCol * (1 + i / numberPlatformCol); j++)
 						platforms.get(j).activated = true;
-					FrostbiteIgloo igloo = s.igloo;
+					FrostbiteIgloo igloo = s.touchIgloo();
 					igloo.height = igloo.height + 1;
 					break;
 				}

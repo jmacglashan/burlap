@@ -35,11 +35,11 @@ public class FrostbiteState implements MutableOOState {
 
 		platforms = new ArrayList<FrostbitePlatform>(numberPlatformCol*numberPlatformRow);
 		int ind = 0;
-		for(int i = 0; i < numberPlatformRow; i++){
-			for(int j = 0; j < numberPlatformCol; j++){
+		for(int row = 0; row < numberPlatformRow; row++){
+			for(int i = 0; i < numberPlatformCol; i++){
 				FrostbitePlatform p = new FrostbitePlatform(
-						spaceBetweenPlatforms * i + ((i % 2 == 0) ? 0 : gameWidth / 3),
-						gameIceHeight + jumpSize / 2 - platformSize / 2 + agentSize / 2 + jumpSize * i,
+						spaceBetweenPlatforms * i + ((row % 2 == 0) ? 0 : gameWidth / 3),
+						gameIceHeight + jumpSize / 2 - platformSize / 2 + agentSize / 2 + jumpSize * row,
 						platformSize,
 						false,
 						"p"+ind
@@ -256,5 +256,10 @@ public class FrostbiteState implements MutableOOState {
 		}
 		this.platforms = nplatforms;
 		return this.platforms;
+	}
+
+	@Override
+	public String toString() {
+		return OOStateUtilities.ooStateToString(this);
 	}
 }
