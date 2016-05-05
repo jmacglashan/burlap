@@ -177,54 +177,7 @@ public class GridGame implements DomainGenerator {
 	 * The probability that an agent will pass through a semi-wall.
 	 */
 	protected double						semiWallProb = 0.5;
-	
 
-	
-	/**
-	 * Creates a visual explorer for a simple domain with two agents in it. The
-	 * w-a-s-d keys control the movement of the first agent; the i-k-j-l keys control
-	 * the movement direction of the second agent. q sets the first agent to do nothing
-	 * and u sets the second agent to do nothing. When the actions for both agents have been set,
-	 * the actions can be committed to affect the world by pressing the c key.
-	 * 
-	 * <p>
-	 * If "t" is passed as an argument then a terminal explorer is used instead.
-	 * 
-	 * @param args
-	 */
-	public static void main(String [] args){
-		
-		GridGame gg = new GridGame();
-
-		OOSGDomain d = gg.generateDomain();
-
-		
-		//State s = GridGame.getCorrdinationGameInitialState(d);
-		State s = GridGame.getTurkeyInitialState(d);
-
-		
-		Visualizer v = GGVisualizer.getVisualizer(9, 9);
-		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
-
-		
-		exp.addKeyAction("w", CLASS_AGENT +"0:"+ ACTION_NORTH);
-		exp.addKeyAction("s", CLASS_AGENT +"0:"+ ACTION_SOUTH);
-		exp.addKeyAction("d", CLASS_AGENT +"0:"+ ACTION_EAST);
-		exp.addKeyAction("a", CLASS_AGENT +"0:"+ ACTION_WEST);
-		exp.addKeyAction("q", CLASS_AGENT +"0:"+ ACTION_NOOP);
-		
-		exp.addKeyAction("i", CLASS_AGENT +"1:"+ ACTION_NORTH);
-		exp.addKeyAction("k", CLASS_AGENT +"1:"+ ACTION_SOUTH);
-		exp.addKeyAction("l", CLASS_AGENT +"1:"+ ACTION_EAST);
-		exp.addKeyAction("j", CLASS_AGENT +"1:"+ ACTION_WEST);
-		exp.addKeyAction("u", CLASS_AGENT +"1:"+ ACTION_NOOP);
-		
-		exp.initGUI();
-		
-
-		
-		
-	}
 	
 	
 	/**
@@ -348,14 +301,13 @@ public class GridGame implements DomainGenerator {
 
 	/**
 	 * Returns the initial state for a simple game in which both players can win without interfering with one another.
-	 * @param d the grid games domain object
 	 * @return the simple game initial state
 	 */
-	public static State getSimpleGameInitialState(Domain d){
+	public static State getSimpleGameInitialState(){
 
 		GenericOOState s = new GenericOOState(
-				new GGAgent(0, 0, 0, "p0"),
-				new GGAgent(2, 0, 1, "p1"),
+				new GGAgent(0, 0, 0, "agent0"),
+				new GGAgent(2, 0, 1, "agent1"),
 				new GGGoal(0, 2, 1, "g0"),
 				new GGGoal(2, 2, 2, "g1")
 		);
@@ -368,14 +320,13 @@ public class GridGame implements DomainGenerator {
 	
 	/**
 	 * Returns the initial state for a classic coordination game, where the agent's personal goals are on opposite sides.
-	 * @param d the grid games domain object
 	 * @return the coordination game initial state
 	 */
-	public static State getCorrdinationGameInitialState(Domain d){
+	public static State getCorrdinationGameInitialState(){
 
 		GenericOOState s = new GenericOOState(
-				new GGAgent(0, 0, 0, "p0"),
-				new GGAgent(2, 0, 1, "p1"),
+				new GGAgent(0, 0, 0, "agent0"),
+				new GGAgent(2, 0, 1, "agent1"),
 				new GGGoal(0, 2, 2, "g0"),
 				new GGGoal(2, 2, 1, "g1")
 		);
@@ -388,14 +339,13 @@ public class GridGame implements DomainGenerator {
 	
 	/**
 	 * Returns the initial state for a classic prisoner's dilemma formulated in a Grid Game.
-	 * @param d the grid game's domain object
 	 * @return the grid game prisoner's dilemma initial state
 	 */
-	public static State getPrisonersDilemmaInitialState(Domain d){
+	public static State getPrisonersDilemmaInitialState(){
 
 		GenericOOState s = new GenericOOState(
-				new GGAgent(3, 0, 0, "p0"),
-				new GGAgent(5, 0, 1, "p1"),
+				new GGAgent(3, 0, 0, "agent0"),
+				new GGAgent(5, 0, 1, "agent1"),
 				new GGGoal(0, 0, 1, "g0"),
 				new GGGoal(4, 0, 0, "g1"),
 				new GGGoal(8, 0, 2, "g2")
@@ -409,14 +359,13 @@ public class GridGame implements DomainGenerator {
 	
 	/**
 	 * Returns the initial state for Friend Foe game.
-	 * @param d the grid game's domain object
 	 * @return the initial state for Friend Foe
 	 */
-	public static State getFriendFoeInitialState(Domain d){
+	public static State getFriendFoeInitialState(){
 
 		GenericOOState s = new GenericOOState(
-				new GGAgent(3, 0 ,0, "p0"),
-				new GGAgent(6, 0, 1, "p1"),
+				new GGAgent(3, 0 ,0, "agent0"),
+				new GGAgent(6, 0, 1, "agent1"),
 				new GGGoal(0, 0, 1, "g0"),
 				new GGGoal(4, 0, 0, "g1")
 		);
@@ -430,14 +379,13 @@ public class GridGame implements DomainGenerator {
 	
 	/**
 	 * Returns the initial state for the Incredible game (a game in which player 0 can give an incredible threat).
-	 * @param d the grid game's domain object
 	 * @return the initial state for the Incredible game.
 	 */
-	public static State getIncredibleInitialState(Domain d){
+	public static State getIncredibleInitialState(){
 
 		GenericOOState s = new GenericOOState(
-				new GGAgent(2, 0, 0, "p0"),
-				new GGAgent(3, 0, 1, "p1"),
+				new GGAgent(2, 0, 0, "agent0"),
+				new GGAgent(3, 0, 1, "agent1"),
 				new GGGoal(0, 0, 1, "g0"),
 				new GGGoal(1, 0, 2, "g1")
 		);
@@ -449,16 +397,16 @@ public class GridGame implements DomainGenerator {
 	}
 	
 	
-	public static State getTurkeyInitialState(Domain d){
+	public static State getTurkeyInitialState(){
 
 		GenericOOState s = new GenericOOState(
-				new GGAgent(0, 0, 0, "p0"),
-				new GGAgent(2, 0, 1, "p1"),
+				new GGAgent(0, 0, 0, "agent0"),
+				new GGAgent(2, 0, 1, "agent1"),
 				new GGGoal(0, 3, 1, "g0"),
 				new GGGoal(1, 2, 0, "g1"),
 				new GGGoal(2, 3, 2, "g2"),
-				new GGWall.GGHorizontalWall(1, 0, 0, 1, "w0"),
-				new GGWall.GGHorizontalWall(1, 2, 2, 1, "w1")
+				new GGWall.GGHorizontalWall(0, 0, 1, 1, "w0"),
+				new GGWall.GGHorizontalWall(2, 2, 1, 1, "w1")
 
 		);
 
@@ -484,10 +432,10 @@ public class GridGame implements DomainGenerator {
 		int numV = s.objectsOfClass(CLASS_DIM_V_WALL).size();
 		int numH = s.objectsOfClass(CLASS_DIM_H_WALL).size();
 		
-		s.addObject(new GGWall.GGHorizontalWall(0, h-1, 0, 0, "h"+numH))
-				.addObject(new GGWall.GGHorizontalWall(0, h-1, w, 0, "h"+(numH+1)))
-				.addObject(new GGWall.GGVerticalWall(0, w-1, 0, 0, "v"+numV))
-				.addObject(new GGWall.GGVerticalWall(0, w-1, h, 0, "v"+(numV+1)) );
+		s.addObject(new GGWall.GGVerticalWall(0, h-1, 0, 0, "h"+numH))
+				.addObject(new GGWall.GGVerticalWall(0, h-1, w, 0, "h"+(numH+1)))
+				.addObject(new GGWall.GGHorizontalWall(0, w-1, 0, 0, "v"+numV))
+				.addObject(new GGWall.GGHorizontalWall(0, w-1, h, 0, "v"+(numV+1)) );
 
 		
 		
@@ -811,6 +759,52 @@ public class GridGame implements DomainGenerator {
 			
 			return false;
 		}
+
+	}
+
+
+	/**
+	 * Creates a visual explorer for a simple domain with two agents in it. The
+	 * w-a-s-d keys control the movement of the first agent; the i-k-j-l keys control
+	 * the movement direction of the second agent. q sets the first agent to do nothing
+	 * and u sets the second agent to do nothing. When the actions for both agents have been set,
+	 * the actions can be committed to affect the world by pressing the c key.
+	 *
+	 * <p>
+	 * If "t" is passed as an argument then a terminal explorer is used instead.
+	 *
+	 * @param args
+	 */
+	public static void main(String [] args){
+
+		GridGame gg = new GridGame();
+
+		OOSGDomain d = gg.generateDomain();
+
+
+		State s = GridGame.getTurkeyInitialState();
+
+
+		Visualizer v = GGVisualizer.getVisualizer(9, 9);
+		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
+
+
+		exp.addKeyAction("w", CLASS_AGENT +"0:"+ ACTION_NORTH);
+		exp.addKeyAction("s", CLASS_AGENT +"0:"+ ACTION_SOUTH);
+		exp.addKeyAction("d", CLASS_AGENT +"0:"+ ACTION_EAST);
+		exp.addKeyAction("a", CLASS_AGENT +"0:"+ ACTION_WEST);
+		exp.addKeyAction("q", CLASS_AGENT +"0:"+ ACTION_NOOP);
+
+		exp.addKeyAction("i", CLASS_AGENT +"1:"+ ACTION_NORTH);
+		exp.addKeyAction("k", CLASS_AGENT +"1:"+ ACTION_SOUTH);
+		exp.addKeyAction("l", CLASS_AGENT +"1:"+ ACTION_EAST);
+		exp.addKeyAction("j", CLASS_AGENT +"1:"+ ACTION_WEST);
+		exp.addKeyAction("u", CLASS_AGENT +"1:"+ ACTION_NOOP);
+
+		exp.initGUI();
+
+
+
 
 	}
 	

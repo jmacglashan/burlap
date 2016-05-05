@@ -448,8 +448,8 @@ public class GameAnalysis {
 	public static void main(String[] args) {
 
 		GridGame gg = new GridGame();
-		OOSGDomain domain = (OOSGDomain)gg.generateDomain();
-		State s = GridGame.getTurkeyInitialState(domain);
+		OOSGDomain domain = gg.generateDomain();
+		State s = GridGame.getTurkeyInitialState();
 
 		JointReward jr = new GridGame.GGJointRewardFunction(domain);
 		TerminalFunction tf = new GridGame.GGTerminalFunction(domain);

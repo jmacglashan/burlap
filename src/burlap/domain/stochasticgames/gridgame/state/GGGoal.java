@@ -85,7 +85,7 @@ public class GGGoal implements ObjectInstance, MutableState{
 		else if(variableKey.equals(VAR_Y)){
 			return y;
 		}
-		else if(variableKey.equals(VAR_PN)){
+		else if(variableKey.equals(VAR_GT)){
 			return type;
 		}
 		else{

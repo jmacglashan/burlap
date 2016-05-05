@@ -122,6 +122,10 @@ public class GenericOOState implements MutableOOState {
 
 	@Override
 	public List<ObjectInstance> objectsOfClass(String oclass) {
+		List<ObjectInstance> objects = this.objectsByClass.get(oclass);
+		if(objects == null){
+			return new ArrayList<ObjectInstance>();
+		}
 		return this.objectsByClass.get(oclass);
 	}
 
