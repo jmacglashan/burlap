@@ -147,9 +147,9 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 
 	@Override
 	protected int computeOOHashCode(OOState s) {
-		List<Integer> hashCodes = new ArrayList<Integer>(s.numTotalObjects());
+		List<Integer> hashCodes = new ArrayList<Integer>(s.numObjects());
 		List<ObjectInstance> objects = s.objects();
-		for(int i = 0; i < s.numTotalObjects(); i++){
+		for(int i = 0; i < s.numObjects(); i++){
 			ObjectInstance o = objects.get(i);
 			if(!this.maskedObjectClasses.contains(o.className())) {
 				int oHash = this.computeFlatHashCode(o);

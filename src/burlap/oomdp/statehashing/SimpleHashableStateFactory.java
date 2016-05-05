@@ -108,7 +108,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 
 	protected int computeOOHashCode(OOState s){
 
-		int [] hashCodes = new int[s.numTotalObjects()];
+		int [] hashCodes = new int[s.numObjects()];
 		List<ObjectInstance> objects = s.objects();
 		for(int i = 0; i < hashCodes.length; i++){
 			ObjectInstance o = objects.get(i);
@@ -208,7 +208,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 		if(s1 == s2){
 			return true;
 		}
-		if(s1.numTotalObjects() != s2.numTotalObjects()){
+		if(s1.numObjects() != s2.numObjects()){
 			return false;
 		}
 
@@ -257,7 +257,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 		if (s1 == s2) {
 			return true;
 		}
-		if(s1.numTotalObjects() != s2.numTotalObjects()){
+		if(s1.numObjects() != s2.numObjects()){
 			return false;
 		}
 

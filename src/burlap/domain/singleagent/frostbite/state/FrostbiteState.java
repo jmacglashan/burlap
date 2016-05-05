@@ -119,7 +119,7 @@ public class FrostbiteState implements MutableOOState {
 	}
 
 	@Override
-	public int numTotalObjects() {
+	public int numObjects() {
 		return platforms.size()+2;
 	}
 

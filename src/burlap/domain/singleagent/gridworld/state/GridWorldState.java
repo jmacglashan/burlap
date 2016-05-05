@@ -95,7 +95,7 @@ public class GridWorldState implements MutableOOState {
 	}
 
 	@Override
-	public int numTotalObjects() {
+	public int numObjects() {
 		return 1 + this.locations.size();
 	}
 

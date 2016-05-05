@@ -94,7 +94,7 @@ public class BlockDudeState implements MutableOOState {
 	}
 
 	@Override
-	public int numTotalObjects() {
+	public int numObjects() {
 		return this.blocks.size() + 3;
 	}
 

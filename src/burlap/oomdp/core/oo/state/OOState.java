@@ -21,7 +21,7 @@ public interface OOState extends State{
 	 * Returns the number of object instances in this state.
 	 * @return the number of object instances in this state.
 	 */
-	int numTotalObjects();
+	int numObjects();
 
 	/**
 	 * Returns the object in this state with the name oname

@@ -107,7 +107,7 @@ public class LLState implements MutableOOState{
 	}
 
 	@Override
-	public int numTotalObjects() {
+	public int numObjects() {
 		return pad != null ? 2 + obstacles.size() : 1 + obstacles.size();
 	}
 

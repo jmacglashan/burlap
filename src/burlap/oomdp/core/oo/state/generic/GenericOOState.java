@@ -106,7 +106,7 @@ public class GenericOOState implements MutableOOState {
 	}
 
 	@Override
-	public int numTotalObjects() {
+	public int numObjects() {
 		return objectsMap.size();
 	}
 
