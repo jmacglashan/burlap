@@ -65,7 +65,7 @@ public class GridWorldDomain implements DomainGenerator {
 	/**
 	 * Constant for y attribute name
 	 */
-	public static final String ATT_Y = "x";
+	public static final String ATT_Y = "y";
 
 	/**
 	 * Constant for location type attribute name

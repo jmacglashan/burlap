@@ -5,6 +5,8 @@ import burlap.oomdp.core.oo.state.OOState;
 import burlap.oomdp.core.oo.state.ObjectInstance;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +25,12 @@ public class OOStatePainter implements StatePainter {
 	/**
 	 * Ordered list of painters for each object class
 	 */
-	protected List<ObjectPainterAndClassNamePair> objectClassPainterList;
+	protected List<ObjectPainterAndClassNamePair> objectClassPainterList = new ArrayList<ObjectPainterAndClassNamePair>();
 
 	/**
 	 * Map of painters that define how to paint specific objects; if an object it appears in both specific and general lists, the specific painter is used
 	 */
-	protected Map<String, ObjectPainter> specificObjectPainters;
+	protected Map<String, ObjectPainter> specificObjectPainters = new HashMap<String, ObjectPainter>();
 
 
 	/**

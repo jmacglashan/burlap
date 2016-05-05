@@ -27,7 +27,7 @@ public class GridAgent implements ObjectInstance {
 	}
 
 	public GridAgent(int x, int y) {
-		super();
+		this();
 		this.x = x;
 		this.y = y;
 	}
