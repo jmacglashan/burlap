@@ -1,22 +1,26 @@
 package burlap.testing;
 
-import java.util.List;
-
+import burlap.domain.singleagent.gridworld.GridAgent;
+import burlap.domain.singleagent.gridworld.GridLocation;
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.domain.singleagent.gridworld.GridWorldState;
+import burlap.oomdp.core.Domain;
+import burlap.oomdp.core.oo.propositional.GroundedProp;
+import burlap.oomdp.core.oo.propositional.PropositionalFunction;
+import burlap.oomdp.core.oo.state.OOState;
+import burlap.oomdp.core.state.State;
+import burlap.oomdp.singleagent.Action;
+import burlap.oomdp.singleagent.GroundedAction;
+import burlap.oomdp.singleagent.oo.OOSADomain;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
-import burlap.oomdp.core.Domain;
-import burlap.oomdp.core.oo.propositional.GroundedProp;
-import burlap.oomdp.core.oo.propositional.PropositionalFunction;
-import burlap.oomdp.core.state.State;
-import burlap.oomdp.singleagent.Action;
-import burlap.oomdp.singleagent.GroundedAction;
+import java.util.List;
 
 public class TestGridWorld {
-	Domain domain;
+	OOSADomain domain;
 	GridWorldDomain gw;
 	
 	
@@ -29,9 +33,7 @@ public class TestGridWorld {
 		
 	}
 	public State generateState() {
-		State s = GridWorldDomain.getOneAgentOneLocationState(domain);
-		GridWorldDomain.setAgent(s, 0, 0);
-		GridWorldDomain.setLocation(s, 0, 10, 10);
+		GridWorldState s = new GridWorldState(new GridAgent(0, 0), new GridLocation(10, 10, "location0"));
 		return s;
 	}
 	
@@ -113,30 +115,30 @@ public class TestGridWorld {
 		PropositionalFunction atLocation = domain.getPropFunction(GridWorldDomain.PF_AT_LOCATION);
 		List<GroundedProp> gpAt = atLocation.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpAt.size());
-		Assert.assertEquals(expectedValues[0], gpAt.get(0).isTrue(s));
+		Assert.assertEquals(expectedValues[0], gpAt.get(0).isTrue((OOState)s));
 		
 		PropositionalFunction pfWallNorth = domain.getPropFunction(GridWorldDomain.PF_WALL_NORTH);
 		List<GroundedProp> gpWallNorth = pfWallNorth.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallNorth.size());
-		Assert.assertEquals(expectedValues[1], gpWallNorth.get(0).isTrue(s));
+		Assert.assertEquals(expectedValues[1], gpWallNorth.get(0).isTrue((OOState)s));
 		
 		
 		PropositionalFunction pfWallSouth = domain.getPropFunction(GridWorldDomain.PF_WALL_SOUTH);
 		List<GroundedProp> gpWallSouth = pfWallSouth.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallSouth.size());
-		Assert.assertEquals(expectedValues[2], gpWallSouth.get(0).isTrue(s));
+		Assert.assertEquals(expectedValues[2], gpWallSouth.get(0).isTrue((OOState)s));
 		
 		
 		PropositionalFunction pfWallEast = domain.getPropFunction(GridWorldDomain.PF_WALL_EAST);
 		List<GroundedProp> gpWallEast = pfWallEast.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallEast.size());
-		Assert.assertEquals(expectedValues[3], gpWallEast.get(0).isTrue(s));
+		Assert.assertEquals(expectedValues[3], gpWallEast.get(0).isTrue((OOState)s));
 		
 		
 		PropositionalFunction pfWallWest = domain.getPropFunction(GridWorldDomain.PF_WALL_WEST);
 		List<GroundedProp> gpWallWest = pfWallWest.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallWest.size());
-		Assert.assertEquals(expectedValues[4], gpWallWest.get(0).isTrue(s));
+		Assert.assertEquals(expectedValues[4], gpWallWest.get(0).isTrue((OOState)s));
 		
 
 	}
