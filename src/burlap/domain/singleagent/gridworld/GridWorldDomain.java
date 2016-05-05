@@ -539,11 +539,9 @@ public class GridWorldDomain implements DomainGenerator {
 			ny = ay;
 		}
 
-		GridAgent nagent = gws.agent.copy();
+		GridAgent nagent = gws.touchAgent();
 		nagent.x = nx;
 		nagent.y = ny;
-		
-		gws.agent = nagent;
 
 		return s;
 	}
