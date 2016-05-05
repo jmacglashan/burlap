@@ -25,7 +25,12 @@ public class GridWorldState implements MutableOOState {
 
 	public GridWorldState(GridAgent agent, GridLocation...locations){
 		this.agent = agent;
-		this.locations = Arrays.asList(locations);
+		if(locations.length == 0){
+			this.locations = new ArrayList<GridLocation>();
+		}
+		else {
+			this.locations = Arrays.asList(locations);
+		}
 	}
 
 	public GridWorldState(GridAgent agent, List<GridLocation> locations){
