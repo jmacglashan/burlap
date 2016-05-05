@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StateValuePainter;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.VariableDomain;
+import burlap.mdp.core.state.vardomain.VariableDomain;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

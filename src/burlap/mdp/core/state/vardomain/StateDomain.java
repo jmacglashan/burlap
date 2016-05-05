@@ -1,4 +1,4 @@
-package burlap.mdp.core.state.range;
+package burlap.mdp.core.state.vardomain;
 
 import burlap.mdp.core.state.State;
 

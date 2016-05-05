@@ -15,7 +15,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.VariableDomain;
+import burlap.mdp.core.state.vardomain.VariableDomain;
 import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.common.SimpleAction;

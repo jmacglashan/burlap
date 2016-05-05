@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.PolicyGlyph
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValuePainter2D;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.VariableDomain;
+import burlap.mdp.core.state.vardomain.VariableDomain;
 import burlap.mdp.visualizer.MultiLayerRenderer;
 
 import javax.swing.*;

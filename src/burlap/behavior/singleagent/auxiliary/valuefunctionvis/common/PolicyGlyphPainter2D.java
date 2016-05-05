@@ -4,7 +4,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StatePolicyPainter;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.VariableDomain;
+import burlap.mdp.core.state.vardomain.VariableDomain;
 
 import java.awt.*;
 import java.util.HashMap;

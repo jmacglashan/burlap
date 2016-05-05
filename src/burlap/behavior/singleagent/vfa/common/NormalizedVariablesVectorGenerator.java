@@ -2,8 +2,8 @@ package burlap.behavior.singleagent.vfa.common;
 
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.range.StateDomain;
-import burlap.mdp.core.state.range.VariableDomain;
+import burlap.mdp.core.state.vardomain.StateDomain;
+import burlap.mdp.core.state.vardomain.VariableDomain;
 
 import java.util.HashMap;
 import java.util.Map;
