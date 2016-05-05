@@ -128,7 +128,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		this.keyActionMap = new HashMap <String, GroundedSGAgentAction>();
 		this.keyShellMap = new HashMap <String, String>();
 
-		this.keyShellMap.put("`", "sg");
+		this.keyShellMap.put("`", "gs");
 		
 		this.cWidth = w;
 		this.cHeight = h;
