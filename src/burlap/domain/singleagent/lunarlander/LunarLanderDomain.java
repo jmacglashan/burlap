@@ -984,7 +984,7 @@ public class LunarLanderDomain implements DomainGenerator {
 			LLAgent agent = (LLAgent)st.object(params[0]);
 			LLBlock o = (LLBlock)st.object(params[1]);
 			double x = agent.x;
-			double y = agent.x;
+			double y = agent.y;
 
 			double l = o.left;
 			double r = o.right;
@@ -1063,8 +1063,9 @@ public class LunarLanderDomain implements DomainGenerator {
 
 
 		LLState clean = new LLState(
-				new LLAgent(0, 5, 0),
-				new LLBlock.LLPad(80, 95, 0, 10, "pad")
+				new LLAgent(5, 0, 0),
+				new LLBlock.LLPad(80, 95, 0, 10, "pad"),
+				new LLBlock.LLObstacle(60, 70, 0, 13, "obstacle")
 		);
 
 
