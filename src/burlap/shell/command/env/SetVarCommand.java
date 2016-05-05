@@ -16,17 +16,17 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for setting attribute values for the current {@link burlap.mdp.singleagent.environment.Environment}
+ * A {@link burlap.shell.command.ShellCommand} for setting state variables values for the current {@link burlap.mdp.singleagent.environment.Environment}
  * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
-public class SetAttributeCommand implements ShellCommand {
+public class SetVarCommand implements ShellCommand {
 
 	protected OptionParser parser = new OptionParser("vh*");
 
 	@Override
 	public String commandName() {
-		return "setAtt";
+		return "setVar";
 	}
 
 	@Override

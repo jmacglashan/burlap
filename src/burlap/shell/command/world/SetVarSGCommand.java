@@ -14,17 +14,17 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for setting attribute values for the current {@link burlap.mdp.stochasticgames.World}
+ * A {@link burlap.shell.command.ShellCommand} for setting state variables values for the current {@link burlap.mdp.stochasticgames.World}
  * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */
-public class SetAttributeSGCommand implements ShellCommand {
+public class SetVarSGCommand implements ShellCommand {
 
 	protected OptionParser parser = new OptionParser("vh*");
 
 	@Override
 	public String commandName() {
-		return "setAtt";
+		return "setVar";
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class SetAttributeSGCommand implements ShellCommand {
 			return 0;
 		}
 
-		if(args.size() % 2 != 1 && args.size() < 3){
+		if(args.size() % 2 != 0 && args.size() < 3){
 			return -1;
 		}
 

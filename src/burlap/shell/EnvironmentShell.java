@@ -58,7 +58,7 @@ public class EnvironmentShell extends BurlapShell{
 	protected Collection<ShellCommand> generateStandard() {
 		EpisodeRecordingCommands erc = new EpisodeRecordingCommands();
 		return Arrays.asList(new ExecuteActionCommand(domain), new ObservationCommand(), new ResetEnvCommand(),
-				new AddStateObjectCommand(domain), new RemoveStateObjectCommand(), new SetAttributeCommand(),
+				new AddStateObjectCommand(domain), new RemoveStateObjectCommand(), new SetVarCommand(),
 				new RewardCommand(), new IsTerminalCommand(),
 				erc.getRecCommand(), erc.getBrowser(), new ListActionsCommand(), new ListPropFunctions());
 	}

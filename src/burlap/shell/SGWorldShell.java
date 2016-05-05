@@ -52,7 +52,7 @@ public class SGWorldShell extends BurlapShell {
 				macs.getLsAgents(), macs.getSetAction(), new GameCommand(), new JointActionCommand(),
 				new RewardsCommand(), new LastJointActionCommand(), new IsTerminalSGCommand(),
 				new GenerateStateCommand(), new AddStateObjectSGCommand(domain),
-				new RemoveStateObjectSGCommand(), new SetAttributeSGCommand());
+				new RemoveStateObjectSGCommand(), new SetVarSGCommand());
 	}
 
 
