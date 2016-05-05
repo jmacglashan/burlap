@@ -731,7 +731,7 @@ public class CartPoleDomain implements DomainGenerator {
 
 		Domain domain = dgen.generateDomain();
 		
-		State s = new CartPoleState();
+		State s = new CartPoleFullState();
 		
 		VisualExplorer exp = new VisualExplorer(domain, CartPoleVisualizer.getCartPoleVisualizer(), s);
 		exp.addKeyAction("a", ACTION_LEFT);
