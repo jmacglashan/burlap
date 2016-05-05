@@ -85,13 +85,13 @@ public class BlocksWorldState implements MutableOOState{
 		BlocksWorldBlock ob = this.blocks.get(key.obName);
 		if(ob != null){
 			ob = ob.copy();
-			if(key.obVarKey.equals(ATT_ON)){
+			if(key.obVarKey.equals(VAR_ON)){
 				ob.on = (String)value;
 			}
-			else if(key.obVarKey.equals(ATT_CLEAR)){
+			else if(key.obVarKey.equals(VAR_CLEAR)){
 				ob.clear = (Boolean)value;
 			}
-			else if(key.obVarKey.equals(ATT_COLOR)){
+			else if(key.obVarKey.equals(VAR_COLOR)){
 				ob.color = (Color)value;
 			}
 			this.blocks.put(ob.name(), ob);

@@ -44,7 +44,7 @@ public class TigerObservation implements MutableState {
 
 	@Override
 	public List<Object> variableKeys() {
-		return Arrays.<Object>asList(ATT_HEAR);
+		return Arrays.<Object>asList(VAR_HEAR);
 	}
 
 	@Override

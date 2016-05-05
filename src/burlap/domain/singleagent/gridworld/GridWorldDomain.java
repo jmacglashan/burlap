@@ -61,19 +61,19 @@ public class GridWorldDomain implements DomainGenerator {
 
 
 	/**
-	 * Constant for x attribute name
+	 * Constant for x variable key
 	 */
-	public static final String ATT_X = "x";
+	public static final String VAR_X = "x";
 
 	/**
-	 * Constant for y attribute name
+	 * Constant for y variable key
 	 */
-	public static final String ATT_Y = "y";
+	public static final String VAR_Y = "y";
 
 	/**
-	 * Constant for location type attribute name
+	 * Constant for location type variable key
 	 */
-	public static final String ATT_TYPE = "type";
+	public static final String VAR_TYPE = "type";
 
 
 	/**
@@ -508,7 +508,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, int maxX, int maxY, ValueFunction valueFunction, Policy p){
 		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, valueFunction, p,
-				ATT_X, ATT_Y, new VariableRange(0, maxX), new VariableRange(0, maxY), 1, 1,
+				VAR_X, VAR_Y, new VariableRange(0, maxX), new VariableRange(0, maxY), 1, 1,
 				ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST);
 	}
 	

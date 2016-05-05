@@ -45,12 +45,12 @@ public class TigerDomain implements DomainGenerator {
 	/**
 	 * The attribute name that defines which door the tiger is behind
 	 */
-	public static final String ATT_DOOR = "behindDoor";
+	public static final String VAR_DOOR = "behindDoor";
 
 	/**
-	 * The attribute name for an observation
+	 * The variable key for an observation
 	 */
-	public static final String ATT_HEAR = "observation";
+	public static final String VAR_HEAR = "observation";
 
 
 
@@ -226,10 +226,10 @@ public class TigerDomain implements DomainGenerator {
 
 
 			if(r < 0.5){
-				((MutableState)s).set(ATT_DOOR, VAL_LEFT);
+				((MutableState)s).set(VAR_DOOR, VAL_LEFT);
 			}
 			else{
-				((MutableState)s).set(ATT_DOOR, VAL_RIGHT);
+				((MutableState)s).set(VAR_DOOR, VAL_RIGHT);
 			}
 			
 			return s;
@@ -240,11 +240,11 @@ public class TigerDomain implements DomainGenerator {
 			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(2);
 			
 			State left = s.copy();
-			((MutableState)left).set(ATT_DOOR, VAL_LEFT);
+			((MutableState)left).set(VAR_DOOR, VAL_LEFT);
 			tps.add(new TransitionProbability(left, 0.5));
 			
 			State right = s.copy();
-			((MutableState)right).set(ATT_DOOR, VAL_RIGHT);
+			((MutableState)right).set(VAR_DOOR, VAL_RIGHT);
 			tps.add(new TransitionProbability(right, 0.5));
 			
 			return tps;
@@ -293,7 +293,7 @@ public class TigerDomain implements DomainGenerator {
 				return this.observationReset();
 			}
 			else if(action.actionName().equals(ACTION_LISTEN)){
-				String tigerVal = (String)state.get(ATT_DOOR);
+				String tigerVal = (String)state.get(VAR_DOOR);
 				double r = RandomFactory.getMapped(0).nextDouble();
 				if(r < this.listenAccuracy){
 					if(tigerVal.equals(VAL_LEFT)){
@@ -325,8 +325,8 @@ public class TigerDomain implements DomainGenerator {
 				GroundedAction action) {
 			
 			
-			String oVal = (String)observation.get(ATT_HEAR);
-			String tigerVal = (String)state.get(ATT_DOOR);
+			String oVal = (String)observation.get(VAR_HEAR);
+			String tigerVal = (String)state.get(VAR_DOOR);
 			
 			if(action.actionName().equals(ACTION_LEFT) || action.actionName().equals(ACTION_RIGHT)){
 				if(oVal.equals(DOOR_RESET)){
@@ -449,7 +449,7 @@ public class TigerDomain implements DomainGenerator {
 			
 			
 			if(a.actionName().equals(ACTION_LEFT)){
-				String tigerVal = (String)s.get(ATT_DOOR);
+				String tigerVal = (String)s.get(VAR_DOOR);
 				
 				if(tigerVal.equals(VAL_LEFT)){
 					return wrongDoor;
@@ -459,7 +459,7 @@ public class TigerDomain implements DomainGenerator {
 				}
 			}
 			else if(a.actionName().equals(ACTION_RIGHT)){
-				String tigerVal = (String)s.get(ATT_DOOR);
+				String tigerVal = (String)s.get(VAR_DOOR);
 				if(tigerVal.equals(VAL_RIGHT)){
 					return wrongDoor;
 				}

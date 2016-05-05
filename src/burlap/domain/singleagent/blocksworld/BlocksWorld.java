@@ -29,19 +29,19 @@ import java.util.List;
 public class BlocksWorld implements DomainGenerator {
 
 	/**
-	 * Constant for the relational "on" attribute name.
+	 * Constant for the relational "on" variable key.
 	 */
-	public static final String ATT_ON = "on";
+	public static final String VAR_ON = "on";
 
 	/**
-	 * Constant for the binary "clear" attribute name.
+	 * Constant for the binary "clear" variable key.
 	 */
-	public static final String ATT_CLEAR = "clear";
+	public static final String VAR_CLEAR = "clear";
 	
 	/**
-	 * Constant for the categorical "color" attribute name.
+	 * Constant for the categorical "color" variable key.
 	 */
-	public static final String ATT_COLOR = "color";
+	public static final String VAR_COLOR = "color";
 
 
 	/**
@@ -238,9 +238,9 @@ public class BlocksWorld implements DomainGenerator {
 			
 			String srcOnName = src.on;
 
-			s.set(src.name() + ":" + ATT_ON, TABLE_VAL);
+			s.set(src.name() + ":" + VAR_ON, TABLE_VAL);
 			if(!srcOnName.equals(TABLE_VAL)) {
-				s.set(srcOnName + ":" + ATT_CLEAR, true);
+				s.set(srcOnName + ":" + VAR_CLEAR, true);
 			}
 
 			

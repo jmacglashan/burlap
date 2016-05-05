@@ -7,9 +7,9 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import java.util.Arrays;
 import java.util.List;
 
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_TYPE;
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_X;
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_Y;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_TYPE;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_X;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_Y;
 
 /**
  * ObjectInstance for locations in a {@link GridWorldDomain}. Variable keys are string "x", "y", and "loc" of type int.
@@ -23,7 +23,7 @@ public class GridLocation implements ObjectInstance {
 
 	protected String name;
 
-	private final static List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_TYPE);
+	private final static List<Object> keys = Arrays.<Object>asList(VAR_X, VAR_Y, VAR_TYPE);
 
 
 
@@ -70,13 +70,13 @@ public class GridLocation implements ObjectInstance {
 		}
 
 		String key = (String)variableKey;
-		if(key.equals(ATT_X)){
+		if(key.equals(VAR_X)){
 			return x;
 		}
-		else if(key.equals(ATT_Y)){
+		else if(key.equals(VAR_Y)){
 			return y;
 		}
-		else if(key.equals(ATT_TYPE)){
+		else if(key.equals(VAR_TYPE)){
 			return type;
 		}
 

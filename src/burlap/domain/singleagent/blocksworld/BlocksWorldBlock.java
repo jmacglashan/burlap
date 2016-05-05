@@ -20,7 +20,7 @@ public class BlocksWorldBlock implements ObjectInstance {
 
 	protected String name = "block";
 
-	private final List<Object> keys = Arrays.<Object>asList(ATT_ON, ATT_CLEAR, ATT_COLOR);
+	private final List<Object> keys = Arrays.<Object>asList(VAR_ON, VAR_CLEAR, VAR_COLOR);
 
 	public BlocksWorldBlock() {
 	}
@@ -62,13 +62,13 @@ public class BlocksWorldBlock implements ObjectInstance {
 			throw new RuntimeException("Key must be a string");
 		}
 		String key = (String)variableKey;
-		if(key.equals(ATT_ON)){
+		if(key.equals(VAR_ON)){
 			return on;
 		}
-		else if(key.equals(ATT_CLEAR)){
+		else if(key.equals(VAR_CLEAR)){
 			return clear;
 		}
-		else if(key.equals(ATT_COLOR)){
+		else if(key.equals(VAR_COLOR)){
 			return color;
 		}
 		throw new RuntimeException("Unknown key " + key);

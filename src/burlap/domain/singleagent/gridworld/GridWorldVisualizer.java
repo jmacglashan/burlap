@@ -238,8 +238,8 @@ public class GridWorldVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = (Integer)ob.get(ATT_X)*width;
-			float ry = cHeight - height - (Integer)ob.get(ATT_Y)*height;
+			float rx = (Integer)ob.get(VAR_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(VAR_Y)*height;
 			
 			if(this.shape == 0){
 				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
@@ -289,7 +289,7 @@ public class GridWorldVisualizer {
 		@Override
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) {
 			
-			int type = (Integer)ob.get(ATT_TYPE);
+			int type = (Integer)ob.get(VAR_TYPE);
 			int multiplier = type / this.baseColors.size();
 			int colIndex = type % this.baseColors.size();
 			
@@ -308,8 +308,8 @@ public class GridWorldVisualizer {
 			float width = (1.0f / domainXScale) * cWidth;
 			float height = (1.0f / domainYScale) * cHeight;
 
-			float rx = (Integer)ob.get(ATT_X)*width;
-			float ry = cHeight - height - (Integer)ob.get(ATT_Y)*height;
+			float rx = (Integer)ob.get(VAR_X)*width;
+			float ry = cHeight - height - (Integer)ob.get(VAR_Y)*height;
 
 			
 			g2.fill(new Rectangle2D.Float(rx, ry, width, height));

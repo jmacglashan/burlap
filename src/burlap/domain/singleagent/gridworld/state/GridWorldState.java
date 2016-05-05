@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_TYPE;
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_X;
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_Y;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_TYPE;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_X;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_Y;
 
 /**
  * @author James MacGlashan.
@@ -136,10 +136,10 @@ public class GridWorldState implements MutableOOState {
 		OOVariableKey key = OOStateUtilities.generateKey(variableKey);
 		if(key.obName.equals(agent.name())){
 			GridAgent nagent = agent.copy();
-			if(key.obVarKey.equals(ATT_X)){
+			if(key.obVarKey.equals(VAR_X)){
 				nagent.x = ((Number)value).intValue();
 			}
-			else if(key.obVarKey.equals(ATT_Y)){
+			else if(key.obVarKey.equals(VAR_Y)){
 				nagent.y = ((Number)value).intValue();
 			}
 			else{
@@ -150,13 +150,13 @@ public class GridWorldState implements MutableOOState {
 		int ind = locationInd(key.obName);
 		if(ind != -1){
 			GridLocation nloc = locations.get(ind).copy();
-			if(key.obVarKey.equals(ATT_X)){
+			if(key.obVarKey.equals(VAR_X)){
 				nloc.x = ((Number)value).intValue();
 			}
-			else if(key.obVarKey.equals(ATT_Y)){
+			else if(key.obVarKey.equals(VAR_Y)){
 				nloc.y = ((Number)value).intValue();
 			}
-			else if(key.obVarKey.equals(ATT_TYPE)){
+			else if(key.obVarKey.equals(VAR_TYPE)){
 				nloc.type = ((Number)value).intValue();
 			}
 			else{

@@ -42,7 +42,7 @@ public class TigerState implements MutableState{
 
 	@Override
 	public List<Object> variableKeys() {
-		return Arrays.<Object>asList(ATT_DOOR);
+		return Arrays.<Object>asList(VAR_DOOR);
 	}
 
 	@Override

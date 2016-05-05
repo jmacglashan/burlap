@@ -7,8 +7,8 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import java.util.Arrays;
 import java.util.List;
 
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_X;
-import static burlap.domain.singleagent.gridworld.GridWorldDomain.ATT_Y;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_X;
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_Y;
 
 /**
  * Object instance for the agent in a {@link GridWorldDomain}. Variable keys are string "x" and "y" of type int.
@@ -21,7 +21,7 @@ public class GridAgent implements ObjectInstance {
 
 	protected String name;
 
-	private final static List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y);
+	private final static List<Object> keys = Arrays.<Object>asList(VAR_X, VAR_Y);
 
 	public GridAgent() {
 		this.name = "agent";
@@ -68,10 +68,10 @@ public class GridAgent implements ObjectInstance {
 		}
 
 		String key = (String)variableKey;
-		if(key.equals(ATT_X)){
+		if(key.equals(VAR_X)){
 			return x;
 		}
-		else if(key.equals(ATT_Y)){
+		else if(key.equals(VAR_Y)){
 			return y;
 		}
 
