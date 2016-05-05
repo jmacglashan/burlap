@@ -19,10 +19,10 @@ import burlap.mdp.core.state.vardomain.VariableDomain;
 import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.common.SimpleAction;
-import burlap.mdp.singleagent.explorer.TerminalExplorer;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
+import burlap.shell.EnvironmentShell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -803,10 +803,9 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 		
 		if(expMode == 0){
-			
-			TerminalExplorer exp = new TerminalExplorer(d, s);
-			
-			exp.explore();
+
+			EnvironmentShell shell = new EnvironmentShell(d, s);
+			shell.start();
 			
 		}
 		else if(expMode == 1){

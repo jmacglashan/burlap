@@ -10,7 +10,7 @@ import burlap.mdp.stochasticgames.*;
 import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.mdp.stochasticgames.common.StaticRepeatedGameActionModel;
-import burlap.mdp.stochasticgames.explorers.SGTerminalExplorer;
+import burlap.shell.SGWorldShell;
 
 import java.util.*;
 
@@ -842,7 +842,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	/**
 	 * A main method showing example code that would be used to create an instance of Prisoner's dilemma and begin playing it with a 
-	 * {@link burlap.mdp.stochasticgames.explorers.SGTerminalExplorer}.
+	 * {@link SGWorldShell}.
 	 * @param args
 	 */
 	public static void main(String [] args){
@@ -853,8 +853,9 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 
 		World w = new World(domain, r, new NullTermination(), (State)new NFGameState(2));
 
-		SGTerminalExplorer exp = new SGTerminalExplorer(w);
-		exp.explore();
+		SGWorldShell shell = new SGWorldShell(domain, w);
+		shell.start();
+
 		
 	}
 	

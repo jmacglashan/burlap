@@ -12,10 +12,10 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.common.SimpleAction;
-import burlap.mdp.singleagent.explorer.TerminalExplorer;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
+import burlap.shell.EnvironmentShell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1082,9 +1082,8 @@ public class LunarLanderDomain implements DomainGenerator {
 
 		if(expMode == 0){
 
-			TerminalExplorer te = new TerminalExplorer(domain, clean);
-
-			te.explore();
+			EnvironmentShell shell = new EnvironmentShell(domain, clean);
+			shell.start();
 
 		}
 		else if(expMode == 1){

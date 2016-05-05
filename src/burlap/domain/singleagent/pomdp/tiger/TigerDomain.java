@@ -17,16 +17,18 @@ import burlap.mdp.singleagent.common.NullAction;
 import burlap.mdp.singleagent.common.SimpleAction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
-import burlap.mdp.singleagent.explorer.TerminalExplorer;
 import burlap.mdp.singleagent.pomdp.ObservationFunction;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
+import burlap.shell.EnvironmentShell;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static cern.clhep.Units.s;
 
 
 /**
@@ -508,9 +510,8 @@ public class TigerDomain implements DomainGenerator {
 		    envTouse = observableEnv;
 		}
 
-		TerminalExplorer exp = new TerminalExplorer(domain, envTouse);
-		exp.explore();
-
+		EnvironmentShell shell = new EnvironmentShell(domain, envTouse);
+		shell.start();
 
 		
 		

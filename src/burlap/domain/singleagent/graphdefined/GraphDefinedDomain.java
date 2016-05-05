@@ -10,7 +10,7 @@ import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.common.SimpleAction;
-import burlap.mdp.singleagent.explorer.TerminalExplorer;
+import burlap.shell.EnvironmentShell;
 
 import java.util.*;
 
@@ -545,8 +545,8 @@ public class GraphDefinedDomain implements DomainGenerator {
 
 
 		State s = new GraphStateNode(0);
-		TerminalExplorer exp = new TerminalExplorer(domain, s);
-		exp.explore();
+		EnvironmentShell shell = new EnvironmentShell(domain, s);
+		shell.start();
 	}
 	
 	

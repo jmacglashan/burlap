@@ -10,10 +10,10 @@ import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.explorer.TerminalExplorer;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.singleagent.oo.ObjectParameterizedAction;
+import burlap.shell.EnvironmentShell;
 
 import java.awt.*;
 import java.util.List;
@@ -392,10 +392,9 @@ public class BlocksWorld implements DomainGenerator {
 		
 		
 		if(expMode == 0){
-			
-			TerminalExplorer exp = new TerminalExplorer(domain, s);
-			
-			exp.explore();
+
+			EnvironmentShell shell = new EnvironmentShell(domain, s);
+			shell.start();
 			
 		}
 		else if(expMode == 1){
