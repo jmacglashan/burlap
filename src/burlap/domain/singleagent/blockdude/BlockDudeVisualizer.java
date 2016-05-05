@@ -251,7 +251,9 @@ public class BlockDudeVisualizer {
 					float rx = x * width;
 					float ry = cHeight - height - y * height;
 
-					g2.fill(new Rectangle2D.Float(rx, ry, width, height));
+					if(map[x][y] == 1) {
+						g2.fill(new Rectangle2D.Float(rx, ry, width, height));
+					}
 				}
 			}
 

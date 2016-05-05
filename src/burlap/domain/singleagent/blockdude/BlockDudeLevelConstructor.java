@@ -26,7 +26,7 @@ public class BlockDudeLevelConstructor {
 	 */
 	public static State getLevel1(Domain domain){
 
-		int [][] map = new int[25][3];
+		int [][] map = new int[25][25];
 		addFloor(map);
 
 		map[3][1] = 1;
@@ -57,7 +57,7 @@ public class BlockDudeLevelConstructor {
 	 */
 	public static State getLevel2(Domain domain){
 
-		int [][] map = new int[25][6];
+		int [][] map = new int[25][25];
 
 		wallSegment(map, 2, 5, 0);
 		floorSegment(map, 0, 4, 2);
@@ -74,7 +74,7 @@ public class BlockDudeLevelConstructor {
 				BlockDudeCell.block("b0", 7, 1),
 				BlockDudeCell.block("b1", 13, 3),
 				BlockDudeCell.block("b2", 15, 3),
-				BlockDudeCell.block("b3", 14, 4),
+				BlockDudeCell.block("b3", 15, 4),
 				BlockDudeCell.block("b4", 16, 3)
 		);
 
@@ -90,7 +90,7 @@ public class BlockDudeLevelConstructor {
 	 */
 	public static State getLevel3(Domain domain){
 
-		int [][] map = new int[25][9];
+		int [][] map = new int[25][25];
 
 		floorSegment(map, 0, 1, 0);
 		wallSegment(map, 0, 4, 1);

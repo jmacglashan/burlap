@@ -69,7 +69,7 @@ public class BlockDudeAgent implements ObjectInstance {
 
 	@Override
 	public BlockDudeAgent copy() {
-		return null;
+		return new BlockDudeAgent(x, y, dir, holding);
 	}
 
 	@Override

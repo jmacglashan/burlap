@@ -83,7 +83,7 @@ public class BlockDudeCell implements ObjectInstance {
 
 	@Override
 	public BlockDudeCell copy() {
-		return null;
+		return new BlockDudeCell(x, y, className, name);
 	}
 
 	public String getClassName() {

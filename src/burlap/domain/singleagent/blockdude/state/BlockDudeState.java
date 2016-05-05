@@ -124,7 +124,7 @@ public class BlockDudeState implements MutableOOState {
 		obs.add(agent);
 		obs.add(map);
 		obs.add(exit);
-		return null;
+		return obs;
 	}
 
 	@Override
