@@ -44,7 +44,7 @@ public class LandmarkColorBlendInterpolation implements ColorBlend {
 	
 	/**
 	 * Initializes the color blend with a power to raise the normalized distance of values.
-	 * @param polyDegree
+	 * @param polyDegree the polynomial degree to use in interpolation
 	 */
 	public LandmarkColorBlendInterpolation(double polyDegree) {
 		this.landmarkValues = new ArrayList<Double>();

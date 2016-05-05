@@ -158,6 +158,7 @@ public class MountainCar implements DomainGenerator {
 	 * dir=+1 indicates forward acceleration; -1 backwards acceleration; 0 no acceleration (coast).
 	 * @param s the state in which the agents position should be modified
 	 * @param dir the direction of acceleration
+	 * @param physParms the physics parameters used
 	 * @return the modified state s
 	 */
 	public static State move(State s, int dir, MCPhysicsParams physParms){

@@ -29,6 +29,7 @@ public interface OODomain extends Domain {
 	 * Adds the Java class definition for an OO-MDP class with the given name
 	 * @param className the OO-MDP class name
 	 * @param stateClass the Java class used to define it
+	 * @return this object to support the builder paradigm
 	 */
 	OODomain addStateClass(String className, Class<?> stateClass);
 

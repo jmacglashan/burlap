@@ -29,7 +29,6 @@ import burlap.mdp.visualizer.Visualizer;
  * by the player's position, facing direction, whether they are holding a block, the place of every block in the world
  * and an int array specifying the map of the "bricks" that define the landscape.
  * <p>
- * <p>
  * States representing the first three levels of Block Dude can be generated from the
  * {@link burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor} and states can be visualized with the
  * {@link burlap.domain.singleagent.blockdude.BlockDudeVisualizer}. You can run this class' main method
@@ -147,8 +146,8 @@ public class BlockDude implements DomainGenerator{
 
 	/**
 	 * Initializes a world with the maximum space dimensionality provided and actions that use semi-deep state copies.
-	 * @param maxx
-	 * @param maxy
+	 * @param maxx max x size of the world
+	 * @param maxy max y size of the world
 	 */
 	public BlockDude(int maxx, int maxy){
 		this.maxx = maxx;
@@ -502,6 +501,7 @@ public class BlockDude implements DomainGenerator{
 		 * @param name the name of the action
 		 * @param domain the domain to which it will be associated
 		 * @param dir the direction of movement: +1 for east; -1 for west.
+		 * @param maxx the max x size of the world
 		 */
 		public MoveAction(String name, Domain domain, int dir, int maxx){
 			super(name, domain);

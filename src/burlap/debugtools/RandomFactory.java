@@ -41,7 +41,7 @@ public class RandomFactory {
 	
 	/**
 	 * Example usage.
-	 * @param args
+	 * @param args command line args
 	 */
 	public static void main(String []args){
 		

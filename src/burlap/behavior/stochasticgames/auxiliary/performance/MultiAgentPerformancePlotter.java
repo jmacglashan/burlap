@@ -898,6 +898,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	
 	/**
 	 * Updates the cumulative reward by step series. Does nothing if that metric is not being plotted.
+	 * @param agentData the agent dataset
 	 */
 	protected void updateCSRSeries(DatasetsAndTrials agentData){
 		
@@ -917,6 +918,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 
 	/**
 	 * Updates the cumulative reward by episode series.  Does nothing if that metric is not being plotted.
+	 * @param agentData the agent dataset
 	 */
 	protected void updateCERSeries(DatasetsAndTrials agentData){
 		
@@ -937,6 +939,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 
 	/**
 	 * Updates the average reward by episode series.  Does nothing if that metric is not being plotted.
+	 * @param agentData the agent dataset
 	 */
 	protected void updateAERSeris(DatasetsAndTrials agentData){
 		
@@ -956,6 +959,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 
 	/**
 	 * Updates the median reward by episode series.  Does nothing if that metric is not being plotted.
+	 * @param agentData the agent dataset
 	 */
 	protected void updateMERSeris(DatasetsAndTrials agentData){
 		
@@ -975,6 +979,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 
 	/**
 	 * Updates the cumulative steps by episode series.  Does nothing if that metric is not being plotted.
+	 * @param agentData the agent dataset
 	 */
 	protected void updateCSESeries(DatasetsAndTrials agentData){
 		
@@ -994,6 +999,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 
 	/**
 	 * Updates the steps by episode series.  Does nothing if that metric is not being plotted.
+	 * @param agentData the agent dataset
 	 */
 	protected void updateSESeries(DatasetsAndTrials agentData){
 		
@@ -1283,6 +1289,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		
 		/**
 		 * Initializes the datastructures for an agent with the given name
+		 * @param agentName the agent name for which data will be tracked
 		 */
 		public AgentDatasets(String agentName){
 			this.cumulativeStepRewardSeries = new XYSeries(agentName);
@@ -1393,7 +1400,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		
 		/**
 		 * Initializes with the given Boolean value
-		 * @param b
+		 * @param b the initial boolean value
 		 */
 		public MutableBoolean(boolean b){
 			this.b = b;

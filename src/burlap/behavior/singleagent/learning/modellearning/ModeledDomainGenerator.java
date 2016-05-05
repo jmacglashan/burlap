@@ -40,6 +40,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 	 * the given model that was learned by some {@link Model} class. To retrieve the Domain object that
 	 * was created, make a call to the {@link #generateDomain()} method.
 	 * @param sourceDomain the source domain that the create domain will reflect.
+	 * @param model the model on which transition dynamics will be made
 	 */
 	public ModeledDomainGenerator(Domain sourceDomain, Model model){
 		

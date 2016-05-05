@@ -1,17 +1,17 @@
 package burlap.behavior.stochasticgames.agents.madp;
 
-import java.util.Map;
-
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.dpplanners.MAValueIteration;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.JointActionModel;
 import burlap.mdp.stochasticgames.JointReward;
+import burlap.mdp.stochasticgames.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
+
+import java.util.Map;
 
 /**
  * An interface for generating {@link burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming} objects. This is useful for the
@@ -193,6 +193,7 @@ public interface MADPPlannerFactory {
 		/**
 		 * Initializes.
 		 * @param domain the domain in which to perform planing
+		 * @param agentDefinitions the definitions of the agent types
 		 * @param jointActionModel the joint action model
 		 * @param jointReward the joint reward function
 		 * @param terminalFunction the terminal state function

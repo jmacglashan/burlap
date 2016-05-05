@@ -55,6 +55,7 @@ public interface AbstractObjectParameterizedGroundedAction extends AbstractGroun
 		 * target state that are equal. This method is useful if a domain uses parameterized actions and is object identifier invariant.
 		 * If the domain of this grounded action's action is object identifier dependent, then no translation will occur
 		 * and this object will be returned. This object will also be returned if it is a parameterless action.
+		 * @param groundedAction the underlying grounded action to have its parameters translated
 		 * @param sourceState the source state from which this objects parameters were bound.
 		 * @param targetState a target state with potentially different object identifiers for equivalent values.
 		 * @return a grounded action object whose parameters have been translated to the target state object identifiers

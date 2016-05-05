@@ -1,12 +1,8 @@
 package burlap.datastructures;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import burlap.debugtools.RandomFactory;
+
+import java.util.*;
 
 
 
@@ -69,7 +65,7 @@ public class StochasticTree <T>{
 	
 	/**
 	 * Sets the tree to use a specific random object when performing sampling
-	 * @param r
+	 * @param r the random generator to use
 	 */
 	public void setRandom(Random r){
 		this.rand = r;
@@ -133,7 +129,7 @@ public class StochasticTree <T>{
 	/**
 	 * Removes the given element from the tree. For this operation to be supported
 	 * T must be hashable.
-	 * @param element
+	 * @param element the element to remove
 	 */
 	public void remove(T element){
 		STNode node = nodeMap.get(element);
@@ -213,7 +209,7 @@ public class StochasticTree <T>{
 	/**
 	 * A recursive method for percolating a weight change of a node
 	 * @param node the node whose weight change should be percolated
-	 * @param delta
+	 * @param delta the change in weight
 	 */
 	protected void percolateWeightChange(STNode node, double delta){
 		node.width += delta;

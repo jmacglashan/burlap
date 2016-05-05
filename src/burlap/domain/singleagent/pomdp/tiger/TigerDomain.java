@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static cern.clhep.Units.s;
-
 
 /**
  * An implementation of the classic Tiger domain. In this problem an agent is faced with two closed doors side by side:
@@ -486,7 +484,7 @@ public class TigerDomain implements DomainGenerator {
 
 
 	/**
-	 * Main method for interacting with the tiger domain via a {@link burlap.mdp.singleagent.explorer.TerminalExplorer}.
+	 * Main method for interacting with the tiger domain via an {@link EnvironmentShell}
 	 * By default, the TerminalExplorer interacts with the partially observable environment ({@link burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment}),
 	 * which means you only get to see the observations that the agent would. However, if you set the first command-line argument
 	 * to be "h", then the explorer will explorer the underlying fully observable MDP states.

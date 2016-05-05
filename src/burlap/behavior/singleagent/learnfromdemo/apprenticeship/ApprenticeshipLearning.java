@@ -1,32 +1,24 @@
 package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
 import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.Action;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.common.UniformCostRF;
-
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
 import com.joptimizer.functions.ConvexMultivariateRealFunction;
 import com.joptimizer.functions.LinearMultivariateRealFunction;
@@ -35,6 +27,8 @@ import com.joptimizer.optimizers.JOptimizer;
 import com.joptimizer.optimizers.OptimizationRequest;
 import com.joptimizer.optimizers.OptimizationResponse;
 import com.joptimizer.util.Utils;
+
+import java.util.*;
 
 
 /** 
@@ -137,7 +131,7 @@ public class ApprenticeshipLearning {
 	
 	/**
 	 * Returns the initial state of a randomly chosen episode analysis
-	 * @param episodes
+	 * @param episodes the expert demonstrations
 	 * @return a random episode's initial state
 	 */
 	public static State getInitialState(List<EpisodeAnalysis> episodes) {
@@ -148,8 +142,8 @@ public class ApprenticeshipLearning {
 
 
 	/**
-	 * Computes a policy that models the expert trajectorys included in the request object.
-	 * @param request
+	 * Computes a policy that models the expert trajectories included in the request object.
+	 * @param request the IRL problem description
 	 * @return the computed {@link Policy}
 	 */
 	public static Policy getLearnedPolicy(ApprenticeshipLearningRequest request) {

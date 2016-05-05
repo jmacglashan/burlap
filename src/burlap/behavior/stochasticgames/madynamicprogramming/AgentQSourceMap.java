@@ -1,11 +1,11 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
+import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
+import burlap.mdp.stochasticgames.SGAgent;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
-import burlap.mdp.stochasticgames.SGAgent;
 
 
 /**
@@ -37,7 +37,7 @@ public interface AgentQSourceMap {
 		
 		/**
 		 * Initializes with the Q-source hashmap ot be used.
-		 * @param qSourceMapping
+		 * @param qSourceMapping the source hash map to be used.
 		 */
 		public HashMapAgentQSourceMap(Map<String, QSourceForSingleAgent> qSourceMapping){
 			this.qSourceMapping = qSourceMapping;

@@ -1,12 +1,12 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
+import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.singleagent.GroundedAction;
 
 /**
  * UCT Action node that stores relevant action statics necessary for UCT.
@@ -71,7 +71,7 @@ public class UCTActionNode {
 	
 	/**
 	 * Adds a successor node to the list of possible successors
-	 * @param node
+	 * @param node the uct successor node
 	 */
 	public void addSuccessor(UCTStateNode node){
 		

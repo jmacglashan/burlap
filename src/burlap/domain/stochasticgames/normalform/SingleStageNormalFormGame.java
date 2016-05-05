@@ -371,6 +371,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	/**
 	 * Creates a world instance for this game in which the provided agents join in the order they are passed. This object
 	 * uses the provided domain instance generated from this object instead of generating a new one.
+	 * @param domain the SGDomain instance
 	 * @param agents the agents to join the created world.
 	 * @return a world instance with the provided agents having already joined.
 	 */
@@ -415,6 +416,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	/**
 	 * Returns a hashable strategy profile object for a strategy profile specified by action names
+	 * @param actionNameToIndex the map from action names to action indices
 	 * @param actions the strategy profile specified as an array of action names, ordered by the player number of the player that took the action.
 	 * @return a hashable strategy profile.
 	 */
@@ -843,7 +845,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	/**
 	 * A main method showing example code that would be used to create an instance of Prisoner's dilemma and begin playing it with a 
 	 * {@link SGWorldShell}.
-	 * @param args
+	 * @param args command line args
 	 */
 	public static void main(String [] args){
 		

@@ -1227,6 +1227,7 @@ public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 		
 		/**
 		 * Initializes the datastructures for an agent with the given name
+		 * @param agentName the agent's identifying name
 		 */
 		public AgentDatasets(String agentName){
 			this.cumulativeStepRewardSeries = new XYSeries(agentName);
@@ -1337,7 +1338,7 @@ public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 		
 		/**
 		 * Initializes with the given Boolean value
-		 * @param b
+		 * @param b the inital boolean value
 		 */
 		public MutableBoolean(boolean b){
 			this.b = b;

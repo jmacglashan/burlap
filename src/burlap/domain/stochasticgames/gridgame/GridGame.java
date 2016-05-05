@@ -773,7 +773,7 @@ public class GridGame implements DomainGenerator {
 	 * <p>
 	 * If "t" is passed as an argument then a terminal explorer is used instead.
 	 *
-	 * @param args
+	 * @param args command line args
 	 */
 	public static void main(String [] args){
 

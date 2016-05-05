@@ -1,24 +1,24 @@
 package burlap.behavior.singleagent.learning.actorcritic.critics;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.state.State;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.Action;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * An implementation of TDLambda that can be used as a critic for {@link burlap.behavior.singleagent.learning.actorcritic.ActorCritic} algorithms [1].
@@ -144,7 +144,7 @@ public class TDLambda implements Critic, ValueFunction {
 
 	/**
 	 * Sets the reward function to use.
-	 * @param rf
+	 * @param rf the reward function to use
 	 */
 	public void setRewardFunction(RewardFunction rf){
 		this.rf = rf;

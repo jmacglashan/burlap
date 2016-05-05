@@ -21,6 +21,8 @@ public interface ObjectInstance extends State {
 
 	/**
 	 * Returns a copy of this {@link ObjectInstance} with the specified name
+	 * @param objectName the new name for the object
+	 * @return a copy of this object
 	 */
 	ObjectInstance copyWithName(String objectName);
 }

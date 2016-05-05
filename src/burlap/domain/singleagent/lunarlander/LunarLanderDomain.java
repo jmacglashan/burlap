@@ -545,6 +545,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * Turns the lander in the direction indicated by the domains defined change in angle for turn actions.
 	 * @param s the state in which the lander's angle should be changed
 	 * @param dir the direction to turn; +1 is clockwise, -1 is counterclockwise
+	 * @param physParams the physics parameters being used
 	 */
 	protected static void incAngle(LLState s, double dir, LLPhysicsParams physParams){
 
@@ -569,6 +570,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * Updates the position of the agent/lander given the provided thrust force that has been exerted
 	 * @param s the state in which the agent/lander should be modified
 	 * @param thrust the amount of thrust force exerted by the lander.
+	 * @param physParams the physics parameters being used
 	 */
 	protected static void updateMotion(LLState s, double thrust, LLPhysicsParams physParams){
 		
@@ -741,6 +743,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param name the name of the action
 		 * @param domain the domain in which the action exists
 		 * @param dir the direction this action will turn; +1 for clockwise, -1 for counterclockwise.
+		 * @param physParams the physics parameters being used
 		 */
 		public ActionTurn(String name, Domain domain, double dir, LLPhysicsParams physParams) {
 			super(name, domain);
@@ -782,6 +785,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * Initializes the idle action.
 		 * @param name the name of the action
 		 * @param domain the domain of the action.
+		 * @param physParams the physics parameters being used
 		 */
 		public ActionIdle(String name, Domain domain, LLPhysicsParams physParams) {
 			super(name, domain);
@@ -823,6 +827,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param name the name of the action
 		 * @param domain the domain of the action
 		 * @param thrustValue the force of thrust for this thrust action
+		 * @param physParams the physics parameters being used
 		 */
 		public ActionThrust(String name, Domain domain, double thrustValue, LLPhysicsParams physParams){
 			super(name, domain);
@@ -1011,12 +1016,24 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	public class TouchGroundPF extends PropositionalFunction{
 
-		protected double ymin;
+		protected double ymin = 0;
+
 
 		/**
 		 * Initializes to be evaluated on an agent object.
 		 * @param name the name of the propositional function
 		 * @param domain the domain of the propositional function
+		 */
+		public TouchGroundPF(String name, OODomain domain) {
+			super(name, domain, new String[]{CLASS_AGENT});
+			this.ymin = ymin;
+		}
+
+		/**
+		 * Initializes to be evaluated on an agent object.
+		 * @param name the name of the propositional function
+		 * @param domain the domain of the propositional function
+		 * @param ymin the minimum y value
 		 */
 		public TouchGroundPF(String name, OODomain domain, double ymin) {
 			super(name, domain, new String[]{CLASS_AGENT});

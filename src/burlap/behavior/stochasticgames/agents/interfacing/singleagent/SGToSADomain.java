@@ -91,6 +91,7 @@ public class SGToSADomain implements DomainGenerator {
 		/**
 		 * Initializes for a given stochastic games action.
 		 * @param srcAction the source stochastic games {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} object.
+		 * @param domainWrapper SADomain to which this action will be attached
 		 */
 		public SAActionWrapper(SGAgentAction srcAction, Domain domainWrapper){
 			super(srcAction.actionName, domainWrapper);

@@ -39,7 +39,7 @@ public interface FeatureDatabase {
 	 * online fashion. That is, if the set of possible state features is defined at construction, then this method does not need to do anything.
 	 * If features are generated as needed, such as with an instance-based feature set, then when the database is told to be frozen no new
 	 * instances should be created.
-	 * @param toggle
+	 * @param toggle if true, then no need features will be generated.
 	 */
 	void freezeDatabaseState(boolean toggle);
 	

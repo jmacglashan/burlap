@@ -520,6 +520,8 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @param s the current state
 	 * @param xd the attempted new X position of the agent
 	 * @param yd the attempted new Y position of the agent
+	 * @param map the walls map
+	 * @return input state s, after modification
 	 */
 	protected State move(State s, int xd, int yd, int [][] map){
 
@@ -778,7 +780,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * Creates a visual explorer or terminal explorer. By default a visual explorer is presented; use the "t" argument
 	 * to create terminal explorer. Will create a 4 rooms grid world with the agent in lower left corner and a location in
 	 * the upper right. Use w-a-s-d to move.
-	 * @param args
+	 * @param args command line args
 	 */
 	public static void main(String[] args) {
 	

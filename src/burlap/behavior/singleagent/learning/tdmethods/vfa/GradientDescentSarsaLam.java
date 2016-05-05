@@ -319,7 +319,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	
 	/**
 	 * Sets whether to use replacing eligibility traces rather than accumulating traces.
-	 * @param toggle
+	 * @param toggle true to use replacing traces, false to use accumulating traces
 	 */
 	public void setUseReplaceTraces(boolean toggle){
 		this.useReplacingTraces = toggle;
@@ -601,6 +601,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		/**
 		 * Creates a trace for the given weight with the given eligibility value
 		 * @param weight the VFA weight
+		 * @param weightValue the initial weight value
 		 * @param eligibilityValue the eligibility to assign to it.
 		 */
 		public EligibilityTraceVector(int weight, double weightValue, double eligibilityValue){

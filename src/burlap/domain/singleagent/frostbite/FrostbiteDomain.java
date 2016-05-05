@@ -30,7 +30,6 @@ import java.util.Random;
  * of ice blocks are activated, they reset and can be activated by jumping on them again. Once the igloo is built,
  * the agent can go to it to win the game. If the agent jumps or walks into the water, the game is over.
  * <p>
- * <p>
  * If you run the main method of this class, it will launch of a visual explorer that you can play. They keys
  * w,s,a,d,x correspond to the actions jump north, jump south, move west, move east, do nothing. If you win or lose
  * the visual explorer will automatically terminate. If you want it to keep running, you can set this class' public static
@@ -171,7 +170,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	 * Note: The termination conditions are not checked when testing the domain this way, which means it is
 	 * impossible to win or die and might trigger bugs. To enable them, uncomment the code in the "update" function.
 	 *
-	 * @param args
+	 * @param args command line args
 	 */
 	public static void main(String[] args) {
 		FrostbiteDomain fd = new FrostbiteDomain();

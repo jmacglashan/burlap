@@ -169,6 +169,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * @param domain the problem domain
 	 * @param gamma the discount factor
 	 * @param fd the feature database defining state features on which LSPI will run.
+	 * @param dataset the dataset of transitions to use
 	 */
 	public LSPI(Domain domain, double gamma, FeatureDatabase fd, SARSData dataset){
 		this.solverInit(domain, rf, tf, gamma, null);
@@ -205,6 +206,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * @param rf the reward function to use for planning
 	 * @param tf the terminal function to use for planning
 	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
+	 * @param planningCollector the dataset collector to use for planning
 	 */
 	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numSamplesForPlanning, SARSCollector planningCollector){
 		this.rf = rf;

@@ -53,7 +53,6 @@ import java.util.List;
  * will only ever be able to use this action indirectly by applying it in an {@link burlap.mdp.singleagent.environment.Environment},
  * which should know how to execute it (for example, by telling a robot to execute the action in the real world).
  * <p>
- * <p>
  * Implementing the {@link #applicableInState(State, burlap.mdp.singleagent.GroundedAction)} method is how preconditions can be specified.
  * If you do not override this method, then the default behavior is that the action will have no preconditions and can be applied
  * in any state. This method takes as input a {@link State} and the parameters for this action (if any),

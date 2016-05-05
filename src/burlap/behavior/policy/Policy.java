@@ -56,7 +56,7 @@ import java.util.Random;
  * {@link #getActionDistributionForState(State)} method can be trivially implemented by having it
  * return the result of {@link #getDeterministicPolicy(State)}, which will call {@link #getAction(State)}
  * and wrap the result in an {@link Policy.ActionProb} object with assigned probability of 1.0.
- * <p><p>
+ * <p>
  * <b>Superclass method</b><p>
  * This class also has many superclass methods for interacting with policy. These include
  * {@link #getProbOfAction(State, AbstractGroundedAction)},
@@ -167,22 +167,6 @@ public abstract class Policy {
 	}
 	
 
-
-	/**
-	 * Don't use this, the input state is not necessary; instead use {@link #getProbOfActionGivenDistribution(AbstractGroundedAction, java.util.List)}.
-	 */
-	@Deprecated
-	public static double getProbOfActionGivenDistribution(State s, AbstractGroundedAction ga, List<ActionProb> distribution){
-		if(distribution == null || distribution.isEmpty()){
-			throw new RuntimeException("Distribution is null or empty, cannot return probability for given action.");
-		}
-		for(ActionProb ap : distribution){
-			if(ap.ga.equals(ga)){
-				return ap.pSelection;
-			}
-		}
-		return 0.;
-	}
 
 	/**
 	 * Searches the input distribution for the occurrence of the input action and returns its probability.

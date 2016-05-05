@@ -1,22 +1,20 @@
 package burlap.behavior.singleagent.planning.stochastic.rtdp;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
-import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.debugtools.DPrint;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
 import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 
 /**
@@ -46,8 +44,8 @@ public class BFSRTDP extends RTDP {
 	
 	/**
 	 * Initializes the valueFunction. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
-	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
-	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else.
+	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)}  method
+	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)}  method to change the rollout policy to something else.
 	 * @param domain the domain in which to plan
 	 * @param rf the reward function
 	 * @param tf the terminal state function
@@ -96,7 +94,7 @@ public class BFSRTDP extends RTDP {
 
 	/**
 	 * Sets the goal state that causes the BFS-like pass to stop expanding when found.
-	 * @param gc
+	 * @param gc sets the goal state test to stop BFS
 	 */
 	public void setGoalCondition(StateConditionTest gc){
 		this.goalCondition = gc;

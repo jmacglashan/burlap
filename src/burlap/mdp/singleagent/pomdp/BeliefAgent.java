@@ -95,6 +95,7 @@ public abstract class BeliefAgent {
 	 * method. The agent's action selection for the current belief state is defend by
 	 * the {@link #getAction(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
 	 * sequence is saved and {@link burlap.behavior.singleagent.EpisodeAnalysis} object and returned.
+	 * @param maxSteps the maximum number of steps to take in the environment
 	 * @return and {@link burlap.behavior.singleagent.EpisodeAnalysis} that recorded the observation, action, and reward sequence.
 	 */
 	public EpisodeAnalysis actUntilTerminalOrMaxSteps(int maxSteps){

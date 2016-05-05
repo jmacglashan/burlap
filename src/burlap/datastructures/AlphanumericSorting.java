@@ -103,6 +103,7 @@ public class AlphanumericSorting implements Comparator {
 
 	/**
 	 * Testing the alphanumeric sorting
+	 * @param args command line args
 	 */
 	public static void main(String[] args) {
 		String[] alphaNumericStringArray = new String[] { "NUM10071",

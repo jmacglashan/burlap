@@ -278,6 +278,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 
 	/**
 	 * Returns whether two values are equal.
+	 * @param key the state variable key
 	 * @param v1 the first value to compare
 	 * @param v2 the second value to compare
 	 * @return true if v1 = v2; false otherwise

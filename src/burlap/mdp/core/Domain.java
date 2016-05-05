@@ -1,17 +1,14 @@
 package burlap.mdp.core;
 
 
-import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.singleagent.Action;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
-import java.util.*;
+import java.util.List;
 
 
 /**
- * This is the base class for a problem domain. A problem domain consists of its state variables, as defined with an
- * OO-MDP ({@link burlap.mdp.core.Attribute}s, {@link burlap.mdp.core.ObjectClass}s, and {@link PropositionalFunction}s),
- * and the physics of the world, which are typically specified with some set of action definitions. For single-agent
+ * This is the base interface for a problem domain. For single-agent
  * domains, the physics and actions are defined with the {@link burlap.mdp.singleagent.Action} object and for
  * multi-agent stochastic games, they are defined with {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} and a
  * {@link burlap.mdp.stochasticgames.JointActionModel}. See the respective single-agent {@link burlap.mdp.singleagent.SADomain}

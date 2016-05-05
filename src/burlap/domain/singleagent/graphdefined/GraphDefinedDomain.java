@@ -439,6 +439,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 * The name of this action will be the constant BASEACTIONNAMEi where i is the action number specified.
 		 * @param domain the domain of the action
 		 * @param aId the action identifier number
+		 * @param transitionDynamics the graph transition dynamics
 		 */
 		public GraphAction(Domain domain, int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics){
 			super(BASE_ACTION_NAME +aId, domain);

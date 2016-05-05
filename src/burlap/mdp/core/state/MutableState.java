@@ -12,7 +12,7 @@ public interface MutableState extends State {
 	 * Sets the value for the given variable key.
 	 * @param variableKey the identifier for the variable value to change
 	 * @param value the variable value to which the variable should be set.
-	 * @return
+	 * @return this object to support multiple set chaining
 	 */
 	MutableState set(Object variableKey, Object value);
 
