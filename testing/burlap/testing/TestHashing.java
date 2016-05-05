@@ -103,9 +103,12 @@ public class TestHashing {
 		testSimpleHashFactoryLargeState(factory, 50, 1000, false);
 		testSimpleHashFactoryLargeState(factory, 100, 10000, false);
 		testSimpleHashFactoryLargeState(factory, 200,100000, false);
+		testSimpleHashFactoryLargeState(factory, 500,100000, false);
 		
 		testSimpleHashFactoryLargeState(factory, 10, 100, true);
-		testSimpleHashFactoryLargeState(factory, 50, 1000, true);
+		testSimpleHashFactoryLargeState(factory, 20, 1000, true);
+		testSimpleHashFactoryLargeState(factory, 50, 10000, true);
+		testSimpleHashFactoryLargeState(factory, 100,100000, true);
 
 	}
 	
