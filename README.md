@@ -1,4 +1,4 @@
-[![Snap CI branch](https://img.shields.io/snap-ci/ThoughtWorksStudios/eb_deployer/master.svg?maxAge=2592000)]() [![Maven Central](https://maven-badges.herokuapp.com/maven-central/edu.brown.cs.burlap/burlap/badge.svg)](https://maven-badges.herokuapp.com/maven-central/edu.brown.cs.burlap/burlap) [![license](https://img.shields.io/badge/license-LGPL-blue.svg)]()  [![java6](https://img.shields.io/badge/java-6-blue.svg)]() [![java7](https://img.shields.io/badge/java-7-blue.svg)]() [![java8](https://img.shields.io/badge/java-8-blue.svg)]()
+[![Snap CI branch](https://img.shields.io/snap-ci/ThoughtWorksStudios/eb_deployer/master.svg?maxAge=2592000)]() [![Maven Central](https://maven-badges.herokuapp.com/maven-central/edu.brown.cs.burlap/burlap/badge.svg)](https://maven-badges.herokuapp.com/maven-central/edu.brown.cs.burlap/burlap) [![license](https://img.shields.io/badge/license-LGPL-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0.en.html)  ![java6](https://img.shields.io/badge/java-6-blue.svg) ![java7](https://img.shields.io/badge/java-7-blue.svg) ![java8](https://img.shields.io/badge/java-8-blue.svg)
 
 BURLAP
 ======
