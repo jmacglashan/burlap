@@ -1,11 +1,20 @@
+[![Snap CI branch](https://img.shields.io/snap-ci/ThoughtWorksStudios/eb_deployer/master.svg?maxAge=2592000)]() [![Maven Central](https://maven-badges.herokuapp.com/maven-central/edu.brown.cs.burlap/burlap/badge.svg)](https://maven-badges.herokuapp.com/maven-central/edu.brown.cs.burlap/burlap) [![license](https://img.shields.io/badge/license-LGPL-blue.svg)]()  [![java6](https://img.shields.io/badge/java-6-blue.svg)]() [![java7](https://img.shields.io/badge/java-7-blue.svg)]() [![java8](https://img.shields.io/badge/java-8-blue.svg)]()
+
 BURLAP
 ======
 
-The master branch now contains the new BURLAP version 2; for version 1, use the branch "v1"
-
 Repository for the ongoing development of the Brown-UMBC Reinforcement Learning And Planning (BURLAP) java library.
 
-BURLAP is a java code library for the use and development of single or multi-agent planning and learning algorithms and domains to accompany them. At the core of the library is a rich state and domain representation framework based on the object-oriented MDP (OO-MDP) [1] paradigm that facilitates the creation of discrete, continuous, or relational domains that can consist of any number of different "objects" in the world. Planning and learning algorithms range from classic forward search planning to value function-based stochastic planning and learning algorithms. Also included is a set of analysis tools such as a common framework for the visualization of domains and agent performance in various domains.
+BURLAP is a java code library for the use and development of single or multi-agent planning and learning algorithms and domains to accompany them. At the core of the library is a rich state and domain representation framework based on the object-oriented MDP (OO-MDP) [1] paradigm that facilitates the creation of discrete, continuous, or relational domains that can consist of any number of different "objects" in the world. Planning and learning algorithms range from classic forward search planning to value function-based stochastic planning and learning algorithms. Also included is a set of tools such as an extendable experiment shell and a common framework for the visualization of domains and agent performance.
+
+## Important Links
+
+* Home page: http://burlap.cs.brown.edu
+* Written tutorials: http://burlap.cs.brown.edu/tutorials/index.html
+* Example code repository: http://github.com/jmacglashan/burlap_examples/
+* Discussion board: https://groups.google.com/forum/#!forum/burlap-discussion
+* BURLAP ROS Bridge library: https://github.com/h2r/burlap_rosbridge
+* Minecraft Interface: http://github.com/h2r/burlapcraft
 
 ## Linking
 
@@ -23,20 +32,33 @@ Alternatively, you can compile from the source using either Maven or, for the ti
 ## Compiling
 
 ### Maven
+The recommended builds sytem for BURLAP is [Maven](https://maven.apache.org/). If you have Maven intalled already then use the follow commands for the desired operation from the same directory as the code.
 
-Compile with `mvn compile`. Create a jar file with `mvn package` This will create a jar in the target directory along with sources and Java doc. It will also create a jar that includes all the dependencies. Install to your local repository with `mvn install`.
+Create a jar file with sources and Java doc in the target directory (will be created):
+```
+mvn package
+```
+Install to your local Maven repository: 
+```
+mvn install
+```
 
 ### Ant
 
-To compile with ant, type "ant dist" to produce the jar file, which will be created in the directory "dist". To compile the javadoc type: "ant doc" which will put the javadoc files in the directory "doc".
+For the time being, you can also use ant as a build system. But we will be phasing this out for Maven.
 
-##Example and Tutorial Code
-Example code for various aspects of BURLAP can be found at:
-https://github.com/jmacglashan/burlap_examples
+Compile a jar file into the dist directory:
+```
+ant dist
+```
 
-## More information
-You can find more information on BURLAP, including tutorials, FAQS, Java docs, and library extensions, by visiting our website at:
-http://burlap.cs.brown.edu
+Compile  java doc into the doc folder:
+```
+ant doc
+```
+
+## Older versions
+Github branches contain older versions of the code repository. See branches v1 and v2 for the version 1 and version iterations of BURLAP.
 
 ## References
 1. Diuk, C., Cohen, A., and Littman, M.L.. "An object-oriented representation for efficient reinforcement learning." Proceedings of the 25th international conference on Machine learning (2008). 240-270.
