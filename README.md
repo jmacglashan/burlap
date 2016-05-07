@@ -32,7 +32,7 @@ Alternatively, you can compile from the source using either Maven or, for the ti
 ## Compiling
 
 ### Maven
-The recommended builds sytem for BURLAP is [Maven](https://maven.apache.org/). If you have Maven intalled already then use the follow commands for the desired operation from the same directory as the code.
+The recommended build sytem for BURLAP is [Maven](https://maven.apache.org/). If you have Maven intalled already, then use the following commands for the desired operation from the same directory as the code.
 
 Create a jar file with sources and Java doc in the target directory (will be created):
 ```
@@ -45,7 +45,7 @@ mvn install
 
 ### Ant
 
-For the time being, you can also use ant as a build system. But we will be phasing this out for Maven.
+For the time being, you can also use ant as a build system. But we will be phasing ant support out.
 
 Compile a jar file into the dist directory:
 ```
