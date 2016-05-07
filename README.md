@@ -58,7 +58,7 @@ ant doc
 ```
 
 ## Older versions
-Github branches contain older versions of the code repository. See branches v1 and v2 for the version 1 and version iterations of BURLAP.
+Github branches contain older versions of the code repository. See branches [v1](https://github.com/jmacglashan/burlap/tree/v1) and [v2](https://github.com/jmacglashan/burlap/tree/v2) for the version 1 and version 2 iterations of BURLAP.
 
 ## References
 1. Diuk, C., Cohen, A., and Littman, M.L.. "An object-oriented representation for efficient reinforcement learning." Proceedings of the 25th international conference on Machine learning (2008). 240-270.
