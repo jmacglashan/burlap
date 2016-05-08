@@ -66,7 +66,7 @@ public class StateRenderLayer implements RenderLayer{
 	@Override
 	public void render(Graphics2D g2, float width, float height) {
 		
-		if(this.curState == null){
+		if(this.curState == null || this.curState instanceof NullState){
 			return; //don't render anything if there is no state to render
 		}
 		

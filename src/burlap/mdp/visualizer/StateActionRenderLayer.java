@@ -1,6 +1,7 @@
 package burlap.mdp.visualizer;
 
 import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
 
 import java.awt.*;
@@ -67,7 +68,7 @@ public abstract class StateActionRenderLayer implements RenderLayer {
 
 	@Override
 	public void render(Graphics2D g2, float width, float height) {
-		if(this.renderAction != null){
+		if(this.renderAction != null && this.renderState != null && !(this.renderState instanceof NullState)){
 			this.renderStateAction(g2, this.renderState, this.renderAction, width, height);
 		}
 	}
