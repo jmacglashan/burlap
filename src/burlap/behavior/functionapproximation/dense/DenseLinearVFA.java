@@ -28,7 +28,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	/**
 	 * The state feature vector generator used for linear value function approximation.
 	 */
-	protected DenseStateFeatures fvGen;
+	protected DenseStateFeatures stateFeatures;
 
 	/**
 	 * A feature index offset for each action when using Q-value function approximation.
@@ -67,18 +67,18 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	 * If the former method is called
 	 * first, then this object will be tasked with state value function approximation. If the latter
 	 * method is called first, then this object will be tasked with state-action value function approximation.
-	 * @param fvGen The state feature vector generator that produces the features used for either linear state value function approximation or state-action-value function approximation.
+	 * @param stateFeatures The state feature vector generator that produces the features used for either linear state value function approximation or state-action-value function approximation.
 	 * @param defaultWeightValue The default weight value of all function weights.
 	 */
-	public DenseLinearVFA(DenseStateFeatures fvGen, double defaultWeightValue){
-		this.fvGen = fvGen;
+	public DenseLinearVFA(DenseStateFeatures stateFeatures, double defaultWeightValue){
+		this.stateFeatures = stateFeatures;
 		this.defaultWeight = defaultWeightValue;
 	}
 
 
 	@Override
 	public double evaluate(State s, AbstractGroundedAction a) {
-		this.currentStateFeatures = this.fvGen.features(s);
+		this.currentStateFeatures = this.stateFeatures.features(s);
 		this.currentActionOffset = this.getActionOffset(a);
 		int indOff = this.currentActionOffset*this.currentStateFeatures.length;
 		double val = 0;
@@ -96,7 +96,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 
 	@Override
 	public double evaluate(State s) {
-		this.currentStateFeatures = this.fvGen.features(s);
+		this.currentStateFeatures = this.stateFeatures.features(s);
 		this.currentActionOffset = 0;
 		if(this.stateWeights == null){
 			this.stateWeights = new double[this.currentStateFeatures.length];
@@ -125,7 +125,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 			features = this.currentStateFeatures;
 		}
 		else{
-			features = this.fvGen.features(s);
+			features = this.stateFeatures.features(s);
 		}
 
 		FunctionGradient gradient = new FunctionGradient.SparseGradient(features.length);
@@ -152,7 +152,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 			features = this.currentStateFeatures;
 		}
 		else{
-			features = this.fvGen.features(s);
+			features = this.stateFeatures.features(s);
 		}
 
 		FunctionGradient gradient = new FunctionGradient.SparseGradient(features.length);
@@ -262,8 +262,8 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 
 
 
-	public DenseStateFeatures getFvGen() {
-		return fvGen;
+	public DenseStateFeatures getStateFeatures() {
+		return stateFeatures;
 	}
 
 	public double getDefaultWeight() {
@@ -328,7 +328,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 
 	@Override
 	public DenseLinearVFA copy() {
-		DenseLinearVFA vfa = new DenseLinearVFA(this.fvGen, this.defaultWeight);
+		DenseLinearVFA vfa = new DenseLinearVFA(this.stateFeatures, this.defaultWeight);
 		vfa.actionOffset = new HashMap<AbstractGroundedAction, Integer>(this.actionOffset);
 
 		if(this.stateWeights != null) {

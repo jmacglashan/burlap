@@ -1,11 +1,7 @@
 package burlap.behavior.functionapproximation.dense.rbf;
 
-import burlap.behavior.functionapproximation.sparse.ActionFeaturesQuery;
-import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
-import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.functionapproximation.dense.DenseLinearVFA;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
-import burlap.behavior.functionapproximation.sparse.LinearVFA;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
 
@@ -24,12 +20,12 @@ import java.util.Map;
  *
  * @author James MacGlashan.
  */
-public class RBFFeatures implements SparseStateFeatures {
+public class RBFFeatures implements DenseStateFeatures {
 
 	/**
-	 * The state feature vector generator to supply to the RBFs
+	 * The input features over which RBFs will be generated
 	 */
-	protected DenseStateFeatures fvGen;
+	protected DenseStateFeatures inputFeatures;
 
 	/**
 	 * The list of RBF units in this database
@@ -62,13 +58,13 @@ public class RBFFeatures implements SparseStateFeatures {
 
 	/**
 	 * Initializes with an empty list of RBF units.
-	 * @param fvGen the state feature vector generator to use to generate the feature vectors provided to RBFs
+	 * @param inputFeatures the input features over which RBFs will be generated
 	 * @param hasOffset if true, an offset RBF unit with a constant response value is included in the feature set.
 	 */
-	public RBFFeatures(DenseStateFeatures fvGen, boolean hasOffset){
+	public RBFFeatures(DenseStateFeatures inputFeatures, boolean hasOffset){
 		rbfs = new ArrayList<RBF>();
 		this.hasOffset = hasOffset;
-		this.fvGen = fvGen;
+		this.inputFeatures = inputFeatures;
 
 		if(hasOffset)
 		{
@@ -95,60 +91,36 @@ public class RBFFeatures implements SparseStateFeatures {
 		this.rbfs.addAll(rbfs);
 	}
 
+
+
+
 	@Override
-	public List<StateFeature> getStateFeatures(State s)
+	public double [] features(State s)
 	{
 
-		List<StateFeature> rbfsf = new ArrayList<StateFeature>();
+		int n = this.rbfs.size();
+		n = hasOffset ? n+1 : n;
+
+		double [] rbfFeatures = new double[n];
+
+
+
+		double [] svars = this.inputFeatures.features(s);
+
 		int id = 0;
-
-		double [] svars = this.fvGen.features(s);
-
 		for(RBF r : rbfs)
 		{
 			double value = r.responseFor(svars);
-			StateFeature sf = new StateFeature(id, value);
-			rbfsf.add(sf);
+			rbfFeatures[id] = value;
 			id++;
 		}
 
 		if(hasOffset)
 		{
-			StateFeature sf = new StateFeature(id, 1);
-			rbfsf.add(sf);
+			rbfFeatures[id] = 1.;
 		}
 
-		return rbfsf;
-	}
-
-	@Override
-	public List<ActionFeaturesQuery> getActionFeaturesSets(State s, List<GroundedAction> actions)
-	{
-
-		List<ActionFeaturesQuery> lstAFQ = new ArrayList<ActionFeaturesQuery>();
-
-		List<StateFeature> sfs = this.getStateFeatures(s);
-
-		for(GroundedAction ga : actions){
-			int actionMult = this.getActionMultiplier(ga);
-			int indexOffset = actionMult*this.nRbfs;
-
-			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga);
-			for(StateFeature sf : sfs){
-				afq.addFeature(new StateFeature(sf.id + indexOffset, sf.value));
-			}
-
-			lstAFQ.add(afq);
-
-		}
-
-		return lstAFQ;
-	}
-
-	@Override
-	public void freezeDatabaseState(boolean toggle)
-	{
-		//do nothing
+		return rbfFeatures;
 	}
 
 
@@ -157,48 +129,18 @@ public class RBFFeatures implements SparseStateFeatures {
 	 * @param defaultWeightValue the default feature weight value to use for all features
 	 * @return a linear VFA object over this RBF feature database.
 	 */
-	public LinearVFA generateVFA(double defaultWeightValue)
+	public DenseLinearVFA generateVFA(double defaultWeightValue)
 	{
-		return new LinearVFA(this, defaultWeightValue);
+		return new DenseLinearVFA(this, defaultWeightValue);
 	}
 
 
 
-	/**
-	 * This method returns the action multiplier for the specified grounded action.
-	 * If the action is not stored, a new action multiplier will created, stored, and returned.
-	 * If the action is parameterized a runtime exception is thrown.
-	 * @param ga the grounded action for which the multiplier will be returned
-	 * @return the action multiplier to be applied to a state feature id.
-	 */
-	protected int getActionMultiplier(GroundedAction ga){
-
-		if(ga instanceof AbstractObjectParameterizedGroundedAction){
-			throw new RuntimeException("RBF Feature Database does not support AbstractObjectParameterizedGroundedActions.");
-		}
-
-		Integer stored = this.actionFeatureMultiplier.get(ga);
-		if(stored == null){
-			this.actionFeatureMultiplier.put(ga, this.nextActionMultiplier);
-			stored = this.nextActionMultiplier;
-			this.nextActionMultiplier++;
-		}
-
-		return stored;
-	}
-
-	@Override
-	public int numberOfFeatures() {
-		if(this.actionFeatureMultiplier.size() == 0){
-			return this.nRbfs;
-		}
-		return this.nRbfs*this.nextActionMultiplier;
-	}
 
 	@Override
 	public RBFFeatures copy() {
 
-		RBFFeatures rbf = new RBFFeatures(this.fvGen, this.hasOffset);
+		RBFFeatures rbf = new RBFFeatures(this.inputFeatures, this.hasOffset);
 		rbf.rbfs = new ArrayList<RBF>(this.rbfs);
 		rbf.nRbfs = this.nRbfs;
 		rbf.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);

@@ -1,6 +1,6 @@
 package burlap.behavior.functionapproximation.sparse.tilecoding;
 
-import burlap.behavior.functionapproximation.sparse.ActionFeaturesQuery;
+import burlap.behavior.functionapproximation.sparse.ActionFeaturesSet;
 import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
 import burlap.behavior.functionapproximation.sparse.StateFeature;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
@@ -165,7 +165,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	}
 	
 	@Override
-	public List<StateFeature> getStateFeatures(State s) {
+	public List<StateFeature> features(State s) {
 		
 		double [] input = this.featureVectorGenerator.features(s);
 		List<StateFeature> features = new ArrayList<StateFeature>();
@@ -208,13 +208,13 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	}
 
 	@Override
-	public List<ActionFeaturesQuery> getActionFeaturesSets(State s,
-			List<GroundedAction> actions) {
+	public List<ActionFeaturesSet> getActionFeaturesSets(State s,
+														 List<GroundedAction> actions) {
 		
 		double [] input = this.featureVectorGenerator.features(s);
-		List<ActionFeaturesQuery> features = new ArrayList<ActionFeaturesQuery>();
+		List<ActionFeaturesSet> features = new ArrayList<ActionFeaturesSet>();
 		for(GroundedAction ga : actions){
-			features.add(new ActionFeaturesQuery(ga));
+			features.add(new ActionFeaturesSet(ga));
 		}
 		
 		for(int i = 0; i < this.tilings.size(); i++){
@@ -225,7 +225,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 			List<ActionFeatureID> storedActionFeatures = this.getOrGenerateActionFeatureList(tileFeatureMap, tile);
 			for(int j = 0; j < actions.size(); j++){
 				GroundedAction ga = actions.get(j);
-				ActionFeaturesQuery afq = features.get(j);
+				ActionFeaturesSet afq = features.get(j);
 				int fid = this.addOrGetMatchingActionFeatureID(storedActionFeatures, ga);
 				StateFeature sf = new StateFeature(fid, 1.);
 				afq.addFeature(sf);
@@ -283,12 +283,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	public LinearVFA generateVFA(double defaultWeightValue){
 		return new LinearVFA(this, defaultWeightValue);
 	}
-	
-	@Override
-	public void freezeDatabaseState(boolean toggle) {
-		//do nothing
 
-	}
 	
 	
 	/**

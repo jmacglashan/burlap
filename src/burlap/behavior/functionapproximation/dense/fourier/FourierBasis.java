@@ -1,14 +1,11 @@
 package burlap.behavior.functionapproximation.dense.fourier;
 
-import burlap.behavior.functionapproximation.dense.NormalizedVariableFeatures;
-import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
-import burlap.behavior.functionapproximation.sparse.ActionFeaturesQuery;
-import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
-import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.functionapproximation.dense.DenseLinearVFA;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
-import burlap.behavior.functionapproximation.sparse.LinearVFA;
+import burlap.behavior.functionapproximation.dense.NormalizedVariableFeatures;
+import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
@@ -35,17 +32,17 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class FourierBasis implements SparseStateFeatures {
+public class FourierBasis implements DenseStateFeatures {
 
 	/**
-	 * The number of state varibles on which the produced basis functions operate
+	 * The number of state variables on which the produced basis functions operate
 	 */
 	protected int								numStateVariables;
 	
 	/**
-	 * The OO-MDP {@link State} to feature vector/variable generator. Should produced normalized values.
+	 * The input features over which fourier basis functions will be generated
 	 */
-	protected DenseStateFeatures featureVectorGenerator;
+	protected DenseStateFeatures inputFeatures;
 	
 	/**
 	 * The coefficient vectors used
@@ -55,7 +52,7 @@ public class FourierBasis implements SparseStateFeatures {
 	/**
 	 * The maximum number of non-zero coefficient entries permitted in a coefficient vector
 	 */
-	protected int								maxNonZeroCoefficents;
+	protected int maxNonZeroCoefficients;
 	
 	/**
 	 * The order of the Fourier basis functions.
@@ -80,27 +77,27 @@ public class FourierBasis implements SparseStateFeatures {
 	/**
 	 * Initializes. The coefficient vectors used by this Fourier Basis function will be generated lazily when the first features for an input state/state-action pair are queried.
 	 * The maximum number of non-zero coefficient entries in a coefficient vector will be set to the maixmum (the state variable dimensionality).
-	 * @param featureVectorGenerator the state feature vector generator that turns OO-MDP {@link State} objects into double arrays.
+	 * @param inputFeatures the state feature vector generator that turns OO-MDP {@link State} objects into double arrays.
 	 * @param order the Fourier basis order
 	 */
-	public FourierBasis(DenseStateFeatures featureVectorGenerator, int order){
-		this.featureVectorGenerator = featureVectorGenerator;
+	public FourierBasis(DenseStateFeatures inputFeatures, int order){
+		this.inputFeatures = inputFeatures;
 		this.order = order;
-		this.maxNonZeroCoefficents = -1;
+		this.maxNonZeroCoefficients = -1;
 	}
 	
 	/**
-	 * Initializes. The coefficient vectors used by this Fourier Basis function will be generated lazily when the first features for an input state/state-action pair are queried.
-	 * Setting maxNonZeroCoefficents to one results in treating each state variable as indepdent and thereby producing order*d basis functions (for each action) where d is the number
-	 * of state variables. Larger values of maxNonZeroCoefficents will result in more variable dependency conbinations.
-	 * @param featureVectorGenerator the state feature vector generator that turns OO-MDP {@link State} objects into double arrays
+	 * Initializes. The coefficient vectors used by this Fourier Basis function will be generated lazily when the first features for an input state are queried.
+	 * Setting maxNonZeroCoefficents to one results in treating each state variable as independent and thereby producing order*d basis functions (for each action) where d is the number
+	 * of state variables. Larger values of maxNonZeroCoefficents will result in more variable dependency combinations.
+	 * @param inputFeatures The input features over which fourier basis functions will be generated
 	 * @param order the fourier basis order
-	 * @param maxNonZeroCoefficents the maximum number of entries in coeffient vectors that can have non-zero values. 
+	 * @param maxNonZeroCoefficients the maximum number of entries in coefficient vectors that can have non-zero values.
 	 */
-	public FourierBasis(DenseStateFeatures featureVectorGenerator, int order, int maxNonZeroCoefficents){
-		this.featureVectorGenerator = featureVectorGenerator;
+	public FourierBasis(DenseStateFeatures inputFeatures, int order, int maxNonZeroCoefficients){
+		this.inputFeatures = inputFeatures;
 		this.order = order;
-		this.maxNonZeroCoefficents = maxNonZeroCoefficents;
+		this.maxNonZeroCoefficients = maxNonZeroCoefficients;
 	}
 	
 	
@@ -139,69 +136,31 @@ public class FourierBasis implements SparseStateFeatures {
 	}
 	
 	@Override
-	public List<StateFeature> getStateFeatures(State s) {
+	public double [] features(State s) {
 		
-		double [] input = this.featureVectorGenerator.features(s);
+		double [] input = this.inputFeatures.features(s);
 		if(this.coefficientVectors == null){
 			this.numStateVariables = input.length;
-			if(this.maxNonZeroCoefficents == -1){
-				this.maxNonZeroCoefficents = this.numStateVariables;
+			if(this.maxNonZeroCoefficients == -1){
+				this.maxNonZeroCoefficients = this.numStateVariables;
 			}
 			this.generateCoefficientVectors();
 		}
 		
 		List<StateFeature> res = new ArrayList<StateFeature>(this.coefficientVectors.size());
-		
+
+		double [] features = new double[this.coefficientVectors.size()];
 		for(int i = 0; i < this.coefficientVectors.size(); i++){
 			double value = this.basisValue(input, i);
-			StateFeature sf = new StateFeature(i, value);
-			res.add(sf);
+			features[i] = value;
 		}
 		
 		
-		return res;
+		return features;
 	}
 
-	@Override
-	public List<ActionFeaturesQuery> getActionFeaturesSets(State s,
-			List<GroundedAction> actions) {
-		
-		List<ActionFeaturesQuery> lstAFQ = new ArrayList<ActionFeaturesQuery>();
-		
-		List<StateFeature> sfs = this.getStateFeatures(s);
-		
-		for(GroundedAction ga : actions){
-			int actionMult = this.getActionMultiplier(ga);
-			int indexOffset = actionMult*this.coefficientVectors.size();
-			
-			ActionFeaturesQuery afq = new ActionFeaturesQuery(ga);
-			for(StateFeature sf : sfs){
-				afq.addFeature(new StateFeature(sf.id + indexOffset, sf.value));
-			}
-			
-			lstAFQ.add(afq);
-			
-		}
-		
-		return lstAFQ;
-		
-	}
 
-	@Override
-	public void freezeDatabaseState(boolean toggle) {
-		//nothing to do
-	}
 
-	@Override
-	public int numberOfFeatures() {
-		if(this.coefficientVectors == null){
-			return 0;
-		}
-		if(this.nextActionMultiplier == 0){
-			return this.coefficientVectors.size();
-		}
-		return this.coefficientVectors.size()*this.nextActionMultiplier;
-	}
 	
 	
 	/**
@@ -239,9 +198,9 @@ public class FourierBasis implements SparseStateFeatures {
 	 * @param defaultWeightValue the default feature weight value to use for all features
 	 * @return a linear VFA object over this Fourier basis feature database.
 	 */
-	public LinearVFA generateVFA(double defaultWeightValue)
+	public DenseLinearVFA generateVFA(double defaultWeightValue)
 	{
-		return new LinearVFA(this, defaultWeightValue);
+		return new DenseLinearVFA(this, defaultWeightValue);
 	}
 	
 	
@@ -270,7 +229,7 @@ public class FourierBasis implements SparseStateFeatures {
 		}
 		
 		//otherwise, consider all possible values for this vector provided we don't have too many non-zero entries
-		if(numNonZeroEntries >= this.maxNonZeroCoefficents){
+		if(numNonZeroEntries >= this.maxNonZeroCoefficients){
 			vector[index] = 0;
 			this.generateCoefficientVectorsHelper(index+1, vector, numNonZeroEntries);
 		}
@@ -289,35 +248,12 @@ public class FourierBasis implements SparseStateFeatures {
 		
 	}
 
-	
-	
-	/**
-	 * This method returns the action multiplier for the specified grounded action.
-	 * If the action is not stored, a new action multiplier will created, stored, and returned.
-	 * If the action is parameterized a runtime exception is thrown.
-	 * @param ga the grounded action for which the multiplier will be returned
-	 * @return the action multiplier to be applied to a state feature id.
-	 */
-	protected int getActionMultiplier(GroundedAction ga){
-		
-		if(ga instanceof AbstractObjectParameterizedGroundedAction){
-			throw new RuntimeException("Fourier Basis Feature Database does not support AbstractObjectParameterizedGroundedActions");
-		}
-		
-		Integer stored = this.actionFeatureMultiplier.get(ga);
-		if(stored == null){
-			this.actionFeatureMultiplier.put(ga, this.nextActionMultiplier);
-			stored = this.nextActionMultiplier;
-			this.nextActionMultiplier++;
-		}
-		
-		return stored;
-	}
+
 
 
 	@Override
 	public FourierBasis copy() {
-		FourierBasis fb = new FourierBasis(this.featureVectorGenerator, this.order, this.maxNonZeroCoefficents);
+		FourierBasis fb = new FourierBasis(this.inputFeatures, this.order, this.maxNonZeroCoefficients);
 		fb.numStateVariables = this.numStateVariables;
 		fb.coefficientVectors = new ArrayList<short[]>(this.coefficientVectors);
 		fb.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);

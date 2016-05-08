@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learning.lspi;
 
-import burlap.behavior.functionapproximation.sparse.ActionFeaturesQuery;
+import burlap.behavior.functionapproximation.sparse.ActionFeaturesSet;
 import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
 import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.functionapproximation.sparse.StateFeature;
@@ -477,7 +477,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * @param nf the total number of state-action features.
 	 * @return the state-action feature vector as a {@link SimpleMatrix}.
 	 */
-	protected SimpleMatrix phiConstructor(List<ActionFeaturesQuery> features, int nf){
+	protected SimpleMatrix phiConstructor(List<ActionFeaturesSet> features, int nf){
 		SimpleMatrix phi = new SimpleMatrix(nf, 1);
 		if(features.size() != 1){
 			throw new RuntimeException("Expected only one actions's set of features.");
@@ -573,12 +573,12 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		/**
 		 * State-action features
 		 */
-		public List<ActionFeaturesQuery> sActionFeatures;
+		public List<ActionFeaturesSet> sActionFeatures;
 		
 		/**
 		 * Next state-action features.
 		 */
-		public List<ActionFeaturesQuery> sPrimeActionFeatures;
+		public List<ActionFeaturesSet> sPrimeActionFeatures;
 		
 		
 		/**
@@ -586,7 +586,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		 * @param sActionFeatures state-action features
 		 * @param sPrimeActionFeatures next state-action features
 		 */
-		public SSFeatures(List<ActionFeaturesQuery> sActionFeatures, List<ActionFeaturesQuery> sPrimeActionFeatures){
+		public SSFeatures(List<ActionFeaturesSet> sActionFeatures, List<ActionFeaturesSet> sPrimeActionFeatures){
 			this.sActionFeatures = sActionFeatures;
 			this.sPrimeActionFeatures = sPrimeActionFeatures;
 		}

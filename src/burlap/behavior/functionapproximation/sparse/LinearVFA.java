@@ -103,7 +103,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 
 	@Override
 	public double evaluate(State s) {
-		List<StateFeature> features = this.sparseStateFeatures.getStateFeatures(s);
+		List<StateFeature> features = this.sparseStateFeatures.features(s);
 		double val = 0.;
 		for(StateFeature sf : features){
 			double prod = sf.value * this.getWeight(sf.id);
@@ -130,7 +130,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 			features = this.currentFeatures;
 		}
 		else{
-			features = this.sparseStateFeatures.getStateFeatures(s);
+			features = this.sparseStateFeatures.features(s);
 		}
 
 		FunctionGradient gd = new FunctionGradient.SparseGradient(features.size());

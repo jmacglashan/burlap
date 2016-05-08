@@ -17,5 +17,11 @@ public interface DenseStateFeatures {
 	 * @return the feature vector represented as a double array.
 	 */
 	double [] features(State s);
+
+	/**
+	 * Returns a copy of this {@link DenseStateFeatures}
+	 * @return a copy of this {@link DenseStateFeatures}
+	 */
+	DenseStateFeatures copy();
 	
 }
