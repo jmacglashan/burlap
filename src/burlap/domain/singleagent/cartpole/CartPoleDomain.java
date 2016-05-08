@@ -698,7 +698,7 @@ public class CartPoleDomain implements DomainGenerator {
 		@Override
 		public double reward(State s, GroundedAction a, State sprime) {
 
-			CartPoleState cs = (CartPoleState)s;
+			CartPoleState cs = (CartPoleState)sprime;
 			double x = cs.x;
 			
 			double failReward = -1;

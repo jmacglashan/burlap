@@ -322,7 +322,7 @@ public class InvertedPendulum implements DomainGenerator {
 			
 			double failReward = -1;
 
-			InvertedPendulumState is = (InvertedPendulumState)s;
+			InvertedPendulumState is = (InvertedPendulumState)sprime;
 			double ang = is.angle;
 			
 			if(Math.abs(ang) >= maxAbsoluteAngle){
