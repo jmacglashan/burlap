@@ -1,6 +1,6 @@
 package burlap.mdp.singleagent.interfaces.rlglue;
 
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * This class can be used to take a BURLAP domain and task with discrete actions and turn it into an RLGlue environment with which other RLGlue agents
- * can interact. Because RLGLue requires flat vector representations of states, you must provide a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}
+ * can interact. Because RLGLue requires flat vector representations of states, you must provide a {@link DenseStateFeatures}
  * to flatten the BURLAP states; it should always return arrays of the same length for all visitable states.
  * Additionally, RLGlue does not support action preconditions, so each action must be available everywhere.
  * <p>
@@ -49,7 +49,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	/**
 	 * Used to flatten states into a vector representation
 	 */
-	protected StateToFeatureVectorGenerator stateFlattener;
+	protected DenseStateFeatures stateFlattener;
 
 
 	/**
@@ -127,7 +127,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 * @param isEpisodic whether the task is episodic or continuing
 	 * @param discount the discount factor to use for the task
 	 */
-	public RLGlueEnvironment(Domain domain, StateGenerator stateGenerator, StateToFeatureVectorGenerator stateFlattener,
+	public RLGlueEnvironment(Domain domain, StateGenerator stateGenerator, DenseStateFeatures stateFlattener,
 							 DoubleRange[] valueRanges, RewardFunction rf, TerminalFunction tf,
 							 DoubleRange rewardRange, boolean isEpisodic, double discount){
 		

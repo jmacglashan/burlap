@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.mdp.core.TransitionProbability;

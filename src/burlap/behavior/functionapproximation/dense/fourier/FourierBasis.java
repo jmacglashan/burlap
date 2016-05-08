@@ -1,11 +1,12 @@
-package burlap.behavior.singleagent.vfa.fourier;
+package burlap.behavior.functionapproximation.dense.fourier;
 
+import burlap.behavior.functionapproximation.dense.NormalizedVariableFeatures;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
-import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.behavior.singleagent.vfa.StateFeature;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.behavior.singleagent.vfa.common.LinearVFA;
+import burlap.behavior.functionapproximation.sparse.ActionFeaturesQuery;
+import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
+import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.functionapproximation.sparse.LinearVFA;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.mdp.singleagent.GroundedAction;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 /**
  * An implementation of Fourier Basis functions [1]. This class expects a normalized state variable/feature vector of input states, if it is not normalized, behavior is not well defined. Therefore,
- * you may want to consider using the {@link burlap.behavior.singleagent.vfa.common.NormalizedVariablesVectorGenerator}.
+ * you may want to consider using the {@link NormalizedVariableFeatures}.
  * The higher order the basis functions, the higher the VFA resolution is. Typically, order n will produce (n+1)^d state basis functions (and a copy for each action), where d is the number of state variables. Since this grows quickly,
  * a way to manage the complexity is to simplify the number of coefficient vectors. That is, each basis function is a function of the dot product of the input state variable vector and a coefficient vector {0...n}^d 
  * and normally all possible coefficient vectors (and their corresponding basis functions) for
@@ -34,7 +35,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class FourierBasis implements FeatureDatabase {
+public class FourierBasis implements SparseStateFeatures {
 
 	/**
 	 * The number of state varibles on which the produced basis functions operate
@@ -44,7 +45,7 @@ public class FourierBasis implements FeatureDatabase {
 	/**
 	 * The OO-MDP {@link State} to feature vector/variable generator. Should produced normalized values.
 	 */
-	protected StateToFeatureVectorGenerator		featureVectorGenerator;
+	protected DenseStateFeatures featureVectorGenerator;
 	
 	/**
 	 * The coefficient vectors used
@@ -82,7 +83,7 @@ public class FourierBasis implements FeatureDatabase {
 	 * @param featureVectorGenerator the state feature vector generator that turns OO-MDP {@link State} objects into double arrays.
 	 * @param order the Fourier basis order
 	 */
-	public FourierBasis(StateToFeatureVectorGenerator featureVectorGenerator, int order){
+	public FourierBasis(DenseStateFeatures featureVectorGenerator, int order){
 		this.featureVectorGenerator = featureVectorGenerator;
 		this.order = order;
 		this.maxNonZeroCoefficents = -1;
@@ -96,7 +97,7 @@ public class FourierBasis implements FeatureDatabase {
 	 * @param order the fourier basis order
 	 * @param maxNonZeroCoefficents the maximum number of entries in coeffient vectors that can have non-zero values. 
 	 */
-	public FourierBasis(StateToFeatureVectorGenerator featureVectorGenerator, int order, int maxNonZeroCoefficents){
+	public FourierBasis(DenseStateFeatures featureVectorGenerator, int order, int maxNonZeroCoefficents){
 		this.featureVectorGenerator = featureVectorGenerator;
 		this.order = order;
 		this.maxNonZeroCoefficents = maxNonZeroCoefficents;

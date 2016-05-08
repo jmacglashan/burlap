@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa;
+package burlap.behavior.functionapproximation;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,7 +77,7 @@ public interface FunctionGradient {
 
 
 	/**
-	 * A sparse {@link burlap.behavior.singleagent.vfa.FunctionGradient} that only explicitly stores
+	 * A sparse {@link FunctionGradient} that only explicitly stores
 	 * the partial derivative for parameters with non-zero partial derivatives. The partial derivative for parameters
 	 * not explicitly stored will have a value of zero returned.
 	 */

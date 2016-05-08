@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
-import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricFunction;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.FunctionGradient;
+import burlap.behavior.functionapproximation.ParametricFunction;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.state.State;
 
@@ -17,7 +17,7 @@ public class LinearStateDiffVF implements DifferentiableVInit {
 	/**
 	 * The state feature vector generator over which the linear function operates
 	 */
-	protected StateToFeatureVectorGenerator fvgen;
+	protected DenseStateFeatures fvgen;
 
 	protected int dim;
 	protected double [] parameters;
@@ -28,7 +28,7 @@ public class LinearStateDiffVF implements DifferentiableVInit {
 	 * @param fvgen the state feature vector generator over which the linear function is defined.
 	 * @param dim the dimensionality of the feature vector/parameters
 	 */
-	public LinearStateDiffVF(StateToFeatureVectorGenerator fvgen, int dim){
+	public LinearStateDiffVF(DenseStateFeatures fvgen, int dim){
 		this.dim = dim;
 		this.parameters = new double[dim];
 		this.fvgen = fvgen;

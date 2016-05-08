@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa;
+package burlap.behavior.functionapproximation.sparse;
 
 import java.util.ArrayList;
 import java.util.List;

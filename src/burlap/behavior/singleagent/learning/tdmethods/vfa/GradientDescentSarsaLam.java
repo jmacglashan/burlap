@@ -11,8 +11,8 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.singleagent.vfa.DifferentiableStateActionValue;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.AbstractGroundedAction;
@@ -32,7 +32,7 @@ import java.util.*;
 /**
  * Gradient Descent SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. This implementation will work
  * with both linear and non-linear value function approximations by using the gradient value provided to it through the 
- * {@link burlap.behavior.singleagent.vfa.DifferentiableStateActionValue} implementation provided. <p>
+ * {@link DifferentiableStateActionValue} implementation provided. <p>
  * The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.mdp.singleagent.environment.SimulatedEnvironment}.
  * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}

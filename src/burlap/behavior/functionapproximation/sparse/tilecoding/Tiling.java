@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa.tilecoding;
+package burlap.behavior.functionapproximation.sparse.tilecoding;
 
 /**
  * This class provides a tiling of a provided feature vector. Unlike the {@link Tiling} class, this tiling method does not take OO-MDP states as input; instead

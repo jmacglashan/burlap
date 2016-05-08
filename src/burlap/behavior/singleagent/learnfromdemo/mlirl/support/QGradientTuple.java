@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
-import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.state.State;
 

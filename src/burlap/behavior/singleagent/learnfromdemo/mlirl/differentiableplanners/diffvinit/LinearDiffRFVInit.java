@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricFunction;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.FunctionGradient;
+import burlap.behavior.functionapproximation.ParametricFunction;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
@@ -29,13 +29,13 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	/**
 	 * The state feature vector generator.
 	 */
-	protected StateToFeatureVectorGenerator rfFvGen;
+	protected DenseStateFeatures rfFvGen;
 
 
 	/**
 	 * The state feature vector generator.
 	 */
-	protected StateToFeatureVectorGenerator 		vinitFvGen;
+	protected DenseStateFeatures vinitFvGen;
 
 
 	/**
@@ -63,7 +63,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	 * @param rfDim the reward function feature/parameter dimensionality
 	 * @param vinitDim the value function initialization feature/parameter dimensionality
 	 */
-	public LinearDiffRFVInit(StateToFeatureVectorGenerator rfFvGen, StateToFeatureVectorGenerator vinitFvGen, int rfDim, int vinitDim) {
+	public LinearDiffRFVInit(DenseStateFeatures rfFvGen, DenseStateFeatures vinitFvGen, int rfDim, int vinitDim) {
 		this.rfFvGen = rfFvGen;
 		this.vinitFvGen = vinitFvGen;
 		this.rfDim = rfDim;
@@ -84,7 +84,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	 * @param vinitDim the value function initialization feature/parameter dimensionality
 	 * @param rfFeaturesAreForNextState if true, the the rf features are evaluated on the next state of the transition; if false then on the previous state of the transition.
 	 */
-	public LinearDiffRFVInit(StateToFeatureVectorGenerator rfFvGen, StateToFeatureVectorGenerator vinitFvGen, int rfDim, int vinitDim, boolean rfFeaturesAreForNextState) {
+	public LinearDiffRFVInit(DenseStateFeatures rfFvGen, DenseStateFeatures vinitFvGen, int rfDim, int vinitDim, boolean rfFeaturesAreForNextState) {
 		this.rfFvGen = rfFvGen;
 		this.vinitFvGen = vinitFvGen;
 		this.rfDim = rfDim;
@@ -109,19 +109,19 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 		this.rfFeaturesAreForNextState = rfFeaturesAreForNextState;
 	}
 
-	public StateToFeatureVectorGenerator getRfFvGen() {
+	public DenseStateFeatures getRfFvGen() {
 		return rfFvGen;
 	}
 
-	public void setRfFvGen(StateToFeatureVectorGenerator rfFvGen) {
+	public void setRfFvGen(DenseStateFeatures rfFvGen) {
 		this.rfFvGen = rfFvGen;
 	}
 
-	public StateToFeatureVectorGenerator getVinitFvGen() {
+	public DenseStateFeatures getVinitFvGen() {
 		return vinitFvGen;
 	}
 
-	public void setVinitFvGen(StateToFeatureVectorGenerator vinitFvGen) {
+	public void setVinitFvGen(DenseStateFeatures vinitFvGen) {
 		this.vinitFvGen = vinitFvGen;
 	}
 

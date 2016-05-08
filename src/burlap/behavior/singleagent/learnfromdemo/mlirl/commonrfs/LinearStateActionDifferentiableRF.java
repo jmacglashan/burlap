@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricFunction;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.FunctionGradient;
+import burlap.behavior.functionapproximation.ParametricFunction;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * A class for defining a state-action linear {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}.
- * The class takes as input a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} and the set of possible
+ * The class takes as input a {@link DenseStateFeatures} and the set of possible
  * grounded actions that can be applied in the world. The dimensionality of this reward function is equal to |A|*|f|,
  * where A is the set of possible grounded actions, and |f| is the state feature vector dimensionality.
  * <p>
@@ -23,7 +23,7 @@ import java.util.Map;
  * Note that when the gradient is a vector of size |A||f|, since the feature vector is replicated for each action, and the gradient
  * for all entries associated with an action other than the one taken in the (s, a, s') query will have a gradient value of zero.
  * <p>
- * The set of possible grounded actions must be defined either in the {@link #LinearStateActionDifferentiableRF(burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator, int, burlap.mdp.singleagent.GroundedAction...)}
+ * The set of possible grounded actions must be defined either in the {@link #LinearStateActionDifferentiableRF(DenseStateFeatures, int, burlap.mdp.singleagent.GroundedAction...)}
  * constructor, or added iteratively with the {@link #addAction(burlap.mdp.singleagent.GroundedAction)} method.
  * @author James MacGlashan.
  */
@@ -48,7 +48,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 	/**
 	 * The state feature vector generator to use
 	 */
-	protected StateToFeatureVectorGenerator 	fvGen;
+	protected DenseStateFeatures fvGen;
 
 	/**
 	 * The number of state features
@@ -68,7 +68,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 	 * @param numStateFeatures the dimensionality of the state feature vector
 	 * @param allPossibleActions the set of possible grounded actions.
 	 */
-	public LinearStateActionDifferentiableRF(StateToFeatureVectorGenerator stateFeatures, int numStateFeatures, GroundedAction...allPossibleActions){
+	public LinearStateActionDifferentiableRF(DenseStateFeatures stateFeatures, int numStateFeatures, GroundedAction...allPossibleActions){
 		this.fvGen = stateFeatures;
 		this.numStateFeatures = numStateFeatures;
 		this.actionMap = new HashMap<GroundedAction, Integer>(allPossibleActions.length);

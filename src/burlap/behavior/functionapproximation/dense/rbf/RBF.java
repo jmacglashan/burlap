@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa.rbf;
+package burlap.behavior.functionapproximation.dense.rbf;
 
 /**
  * A class for defining radial basis functions for states represented with a double array.

@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa.rbf;
+package burlap.behavior.functionapproximation.dense.rbf;
 
 /**
  * An interface for defining the distance between two states that are represented with double arrays.

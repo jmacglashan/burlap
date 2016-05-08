@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricFunction;
+import burlap.behavior.functionapproximation.FunctionGradient;
+import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;

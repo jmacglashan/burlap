@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
-import burlap.behavior.singleagent.vfa.ParametricFunction;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.FunctionGradient;
+import burlap.behavior.functionapproximation.ParametricFunction;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
 
@@ -11,11 +11,11 @@ import java.util.Arrays;
 
 /**
  * A class for defining a linear state {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF}.
- * The features of the reward function are produced by a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}.
+ * The features of the reward function are produced by a {@link DenseStateFeatures}.
  * By default, the reward function is defined as: R(s, a, s') = w * f(s'), where w is the weight vector (the parameters)
  * of this object, * is the dot product operator, and f(s') is the feature vector for state s'. Alternatively, the reward function
  * may be defined R(s, a, s') = w * f(s), (that is, using the feature vector for the previous state) by using the
- * {@link #LinearStateDifferentiableRF(burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator, int, boolean)} constructor
+ * {@link #LinearStateDifferentiableRF(DenseStateFeatures, int, boolean)} constructor
  * or the {@link #setFeaturesAreForNextState(boolean)}} method
  * and setting the featuresAreForNextState boolean to false.
  * @author James MacGlashan.
@@ -30,7 +30,7 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 	/**
 	 * The state feature vector generator.
 	 */
-	protected StateToFeatureVectorGenerator 	fvGen;
+	protected DenseStateFeatures fvGen;
 
 	/**
 	 * The parameters of this reward function
@@ -49,7 +49,7 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 	 * @param fvGen the state feature vector generator
 	 * @param dim the dimensionality of the state features that will be produced
 	 */
-	public LinearStateDifferentiableRF(StateToFeatureVectorGenerator fvGen, int dim){
+	public LinearStateDifferentiableRF(DenseStateFeatures fvGen, int dim){
 		this.dim = dim;
 		this.parameters = new double[dim];
 		this.fvGen = fvGen;
@@ -61,7 +61,7 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 	 * @param dim the dimensionality of the state features that will be produced
 	 * @param featuresAreForNextState If true, then the features will be generated from the next state in the (s, a, s') transition. If false, then the previous state.
 	 */
-	public LinearStateDifferentiableRF(StateToFeatureVectorGenerator fvGen, int dim, boolean featuresAreForNextState){
+	public LinearStateDifferentiableRF(DenseStateFeatures fvGen, int dim, boolean featuresAreForNextState){
 		this.featuresAreForNextState = featuresAreForNextState;
 		this.dim = dim;
 		this.parameters = new double[dim];

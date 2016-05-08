@@ -1,6 +1,6 @@
 package burlap.datastructures;
 
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.core.state.State;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
@@ -25,12 +25,12 @@ public class WekaInterfaces {
 	 * {@link weka.core.Instance} is associated added to the provided {@link Instances} object. If it is null, then it makes one and
 	 * adds it to that.
 	 * @param s the state for which the instance is to be constructed
-	 * @param fvgen the {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} to turn the state into a feature vector.
+	 * @param fvgen the {@link DenseStateFeatures} to turn the state into a feature vector.
 	 * @param targetValue the target supervised output value for the instance
 	 * @param dataset the dataset to which the created instance will be added.
 	 * @return the created {@link weka.core.Instance}
 	 */
-	public static Instance getInstance(State s, StateToFeatureVectorGenerator fvgen, double targetValue, Instances dataset){
+	public static Instance getInstance(State s, DenseStateFeatures fvgen, double targetValue, Instances dataset){
 
 		double [] fv = fvgen.generateFeatureVectorFrom(s);
 		double [] labeled = new double[fv.length+1];
@@ -57,11 +57,11 @@ public class WekaInterfaces {
 	/**
 	 * Creates an empty Weka dataset ({@link Instances}) that can accommodate the feature set necessary for the input state.
 	 * @param s the input state from which the Weka dataset features will be modeled.
-	 * @param fvgen The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} that converts the state into a feature vector
+	 * @param fvgen The {@link DenseStateFeatures} that converts the state into a feature vector
 	 * @param capacity the reserved capacity for the dataset.
 	 * @return the created {@link Instances} Weka dataset.
 	 */
-	public static Instances getInstancesShell(State s, StateToFeatureVectorGenerator fvgen, int capacity){
+	public static Instances getInstancesShell(State s, DenseStateFeatures fvgen, int capacity){
 		double [] exfv = fvgen.generateFeatureVectorFrom(s);
 		FastVector attInfo = new FastVector(exfv.length+1);
 		for(int i = 0; i < exfv.length; i++){

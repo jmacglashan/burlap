@@ -1,10 +1,10 @@
-package burlap.behavior.singleagent.vfa.tilecoding;
+package burlap.behavior.functionapproximation.sparse.tilecoding;
 
-import burlap.behavior.singleagent.vfa.ActionFeaturesQuery;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
-import burlap.behavior.singleagent.vfa.StateFeature;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.behavior.singleagent.vfa.common.LinearVFA;
+import burlap.behavior.functionapproximation.sparse.ActionFeaturesQuery;
+import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
+import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.functionapproximation.sparse.LinearVFA;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
@@ -31,12 +31,12 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class TileCodingFeatures implements FeatureDatabase {
+public class TileCodingFeatures implements SparseStateFeatures {
 
 	/**
 	 * The generator that turns OO-MDP state objects into state feature vectors.
 	 */
-	protected StateToFeatureVectorGenerator								featureVectorGenerator;
+	protected DenseStateFeatures featureVectorGenerator;
 	
 	
 	
@@ -105,7 +105,7 @@ public class TileCodingFeatures implements FeatureDatabase {
 	 * The resulting feature vectors are what is tiled by this class.
 	 * @param featureVectorGenerator the OO-MDP state to feature vector generator to use
 	 */
-	public TileCodingFeatures(StateToFeatureVectorGenerator featureVectorGenerator){
+	public TileCodingFeatures(DenseStateFeatures featureVectorGenerator){
 		
 		this.featureVectorGenerator = featureVectorGenerator;
 		this.tilings = new ArrayList<Tiling>();

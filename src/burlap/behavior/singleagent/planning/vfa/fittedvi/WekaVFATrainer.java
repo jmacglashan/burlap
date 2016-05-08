@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.datastructures.WekaInterfaces;
 import burlap.mdp.core.state.State;
 import weka.classifiers.Classifier;
@@ -16,11 +16,11 @@ import java.util.List;
 /**
  * A class for using supervised learning algorithms provided by the Weka library for fitted value iteration. This class
  * takes a generator for Weka {@link weka.classifiers.Classifier} objects (specified with the {@link burlap.behavior.singleagent.planning.vfa.fittedvi.WekaVFATrainer.WekaClassifierGenerator}
- * interface and a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} to turn BURLAP {@link State} objects into
+ * interface and a {@link DenseStateFeatures} to turn BURLAP {@link State} objects into
  * feature vectors usable by Weka.
  *
  * <p>
- * This class also provides the static method {@link #getKNNTrainer(burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator, int)}
+ * This class also provides the static method {@link #getKNNTrainer(DenseStateFeatures, int)}
  * for construction of the Weka instance-based regression algorithm {@link weka.classifiers.lazy.IBk},
  * since instance-based methods have convergence guarantees for fitted value iteration.
  * @author James MacGlashan.
@@ -33,17 +33,17 @@ public class WekaVFATrainer implements SupervisedVFA{
 	protected WekaClassifierGenerator baseClassifier;
 
 	/**
-	 * The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link State} objects to feature vectors.
+	 * The {@link DenseStateFeatures} used to convert BURLAP {@link State} objects to feature vectors.
 	 */
-	protected StateToFeatureVectorGenerator fvGen;
+	protected DenseStateFeatures fvGen;
 
 
 	/**
 	 * Initializes.
 	 * @param baseClassifier The generator of the Weka {@link weka.classifiers.Classifier} to use for training.
-	 * @param fvGen The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link State} objects to feature vectors.
+	 * @param fvGen The {@link DenseStateFeatures} used to convert BURLAP {@link State} objects to feature vectors.
 	 */
-	public WekaVFATrainer(WekaClassifierGenerator baseClassifier, StateToFeatureVectorGenerator fvGen){
+	public WekaVFATrainer(WekaClassifierGenerator baseClassifier, DenseStateFeatures fvGen){
 		this.baseClassifier = baseClassifier;
 		this.fvGen  = fvGen;
 	}
@@ -75,11 +75,11 @@ public class WekaVFATrainer implements SupervisedVFA{
 	/**
 	 * Creates a standard supervised VFA trainer that uses Weka's {@link weka.classifiers.lazy.IBk} instance-based algorithm with
 	 * a KD-tree and 1-distance similarity measure.
-	 * @param fvGen the {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} for converting the BURLAP state into a feature vector usable by Weka.
+	 * @param fvGen the {@link DenseStateFeatures} for converting the BURLAP state into a feature vector usable by Weka.
 	 * @param k the number of nearest neighbors uses in the regression algorithm.
 	 * @return the {@link burlap.behavior.singleagent.planning.vfa.fittedvi.WekaVFATrainer} for Weka's {@link weka.classifiers.lazy.IBk} algorithm.
 	 */
-	public static WekaVFATrainer getKNNTrainer(StateToFeatureVectorGenerator fvGen, final int k){
+	public static WekaVFATrainer getKNNTrainer(DenseStateFeatures fvGen, final int k){
 
 		WekaClassifierGenerator generator = new WekaClassifierGenerator() {
 			@Override
@@ -104,9 +104,9 @@ public class WekaVFATrainer implements SupervisedVFA{
 	public static class WekaVFA implements ValueFunction{
 
 		/**
-		 * The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link State} objects to feature vectors.
+		 * The {@link DenseStateFeatures} used to convert BURLAP {@link State} objects to feature vectors.
 		 */
-		protected StateToFeatureVectorGenerator fvGen;
+		protected DenseStateFeatures fvGen;
 
 		/**
 		 * The Weka {@link weka.classifiers.Classifier} used to predict state values.
@@ -116,10 +116,10 @@ public class WekaVFATrainer implements SupervisedVFA{
 
 		/**
 		 * Initializes.
-		 * @param fvGen The {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert BURLAP {@link State} objects to feature vectors.
+		 * @param fvGen The {@link DenseStateFeatures} used to convert BURLAP {@link State} objects to feature vectors.
 		 * @param classifier The Weka {@link weka.classifiers.Classifier} used to predict state values.
 		 */
-		public WekaVFA(StateToFeatureVectorGenerator fvGen, Classifier classifier) {
+		public WekaVFA(DenseStateFeatures fvGen, Classifier classifier) {
 			this.fvGen = fvGen;
 			this.classifier = classifier;
 		}

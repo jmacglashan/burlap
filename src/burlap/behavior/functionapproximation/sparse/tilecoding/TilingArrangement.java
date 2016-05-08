@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa.tilecoding;
+package burlap.behavior.functionapproximation.sparse.tilecoding;
 
 /**
  * Enum for specifying whether tilings should have their tile alignments should be chossen so that they

@@ -1,9 +1,9 @@
-package burlap.behavior.singleagent.vfa.rbf.functions;
+package burlap.behavior.functionapproximation.dense.rbf.functions;
 
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
-import burlap.behavior.singleagent.vfa.rbf.DistanceMetric;
-import burlap.behavior.singleagent.vfa.rbf.RBF;
-import burlap.behavior.singleagent.vfa.rbf.metrics.EuclideanDistance;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.functionapproximation.dense.rbf.DistanceMetric;
+import burlap.behavior.functionapproximation.dense.rbf.RBF;
+import burlap.behavior.functionapproximation.dense.rbf.metrics.EuclideanDistance;
 import burlap.mdp.core.state.State;
 
 import java.util.ArrayList;
@@ -60,14 +60,14 @@ public class GaussianRBF extends RBF {
 
 	/**
 	 * Creates a {@link java.util.List} of {@link GaussianRBF} units
-	 * for each {@link State} provided using the given {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}, metric, and epsilon value.
-	 * @param states the {@link State} objects around which a {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} will be created
-	 * @param fvGen the {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert states to a double array usable by {@link RBF} units.
-	 * @param metric the {@link burlap.behavior.singleagent.vfa.rbf.DistanceMetric} to use
+	 * for each {@link State} provided using the given {@link DenseStateFeatures}, metric, and epsilon value.
+	 * @param states the {@link State} objects around which a {@link burlap.behavior.functionapproximation.dense.rbf.functions.GaussianRBF} will be created
+	 * @param fvGen the {@link DenseStateFeatures} used to convert states to a double array usable by {@link RBF} units.
+	 * @param metric the {@link burlap.behavior.functionapproximation.dense.rbf.DistanceMetric} to use
 	 * @param epsilon the bandwidth parameter.
-	 * @return a {@link java.util.List} of {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} units.
+	 * @return a {@link java.util.List} of {@link burlap.behavior.functionapproximation.dense.rbf.functions.GaussianRBF} units.
 	 */
-	public static List<RBF> generateGaussianRBFsForStates(List<State> states, StateToFeatureVectorGenerator fvGen, DistanceMetric metric, double epsilon){
+	public static List<RBF> generateGaussianRBFsForStates(List<State> states, DenseStateFeatures fvGen, DistanceMetric metric, double epsilon){
 
 
 		List<RBF> units = new ArrayList<RBF>(states.size());
@@ -81,14 +81,14 @@ public class GaussianRBF extends RBF {
 
 	/**
 	 * Creates a {@link java.util.List} of {@link GaussianRBF} units
-	 * for each {@link State} provided using the given {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator}, and epsilon value
+	 * for each {@link State} provided using the given {@link DenseStateFeatures}, and epsilon value
 	 * and using a default {@link EuclideanDistance} metric for all units.
-	 * @param states the {@link State} objects around which a {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} will be created
-	 * @param fvGen the {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} used to convert states to a double array usable by {@link RBF} units.
+	 * @param states the {@link State} objects around which a {@link burlap.behavior.functionapproximation.dense.rbf.functions.GaussianRBF} will be created
+	 * @param fvGen the {@link DenseStateFeatures} used to convert states to a double array usable by {@link RBF} units.
 	 * @param epsilon the bandwidth parameter.
-	 * @return a {@link java.util.List} of {@link burlap.behavior.singleagent.vfa.rbf.functions.GaussianRBF} units.
+	 * @return a {@link java.util.List} of {@link burlap.behavior.functionapproximation.dense.rbf.functions.GaussianRBF} units.
 	 */
-	public static List<RBF> generateGaussianRBFsForStates(List<State> states, StateToFeatureVectorGenerator fvGen, double epsilon){
+	public static List<RBF> generateGaussianRBFsForStates(List<State> states, DenseStateFeatures fvGen, double epsilon){
 
 
 		List<RBF> units = new ArrayList<RBF>(states.size());

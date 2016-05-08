@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa;
+package burlap.behavior.functionapproximation;
 
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.state.State;
@@ -15,7 +15,7 @@ public interface DifferentiableStateActionValue extends ParametricFunction.Param
 	 * Returns the gradient of this function.
 	 * @param s the input {@link State}
 	 * @param a the input {@link AbstractGroundedAction}
-	 * @return the {@link burlap.behavior.singleagent.vfa.FunctionGradient} of this function at the input
+	 * @return the {@link FunctionGradient} of this function at the input
 	 */
 	FunctionGradient gradient(State s, AbstractGroundedAction a);
 

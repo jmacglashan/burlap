@@ -1,8 +1,8 @@
-package burlap.behavior.singleagent.vfa.fourier;
+package burlap.behavior.functionapproximation.dense.fourier;
 
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
-import burlap.behavior.singleagent.vfa.FeatureDatabase;
+import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.state.State;
 
@@ -39,7 +39,7 @@ public class FourierBasisLearningRateWrapper implements LearningRate {
 	/**
 	 * Initializes.
 	 * @param sourceLearningRateFunction the source {@link LearningRate} function that will be scaled.
-	 * @param fouierBasisFunctions the {@link FourierBasis} {@link FeatureDatabase} that defines the Fourier basis functions and their coefficient vectors.
+	 * @param fouierBasisFunctions the {@link FourierBasis} {@link SparseStateFeatures} that defines the Fourier basis functions and their coefficient vectors.
 	 */
 	public FourierBasisLearningRateWrapper(LearningRate sourceLearningRateFunction, FourierBasis fouierBasisFunctions){
 		this.sourceLearningRateFunction = sourceLearningRateFunction;

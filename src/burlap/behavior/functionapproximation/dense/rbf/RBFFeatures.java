@@ -1,7 +1,10 @@
-package burlap.behavior.singleagent.vfa.rbf;
+package burlap.behavior.functionapproximation.dense.rbf;
 
-import burlap.behavior.singleagent.vfa.*;
-import burlap.behavior.singleagent.vfa.common.LinearVFA;
+import burlap.behavior.functionapproximation.sparse.ActionFeaturesQuery;
+import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
+import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.functionapproximation.sparse.LinearVFA;
 import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
@@ -15,18 +18,18 @@ import java.util.Map;
  *
  * A feature database of RBF units that can be used for linear value function approximation.
  * This class takes as input
- * a {@link burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator} object so that states are first converted
+ * a {@link DenseStateFeatures} object so that states are first converted
  * to a double array and then provided to {@link RBF} objects that operate
  * directly on the feature vector of the state.
  *
  * @author James MacGlashan.
  */
-public class RBFFeatures implements FeatureDatabase{
+public class RBFFeatures implements SparseStateFeatures {
 
 	/**
 	 * The state feature vector generator to supply to the RBFs
 	 */
-	protected StateToFeatureVectorGenerator fvGen;
+	protected DenseStateFeatures fvGen;
 
 	/**
 	 * The list of RBF units in this database
@@ -62,7 +65,7 @@ public class RBFFeatures implements FeatureDatabase{
 	 * @param fvGen the state feature vector generator to use to generate the feature vectors provided to RBFs
 	 * @param hasOffset if true, an offset RBF unit with a constant response value is included in the feature set.
 	 */
-	public RBFFeatures(StateToFeatureVectorGenerator fvGen, boolean hasOffset){
+	public RBFFeatures(DenseStateFeatures fvGen, boolean hasOffset){
 		rbfs = new ArrayList<RBF>();
 		this.hasOffset = hasOffset;
 		this.fvGen = fvGen;

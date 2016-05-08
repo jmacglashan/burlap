@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.AbstractGroundedAction;
@@ -61,7 +61,7 @@ public class ApprenticeshipLearning {
 	 * @return The Feature Expectations generated (double array that matches the length of the featureMapping)
 	 */
 	public static double[] estimateFeatureExpectation(
-			EpisodeAnalysis episodeAnalysis, StateToFeatureVectorGenerator featureFunctions, Double gamma) {
+			EpisodeAnalysis episodeAnalysis, DenseStateFeatures featureFunctions, Double gamma) {
 		return ApprenticeshipLearning.estimateFeatureExpectation(
 				Arrays.asList(episodeAnalysis), featureFunctions, gamma);
 	}
@@ -75,7 +75,7 @@ public class ApprenticeshipLearning {
 	 * @return The Feature Expectations generated (double array that matches the length of the featureMapping)
 	 */
 	public static double[] estimateFeatureExpectation(
-			List<EpisodeAnalysis> episodes, StateToFeatureVectorGenerator featureFunctions, Double gamma) {
+			List<EpisodeAnalysis> episodes, DenseStateFeatures featureFunctions, Double gamma) {
 
 		double[] featureExpectations = null;
 
@@ -109,8 +109,8 @@ public class ApprenticeshipLearning {
 	 * @return An anonymous instance of RewardFunction
 	 */
 	public static RewardFunction generateRewardFunction(
-			StateToFeatureVectorGenerator featureFunctions, FeatureWeights featureWeights) {
-		final StateToFeatureVectorGenerator newFeatureFunctions = featureFunctions;
+			DenseStateFeatures featureFunctions, FeatureWeights featureWeights) {
+		final DenseStateFeatures newFeatureFunctions = featureFunctions;
 		final FeatureWeights newFeatureWeights = new FeatureWeights(featureWeights);
 		return new RewardFunction() {
 			@Override
@@ -181,7 +181,7 @@ public class ApprenticeshipLearning {
 		Domain domain = request.getDomain();
 		Policy policy = new RandomPolicy(domain);
 
-		StateToFeatureVectorGenerator featureFunctions = request.getFeatureGenerator();
+		DenseStateFeatures featureFunctions = request.getFeatureGenerator();
 		List<double[]> featureExpectationsHistory = new ArrayList<double[]>();
 		double[] expertExpectations = 
 				ApprenticeshipLearning.estimateFeatureExpectation(expertEpisodes, featureFunctions, request.getGamma());
@@ -282,7 +282,7 @@ public class ApprenticeshipLearning {
 		List<Policy> policyHistory = new ArrayList<Policy>();
 		List<double[]> featureExpectationsHistory = new ArrayList<double[]>();
 
-		StateToFeatureVectorGenerator featureFunctions = request.getFeatureGenerator();
+		DenseStateFeatures featureFunctions = request.getFeatureGenerator();
 		double[] expertExpectations = 
 				ApprenticeshipLearning.estimateFeatureExpectation(expertEpisodes, featureFunctions, request.getGamma());
 

@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.vfa;
+package burlap.behavior.functionapproximation;
 
 import burlap.mdp.core.state.State;
 

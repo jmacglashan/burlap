@@ -1,6 +1,6 @@
-package burlap.behavior.singleagent.vfa.rbf.metrics;
+package burlap.behavior.functionapproximation.dense.rbf.metrics;
 
-import burlap.behavior.singleagent.vfa.rbf.DistanceMetric;
+import burlap.behavior.functionapproximation.dense.rbf.DistanceMetric;
 
 /**
  * A distance metric; returns sqrt( sum_i (x_i - y_i)^2 )

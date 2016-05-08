@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;

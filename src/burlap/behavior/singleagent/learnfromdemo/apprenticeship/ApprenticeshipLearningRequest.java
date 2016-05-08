@@ -6,7 +6,7 @@ import java.util.List;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnfromdemo.IRLRequest;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.singleagent.vfa.StateToFeatureVectorGenerator;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.Domain;
 
@@ -24,7 +24,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 	/**
 	 * The state feature generator that turns a state into a feature vector on which the reward function is assumed to be modeled
 	 */
-	protected StateToFeatureVectorGenerator 		featureGenerator;
+	protected DenseStateFeatures featureGenerator;
 	
 	/**
 	 * The initial state generator that models the initial states from which the expert trajectories were drawn
@@ -68,7 +68,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		this.initDefaults();
 	}
 
-	public ApprenticeshipLearningRequest(Domain domain, Planner planner, StateToFeatureVectorGenerator featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
+	public ApprenticeshipLearningRequest(Domain domain, Planner planner, DenseStateFeatures featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
 		super(domain, planner, expertEpisodes);
 		this.initDefaults();
 		this.setFeatureGenerator(featureGenerator);
@@ -116,7 +116,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		this.planner = p;
 	}
 
-	public void setFeatureGenerator(StateToFeatureVectorGenerator stateFeaturesGenerator) {
+	public void setFeatureGenerator(DenseStateFeatures stateFeaturesGenerator) {
 		this.featureGenerator = stateFeaturesGenerator;
 	}
 
@@ -142,7 +142,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 
 	public Planner getPlanner() {return this.planner;}
 
-	public StateToFeatureVectorGenerator getFeatureGenerator() {return this.featureGenerator;}	
+	public DenseStateFeatures getFeatureGenerator() {return this.featureGenerator;}
 
 	public List<EpisodeAnalysis> getExpertEpisodes() { return new ArrayList<EpisodeAnalysis>(this.expertEpisodes);}
 

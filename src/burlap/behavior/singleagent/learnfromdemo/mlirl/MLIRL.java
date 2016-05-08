@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.singleagent.vfa.FunctionGradient;
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
