@@ -8,7 +8,7 @@ package burlap.behavior.functionapproximation.sparse.tilecoding;
  */
 public enum TilingArrangement {
 
-	RANDOMJITTER(0),
+	RANDOM_JITTER(0),
 	UNIFORM(1);
 
 	private final int value;
@@ -24,7 +24,7 @@ public enum TilingArrangement {
 	public static TilingArrangement fromInt(int i){
 		switch(i){
 			case 0:
-				return RANDOMJITTER;
+				return RANDOM_JITTER;
 			case 1:
 				return UNIFORM;
 			default:

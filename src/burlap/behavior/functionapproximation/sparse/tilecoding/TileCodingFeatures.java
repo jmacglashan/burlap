@@ -119,7 +119,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	/**
 	 * Adss a number of tilings where each tile is dependent on the dimensions that are labeled as "true" in the dimensionMask parameter. The widths parameter
 	 * specifies the width of each tile along that given dimension. If tileArrangement is set to {@link TilingArrangement#UNIFORM} then each of the nTilings
-	 * created with will be uniformly spaced across the width of each dimension. If it is set to {@link TilingArrangement#RANDOMJITTER} then each tiling
+	 * created with will be uniformly spaced across the width of each dimension. If it is set to {@link TilingArrangement#RANDOM_JITTER} then each tiling
 	 * will be offset by a random amount.
 	 * @param dimensionMask each true entry in this boolen array is a dimension over which the tiling will be defined.
 	 * @param widths the width of tiles along each dimension. This value should be non-zero for each dimension unless the tiling doesn't depend on that dimension.
@@ -132,7 +132,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 			this.stateFeatures.add(new HashMap<Tiling.FVTile, Integer>());
 			this.stateActionFeatures.add(new HashMap<Tiling.FVTile, List<ActionFeatureID>>());
 			double [] offset;
-			if(tileArrangement == TilingArrangement.RANDOMJITTER){
+			if(tileArrangement == TilingArrangement.RANDOM_JITTER){
 				offset = this.produceRandomOffset(dimensionMask, widths);
 			}
 			else{
@@ -148,7 +148,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	/**
 	 * Adss a number of tilings where each tile is dependent on *all* the dimensions of a state feature vector. The widths parameter
 	 * specifies the width of each tile along that given dimension. If tileArrangement is set to {@link TilingArrangement#UNIFORM} then each of the nTilings
-	 * created with will be uniformly spaced across the width of each dimension. If it is set to {@link TilingArrangement#RANDOMJITTER} then each tiling
+	 * created with will be uniformly spaced across the width of each dimension. If it is set to {@link TilingArrangement#RANDOM_JITTER} then each tiling
 	 * will be offset by a random amount.
 	 * @param widths the width of tiles along each dimension. This value should be non-zero for each dimension .
 	 * @param nTilings the number of tilings over the specified dimensions to create.
