@@ -131,6 +131,10 @@ public class MountainCar implements DomainGenerator {
 			return -(Math.PI/2) / cosScale;
 		}
 
+		public MCState valleyState(){
+			return new MCState(this.valleyPos(), 0.);
+		}
+
 	}
 
 
@@ -150,6 +154,10 @@ public class MountainCar implements DomainGenerator {
 		
 		
 		return domain;
+	}
+
+	public MCState valleyState(){
+		return this.physParams.valleyState();
 	}
 	
 	
@@ -295,7 +303,7 @@ public class MountainCar implements DomainGenerator {
 		
 		MountainCar mcGen = new MountainCar();
 		Domain domain = mcGen.generateDomain();
-		State s = new MCState(mcGen.physParams.valleyPos(), 0.);
+		State s = mcGen.valleyState();
 		
 
 		Visualizer vis = MountainCarVisualizer.getVisualizer(mcGen);
