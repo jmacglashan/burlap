@@ -13,6 +13,7 @@ import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.vardomain.VariableDomain;
@@ -508,7 +509,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public static ValueFunctionVisualizerGUI getGridWorldValueFunctionVisualization(List <State> states, int maxX, int maxY, ValueFunction valueFunction, Policy p){
 		return ValueFunctionVisualizerGUI.createGridWorldBasedValueFunctionVisualizerGUI(states, valueFunction, p,
-				VAR_X, VAR_Y, new VariableDomain(0, maxX), new VariableDomain(0, maxY), 1, 1,
+				new OOVariableKey(CLASS_AGENT, VAR_X), new OOVariableKey(CLASS_AGENT, VAR_Y), new VariableDomain(0, maxX), new VariableDomain(0, maxY), 1, 1,
 				ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST);
 	}
 	
