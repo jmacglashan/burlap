@@ -33,6 +33,10 @@ public class NormalizedVariableFeatures implements DenseStateFeatures {
 		return this;
 	}
 
+	public NormalizedVariableFeatures(Map<Object, VariableDomain> domains) {
+		this.domains = domains;
+	}
+
 	/**
 	 * Goes through the state and sets the ranges for all variables that have a {@link VariableDomain} set. If
 	 * the {@link StateDomain#domain(Object)} method returns null for a state variable key, then a range will not be set
@@ -70,5 +74,10 @@ public class NormalizedVariableFeatures implements DenseStateFeatures {
 		}
 
 		return vals;
+	}
+
+	@Override
+	public DenseStateFeatures copy() {
+		return new NormalizedVariableFeatures(new HashMap<Object, VariableDomain>(domains));
 	}
 }

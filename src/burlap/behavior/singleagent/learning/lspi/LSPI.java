@@ -1,9 +1,8 @@
 package burlap.behavior.singleagent.learning.lspi;
 
-import burlap.behavior.functionapproximation.sparse.ActionFeaturesSet;
-import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
 import burlap.behavior.functionapproximation.ParametricFunction;
-import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.functionapproximation.dense.DenseStateActionFeatures;
+import burlap.behavior.functionapproximation.dense.DenseStateActionLinearVFA;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
@@ -13,7 +12,6 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData.SARS;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.functionapproximation.sparse.LinearVFA;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
@@ -84,7 +82,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * The state feature database on which the linear VFA is performed
 	 */
-	protected SparseStateFeatures sparseStateFeatures;
+	protected DenseStateActionFeatures features;
 	
 	
 	/**
@@ -158,12 +156,12 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * Initializes.
 	 * @param domain the problem domain
 	 * @param gamma the discount factor
-	 * @param fd the feature database defining state features on which LSPI will run.
+	 * @param features the state-action features to use
 	 */
-	public LSPI(Domain domain, double gamma, SparseStateFeatures fd){
+	public LSPI(Domain domain, double gamma, DenseStateActionFeatures features){
 		this.solverInit(domain, rf, tf, gamma, null);
-		this.sparseStateFeatures = fd;
-		this.vfa = new LinearVFA(this.sparseStateFeatures);
+		this.features = features;
+		this.vfa = new DenseStateActionLinearVFA(features, 0.);
 		this.learningPolicy = new EpsilonGreedy(this, 0.1);
 	}
 
@@ -171,13 +169,13 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * Initializes.
 	 * @param domain the problem domain
 	 * @param gamma the discount factor
-	 * @param fd the feature database defining state features on which LSPI will run.
+	 * @param features the state-action features
 	 * @param dataset the dataset of transitions to use
 	 */
-	public LSPI(Domain domain, double gamma, SparseStateFeatures fd, SARSData dataset){
+	public LSPI(Domain domain, double gamma, DenseStateActionFeatures features, SARSData dataset){
 		this.solverInit(domain, rf, tf, gamma, null);
-		this.sparseStateFeatures = fd;
-		this.vfa = new LinearVFA(this.sparseStateFeatures);
+		this.features = features;
+		this.vfa = new DenseStateActionLinearVFA(features, 0.);
 		this.learningPolicy = new EpsilonGreedy(this, 0.1);
 		this.dataset = dataset;
 	}
@@ -237,19 +235,19 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	
 	
 	/**
-	 * Returns the feature database defining state features
-	 * @return the feature database defining state features
+	 * Returns the state-action features used
+	 * @return the state-action features used
 	 */
-	public SparseStateFeatures getSparseStateFeatures() {
-		return sparseStateFeatures;
+	public DenseStateActionFeatures getFeatures() {
+		return features;
 	}
 
 	/**
-	 * Sets the feature datbase defining state features
-	 * @param sparseStateFeatures the feature database defining state features
+	 * Sets the state-action features to used
+	 * @param features the state-action feature to use
 	 */
-	public void setSparseStateFeatures(SparseStateFeatures sparseStateFeatures) {
-		this.sparseStateFeatures = sparseStateFeatures;
+	public void setFeatures(DenseStateActionFeatures features) {
+		this.features = features;
 	}
 
 	
@@ -401,12 +399,13 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		//first we want to get all the features for all of our states in our data set; this is important if our feature database generates new features on the fly
 		//and will also restrict our focus to only the action features that we want
 		List<SSFeatures> features = new ArrayList<LSPI.SSFeatures>(this.dataset.size());
+		int nf = 0;
 		for(SARS sars : this.dataset.dataset){
-			features.add(new SSFeatures(this.sparseStateFeatures.getActionFeaturesSets(sars.s, this.gaListWrapper(sars.a)),
-					this.sparseStateFeatures.getActionFeaturesSets(sars.sp, this.gaListWrapper(p.getAction(sars.sp)))));
+			SSFeatures transitionFeatures = new SSFeatures(this.features.features(sars.s, sars.a), this.features.features(sars.sp, p.getAction(sars.sp)));
+			features.add(transitionFeatures);
+			nf = Math.max(nf, transitionFeatures.sActionFeatures.length);
 		}
-		
-		int nf = this.sparseStateFeatures.numberOfFeatures();
+
 		SimpleMatrix B = SimpleMatrix.identity(nf).scale(this.identityScalar);
 		SimpleMatrix b = new SimpleMatrix(nf, 1);
 		
@@ -433,7 +432,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		
 		SimpleMatrix w = B.mult(b);
 		
-		this.vfa = new LinearVFA(this.sparseStateFeatures);
+		this.vfa = new DenseStateActionLinearVFA(this.features, 0.);
 		for(int i = 0; i < nf; i++){
 			this.vfa.setParameter(i, w.get(i, 0));
 		}
@@ -473,17 +472,15 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	
 	/**
 	 * Constructs the state-action feature vector as a {@link SimpleMatrix}.
-	 * @param features the state-action features that have non-zero values
+	 * @param features the state-action features
 	 * @param nf the total number of state-action features.
 	 * @return the state-action feature vector as a {@link SimpleMatrix}.
 	 */
-	protected SimpleMatrix phiConstructor(List<ActionFeaturesSet> features, int nf){
+	protected SimpleMatrix phiConstructor(double [] features, int nf){
 		SimpleMatrix phi = new SimpleMatrix(nf, 1);
-		if(features.size() != 1){
-			throw new RuntimeException("Expected only one actions's set of features.");
-		}
-		for(StateFeature f : features.get(0).features){
-			phi.set(f.id, f.value);
+
+		for(int i = 0; i < features.length; i++){
+			phi.set(i, features[i]);
 		}
 		
 		return phi;
@@ -573,12 +570,12 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		/**
 		 * State-action features
 		 */
-		public List<ActionFeaturesSet> sActionFeatures;
+		public double[] sActionFeatures;
 		
 		/**
 		 * Next state-action features.
 		 */
-		public List<ActionFeaturesSet> sPrimeActionFeatures;
+		public double[] sPrimeActionFeatures;
 		
 		
 		/**
@@ -586,7 +583,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		 * @param sActionFeatures state-action features
 		 * @param sPrimeActionFeatures next state-action features
 		 */
-		public SSFeatures(List<ActionFeaturesSet> sActionFeatures, List<ActionFeaturesSet> sPrimeActionFeatures){
+		public SSFeatures(double[] sActionFeatures, double[] sPrimeActionFeatures){
 			this.sActionFeatures = sActionFeatures;
 			this.sPrimeActionFeatures = sPrimeActionFeatures;
 		}

@@ -3,6 +3,7 @@ package burlap.behavior.functionapproximation.dense;
 import burlap.mdp.core.state.State;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +18,17 @@ public class NumericVariableFeatures implements DenseStateFeatures {
 
 	protected List<Object> whiteList = null;
 
+	public NumericVariableFeatures() {
+	}
+
+	public NumericVariableFeatures(Object...keys) {
+		this.whiteList = Arrays.asList(keys);
+	}
+
+	public NumericVariableFeatures(List<Object> whiteList) {
+		this.whiteList = whiteList;
+	}
+
 	public NumericVariableFeatures addToWhiteList(Object variableKey){
 		if(whiteList == null){
 			this.whiteList = new ArrayList<Object>();
@@ -25,6 +37,7 @@ public class NumericVariableFeatures implements DenseStateFeatures {
 
 		return this;
 	}
+
 
 
 	@Override
@@ -54,5 +67,10 @@ public class NumericVariableFeatures implements DenseStateFeatures {
 		}
 
 		return vals;
+	}
+
+	@Override
+	public NumericVariableFeatures copy() {
+		return new NumericVariableFeatures(new ArrayList<Object>(this.whiteList));
 	}
 }

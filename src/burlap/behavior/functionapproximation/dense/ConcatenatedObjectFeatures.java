@@ -33,6 +33,13 @@ public class ConcatenatedObjectFeatures implements
 	 */
 	protected Map<String, DenseStateFeatures> objectVectorGenerators = new HashMap<String, DenseStateFeatures>();
 
+	public ConcatenatedObjectFeatures() {
+	}
+
+	public ConcatenatedObjectFeatures(List<String> objectClassOrder, Map<String, DenseStateFeatures> objectVectorGenerators) {
+		this.objectClassOrder = objectClassOrder;
+		this.objectVectorGenerators = objectVectorGenerators;
+	}
 
 	/**
 	 * Adds an OO-MDP class next in the list of object classes to vectorize with the given {@link DenseStateFeatures}.
@@ -75,5 +82,10 @@ public class ConcatenatedObjectFeatures implements
 		}
 
 		return fvec;
+	}
+
+	@Override
+	public ConcatenatedObjectFeatures copy() {
+		return new ConcatenatedObjectFeatures(new ArrayList<String>(objectClassOrder), new HashMap<String, DenseStateFeatures>(objectVectorGenerators));
 	}
 }
