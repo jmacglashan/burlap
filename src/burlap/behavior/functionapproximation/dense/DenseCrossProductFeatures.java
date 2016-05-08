@@ -60,9 +60,9 @@ public class DenseCrossProductFeatures implements DenseStateActionFeatures {
 
 		double [] sFeatures = stateFeatures.features(s);
 		double [] saFeatures = new double[sFeatures.length*numActions];
-		int offset = this.getActionOffset(a);
-		for(int i = offset; i < sFeatures.length; i++){
-			saFeatures[i] = sFeatures[i - offset];
+		int offset = this.getActionOffset(a)*sFeatures.length;
+		for(int i = 0; i < sFeatures.length; i++){
+			saFeatures[i+offset] = sFeatures[i];
 		}
 
 		return saFeatures;
