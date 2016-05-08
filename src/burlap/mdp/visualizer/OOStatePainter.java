@@ -1,5 +1,6 @@
 package burlap.mdp.visualizer;
 
+import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
@@ -54,6 +55,10 @@ public class OOStatePainter implements StatePainter {
 
 	@Override
 	public void paint(Graphics2D g2, State s, float cWidth, float cHeight) {
+
+		if(s == null || s instanceof NullState){
+			return ;
+		}
 
 		if(!(s instanceof OOState)){
 			throw new RuntimeException("OOStatePainter cannot paint the state, because it is a " + s.getClass().getName() + " and does not implement OOState");
