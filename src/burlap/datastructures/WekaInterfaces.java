@@ -32,7 +32,7 @@ public class WekaInterfaces {
 	 */
 	public static Instance getInstance(State s, DenseStateFeatures fvgen, double targetValue, Instances dataset){
 
-		double [] fv = fvgen.generateFeatureVectorFrom(s);
+		double [] fv = fvgen.features(s);
 		double [] labeled = new double[fv.length+1];
 		for(int i = 0; i < fv.length; i++){
 			labeled[i] = fv[i];
@@ -62,7 +62,7 @@ public class WekaInterfaces {
 	 * @return the created {@link Instances} Weka dataset.
 	 */
 	public static Instances getInstancesShell(State s, DenseStateFeatures fvgen, int capacity){
-		double [] exfv = fvgen.generateFeatureVectorFrom(s);
+		double [] exfv = fvgen.features(s);
 		FastVector attInfo = new FastVector(exfv.length+1);
 		for(int i = 0; i < exfv.length; i++){
 			Attribute att = new Attribute("f"+i);

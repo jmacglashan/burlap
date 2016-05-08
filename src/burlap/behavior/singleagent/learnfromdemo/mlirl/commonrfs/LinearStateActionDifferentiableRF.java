@@ -96,7 +96,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 
 	@Override
 	public double reward(State s, GroundedAction a, State sprime) {
-		double [] sFeatures = this.fvGen.generateFeatureVectorFrom(s);
+		double [] sFeatures = this.fvGen.features(s);
 		int sIndex = this.actionMap.get(a) * this.numStateFeatures;
 		double sum = 0.;
 		for(int i = sIndex; i < sIndex + this.numStateFeatures; i++){
@@ -108,7 +108,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 
 	@Override
 	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
-		double [] sFeatures = this.fvGen.generateFeatureVectorFrom(s);
+		double [] sFeatures = this.fvGen.features(s);
 		int sIndex = this.actionMap.get(a) * this.numStateFeatures;
 
 		FunctionGradient gradient = new FunctionGradient.SparseGradient(sFeatures.length);

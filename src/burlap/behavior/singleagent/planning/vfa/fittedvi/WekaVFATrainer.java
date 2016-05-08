@@ -126,7 +126,7 @@ public class WekaVFATrainer implements SupervisedVFA{
 
 		@Override
 		public double value(State s) {
-			double [] vec = fvGen.generateFeatureVectorFrom(s);
+			double [] vec = fvGen.features(s);
 			Instances dataset = WekaInterfaces.getInstancesShell(vec, 1);
 			Instance inst = WekaInterfaces.getInstance(vec, 0., dataset);
 			double prediction = 0.;

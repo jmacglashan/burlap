@@ -167,7 +167,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	@Override
 	public List<StateFeature> getStateFeatures(State s) {
 		
-		double [] input = this.featureVectorGenerator.generateFeatureVectorFrom(s);
+		double [] input = this.featureVectorGenerator.features(s);
 		List<StateFeature> features = new ArrayList<StateFeature>();
 		for(int i = 0; i < this.tilings.size(); i++){
 			Tiling tiling = this.tilings.get(i);
@@ -211,7 +211,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	public List<ActionFeaturesQuery> getActionFeaturesSets(State s,
 			List<GroundedAction> actions) {
 		
-		double [] input = this.featureVectorGenerator.generateFeatureVectorFrom(s);
+		double [] input = this.featureVectorGenerator.features(s);
 		List<ActionFeaturesQuery> features = new ArrayList<ActionFeaturesQuery>();
 		for(GroundedAction ga : actions){
 			features.add(new ActionFeaturesQuery(ga));

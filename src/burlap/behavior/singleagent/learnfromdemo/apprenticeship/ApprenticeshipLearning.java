@@ -81,7 +81,7 @@ public class ApprenticeshipLearning {
 
 		for (EpisodeAnalysis episodeAnalysis : episodes) {
 			for (int i = 0; i < episodeAnalysis.stateSequence.size(); ++i) {
-				double [] fvi = featureFunctions.generateFeatureVectorFrom(episodeAnalysis.stateSequence.get(i));
+				double [] fvi = featureFunctions.features(episodeAnalysis.stateSequence.get(i));
 				if(featureExpectations == null){
 					featureExpectations = new double[fvi.length];
 				}
@@ -117,7 +117,7 @@ public class ApprenticeshipLearning {
 			public double reward(State state, GroundedAction a, State sprime) {
 				double[] featureWeightValues = newFeatureWeights.getWeights();
 				double sumReward = 0;
-				double [] fv = newFeatureFunctions.generateFeatureVectorFrom(state);
+				double [] fv = newFeatureFunctions.features(state);
 				for (int i = 0; i < fv.length; ++i) {
 					sumReward += featureWeightValues[i] * fv[i];
 				}

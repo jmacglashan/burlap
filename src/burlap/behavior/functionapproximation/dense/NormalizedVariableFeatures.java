@@ -52,7 +52,7 @@ public class NormalizedVariableFeatures implements DenseStateFeatures {
 	}
 
 	@Override
-	public double[] generateFeatureVectorFrom(State s) {
+	public double[] features(State s) {
 		double [] vals = new double[domains.size()];
 		int i = 0;
 		List<Object> keys = s.variableKeys();

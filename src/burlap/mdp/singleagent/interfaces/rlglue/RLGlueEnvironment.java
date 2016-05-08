@@ -256,7 +256,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		
 		Observation o = new Observation(0, this.valueRanges.length);
 
-		double [] flatRep = this.stateFlattener.generateFeatureVectorFrom(s);
+		double [] flatRep = this.stateFlattener.features(s);
 		for(int i = 0; i < flatRep.length; i++){
 			o.setDouble(i, flatRep[i]);
 		}

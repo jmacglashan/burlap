@@ -83,10 +83,10 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 
 		double [] features;
 		if(featuresAreForNextState){
-			features = fvGen.generateFeatureVectorFrom(sprime);
+			features = fvGen.features(sprime);
 		}
 		else{
-			features = fvGen.generateFeatureVectorFrom(s);
+			features = fvGen.features(s);
 		}
 		FunctionGradient gradient = new FunctionGradient.SparseGradient(features.length);
 		for(int i = 0; i < features.length; i++){
@@ -130,10 +130,10 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 	public double reward(State s, GroundedAction a, State sprime){
 		double [] features;
 		if(this.featuresAreForNextState){
-			features = fvGen.generateFeatureVectorFrom(sprime);
+			features = fvGen.features(sprime);
 		}
 		else{
-			features = fvGen.generateFeatureVectorFrom(s);
+			features = fvGen.features(s);
 		}
 		double sum = 0.;
 		for(int i = 0; i < features.length; i++){

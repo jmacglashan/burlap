@@ -16,6 +16,6 @@ public interface DenseStateFeatures {
 	 * @param s the input state to turn into a feature vector.
 	 * @return the feature vector represented as a double array.
 	 */
-	double [] generateFeatureVectorFrom(State s);
+	double [] features(State s);
 	
 }

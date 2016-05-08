@@ -34,7 +34,7 @@ public class SparseToDenseFeatures implements DenseStateFeatures {
 	}
 
 	@Override
-	public double[] generateFeatureVectorFrom(State s) {
+	public double[] features(State s) {
 
 		List<StateFeature> sfs = this.fd.getStateFeatures(s);
 		double [] fv = new double[this.fd.numberOfFeatures()];

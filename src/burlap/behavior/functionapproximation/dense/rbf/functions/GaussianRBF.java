@@ -72,7 +72,7 @@ public class GaussianRBF extends RBF {
 
 		List<RBF> units = new ArrayList<RBF>(states.size());
 		for(State s : states){
-			units.add(new GaussianRBF(fvGen.generateFeatureVectorFrom(s), metric, epsilon));
+			units.add(new GaussianRBF(fvGen.features(s), metric, epsilon));
 		}
 
 		return units;
@@ -93,7 +93,7 @@ public class GaussianRBF extends RBF {
 
 		List<RBF> units = new ArrayList<RBF>(states.size());
 		for(State s : states){
-			units.add(new GaussianRBF(fvGen.generateFeatureVectorFrom(s), epsilon));
+			units.add(new GaussianRBF(fvGen.features(s), epsilon));
 		}
 
 		return units;

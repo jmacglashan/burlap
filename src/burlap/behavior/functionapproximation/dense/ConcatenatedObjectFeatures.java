@@ -47,7 +47,7 @@ public class ConcatenatedObjectFeatures implements
 	}
 
 	@Override
-	public double[] generateFeatureVectorFrom(State s) {
+	public double[] features(State s) {
 
 		if(!(s instanceof OOState)){
 			throw new RuntimeException("ConcatenatedObjectFeatureVectorGenerator is only defined for OOState instances.");
@@ -59,7 +59,7 @@ public class ConcatenatedObjectFeatures implements
 			List<ObjectInstance> objects = ((OOState)s).objectsOfClass(className);
 			DenseStateFeatures ovecGen = this.objectVectorGenerators.get(className);
 			for(ObjectInstance o : objects){
-				double [] ovec = ovecGen.generateFeatureVectorFrom(o);
+				double [] ovec = ovecGen.features(o);
 				size += ovec.length;
 				objectVecs.add(ovec);
 			}

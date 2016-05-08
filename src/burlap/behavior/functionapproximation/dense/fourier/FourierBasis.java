@@ -141,7 +141,7 @@ public class FourierBasis implements SparseStateFeatures {
 	@Override
 	public List<StateFeature> getStateFeatures(State s) {
 		
-		double [] input = this.featureVectorGenerator.generateFeatureVectorFrom(s);
+		double [] input = this.featureVectorGenerator.features(s);
 		if(this.coefficientVectors == null){
 			this.numStateVariables = input.length;
 			if(this.maxNonZeroCoefficents == -1){

@@ -145,10 +145,10 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 
 		double [] sfeatures;
 		if(rfFeaturesAreForNextState){
-			sfeatures = rfFvGen.generateFeatureVectorFrom(sp);
+			sfeatures = rfFvGen.features(sp);
 		}
 		else{
-			sfeatures = rfFvGen.generateFeatureVectorFrom(s);
+			sfeatures = rfFvGen.features(s);
 		}
 
 		FunctionGradient gradient = new FunctionGradient.SparseGradient(sfeatures.length);
@@ -169,10 +169,10 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 
 		double [] features;
 		if(this.rfFeaturesAreForNextState){
-			features = this.rfFvGen.generateFeatureVectorFrom(sprime);
+			features = this.rfFvGen.features(sprime);
 		}
 		else{
-			features = this.rfFvGen.generateFeatureVectorFrom(s);
+			features = this.rfFvGen.features(s);
 		}
 		double sum = 0.;
 		for(int i = 0; i < features.length; i++){
@@ -185,7 +185,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	@Override
 	public FunctionGradient getVGradient(State s){
 
-		double [] vFeatures = this.vinitFvGen.generateFeatureVectorFrom(s);
+		double [] vFeatures = this.vinitFvGen.features(s);
 		FunctionGradient gradient = new FunctionGradient.SparseGradient(vFeatures.length);
 
 		for(int i = 0; i < vFeatures.length; i++){
@@ -204,7 +204,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 
 	@Override
 	public double value(State s) {
-		double [] features = this.vinitFvGen.generateFeatureVectorFrom(s);
+		double [] features = this.vinitFvGen.features(s);
 
 		double sum = 0.;
 		for(int i = 0; i < features.length; i++){

@@ -50,7 +50,7 @@ public class PFFeatures implements DenseStateFeatures {
 	
 	
 	@Override
-	public double[] generateFeatureVectorFrom(State s) {
+	public double[] features(State s) {
 		
 		List<Double> featureValueList = new LinkedList<Double>();
 		for(PropositionalFunction pf : this.pfsToUse){

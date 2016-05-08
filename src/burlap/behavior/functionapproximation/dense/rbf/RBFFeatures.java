@@ -102,7 +102,7 @@ public class RBFFeatures implements SparseStateFeatures {
 		List<StateFeature> rbfsf = new ArrayList<StateFeature>();
 		int id = 0;
 
-		double [] svars = this.fvGen.generateFeatureVectorFrom(s);
+		double [] svars = this.fvGen.features(s);
 
 		for(RBF r : rbfs)
 		{

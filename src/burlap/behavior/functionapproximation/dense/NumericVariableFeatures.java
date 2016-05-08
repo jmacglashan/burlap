@@ -28,7 +28,7 @@ public class NumericVariableFeatures implements DenseStateFeatures {
 
 
 	@Override
-	public double[] generateFeatureVectorFrom(State s) {
+	public double[] features(State s) {
 
 		if(this.whiteList == null){
 			//then use all
