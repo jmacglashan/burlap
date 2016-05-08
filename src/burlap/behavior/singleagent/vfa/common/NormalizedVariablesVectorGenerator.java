@@ -6,6 +6,7 @@ import burlap.mdp.core.state.vardomain.StateDomain;
 import burlap.mdp.core.state.vardomain.VariableDomain;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 public class NormalizedVariablesVectorGenerator implements StateToFeatureVectorGenerator{
 
-	protected Map<Object, VariableDomain> ranges = new HashMap<Object, VariableDomain>();
+	protected Map<Object, VariableDomain> domains = new HashMap<Object, VariableDomain>();
 
 	/**
 	 * Sets the variable range for the given variable.
@@ -29,7 +30,7 @@ public class NormalizedVariablesVectorGenerator implements StateToFeatureVectorG
 	 * @return this object, so a builder design pattern may be used.
 	 */
 	public NormalizedVariablesVectorGenerator variableDomain(Object key, VariableDomain range){
-		ranges.put(key, range);
+		domains.put(key, range);
 		return this;
 	}
 
@@ -45,7 +46,7 @@ public class NormalizedVariablesVectorGenerator implements StateToFeatureVectorG
 		for(Object key : state.variableKeys()){
 			VariableDomain range = state.domain(key);
 			if(range != null){
-				this.ranges.put(key, range);
+				this.domains.put(key, range);
 			}
 		}
 		return this;
@@ -53,15 +54,18 @@ public class NormalizedVariablesVectorGenerator implements StateToFeatureVectorG
 
 	@Override
 	public double[] generateFeatureVectorFrom(State s) {
-		double [] vals = new double[ranges.size()];
+		double [] vals = new double[domains.size()];
 		int i = 0;
-		for(Map.Entry<Object, VariableDomain> e : ranges.entrySet()){
+		List<Object> keys = s.variableKeys();
+		for(Object key : keys){
+			VariableDomain vd = this.domains.get(key);
+			if(vd == null){
+				continue;
+			}
 
-			double d = ((Number)s.get(e.getKey())).doubleValue();
-			VariableDomain r = e.getValue();
-
-			double norm = r.norm(d);
-			vals[i] = d;
+			double d = ((Number)s.get(key)).doubleValue();
+			double norm = vd.norm(d);
+			vals[i] = norm;
 
 			i++;
 		}
