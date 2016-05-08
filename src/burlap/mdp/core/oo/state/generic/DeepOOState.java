@@ -6,7 +6,6 @@ import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.exceptions.UnknownObjectException;
 import burlap.mdp.core.state.MutableState;
-import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.annotations.DeepCopyState;
 
 /**
@@ -47,7 +46,7 @@ public class DeepOOState extends GenericOOState {
 	}
 
 	@Override
-	public State copy() {
+	public DeepOOState copy() {
 		return new DeepOOState(this);
 	}
 }

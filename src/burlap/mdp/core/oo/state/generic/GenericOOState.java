@@ -3,7 +3,6 @@ package burlap.mdp.core.oo.state.generic;
 import burlap.mdp.core.oo.state.*;
 import burlap.mdp.core.oo.state.exceptions.UnknownObjectException;
 import burlap.mdp.core.state.MutableState;
-import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.annotations.ShallowCopyState;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class GenericOOState implements MutableOOState {
 	}
 
 	@Override
-	public State copy() {
+	public GenericOOState copy() {
 		return new GenericOOState(this);
 	}
 
