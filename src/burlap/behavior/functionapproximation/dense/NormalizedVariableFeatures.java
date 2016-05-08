@@ -22,6 +22,10 @@ public class NormalizedVariableFeatures implements DenseStateFeatures {
 
 	protected Map<Object, VariableDomain> domains = new HashMap<Object, VariableDomain>();
 
+
+	public NormalizedVariableFeatures() {
+	}
+
 	/**
 	 * Sets the variable range for the given variable.
 	 * @param key the variable key
