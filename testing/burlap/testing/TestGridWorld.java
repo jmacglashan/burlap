@@ -52,16 +52,16 @@ public class TestGridWorld {
 		Action southAction = domain.getAction(GridWorldDomain.ACTION_SOUTH);
 		Action westAction = domain.getAction(GridWorldDomain.ACTION_WEST);
 		
-		List<GroundedAction> northActions = northAction.getAllApplicableGroundedActions(s);
+		List<GroundedAction> northActions = northAction.allApplicableGroundedActions(s);
 		Assert.assertEquals(1, northActions.size());
 		
-		List<GroundedAction> eastActions = eastAction.getAllApplicableGroundedActions(s);
+		List<GroundedAction> eastActions = eastAction.allApplicableGroundedActions(s);
 		Assert.assertEquals(1, eastActions.size());
 		
-		List<GroundedAction> southActions = southAction.getAllApplicableGroundedActions(s);
+		List<GroundedAction> southActions = southAction.allApplicableGroundedActions(s);
 		Assert.assertEquals(1, southActions.size());
 		
-		List<GroundedAction> westActions = westAction.getAllApplicableGroundedActions(s);
+		List<GroundedAction> westActions = westAction.allApplicableGroundedActions(s);
 		Assert.assertEquals(1, westActions.size());
 		
 		GroundedAction north = northActions.get(0);
@@ -71,37 +71,37 @@ public class TestGridWorld {
 		
 		// AtLocation, WallNorth, WallSouth, WallEast, WallWest
 		this.assertPFs(s, new boolean[] {false, false, true, false, true});
-		s = north.executeIn(s);
+		s = north.sample(s);
 		this.assertPFs(s, new boolean[] {false, false, false, false, true});
-		s = east.executeIn(s);
+		s = east.sample(s);
 		this.assertPFs(s, new boolean[] {false, false, false, false, false});
-		s = north.executeIn(s);
-		s = north.executeIn(s);
-		s = north.executeIn(s);
-		s = north.executeIn(s);
+		s = north.sample(s);
+		s = north.sample(s);
+		s = north.sample(s);
+		s = north.sample(s);
 		this.assertPFs(s, new boolean[] {false, false, false, true, true});
-		s = north.executeIn(s);
-		s = east.executeIn(s);
-		s = east.executeIn(s);
-		s = east.executeIn(s);
+		s = north.sample(s);
+		s = east.sample(s);
+		s = east.sample(s);
+		s = east.sample(s);
 		this.assertPFs(s, new boolean[] {false, false, true, true, false});
-		s = north.executeIn(s);
-		s = north.executeIn(s);
-		s = east.executeIn(s);
+		s = north.sample(s);
+		s = north.sample(s);
+		s = east.sample(s);
 		this.assertPFs(s, new boolean[] {false, true, true, false, false});
-		s = east.executeIn(s);
-		s = north.executeIn(s);
-		s = north.executeIn(s);
+		s = east.sample(s);
+		s = north.sample(s);
+		s = north.sample(s);
 		this.assertPFs(s, new boolean[] {false, true, false, false, true});
-		s = east.executeIn(s);
-		s = south.executeIn(s);
-		s = north.executeIn(s);
-		s = west.executeIn(s);
+		s = east.sample(s);
+		s = south.sample(s);
+		s = north.sample(s);
+		s = west.sample(s);
 		this.assertPFs(s, new boolean[] {false, true, false, false, true});
-		s = east.executeIn(s);
-		s = east.executeIn(s);
-		s = east.executeIn(s);
-		s = east.executeIn(s);
+		s = east.sample(s);
+		s = east.sample(s);
+		s = east.sample(s);
+		s = east.sample(s);
 		this.assertPFs(s, new boolean[] {true, true, false, true, false});
 	}
 	

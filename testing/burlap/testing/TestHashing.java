@@ -269,7 +269,7 @@ public class TestHashing {
 			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
 			for(GroundedAction ga : gas){
-				List <TransitionProbability> tps = ga.getTransitions(sh.s);
+				List <TransitionProbability> tps = ga.transitions(sh.s);
 				for(TransitionProbability tp : tps){
 					HashableState nsh = usingHashFactory.hashState(tp.s);
 					
