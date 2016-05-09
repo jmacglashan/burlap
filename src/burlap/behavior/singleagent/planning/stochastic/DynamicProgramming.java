@@ -491,7 +491,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 			double expectedR = o.getExpectedRewards(sh.s, ga);
 			q += expectedR;
 			
-			List <TransitionProbability> tps = o.getTransitions(sh.s, ga);
+			List <TransitionProbability> tps = o.transitions(sh.s, ga);
 			for(TransitionProbability tp : tps){
 				double vp = this.value(tp.s);
 				

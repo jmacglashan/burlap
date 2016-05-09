@@ -137,7 +137,7 @@ public abstract class GroundedAction implements AbstractGroundedAction{
 			throw new RuntimeException("GroundedAction cannot return the full state transitions because action " + this.actionName() + " does " +
 					"not implement the FullActionModel interface.");
 		}
-		return ((FullActionModel)this.action).getTransitions(s, this);
+		return ((FullActionModel)this.action).transitions(s, this);
 	}
 
 

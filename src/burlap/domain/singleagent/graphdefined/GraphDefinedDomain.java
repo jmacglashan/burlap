@@ -493,7 +493,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction){
+		public List<TransitionProbability> transitions(State st, GroundedAction groundedAction){
 			
 			List <TransitionProbability> result = new ArrayList<TransitionProbability>();
 

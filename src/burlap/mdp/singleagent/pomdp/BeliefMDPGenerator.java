@@ -64,7 +64,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 	/**
 	 * A Belief MDP action. (transitions between belief states). This requires that the input states on which the action
 	 * operates be an instance of {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState} and
-	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.  The {@link #getTransitions(State, burlap.mdp.singleagent.GroundedAction)} method
+	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.  The {@link #transitions(State, burlap.mdp.singleagent.GroundedAction)} method
 	 * (used by planning algorithms that require the full transition dynamics)
 	 * operates by iterating over all possible observations.
 	 */
@@ -164,7 +164,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction ga){
+		public List<TransitionProbability> transitions(State s, GroundedAction ga){
 
 			if(!(s instanceof BeliefState) || !(s instanceof EnumerableBeliefState)){
 				throw new RuntimeException("getTransitions for Belief MDP actions must operate on EnumerableBeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");

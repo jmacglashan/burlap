@@ -234,7 +234,7 @@ public class InvertedPendulum implements DomainGenerator {
 		}
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State s,  GroundedAction groundedAction){
+		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction){
 			if(this.physParams.actionNoise != 0.) {
 				throw new RuntimeException("Transition Probabilities for the Inverted Pendulum with continuous action noise cannot be enumerated.");
 			}

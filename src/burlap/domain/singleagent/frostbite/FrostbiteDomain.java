@@ -507,7 +507,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction) {
+		public List<TransitionProbability> transitions(State st, GroundedAction groundedAction) {
 
 			List<TransitionProbability> transitions = new ArrayList<TransitionProbability>();
 			for (int i = 0; i < directionProbs.length; i++) {

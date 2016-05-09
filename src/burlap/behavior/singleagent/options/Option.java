@@ -52,9 +52,9 @@ import java.util.*;
  * As a result, the transition dynamics computation will stop searching for states at given
  * horizons that are less than some small probability of occurring (by default set to
  * 0.001). This threshold hold may be modified. However, if these transition dynamics can be specified
- * a priori, it is recommended that the {@link #getTransitions(State, burlap.mdp.singleagent.GroundedAction)} method is overridden
+ * a priori, it is recommended that the {@link #transitions(State, burlap.mdp.singleagent.GroundedAction)} method is overridden
  * and specified by hand rather than requiring this class to have to enumerate the results. Finally,
- * note that the {@link #getTransitions(State, burlap.mdp.singleagent.GroundedAction)} returns {@link burlap.mdp.core.TransitionProbability}
+ * note that the {@link #transitions(State, burlap.mdp.singleagent.GroundedAction)} returns {@link burlap.mdp.core.TransitionProbability}
  * elements, where each {@link burlap.mdp.core.TransitionProbability} holds the probability of transitioning to a state discounted
  * by the the expected length of time. That is, the probability value in each {@link burlap.mdp.core.TransitionProbability} is
  * <p> 
@@ -591,13 +591,13 @@ public abstract class Option extends Action implements FullActionModel{
 		if(result != null){
 			return result;
 		}
-		this.getTransitions(s, groundedAction);
+		this.transitions(s, groundedAction);
 		return this.cachedExpectedRewards.get(sh);
 	}
 	
 	
 	@Override
-	public List<TransitionProbability> getTransitions(State st, GroundedAction groundedAction){
+	public List<TransitionProbability> transitions(State st, GroundedAction groundedAction){
 		
 		HashableState sh = this.expectationStateHashingFactory.hashState(st);
 		

@@ -122,7 +122,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction){
 			return this.model.getTransitionProbabilities(s, groundedAction);
 		}
 

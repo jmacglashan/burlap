@@ -14,9 +14,9 @@ import java.util.List;
 /**
  * An abstract subclass of {@link burlap.mdp.singleagent.Action} for actions that are not parameterized, are primitive,
  * and have no preconditions (applicable everywhere). Only the {@link burlap.mdp.singleagent.Action#performActionHelper(State, burlap.mdp.singleagent.GroundedAction)}
- * method needs to be implemented by a subclass and the {@link burlap.mdp.singleagent.FullActionModel#getTransitions(State, burlap.mdp.singleagent.GroundedAction)}
+ * method needs to be implemented by a subclass and the {@link burlap.mdp.singleagent.FullActionModel#transitions(State, burlap.mdp.singleagent.GroundedAction)}
  * method if the subclass implements the {@link burlap.mdp.singleagent.FullActionModel} interface. There is also an existing
- * subclass for simple deterministic actions ({@link burlap.mdp.singleagent.common.SimpleAction.SimpleDeterministicAction}) that fills in the {@link burlap.mdp.singleagent.FullActionModel#getTransitions(State, burlap.mdp.singleagent.GroundedAction)}
+ * subclass for simple deterministic actions ({@link burlap.mdp.singleagent.common.SimpleAction.SimpleDeterministicAction}) that fills in the {@link burlap.mdp.singleagent.FullActionModel#transitions(State, burlap.mdp.singleagent.GroundedAction)}
  * method using the implementation of {@link burlap.mdp.singleagent.Action#performActionHelper(State, burlap.mdp.singleagent.GroundedAction)}
  * method.
  * @author James MacGlashan.
@@ -61,7 +61,7 @@ public abstract class SimpleAction extends Action {
 	/**
 	 * A abstract class for deterministic actions that are not parameterized, are primitive,
 	 * and have no preconditions (applicable everywhere). Only the {@link burlap.mdp.singleagent.Action#performActionHelper(State, burlap.mdp.singleagent.GroundedAction)}
-	 * method needs to be implemented by a subclass The {@link burlap.mdp.singleagent.FullActionModel#getTransitions(State, burlap.mdp.singleagent.GroundedAction)}
+	 * method needs to be implemented by a subclass The {@link burlap.mdp.singleagent.FullActionModel#transitions(State, burlap.mdp.singleagent.GroundedAction)}
 	 * method is pre-implemented by getting the deterministic result from the implementation of {@link burlap.mdp.singleagent.Action#performActionHelper(State, burlap.mdp.singleagent.GroundedAction)}.
 	 */
 	public static abstract class SimpleDeterministicAction extends SimpleAction implements FullActionModel{
@@ -74,7 +74,7 @@ public abstract class SimpleAction extends Action {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
+		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction) {
 			return this.deterministicTransition(s, groundedAction);
 		}
 	}

@@ -240,7 +240,7 @@ public class TigerDomain implements DomainGenerator {
 		}
 		
 		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction ga){
+		public List<TransitionProbability> transitions(State s, GroundedAction ga){
 			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(2);
 			
 			State left = s.copy();

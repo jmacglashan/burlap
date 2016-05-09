@@ -639,7 +639,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction) {
+		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction) {
 			List <TransitionProbability> transitions = new ArrayList<TransitionProbability>();
 			for(int i = 0; i < directionProbs.length; i++){
 				double p = directionProbs[i];

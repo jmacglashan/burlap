@@ -183,7 +183,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction){
 			return this.deterministicTransition(s, groundedAction);
 		}
 
@@ -248,7 +248,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s, GroundedAction groundedAction){
+		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction){
 			return this.deterministicTransition(s, groundedAction);
 		}
 
