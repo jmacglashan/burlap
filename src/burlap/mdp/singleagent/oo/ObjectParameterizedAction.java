@@ -39,7 +39,7 @@ import java.util.List;
  * to a parameter order group. For example, the parameterClasses of the combine action would be new String[]{INGREDIENT, INGREDIENT}, and
  * the parameterOrderGroups would be new String[]{g1, g1}, thereby placing them in the same group to indicate that their order
  * is unimportant. Specifying parameter order groups is useful because it allows the list of {@link ObjectParameterizedAction.ObjectParameterizedGroundedAction}
- * instances returned by the {@link #getAllApplicableGroundedActions(State)} method to exclude
+ * instances returned by the {@link #allApplicableGroundedActions(State)} method to exclude
  * multiple parameterizations that have the same effect.
  * @author James MacGlashan.
  */
@@ -115,12 +115,12 @@ public abstract class ObjectParameterizedAction extends Action {
 	}
 
 	@Override
-	public GroundedAction getAssociatedGroundedAction() {
+	public GroundedAction associatedGroundedAction() {
 		return new ObjectParameterizedGroundedAction(this);
 	}
 
 	@Override
-	public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+	public List<GroundedAction> allApplicableGroundedActions(State s) {
 
 		List <GroundedAction> res = new ArrayList<GroundedAction>();
 

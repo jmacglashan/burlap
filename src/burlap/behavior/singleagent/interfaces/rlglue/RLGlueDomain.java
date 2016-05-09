@@ -97,7 +97,7 @@ public class RLGlueDomain implements DomainGenerator {
 
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction ga) {
+		protected State sampleHelper(State s, GroundedAction ga) {
 			throw new RuntimeException("RLGlue Actions cannot be applied to arbitrary states; they can only be performed in an Environment.");
 		}
 	}

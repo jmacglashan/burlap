@@ -503,7 +503,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		}
 		else{
 			
-			List <TransitionProbability> tps = ga.getTransitions(sh.s);
+			List <TransitionProbability> tps = ga.transitions(sh.s);
 			for(TransitionProbability tp : tps){
 				double vp = this.value(tp.s);
 				

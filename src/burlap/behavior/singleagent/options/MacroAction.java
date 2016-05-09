@@ -40,12 +40,12 @@ public class MacroAction extends Option {
 	}
 
 	@Override
-	public GroundedAction getAssociatedGroundedAction() {
+	public GroundedAction associatedGroundedAction() {
 		return new SimpleGroundedAction(this);
 	}
 
 	@Override
-	public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+	public List<GroundedAction> allApplicableGroundedActions(State s) {
 		GroundedAction ga = new SimpleGroundedAction(this);
 		return this.applicableInState(s, ga) ? Arrays.asList(ga) : new ArrayList<GroundedAction>(0);
 	}

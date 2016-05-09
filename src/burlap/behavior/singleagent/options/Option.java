@@ -204,7 +204,7 @@ public abstract class Option extends Action implements FullActionModel{
 	public abstract double probabilityOfTermination(State s, GroundedAction groundedAction);
 	
 	/**
-	 * This method is always called when an option is initiated and begins execution. Specifically, it is called from the {@link #performActionHelper(State, burlap.mdp.singleagent.GroundedAction)}
+	 * This method is always called when an option is initiated and begins execution. Specifically, it is called from the {@link #sampleHelper(State, burlap.mdp.singleagent.GroundedAction)}
 	 * For Markov options, this method probably does not need to do anything, but for non-Markov options, like Macro actions, it may need
 	 * to initialize some structures for determining termination and action selection.
 	 * @param s the state in which the option was initiated
@@ -215,7 +215,7 @@ public abstract class Option extends Action implements FullActionModel{
 	
 	/**
 	 * This method causes the option to select a single step in the given state, when the option was initiated with the provided parameters.
-	 * This method will be called by the {@link #performActionHelper(State, burlap.mdp.singleagent.GroundedAction)}  method until it is determined that the option terminates.
+	 * This method will be called by the {@link #sampleHelper(State, burlap.mdp.singleagent.GroundedAction)}  method until it is determined that the option terminates.
 	 * @param s the state in which an action should be selected.
 	 * @param groundedAction the parameters in which this option was initiated
 	 * @return the action the option has selected to take in State <code>s</code>
@@ -436,7 +436,7 @@ public abstract class Option extends Action implements FullActionModel{
 	
 	
 	@Override
-	protected State performActionHelper(State st, GroundedAction groundedAction){
+	protected State sampleHelper(State st, GroundedAction groundedAction){
 		
 		if(terminateMapper != null){
 			State ns = terminateMapper.generateOptionTerminalState(st);
@@ -460,7 +460,7 @@ public abstract class Option extends Action implements FullActionModel{
 
 
 	@Override
-	public EnvironmentOutcome performInEnvironment(Environment env, GroundedAction groundedActions) {
+	public EnvironmentOutcome executeIn(Environment env, GroundedAction groundedActions) {
 
 		State initialState = env.getCurrentObservation();
 		this.initiateInState(initialState, groundedActions);
@@ -488,7 +488,7 @@ public abstract class Option extends Action implements FullActionModel{
 	 */
 	public State oneStep(State s, GroundedAction groundedAction){
 		GroundedAction ga = this.oneStepActionSelection(s, groundedAction);
-		State sprime = ga.executeIn(s);
+		State sprime = ga.sample(s);
 		lastNumSteps++;
 		double r = 0.;
 		if(keepTrackOfReward){
@@ -667,7 +667,7 @@ public abstract class Option extends Action implements FullActionModel{
 			for(ActionProb ap : actionSelction){
 				
 				//now get possible outcomes of each action
-				List <TransitionProbability> transitions = ((GroundedAction)ap.ga).getTransitions(src.s);
+				List <TransitionProbability> transitions = ((GroundedAction)ap.ga).transitions(src.s);
 				for(TransitionProbability tp : transitions){
 					double totalTransP = ap.pSelection * tp.p;
 					double r = stackedDiscount * this.rf.reward(src.s, (GroundedAction)ap.ga, tp.s);

@@ -468,7 +468,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 		
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
 			int n = (Integer)st.get(VAR);
 			

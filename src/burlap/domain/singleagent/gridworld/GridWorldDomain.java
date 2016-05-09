@@ -622,7 +622,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			double roll = rand.nextDouble();
 			double curSum = 0.;
 			int dir = 0;

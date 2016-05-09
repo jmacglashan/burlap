@@ -754,7 +754,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 			incAngle((LLState)st, dir, this.physParams);
 			updateMotion((LLState)st, 0.0, this.physParams);
 			return st;
@@ -794,7 +794,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 			updateMotion((LLState)st, 0.0, this.physParams);
 			return st;
 		}
@@ -837,7 +837,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		
 		
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 			updateMotion((LLState)st, thrustValue, this.physParams);
 			return st;
 		}

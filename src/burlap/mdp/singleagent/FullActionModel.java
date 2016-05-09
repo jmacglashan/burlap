@@ -64,7 +64,7 @@ public interface FullActionModel {
 				throw new RuntimeException("Cannot sample a transition from the enumerated transition distribution, because the input action does not implement FullActionModel.");
 			}
 
-			List<TransitionProbability> tps = action.getTransitions(previousState);
+			List<TransitionProbability> tps = action.transitions(previousState);
 			double roll = RandomFactory.getMapped(0).nextDouble();
 			double sum = 0.;
 			for(TransitionProbability tp : tps){

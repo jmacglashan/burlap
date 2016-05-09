@@ -469,7 +469,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			for(int i = 0; i < c; i++){
 
 				//execute
-				State ns = ga.executeIn(this.sh.s);
+				State ns = ga.sample(this.sh.s);
 				double r = DifferentiableSparseSampling.this.rf.reward(this.sh.s, ga, ns);
 				FunctionGradient rGradient = ((DifferentiableRF)DifferentiableSparseSampling.this.rf).gradient(this.sh.s, ga, ns);
 
@@ -505,7 +505,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
 			double sum = 0.;
-			List<TransitionProbability> tps = ga.getTransitions(sh.s);
+			List<TransitionProbability> tps = ga.transitions(sh.s);
 			for(TransitionProbability tp : tps){
 
 				State ns = tp.s;

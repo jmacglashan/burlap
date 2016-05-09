@@ -107,7 +107,7 @@ public class BFS extends DeterministicPlanner {
 			
 			//add children reach from each deterministic action
 			for(GroundedAction ga : gas){
-				State ns = ga.executeIn(s);
+				State ns = ga.sample(s);
 				HashableState nsh = this.stateHash(ns);
 				SearchNode nsn = new SearchNode(nsh, ga, node);
 				

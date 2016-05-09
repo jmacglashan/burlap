@@ -172,7 +172,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	protected FunctionGradient computeQGradient(State s, GroundedAction ga){
 
 		FunctionGradient qgradient = new FunctionGradient.SparseGradient();
-		List<TransitionProbability> tps = ga.getTransitions(s);
+		List<TransitionProbability> tps = ga.transitions(s);
 		for(TransitionProbability tp : tps){
 			FunctionGradient valueGradient = this.getValueGradient(tp.s);
 			FunctionGradient rewardGradient = ((DifferentiableRF)this.rf).gradient(s, ga, tp.s);

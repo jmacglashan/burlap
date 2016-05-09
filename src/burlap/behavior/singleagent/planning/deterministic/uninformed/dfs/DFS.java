@@ -238,7 +238,7 @@ public class DFS extends DeterministicPlanner {
 		
 		//generate a search successors from the order of grounded actions
 		for(GroundedAction ga : gas){
-			HashableState shp = this.stateHash(ga.executeIn(n.s.s));
+			HashableState shp = this.stateHash(ga.sample(n.s.s));
 			if(!statesOnPath.contains(shp)){
 				SearchNode snp = new SearchNode(shp, ga, n);
 				SearchNode result = this.dfs(snp, depth+1, statesOnPath);

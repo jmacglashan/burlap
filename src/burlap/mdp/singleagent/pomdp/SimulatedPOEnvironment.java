@@ -92,7 +92,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 		State nextState = this.curState;
 		State nextObservation = this.curObservation;
 		if(this.allowActionFromTerminalStates || !this.isInTerminalState()) {
-			nextState = simGA.executeIn(this.curState);
+			nextState = simGA.sample(this.curState);
 			this.lastReward = this.rf.reward(this.curState, simGA, nextState);
 			nextObservation = ((PODomain)domain).getObservationFunction().sample(nextState, simGA);
 		}

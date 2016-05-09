@@ -222,7 +222,7 @@ public class TigerDomain implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State s, GroundedAction ga) {
+		protected State sampleHelper(State s, GroundedAction ga) {
 			
 			Random random = RandomFactory.getMapped(0);
 			double r = random.nextDouble();

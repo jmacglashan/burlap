@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * An {@link burlap.mdp.singleagent.environment.Environment} that simulates interactions using the {@link burlap.mdp.singleagent.Action#performAction(State, burlap.mdp.singleagent.GroundedAction)}
+ * An {@link burlap.mdp.singleagent.environment.Environment} that simulates interactions using the {@link burlap.mdp.singleagent.Action#sample(State, burlap.mdp.singleagent.GroundedAction)}
  * method of the the {@link burlap.mdp.core.Domain} provided to this Environment. The rewards and terminal states are similarly tracked using a
  * provided {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}. Initial states of the environment
  * are defined using a {@link burlap.mdp.auxiliary.StateGenerator}. If no {@link burlap.mdp.auxiliary.StateGenerator} is specified,
@@ -199,7 +199,7 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 
 		State nextState;
 		if(this.allowActionFromTerminalStates || !this.isInTerminalState()) {
-			nextState = simGA.executeIn(this.curState);
+			nextState = simGA.sample(this.curState);
 			this.lastReward = this.rf.reward(this.curState, simGA, nextState);
 		}
 		else{

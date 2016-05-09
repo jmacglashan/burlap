@@ -487,7 +487,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
 			double roll = rand.nextDouble();
 			double curSum = 0.;
@@ -556,7 +556,7 @@ public class FrostbiteDomain implements DomainGenerator{
 
 
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 			FrostbiteDomain.this.move((FrostbiteState)st, 0, 0);
 			return st;
 		}

@@ -225,7 +225,7 @@ public class InvertedPendulum implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State s,  GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			
 			double roll = RandomFactory.getMapped(0).nextDouble() * (2 * physParams.actionNoise) - physParams.actionNoise;
 			double force = this.baseForce + roll;

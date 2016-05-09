@@ -152,7 +152,7 @@ public class IDAStar extends DeterministicPlanner {
 		List <Double> successorGs = new ArrayList<Double>(gas.size());
 		for(GroundedAction ga : gas){
 			
-			State ns = ga.executeIn(s);
+			State ns = ga.sample(s);
 			HashableState nsh = this.stateHash(ns);
 			
 			double r = rf.reward(s, ga, ns);

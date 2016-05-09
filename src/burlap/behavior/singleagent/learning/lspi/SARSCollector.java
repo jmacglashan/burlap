@@ -165,7 +165,7 @@ public abstract class SARSCollector {
 				
 				List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, curState);
 				GroundedAction ga = gas.get(RandomFactory.getMapped(0).nextInt(gas.size()));
-				State nextState = ga.executeIn(curState);
+				State nextState = ga.sample(curState);
 				double r = rf.reward(curState, ga, nextState);
 				intoDataset.add(curState, ga, r, nextState);
 				curState = nextState;

@@ -116,7 +116,7 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		}
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			return this.model.sampleModel(s, groundedAction);
 		}
 		
@@ -127,15 +127,15 @@ public class ModeledDomainGenerator implements DomainGenerator{
 		}
 
 		@Override
-		public GroundedAction getAssociatedGroundedAction() {
-			GroundedAction swappedPointer = sourceAction.getAssociatedGroundedAction();
+		public GroundedAction associatedGroundedAction() {
+			GroundedAction swappedPointer = sourceAction.associatedGroundedAction();
 			swappedPointer.action = this;
 			return swappedPointer;
 		}
 
 		@Override
-		public List<GroundedAction> getAllApplicableGroundedActions(State s) {
-			List <GroundedAction> actionList = sourceAction.getAllApplicableGroundedActions(s);
+		public List<GroundedAction> allApplicableGroundedActions(State s) {
+			List <GroundedAction> actionList = sourceAction.allApplicableGroundedActions(s);
 			for(GroundedAction ga : actionList){
 				ga.action = this;
 			}

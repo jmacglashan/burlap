@@ -105,8 +105,8 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		}
 
 		@Override
-		public GroundedAction getAssociatedGroundedAction() {
-			GroundedAction mga = this.pomdpAction.getAssociatedGroundedAction();
+		public GroundedAction associatedGroundedAction() {
+			GroundedAction mga = this.pomdpAction.associatedGroundedAction();
 			if(mga instanceof AbstractObjectParameterizedGroundedAction){
 				return new ObjectParameterizedGroundedBeliefAction(this, mga);
 			}
@@ -117,9 +117,9 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		}
 
 		@Override
-		public List<GroundedAction> getAllApplicableGroundedActions(State s){
+		public List<GroundedAction> allApplicableGroundedActions(State s){
 			State anMDPState = ((BeliefState)s).sampleStateFromBelief();
-			List<GroundedAction> mdpGAs = this.pomdpAction.getAllApplicableGroundedActions(anMDPState);
+			List<GroundedAction> mdpGAs = this.pomdpAction.allApplicableGroundedActions(anMDPState);
 			List<GroundedAction> beliefGAs = new ArrayList<GroundedAction>(mdpGAs.size());
 			for(GroundedAction mga : mdpGAs){
 
@@ -134,7 +134,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		}
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction ga) {
+		protected State sampleHelper(State s, GroundedAction ga) {
 
 			if(!(s instanceof BeliefState)){
 				throw new RuntimeException("Belief MDP actions must operate on BeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");
@@ -147,7 +147,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			//sample a current state
 			State mdpS = bs.sampleStateFromBelief();
 			//sample a next state
-			State mdpSP = mdpGA.executeIn(mdpS);
+			State mdpSP = mdpGA.sample(mdpS);
 			//sample an observations
 			State observation = BeliefMDPGenerator.this.podomain.getObservationFunction().sample(mdpSP, mdpGA);
 			
@@ -214,7 +214,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			double sum = 0.;
 			List <EnumerableBeliefState.StateBelief> beliefs =((EnumerableBeliefState)bs).getStatesAndBeliefsWithNonZeroProbability();
 			for(EnumerableBeliefState.StateBelief sb : beliefs){
-				List<TransitionProbability> mdpTps = ga.getTransitions(sb.s);
+				List<TransitionProbability> mdpTps = ga.transitions(sb.s);
 				for(TransitionProbability tp : mdpTps){
 					double op = of.probability(observation, tp.s, ga);
 					double term = sb.belief * tp.p * op;
@@ -449,7 +449,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			List<EnumerableBeliefState.StateBelief> beliefs = ((EnumerableBeliefState)bs).getStatesAndBeliefsWithNonZeroProbability();
 			double sum = 0.;
 			for(EnumerableBeliefState.StateBelief sb : beliefs){
-				List<TransitionProbability> tps = a.getTransitions(sb.s);
+				List<TransitionProbability> tps = a.transitions(sb.s);
 				double sumTransR = 0.;
 				for(TransitionProbability tp : tps){
 					double r = this.pomdpRF.reward(sb.s, a, tp.s);

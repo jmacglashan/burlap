@@ -563,7 +563,7 @@ public class CartPoleDomain implements DomainGenerator {
 		}
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			if(physParams.useCorrectModel){
 				return CartPoleDomain.moveCorrectModel(s, this.dir, this.physParams);
 			}

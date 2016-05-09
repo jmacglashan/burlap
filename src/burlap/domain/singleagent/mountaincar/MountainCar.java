@@ -230,7 +230,7 @@ public class MountainCar implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			return MountainCar.move(s, dir, this.physParams);
 		}
 

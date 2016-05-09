@@ -283,7 +283,7 @@ public class PrioritizedSweeping extends ValueIteration{
 			//find action with maximum transition probability
 			for(GroundedAction ga : actions){
 				//search for match
-				List<TransitionProbability> tps = ga.getTransitions(backNode.sh.s);
+				List<TransitionProbability> tps = ga.transitions(backNode.sh.s);
 				for(TransitionProbability tp : tps){
 					HashableState tpsh = PrioritizedSweeping.this.hashingFactory.hashState(tp.s);
 					if(tpsh.equals(forwardState)){

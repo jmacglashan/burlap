@@ -74,7 +74,7 @@ public class ExecuteActionCommand implements ShellCommand {
 			}
 		}
 		if(action != null){
-			GroundedAction ga = action.getAssociatedGroundedAction();
+			GroundedAction ga = action.associatedGroundedAction();
 			ga.initParamsWithStringRep(this.actionArgs(args));
 			EnvironmentOutcome o = ga.executeIn(env);
 			if(oset.has("v")){

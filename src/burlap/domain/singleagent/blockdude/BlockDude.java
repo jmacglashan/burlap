@@ -510,7 +510,7 @@ public class BlockDude implements DomainGenerator{
 		}
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			moveHorizontally((BlockDudeState)s, dir, maxx);
 			return s;
 		}
@@ -534,7 +534,7 @@ public class BlockDude implements DomainGenerator{
 
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			moveUp((BlockDudeState)s, maxx);
 			return s;
 		}
@@ -558,7 +558,7 @@ public class BlockDude implements DomainGenerator{
 
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			pickupBlock((BlockDudeState)s, maxx);
 			return s;
 		}
@@ -581,7 +581,7 @@ public class BlockDude implements DomainGenerator{
 
 
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			putdownBlock((BlockDudeState) s, maxx);
 			return s;
 		}

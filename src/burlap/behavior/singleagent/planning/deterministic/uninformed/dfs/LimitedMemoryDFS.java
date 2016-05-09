@@ -149,7 +149,7 @@ public class LimitedMemoryDFS extends DFS {
 		
 		//generate a search successors from the order of grounded actions
 		for(GroundedAction ga : gas){
-			HashableState shp = this.stateHash(ga.executeIn(n.s.s));
+			HashableState shp = this.stateHash(ga.sample(n.s.s));
 			boolean notInMemory = true;
 			Integer memoryDepth = memoryStateDepth.get(shp);
 			if(memoryDepth != null){

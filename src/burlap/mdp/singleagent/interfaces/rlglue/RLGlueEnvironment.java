@@ -144,7 +144,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		State exampleState = this.stateGenerator.generateState();
 		int actionInd = 0;
 		for(burlap.mdp.singleagent.Action a : this.domain.getActions()){
-			List<GroundedAction> gas = a.getAllApplicableGroundedActions(exampleState);
+			List<GroundedAction> gas = a.allApplicableGroundedActions(exampleState);
 			for(GroundedAction ga : gas){
 				this.actionMap.put(actionInd, ga);
 				actionInd++;
@@ -229,7 +229,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		State nextState;
 		boolean curStateTerminal = this.tf.isTerminal(this.curState);
 		if(!curStateTerminal) {
-			nextState = burlapAction.executeIn(this.curState);
+			nextState = burlapAction.sample(this.curState);
 		}
 		else{
 			nextState = this.curState;

@@ -378,7 +378,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	protected StateSelectionAndExpectedGap getNextState(State s, GroundedAction a){
 		
 		if(this.selectionMode == StateSelectionMode.MODELBASED){
-			HashableState nsh =  this.hashingFactory.hashState(a.executeIn(s));
+			HashableState nsh =  this.hashingFactory.hashState(a.sample(s));
 			double gap = this.getGap(nsh);
 			return new StateSelectionAndExpectedGap(nsh, gap);
 		}
@@ -401,7 +401,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 */
 	protected StateSelectionAndExpectedGap getNextStateByMaxMargin(State s, GroundedAction a){
 		
-		List<TransitionProbability> tps = a.getTransitions(s);
+		List<TransitionProbability> tps = a.transitions(s);
 		double sum = 0.;
 		double maxGap = Double.NEGATIVE_INFINITY;
 		List<HashableState> maxStates = new ArrayList<HashableState>(tps.size());
@@ -435,7 +435,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 */
 	protected StateSelectionAndExpectedGap getNextStateBySampling(State s, GroundedAction a){
 		
-		List<TransitionProbability> tps = a.getTransitions(s);
+		List<TransitionProbability> tps = a.transitions(s);
 		double sum = 0.;
 		double [] weightedGap = new double[tps.size()];
 		HashableState[] hashedStates = new HashableState[tps.size()];

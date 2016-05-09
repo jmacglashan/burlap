@@ -23,9 +23,9 @@ import java.util.List;
  * Each of the stochastic game agent actions is converted into a single agent {@link burlap.mdp.singleagent.Action} object with the same
  * action name and parametrization. The created {@link burlap.mdp.singleagent.SADomain}'s {@link burlap.mdp.singleagent.Action} objects maintain the action specification of
  * the input {@link burlap.mdp.stochasticgames.SGDomain}'s {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} (that is, their name and parameter types), but
- * the {@link burlap.mdp.singleagent.Action#performAction(State, burlap.mdp.singleagent.GroundedAction)}
+ * the {@link burlap.mdp.singleagent.Action#sample(State, burlap.mdp.singleagent.GroundedAction)}
  * method is undefined since the transition dynamics would depend on the action selection of other agents, which is unknown. Instead, actions can only
- * be executed through the {@link burlap.mdp.singleagent.Action#performInEnvironment(burlap.mdp.singleagent.environment.Environment, burlap.mdp.singleagent.GroundedAction)} method only
+ * be executed through the {@link burlap.mdp.singleagent.Action#executeIn(burlap.mdp.singleagent.environment.Environment, burlap.mdp.singleagent.GroundedAction)} method only
  * in which the specified {@link burlap.mdp.singleagent.environment.Environment} handles the decisions of the other agents. For example, this domain
  * can typically be paired with the {@link LearningAgentToSGAgentInterface}, which will handle these calls
  * indirectly by simultaneously acting as a stochastic game {@link burlap.mdp.stochasticgames.SGAgent}.
@@ -104,7 +104,7 @@ public class SGToSADomain implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State s, GroundedAction groundedAction) {
+		protected State sampleHelper(State s, GroundedAction groundedAction) {
 			throw new RuntimeException("The SGToSADomain Action instances cannot execute the performAction method, because the transition dynamics depend on the other agent decisions which are unknown. Instead, use the performInEnvironment method or use these action indirectly with a LearningAgentToSGAgentInterface instance.");
 		}
 
@@ -114,7 +114,7 @@ public class SGToSADomain implements DomainGenerator {
 		}
 
 		@Override
-		public GroundedAction getAssociatedGroundedAction() {
+		public GroundedAction associatedGroundedAction() {
 			GroundedSGAgentAction tmp = this.srcAction.getAssociatedGroundedAction(agentName);
 			if(tmp instanceof AbstractObjectParameterizedGroundedAction){
 				return new GroundedSObParamedAAActionWrapper(this, tmp);
@@ -123,7 +123,7 @@ public class SGToSADomain implements DomainGenerator {
 		}
 
 		@Override
-		public List<GroundedAction> getAllApplicableGroundedActions(State s) {
+		public List<GroundedAction> allApplicableGroundedActions(State s) {
 
 			List<GroundedSGAgentAction> sgGroundigns = this.srcAction.getAllApplicableGroundedActions(s, agentName);
 			List<GroundedAction> gas = new ArrayList<GroundedAction>(sgGroundigns.size());

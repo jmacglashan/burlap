@@ -283,7 +283,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		
 		
 		//sample the action
-		HashableState shprime = this.stateHash(anode.action.executeIn(node.state.s));
+		HashableState shprime = this.stateHash(anode.action.sample(node.state.s));
 		double r = rf.reward(node.state.s, anode.action, shprime.s);
 		int depthChange = 1;
 		if(!anode.action.action.isPrimitive()){
@@ -416,7 +416,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		if(untriedNodes){
 			List <UCTActionNode> candidates2 = new ArrayList<UCTActionNode>(candidates.size());
 			for(UCTActionNode anode : candidates){
-				HashableState sample = this.stateHash(anode.action.executeIn(snode.state.s));
+				HashableState sample = this.stateHash(anode.action.sample(snode.state.s));
 				if(!uniqueStatesInTree.contains(sample)){
 					candidates2.add(anode);
 				}

@@ -499,7 +499,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			for(int i = 0; i < c; i++){
 				
 				//execute
-				State ns = ga.executeIn(this.sh.s);
+				State ns = ga.sample(this.sh.s);
 				
 				//manage option stepsize modifications
 				int k = 1;
@@ -530,7 +530,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		protected double fullBelmmanQValue(GroundedAction ga){
 			
 			double sum = 0.;
-			List<TransitionProbability> tps = ga.getTransitions(sh.s);
+			List<TransitionProbability> tps = ga.transitions(sh.s);
 			
 			if(!(ga.action instanceof Option)){
 				

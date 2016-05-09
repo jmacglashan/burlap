@@ -156,7 +156,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 
@@ -229,7 +229,7 @@ public class BlocksWorld implements DomainGenerator {
 		}
 		
 		@Override
-		protected State performActionHelper(State st, GroundedAction groundedAction) {
+		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
 			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
 

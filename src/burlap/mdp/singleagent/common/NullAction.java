@@ -26,7 +26,7 @@ public class NullAction extends SimpleAction.SimpleDeterministicAction implement
 
 	
 	@Override
-	protected State performActionHelper(State st, GroundedAction groundedAction) {
+	protected State sampleHelper(State st, GroundedAction groundedAction) {
 		return st;
 	}
 

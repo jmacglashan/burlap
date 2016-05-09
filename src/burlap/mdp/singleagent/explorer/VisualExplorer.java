@@ -472,7 +472,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 			this.updateState(env.getCurrentObservation());
 		}
 		else{
-			GroundedAction ga = action.getAssociatedGroundedAction();
+			GroundedAction ga = action.associatedGroundedAction();
 			ga.initParamsWithStringRep(params);
 			executeAction(ga);
 
@@ -505,7 +505,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		if(action == null){
 			return null;
 		}
-		GroundedAction ga = action.getAssociatedGroundedAction();
+		GroundedAction ga = action.associatedGroundedAction();
 		ga.initParamsWithStringRep(params);
 		return ga;
 	}

@@ -107,7 +107,7 @@ public class StateReachability {
 			
 			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
 			for(GroundedAction ga : gas){
-				List <TransitionProbability> tps = ga.getTransitions(sh.s);
+				List <TransitionProbability> tps = ga.transitions(sh.s);
 				nGenerated += tps.size();
 				for(TransitionProbability tp : tps){
 					HashableState nsh = usingHashFactory.hashState(tp.s);
@@ -213,7 +213,7 @@ public class StateReachability {
 			List<Policy.ActionProb> policyActions = p.getActionDistributionForState(sh.s);
 			for(Policy.ActionProb ap : policyActions){
 				if(ap.pSelection > 0){
-					List <TransitionProbability> tps = ((GroundedAction)ap.ga).getTransitions(sh.s);
+					List <TransitionProbability> tps = ((GroundedAction)ap.ga).transitions(sh.s);
 					nGenerated += tps.size();
 					for(TransitionProbability tp : tps){
 						HashableState nsh = usingHashFactory.hashState(tp.s);

@@ -467,7 +467,7 @@ public class EpisodeAnalysis {
 				params[i - 1] = scomps[i];
 			}
 
-			GroundedAction ga = a.getAssociatedGroundedAction();
+			GroundedAction ga = a.associatedGroundedAction();
 			ga.initParamsWithStringRep(params);
 			return ga;
 		}

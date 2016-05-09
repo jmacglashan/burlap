@@ -81,7 +81,7 @@ import java.util.Random;
  * Note that this method requires that the returned {@link AbstractGroundedAction} instances are
  * able to be executed using the action's defined transition dynamics. For single agent domains in which the actions
  * are {@link burlap.mdp.singleagent.GroundedAction} instances, this will work as long as the corresponding
- * {@link burlap.mdp.singleagent.Action#performAction(State, burlap.mdp.singleagent.GroundedAction)} method is implemented. If this
+ * {@link burlap.mdp.singleagent.Action#sample(State, burlap.mdp.singleagent.GroundedAction)} method is implemented. If this
  * policy defines the policy for an agent in a stochastic game, returning {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} instances
  * for the action, then the policy cannot be rolled out since the outcome state would depend on the action selection of
  * other agents.
@@ -464,7 +464,7 @@ public abstract class Policy {
 		GroundedAction ga = (GroundedAction)aga;
 		
 		if(ga.action.isPrimitive() || !this.evaluateDecomposesOptions){
-			next = ga.executeIn(cur);
+			next = ga.sample(cur);
 			double r = rf.reward(cur, ga, next);
 			
 			//record result
@@ -478,7 +478,7 @@ public abstract class Policy {
 			do{
 				//do step of option
 				GroundedAction cga = o.oneStepActionSelection(cur, ga);
-				next = cga.executeIn(cur);
+				next = cga.sample(cur);
 				double r = rf.reward(cur, cga, next);
 				
 				if(annotateOptionDecomposition){
@@ -621,13 +621,13 @@ public abstract class Policy {
 		}
 
 		@Override
-		public State executeIn(State s) {
-			return delegate.executeIn(s);
+		public State sample(State s) {
+			return delegate.sample(s);
 		}
 
 		@Override
-		public List<TransitionProbability> getTransitions(State s) {
-			return delegate.getTransitions(s);
+		public List<TransitionProbability> transitions(State s) {
+			return delegate.transitions(s);
 		}
 
 		@Override

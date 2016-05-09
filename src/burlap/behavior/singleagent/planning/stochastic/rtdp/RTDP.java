@@ -252,7 +252,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 				this.numberOfBellmanUpdates++;
 				
 				//take the action
-				curState = ga.executeIn(curState);
+				curState = ga.sample(curState);
 				nSteps++;
 			}
 			

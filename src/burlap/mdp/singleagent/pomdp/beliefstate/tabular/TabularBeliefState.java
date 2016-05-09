@@ -251,7 +251,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	 * @return the probability that the underlying MDP will transition from state s to sp when taking action a in state s.
 	 */
 	protected double getTransitionProb(State s, GroundedAction ga, State sp){
-		List<TransitionProbability> tps = ga.getTransitions(s);
+		List<TransitionProbability> tps = ga.transitions(s);
 		for(TransitionProbability tp : tps){
 			if(tp.s.equals(sp)){
 				return tp.p;
