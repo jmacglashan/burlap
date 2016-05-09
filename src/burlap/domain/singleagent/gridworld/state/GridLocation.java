@@ -3,6 +3,7 @@ package burlap.domain.singleagent.gridworld.state;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,7 @@ import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_Y;
  * ObjectInstance for locations in a {@link GridWorldDomain}. Variable keys are string "x", "y", and "loc" of type int.
  * @author James MacGlashan.
  */
+@DeepCopyState
 public class GridLocation implements ObjectInstance {
 
 	public int x;

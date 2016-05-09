@@ -3,6 +3,7 @@ package burlap.domain.singleagent.cartpole.states;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.StateUtilities;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import static burlap.domain.singleagent.cartpole.CartPoleDomain.*;
 /**
  * @author James MacGlashan.
  */
+@DeepCopyState
 public class CartPoleState extends InvertedPendulumState {
 
 	public double x;

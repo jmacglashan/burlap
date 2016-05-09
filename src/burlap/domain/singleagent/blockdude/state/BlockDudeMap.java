@@ -2,6 +2,7 @@ package burlap.domain.singleagent.blockdude.state;
 
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.annotations.ShallowCopyState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import static burlap.domain.singleagent.blockdude.BlockDude.VAR_MAP;
 /**
  * @author James MacGlashan.
  */
+@ShallowCopyState
 public class BlockDudeMap implements ObjectInstance {
 
 	public int [][] map;

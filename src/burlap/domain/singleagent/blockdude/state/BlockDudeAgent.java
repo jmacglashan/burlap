@@ -2,6 +2,7 @@ package burlap.domain.singleagent.blockdude.state;
 
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +12,7 @@ import static burlap.domain.singleagent.blockdude.BlockDude.*;
 /**
  * @author James MacGlashan.
  */
+@DeepCopyState
 public class BlockDudeAgent implements ObjectInstance {
 
 	public int x;

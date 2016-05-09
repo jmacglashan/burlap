@@ -7,6 +7,7 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.StateUtilities;
+import burlap.mdp.core.state.annotations.ShallowCopyState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import static burlap.domain.singleagent.gridworld.GridWorldDomain.VAR_Y;
 /**
  * @author James MacGlashan.
  */
+@ShallowCopyState
 public class GridWorldState implements MutableOOState {
 
 	public GridAgent agent;

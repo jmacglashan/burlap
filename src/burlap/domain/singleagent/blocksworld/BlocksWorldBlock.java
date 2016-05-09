@@ -2,6 +2,7 @@ package burlap.domain.singleagent.blocksworld;
 
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import static burlap.domain.singleagent.blocksworld.BlocksWorld.*;
 /**
  * @author James MacGlashan.
  */
+@DeepCopyState
 public class BlocksWorldBlock implements ObjectInstance {
 
 	public String on = TABLE_VAL;

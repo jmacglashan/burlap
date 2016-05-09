@@ -7,6 +7,7 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.StateUtilities;
+import burlap.mdp.core.state.annotations.ShallowCopyState;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import static burlap.domain.singleagent.blocksworld.BlocksWorld.*;
 /**
  * @author James MacGlashan.
  */
+@ShallowCopyState
 public class BlocksWorldState implements MutableOOState{
 
 	protected Map<String, BlocksWorldBlock> blocks = new HashMap<String, BlocksWorldBlock>();

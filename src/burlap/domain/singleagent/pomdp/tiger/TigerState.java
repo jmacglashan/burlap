@@ -1,6 +1,7 @@
 package burlap.domain.singleagent.pomdp.tiger;
 
 import burlap.mdp.core.state.MutableState;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +11,7 @@ import static burlap.domain.singleagent.pomdp.tiger.TigerDomain.*;
 /**
  * @author James MacGlashan.
  */
+@DeepCopyState
 public class TigerState implements MutableState{
 	public String door;
 

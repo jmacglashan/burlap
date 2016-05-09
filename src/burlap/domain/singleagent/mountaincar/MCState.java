@@ -3,6 +3,7 @@ package burlap.domain.singleagent.mountaincar;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.StateUtilities;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +14,7 @@ import static burlap.domain.singleagent.mountaincar.MountainCar.ATT_X;
 /**
  * @author James MacGlashan.
  */
+@DeepCopyState
 public class MCState implements MutableState {
 
 	public double x;

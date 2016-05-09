@@ -2,6 +2,7 @@ package burlap.domain.singleagent.graphdefined;
 
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.core.state.annotations.DeepCopyState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 /**
  * @author James MacGlashan.
  */
+@DeepCopyState
 public class GraphStateNode implements MutableState {
 
 	protected int id;
