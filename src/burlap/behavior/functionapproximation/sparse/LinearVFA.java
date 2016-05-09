@@ -1,20 +1,24 @@
 package burlap.behavior.functionapproximation.sparse;
 
-import burlap.behavior.functionapproximation.*;
+import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
+import burlap.behavior.functionapproximation.DifferentiableStateValue;
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.mdp.core.AbstractGroundedAction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 /**
- * This class is used for general purpose linear VFA. It only needs to be provided a FeatureDatabase object that will be used to store
- * retrieve state features. For every feature returned by the feature database, this class will automatically create a weight associated with it.
+ * This class is used for general purpose linear VFA. It only needs to be provided a {@link SparseStateFeatures} object that will be used to store
+ * retrieve state features. For every feature returned by the feature functions, this class will automatically create a weight associated with it.
  * The returned approximated value for any state is the linear combination of state features and weights.
+ * <p>
+ * This class can also be used for state-action value function approximation, which it will perform by creating
+ * state-action features as a cross product of the state features and action set. You should only ever using this class
+ * for state-values or state-action values, not both.
  *  
  * @author James MacGlashan
  *
@@ -22,9 +26,14 @@ import java.util.Map;
 public class LinearVFA implements DifferentiableStateValue, DifferentiableStateActionValue {
 
 	/**
-	 * A feature database for which a unique function weight will be associated
+	 * The state features
 	 */
 	protected SparseStateFeatures sparseStateFeatures;
+
+	/**
+	 * The State-action features based on the cross product of state features and actions
+	 */
+	protected SparseCrossProductFeatures stateActionFeatures;
 	
 	/**
 	 * A map from feature identifiers to function weights
@@ -54,12 +63,9 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 	public LinearVFA(SparseStateFeatures sparseStateFeatures) {
 
 		this.sparseStateFeatures = sparseStateFeatures;
-		if(sparseStateFeatures.numberOfFeatures() > 0){
-			this.weights = new HashMap<Integer, Double>(sparseStateFeatures.numberOfFeatures());
-		}
-		else{
-			this.weights = new HashMap<Integer, Double>();
-		}
+		this.stateActionFeatures = new SparseCrossProductFeatures(sparseStateFeatures);
+		this.weights = new HashMap<Integer, Double>();
+
 
 	}
 
@@ -72,22 +78,20 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 	public LinearVFA(SparseStateFeatures sparseStateFeatures, double defaultWeight) {
 
 		this.sparseStateFeatures = sparseStateFeatures;
+		this.stateActionFeatures = new SparseCrossProductFeatures(sparseStateFeatures);
 		this.defaultWeight = defaultWeight;
-		if(sparseStateFeatures.numberOfFeatures() > 0){
-			this.weights = new HashMap<Integer, Double>(sparseStateFeatures.numberOfFeatures());
-		}
-		else{
-			this.weights = new HashMap<Integer, Double>();
-		}
+		this.weights = new HashMap<Integer, Double>();
+
 
 	}
+
 
 
 
 	@Override
 	public double evaluate(State s, AbstractGroundedAction a) {
 
-		List<StateFeature> features = this.sparseStateFeatures.getActionFeaturesSets(s, Arrays.asList((GroundedAction)a)).get(0).features;
+		List<StateFeature> features = this.stateActionFeatures.features(s, a);
 		double val = 0.;
 		for(StateFeature sf : features){
 			double prod = sf.value * this.getWeight(sf.id);
@@ -157,7 +161,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 			features = this.currentFeatures;
 		}
 		else{
-			features = this.sparseStateFeatures.getActionFeaturesSets(s, Arrays.asList((GroundedAction)a)).get(0).features;
+			features = this.stateActionFeatures.features(s, a);
 		}
 
 		FunctionGradient gd = new FunctionGradient.SparseGradient(features.size());
@@ -208,6 +212,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 
 		LinearVFA vfa = new LinearVFA(this.sparseStateFeatures.copy(), this.defaultWeight);
 		vfa.weights = new HashMap<Integer, Double>(this.weights.size());
+		vfa.stateActionFeatures = stateActionFeatures.copy();
 		for(Map.Entry<Integer, Double> e : this.weights.entrySet()){
 			vfa.weights.put(e.getKey(), e.getValue());
 		}

@@ -35,7 +35,7 @@ public class SparseToDenseFeatures implements DenseStateFeatures {
 	public double[] features(State s) {
 
 		List<StateFeature> sfs = this.sparseStateFeatures.features(s);
-		double [] fv = new double[this.sparseStateFeatures.numberOfFeatures()];
+		double [] fv = new double[this.sparseStateFeatures.numFeatures()];
 		for(StateFeature sf : sfs){
 			fv[sf.id] = sf.value;
 		}

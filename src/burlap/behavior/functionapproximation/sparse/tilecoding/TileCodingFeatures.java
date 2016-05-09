@@ -1,10 +1,9 @@
 package burlap.behavior.functionapproximation.sparse.tilecoding;
 
-import burlap.behavior.functionapproximation.sparse.ActionFeaturesSet;
-import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
-import burlap.behavior.functionapproximation.sparse.StateFeature;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.functionapproximation.sparse.LinearVFA;
+import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
+import burlap.behavior.functionapproximation.sparse.StateFeature;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
@@ -55,18 +54,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	 * Mapping to state features
 	 */
 	List<Map<Tiling.FVTile, Integer>>	 								stateFeatures;
-	
-	
-	/**
-	 * Mapping to state-action features
-	 */
-	List<Map<Tiling.FVTile, List<ActionFeatureID>>>	 				stateActionFeatures;
-	
-	
-	/**
-	 * The identifier to use for the next state-action pair feature
-	 */
-	protected int														nextActionFeatureId = 0;
+
 	
 	/**
 	 * The identifier to use for the next state feature.
@@ -76,28 +64,19 @@ public class TileCodingFeatures implements SparseStateFeatures {
 
 	@Override
 	public TileCodingFeatures copy() {
-		TileCodingFeatures cmac = new TileCodingFeatures(this.featureVectorGenerator);
-		cmac.rand = this.rand;
-		cmac.tilings = new ArrayList<Tiling>(this.tilings);
+		TileCodingFeatures tilecoding = new TileCodingFeatures(this.featureVectorGenerator);
+		tilecoding.rand = this.rand;
+		tilecoding.tilings = new ArrayList<Tiling>(this.tilings);
 
-		cmac.stateFeatures = new ArrayList<Map<Tiling.FVTile, Integer>>(this.stateFeatures.size());
+		tilecoding.stateFeatures = new ArrayList<Map<Tiling.FVTile, Integer>>(this.stateFeatures.size());
 		for(Map<Tiling.FVTile, Integer> el : this.stateFeatures){
 			Map<Tiling.FVTile, Integer> nel = new HashMap<Tiling.FVTile, Integer>(el);
-			cmac.stateFeatures.add(nel);
+			tilecoding.stateFeatures.add(nel);
 		}
 
-		cmac.stateActionFeatures = new ArrayList<Map<Tiling.FVTile, List<ActionFeatureID>>>(this.stateActionFeatures.size());
-		for(Map<Tiling.FVTile, List<ActionFeatureID>> el : this.stateActionFeatures){
-			Map<Tiling.FVTile, List<ActionFeatureID>> nel = new HashMap<Tiling.FVTile, List<ActionFeatureID>>(el.size());
-			for(Map.Entry<Tiling.FVTile, List<ActionFeatureID>> e : el.entrySet()){
-				nel.put(e.getKey(), new ArrayList<ActionFeatureID>(e.getValue()));
-			}
-			cmac.stateActionFeatures.add(nel);
-		}
-		cmac.nextActionFeatureId = this.nextActionFeatureId;
-		cmac.nextStateFeatureId = this.nextStateFeatureId;
+		tilecoding.nextStateFeatureId = this.nextStateFeatureId;
 
-		return cmac;
+		return tilecoding;
 	}
 
 	/**
@@ -110,7 +89,6 @@ public class TileCodingFeatures implements SparseStateFeatures {
 		this.featureVectorGenerator = featureVectorGenerator;
 		this.tilings = new ArrayList<Tiling>();
 		this.stateFeatures = new ArrayList<Map<Tiling.FVTile,Integer>>();
-		this.stateActionFeatures = new ArrayList<Map<Tiling.FVTile,List<ActionFeatureID>>>();
 		
 		
 	}
@@ -130,7 +108,6 @@ public class TileCodingFeatures implements SparseStateFeatures {
 		
 		for(int i = 0; i < nTilings; i++){
 			this.stateFeatures.add(new HashMap<Tiling.FVTile, Integer>());
-			this.stateActionFeatures.add(new HashMap<Tiling.FVTile, List<ActionFeatureID>>());
 			double [] offset;
 			if(tileArrangement == TilingArrangement.RANDOM_JITTER){
 				offset = this.produceRandomOffset(dimensionMask, widths);
@@ -182,14 +159,12 @@ public class TileCodingFeatures implements SparseStateFeatures {
 		
 		return features;
 	}
-	
-	
+
 	@Override
-	public int numberOfFeatures() {
-		return Math.max(this.nextActionFeatureId, this.nextStateFeatureId);
+	public int numFeatures() {
+		return nextStateFeatureId;
 	}
-	
-	
+
 	/**
 	 * Returns the stored feature id or creates, stores and returns one. If a feature id is created, then the {@link #nextStateFeatureId} data member of this
 	 * object is incremented.
@@ -205,35 +180,6 @@ public class TileCodingFeatures implements SparseStateFeatures {
 			this.nextStateFeatureId++;
 		}
 		return stored;
-	}
-
-	@Override
-	public List<ActionFeaturesSet> getActionFeaturesSets(State s,
-														 List<GroundedAction> actions) {
-		
-		double [] input = this.featureVectorGenerator.features(s);
-		List<ActionFeaturesSet> features = new ArrayList<ActionFeaturesSet>();
-		for(GroundedAction ga : actions){
-			features.add(new ActionFeaturesSet(ga));
-		}
-		
-		for(int i = 0; i < this.tilings.size(); i++){
-			Tiling tiling = this.tilings.get(i);
-			Map<Tiling.FVTile, List<ActionFeatureID>> tileFeatureMap = this.stateActionFeatures.get(i);
-			Tiling.FVTile tile = tiling.getFVTile(input);
-			
-			List<ActionFeatureID> storedActionFeatures = this.getOrGenerateActionFeatureList(tileFeatureMap, tile);
-			for(int j = 0; j < actions.size(); j++){
-				GroundedAction ga = actions.get(j);
-				ActionFeaturesSet afq = features.get(j);
-				int fid = this.addOrGetMatchingActionFeatureID(storedActionFeatures, ga);
-				StateFeature sf = new StateFeature(fid, 1.);
-				afq.addFeature(sf);
-			}
-			
-		}
-		
-		return features;
 	}
 	
 	
@@ -254,23 +200,7 @@ public class TileCodingFeatures implements SparseStateFeatures {
 		return stored;
 		
 	}
-	
-	/**
-	 * Returns or creates, stores and returns the action feature id for the given {@link GroundedAction} in the list of action features. If a
-	 * a new action feature id is created, then the {@link #nextActionFeatureId} datamember of this object is incremented.
-	 * @param storedActionFeatures the stores list of action features.
-	 * @param ga the grounded action whose associated feature should be returned (or created, stored, and returned)
-	 * @return the action feature id for this action.
-	 */
-	protected int addOrGetMatchingActionFeatureID(List<ActionFeatureID> storedActionFeatures, GroundedAction ga){
-		ActionFeatureID id = matchingActionFeature(storedActionFeatures, ga);
-		if(id == null){
-			id = new ActionFeatureID(ga, this.nextActionFeatureId);
-			storedActionFeatures.add(id);
-			this.nextActionFeatureId++;
-		}
-		return id.id;
-	}
+
 
 	
 	
