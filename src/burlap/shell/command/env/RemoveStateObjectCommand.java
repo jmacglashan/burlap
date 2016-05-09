@@ -53,7 +53,7 @@ public class RemoveStateObjectCommand implements ShellCommand {
 			return -1;
 		}
 
-		State s = env.getCurrentObservation();
+		State s = env.currentObservation();
 
 		if(!(s instanceof MutableOOState)){
 			os.println("Cannot remove object from state, because state is not a MutableOOState");
@@ -64,7 +64,7 @@ public class RemoveStateObjectCommand implements ShellCommand {
 		senv.setCurStateTo(s);
 
 		if(oset.has("v")){
-			os.println(env.getCurrentObservation().toString());
+			os.println(env.currentObservation().toString());
 		}
 
 		return 1;

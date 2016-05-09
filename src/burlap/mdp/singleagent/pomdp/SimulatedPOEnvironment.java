@@ -14,7 +14,7 @@ import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 
 /**
  * An {@link burlap.mdp.singleagent.environment.Environment} specifically for simulating interaction with a POMDP
- * environments ({@link burlap.mdp.singleagent.pomdp.PODomain}). In this case, the {@link #getCurrentObservation()}
+ * environments ({@link burlap.mdp.singleagent.pomdp.PODomain}). In this case, the {@link #currentObservation()}
  * returns the last observation made from the {@link burlap.mdp.singleagent.environment.Environment}, not the hidden
  * state, and the {@link #executeAction(burlap.mdp.singleagent.GroundedAction)}
  * method does not return {@link burlap.mdp.singleagent.environment.EnvironmentOutcome} objects that contain the full state
@@ -68,7 +68,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 
 
 	@Override
-	public State getCurrentObservation() {
+	public State currentObservation() {
 		return this.curObservation;
 	}
 

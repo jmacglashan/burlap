@@ -216,7 +216,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
 
-		State initialState = env.getCurrentObservation();
+		State initialState = env.currentObservation();
 
 		this.modelPlanner.initializePlannerIn(initialState);
 
@@ -243,7 +243,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 			}
 
 
-			curState = env.getCurrentObservation();
+			curState = env.currentObservation();
 
 			steps++;
 		}

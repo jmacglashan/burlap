@@ -232,7 +232,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 			@Override
 			public void run() {
 				while(runLivePolling) {
-					State s = env.getCurrentObservation();
+					State s = env.currentObservation();
 					if(s != null) {
 						updateState(s);
 					}
@@ -260,10 +260,10 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	@Override
 	public void observeCommand(BurlapShell shell, ShellCommandEvent event) {
 		if(event.returnCode == 1){
-			this.updateState(this.env.getCurrentObservation());
+			this.updateState(this.env.currentObservation());
 		}
 		if(event.command instanceof ObservationCommand){
-			this.updateState(this.env.getCurrentObservation());
+			this.updateState(this.env.currentObservation());
 		}
 	}
 
@@ -331,8 +331,8 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		});
 		bottomContainer.add(actionButton, BorderLayout.EAST);
 		
-		painter.updateState(this.env.getCurrentObservation());
-		this.updatePropTextArea(this.env.getCurrentObservation());
+		painter.updateState(this.env.currentObservation());
+		this.updatePropTextArea(this.env.currentObservation());
 
 		JButton showConsoleButton = new JButton("Show Shell");
 		showConsoleButton.addActionListener(new ActionListener() {
@@ -469,7 +469,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		if(action == null){
 			this.warningMessage = "Unknown action: " + actionName + "; nothing changed";
 			System.out.println(warningMessage);
-			this.updateState(env.getCurrentObservation());
+			this.updateState(env.currentObservation());
 		}
 		else{
 			GroundedAction ga = action.associatedGroundedAction();
@@ -517,7 +517,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 * @param ga the {@link burlap.mdp.singleagent.GroundedAction} to execute.
 	 */
 	protected void executeAction(GroundedAction ga){
-		if(ga.applicableInState(env.getCurrentObservation())){
+		if(ga.applicableInState(env.currentObservation())){
 
 			EnvironmentOutcome eo = ga.executeIn(env);
 			if(this.currentEpisode != null){
@@ -528,12 +528,12 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 
 
 			numSteps++;
-			this.updateState(this.env.getCurrentObservation());
+			this.updateState(this.env.currentObservation());
 		}
 		else{
 			this.warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
 			System.out.println(warningMessage);
-			this.updateState(this.env.getCurrentObservation());
+			this.updateState(this.env.currentObservation());
 		}
 	}
 

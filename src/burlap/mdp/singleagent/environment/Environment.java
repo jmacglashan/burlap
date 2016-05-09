@@ -29,7 +29,7 @@ public interface Environment {
 	 * Returns the current observation of the environment as a {@link State}.
 	 * @return the current observation of the environment as a {@link State}.
 	 */
-	State getCurrentObservation();
+	State currentObservation();
 
 
 	/**
@@ -45,7 +45,7 @@ public interface Environment {
 	 * Returns the last reward returned by the environment
 	 * @return  the last reward returned by the environment
 	 */
-	double getLastReward();
+	double lastReward();
 	
 	/**
 	 * Returns whether the environment is in a terminal state that prevents further action by the agent.

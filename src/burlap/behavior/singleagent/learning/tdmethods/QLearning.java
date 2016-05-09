@@ -498,7 +498,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 
 		this.toggleShouldAnnotateOptionDecomposition(shouldAnnotateOptions);
 
-		State initialState = env.getCurrentObservation();
+		State initialState = env.currentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		HashableState curState = this.stateHash(initialState);
@@ -546,7 +546,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			}
 
 			//move on polling environment for its current state in case it changed during processing
-			curState = this.stateHash(env.getCurrentObservation());
+			curState = this.stateHash(env.currentObservation());
 			this.totalNumberOfSteps++;
 
 

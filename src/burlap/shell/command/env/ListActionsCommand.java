@@ -53,7 +53,7 @@ public class ListActionsCommand implements ShellCommand{
 		}
 
 
-		State qs = env.getCurrentObservation();
+		State qs = env.currentObservation();
 
 		if(oset.has("s")){
 			if(!(env instanceof SimulatedPOEnvironment)){

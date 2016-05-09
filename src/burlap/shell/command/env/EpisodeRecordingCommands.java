@@ -132,7 +132,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 					os.println(" without auto episode recording.");
 				}
 				EnvironmentServerInterface serverenv = (EnvironmentServerInterface)env;
-				if(!serverenv.getObservers().contains(EpisodeRecordingCommands.this)){
+				if(!serverenv.observers().contains(EpisodeRecordingCommands.this)){
 					serverenv.addObservers(EpisodeRecordingCommands.this);
 				}
 
@@ -142,7 +142,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 
 			if(oset.has("i")){
 				if(recording) {
-					curEpisode = new EpisodeAnalysis(env.getCurrentObservation());
+					curEpisode = new EpisodeAnalysis(env.currentObservation());
 					finished = false;
 					os.println("Initialized new episode.");
 				}
@@ -156,7 +156,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 				if(EpisodeRecordingCommands.this.curEpisode != null && !EpisodeRecordingCommands.this.recordedLast){
 					EpisodeRecordingCommands.this.episodes.add(EpisodeRecordingCommands.this.curEpisode);
 					EpisodeRecordingCommands.this.recordedLast = true;
-					curEpisode = new EpisodeAnalysis(env.getCurrentObservation());
+					curEpisode = new EpisodeAnalysis(env.currentObservation());
 					os.println("Recorded episode since last environment reset or initialization.");
 				}
 				else{

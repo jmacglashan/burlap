@@ -74,7 +74,7 @@ public abstract class BeliefAgent {
 	 */
 	public EpisodeAnalysis actUntilTerminal(){
 		EpisodeAnalysis ea = new EpisodeAnalysis();
-		ea.initializeEpisideWithInitialState(this.environment.getCurrentObservation());
+		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
 		while(!this.environment.isInTerminalState()){
 			GroundedAction ga = this.getAction(this.curBelief);
 			EnvironmentOutcome eo = ga.executeIn(environment);
@@ -100,7 +100,7 @@ public abstract class BeliefAgent {
 	 */
 	public EpisodeAnalysis actUntilTerminalOrMaxSteps(int maxSteps){
 		EpisodeAnalysis ea = new EpisodeAnalysis();
-		ea.initializeEpisideWithInitialState(this.environment.getCurrentObservation());
+		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
 		int c = 0;
 		while(!this.environment.isInTerminalState() && c < maxSteps){
 			GroundedAction ga = this.getAction(this.curBelief);

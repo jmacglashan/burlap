@@ -146,7 +146,7 @@ public class SarsaLam extends QLearning {
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps){
 
-		State initialState = env.getCurrentObservation();
+		State initialState = env.currentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxQChangeInLastEpisode = 0.;

@@ -53,7 +53,7 @@ public class SetVarCommand implements ShellCommand {
 			return -1;
 		}
 
-		State s = env.getCurrentObservation();
+		State s = env.currentObservation();
 		if(!(s instanceof MutableState)){
 			os.println("Cannot modify state values, because the state does not implement MutableState");
 		}
@@ -69,7 +69,7 @@ public class SetVarCommand implements ShellCommand {
 		}
 		senv.setCurStateTo(s);
 		if(oset.has("v")){
-			os.println(senv.getCurrentObservation().toString());
+			os.println(senv.currentObservation().toString());
 		}
 
 		return 1;

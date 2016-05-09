@@ -343,7 +343,7 @@ public abstract class Policy {
 	 */
 	public EpisodeAnalysis evaluateBehavior(Environment env){
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(env.getCurrentObservation());
+		EpisodeAnalysis ea = new EpisodeAnalysis(env.currentObservation());
 
 		do{
 			this.followAndRecordPolicy(env, ea);
@@ -361,7 +361,7 @@ public abstract class Policy {
 	 */
 	public EpisodeAnalysis evaluateBehavior(Environment env, int numSteps){
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(env.getCurrentObservation());
+		EpisodeAnalysis ea = new EpisodeAnalysis(env.currentObservation());
 
 		int nSteps;
 		do{
@@ -389,7 +389,7 @@ public abstract class Policy {
 
 
 		//follow policy
-		AbstractGroundedAction aga = this.getAction(env.getCurrentObservation());
+		AbstractGroundedAction aga = this.getAction(env.currentObservation());
 		if(aga == null){
 			throw new PolicyUndefinedException();
 		}
@@ -404,7 +404,7 @@ public abstract class Policy {
 		}
 		else{
 			//then we need to decompose the option
-			State cur = env.getCurrentObservation();
+			State cur = env.currentObservation();
 			Option o = (Option)ga.action;
 			o.initiateInState(cur, ga);
 			int ns = 0;
@@ -427,7 +427,7 @@ public abstract class Policy {
 					ea.recordTransitionTo(cga, next, r);
 				}
 
-				cur = env.getCurrentObservation();
+				cur = env.currentObservation();
 				ns++;
 			}while(o.continueFromState(cur, ga));
 		}

@@ -118,20 +118,20 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 	 * Returns all {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s registered with this server.
 	 * @return all {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s registered with this server.
 	 */
-	public List<EnvironmentObserver> getObservers(){
+	public List<EnvironmentObserver> observers(){
 		return this.observers;
 	}
 
 
 	@Override
-	public State getCurrentObservation() {
-		return this.delegate.getCurrentObservation();
+	public State currentObservation() {
+		return this.delegate.currentObservation();
 	}
 
 	@Override
 	public EnvironmentOutcome executeAction(GroundedAction ga) {
 		for(EnvironmentObserver observer : this.observers){
-			observer.observeEnvironmentActionInitiation(this.delegate.getCurrentObservation(), ga);
+			observer.observeEnvironmentActionInitiation(this.delegate.currentObservation(), ga);
 		}
 		EnvironmentOutcome eo = this.delegate.executeAction(ga);
 		for(EnvironmentObserver observer : this.observers){
@@ -141,8 +141,8 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 	}
 
 	@Override
-	public double getLastReward() {
-		return this.delegate.getLastReward();
+	public double lastReward() {
+		return this.delegate.lastReward();
 	}
 
 	@Override

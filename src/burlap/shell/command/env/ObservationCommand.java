@@ -34,7 +34,7 @@ public class ObservationCommand implements ShellCommand {
 		}
 
 		Environment env = ((EnvironmentShell)shell).getEnv();
-		os.println(env.getCurrentObservation().toString());
+		os.println(env.currentObservation().toString());
 		return 0;
 	}
 }

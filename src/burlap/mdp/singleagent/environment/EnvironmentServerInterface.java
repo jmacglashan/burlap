@@ -30,6 +30,6 @@ public interface EnvironmentServerInterface extends Environment{
 	 * Returns all {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s registered with this server.
 	 * @return all {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s registered with this server.
 	 */
-	List<EnvironmentObserver> getObservers();
+	List<EnvironmentObserver> observers();
 
 }

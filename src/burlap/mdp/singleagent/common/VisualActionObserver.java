@@ -239,8 +239,8 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 	public void observeEnvironmentReset(Environment resetEnvironment) {
 
 
-		this.painter.updateState(resetEnvironment.getCurrentObservation());
-		this.updatePropTextArea(resetEnvironment.getCurrentObservation());
+		this.painter.updateState(resetEnvironment.currentObservation());
+		this.updatePropTextArea(resetEnvironment.currentObservation());
 
 		Thread waitThread = new Thread(new Runnable() {
 

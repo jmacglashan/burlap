@@ -462,15 +462,15 @@ public abstract class Option extends Action implements FullActionModel{
 	@Override
 	public EnvironmentOutcome executeIn(Environment env, GroundedAction groundedActions) {
 
-		State initialState = env.getCurrentObservation();
+		State initialState = env.currentObservation();
 		this.initiateInState(initialState, groundedActions);
 		do{
 			this.oneStep(env, groundedActions);
-		}while(this.continueFromState(env.getCurrentObservation(), groundedActions) && !env.isInTerminalState());
+		}while(this.continueFromState(env.currentObservation(), groundedActions) && !env.isInTerminalState());
 
 		EnvironmentOptionOutcome eoo = new EnvironmentOptionOutcome(initialState,
 																	groundedActions.copy(),
-																	env.getCurrentObservation(),
+																	env.currentObservation(),
 																	this.lastCumulativeReward,
 																	env.isInTerminalState(),
 																	this.discountFactor,
@@ -521,7 +521,7 @@ public abstract class Option extends Action implements FullActionModel{
 	 */
 	public EnvironmentOutcome oneStep(Environment env, GroundedAction groundedAction){
 
-		GroundedAction ga = this.oneStepActionSelection(env.getCurrentObservation(), groundedAction);
+		GroundedAction ga = this.oneStepActionSelection(env.currentObservation(), groundedAction);
 		EnvironmentOutcome eo = ga.executeIn(env);
 		if(eo instanceof EnvironmentOptionOutcome){
 			EnvironmentOptionOutcome eoo = (EnvironmentOptionOutcome)eo;

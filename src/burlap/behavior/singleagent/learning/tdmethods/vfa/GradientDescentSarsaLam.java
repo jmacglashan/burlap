@@ -368,7 +368,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
 
-		State initialState = env.getCurrentObservation();
+		State initialState = env.currentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
 		maxWeightChangeInLastEpisode = 0.;

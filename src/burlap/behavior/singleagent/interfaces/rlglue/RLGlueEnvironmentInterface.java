@@ -319,7 +319,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 	}
 
 	@Override
-	public State getCurrentObservation() {
+	public State currentObservation() {
 		if(this.curState == null){
 			this.blockUntilStateReceived();
 		}
@@ -368,7 +368,7 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 	}
 
 	@Override
-	public double getLastReward() {
+	public double lastReward() {
 		return this.lastReward;
 	}
 

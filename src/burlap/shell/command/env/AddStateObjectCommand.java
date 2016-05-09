@@ -83,7 +83,7 @@ public class AddStateObjectCommand implements ShellCommand {
 			return 0;
 		}
 
-		State s = env.getCurrentObservation();
+		State s = env.currentObservation();
 
 		if(!(s instanceof MutableOOState)){
 			os.println("Cannot add object to state, because the state of the environment does not implement MutableOOState");
@@ -93,7 +93,7 @@ public class AddStateObjectCommand implements ShellCommand {
 		senv.setCurStateTo(s);
 
 		if(oset.has("v")){
-			os.println(senv.getCurrentObservation().toString());
+			os.println(senv.currentObservation().toString());
 		}
 
 		return 1;

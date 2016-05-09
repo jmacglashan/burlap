@@ -34,7 +34,7 @@ public class RewardCommand implements ShellCommand {
 			return 0;
 		}
 
-		os.println("" + env.getLastReward());
+		os.println("" + env.lastReward());
 
 		return 0;
 	}

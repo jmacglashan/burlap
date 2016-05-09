@@ -155,7 +155,7 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 	}
 
 	@Override
-	public List<EnvironmentObserver> getObservers() {
+	public List<EnvironmentObserver> observers() {
 		return this.observers;
 	}
 
@@ -180,7 +180,7 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 	}
 
 	@Override
-	public State getCurrentObservation() {
+	public State currentObservation() {
 		return this.curState.copy();
 	}
 
@@ -194,7 +194,7 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 		}
 
 		for(EnvironmentObserver observer : this.observers){
-			observer.observeEnvironmentActionInitiation(this.getCurrentObservation(), ga);
+			observer.observeEnvironmentActionInitiation(this.currentObservation(), ga);
 		}
 
 		State nextState;
@@ -219,7 +219,7 @@ public class SimulatedEnvironment implements StateSettableEnvironment, TaskSetta
 	}
 
 	@Override
-	public double getLastReward() {
+	public double lastReward() {
 		return this.lastReward;
 	}
 
