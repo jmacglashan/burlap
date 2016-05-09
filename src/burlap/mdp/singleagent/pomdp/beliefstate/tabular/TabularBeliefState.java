@@ -6,7 +6,7 @@ import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.pomdp.ObservationFunction;
+import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.DenseBeliefVector;
@@ -40,7 +40,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 
 
 	/**
-	 * The POMDP domain with which this belief state is associated. Contains the {@link burlap.mdp.singleagent.pomdp.ObservationFunction} necessary to perform
+	 * The POMDP domain with which this belief state is associated. Contains the {@link ObservationFunction} necessary to perform
 	 * belief state updates.
 	 */
 	protected PODomain domain;
@@ -150,7 +150,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 		double sum = 0.;
 		for(int i = 0; i < newBeliefStateVector.length; i++){
 			State ns = this.stateForId(i);
-			double op = of.getObservationProbability(observation, ns, ga);
+			double op = of.probability(observation, ns, ga);
 			double transitionSum = 0.;
 			for(Map.Entry<Integer, Double> srcStateEntry : this.beliefValues.entrySet()){
 				double srcB = srcStateEntry.getValue();

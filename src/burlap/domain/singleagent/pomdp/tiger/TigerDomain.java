@@ -17,10 +17,13 @@ import burlap.mdp.singleagent.common.NullAction;
 import burlap.mdp.singleagent.common.SimpleAction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
-import burlap.mdp.singleagent.pomdp.ObservationFunction;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
+import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
+import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
+import burlap.mdp.singleagent.pomdp.observations.ObservationProbability;
+import burlap.mdp.singleagent.pomdp.observations.ObservationUtilities;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
 import burlap.shell.EnvironmentShell;
 
@@ -154,8 +157,9 @@ public class TigerDomain implements DomainGenerator {
 		if(this.includeDoNothing){
 			new NullAction(ACTION_DO_NOTHING, domain);
 		}
-		
-		new TigerObservations(domain, this.listenAccuracy);
+
+		ObservationFunction of = new TigerObservations(this.listenAccuracy);
+		domain.setObservationFunction(of);
 		
 		StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
 		senum.getEnumeratedID(new TigerState(VAL_LEFT));
@@ -257,22 +261,16 @@ public class TigerDomain implements DomainGenerator {
 	/**
 	 * Defines the Tiger domain observation function
 	 */
-	public class TigerObservations extends ObservationFunction{
+	public class TigerObservations implements DiscreteObservationFunction{
 
 		protected double listenAccuracy;
 		
-		public TigerObservations(PODomain domain, double listenAccuracy){
-			super(domain);
+		public TigerObservations(double listenAccuracy){
 			this.listenAccuracy = listenAccuracy;
 		}
 
 		@Override
-		public boolean canEnumerateObservations() {
-			return true;
-		}
-
-		@Override
-		public List<State> getAllPossibleObservations() {
+		public List<State> allObservations() {
 			
 			List<State> result = new ArrayList<State>(3);
 			
@@ -287,7 +285,7 @@ public class TigerDomain implements DomainGenerator {
 		}
 		
 		@Override
-		public State sampleObservation(State state, GroundedAction action){
+		public State sample(State state, GroundedAction action){
 			//override for faster sampling
 			if(action.actionName().equals(ACTION_LEFT) || action.actionName().equals(ACTION_RIGHT)){
 				return this.observationReset();
@@ -321,8 +319,8 @@ public class TigerDomain implements DomainGenerator {
 		}
 
 		@Override
-		public double getObservationProbability(State observation, State state,
-				GroundedAction action) {
+		public double probability(State observation, State state,
+								  GroundedAction action) {
 			
 			
 			String oVal = (String)observation.get(VAR_HEAR);
@@ -370,12 +368,12 @@ public class TigerDomain implements DomainGenerator {
 				}
 			}
 			
-			throw new RuntimeException("Unknown aciton " + action.actionName() + "; cannot return observation probability.");
+			throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation probability.");
 		}
 
 		@Override
-		public List<ObservationProbability> getObservationProbabilities(State state, GroundedAction action) {
-			return this.getObservationProbabilitiesByEnumeration(state, action);
+		public List<ObservationProbability> probabilities(State state, GroundedAction action) {
+			return ObservationUtilities.probabilitiesByEnumeration(this, state, action);
 		}
 
 		/**

@@ -2,11 +2,12 @@ package burlap.mdp.singleagent.pomdp;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 
 
 /**
  * A class for defining POMDP domains. Primarily, this adds to the {@link burlap.mdp.singleagent.SADomain} definition
- * an {@link burlap.mdp.singleagent.pomdp.ObservationFunction}. It also adds an optional {@link burlap.behavior.singleagent.auxiliary.StateEnumerator}
+ * an {@link ObservationFunction}. It also adds an optional {@link burlap.behavior.singleagent.auxiliary.StateEnumerator}
  * since many POMDP algorithms require knowing in advance the full underlying MDP state space. However, not all domains
  * can enumerate all the states, and therefore this field is not required to be set. If a POMDP algorithm requires
  * a {@link burlap.behavior.singleagent.auxiliary.StateEnumerator}, then it should first check the {@link #providesStateEnumerator()}
@@ -26,16 +27,16 @@ public class PODomain extends SADomain {
 
 
 	/**
-	 * Sets the {@link burlap.mdp.singleagent.pomdp.ObservationFunction} used by the domain.
-	 * @param observationFunction the {@link burlap.mdp.singleagent.pomdp.ObservationFunction} to be used by the domain.
+	 * Sets the {@link ObservationFunction} used by the domain.
+	 * @param observationFunction the {@link ObservationFunction} to be used by the domain.
 	 */
 	public void setObservationFunction(ObservationFunction observationFunction){
 		this.obsevationFunction = observationFunction;
 	}
 
 	/**
-	 * Returns the {@link burlap.mdp.singleagent.pomdp.ObservationFunction} used by this domain.
-	 * @return the {@link burlap.mdp.singleagent.pomdp.ObservationFunction} used by this domain.
+	 * Returns the {@link ObservationFunction} used by this domain.
+	 * @return the {@link ObservationFunction} used by this domain.
 	 */
 	public ObservationFunction getObservationFunction(){
 		return this.obsevationFunction;

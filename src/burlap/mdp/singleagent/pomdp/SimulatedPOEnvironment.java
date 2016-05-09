@@ -9,6 +9,7 @@ import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 
 
 /**
@@ -17,7 +18,7 @@ import burlap.mdp.singleagent.environment.SimulatedEnvironment;
  * returns the last observation made from the {@link burlap.mdp.singleagent.environment.Environment}, not the hidden
  * state, and the {@link #executeAction(burlap.mdp.singleagent.GroundedAction)}
  * method does not return {@link burlap.mdp.singleagent.environment.EnvironmentOutcome} objects that contain the full state
- * of the environment, but an observation drawn from the POMDP {@link burlap.mdp.singleagent.pomdp.ObservationFunction} following
+ * of the environment, but an observation drawn from the POMDP {@link ObservationFunction} following
  * the execution of the action. If you would like to access the true hidden state of the environment, use the
  * {@link #getCurrentHiddenState()} method.
  */
@@ -93,7 +94,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 		if(this.allowActionFromTerminalStates || !this.isInTerminalState()) {
 			nextState = simGA.executeIn(this.curState);
 			this.lastReward = this.rf.reward(this.curState, simGA, nextState);
-			nextObservation = ((PODomain)domain).getObservationFunction().sampleObservation(nextState, simGA);
+			nextObservation = ((PODomain)domain).getObservationFunction().sample(nextState, simGA);
 		}
 		else{
 			this.lastReward = 0.;

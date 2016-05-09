@@ -8,6 +8,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.*;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
+import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
+import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +149,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			//sample a next state
 			State mdpSP = mdpGA.executeIn(mdpS);
 			//sample an observations
-			State observation = BeliefMDPGenerator.this.podomain.getObservationFunction().sampleObservation(mdpSP, mdpGA);
+			State observation = BeliefMDPGenerator.this.podomain.getObservationFunction().sample(mdpSP, mdpGA);
 			
 			//get next belief state
 			BeliefState nbs = bs.getUpdatedBeliefState(observation, mdpGA);
@@ -168,11 +170,13 @@ public class BeliefMDPGenerator implements DomainGenerator {
 				throw new RuntimeException("getTransitions for Belief MDP actions must operate on EnumerableBeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");
 			}
 
-			if(!this.poDomain.getObservationFunction().canEnumerateObservations()){
+			if(!(this.poDomain.getObservationFunction() instanceof DiscreteObservationFunction)){
 				throw new RuntimeException("BeliefAction cannot return the full BeliefMDP transition dynamics distribution, because" +
-						"the POMDP observation function does not support observation enumeration. Consider sampling" +
+						"the POMDP observation function is not a DiscreteObservationFunction instance. Consider sampling" +
 						"with the performAction method instead.");
 			}
+
+			DiscreteObservationFunction of = (DiscreteObservationFunction)this.poDomain.getObservationFunction();
 
 			BeliefState bs = (BeliefState)s;
 
@@ -180,7 +184,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			GroundedAction mdpGA = ((GroundedBeliefAction)ga).pomdpAction;
 
 			
-			List<State> observations = BeliefMDPGenerator.this.podomain.getObservationFunction().getAllPossibleObservations();
+			List<State> observations = of.allObservations();
 			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(observations.size());
 			for(State observation : observations){
 				double p = this.probObservation(bs, observation, mdpGA);
@@ -212,7 +216,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			for(EnumerableBeliefState.StateBelief sb : beliefs){
 				List<TransitionProbability> mdpTps = ga.getTransitions(sb.s);
 				for(TransitionProbability tp : mdpTps){
-					double op = of.getObservationProbability(observation, tp.s, ga);
+					double op = of.probability(observation, tp.s, ga);
 					double term = sb.belief * tp.p * op;
 					sum += term;
 				}
