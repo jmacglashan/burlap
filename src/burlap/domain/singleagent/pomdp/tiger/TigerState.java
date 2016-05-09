@@ -59,4 +59,21 @@ public class TigerState implements MutableState{
 	public String toString() {
 		return door;
 	}
+
+	@Override
+	public int hashCode() {
+		return door.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj){
+			return true;
+		}
+		if(!(obj instanceof TigerState)){
+			return false;
+		}
+		TigerState o = (TigerState)obj;
+		return this.door.equals(o.door);
+	}
 }
