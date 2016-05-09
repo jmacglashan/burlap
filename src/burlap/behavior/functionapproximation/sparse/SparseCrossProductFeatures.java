@@ -58,7 +58,7 @@ public class SparseCrossProductFeatures implements SparseStateActionFeatures{
 
 	protected int actionFeature(AbstractGroundedAction a, int from){
 		FeaturesMap fmap = this.actionFeatures.get(a);
-		if(a == null){
+		if(fmap == null){
 			fmap = new FeaturesMap();
 			this.actionFeatures.put(a, fmap);
 		}
