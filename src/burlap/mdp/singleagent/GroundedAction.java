@@ -59,6 +59,12 @@ public abstract class GroundedAction implements AbstractGroundedAction{
 
 
 	/**
+	 * Default constructor. In general, you should not use this; it is provided for serialization purposes.
+	 */
+	public GroundedAction() {
+	}
+
+	/**
 	 * Initializes with the {@link burlap.mdp.singleagent.Action} definition with which this {@link burlap.mdp.singleagent.GroundedAction}
 	 * is associated.
 	 * @param action the associated {@link burlap.mdp.singleagent.Action} definition.
