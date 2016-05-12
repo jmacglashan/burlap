@@ -284,6 +284,9 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 	 * @return true if v1 = v2; false otherwise
 	 */
 	protected boolean valuesEqual(Object key, Object v1, Object v2){
+		if(v1.getClass().isArray() && v2.getClass().isArray()){
+			return Arrays.equals((Object[])v1, (Object[])v2);
+		}
 		return v1.equals(v2);
 	}
 
