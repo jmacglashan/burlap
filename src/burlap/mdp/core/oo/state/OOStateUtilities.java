@@ -83,7 +83,7 @@ public class OOStateUtilities {
 		StringBuilder buf = new StringBuilder();
 		buf.append("{\n");
 		for(ObjectInstance o : s.objects()){
-			buf.append(objectInstanceToString(o)).append("\n");
+			buf.append(o.toString()).append("\n");
 		}
 		buf.append("}");
 		return buf.toString();
