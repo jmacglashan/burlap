@@ -12,6 +12,7 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
@@ -58,8 +59,12 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		
 		
 	}
-	
-	
+
+	@Override
+	public SampleModel getModel() {
+		return this.model;
+	}
+
 	@Override
 	public void resetSolver(){
 		this.valueFunction.clear();

@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
@@ -12,11 +13,9 @@ import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -71,28 +70,26 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	/**
 	 * Initializes UCT
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function to use
-	 * @param tf the terminal function to use
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory
 	 * @param horizon the planning horizon
 	 * @param nRollouts the number of rollouts to perform 
 	 * @param explorationBias the exploration bias constant (suggested &gt;2)
 	 */
-	public UCT(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
+	public UCT(SADomain domain, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
 		stateNodeConstructor = new UCTStateConstructor();
 		actionNodeConstructor = new UCTActionConstructor();
 		
 		
-		this.UCTInit(domain, rf, tf, gamma, hashingFactory, horizon, nRollouts, explorationBias);
+		this.UCTInit(domain, gamma, hashingFactory, horizon, nRollouts, explorationBias);
 		
 		
 	}
 	
-	protected void UCTInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
+	protected void UCTInit(SADomain domain, double gamma, HashableStateFactory hashingFactory, int horizon, int nRollouts, int explorationBias){
 		
-		this.solverInit(domain, rf, tf, gamma, hashingFactory);
+		this.solverInit(domain, gamma, hashingFactory);
 		this.maxHorizon = horizon;
 		this.maxRollOutsFromRoot = nRollouts;
 		this.explorationBias = explorationBias;
@@ -164,10 +161,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 				DPrint.cl(debugCode, String.valueOf(numRollOutsFromRoot) + "; unique states: " + nu  + "; tree size: " + treeSize + "; total visits: " + numVisits);
 				lastNumUnique = nu;
 			}
-			
-			
-			
-			//System.out.println("\nRollouts: " + numRollOutsFromRoot + "; Best Action Expected Return: " + this.bestReturnAction(root).averageReturn());
+
 		}
 		DPrint.cl(debugCode, "\nRollouts: " + numRollOutsFromRoot + "; Best Action Expected Return: " + this.bestReturnAction(root).averageReturn());
 
@@ -214,10 +208,9 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 			this.planFromState(s);
 		}
 
-		GroundedAction ga = (GroundedAction)a;
 		for(UCTActionNode act : this.root.actionNodes){
-			if(act.action.equals(ga)){
-				return new QValue(s, ga, act.averageReturn());
+			if(act.action.equals(a)){
+				return new QValue(s, a, act.averageReturn());
 			}
 		}
 
@@ -226,12 +219,14 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 
 	@Override
 	public double value(State s) {
-		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
+		if(model.terminalState(s)){
+			return 0.;
+		}
+		return QFunction.QFunctionHelper.getOptimalValue(this, s);
 	}
 
 	@Override
 	public void resetSolver(){
-		this.mapToStateIndex.clear();
 		this.stateDepthIndex.clear();
 		this.statesToStateNodes.clear();
 		this.root = null;
@@ -261,7 +256,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 			return 0.;
 		}
 		
-		if(tf.isTerminal(node.state.s)){
+		if(model.terminalState(node.state.s)){
 			if(goalCondition != null && goalCondition.satisfies(node.state.s)){
 			    foundGoal = true;
                 foundGoalOnRollout = true;
@@ -277,18 +272,17 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		if(anode == null){
 			//no actions can be performed in this state
 			return 0.;
-			//return ((maxHorizon - depth))*-1.;
 		}
 		
 		
 		
 		//sample the action
-		HashableState shprime = this.stateHash(anode.action.sample(node.state.s));
-		double r = rf.reward(node.state.s, anode.action, shprime.s);
+		EnvironmentOutcome eo = model.sampleTransition(node.state.s, anode.action);
+		HashableState shprime = this.stateHash(eo.op);
+		double r = eo.r;
 		int depthChange = 1;
-		if(!anode.action.actionType.isPrimitive()){
-			Option o = (Option)anode.action.actionType;
-			depthChange = o.getLastNumSteps();
+		if(anode.action instanceof Option){
+			depthChange = ((EnvironmentOptionOutcome)eo).numSteps();
 		}
 		
 		UCTStateNode snprime = this.queryTreeIndex(shprime, depth+depthChange);
@@ -410,20 +404,6 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		//only one thing to do
 		if(candidates.size() == 1){
 			return candidates.get(0);
-		}
-		
-		//if there are untried actions, try the most interesting first
-		if(untriedNodes){
-			List <UCTActionNode> candidates2 = new ArrayList<UCTActionNode>(candidates.size());
-			for(UCTActionNode anode : candidates){
-				HashableState sample = this.stateHash(anode.action.sample(snode.state.s));
-				if(!uniqueStatesInTree.contains(sample)){
-					candidates2.add(anode);
-				}
-			}
-			if(!candidates2.isEmpty()){
-				candidates = candidates2;
-			}
 		}
 		
 		return candidates.get(rand.nextInt(candidates.size()));

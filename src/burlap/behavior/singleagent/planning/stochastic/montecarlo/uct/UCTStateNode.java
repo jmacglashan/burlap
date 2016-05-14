@@ -1,12 +1,13 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
+import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
+import burlap.mdp.core.Action;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.statehashing.HashableState;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
 
 /**
  * UCT State Node that wraps a hashed state object and provided additional state statistics necessary for UCT.
@@ -53,18 +54,13 @@ public class UCTStateNode {
 		n = 0;
 		
 		actionNodes = new ArrayList<UCTActionNode>();
-		
-		for(ActionType a : actionTypes){
-			//List <GroundedAction> gas = s.s.getAllGroundedActionsFor(a);
-			List<GroundedAction> gas = a.allApplicableActions(s.s);
-			for(GroundedAction ga : gas){
-				UCTActionNode an = constructor.generate(ga);
-				actionNodes.add(an);
-			}
+
+		List<Action> actions = ActionUtils.allApplicableActionsForTypes(actionTypes, s.s);
+		for(Action a : actions){
+			UCTActionNode an = constructor.generate(a);
+			actionNodes.add(an);
 		}
-		
-		
-		
+
 	}
 	
 	

@@ -3,12 +3,14 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -58,17 +60,17 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	 * Initializes the valueFunction.
 	 * @param domain the domain in which to plan
 	 * @param rf the differentiable reward function that will be used
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param boltzBeta the scaling factor in the boltzmann distribution used for the state value function. The larger the value, the more deterministic.
 	 * @param hashingFactory the state hashing factor to use
 	 * @param maxDelta when the maximum change in the value function is smaller than this value, VI will terminate.
 	 * @param maxIterations when the number of VI iterations exceeds this value, VI will terminate.
 	 */
-	public DifferentiableVI(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, double boltzBeta, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
+	public DifferentiableVI(SADomain domain, DifferentiableRF rf, double gamma, double boltzBeta, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
 
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, gamma, hashingFactory);
 
+		this.rf = rf;
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		this.boltzBeta = boltzBeta;
@@ -82,7 +84,6 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	 */
 	public void recomputeReachableStates(){
 		this.foundReachableStates = false;
-		this.transitionDynamics = new HashMap<HashableState, List<ActionTransitions>>();
 	}
 
 
@@ -105,7 +106,6 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	 */
 	@Override
 	public BoltzmannQPolicy planFromState(State initialState){
-		this.initializeOptionsForExpectationComputations();
 		if(!this.valueFunction.containsKey(this.hashingFactory.hashState(initialState))){
 			this.performReachabilityFrom(initialState);
 			this.runVI();
@@ -134,7 +134,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use the planFromState, performReachabilityFrom, addStateToStateSpace or addStatesToStateSpace methods at least once before calling runVI.");
 		}
 
-		Set<HashableState> states = mapToStateIndex.keySet();
+		Set<HashableState> states = valueFunction.keySet();
 
 		int i;
 		for(i = 0; i < this.maxIterations; i++){
@@ -168,7 +168,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	 */
 	public void addStateToStateSpace(State s){
 		HashableState sh = this.hashingFactory.hashState(s);
-		this.mapToStateIndex.put(sh, sh);
+		this.valueFunction.put(sh, valueInitializer.value(s));
 		this.foundReachableStates = true;
 	}
 
@@ -208,33 +208,33 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 			HashableState sh = openList.poll();
 
 			//skip this if it's already been expanded
-			if(!mapToStateIndex.containsKey(sh)){
-				mapToStateIndex.put(sh, sh);
-			}
-
-			//do not need to expand from terminal states if set to prune
-			if(this.tf.isTerminal(sh.s) && stopReachabilityFromTerminalStates){
+			if(!valueFunction.containsKey(sh)){
 				continue;
 			}
 
+			//do not need to expand from terminal states if set to prune
+			if(model.terminalState(sh.s) && stopReachabilityFromTerminalStates){
+				continue;
+			}
 
-			//get the transition dynamics for each action and queue up new states
-			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
-			for(ActionTransitions at : transitions){
-				for(HashedTransitionProbability tp : at.transitions){
-					HashableState tsh = tp.sh;
-					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
+			valueFunction.put(sh, valueInitializer.value(sh.s));
+
+			List<Action> actions = this.getAllGroundedActions(sh.s);
+			for(Action a : actions){
+				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, a);
+				for(TransitionProb tp : tps){
+					HashableState tsh = this.stateHash(tp.eo.op);
+					if(!openedSet.contains(tsh) && !valueFunction.containsKey(tsh)){
 						openedSet.add(tsh);
 						openList.offer(tsh);
 					}
 				}
-
 			}
 
 
 		}
 
-		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + mapToStateIndex.size());
+		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + valueFunction.size());
 
 		this.foundReachableStates = true;
 		this.hasRunVI = false;

@@ -1,8 +1,5 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.backupOperators;
 
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
@@ -10,10 +7,13 @@ import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agentactions.SGActionUtils;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -59,9 +59,10 @@ public class CorrelatedQ implements SGBackupOperator {
 		
 		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(forAgent);
 		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
-		
-		List<SGAgentAction> forAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, forAgent, agentDefinitions.get(forAgent).actions);
-		List<SGAgentAction> otherAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, agentDefinitions.get(otherAgentName).actions);
+
+		List<SGAgentAction> forAgentGSAs = SGActionUtils.allApplicableActionsForTypes(agentDefinitions.get(forAgent).actions, forAgent, s);
+		List<SGAgentAction> otherAgentGSAs = SGActionUtils.allApplicableActionsForTypes(agentDefinitions.get(otherAgentName).actions, otherAgentName, s);
+
 		
 		double [][] forPlayerPaoyff = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		double [][] otherPlayerPaoyff = new double[forAgentGSAs.size()][otherAgentGSAs.size()];

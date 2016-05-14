@@ -11,8 +11,8 @@ import burlap.behavior.stochasticgames.solvers.MinMaxSolver;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agentactions.SGActionUtils;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,9 +101,10 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 		
 		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(this.targetAgentQName);
 		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
-		
-		List<SGAgentAction> forAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, this.targetAgentQName, this.agentsInJointPolicy.get(this.targetAgentQName).actions);
-		List<SGAgentAction> otherAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
+
+		List<SGAgentAction> forAgentGSAs = SGActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(targetAgentQName).actions, targetAgentQName, s);
+		List<SGAgentAction> otherAgentGSAs = SGActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(otherAgentName).actions, otherAgentName, s);
+
 		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		

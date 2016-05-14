@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.valuefunction.QFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public interface QGradientPlanner extends QFunction {
 	 * @param a the action for which the Q-value gradient is to be returned.
 	 * @return the Q-value gradient for the given state and action.
 	 */
-	public QGradientTuple getQGradient(State s, GroundedAction a);
+	public QGradientTuple getQGradient(State s, Action a);
 
 
 	/**

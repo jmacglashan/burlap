@@ -1,14 +1,14 @@
 package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnfromdemo.IRLRequest;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.auxiliary.StateGenerator;
-import burlap.mdp.core.Domain;
+import burlap.mdp.singleagent.SADomain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -68,7 +68,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		this.initDefaults();
 	}
 
-	public ApprenticeshipLearningRequest(Domain domain, Planner planner, DenseStateFeatures featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
+	public ApprenticeshipLearningRequest(SADomain domain, Planner planner, DenseStateFeatures featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
 		super(domain, planner, expertEpisodes);
 		this.initDefaults();
 		this.setFeatureGenerator(featureGenerator);
@@ -107,14 +107,8 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		return true;
 	}
 
-	public void setDomain(Domain d) {
-		this.domain = d;
-	}
 
 
-	public void setPlanner(Planner p) {
-		this.planner = p;
-	}
 
 	public void setFeatureGenerator(DenseStateFeatures stateFeaturesGenerator) {
 		this.featureGenerator = stateFeaturesGenerator;
@@ -126,7 +120,6 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 
 	public void setStartStateGenerator(StateGenerator startStateGenerator) { this.startStateGenerator = startStateGenerator;}
 
-	public void setGamma(double gamma) { this.gamma = gamma;}
 
 	public void setEpsilon(double epsilon) {this.epsilon = epsilon;}
 
@@ -138,9 +131,6 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 
 	public void setUsingMaxMargin(boolean useMaxMargin) {this.useMaxMargin = useMaxMargin;}
 
-	public Domain getDomain() {return this.domain;}
-
-	public Planner getPlanner() {return this.planner;}
 
 	public DenseStateFeatures getFeatureGenerator() {return this.featureGenerator;}
 
@@ -148,7 +138,6 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 
 	public StateGenerator getStartStateGenerator() {return this.startStateGenerator;}
 
-	public double getGamma() {return this.gamma;}
 
 	public double getEpsilon() {return this.epsilon;}
 

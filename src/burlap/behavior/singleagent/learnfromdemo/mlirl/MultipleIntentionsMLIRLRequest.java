@@ -4,8 +4,8 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.core.Domain;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 	 * @param rf the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} model to use.
 	 * @param k the number of clusters
 	 */
-	public MultipleIntentionsMLIRLRequest(Domain domain, QGradientPlannerFactory plannerFactory, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, int k) {
+	public MultipleIntentionsMLIRLRequest(SADomain domain, QGradientPlannerFactory plannerFactory, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, int k) {
 		super(domain, null, expertEpisodes, rf);
 		this.plannerFactory = plannerFactory;
 		this.k = k;
@@ -54,7 +54,7 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 	 * @param k the number of clusters
 	 * @param hashableStateFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory.DifferentiableVIFactory} that will be created.
 	 */
-	public MultipleIntentionsMLIRLRequest(Domain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, int k, HashableStateFactory hashableStateFactory) {
+	public MultipleIntentionsMLIRLRequest(SADomain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, int k, HashableStateFactory hashableStateFactory) {
 		super(domain, null, expertEpisodes, rf);
 		this.plannerFactory = new QGradientPlannerFactory.DifferentiableVIFactory(hashableStateFactory);
 		this.k = k;

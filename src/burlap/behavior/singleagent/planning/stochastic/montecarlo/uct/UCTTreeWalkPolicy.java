@@ -1,18 +1,13 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.statehashing.HashableState;
+
+import java.util.*;
 
 
 
@@ -33,7 +28,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 
 	UCT 									planner;
 	
-	Map<HashableState, GroundedAction> 	policy;
+	Map<HashableState, Action> 	policy;
 	
 	/**
 	 * Initializes the policy with the UCT valueFunction
@@ -58,7 +53,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 	 * computes a hash-backed policy for every state visited along the greedy path of the UCT tree.
 	 */
 	public void computePolicyFromTree(){
-		policy = new HashMap<HashableState, GroundedAction>();
+		policy = new HashMap<HashableState, Action>();
 
 		if(this.planner.getRoot() == null){
 			return ;
@@ -125,7 +120,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 			this.computePolicyFromTree();
 		}
 		
-		GroundedAction ga = policy.get(planner.stateHash(s));
+		Action ga = policy.get(planner.stateHash(s));
 		if(ga == null){
 			throw new PolicyUndefinedException();
 		}
@@ -139,8 +134,8 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 		if(policy == null){
 			this.computePolicyFromTree();
 		}
-		
-		GroundedAction ga = policy.get(planner.stateHash(s));
+
+		Action ga = policy.get(planner.stateHash(s));
 		if(ga == null){
 			throw new PolicyUndefinedException();
 		}
@@ -162,7 +157,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 		if(policy == null){
 			this.computePolicyFromTree();
 		}
-		GroundedAction ga = policy.get(planner.stateHash(s));
+		Action ga = policy.get(planner.stateHash(s));
 		if(ga == null){
 			return false;
 		}

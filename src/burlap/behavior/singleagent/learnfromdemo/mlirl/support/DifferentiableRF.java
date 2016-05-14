@@ -2,8 +2,8 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 
 
@@ -14,7 +14,7 @@ import burlap.mdp.singleagent.RewardFunction;
 public interface DifferentiableRF extends RewardFunction, ParametricFunction {
 
 
-	FunctionGradient gradient(State s, GroundedAction a, State sprime);
+	FunctionGradient gradient(State s, Action a, State sprime);
 
 
 }

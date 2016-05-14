@@ -1,28 +1,31 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
-import burlap.behavior.policy.BoltzmannQPolicy;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.functionapproximation.FunctionGradient;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.policy.BoltzmannQPolicy;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.VanillaDiffVinit;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
-import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.mdp.core.Action;
-import burlap.mdp.core.oo.ObjectParameterizedAction;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.*;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.SampleModel;
+import burlap.mdp.singleagent.model.TransitionProb;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -66,6 +69,8 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	 */
 	protected DifferentiableVInit vinit;
 
+	protected DifferentiableRF rf;
+
 
 	/**
 	 * The tree nodes indexed by state and height.
@@ -98,26 +103,28 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 
 	/**
-	 * Initializes.
+	 * Initializes. The model of this planner will automatically be set to a {@link CustomRewardModel} using the provided reward function.
 	 * @param domain the problem domain
 	 * @param rf the differentiable reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the hashing factory used to compare state equality
 	 * @param h the planning horizon
 	 * @param c how many samples from the transition dynamics to use. Set to -1 to use the full (unsampled) transition dynamics.
 	 * @param boltzBeta the Boltzmann beta parameter for the differentiable Boltzmann (softmax) backup equation. The larger the value the more deterministic, the closer to 1 the softer.
 	 */
-	public DifferentiableSparseSampling(Domain domain, DifferentiableRF rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int h, int c, double boltzBeta){
-		this.solverInit(domain, rf, tf, gamma, hashingFactory);
+	public DifferentiableSparseSampling(SADomain domain, DifferentiableRF rf, double gamma, HashableStateFactory hashingFactory, int h, int c, double boltzBeta){
+		this.solverInit(domain, gamma, hashingFactory);
 		this.h = h;
 		this.c = c;
+		this.rf = rf;
 		this.boltzBeta = boltzBeta;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, DiffStateNode>();
 		this.rootLevelQValues = new HashMap<HashableState, DifferentiableSparseSampling.QAndQGradient>();
 		this.rfDim = rf.numParameters();
 
 		this.vinit = new VanillaDiffVinit(new ValueFunctionInitialization.ConstantValueFunctionInitialization(), rf);
+
+		this.model = new CustomRewardModel(domain.getModel(), rf);
 
 		this.debugCode = 6368290;
 	}
@@ -167,6 +174,11 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		return this.h;
 	}
 
+
+	@Override
+	public SampleModel getModel() {
+		return this.model;
+	}
 
 	/**
 	 * Sets whether previous planning results should be forgetten or resued in subsequent planning. Forgetting results is more memory efficient, but less
@@ -247,11 +259,6 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			qvs = this.rootLevelQValues.get(sh);
 		}
 
-		if(a instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)a).actionDomainIsObjectIdentifierIndependent()){
-			HashableState storedSh = this.mapToStateIndex.get(sh);
-			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
-		}
-
 		for(QValue qv : qvs.qs){
 			if(qv.a.equals(a)){
 				return qv;
@@ -263,7 +270,10 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 	@Override
 	public double value(State s) {
-		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
+		if(model.terminalState(s)){
+			return 0.;
+		}
+		return QFunction.QFunctionHelper.getOptimalValue(this, s);
 	}
 
 	@Override
@@ -278,17 +288,12 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	}
 
 	@Override
-	public QGradientTuple getQGradient(State s, GroundedAction a) {
+	public QGradientTuple getQGradient(State s, Action a) {
 		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
 		if(qvs == null){
 			this.planFromState(s);
 			qvs = this.rootLevelQValues.get(sh);
-		}
-
-		if(a instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)a).actionDomainIsObjectIdentifierIndependent()){
-			HashableState storedSh = this.mapToStateIndex.get(sh);
-			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
 		}
 
 		for(QGradientTuple qg : qvs.qGrads){
@@ -330,8 +335,6 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		if(this.forgetPreviousPlanResults){
 			this.nodesByHeight.clear();
 		}
-
-		this.mapToStateIndex.put(sh, sh);
 
 		return new BoltzmannQPolicy(this, 1./this.boltzBeta);
 
@@ -429,11 +432,11 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 			int dim = DifferentiableSparseSampling.this.rfDim;
 
-			List<GroundedAction> gas = DifferentiableSparseSampling.this.getAllGroundedActions(this.sh.s);
+			List<Action> gas = DifferentiableSparseSampling.this.getAllGroundedActions(this.sh.s);
 			QAndQGradient qs = new QAndQGradient(gas.size());
 
 			int c = DifferentiableSparseSampling.this.getCAtHeight(this.height);
-			for(GroundedAction ga : gas){
+			for(Action ga : gas){
 				if(this.height == 0 || c == 0){
 					qs.add(new QValue(this.sh.s, ga, DifferentiableSparseSampling.this.vinit.value(this.sh.s)),
 							new QGradientTuple(
@@ -460,7 +463,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		}
 
-		public void sampledBellmanQEstimate(GroundedAction ga, QAndQGradient qs){
+		public void sampledBellmanQEstimate(Action ga, QAndQGradient qs){
 
 			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
@@ -469,9 +472,10 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			for(int i = 0; i < c; i++){
 
 				//execute
-				State ns = ga.sample(this.sh.s);
-				double r = DifferentiableSparseSampling.this.rf.reward(this.sh.s, ga, ns);
-				FunctionGradient rGradient = ((DifferentiableRF)DifferentiableSparseSampling.this.rf).gradient(this.sh.s, ga, ns);
+				EnvironmentOutcome eo = model.sampleTransition(this.sh.s, ga);
+				State ns = eo.op;
+				double r = eo.r;
+				FunctionGradient rGradient = DifferentiableSparseSampling.this.rf.gradient(this.sh.s, ga, ns);
 
 				DiffStateNode nsn = DifferentiableSparseSampling.this.getStateNode(ns, this.height-1);
 
@@ -499,18 +503,18 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		}
 
 
-		public void fulldBellmanQEstimate(GroundedAction ga, QAndQGradient qs){
+		public void fulldBellmanQEstimate(Action ga, QAndQGradient qs){
 
 			int dim = DifferentiableSparseSampling.this.rfDim;
 			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
 			double sum = 0.;
-			List<TransitionProbability> tps = ga.transitions(sh.s);
-			for(TransitionProbability tp : tps){
+			List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, ga);
+			for(TransitionProb tp : tps){
 
-				State ns = tp.s;
-				double r = DifferentiableSparseSampling.this.rf.reward(this.sh.s, ga, ns);
-				FunctionGradient rGradient = ((DifferentiableRF)DifferentiableSparseSampling.this.rf).gradient(this.sh.s, ga, ns);
+				State ns = tp.eo.op;
+				double r = tp.eo.r;
+				FunctionGradient rGradient = DifferentiableSparseSampling.this.rf.gradient(this.sh.s, ga, ns);
 
 				DiffStateNode nsn = DifferentiableSparseSampling.this.getStateNode(ns, this.height-1);
 
@@ -536,7 +540,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 				return new VAndVGradient(this.v, this.vgrad);
 			}
 
-			if(DifferentiableSparseSampling.this.tf.isTerminal(this.sh.s)){
+			if(model.terminalState(this.sh.s)){
 				this.v = 0.;
 				this.vgrad = new FunctionGradient.SparseGradient();
 				this.closed = true;

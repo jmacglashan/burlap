@@ -1,28 +1,28 @@
 package burlap.behavior.singleagent.planning.stochastic.sparsesampling;
 
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
+import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.debugtools.DPrint;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.mdp.core.*;
-import burlap.mdp.core.Action;
-import burlap.mdp.core.oo.ObjectParameterizedAction;
-import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.debugtools.DPrint;
-import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * An implementation of the Sparse Sampling (SS) [1] planning algorithm. SS's computational complexity is independent of the state space size, which makes it appealing
@@ -56,10 +56,8 @@ import burlap.mdp.singleagent.RewardFunction;
  * <p>
  * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is,
- * all {@link ActionType} instances implement the {@link burlap.mdp.singleagent.FullActionModel} interface.). To set this class to compute the exact finite horizon value function, use the
- * {@link #setComputeExactValueFunction(boolean)} method. Note that you cannot use {@link Option}s when using the fully Bellman update, because that would
- * required factored access to the probability of each length of each transition, which is not available from Options (it's aggregated into the transition function
- * itself). An exception will be thrown if {@link Option}s are used with the full Bellman transitions.
+ * all the model implements {@link burlap.mdp.singleagent.model.FullModel}). To set this class to compute the exact finite horizon value function, use the
+ * {@link #setComputeExactValueFunction(boolean)} method. Note that you cannot use {@link Option}s when using the full Bellman update.
  * <p>
  * 
  * 
@@ -126,18 +124,15 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	/**
 	 * Initializes. Note that you can have h and c set to values that ensure epsilon optimality by using the {@link #setHAndCByMDPError(double, double, int)} method, but in
 	 * general this will result in very large values that will be intractable. If you set c = -1, then the full transition dynamics will be used. You should
-	 * only use the full transition dynamics if the number of possible transitions from each state is small and if the domain Action object's
-	 * implements the {@link burlap.mdp.singleagent.FullActionModel} interface.
+	 * only use the full transition dynamics if the number of possible transitions from each state is small and if the model implements {@link burlap.mdp.singleagent.model.FullModel}
 	 * @param domain the planning domain
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory for matching generated states with their state nodes.
 	 * @param h the height of the tree
 	 * @param c the number of transition dynamics samples used. If set to -1, then the full transition dynamics are used.
 	 */
-	public SparseSampling(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, int h, int c){
-		this.solverInit(domain, rf, tf, gamma, hashingFactory);
+	public SparseSampling(SADomain domain, double gamma, HashableStateFactory hashingFactory, int h, int c){
+		this.solverInit(domain, gamma, hashingFactory);
 		this.h = h;
 		this.c = c;
 		this.nodesByHeight = new HashMap<SparseSampling.HashedHeightState, SparseSampling.StateNode>();
@@ -153,7 +148,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	/**
 	 * Sets the height and number of transition dynamics samples in a way that ensure epsilon optimality.
 	 * @param rmax the maximum reward value of the MDP
-	 * @param epsilon the epsilon optimality (amount that the estimated value funciton may diverge from the true optimal)
+	 * @param epsilon the epsilon optimality (amount that the estimated value function may diverge from the true optimal)
 	 * @param numActions the maximum number of actions that could be applied from a state
 	 */
 	public void setHAndCByMDPError(double rmax, double epsilon, int numActions){
@@ -219,7 +214,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	
 	
 	/**
-	 * Sets whether this valueFunction will compute the exact finite horizon value funciton (using the full transition dynamics) or if sampling
+	 * Sets whether this valueFunction will compute the exact finite horizon value function (using the full transition dynamics) or if sampling
 	 * to estimate the value function will be used. The default of this class is to use sampling.
 	 * @param computeExactValueFunction if true, the exact finite horizon value function is computed; if false, then sampling is used.
 	 */
@@ -229,8 +224,8 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	
 	
 	/**
-	 * Returns whether this valueFunction comptues the exact finite horizon value function (by using the full transition dynamics) or whether
-	 * it estimates the value funciton with sampling.
+	 * Returns whether this valueFunction computes the exact finite horizon value function (by using the full transition dynamics) or whether
+	 * it estimates the value function with sampling.
 	 * @return true if the exact finite horizon value function is estimate; false if sampling is used.
 	 */
 	public boolean computesExactValueFunction(){
@@ -239,9 +234,9 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	
 	
 	/**
-	 * Sets whether previous planning results should be forgetten or resued in subsequent planning. Forgetting results is more memory efficient, but less
+	 * Sets whether previous planning results should be forgotten or reused in subsequent planning. Forgetting results is more memory efficient, but less
 	 * CPU efficient.
-	 * @param forgetPreviousPlanResults if true, then previous planning results will be forgotten; if true, they will be remembered and reused in susbequent planning.
+	 * @param forgetPreviousPlanResults if true, then previous planning results will be forgotten; if true, they will be remembered and reused in subsequent planning.
 	 */
 	public void setForgetPreviousPlanResults(boolean forgetPreviousPlanResults){
 		this.forgetPreviousPlanResults = forgetPreviousPlanResults;
@@ -321,8 +316,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		if(this.forgetPreviousPlanResults){
 			this.nodesByHeight.clear();
 		}
-		
-		this.mapToStateIndex.put(sh, sh);
+
 
 		return new GreedyQPolicy(this);
 
@@ -358,11 +352,6 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			this.planFromState(s);
 			qs = this.rootLevelQValues.get(sh);
 		}
-
-		if(a instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)a).actionDomainIsObjectIdentifierIndependent()){
-			HashableState storedSh = this.mapToStateIndex.get(sh);
-			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
-		}
 		
 		for(QValue qv : qs){
 			if(qv.a.equals(a)){
@@ -377,7 +366,10 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 
 	@Override
 	public double value(State s) {
-		return QFunction.QFunctionHelper.getOptimalValue(this, s, this.tf);
+		if(model.terminalState(s)){
+			return 0.;
+		}
+		return QFunction.QFunctionHelper.getOptimalValue(this, s);
 	}
 	
 	
@@ -464,9 +456,9 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @return a {@link List} of the estiamted Q-values for each action.
 		 */
 		public List<QValue> estimateQs(){
-			List<GroundedAction> gas = SparseSampling.this.getAllGroundedActions(this.sh.s);
+			List<Action> gas = SparseSampling.this.getAllGroundedActions(this.sh.s);
 			List<QValue> qs = new ArrayList<QValue>(gas.size());
-			for(GroundedAction ga : gas){
+			for(Action ga : gas){
 				if(this.height <= 0){
 					qs.add(new QValue(this.sh.s, ga, SparseSampling.this.vinit.value(this.sh.s)));
 				}
@@ -476,7 +468,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 						q = this.sampledBellmanQEstimate(ga);
 					}
 					else{
-						q = this.fullBelmmanQValue(ga);
+						q = this.fullBelmanQValue(ga);
 					}
 					
 					qs.add(new QValue(this.sh.s, ga, q));
@@ -491,7 +483,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @param ga the action for which the Q-value estimate is to be returned
 		 * @return the Q-value estimate
 		 */
-		protected double sampledBellmanQEstimate(GroundedAction ga){
+		protected double sampledBellmanQEstimate(Action ga){
 			
 			double sum = 0.;
 			
@@ -500,16 +492,17 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			for(int i = 0; i < c; i++){
 				
 				//execute
-				State ns = ga.sample(this.sh.s);
+				EnvironmentOutcome eo = model.sampleTransition(sh.s, ga);
+				State ns = eo.op;
 				
 				//manage option stepsize modifications
 				int k = 1;
-				if(ga.actionType instanceof Option){
-					k = ((Option)ga.actionType).getLastNumSteps();
+				if(ga instanceof Option){
+					k = ((EnvironmentOptionOutcome)ga).numSteps();
 				}
 				
 				//get reward; our rf will automatically do cumumative discounted if it's an option
-				double r = SparseSampling.this.rf.reward(this.sh.s, ga, ns);
+				double r = eo.r;
 				
 				StateNode nsn = SparseSampling.this.getStateNode(ns, this.height-k);
 				
@@ -528,17 +521,17 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @param ga the action for which the Q-value estimate is to be returned
 		 * @return the exact finite horizon Q-value
 		 */
-		protected double fullBelmmanQValue(GroundedAction ga){
+		protected double fullBelmanQValue(Action ga){
 			
 			double sum = 0.;
-			List<TransitionProbability> tps = ga.transitions(sh.s);
+			List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, ga);
 			
-			if(!(ga.actionType instanceof Option)){
+			if(!(ga instanceof Option)){
 				
-				for(TransitionProbability tp : tps){
+				for(TransitionProb tp : tps){
 					
-					double r = SparseSampling.this.rf.reward(this.sh.s, ga, tp.s);
-					StateNode nsn = SparseSampling.this.getStateNode(tp.s, this.height-1);
+					double r = tp.eo.r;
+					StateNode nsn = SparseSampling.this.getStateNode(tp.eo.op, this.height-1);
 					sum += tp.p * (r + SparseSampling.this.gamma * nsn.estimateV());
 					
 				}
@@ -564,7 +557,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 				return this.v;
 			}
 			
-			if(SparseSampling.this.tf.isTerminal(this.sh.s)){
+			if(SparseSampling.this.model.terminalState(sh.s)){
 				this.v = 0.;
 				this.closed = true;
 				return this.v;

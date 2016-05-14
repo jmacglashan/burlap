@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,8 +23,8 @@ import java.util.Map;
  * Note that when the gradient is a vector of size |A||f|, since the feature vector is replicated for each action, and the gradient
  * for all entries associated with an action other than the one taken in the (s, a, s') query will have a gradient value of zero.
  * <p>
- * The set of possible grounded actions must be defined either in the {@link #LinearStateActionDifferentiableRF(DenseStateFeatures, int, burlap.mdp.singleagent.GroundedAction...)}
- * constructor, or added iteratively with the {@link #addAction(burlap.mdp.singleagent.GroundedAction)} method.
+ * The set of possible grounded actions must be defined either in the {@link #LinearStateActionDifferentiableRF(DenseStateFeatures, int, Action...)}
+ * constructor, or added iteratively with the {@link #addAction} method.
  * @author James MacGlashan.
  */
 public class LinearStateActionDifferentiableRF implements DifferentiableRF {
@@ -32,7 +32,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 	/**
 	 * An ordering of grounded actions
 	 */
-	protected Map<GroundedAction, Integer> 		actionMap;
+	protected Map<Action, Integer> 		actionMap;
 
 	/**
 	 * The parameters of this reward function
@@ -63,15 +63,15 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 
 	/**
 	 * Initializes. If not all possible grounded actions are provided, they can be defined/added later with the
-	 * {@link #addAction(burlap.mdp.singleagent.GroundedAction)} method.
+	 * {@link #addAction(Action)} method.
 	 * @param stateFeatures the state feature vector generator
 	 * @param numStateFeatures the dimensionality of the state feature vector
 	 * @param allPossibleActions the set of possible grounded actions.
 	 */
-	public LinearStateActionDifferentiableRF(DenseStateFeatures stateFeatures, int numStateFeatures, GroundedAction...allPossibleActions){
+	public LinearStateActionDifferentiableRF(DenseStateFeatures stateFeatures, int numStateFeatures, Action...allPossibleActions){
 		this.fvGen = stateFeatures;
 		this.numStateFeatures = numStateFeatures;
-		this.actionMap = new HashMap<GroundedAction, Integer>(allPossibleActions.length);
+		this.actionMap = new HashMap<Action, Integer>(allPossibleActions.length);
 		for(int i = 0; i < allPossibleActions.length; i++){
 			this.actionMap.put(allPossibleActions[i], i);
 		}
@@ -86,7 +86,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 	 * by |f| where |f| is the dimensionality of the state feature vector.
 	 * @param ga the possible grounded action to add to this reward function's definition.
 	 */
-	public void addAction(GroundedAction ga){
+	public void addAction(Action ga){
 		this.actionMap.put(ga, this.numActions);
 		this.numActions++;
 		this.parameters = new double[numActions*this.numStateFeatures];
@@ -95,7 +95,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 
 
 	@Override
-	public double reward(State s, GroundedAction a, State sprime) {
+	public double reward(State s, Action a, State sprime) {
 		double [] sFeatures = this.fvGen.features(s);
 		int sIndex = this.actionMap.get(a) * this.numStateFeatures;
 		double sum = 0.;
@@ -107,7 +107,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 
 
 	@Override
-	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
+	public FunctionGradient gradient(State s, Action a, State sprime) {
 		double [] sFeatures = this.fvGen.features(s);
 		int sIndex = this.actionMap.get(a) * this.numStateFeatures;
 
@@ -146,7 +146,7 @@ public class LinearStateActionDifferentiableRF implements DifferentiableRF {
 	@Override
 	public ParametricFunction copy() {
 		LinearStateActionDifferentiableRF rf = new LinearStateActionDifferentiableRF(this.fvGen, this.numStateFeatures);
-		for(Map.Entry<GroundedAction, Integer> e : this.actionMap.entrySet()){
+		for(Map.Entry<Action, Integer> e : this.actionMap.entrySet()){
 			rf.actionMap.put(e.getKey(), e.getValue());
 		}
 		rf.parameters = this.parameters.clone();

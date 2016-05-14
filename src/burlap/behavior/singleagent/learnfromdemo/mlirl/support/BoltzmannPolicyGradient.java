@@ -2,8 +2,8 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +30,7 @@ public class BoltzmannPolicyGradient {
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @return the gradient of the policy.
 	 */
-	public static FunctionGradient computeBoltzmannPolicyGradient(State s, GroundedAction a, QGradientPlanner planner, double beta){
+	public static FunctionGradient computeBoltzmannPolicyGradient(State s, Action a, QGradientPlanner planner, double beta){
 
 
 		//get q objects
@@ -55,7 +55,7 @@ public class BoltzmannPolicyGradient {
 
 		FunctionGradient [] qGradients = new FunctionGradient[qs.length];
 		for(int i = 0; i < qs.length; i++){
-			qGradients[i] = planner.getQGradient(s, (GroundedAction)Qs.get(i).a).gradient;
+			qGradients[i] = planner.getQGradient(s, Qs.get(i).a).gradient;
 		}
 
 

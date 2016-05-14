@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.planning.vfa.fittedvi;
+package burlap.behavior.functionapproximation.supervised;
 
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * A class for using supervised learning algorithms provided by the Weka library for fitted value iteration. This class
- * takes a generator for Weka {@link weka.classifiers.Classifier} objects (specified with the {@link burlap.behavior.singleagent.planning.vfa.fittedvi.WekaVFATrainer.WekaClassifierGenerator}
+ * takes a generator for Weka {@link weka.classifiers.Classifier} objects (specified with the {@link WekaVFATrainer.WekaClassifierGenerator}
  * interface and a {@link DenseStateFeatures} to turn BURLAP {@link State} objects into
  * feature vectors usable by Weka.
  *
@@ -77,7 +77,7 @@ public class WekaVFATrainer implements SupervisedVFA{
 	 * a KD-tree and 1-distance similarity measure.
 	 * @param fvGen the {@link DenseStateFeatures} for converting the BURLAP state into a feature vector usable by Weka.
 	 * @param k the number of nearest neighbors uses in the regression algorithm.
-	 * @return the {@link burlap.behavior.singleagent.planning.vfa.fittedvi.WekaVFATrainer} for Weka's {@link weka.classifiers.lazy.IBk} algorithm.
+	 * @return the {@link WekaVFATrainer} for Weka's {@link weka.classifiers.lazy.IBk} algorithm.
 	 */
 	public static WekaVFATrainer getKNNTrainer(DenseStateFeatures fvGen, final int k){
 
@@ -142,13 +142,13 @@ public class WekaVFATrainer implements SupervisedVFA{
 	/**
 	 * An interface for generating Weka {@link weka.classifiers.Classifier} objects to use for training.
 	 */
-	public static interface WekaClassifierGenerator{
+	public interface WekaClassifierGenerator{
 
 		/**
 		 * Returns a Weka {@link weka.classifiers.Classifier} that can be used to for training on new data.
 		 * @return a Weka {@link weka.classifiers.Classifier} that can be used to for training on new data.
 		 */
-		public Classifier generateClassifier();
+		Classifier generateClassifier();
 
 	}
 

@@ -1,22 +1,22 @@
 package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.RewardFunction;
-import burlap.mdp.singleagent.common.UniformCostRF;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
@@ -43,8 +43,7 @@ import java.util.*;
  *
  */
 public class ApprenticeshipLearning {
-	
-	public static final int								FEATURE_EXPECTATION_SAMPLES = 10;
+
 	
 	public static final int								debugCodeScore = 746329;
 	public static final int								debugCodeRFWeights = 636392;
@@ -114,7 +113,7 @@ public class ApprenticeshipLearning {
 		final FeatureWeights newFeatureWeights = new FeatureWeights(featureWeights);
 		return new RewardFunction() {
 			@Override
-			public double reward(State state, GroundedAction a, State sprime) {
+			public double reward(State state, Action a, State sprime) {
 				double[] featureWeightValues = newFeatureWeights.getWeights();
 				double sumReward = 0;
 				double [] fv = newFeatureFunctions.features(state);
@@ -174,12 +173,11 @@ public class ApprenticeshipLearning {
 		}
 
 		Planner planner = request.getPlanner();
-		TerminalFunction terminalFunction = planner.getTf();
 		HashableStateFactory stateHashingFactory = planner.getHashingFactory();
 
 		// (1). Randomly generate policy pi^(0)
-		Domain domain = request.getDomain();
-		Policy policy = new RandomPolicy(domain);
+		SADomain domain = request.getDomain();
+		Policy policy = new StationaryRandomDistributionPolicy(domain);
 
 		DenseStateFeatures featureFunctions = request.getFeatureGenerator();
 		List<double[]> featureExpectationsHistory = new ArrayList<double[]>();
@@ -188,7 +186,7 @@ public class ApprenticeshipLearning {
 
 		// (1b) Compute u^(0) = u(pi^(0))
 		EpisodeAnalysis episodeAnalysis = 
-				policy.evaluateBehavior(request.getStartStateGenerator().generateState(), new UniformCostRF(), maximumExpertEpisodeLength);
+				policy.evaluateBehavior(request.getStartStateGenerator().generateState(), request.getPlanner().getModel(), maximumExpertEpisodeLength);
 		double[] featureExpectations = 
 				ApprenticeshipLearning.estimateFeatureExpectation(episodeAnalysis, featureFunctions, request.getGamma());
 		featureExpectationsHistory.add(featureExpectations);
@@ -221,8 +219,10 @@ public class ApprenticeshipLearning {
 					ApprenticeshipLearning.generateRewardFunction(featureFunctions, featureWeights);
 
 			// (4b) Compute optimal policy for pi^(i) give R
+			CustomRewardModel crModel = new CustomRewardModel(domain.getModel(), rewardFunction);
 			planner.resetSolver();
-			planner.solverInit(domain, rewardFunction, terminalFunction, request.getGamma(), stateHashingFactory);
+			planner.solverInit(domain, request.getGamma(), stateHashingFactory);
+			planner.setModel(crModel);
 			planner.planFromState(request.getStartStateGenerator().generateState());
 
 			if (planner instanceof DeterministicPlanner) {
@@ -237,7 +237,7 @@ public class ApprenticeshipLearning {
 			List<EpisodeAnalysis> evaluatedEpisodes = new ArrayList<EpisodeAnalysis>();
 			for (int j = 0; j < policyCount; ++j) {
 				evaluatedEpisodes.add(
-						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), rewardFunction, maximumExpertEpisodeLength));
+						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));
 			}
 			featureExpectations = 
 					ApprenticeshipLearning.estimateFeatureExpectation(evaluatedEpisodes, featureFunctions, request.getGamma());
@@ -275,7 +275,6 @@ public class ApprenticeshipLearning {
 
 		//Planning objects
 		Planner planner = request.getPlanner();
-		TerminalFunction terminalFunction = planner.getTf();
 		HashableStateFactory stateHashingFactory = planner.getHashingFactory();
 
 		//(0) set up policy array; exper feature expectation
@@ -287,15 +286,15 @@ public class ApprenticeshipLearning {
 				ApprenticeshipLearning.estimateFeatureExpectation(expertEpisodes, featureFunctions, request.getGamma());
 
 		// (1). Randomly generate policy pi^(0)
-		Domain domain = request.getDomain();
-		Policy policy = new RandomPolicy(domain);
+		SADomain domain = request.getDomain();
+		Policy policy = new StationaryRandomDistributionPolicy(domain);
 		policyHistory.add(policy);
 
 		// (1b) Set up initial Feature Expectation based on policy
 		List<EpisodeAnalysis> sampleEpisodes = new ArrayList<EpisodeAnalysis>();
 		for (int j = 0; j < request.getPolicyCount(); ++j) {
 			sampleEpisodes.add(
-					policy.evaluateBehavior(request.getStartStateGenerator().generateState(), new UniformCostRF(), maximumExpertEpisodeLength)); 
+					policy.evaluateBehavior(request.getStartStateGenerator().generateState(), domain.getModel(), maximumExpertEpisodeLength));
 		}
 		double[] curFE = 
 				ApprenticeshipLearning.estimateFeatureExpectation(sampleEpisodes, featureFunctions, request.getGamma());
@@ -338,8 +337,10 @@ public class ApprenticeshipLearning {
 					ApprenticeshipLearning.generateRewardFunction(featureFunctions, featureWeights);
 
 			// (4b) Compute optimal policy for pi^(i) give R
+			CustomRewardModel crModel = new CustomRewardModel(domain.getModel(), rewardFunction);
 			planner.resetSolver();
-			planner.solverInit(domain, rewardFunction, terminalFunction, request.getGamma(), stateHashingFactory);
+			planner.solverInit(domain, request.getGamma(), stateHashingFactory);
+			planner.setModel(crModel);
 			planner.planFromState(request.getStartStateGenerator().generateState());
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
@@ -353,7 +354,7 @@ public class ApprenticeshipLearning {
 			List<EpisodeAnalysis> evaluatedEpisodes = new ArrayList<EpisodeAnalysis>();
 			for (int j = 0; j < policyCount; ++j) {
 				evaluatedEpisodes.add(
-						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), rewardFunction, maximumExpertEpisodeLength));
+						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));
 			}
 			curFE = ApprenticeshipLearning.estimateFeatureExpectation(evaluatedEpisodes, featureFunctions, request.getGamma());
 			featureExpectationsHistory.add(curFE.clone());
@@ -534,14 +535,13 @@ public class ApprenticeshipLearning {
 	}
 
 	/**
-	 * This class extends Policy, and all it does is create a randomly generated distribution of
-	 * actions over all possible states. It lazily initializes because I have no idea what sorts 
-	 * of states you are passing it.
+	 * This class extends Policy. It creates a random policy distribution lazily for each state and keeps that distribution
+	 * forever.
 	 * @author Stephen Brawner
 	 *
 	 */
-	public static class RandomPolicy extends Policy {
-		Map<HashableState, GroundedAction> stateActionMapping;
+	public static class StationaryRandomDistributionPolicy extends Policy {
+		Map<HashableState, Action> stateActionMapping;
 		List<ActionType> actionTypes;
 		Map<HashableState, List<ActionProb>> stateActionDistributionMapping;
 		HashableStateFactory hashFactory;
@@ -551,8 +551,8 @@ public class ApprenticeshipLearning {
 		 * Constructor initializes the policy, doesn't compute anything here.
 		 * @param domain Domain object for which we need to plan
 		 */
-		private RandomPolicy(Domain domain) {
-			this.stateActionMapping = new HashMap<HashableState, GroundedAction>();
+		private StationaryRandomDistributionPolicy(Domain domain) {
+			this.stateActionMapping = new HashMap<HashableState, Action>();
 			this.stateActionDistributionMapping = new HashMap<HashableState, List<ActionProb>>();
 			this.actionTypes = domain.getActionTypes();
 			this.rando = new Random();
@@ -574,7 +574,7 @@ public class ApprenticeshipLearning {
 
 			// Get all possible actions from this state
 			//List<GroundedAction> groundedActions = state.getAllGroundedActionsFor(this.actions);
-			List<GroundedAction> groundedActions = ActionType.getAllApplicableGroundedActionsFromActionList(this.actionTypes, state);
+			List<Action> groundedActions = ActionUtils.allApplicableActionsForTypes(this.actionTypes, state);
 			Double[] probabilities = new Double[groundedActions.size()];
 			Double sum = 0.0;
 

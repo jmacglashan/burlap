@@ -1,19 +1,18 @@
 package burlap.behavior.singleagent.planning.vfa.fittedvi;
 
+import burlap.behavior.functionapproximation.supervised.SupervisedVFA;
 import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.ValueFunction;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunction;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	protected ValueFunction valueFunction;
 
 	/**
-	 * The {@link burlap.behavior.singleagent.planning.vfa.fittedvi.SupervisedVFA} instance used to train the value function on each iteration.
+	 * The {@link SupervisedVFA} instance used to train the value function on each iteration.
 	 */
 	protected SupervisedVFA valueFunctionTrainer;
 
@@ -117,16 +116,14 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	 * calling {@link #planFromState(State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
 	 * will be thrown.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param valueFunctionTrainer the supervised learning algorithm to use for each value iteration
 	 * @param transitionSamples the number of transition samples to use when computing the bellman operator; set to -1 if you want to use the full transition dynamics without sampling.
 	 * @param maxDelta the maximum change in the value function that will cause planning to terminate.
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
-	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, int transitionSamples, double maxDelta, int maxIterations){
-		this.solverInit(domain, rf, tf, gamma, new SimpleHashableStateFactory());
+	public FittedVI(SADomain domain, double gamma, SupervisedVFA valueFunctionTrainer, int transitionSamples, double maxDelta, int maxIterations){
+		this.solverInit(domain, gamma, new SimpleHashableStateFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.transitionSamples = transitionSamples;
 		this.maxDelta = maxDelta;
@@ -142,8 +139,6 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	 * calling {@link #planFromState(State)}, {@link #runIteration()}, or {@link #runVI()}, otherwise a runtime exception
 	 * will be thrown.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param valueFunctionTrainer the supervised learning algorithm to use for each value iteration
 	 * @param samples the set of state samples to use for planning.
@@ -151,8 +146,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	 * @param maxDelta the maximum change in the value function that will cause planning to terminate.
 	 * @param maxIterations the maximum number of iterations to run.
 	 */
-	public FittedVI(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, SupervisedVFA valueFunctionTrainer, List<State> samples, int transitionSamples, double maxDelta, int maxIterations){
-		this.solverInit(domain, rf, tf, gamma, new SimpleHashableStateFactory());
+	public FittedVI(SADomain domain, double gamma, SupervisedVFA valueFunctionTrainer, List<State> samples, int transitionSamples, double maxDelta, int maxIterations){
+		this.solverInit(domain, gamma, new SimpleHashableStateFactory());
 		this.valueFunctionTrainer = valueFunctionTrainer;
 		this.samples = samples;
 		this.transitionSamples = transitionSamples;
@@ -270,7 +265,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 			throw new RuntimeException("FittedVI cannot run value iteration because the state samples have not been set. Use the setSamples method or the constructor to set them.");
 		}
 
-		SparseSampling ss = new SparseSampling(this.domain, this.rf, this.tf, this.gamma, this.hashingFactory, this.planningDepth, this.transitionSamples);
+		SparseSampling ss = new SparseSampling(this.domain, this.gamma, this.hashingFactory, this.planningDepth, this.transitionSamples);
+		ss.setModel(this.model);
 		ss.setValueForLeafNodes(this.leafNodeInit);
 		ss.toggleDebugPrinting(false);
 
@@ -314,7 +310,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 	@Override
 	public List<QValue> getQs(State s) {
-		SparseSampling ss = new SparseSampling(this.domain, this.rf, this.tf, this.gamma, this.hashingFactory, this.controlDepth, this.transitionSamples);
+		SparseSampling ss = new SparseSampling(this.domain, this.gamma, this.hashingFactory, this.controlDepth, this.transitionSamples);
+		ss.setModel(model);
 		ss.setValueForLeafNodes(this.leafNodeInit);
 		ss.toggleDebugPrinting(false);
 		return ss.getQs(s);
@@ -322,7 +319,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 	@Override
 	public QValue getQ(State s, Action a) {
-		SparseSampling ss = new SparseSampling(this.domain, this.rf, this.tf, this.gamma, this.hashingFactory, this.controlDepth, this.transitionSamples);
+		SparseSampling ss = new SparseSampling(this.domain, this.gamma, this.hashingFactory, this.controlDepth, this.transitionSamples);
+		ss.setModel(model);
 		ss.setValueForLeafNodes(this.leafNodeInit);
 		ss.toggleDebugPrinting(false);
 		return ss.getQ(s, a);

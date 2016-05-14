@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.commonrfs;
 
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.Arrays;
 
@@ -79,7 +79,7 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 
 
 	@Override
-	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
+	public FunctionGradient gradient(State s, Action a, State sprime) {
 
 		double [] features;
 		if(featuresAreForNextState){
@@ -127,7 +127,7 @@ public class LinearStateDifferentiableRF implements DifferentiableRF {
 
 
 	@Override
-	public double reward(State s, GroundedAction a, State sprime){
+	public double reward(State s, Action a, State sprime){
 		double [] features;
 		if(this.featuresAreForNextState){
 			features = fvGen.features(sprime);

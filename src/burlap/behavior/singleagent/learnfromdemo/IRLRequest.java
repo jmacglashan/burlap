@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.mdp.core.Domain;
+import burlap.mdp.singleagent.SADomain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class IRLRequest {
 	/**
 	 * The domain in which IRL is to be performed
 	 */
-	protected Domain domain;
+	protected SADomain domain;
 
 	/**
 	 * The planning algorithm used to compute the policy for a given reward function
@@ -50,7 +50,7 @@ public class IRLRequest {
 	 * @param planner the planning algorithm the IRL algorithm will invoke.
 	 * @param expertEpisodes the example expert trajectories/episodes.
 	 */
-	public IRLRequest(Domain domain, Planner planner, List<EpisodeAnalysis> expertEpisodes){
+	public IRLRequest(SADomain domain, Planner planner, List<EpisodeAnalysis> expertEpisodes){
 		this.setDomain(domain);
 		this.setPlanner(planner);
 		this.setExpertEpisodes(expertEpisodes);
@@ -83,7 +83,7 @@ public class IRLRequest {
 	}
 
 
-	public void setDomain(Domain d) {
+	public void setDomain(SADomain d) {
 		this.domain = d;
 	}
 
@@ -99,7 +99,7 @@ public class IRLRequest {
 
 	public void setGamma(double gamma) { this.gamma = gamma;}
 
-	public Domain getDomain() {return this.domain;}
+	public SADomain getDomain() {return this.domain;}
 
 	public Planner getPlanner() {return this.planner;}
 

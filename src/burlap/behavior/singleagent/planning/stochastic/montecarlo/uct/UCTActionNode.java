@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.statehashing.HashableState;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class UCTActionNode {
 	/**
 	 * The action this action node wraps
 	 */
-	public GroundedAction								action;
+	public Action action;
 	
 	/**
 	 * The sum return observed for this action node
@@ -41,7 +41,7 @@ public class UCTActionNode {
 	 * Generates a new action node for a given action. All statistics are initialized to 0.
 	 * @param a the action this node wraps.
 	 */
-	public UCTActionNode(GroundedAction a){
+	public UCTActionNode(Action a){
 		action = a;
 		sumReturn = 0.;
 		n = 0;
@@ -139,7 +139,7 @@ public class UCTActionNode {
 		 * @param a the action to wrap
 		 * @return a UCTActionNode Object that wraps the given action
 		 */
-		public UCTActionNode generate(GroundedAction a){
+		public UCTActionNode generate(Action a){
 			return new UCTActionNode(a);
 		}
 		

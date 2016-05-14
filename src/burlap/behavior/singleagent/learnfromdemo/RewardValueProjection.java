@@ -3,15 +3,15 @@ package burlap.behavior.singleagent.learnfromdemo;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
-import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +34,7 @@ import java.util.List;
  * type is DESTINATIONSTATE, then the value returned is rf.reward(null, null, s), where rf is the input {@link burlap.mdp.singleagent.RewardFunction}
  * and s is the input {@link State} to the {@link #value(State)} method.
  * If it's SOURCESTATE, then it returns rf.reward(s, null, null). If it is STATEACTION or ONESTEP,
- * then the {@link burlap.mdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(burlap.mdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.mdp.core.Domain)}
+ * then the {@link burlap.mdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(RewardFunction, RewardProjectionType, SADomain)}
  * constructor so that the actions can be enumerated (and in the case of ONESTEP, the transitions enumerated) and the max reward taken.
  * Similarly, the {@link #getQ(State, Action)} and
  * {@link #getQs(State)} methods may need the {@link Domain} provided to properly answer the query.
@@ -47,9 +47,9 @@ public class RewardValueProjection implements QFunction{
 	protected RewardFunction rf;
 	protected RewardProjectionType projectionType = RewardProjectionType.ONESTEP.DESTINATIONSTATE;
 	protected SparseSampling oneStepBellmanPlanner;
-	protected Domain domain;
+	protected SADomain domain;
 
-	public static enum RewardProjectionType {SOURCESTATE, DESTINATIONSTATE, STATEACTION, ONESTEP}
+	public enum RewardProjectionType {SOURCESTATE, DESTINATIONSTATE, STATEACTION, ONESTEP}
 
 
 	/**
@@ -63,7 +63,7 @@ public class RewardValueProjection implements QFunction{
 	/**
 	 * Initializes. Note that if projectionType is ONESTEP a runtime exception will be thrown because projecting a one step
 	 * value requires the {@link burlap.mdp.core.Domain} to enumerate the actions and transition dynamics. Use the
-	 * {@link #RewardValueProjection(burlap.mdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.mdp.core.Domain)}
+	 * {@link #RewardValueProjection(RewardFunction, RewardProjectionType, SADomain)}
 	 * constructor instead.
 	 * @param rf the input {@link burlap.mdp.singleagent.RewardFunction} to project for one step.
 	 * @param projectionType the type of reward projection to use.
@@ -84,12 +84,13 @@ public class RewardValueProjection implements QFunction{
 	 * @param projectionType the type of reward projection to use.
 	 * @param domain the {@link burlap.mdp.core.Domain} in which the {@link burlap.mdp.singleagent.RewardFunction} is evaluated.
 	 */
-	public RewardValueProjection(RewardFunction rf, RewardProjectionType projectionType, Domain domain){
+	public RewardValueProjection(RewardFunction rf, RewardProjectionType projectionType, SADomain domain){
 		this.rf = rf;
 		this.projectionType = projectionType;
 		this.domain = domain;
 		if(this.projectionType == RewardProjectionType.ONESTEP){
-			this.oneStepBellmanPlanner = new SparseSampling(domain, rf, new NullTermination(), 1., new SimpleHashableStateFactory(), 1, -1);
+			this.oneStepBellmanPlanner = new SparseSampling(domain, 1., new SimpleHashableStateFactory(), 1, -1);
+			this.oneStepBellmanPlanner.setModel(new CustomRewardNoTermModel(domain.getModel(), rf));
 			this.oneStepBellmanPlanner.toggleDebugPrinting(false);
 			this.oneStepBellmanPlanner.setForgetPreviousPlanResults(true);
 		}
@@ -99,9 +100,9 @@ public class RewardValueProjection implements QFunction{
 	public List<QValue> getQs(State s) {
 
 		if(this.domain != null){
-			List<GroundedAction> actions = ActionType.getAllApplicableGroundedActionsFromActionList(this.domain.getActionTypes(), s);
+			List<Action> actions = ActionUtils.allApplicableActionsForTypes(this.domain.getActionTypes(), s);
 			List<QValue> qs = new ArrayList<QValue>(actions.size());
-			for(GroundedAction ga : actions){
+			for(Action ga : actions){
 				qs.add(this.getQ(s, ga));
 			}
 			return qs;
@@ -126,9 +127,9 @@ public class RewardValueProjection implements QFunction{
 	public QValue getQ(State s, Action a) {
 
 		switch(this.projectionType){
-			case DESTINATIONSTATE: return new QValue(s, a, this.rf.reward(null, (GroundedAction)a, s));
+			case DESTINATIONSTATE: return new QValue(s, a, this.rf.reward(null, a, s));
 			case SOURCESTATE:
-			case STATEACTION: return new QValue(s, a, this.rf.reward(s, (GroundedAction)a, null));
+			case STATEACTION: return new QValue(s, a, this.rf.reward(s, a, null));
 			case ONESTEP: return this.oneStepBellmanPlanner.getQ(s, a);
 
 		}
@@ -148,6 +149,25 @@ public class RewardValueProjection implements QFunction{
 		}
 
 		throw new RuntimeException("Unknown RewardProjectionType... this shouldn't happen.");
+	}
+
+
+
+	public static class CustomRewardNoTermModel extends CustomRewardModel{
+
+		public CustomRewardNoTermModel(SampleModel model, RewardFunction rewardFunction) {
+			super(model, rewardFunction);
+		}
+		@Override
+		public boolean terminalState(State s) {
+			return false; //always non-terminal
+		}
+
+		@Override
+		protected EnvironmentOutcome modifyOutcome(EnvironmentOutcome eo) {
+			eo.terminated = false;
+			return super.modifyOutcome(eo);
+		}
 	}
 
 }

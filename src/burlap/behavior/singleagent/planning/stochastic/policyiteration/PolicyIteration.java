@@ -5,10 +5,11 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -73,16 +74,14 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	/**
 	 * Initializes the valueFunction.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param maxDelta when the maximum change in the value function is smaller than this value, policy evaluation will terminate. Similarly, when the maximum value value function change between policy iterations is smaller than this value planning will terminate.
 	 * @param maxEvaluationIterations when the number iterations of value iteration used to evaluate a policy exceeds this value, policy evaluation will terminate.
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
-	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxEvaluationIterations, int maxPolicyIterations){
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
+	public PolicyIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxEvaluationIterations, int maxPolicyIterations){
+		this.DPPInit(domain, gamma, hashingFactory);
 		
 		this.maxEvalDelta = maxDelta;
 		this.maxPIDelta = maxDelta;
@@ -96,8 +95,6 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	/**
 	 * Initializes the valueFunction.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param maxPIDelta when the maximum value value function change between policy iterations is smaller than this value planning will terminate.
@@ -105,8 +102,8 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @param maxEvaluationIterations when the number iterations of value iteration used to evaluate a policy exceeds this value, policy evaluation will terminate.
 	 * @param maxPolicyIterations when the number of policy iterations passes this value, planning will terminate.
 	 */
-	public PolicyIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxPIDelta, double maxEvalDelta, int maxEvaluationIterations, int maxPolicyIterations){
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
+	public PolicyIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxPIDelta, double maxEvalDelta, int maxEvaluationIterations, int maxPolicyIterations){
+		this.DPPInit(domain, gamma, hashingFactory);
 		
 		this.maxEvalDelta = maxEvalDelta;
 		this.maxPIDelta = maxPIDelta;
@@ -170,7 +167,6 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	public GreedyQPolicy planFromState(State initialState) {
 
 		int iterations = 0;
-		this.initializeOptionsForExpectationComputations();
 		if(this.performReachabilityFrom(initialState) || !this.hasRunPlanning){
 			
 			double delta;
@@ -212,7 +208,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		
 		double maxChangeInPolicyEvaluation = Double.NEGATIVE_INFINITY;
 		
-		Set <HashableState> states = mapToStateIndex.keySet();
+		Set <HashableState> states = valueFunction.keySet();
 		
 		int i;
 		for(i = 0; i < this.maxIterations; i++){
@@ -258,7 +254,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		
 		HashableState sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
-		if(transitionDynamics.containsKey(sih) && this.foundReachableStates){
+		if(valueFunction.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
 		}
 		
@@ -275,35 +271,34 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 			HashableState sh = openList.poll();
 			
 			//skip this if it's already been expanded
-			if(transitionDynamics.containsKey(sh)){
+			if(valueFunction.containsKey(sh)){
 				continue;
 			}
-			
-			mapToStateIndex.put(sh, sh);
 			
 			//do not need to expand from terminal states
-			if(this.tf.isTerminal(sh.s)){
+			if(model.terminalState(sh.s)){
 				continue;
 			}
-			
-			
-			//get the transition dynamics for each action and queue up new states
-			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
-			for(ActionTransitions at : transitions){
-				for(HashedTransitionProbability tp : at.transitions){
-					HashableState tsh = tp.sh;
-					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
+
+			valueFunction.put(sh, valueInitializer.value(sh.s));
+
+
+			List<Action> actions = this.getAllGroundedActions(sh.s);
+			for(Action a : actions){
+				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, a);
+				for(TransitionProb tp : tps){
+					HashableState tsh = this.stateHash(tp.eo.op);
+					if(!openedSet.contains(tsh) && !valueFunction.containsKey(tsh)){
 						openedSet.add(tsh);
 						openList.offer(tsh);
 					}
 				}
-				
 			}
 			
 			
 		}
 		
-		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + mapToStateIndex.size());
+		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + valueFunction.size());
 		
 		this.foundReachableStates = true;
 		

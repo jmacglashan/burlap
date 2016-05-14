@@ -1,17 +1,18 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl;
 
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.List;
 import java.util.Map;
@@ -158,6 +159,7 @@ public class MLIRL {
 
 			//reset valueFunction
 			this.request.getPlanner().resetSolver();
+			this.request.getPlanner().setModel(new CustomRewardModel(request.getDomain().getModel(), rf));
 
 			double newLikelihood = this.logLikelihood();
 			double likelihoodChange = newLikelihood-lastLikelihood;
@@ -269,7 +271,7 @@ public class MLIRL {
 	 * @param ga the action for which the policy is queried.
 	 * @return s the gradient of the Boltzmann policy for the given state and action.
 	 */
-	public FunctionGradient logPolicyGrad(State s, GroundedAction ga){
+	public FunctionGradient logPolicyGrad(State s, Action ga){
 
 		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		double invActProb = 1./p.getProbOfAction(s, ga);

@@ -47,6 +47,13 @@ public interface MDPSolverInterface {
 	 */
 	void setModel(SampleModel model);
 
+
+	/**
+	 * Returns the model being used by this solver
+	 * @return a {@link SampleModel}
+	 */
+	SampleModel getModel();
+
 	/**
 	 * Returns the {@link Domain} this solver solves.
 	 * @return the {@link Domain} this solver solves.

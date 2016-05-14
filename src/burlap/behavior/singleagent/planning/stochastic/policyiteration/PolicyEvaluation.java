@@ -3,10 +3,11 @@ package burlap.behavior.singleagent.planning.stochastic.policyiteration;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -47,15 +48,13 @@ public class PolicyEvaluation extends DynamicProgramming {
 	/**
 	 * Initializes.
 	 * @param domain the domain on which to evaluate a policy
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to index states and perform state equality
 	 * @param maxEvalDelta the minimum change in the value function that will cause policy evaluation to terminate
 	 * @param maxEvalIterations the maximum number of evaluation iterations to perform before terminating policy evaluation
 	 */
-	public PolicyEvaluation(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxEvalDelta, double maxEvalIterations) {
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
+	public PolicyEvaluation(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxEvalDelta, double maxEvalIterations) {
+		this.DPPInit(domain, gamma, hashingFactory);
 		this.maxEvalDelta = maxEvalDelta;
 		this.maxEvalIterations = maxEvalIterations;
 	}
@@ -78,7 +77,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 	 */
 	public void evaluatePolicy(Policy policy){
 
-		if(this.mapToStateIndex.size() == 0){
+		if(this.valueFunction.size() == 0){
 			throw new RuntimeException("Cannot evaluate policy, because no states have been expanded. Use the performStateReachability method" +
 					"or call the evaluatePolicy method that takes a seed initial state as input.");
 		}
@@ -86,7 +85,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 
 		double maxChangeInPolicyEvaluation = Double.NEGATIVE_INFINITY;
 
-		Set <HashableState> states = mapToStateIndex.keySet();
+		Set <HashableState> states = valueFunction.keySet();
 
 		int i;
 		for(i = 0; i < this.maxEvalIterations; i++){
@@ -123,7 +122,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 
 		HashableState sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
-		if(transitionDynamics.containsKey(sih)){
+		if(valueFunction.containsKey(sih)){
 			return false; //no need for additional reachability testing
 		}
 
@@ -140,35 +139,35 @@ public class PolicyEvaluation extends DynamicProgramming {
 			HashableState sh = openList.poll();
 
 			//skip this if it's already been expanded
-			if(transitionDynamics.containsKey(sh)){
+			if(valueFunction.containsKey(sh)){
 				continue;
 			}
 
-			mapToStateIndex.put(sh, sh);
 
 			//do not need to expand from terminal states
-			if(this.tf.isTerminal(sh.s)){
+			if(model.terminalState(sh.s)){
 				continue;
 			}
 
+			valueFunction.put(sh, this.valueInitializer.value(sh.s));
 
-			//get the transition dynamics for each action and queue up new states
-			List<ActionTransitions> transitions = this.getActionsTransitions(sh);
-			for(ActionTransitions at : transitions){
-				for(HashedTransitionProbability tp : at.transitions){
-					HashableState tsh = tp.sh;
-					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
+
+
+			List<Action> actions = this.getAllGroundedActions(sh.s);
+			for(Action a : actions){
+				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, a);
+				for(TransitionProb tp : tps){
+					HashableState tsh = this.stateHash(tp.eo.op);
+					if(!openedSet.contains(tsh) && !valueFunction.containsKey(tsh)){
 						openedSet.add(tsh);
 						openList.offer(tsh);
 					}
 				}
-
 			}
-
 
 		}
 
-		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + mapToStateIndex.size());
+		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + valueFunction.size());
 
 
 		return true;

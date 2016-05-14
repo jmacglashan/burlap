@@ -1,16 +1,17 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 
 import java.util.*;
@@ -37,6 +38,11 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 */
 	protected double										boltzBeta;
 
+	/**
+	 * The differentiable RF
+	 */
+	protected DifferentiableRF 								rf;
+
 
 	@Override
 	public void resetSolver(){
@@ -55,7 +61,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	@Override
 	protected double performBellmanUpdateOn(HashableState sh){
 
-		if(this.tf.isTerminal(sh.s)){
+		if(model.terminalState(sh.s)){
 			this.valueFunction.put(sh, 0.);
 			return 0.;
 		}
@@ -98,7 +104,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 		FunctionGradient [] qGradients = new FunctionGradient[qs.length];
 		for(int i = 0; i < qs.length; i++){
-			qGradients[i] = this.getQGradient(sh.s, (GroundedAction)Qs.get(i).a).gradient;
+			qGradients[i] = this.getQGradient(sh.s, Qs.get(i).a).gradient;
 		}
 
 		double maxBetaScaled = BoltzmannPolicyGradient.maxBetaScaled(qs, this.boltzBeta);
@@ -129,7 +135,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 * @return the value function gradient for the given {@link State}
 	 */
 	public FunctionGradient getValueGradient(State s){
-		//returns deriviate value
+		//returns derivative value
 		HashableState sh = this.hashingFactory.hashState(s);
 		FunctionGradient grad = this.valueGradient.get(sh);
 		if(grad == null){
@@ -140,16 +146,16 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 	@Override
 	public List<QGradientTuple> getAllQGradients(State s){
-		List<GroundedAction> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.getAllGroundedActions(s);
 		List<QGradientTuple> res = new ArrayList<QGradientTuple>(gas.size());
-		for(GroundedAction ga : gas){
+		for(Action ga : gas){
 			res.add(this.getQGradient(s, ga));
 		}
 		return res;
 	}
 
 	@Override
-	public QGradientTuple getQGradient(State s, GroundedAction a){
+	public QGradientTuple getQGradient(State s, Action a){
 
 		FunctionGradient gradient = this.computeQGradient(s, a);
 		QGradientTuple tuple = new QGradientTuple(s, a, gradient);
@@ -164,18 +170,18 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 
 	/**
-	 * Computes the Q-value gradient for the given {@link State} and {@link burlap.mdp.singleagent.GroundedAction}.
+	 * Computes the Q-value gradient for the given {@link State} and {@link Action}.
 	 * @param s the state
 	 * @param ga the grounded action.
 	 * @return the Q-value gradient that was computed.
 	 */
-	protected FunctionGradient computeQGradient(State s, GroundedAction ga){
+	protected FunctionGradient computeQGradient(State s, Action ga){
 
 		FunctionGradient qgradient = new FunctionGradient.SparseGradient();
-		List<TransitionProbability> tps = ga.transitions(s);
-		for(TransitionProbability tp : tps){
-			FunctionGradient valueGradient = this.getValueGradient(tp.s);
-			FunctionGradient rewardGradient = ((DifferentiableRF)this.rf).gradient(s, ga, tp.s);
+		List<TransitionProb> tps = ((FullModel)model).transitions(s, ga);
+		for(TransitionProb tp : tps){
+			FunctionGradient valueGradient = this.getValueGradient(tp.eo.op);
+			FunctionGradient rewardGradient = this.rf.gradient(s, ga, tp.eo.op);
 			Set<Integer> params = combinedNonZeroPDParameters(valueGradient, rewardGradient);
 
 			for(int i : params){

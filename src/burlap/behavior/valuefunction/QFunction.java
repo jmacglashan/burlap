@@ -2,7 +2,6 @@ package burlap.behavior.valuefunction;
 
 import burlap.behavior.policy.Policy;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 
 import java.util.List;
@@ -59,22 +58,6 @@ public interface QFunction extends ValueFunction{
 			return max;
 		}
 
-		/**
-		 * Returns the optimal state value for a state given a {@link QFunction}.
-		 * The optimal value is the max Q-value. If no actions are permissible in the input state or the input state is a terminal state, then zero is returned.
-		 * @param qSource the {@link QFunction} capable of producing Q-values.
-		 * @param s the query {@link State} for which the value should be returned.
-		 * @param tf a terminal function.
-		 * @return the max Q-value for all possible Q-values in the state or zero if there are not permissible actions or if the state is a terminal state.
-		 */
-		public static double getOptimalValue(QFunction qSource, State s, TerminalFunction tf){
-
-			if(tf.isTerminal(s)){
-				return 0.;
-			}
-
-			return getOptimalValue(qSource, s);
-		}
 
 
 		/**
@@ -99,24 +82,6 @@ public interface QFunction extends ValueFunction{
 			return expectedValue;
 		}
 
-
-		/**
-		 * Returns the state value under a given policy for a state and {@link QFunction}.
-		 * The value is the expected Q-value under the input policy action distribution. If no actions are permissible in the input state, then zero is returned.
-		 * @param qSource the {@link QFunction} capable of producing Q-values.
-		 * @param s the query {@link State} for which the value should be returned.
-		 * @param p the policy defining the action distribution.
-		 * @param tf a terminal function.
-		 * @return the expected Q-value under the input policy action distribution or zero if there are not permissible actions or if the state is a terminal state.
-		 */
-		public static double getPolicyValue(QFunction qSource, State s, Policy p, TerminalFunction tf){
-
-			if(tf.isTerminal(s)){
-				return 0.;
-			}
-
-			return getPolicyValue(qSource, s, p);
-		}
 
 	}
 
