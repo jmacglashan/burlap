@@ -1,15 +1,21 @@
 package burlap.domain.singleagent.mountaincar;
 
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleActionType;
+import burlap.mdp.singleagent.UniversalActionType;
+import burlap.mdp.singleagent.common.GoalBasedRF;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.model.FactoredModel;
+import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.visualizer.Visualizer;
+
+import java.util.List;
 
 
 /**
@@ -43,24 +49,28 @@ public class MountainCar implements DomainGenerator {
 	/**
 	 * A constant for the name of the forward action
 	 */
-	public static final String				ACTIONFORWARD = "forward";
+	public static final String ACTION_FORWARD = "forward";
 	
 	/**
 	 * A constant for the name of the backwards action
 	 */
-	public static final String				ACTIONBACKWARDS = "backwards";
+	public static final String ACTION_BACKWARDS = "backwards";
 	
 	
 	/**
 	 * A constant for the name of the coast action
 	 */
-	public static final String				ACTIONCOAST = "coast";
+	public static final String ACTION_COAST = "coast";
 
 
 	/**
 	 * The physics parameters for mountain car.
 	 */
 	public MCPhysicsParams physParams = new MCPhysicsParams();
+
+	protected RewardFunction rf;
+
+	protected TerminalFunction tf;
 
 
 	public static class MCPhysicsParams {
@@ -137,19 +147,44 @@ public class MountainCar implements DomainGenerator {
 	}
 
 
+	public TerminalFunction getTf() {
+		return tf;
+	}
 
-	
-	
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
+	}
+
+	public RewardFunction getRf() {
+		return rf;
+	}
+
+	public void setRf(RewardFunction rf) {
+		this.rf = rf;
+	}
+
 	@Override
-	public Domain generateDomain() {
+	public SADomain generateDomain() {
 		
 		SADomain domain = new SADomain();
-		
-		MCPhysicsParams cphys = this.physParams.copy();
 
-		new MovementActionType(ACTIONFORWARD, domain, 1, cphys);
-		new MovementActionType(ACTIONBACKWARDS, domain, -1, cphys);
-		new MovementActionType(ACTIONCOAST, domain, 0, cphys);
+
+		MCModel smodel = new MCModel(this.physParams.copy());
+		if(tf == null){
+			tf = new ClassicMCTF(physParams.xmax);
+		}
+		if(rf == null){
+			rf = new GoalBasedRF(tf, 100, 0);
+		}
+
+		FactoredModel model = new FactoredModel(smodel, rf, tf);
+
+		domain.setModel(model);
+
+		domain.addAction(new UniversalActionType(ACTION_FORWARD))
+				.addAction(new UniversalActionType(ACTION_BACKWARDS))
+				.addAction(new UniversalActionType(ACTION_COAST));
+
 		
 		
 		return domain;
@@ -159,99 +194,87 @@ public class MountainCar implements DomainGenerator {
 		return this.physParams.valleyState();
 	}
 	
-	
-	/**
-	 * Changes the agents position in the provided state using car engine acceleration in the specified direction.
-	 * dir=+1 indicates forward acceleration; -1 backwards acceleration; 0 no acceleration (coast).
-	 * @param s the state in which the agents position should be modified
-	 * @param dir the direction of acceleration
-	 * @param physParms the physics parameters used
-	 * @return the modified state s
-	 */
-	public static State move(State s, int dir, MCPhysicsParams physParms){
-
-		double p0 = (Double)s.get(ATT_X);
-		double v0 = (Double)s.get(ATT_V);
-
-		double netAccel = (physParms.acceleration * dir) - (physParms.gravity * Math.cos(physParms.cosScale*p0));
-		
-		double v1 = v0 + physParms.timeDelta * netAccel;
-		if(v1 < physParms.vmin){
-			v1 = physParms.vmin;
-		}
-		else if(v1 > physParms.vmax){
-			v1 = physParms.vmax;
-		}
-		
-		double p1 = p0 + physParms.timeDelta*v1; //original mechanics in paper defined this way
-		//double p1 = p0 + this.timeDelta*v0 + .5*netAccel*this.timeDelta*this.timeDelta; //more accurate estimate
-		
-		if(p1 < physParms.xmin){
-			p1 = physParms.xmin;
-			v1 = 0.;
-		}
-		else if(p1 > physParms.xmax){
-			p1 = physParms.xmax;
-			v1 = 0.;
-		}
 
 
-		((MutableState)s).set(ATT_X, p1);
-		((MutableState)s).set(ATT_V, v1);
-		
-		return s;
-		
-	}
+	public static class MCModel implements FullStateModel{
+
+		protected MCPhysicsParams physParams;
 
 
-	
-	/**
-	 * An action for moving in a given direction. The action should be passed a direction parameter indicating the direction of acceleration.
-	 * +1 for forward acceleration, -1 for backwards acceleration, 0 for no acceleration (coast).
-	 * @author James MacGlashan
-	 *
-	 */
-	class MovementActionType extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
-
-		int dir;
-		MCPhysicsParams physParams;
-		
-		/**
-		 * Initializes with the given name, domain, and direction of acceleration.
-		 * @param name the name of this action
-		 * @param domain the domain of this action
-		 * @param dir the direction of acceleration; +1 for forward acceleration, -1 for backwards acceleration, 0 for no acceleration (coast).
-		 */
-		public MovementActionType(String name, Domain domain, int dir, MCPhysicsParams physParams){
-			super(name, domain);
-			this.dir = dir;
+		public MCModel(MCPhysicsParams physParams) {
 			this.physParams = physParams;
 		}
-		
+
 		@Override
-		protected State sampleHelper(State s, GroundedAction groundedAction) {
-			return MountainCar.move(s, dir, this.physParams);
+		public List<StateTransitionProb> stateTransitions(State s, Action a) {
+			return FullStateModel.Helper.deterministicTransition(this, s, a);
 		}
 
-
-		public MCPhysicsParams getPhysParams() {
-			return physParams;
+		@Override
+		public State sampleStateTransition(State s, Action a) {
+			s = s.copy();
+			return move(s, dir(a.actionName()));
 		}
 
-		public void setPhysParams(MCPhysicsParams physParams) {
-			this.physParams = physParams;
+		/**
+		 * Changes the agents position in the provided state using car engine acceleration in the specified direction.
+		 * dir=+1 indicates forward acceleration; -1 backwards acceleration; 0 no acceleration (coast).
+		 * @param s the state in which the agents position should be modified
+		 * @param dir the direction of acceleration
+		 * @return the modified state s
+		 */
+		public State move(State s, int dir){
+
+			double p0 = (Double)s.get(ATT_X);
+			double v0 = (Double)s.get(ATT_V);
+
+			double netAccel = (physParams.acceleration * dir) - (physParams.gravity * Math.cos(physParams.cosScale*p0));
+
+			double v1 = v0 + physParams.timeDelta * netAccel;
+			if(v1 < physParams.vmin){
+				v1 = physParams.vmin;
+			}
+			else if(v1 > physParams.vmax){
+				v1 = physParams.vmax;
+			}
+
+			double p1 = p0 + physParams.timeDelta*v1; //original mechanics in paper defined this way
+			//double p1 = p0 + this.timeDelta*v0 + .5*netAccel*this.timeDelta*this.timeDelta; //more accurate estimate
+
+			if(p1 < physParams.xmin){
+				p1 = physParams.xmin;
+				v1 = 0.;
+			}
+			else if(p1 > physParams.xmax){
+				p1 = physParams.xmax;
+				v1 = 0.;
+			}
+
+
+			((MutableState)s).set(ATT_X, p1);
+			((MutableState)s).set(ATT_V, v1);
+
+			return s;
+
 		}
 
-		public int getDir() {
-			return dir;
-		}
-
-		public void setDir(int dir) {
-			this.dir = dir;
+		protected int dir(String actionName){
+			if(actionName.equals(ACTION_FORWARD)){
+				return 1;
+			}
+			else if(actionName.equals(ACTION_BACKWARDS)){
+				return -1;
+			}
+			else if(actionName.equals(ACTION_COAST)){
+				return 0;
+			}
+			throw new RuntimeException("Unknown action " + actionName);
 		}
 	}
-	
-	
+
+
+
+
 	
 	/**
 	 * A Terminal Function for the Mountain Car domain that terminates when the agent's position is &gt;= the max position in the world (0.5 default).
@@ -301,16 +324,16 @@ public class MountainCar implements DomainGenerator {
 	public static void main(String [] args){
 		
 		MountainCar mcGen = new MountainCar();
-		Domain domain = mcGen.generateDomain();
+		SADomain domain = mcGen.generateDomain();
 		State s = mcGen.valleyState();
 		
 
 		Visualizer vis = MountainCarVisualizer.getVisualizer(mcGen);
 		VisualExplorer exp = new VisualExplorer(domain, vis, s);
 		
-		exp.addKeyAction("d", ACTIONFORWARD);
-		exp.addKeyAction("s", ACTIONCOAST);
-		exp.addKeyAction("a", ACTIONBACKWARDS);
+		exp.addKeyAction("d", ACTION_FORWARD, "");
+		exp.addKeyAction("s", ACTION_COAST, "");
+		exp.addKeyAction("a", ACTION_BACKWARDS, "");
 		
 		exp.initGUI();
 		
