@@ -387,11 +387,6 @@ public abstract class Policy {
 			return new AnnotatedAction(srcAction, annotation);
 		}
 
-		@Override
-		public boolean applicableInState(State s) {
-			return srcAction.applicableInState(s);
-		}
-
 
 		@Override
 		public int hashCode() {

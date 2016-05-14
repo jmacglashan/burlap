@@ -93,15 +93,11 @@ public class SubgoalOption implements Option {
 		return 0.;
 	}
 
-	
-	
 	@Override
-	public boolean applicableInState(State s){
-		if(initiationTest.satisfies(s)){
-			return true;
-		}
-		return false;
+	public boolean inInitiationSet(State s) {
+		return initiationTest.satisfies(s);
 	}
+
 	
 	
 	@Override

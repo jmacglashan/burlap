@@ -556,16 +556,31 @@ public class GraphDefinedDomain implements DomainGenerator {
 
 		@Override
 		public Action associatedAction(String strRep) {
-			return new GraphAction(aId, transitionDynamics);
+			return new GraphAction(aId);
 		}
 
 		@Override
 		public List<Action> allApplicableActions(State s) {
-			Action a = associatedAction("");
-			if(a.applicableInState(s)){
+			Action a = new GraphAction(aId);
+			if(applicableInState(s)){
 				return Arrays.asList(a);
 			}
 			return new ArrayList<Action>();
+		}
+
+		protected boolean applicableInState(State s){
+			int n = (Integer)s.get("node");
+
+			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
+			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
+			if(transitions == null){
+				return false;
+			}
+			if(transitions.isEmpty()){
+				return false;
+			}
+
+			return true;
 		}
 
 
@@ -574,14 +589,11 @@ public class GraphDefinedDomain implements DomainGenerator {
 
 			public int aId;
 
-			public Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics;
-
 			public GraphAction() {
 			}
 
-			public GraphAction(int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics) {
+			public GraphAction(int aId) {
 				this.aId = aId;
-				this.transitionDynamics = transitionDynamics;
 			}
 
 			@Override
@@ -591,23 +603,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 
 			@Override
 			public Action copy() {
-				return new GraphAction(aId, transitionDynamics);
-			}
-
-			@Override
-			public boolean applicableInState(State s) {
-				int n = (Integer)s.get("node");
-
-				Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
-				Set<NodeTransitionProbability> transitions = actionMap.get(aId);
-				if(transitions == null){
-					return false;
-				}
-				if(transitions.isEmpty()){
-					return false;
-				}
-
-				return true;
+				return new GraphAction(aId);
 			}
 
 			@Override

@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.options;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.Policy.ActionProb;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
@@ -24,12 +23,14 @@ import java.util.Random;
  */
 public interface Option extends Action{
 
-
-	EnvironmentOptionOutcome control(Environment env, double discount);
-	void initiateInState(State s);
-	double probabilityOfTermination(State s);
+	boolean inInitiationSet(State s);
 	Action oneStep(State s);
-	List<ActionProb> oneStepProbabilities(State s);
+	List<Policy.ActionProb> oneStepProbabilities(State s);
+	double probabilityOfTermination(State s);
+
+	void initiateInState(State s);
+	EnvironmentOptionOutcome control(Environment env, double discount);
+
 	boolean markov();
 
 

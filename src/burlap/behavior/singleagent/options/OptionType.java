@@ -10,8 +10,8 @@ import java.util.List;
 
 /**
  * An {@link ActionType} for generating a specific unparameterized option. The {@link #allApplicableActions(State)}
- * method checks the option initiation set via its {@link Action#applicableInState(State)} method
- * and returns a list of the option only if is satisfied.
+ * method checks the option initiation set via its {@link Option#inInitiationSet(State)} method
+ * and returns a list containing the option only if it is satisfied.
  * @author James MacGlashan.
  */
 public class OptionType implements ActionType {
@@ -34,7 +34,7 @@ public class OptionType implements ActionType {
 
 	@Override
 	public List<Action> allApplicableActions(State s) {
-		if(o.applicableInState(s)){
+		if(o.inInitiationSet(s)){
 			return Arrays.<Action>asList(o);
 		}
 		return new ArrayList<Action>();

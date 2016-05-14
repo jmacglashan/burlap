@@ -1,7 +1,5 @@
 package burlap.mdp.core;
 
-import burlap.mdp.core.state.State;
-
 /**
  *
  * @author James MacGlashan
@@ -22,10 +20,6 @@ public interface Action {
 	 * @return a copy of this grounded action.
 	 */
 	Action copy();
-	
-	
-	boolean applicableInState(State s);
 
 
-	
 }

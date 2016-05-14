@@ -93,16 +93,6 @@ public class JointAction implements Action, Iterable<SGAgentAction>{
 	}
 
 
-	@Override
-	public boolean applicableInState(State s) {
-		for(SGAgentAction a : this.actions.values()){
-			if(!a.applicableInState(s)){
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/**
 	 * Returns a string representation of this joint aciton without including the parameters of any parameterized actions.
 	 * This method can be useful for generating hash codes since two grounded single actions with different parameter orders may be

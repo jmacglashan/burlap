@@ -2,7 +2,6 @@ package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +28,7 @@ public abstract class JointActionModel {
 	 * @return the resutling state.
 	 */
 	public State performJointAction(State s, JointAction ja){
-		
-		//first make sure that every action satisfies the necessary preconditions
-		for(SGAgentAction gsa : ja){
-			if(!gsa.applicableInState(s)){
-				throw new RuntimeException("The action " + gsa.toString() + " is not applicable in this state.");
-			}
-		}
-		
+
 		State sp = s.copy();
 		sp = this.actionHelper(sp, ja);
 		return sp;

@@ -435,16 +435,8 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 * @param ga the {@link burlap.mdp.core.Action} to execute.
 	 */
 	protected void executeAction(Action ga){
-		if(ga.applicableInState(env.currentObservation())){
-
-			EnvironmentOutcome eo = env.executeAction(ga);
-			this.updateState(this.env.currentObservation());
-		}
-		else{
-			String warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
-			System.out.println(warningMessage);
-			this.updateState(this.env.currentObservation());
-		}
+		EnvironmentOutcome eo = env.executeAction(ga);
+		this.updateState(eo.op);
 	}
 
 

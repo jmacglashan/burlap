@@ -104,9 +104,7 @@ public class ObjectParameterizedActionType implements ActionType {
 		for(List <String> params : bindings){
 			String [] aprams = params.toArray(new String[params.size()]);
 			Action ga = this.generateAction(aprams);
-			if(ga.applicableInState(s)){
-				res.add(ga);
-			}
+			res.add(ga);
 		}
 
 		return res;
@@ -149,11 +147,6 @@ public class ObjectParameterizedActionType implements ActionType {
 		@Override
 		public String actionName() {
 			return name;
-		}
-
-		@Override
-		public boolean applicableInState(State s) {
-			return true;
 		}
 
 		@Override

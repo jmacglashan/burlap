@@ -47,23 +47,23 @@ public class MacroAction implements Option {
 	}
 
 
-	@Override
-	public boolean applicableInState(State s) {
-		return this.actionSequence.get(0).applicableInState(s);
-	}
-
 
 	@Override
 	public double probabilityOfTermination(State s) {
 		if(curIndex >= actionSequence.size()){
 			return 1.;
 		}
-		return actionSequence.get(curIndex).applicableInState(s) ? 0 : 1.;
+		return 0.;
 	}
 
 	@Override
 	public void initiateInState(State s) {
 		curIndex = 0;
+	}
+
+	@Override
+	public boolean inInitiationSet(State s) {
+		return true;
 	}
 
 	@Override

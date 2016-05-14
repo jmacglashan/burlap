@@ -78,9 +78,8 @@ public class ObParamSGAgentActionType implements SGAgentActionType {
 		for(List <String> params : bindings){
 			String [] aparams = params.toArray(new String[params.size()]);
 			SGAgentAction a = this.generateAction(actingAgent, aparams);
-			if(a.applicableInState(s)){
-				res.add(a);
-			}
+			res.add(a);
+
 		}
 
 
@@ -121,11 +120,6 @@ public class ObParamSGAgentActionType implements SGAgentActionType {
 		@Override
 		public String actionName() {
 			return name;
-		}
-
-		@Override
-		public boolean applicableInState(State s) {
-			return true;
 		}
 
 		@Override
