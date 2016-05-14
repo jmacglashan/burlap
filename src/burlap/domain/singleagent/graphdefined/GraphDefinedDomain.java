@@ -2,12 +2,18 @@ package burlap.domain.singleagent.graphdefined;
 
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.StateTransitionProb;
+import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleActionType;
+import burlap.mdp.singleagent.common.NullRewardFunction;
+import burlap.mdp.singleagent.model.FactoredModel;
+import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.shell.EnvironmentShell;
 
 import java.util.*;
@@ -58,6 +64,9 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 */
 	protected Map<Integer, Map<Integer, Set<NodeTransitionProbability>>>	transitionDynamics;
 
+	protected RewardFunction rf = new NullRewardFunction();
+	protected TerminalFunction tf = new NullTermination();
+
 
 	/**
 	 * Initializes the generator. States and transition dynamics will be constructed lazily with calls
@@ -92,6 +101,22 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 */
 	public int getNumNodes() {
 		return numNodes;
+	}
+
+	public RewardFunction getRf() {
+		return rf;
+	}
+
+	public void setRf(RewardFunction rf) {
+		this.rf = rf;
+	}
+
+	public TerminalFunction getTf() {
+		return tf;
+	}
+
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
 	}
 
 	/**
@@ -335,14 +360,19 @@ public class GraphDefinedDomain implements DomainGenerator {
 	
 
 	@Override
-	public Domain generateDomain() {
+	public SADomain generateDomain() {
 		
-		Domain domain = new SADomain();
+		SADomain domain = new SADomain();
 
 		Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> ctd = this.copyTransitionDynamics();
 
+		GraphStateModel stateModel = new GraphStateModel(ctd);
+		FactoredModel model = new FactoredModel(stateModel, rf, tf);
+
+		domain.setModel(model);
+
 		for(int i = 0; i < this.maxActions; i++){
-			new GraphActionType(domain, i, ctd);
+			domain.addAction(new GraphActionType(i, ctd));
 		}
 		
 		
@@ -406,7 +436,82 @@ public class GraphDefinedDomain implements DomainGenerator {
 		
 	}
 	
-	
+	public static class GraphStateModel implements FullStateModel{
+
+		/**
+		 * The transition dynamics to use
+		 */
+		protected Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics;
+
+		protected Random rand = RandomFactory.getMapped(0);
+
+		public GraphStateModel(Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics) {
+			this.transitionDynamics = transitionDynamics;
+		}
+
+		public Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> getTransitionDynamics() {
+			return transitionDynamics;
+		}
+
+		public void setTransitionDynamics(Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics) {
+			this.transitionDynamics = transitionDynamics;
+		}
+
+		@Override
+		public List<StateTransitionProb> stateTransitions(State s, Action a) {
+
+			int aId = ((GraphActionType.GraphAction)a).aId;
+
+			List <StateTransitionProb> result = new ArrayList<StateTransitionProb>();
+
+			int n = (Integer)s.get(VAR);
+
+			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
+			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
+
+			for(NodeTransitionProbability ntp : transitions){
+
+				State ns = s.copy();
+				((MutableState)ns).set(VAR, ntp.transitionTo);
+
+				StateTransitionProb tp = new StateTransitionProb(ns, ntp.probability);
+				result.add(tp);
+
+			}
+
+
+			return result;
+
+		}
+
+		@Override
+		public State sampleStateTransition(State s, Action a) {
+
+			s = s.copy();
+
+			int aId = ((GraphActionType.GraphAction)a).aId;
+
+			int n = (Integer)s.get(VAR);
+
+			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
+			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
+
+			double roll = rand.nextDouble();
+			double sumP = 0.;
+			int selection = 0;
+			for(NodeTransitionProbability ntp : transitions){
+				sumP += ntp.probability;
+				if(roll < sumP){
+					selection = ntp.transitionTo;
+					break;
+				}
+			}
+
+			((MutableState)s).set(VAR, selection);
+
+			return s;
+		}
+	}
 	
 	/**
 	 * An action class for defining actions that can be taken from state nodes. The action can only be taken
@@ -414,7 +519,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class GraphActionType extends SimpleActionType implements FullActionModel{
+	public static class GraphActionType implements ActionType{
 
 		/**
 		 * Random object for sampling the stochastic graph transitions
@@ -426,104 +531,108 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 */
 		protected int aId;
 
-
 		/**
 		 * The transition dynamics to use
 		 */
 		protected Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics;
-		
+
+
 		/**
 		 * Initializes a graph action object for the given domain and for the action of the given number.
 		 * The name of this action will be the constant BASEACTIONNAMEi where i is the action number specified.
-		 * @param domain the domain of the action
 		 * @param aId the action identifier number
-		 * @param transitionDynamics the graph transition dynamics
 		 */
-		public GraphActionType(Domain domain, int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics){
-			super(BASE_ACTION_NAME +aId, domain);
+		public GraphActionType(int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics){
 			this.aId = aId;
 			rand = RandomFactory.getMapped(0);
 			this.transitionDynamics = transitionDynamics;
 		}
-		
-		
-		@Override
-		public boolean applicableInState(State st, GroundedAction groundedAction){
 
-			int n = (Integer)st.get("node");
-			
-			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
-			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
-			if(transitions == null){
-				return false;
-			}
-			if(transitions.isEmpty()){
-				return false;
-			}
-			
-			return true;
+
+		@Override
+		public String typeName() {
+			return BASE_ACTION_NAME + aId;
 		}
-		
-		
-		@Override
-		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
-			int n = (Integer)st.get(VAR);
-			
-			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
-			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
-			
-			double roll = rand.nextDouble();
-			double sumP = 0.;
-			int selection = 0;
-			for(NodeTransitionProbability ntp : transitions){
-				sumP += ntp.probability;
-				if(roll < sumP){
-					selection = ntp.transitionTo;
-					break;
+		@Override
+		public Action associatedAction(String strRep) {
+			return new GraphAction(aId, transitionDynamics);
+		}
+
+		@Override
+		public List<Action> allApplicableActions(State s) {
+			Action a = associatedAction("");
+			if(a.applicableInState(s)){
+				return Arrays.asList(a);
+			}
+			return new ArrayList<Action>();
+		}
+
+
+
+		public static class GraphAction implements Action{
+
+			public int aId;
+
+			public Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics;
+
+			public GraphAction() {
+			}
+
+			public GraphAction(int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics) {
+				this.aId = aId;
+				this.transitionDynamics = transitionDynamics;
+			}
+
+			@Override
+			public String actionName() {
+				return BASE_ACTION_NAME + aId;
+			}
+
+			@Override
+			public Action copy() {
+				return new GraphAction(aId, transitionDynamics);
+			}
+
+			@Override
+			public boolean applicableInState(State s) {
+				int n = (Integer)s.get("node");
+
+				Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
+				Set<NodeTransitionProbability> transitions = actionMap.get(aId);
+				if(transitions == null){
+					return false;
 				}
+				if(transitions.isEmpty()){
+					return false;
+				}
+
+				return true;
 			}
-			
-			((MutableState)st).set(VAR, selection);
-			
-			return st;
+
+			@Override
+			public boolean equals(Object o) {
+				if(this == o) return true;
+				if(o == null || getClass() != o.getClass()) return false;
+
+				GraphAction that = (GraphAction) o;
+
+				return aId == that.aId;
+
+			}
+
+			@Override
+			public int hashCode() {
+				return aId;
+			}
+
+			@Override
+			public String toString() {
+				return actionName();
+			}
 		}
 		
-		
-		@Override
-		public List<TransitionProbability> transitions(State st, GroundedAction groundedAction){
-			
-			List <TransitionProbability> result = new ArrayList<TransitionProbability>();
 
-			int n = (Integer)st.get(VAR);
-			
-			Map<Integer, Set<NodeTransitionProbability>> actionMap = transitionDynamics.get(n);
-			Set<NodeTransitionProbability> transitions = actionMap.get(aId);
-			
-			for(NodeTransitionProbability ntp : transitions){
-				
-				State ns = st.copy();
-				((MutableState)ns).set(VAR, ntp.transitionTo);
-				
-				TransitionProbability tp = new TransitionProbability(ns, ntp.probability);
-				result.add(tp);
-				
-			}
-			
-			
-			return result;
-			
-		}
-
-
-
-		public Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> getTransitionDynamics() {
-			return transitionDynamics;
-		}
-
-		public void setTransitionDynamics(Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics) {
-			this.transitionDynamics = transitionDynamics;
-		}
 	}
 
 
@@ -539,7 +648,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		gdd.setTransition(2, 0, 2, 1.);
 		gdd.setTransition(2, 1, 0, 1.);
 
-		Domain domain = gdd.generateDomain();
+		SADomain domain = gdd.generateDomain();
 
 
 

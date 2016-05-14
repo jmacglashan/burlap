@@ -11,6 +11,10 @@ import java.util.List;
  */
 public class UniversalActionType implements ActionType {
 
+	public UniversalActionType(String typeName) {
+		this.typeName = typeName;
+	}
+
 	public String typeName;
 
 	@Override

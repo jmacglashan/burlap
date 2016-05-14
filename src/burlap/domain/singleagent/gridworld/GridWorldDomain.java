@@ -8,7 +8,9 @@ import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridLocation;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.StateTransitionProb;
+import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
@@ -16,9 +18,12 @@ import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.vardomain.VariableDomain;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.SimpleActionType;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.UniversalActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.model.FactoredModel;
+import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
 import burlap.shell.EnvironmentShell;
@@ -167,6 +172,10 @@ public class GridWorldDomain implements DomainGenerator {
 	 * there is a wall to the east, then with 0.2 probability, the agent will stay in place.
 	 */
 	protected double[][]								transitionDynamics;
+
+
+	protected RewardFunction rf;
+	protected TerminalFunction tf;
 	
 	
 	/**
@@ -249,6 +258,16 @@ public class GridWorldDomain implements DomainGenerator {
 	 */
 	public void setTransitionDynamics(double [][] transitionDynamics){
 		this.transitionDynamics = transitionDynamics.clone();
+	}
+
+	public double [][] getTransitionDynamics(){
+		double [][] copy = new double[transitionDynamics.length][transitionDynamics[0].length];
+		for(int i = 0; i < transitionDynamics.length; i++){
+			for(int j = 0; j < transitionDynamics[0].length; j++){
+				copy[i][j] = transitionDynamics[i][j];
+			}
+		}
+		return copy;
 	}
 	
 	
@@ -455,9 +474,23 @@ public class GridWorldDomain implements DomainGenerator {
 	public int getHeight() {
 		return this.height;
 	}
-	
-	
-	
+
+	public RewardFunction getRf() {
+		return rf;
+	}
+
+	public void setRf(RewardFunction rf) {
+		this.rf = rf;
+	}
+
+	public TerminalFunction getTf() {
+		return tf;
+	}
+
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
+	}
+
 	@Override
 	public OOSADomain generateDomain() {
 
@@ -467,12 +500,15 @@ public class GridWorldDomain implements DomainGenerator {
 
 		domain.addStateClass(CLASS_AGENT, GridAgent.class).addStateClass(CLASS_LOCATION, GridLocation.class);
 
+		GridWorldModel smodel = new GridWorldModel(cmap, getTransitionDynamics());
+		FactoredModel model = new FactoredModel(smodel, rf, tf);
+		domain.setModel(model);
 
-		new MovementActionType(ACTION_NORTH, domain, this.transitionDynamics[0], cmap);
-		new MovementActionType(ACTION_SOUTH, domain, this.transitionDynamics[1], cmap);
-		new MovementActionType(ACTION_EAST, domain, this.transitionDynamics[2], cmap);
-		new MovementActionType(ACTION_WEST, domain, this.transitionDynamics[3], cmap);
-		
+		domain.addAction(new UniversalActionType(ACTION_NORTH))
+				.addAction(new UniversalActionType(ACTION_SOUTH))
+				.addAction(new UniversalActionType(ACTION_EAST))
+				.addAction(new UniversalActionType(ACTION_WEST));
+
 		
 		new AtLocationPF(PF_AT_LOCATION, domain, new String[]{CLASS_AGENT, CLASS_LOCATION});
 		
@@ -510,117 +546,113 @@ public class GridWorldDomain implements DomainGenerator {
 				new OOVariableKey(CLASS_AGENT, VAR_X), new OOVariableKey(CLASS_AGENT, VAR_Y), new VariableDomain(0, maxX), new VariableDomain(0, maxY), 1, 1,
 				ACTION_NORTH, ACTION_SOUTH, ACTION_EAST, ACTION_WEST);
 	}
-	
-	
-	
-	
-	/**
-	 * Attempts to move the agent into the given position, taking into account walls and blocks
-	 * @param s the current state
-	 * @param xd the attempted new X position of the agent
-	 * @param yd the attempted new Y position of the agent
-	 * @param map the walls map
-	 * @return input state s, after modification
-	 */
-	protected State move(State s, int xd, int yd, int [][] map){
 
-		GridWorldState gws = (GridWorldState)s;
 
-		int ax = gws.agent.x;
-		int ay = gws.agent.y;
-		
-		int nx = ax+xd;
-		int ny = ay+yd;
-		
-		//hit wall, so do not change position
-		if(nx < 0 || nx >= map.length || ny < 0 || ny >= map[0].length || map[nx][ny] == 1 ||
-				(xd > 0 && (map[ax][ay] == 3 || map[ax][ay] == 4)) || (xd < 0 && (map[nx][ny] == 3 || map[nx][ny] == 4)) ||
-				(yd > 0 && (map[ax][ay] == 2 || map[ax][ay] == 4)) || (yd < 0 && (map[nx][ny] == 2 || map[nx][ny] == 4)) ){
-			nx = ax;
-			ny = ay;
-		}
-
-		GridAgent nagent = gws.touchAgent();
-		nagent.x = nx;
-		nagent.y = ny;
-
-		return s;
-	}
-	
 	/**
 	 * Returns the change in x and y position for a given direction number.
 	 * @param i the direction number (0,1,2,3 indicates north,south,east,west, respectively)
 	 * @return the change in direction for x and y; the first index of the returned double is change in x, the second index is change in y.
 	 */
-	protected int [] movementDirectionFromIndex(int i){
-		
-		int [] result = null;
-		
-		switch (i) {
-		case 0:
-			result = new int[]{0,1};
-			break;
-			
-		case 1:
-			result = new int[]{0,-1};
-			break;
-			
-		case 2:
-			result = new int[]{1,0};
-			break;
-			
-		case 3:
-			result = new int[]{-1,0};
-			break;
+	protected static int [] movementDirectionFromIndex(int i){
 
-		default:
-			break;
+		int [] result = null;
+
+		switch (i) {
+			case 0:
+				result = new int[]{0,1};
+				break;
+
+			case 1:
+				result = new int[]{0,-1};
+				break;
+
+			case 2:
+				result = new int[]{1,0};
+				break;
+
+			case 3:
+				result = new int[]{-1,0};
+				break;
+
+			default:
+				break;
 		}
-		
+
 		return result;
 	}
-	
-	
-	
-	/**
-	 * Action class for movement actions in grid world.
-	 * @author James MacGlashan
-	 *
-	 */
-	public class MovementActionType extends SimpleActionType implements FullActionModel{
 
-		/**
-		 * Probabilities of the actual direction the agent will go
-		 */
-		protected double [] directionProbs;
-		
-		/**
-		 * Random object for sampling distribution
-		 */
-		protected Random rand;
+
+	public static class GridWorldModel implements FullStateModel{
+
 
 		/**
 		 * The map of the world
 		 */
-		protected int [][] map;
-		
-		
+		int [][] map;
+
+
 		/**
-		 * Initializes for the given name, domain and actually direction probabilities the agent will go
-		 * @param name name of the action
-		 * @param domain the domain of the action
-		 * @param directions the probability for each direction (index 0,1,2,3 corresponds to north,south,east,west, respectively).
-		 * @param map the map of the world
+		 * Matrix specifying the transition dynamics in terms of movement directions. The first index
+		 * indicates the action direction attempted (ordered north, south, east, west) the second index
+		 * indicates the actual resulting direction the agent will go (assuming there is no wall in the way).
+		 * The value is the probability of that outcome. The existence of walls does not affect the probability
+		 * of the direction the agent will actually go, but if a wall is in the way, it will affect the outcome.
+		 * For instance, if the agent selects north, but there is a 0.2 probability of actually going east and
+		 * there is a wall to the east, then with 0.2 probability, the agent will stay in place.
 		 */
-		public MovementActionType(String name, Domain domain, double [] directions, int [][] map){
-			super(name, domain);
-			this.directionProbs = directions.clone();
-			this.rand = RandomFactory.getMapped(0);
+		protected double[][] transitionDynamics;
+
+		protected Random rand = RandomFactory.getMapped(0);
+
+
+		public GridWorldModel(int[][] map, double[][] transitionDynamics) {
 			this.map = map;
+			this.transitionDynamics = transitionDynamics;
 		}
 
 		@Override
-		protected State sampleHelper(State s, GroundedAction groundedAction) {
+		public List<StateTransitionProb> stateTransitions(State s, Action a) {
+
+			double [] directionProbs = transitionDynamics[actionInd(a.actionName())];
+
+			List <StateTransitionProb> transitions = new ArrayList<StateTransitionProb>();
+			for(int i = 0; i < directionProbs.length; i++){
+				double p = directionProbs[i];
+				if(p == 0.){
+					continue; //cannot transition in this direction
+				}
+				State ns = s.copy();
+				int [] dcomps = movementDirectionFromIndex(i);
+				ns = move(ns, dcomps[0], dcomps[1]);
+
+				//make sure this direction doesn't actually stay in the same place and replicate another no-op
+				boolean isNew = true;
+				for(StateTransitionProb tp : transitions){
+					if(tp.s.equals(ns)){
+						isNew = false;
+						tp.p += p;
+						break;
+					}
+				}
+
+				if(isNew){
+					StateTransitionProb tp = new StateTransitionProb(ns, p);
+					transitions.add(tp);
+				}
+
+
+			}
+
+
+			return transitions;
+		}
+
+		@Override
+		public State sampleStateTransition(State s, Action a) {
+
+			s = s.copy();
+
+			double [] directionProbs = transitionDynamics[actionInd(a.actionName())];
 			double roll = rand.nextDouble();
 			double curSum = 0.;
 			int dir = 0;
@@ -632,47 +664,62 @@ public class GridWorldDomain implements DomainGenerator {
 				}
 			}
 
-			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(dir);
-			return GridWorldDomain.this.move(s, dcomps[0], dcomps[1], this.map);
+			int [] dcomps = movementDirectionFromIndex(dir);
+			return move(s, dcomps[0], dcomps[1]);
+
 		}
 
-		@Override
-		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction) {
-			List <TransitionProbability> transitions = new ArrayList<TransitionProbability>();
-			for(int i = 0; i < directionProbs.length; i++){
-				double p = directionProbs[i];
-				if(p == 0.){
-					continue; //cannot transition in this direction
-				}
-				State ns = s.copy();
-				int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(i);
-				ns = GridWorldDomain.this.move(ns, dcomps[0], dcomps[1], this.map);
+		/**
+		 * Attempts to move the agent into the given position, taking into account walls and blocks
+		 * @param s the current state
+		 * @param xd the attempted new X position of the agent
+		 * @param yd the attempted new Y position of the agent
+		 * @return input state s, after modification
+		 */
+		protected State move(State s, int xd, int yd){
 
-				//make sure this direction doesn't actually stay in the same place and replicate another no-op
-				boolean isNew = true;
-				for(TransitionProbability tp : transitions){
-					if(tp.s.equals(ns)){
-						isNew = false;
-						tp.p += p;
-						break;
-					}
-				}
+			GridWorldState gws = (GridWorldState)s;
 
-				if(isNew){
-					TransitionProbability tp = new TransitionProbability(ns, p);
-					transitions.add(tp);
-				}
+			int ax = gws.agent.x;
+			int ay = gws.agent.y;
 
+			int nx = ax+xd;
+			int ny = ay+yd;
 
+			//hit wall, so do not change position
+			if(nx < 0 || nx >= map.length || ny < 0 || ny >= map[0].length || map[nx][ny] == 1 ||
+					(xd > 0 && (map[ax][ay] == 3 || map[ax][ay] == 4)) || (xd < 0 && (map[nx][ny] == 3 || map[nx][ny] == 4)) ||
+					(yd > 0 && (map[ax][ay] == 2 || map[ax][ay] == 4)) || (yd < 0 && (map[nx][ny] == 2 || map[nx][ny] == 4)) ){
+				nx = ax;
+				ny = ay;
 			}
 
+			GridAgent nagent = gws.touchAgent();
+			nagent.x = nx;
+			nagent.y = ny;
 
-			return transitions;
+			return s;
 		}
-		
+
+
+		protected int actionInd(String name){
+			if(name.equals(ACTION_NORTH)){
+				return 0;
+			}
+			else if(name.equals(ACTION_SOUTH)){
+				return 1;
+			}
+			else if(name.equals(ACTION_EAST)){
+				return 2;
+			}
+			else if(name.equals(ACTION_WEST)){
+				return 3;
+			}
+			throw new RuntimeException("Unknown action " + name);
+		}
+
 	}
-	
-	
+
 	
 	/**
 	 * Propositional function for determining if the agent is at the same position as a given location object
@@ -787,7 +834,7 @@ public class GridWorldDomain implements DomainGenerator {
 		gwdg.setMapToFourRooms();
 		//gwdg.setProbSucceedTransitionDynamics(0.75);
 
-		Domain d = gwdg.generateDomain();
+		SADomain d = gwdg.generateDomain();
 
 
 		GridWorldState s = new GridWorldState(new GridAgent(0, 0), new GridLocation(10, 10, "loc0"));
@@ -815,10 +862,10 @@ public class GridWorldDomain implements DomainGenerator {
 			VisualExplorer exp = new VisualExplorer(d, v, s);
 			
 			//use w-s-a-d-x
-			exp.addKeyAction("w", ACTION_NORTH);
-			exp.addKeyAction("s", ACTION_SOUTH);
-			exp.addKeyAction("a", ACTION_WEST);
-			exp.addKeyAction("d", ACTION_EAST);
+			exp.addKeyAction("w", ACTION_NORTH, "");
+			exp.addKeyAction("s", ACTION_SOUTH, "");
+			exp.addKeyAction("a", ACTION_WEST, "");
+			exp.addKeyAction("d", ACTION_EAST, "");
 			
 			exp.initGUI();
 		}

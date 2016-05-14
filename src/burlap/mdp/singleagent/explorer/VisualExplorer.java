@@ -1,7 +1,6 @@
 package burlap.mdp.singleagent.explorer;
 
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
@@ -65,7 +64,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	
 
 	protected Environment									env;
-	protected Domain										domain;
+	protected SADomain										domain;
 	protected Map <String, Action>							keyActionMap;
 	protected Map <String, String>							keyShellMap = new HashMap<String, String>();
 
@@ -173,6 +172,16 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		keyActionMap.put(key, action);
 	}
 
+
+	/**
+	 * Adds a key action mapping.
+	 * @param key the key that is pressed by the user
+	 * @param actionTypeName the name of the {@link burlap.mdp.singleagent.ActionType}
+	 * @param paramStringRep the string representation of the action parameters
+	 */
+	public void addKeyAction(String key, String actionTypeName, String paramStringRep){
+		keyActionMap.put(key, this.domain.getAction(actionTypeName).associatedAction(paramStringRep));
+	}
 
 	/**
 	 * Cause a shell command to be executed when key is pressed with the visualizer highlighted.
