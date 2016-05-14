@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.learning.tdmethods;
 
+import burlap.behavior.valuefunction.QValue;
+import burlap.mdp.core.Action;
+import burlap.mdp.statehashing.HashableState;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import burlap.behavior.valuefunction.QValue;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.singleagent.GroundedAction;
 
 
 /**
@@ -41,7 +41,7 @@ public class QLearningStateNode {
 	 * @param a the action this Q-value is fore
 	 * @param q the numeric Q-value
 	 */
-	public void addQValue(GroundedAction a, double q){
+	public void addQValue(Action a, double q){
 		QValue qv = new QValue(s.s, a, q);
 		qEntry.add(qv);
 	}

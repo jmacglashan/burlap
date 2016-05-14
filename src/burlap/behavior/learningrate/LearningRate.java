@@ -1,6 +1,6 @@
 package burlap.behavior.learningrate;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 
@@ -21,7 +21,7 @@ public interface LearningRate {
 	 * @param ga the action from which the learning rate should be returned
 	 * @return the current learning rate for the given state-action pair
 	 */
-	public double peekAtLearningRate(State s, AbstractGroundedAction ga);
+	public double peekAtLearningRate(State s, Action ga);
 	
 	
 	/**
@@ -31,7 +31,7 @@ public interface LearningRate {
 	 * @param ga the action from which the learning rate should be returned
 	 * @return the current learning rate for the given state-action pair
 	 */
-	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga);
+	public double pollLearningRate(int agentTime, State s, Action ga);
 	
 	
 	

@@ -1,8 +1,8 @@
 package burlap.shell.command.env;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.shell.BurlapShell;
@@ -66,17 +66,16 @@ public class ExecuteActionCommand implements ShellCommand {
 			return -1;
 		}
 
-		Action action = this.domain.getAction(args.get(0));
-		if(action == null){
+		ActionType actionType = this.domain.getAction(args.get(0));
+		if(actionType == null){
 			String actionName = this.actionNameMap.get(args.get(0));
 			if(actionName != null){
-				action = this.domain.getAction(actionName);
+				actionType = this.domain.getAction(actionName);
 			}
 		}
-		if(action != null){
-			GroundedAction ga = action.associatedGroundedAction();
-			ga.initParamsWithStringRep(this.actionArgs(args));
-			EnvironmentOutcome o = ga.executeIn(env);
+		if(actionType != null){
+			Action a = actionType.associatedAction(actionArgs(args));
+			EnvironmentOutcome o = env.executeAction(a);
 			if(oset.has("v")){
 				os.println("reward: " + o.r);
 				if(o.terminated){
@@ -94,12 +93,15 @@ public class ExecuteActionCommand implements ShellCommand {
 		return -1;
 	}
 
-	protected String[] actionArgs(List<String> commandArgs){
-		String [] args = new String[commandArgs.size()-1];
+	protected String actionArgs(List<String> commandArgs){
+		StringBuilder buf = new StringBuilder();
 		for(int i = 1; i < commandArgs.size(); i++){
-			args[i-1] = commandArgs.get(i);
+			if(i > 1){
+				buf.append(" ");
+			}
+			buf.append(commandArgs.get(i));
 		}
-		return args;
+		return buf.toString();
 	}
 
 

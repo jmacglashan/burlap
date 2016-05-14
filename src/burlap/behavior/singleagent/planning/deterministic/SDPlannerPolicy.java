@@ -1,16 +1,14 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.management.RuntimeErrorException;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+
+import javax.management.RuntimeErrorException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -50,14 +48,14 @@ public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		
 		if(this.dp == null){
 			throw new RuntimeException("The valueFunction used by this Policy is not defined; therefore, the policy is undefined.");
 		}
 		
 		if(this.dp.hasCachedPlanForState(s)){
-			GroundedAction ga = this.dp.querySelectedActionForState(s);
+			Action ga = this.dp.querySelectedActionForState(s);
 			//the surrounding if condition will probably be sufficient for null cases, but doing double check just to make sure.
 			if(ga == null){
 				throw new PolicyUndefinedException();
@@ -69,7 +67,7 @@ public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		GroundedAction selectedAction = (GroundedAction)this.getAction(s);
+		Action selectedAction = this.getAction(s);
 		if(selectedAction == null){
 			throw new PolicyUndefinedException();
 		}

@@ -4,7 +4,7 @@ import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
@@ -69,7 +69,7 @@ public class VanillaDiffVinit implements DifferentiableVInit {
 	}
 
 	@Override
-	public FunctionGradient getQGradient(State s, AbstractGroundedAction ga) {
+	public FunctionGradient getQGradient(State s, Action ga) {
 		return new FunctionGradient.SparseGradient();
 	}
 
@@ -79,7 +79,7 @@ public class VanillaDiffVinit implements DifferentiableVInit {
 	}
 
 	@Override
-	public double qValue(State s, AbstractGroundedAction a) {
+	public double qValue(State s, Action a) {
 		return this.vinit.qValue(s, a);
 	}
 

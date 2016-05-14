@@ -1,13 +1,16 @@
 package burlap.behavior.singleagent.interfaces.rlglue;
 
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleAction;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpec;
 import org.rlcommunity.rlglue.codec.types.Observation;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A class for generating a BURLAP {@link burlap.mdp.core.Domain} for an RLGlue {@link org.rlcommunity.rlglue.codec.taskspec.TaskSpec}.
@@ -48,7 +51,7 @@ public class RLGlueDomain implements DomainGenerator {
 		}
 
 		for(int i = 0; i < theTaskSpec.getDiscreteActionRange(0).getRangeSize(); i++){
-			new RLGlueActionSpecification(domain, i);
+			new RLGlueActionType(domain, i);
 		}
 
 		return domain;
@@ -67,9 +70,9 @@ public class RLGlueDomain implements DomainGenerator {
 
 
 	/**
-	 * A BURLAP {@link burlap.mdp.singleagent.Action} that corresponds to an RLGlue action that is defined by a single int value.
+	 * A BURLAP {@link ActionType} that corresponds to an RLGlue action that is defined by a single int value.
 	 */
-	public static class RLGlueActionSpecification extends SimpleAction{
+	public static class RLGlueActionType implements ActionType {
 
 		/**
 		 * The RLGlue action index
@@ -81,8 +84,7 @@ public class RLGlueDomain implements DomainGenerator {
 		 * @param domain the BURLAP domain to which the action will belong.
 		 * @param ind the RLGlue int identifier of the action
 		 */
-		public RLGlueActionSpecification(Domain domain, int ind) {
-			super(String.valueOf(ind), domain);
+		public RLGlueActionType(Domain domain, int ind) {
 			this.ind = ind;
 		}
 
@@ -94,11 +96,66 @@ public class RLGlueDomain implements DomainGenerator {
 			return ind;
 		}
 
-
+		@Override
+		public String typeName() {
+			return String.valueOf(this.ind);
+		}
 
 		@Override
-		protected State sampleHelper(State s, GroundedAction ga) {
-			throw new RuntimeException("RLGlue Actions cannot be applied to arbitrary states; they can only be performed in an Environment.");
+		public Action associatedAction(String strRep) {
+			return new RLGLueAction(ind);
 		}
+
+		@Override
+		public List<Action> allApplicableActions(State s) {
+			return Arrays.<Action>asList(new RLGLueAction(ind));
+		}
+
+
+		public static class RLGLueAction implements Action{
+
+			protected int ind;
+
+			public RLGLueAction(int ind) {
+				this.ind = ind;
+			}
+
+			@Override
+			public String actionName() {
+				return String.valueOf(ind);
+			}
+
+			@Override
+			public Action copy() {
+				return new RLGLueAction(ind);
+			}
+
+			@Override
+			public boolean applicableInState(State s) {
+				return true;
+			}
+
+			@Override
+			public boolean equals(Object o) {
+				if(this == o) return true;
+				if(o == null || getClass() != o.getClass()) return false;
+
+				RLGLueAction that = (RLGLueAction) o;
+
+				return ind == that.ind;
+
+			}
+
+			@Override
+			public int hashCode() {
+				return ind;
+			}
+
+			@Override
+			public String toString() {
+				return actionName();
+			}
+		}
+
 	}
 }

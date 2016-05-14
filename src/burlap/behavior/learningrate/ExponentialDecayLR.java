@@ -1,12 +1,12 @@
 package burlap.behavior.learningrate;
 
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.state.State;
 
 
 /**
@@ -161,7 +161,7 @@ public class ExponentialDecayLR implements LearningRate {
 	}
 	
 	@Override
-	public double peekAtLearningRate(State s, AbstractGroundedAction ga) {
+	public double peekAtLearningRate(State s, Action ga) {
 		
 		if(!useStateWise){
 			return this.universalLR;
@@ -176,7 +176,7 @@ public class ExponentialDecayLR implements LearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, Action ga) {
 		
 		
 		if(!useStateWise){
@@ -330,7 +330,7 @@ public class ExponentialDecayLR implements LearningRate {
 		 * @param ga the input action for which the learning rate is returned.
 		 * @return the mutable double entry for the learning rate for the action for the state with which this object is associated.
 		 */
-		public MutableDouble getActionLearningRateEntry(AbstractGroundedAction ga){
+		public MutableDouble getActionLearningRateEntry(Action ga){
 			MutableDouble entry = this.actionLearningRates.get(ga);
 			if(entry == null){
 				entry = new MutableDouble(initialLearningRate);

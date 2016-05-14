@@ -1,11 +1,13 @@
 package burlap.behavior.singleagent.learning.modellearning.models;
 
-import burlap.behavior.singleagent.learning.modellearning.Model;
-import burlap.mdp.core.*;
+import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -19,7 +21,7 @@ import java.util.*;
  * @author James MacGlashan; adapted from code provided by Takehiro Oyakawa and Chan Trau
  *
  */
-public class TabularModel extends Model {
+public class TabularModel implements KWIKModel {
 
 	/**
 	 * The source actual domain object for which actions will be modeled.
@@ -45,22 +47,13 @@ public class TabularModel extends Model {
 	 * The number of transitions necessary to be confident in a model's prediction.
 	 */
 	protected int								nConfident;
-	
-	/**
-	 * The modeled terminal function.
-	 */
-	protected TerminalFunction					modeledTF;
-	
-	/**
-	 * The modeled reward function.
-	 */
-	protected RewardFunction					modeledRF;
+
 	
 	/**
 	 * Initializes.
 	 * @param sourceDomain the source domain whose actions will be modeled.
 	 * @param hashingFactory the hashing factory to index states
-	 * @param nConfident the number of observed transitions to be confidnent in the model's prediction.
+	 * @param nConfident the number of observed transitions to be confident in the model's prediction.
 	 */
 	public TabularModel(Domain sourceDomain, HashableStateFactory hashingFactory, int nConfident){
 		this.sourceDomain = sourceDomain;
@@ -68,44 +61,12 @@ public class TabularModel extends Model {
 		this.stateNodes = new HashMap<HashableState, TabularModel.StateNode>();
 		this.terminalStates = new HashSet<HashableState>();
 		this.nConfident = nConfident;
-		
-		this.modeledTF = new TerminalFunction() {
-			
-			@Override
-			public boolean isTerminal(State s) {
-				return terminalStates.contains(TabularModel.this.hashingFactory.hashState(s));
-			}
-		};
-		
-		
-		this.modeledRF = new RewardFunction() {
-			
-			@Override
-			public double reward(State s, GroundedAction a, State sprime) {
-				StateActionNode san = TabularModel.this.getStateActionNode(TabularModel.this.hashingFactory.hashState(s), a);
-				if(san == null){
-					return 0;
-				}
-				if(san.nTries == 0){
-					return 0.;
-				}
-				return san.sumR / (double)san.nTries;
-			}
-		};
-	}
-	
-	@Override
-	public RewardFunction getModelRF() {
-		return this.modeledRF;
+
 	}
 
-	@Override
-	public TerminalFunction getModelTF() {
-		return this.modeledTF;
-	}
 
 	@Override
-	public boolean transitionIsModeled(State s, GroundedAction ga) {
+	public boolean transitionIsModeled(State s, Action ga) {
 		
 		StateActionNode san = this.getStateActionNode(this.hashingFactory.hashState(s), ga);
 		if(san == null){
@@ -118,93 +79,53 @@ public class TabularModel extends Model {
 		return true;
 	}
 
-	@Override
-	public boolean stateTransitionsAreModeled(State s) {
-
-		HashableState sh = this.hashingFactory.hashState(s);
-		StateNode sn = this.stateNodes.get(sh);
-		if(sn == null){
-			return false;
-		}
-
-		for(StateActionNode san : sn.actionNodes.values()){
-			if(san.nTries < this.nConfident){
-				return false;
-			}
-		}
-
-		return true;
-
-	}
 
 	@Override
-	public List<AbstractGroundedAction> getUnmodeledActionsForState(State s) {
+	public List<TransitionProb> transitions(State s, Action a) {
 
-		List<AbstractGroundedAction> unmodeled = new ArrayList<AbstractGroundedAction>();
-
-		HashableState sh = this.hashingFactory.hashState(s);
-		StateNode sn = this.stateNodes.get(sh);
-		if(sn == null){
-			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(
-					this.sourceDomain.getActions(), s);
-			for(GroundedAction ga : gas){
-				unmodeled.add(ga);
-			}
-		}
-		else{
-
-			for(StateActionNode san : sn.actionNodes.values()){
-				if(san.nTries < this.nConfident){
-					GroundedAction ta = san.ga.translateParameters(sn.sh.s, s);
-					unmodeled.add(ta);
-				}
-			}
-
-		}
-
-		return unmodeled;
-	}
-
-	@Override
-	public State sampleModelHelper(State s, GroundedAction ga) {
-		return this.sampleTransitionFromTransitionProbabilities(s, ga);
-	}
-
-	@Override
-	public List<TransitionProbability> getTransitionProbabilities(State s, GroundedAction ga) {
-		
-		List<TransitionProbability> transitions = new ArrayList<TransitionProbability>();
-		
-		StateActionNode san = this.getStateActionNode(this.hashingFactory.hashState(s), ga);
+		List<TransitionProb> transitions = new ArrayList<TransitionProb>();
+		StateActionNode san = this.getStateActionNode(this.hashingFactory.hashState(s), a);
 		if(san == null){
 			//assume transition to self if we haven't modeled this at all
-			TransitionProbability tp = new TransitionProbability(s, 1.);
+			TransitionProb tp = new TransitionProb(1., new EnvironmentOutcome(s, a, s, 0., false));
 			transitions.add(tp);
 		}
 		else{
+			double r = san.sumR / san.nTries;
 			for(OutcomeState os : san.outcomes.values()){
 				State sp = os.osh.s;
 				double p = (double)os.nTimes / (double)san.nTries;
-				TransitionProbability tp = new TransitionProbability(sp, p);
+				EnvironmentOutcome eo = new EnvironmentOutcome(s, a, sp, r, this.terminalStates.contains(sp));
+				TransitionProb tp = new TransitionProb(p, eo);
 				transitions.add(tp);
 			}
 		}
-		
+
 		return transitions;
 	}
 
 	@Override
-	public void updateModel(State s, GroundedAction ga, State sprime, double r, boolean sprimeIsTerminal) {
+	public EnvironmentOutcome sampleTransition(State s, Action a) {
+		return FullModel.Helper.sampleByEnumeration(this, s, a);
+	}
+
+	@Override
+	public boolean terminalState(State s) {
+		return this.terminalStates.contains(this.hashingFactory.hashState(s));
+	}
+
+	@Override
+	public void updateModel(EnvironmentOutcome eo) {
 		
-		HashableState sh = this.hashingFactory.hashState(s);
-		HashableState shp = this.hashingFactory.hashState(sprime);
+		HashableState sh = this.hashingFactory.hashState(eo.o);
+		HashableState shp = this.hashingFactory.hashState(eo.op);
 		
-		if(sprimeIsTerminal){
+		if(eo.terminated){
 			this.terminalStates.add(shp);
 		}
 		
-		StateActionNode san = this.getOrCreateActionNode(sh, ga);
-		san.update(r, shp);
+		StateActionNode san = this.getOrCreateActionNode(sh, eo.a);
+		san.update(eo.r, shp);
 
 	}
 	
@@ -212,16 +133,16 @@ public class TabularModel extends Model {
 	 * Returns the {@link TabularModel.StateActionNode} object associated with the given hashed state and action.
 	 * If there is not an associated {@link TabularModel.StateActionNode} object, then null is returned.
 	 * @param sh the hashed state
-	 * @param ga the grounded action
+	 * @param a the action
 	 * @return the associated {@link TabularModel.StateActionNode} or null if it does not exist.
 	 */
-	protected StateActionNode getStateActionNode(HashableState sh, GroundedAction ga){
+	protected StateActionNode getStateActionNode(HashableState sh, Action a){
 
 		StateNode sn = this.stateNodes.get(sh);
 		if(sn == null){
 			return null;
 		}
-		return sn.actionNode((GroundedAction)ga.translateParameters(sh.s, sn.sh.s));
+		return sn.actionNode(a);
 	}
 	
 	/**
@@ -231,7 +152,7 @@ public class TabularModel extends Model {
 	 * @param ga the grounded action
 	 * @return the associated {@link TabularModel.StateActionNode}
 	 */
-	protected StateActionNode getOrCreateActionNode(HashableState sh, GroundedAction ga){
+	protected StateActionNode getOrCreateActionNode(HashableState sh, Action ga){
 
 		StateNode sn = this.stateNodes.get(sh);
 		StateActionNode toReturn = null;
@@ -240,8 +161,8 @@ public class TabularModel extends Model {
 			this.stateNodes.put(sh, sn);
 			
 			//List <GroundedAction> allActions = sh.s.getAllGroundedActionsFor(this.sourceDomain.getActions());
-			List<GroundedAction> allActions = Action.getAllApplicableGroundedActionsFromActionList(this.sourceDomain.getActions(), sh.s);
-			for(GroundedAction tga : allActions){
+			List<Action> allActions = ActionUtils.allApplicableActionsForTypes(this.sourceDomain.getActionTypes(), sh.s);
+			for(Action tga : allActions){
 				StateActionNode san = sn.addActionNode(tga);
 				if(tga.equals(ga)){
 					toReturn = san;
@@ -250,7 +171,7 @@ public class TabularModel extends Model {
 			
 		}
 		else{
-			toReturn = sn.actionNode((GroundedAction)ga.translateParameters(sh.s, sn.sh.s));
+			toReturn = sn.actionNode(ga);
 		}
 		
 		if(toReturn == null){
@@ -283,7 +204,7 @@ public class TabularModel extends Model {
 		/**
 		 * Maps from actions to state-aciton nodes that store statistics about the acitons taken from this state
 		 */
-		Map <GroundedAction, StateActionNode> actionNodes;
+		Map <Action, StateActionNode> actionNodes;
 		
 		
 		/**
@@ -292,7 +213,7 @@ public class TabularModel extends Model {
 		 */
 		public StateNode(HashableState sh){
 			this.sh = sh;
-			this.actionNodes = new HashMap<GroundedAction, TabularModel.StateActionNode>();
+			this.actionNodes = new HashMap<Action, TabularModel.StateActionNode>();
 		}
 		
 		
@@ -301,7 +222,7 @@ public class TabularModel extends Model {
 		 * @param ga the grounded action specifying the action node to return
 		 * @return the {@link StateActionNode} object associated with the specified action
 		 */
-		public StateActionNode actionNode(GroundedAction ga){
+		public StateActionNode actionNode(Action ga){
 			return actionNodes.get(ga);
 		}
 		
@@ -310,7 +231,7 @@ public class TabularModel extends Model {
 		 * @param ga the grounded action for which a {@link StateActionNode} should be created.
 		 * @return the created {@link StateActionNode} object.
 		 */
-		public StateActionNode addActionNode(GroundedAction ga){
+		public StateActionNode addActionNode(Action ga){
 			StateActionNode san = new StateActionNode(ga);
 			this.actionNodes.put(ga, san);
 			return san;
@@ -330,7 +251,7 @@ public class TabularModel extends Model {
 		/**
 		 * The relevant action
 		 */
-		GroundedAction ga;
+		Action ga;
 		
 		/**
 		 * The number of times this action has been tried in the associated state
@@ -352,7 +273,7 @@ public class TabularModel extends Model {
 		 * Initializes.
 		 * @param ga the action for which this object will record transition statistics
 		 */
-		public StateActionNode(GroundedAction ga){
+		public StateActionNode(Action ga){
 			this.ga = ga;
 			this.sumR = 0.;
 			this.nTries = 0;
@@ -367,7 +288,7 @@ public class TabularModel extends Model {
 		 * @param r the reward received for one observaiton
 		 * @param sprime the outcome recieved for one observation
 		 */
-		public StateActionNode(GroundedAction ga, double r, HashableState sprime){
+		public StateActionNode(Action ga, double r, HashableState sprime){
 			this.ga = ga;
 			this.sumR = r;
 			this.nTries = 1;

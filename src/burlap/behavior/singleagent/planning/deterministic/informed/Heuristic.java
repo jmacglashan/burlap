@@ -20,6 +20,6 @@ public interface Heuristic {
 	 * @param s the state from which to estimate the future reward.
 	 * @return  the estimated amount of reward that will be received when following the optimal policy from s.
 	 */
-	public double h(State s);
+	double h(State s);
 	
 }

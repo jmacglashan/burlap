@@ -2,8 +2,8 @@ package burlap.shell.command.world;
 
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.World;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -50,19 +50,14 @@ public class JointActionCommand implements ShellCommand{
 			String agentName = args.get(0);
 
 			String aname = args.get(1);
-			String [] aParams = new String[args.size()-2];
-			for(int i = 2; i < args.size(); i++){
-				aParams[i] = args.get(i);
-			}
 
-			SGAgentAction action = shell.getDomain().getSGAgentAction(aname);
+			SGAgentActionType action = shell.getDomain().getSGAgentAction(aname);
 			if(action == null){
 				os.println("Cannot set action to " + aname + " because that action name is not known.");
 				return 0;
 			}
 
-			GroundedSGAgentAction ga = action.getAssociatedGroundedAction(agentName);
-			ga.initParamsWithStringRep(aParams);
+			SGAgentAction ga = action.associatedAction(agentName, this.actionArgs(args));
 
 			ja.addAction(ga);
 		}
@@ -111,11 +106,23 @@ public class JointActionCommand implements ShellCommand{
 	}
 
 	/**
-	 * Adds a {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} to the {@link burlap.mdp.stochasticgames.JointAction}
+	 * Adds a {@link SGAgentAction} to the {@link burlap.mdp.stochasticgames.JointAction}
 	 * being built and to be executed.
-	 * @param action the {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} to add to the {@link burlap.mdp.stochasticgames.JointAction}.
+	 * @param action the {@link SGAgentAction} to add to the {@link burlap.mdp.stochasticgames.JointAction}.
 	 */
-	public void addGroundedActionToJoint(GroundedSGAgentAction action){
+	public void addGroundedActionToJoint(SGAgentAction action){
 		this.ja.addAction(action);
+	}
+
+
+	protected String actionArgs(List<String> commandArgs){
+		StringBuilder buf = new StringBuilder();
+		for(int i = 2; i < commandArgs.size(); i++){
+			if(i > 2){
+				buf.append(" ");
+			}
+			buf.append(commandArgs.get(i));
+		}
+		return buf.toString();
 	}
 }

@@ -1,7 +1,7 @@
 package burlap.mdp.visualizer;
 
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 import java.awt.*;
@@ -128,9 +128,9 @@ public class Visualizer extends MultiLayerRenderer{
 	/**
 	 * Updates the state and action for the {@link burlap.mdp.visualizer.StateRenderLayer} and {@link burlap.mdp.visualizer.StateActionRenderLayer}; then repaints.
 	 * @param s the {@link State} to be painted.
-	 * @param a the {@link AbstractGroundedAction} to be painted.
+	 * @param a the {@link Action} to be painted.
 	 */
-	public void updateStateAction(State s, AbstractGroundedAction a){
+	public void updateStateAction(State s, Action a){
 		this.srender.updateState(s);
 		if(this.sarender != null) {
 			this.sarender.updateRenderedStateAction(s, a);

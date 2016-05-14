@@ -1,20 +1,19 @@
 package burlap.behavior.singleagent.learning.modellearning.modelplanners;
 
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * A model learning interface wrapper to VI that causes VI to be performed every time the model is updated or whenever a novel state is seen
@@ -47,15 +46,14 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 	/**
 	 * Initializes
 	 * @param domain model domain
-	 * @param rf model reward funciton
-	 * @param tf model termination function
 	 * @param gamma discount factor
 	 * @param hashingFactory the hashing factory
 	 * @param maxDelta max value function delta in VI
 	 * @param maxIterations max iterations of VI
 	 */
-	public VIModelLearningPlanner(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
-		super(domain, rf, tf, gamma, hashingFactory, maxDelta, maxIterations);
+	public VIModelLearningPlanner(SADomain domain, FullModel model, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
+		super(domain, gamma, hashingFactory, maxDelta, maxIterations);
+		this.setModel(model);
 		this.modelPolicy = new ReplanIfUnseenPolicy(new GreedyQPolicy(this));
 		this.toggleDebugPrinting(false);
 	}
@@ -120,7 +118,7 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 		}
 		
 		@Override
-		public AbstractGroundedAction getAction(State s) {
+		public Action getAction(State s) {
 			if(!VIModelLearningPlanner.this.hasComputedValueFor(s)){
 				VIModelLearningPlanner.this.observedStates.add(VIModelLearningPlanner.this.hashingFactory.hashState(s));
 				VIModelLearningPlanner.this.rerunVI();

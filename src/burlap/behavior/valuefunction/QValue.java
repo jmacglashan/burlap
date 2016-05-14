@@ -1,6 +1,6 @@
 package burlap.behavior.valuefunction;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 
@@ -19,7 +19,7 @@ public class QValue {
 	/**
 	 * The action with which this Q-value is associated
 	 */
-	public AbstractGroundedAction		a;
+	public Action a;
 	
 	/**
 	 * The numeric Q-value
@@ -34,7 +34,7 @@ public class QValue {
 	 * @param a the action
 	 * @param q the initial Q-value
 	 */
-	public QValue(State s, AbstractGroundedAction a, double q){
+	public QValue(State s, Action a, double q){
 		this.s = s;
 		this.a = a;
 		this.q = q;

@@ -7,13 +7,11 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -159,8 +157,6 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	/**
 	 * Initializes.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param lowerVInit the value function lower bound initialization
@@ -168,15 +164,14 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @param maxDiff the max permitted difference in value function margin to permit planning termination. This value is also used to prematurely stop a rollout if the next state's margin is under this value.
 	 * @param maxRollouts the maximum number of rollouts permitted before planning is forced to terminate. If set to -1 then there is no limit.
 	 */
-	public BoundedRTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory,
-			ValueFunctionInitialization lowerVInit, ValueFunctionInitialization upperVInit, double maxDiff, int maxRollouts){
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
+	public BoundedRTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory,
+					   ValueFunctionInitialization lowerVInit, ValueFunctionInitialization upperVInit, double maxDiff, int maxRollouts){
+		this.DPPInit(domain, gamma, hashingFactory);
 		this.lowerVInit = lowerVInit;
 		this.upperVInit = upperVInit;
 		this.maxDiff = maxDiff;
 		this.maxRollouts = maxRollouts;
-		
-		this.useCachedTransitions = false;
+
 	}
 	
 
@@ -215,7 +210,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	
 	/**
 	 * Use this method to set which value function--the lower bound or upper bound--to use after a planning rollout is complete. Setting this
-	 * value affects which values the {@link #value(State)}, {@link #getQs(State)}, and {@link #getQ(State, AbstractGroundedAction)} methods returns.
+	 * value affects which values the {@link #value(State)}, {@link #getQs(State)}, and {@link #getQ(State, Action)} methods returns.
 	 * Using the lower bound results in anytime performance.
 	 * @param useLowerBound if true, then the value function is set to use the lower bound after planning. If false, then the upper bound is used.
 	 */
@@ -301,7 +296,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		
 		HashableState csh = this.hashingFactory.hashState(s);
 		
-		while(!this.tf.isTerminal(csh.s) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
+		while(!model.terminalState(csh.s) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
 			
 			if(this.runRolloutsInReverse){
 				trajectory.offerFirst(csh);
@@ -318,7 +313,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 			numBellmanUpdates += 2;
 			this.numSteps++;
 			
-			StateSelectionAndExpectedGap select = this.getNextState(csh.s, (GroundedAction)mxU.a);
+			StateSelectionAndExpectedGap select = this.getNextState(csh.s, mxU.a);
 			csh = select.sh;
 			
 			if(select.expectedGap < this.maxDiff){
@@ -328,7 +323,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 			
 		}
 		
-		if(this.tf.isTerminal(csh.s)){
+		if(model.terminalState(csh.s)){
 			this.lowerBoundV.put(csh, 0.);
 			this.upperBoundV.put(csh, 0.);
 		}
@@ -375,10 +370,10 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @param a the action applied in the source state
 	 * @return a {@link StateSelectionAndExpectedGap} object holding the next state to be expanded and the expected margin size of this transition.
 	 */
-	protected StateSelectionAndExpectedGap getNextState(State s, GroundedAction a){
+	protected StateSelectionAndExpectedGap getNextState(State s, Action a){
 		
 		if(this.selectionMode == StateSelectionMode.MODELBASED){
-			HashableState nsh =  this.hashingFactory.hashState(a.sample(s));
+			HashableState nsh =  this.hashingFactory.hashState(model.sampleTransition(s, a).op);
 			double gap = this.getGap(nsh);
 			return new StateSelectionAndExpectedGap(nsh, gap);
 		}
@@ -399,14 +394,14 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @param a the action applied in the source state
 	 * @return a {@link StateSelectionAndExpectedGap} object holding the next state to be expanded and the expected margin size of this transition.
 	 */
-	protected StateSelectionAndExpectedGap getNextStateByMaxMargin(State s, GroundedAction a){
+	protected StateSelectionAndExpectedGap getNextStateByMaxMargin(State s, Action a){
 		
-		List<TransitionProbability> tps = a.transitions(s);
+		List<TransitionProb> tps = ((FullModel)model).transitions(s, a);
 		double sum = 0.;
 		double maxGap = Double.NEGATIVE_INFINITY;
 		List<HashableState> maxStates = new ArrayList<HashableState>(tps.size());
-		for(TransitionProbability tp : tps){
-			HashableState nsh = this.hashingFactory.hashState(tp.s);
+		for(TransitionProb tp : tps){
+			HashableState nsh = this.hashingFactory.hashState(tp.eo.op);
 			double gap = this.getGap(nsh);
 			sum += tp.p*gap;
 			if(gap == maxGap){
@@ -433,15 +428,15 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @param a the action applied in the source state
 	 * @return a {@link StateSelectionAndExpectedGap} object holding the next state to be expanded and the expected margin size of this transition.
 	 */
-	protected StateSelectionAndExpectedGap getNextStateBySampling(State s, GroundedAction a){
-		
-		List<TransitionProbability> tps = a.transitions(s);
+	protected StateSelectionAndExpectedGap getNextStateBySampling(State s, Action a){
+
+		List<TransitionProb> tps = ((FullModel)model).transitions(s, a);
 		double sum = 0.;
 		double [] weightedGap = new double[tps.size()];
 		HashableState[] hashedStates = new HashableState[tps.size()];
 		for(int i = 0; i < tps.size(); i++){
-			TransitionProbability tp = tps.get(i);
-			HashableState nsh = this.hashingFactory.hashState(tp.s);
+			TransitionProb tp = tps.get(i);
+			HashableState nsh = this.hashingFactory.hashState(tp.eo.op);
 			hashedStates[i] = nsh;
 			double gap = this.getGap(nsh);
 			weightedGap[i] = tp.p*gap;

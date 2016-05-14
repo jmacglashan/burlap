@@ -6,7 +6,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.util.Map;
 
@@ -53,7 +53,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	@Override
 	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		
-		GroundedSGAgentAction myAction = jointAction.action(worldAgentName);
+		SGAgentAction myAction = jointAction.action(worldAgentName);
 		QValue qe = this.getQ(curHState, myAction);
 
 
@@ -80,7 +80,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
+	public SGAgentAction getAction(State s) {
 		if(this.curHState == null){
 			this.curHState = new HistoryState(s, this.historySize);
 		}

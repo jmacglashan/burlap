@@ -2,8 +2,6 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
-import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.statehashing.HashableState;

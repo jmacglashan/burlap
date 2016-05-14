@@ -1,7 +1,8 @@
 package burlap.mdp.singleagent;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.singleagent.model.SampleModel;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,79 +19,54 @@ import java.util.Map;
  */
 public class SADomain implements Domain {
 
-	protected List <Action>							actions = new ArrayList<Action>();
-	protected Map <String, Action>					actionMap = new HashMap<String, Action>();
+	protected List <ActionType> actionTypes = new ArrayList<ActionType>();
+	protected Map <String, ActionType>					actionMap = new HashMap<String, ActionType>();
+	protected SampleModel model;
 
 
-	/**
-	 * Clears all action observers for all actions in this domain and then sets them to have the single action observer provided
-	 * @param observer the single action observer to set all actions to use.
-	 */
-	public void setActionObserverForAllAction(ActionObserver observer){
-		for(Action a : this.actions){
-			a.clearAllActionsObservers();
-			a.addActionObserver(observer);
+	
+	@Override
+	public void addAction(ActionType act){
+		if(!actionMap.containsKey(act.typeName())){
+			actionTypes.add(act);
+			actionMap.put(act.typeName(), act);
 		}
 	}
 	
-	/**
-	 * Adds the action observer to all actions associated with this domain. Actions added to this domain after this method is called
-	 * will have to have the observer set for them independently or by a subsequent call to this method.
-	 * @param observer the observer to set all actions to use.
-	 */
-	public void addActionObserverForAllAction(ActionObserver observer){
-		for(Action a : this.actions){
-			a.addActionObserver(observer);
-		}
-	}
 	
-	/**
-	 * Clears all action observers for all action in this domain.
-	 */
-	public void clearAllActionObserversForAllActions(){
-		for(Action a : this.actions){
-			a.clearAllActionsObservers();
-		}
+	public List <ActionType> getActionTypes(){
+		return new ArrayList <ActionType>(actionTypes);
 	}
 	
 	
 	@Override
-	public void addAction(Action act){
-		if(!actionMap.containsKey(act.getName())){
-			actions.add(act);
-			actionMap.put(act.getName(), act);
-		}
-	}
-	
-	
-	@Override
-	public List <Action> getActions(){
-		return new ArrayList <Action>(actions);
-	}
-	
-	
-	@Override
-	public Action getAction(String name){
+	public ActionType getAction(String name){
 		return actionMap.get(name);
 	}
 
 
 	@Override
-	public void addSGAgentAction(SGAgentAction sa) {
+	public void addSGAgentAction(SGAgentActionType sa) {
 		throw new UnsupportedOperationException("Single Agent domain cannot add actions designed for stochastic game formalisms");
 	}
 
 
 	@Override
-	public List<SGAgentAction> getAgentActions() {
+	public List<SGAgentActionType> getAgentActions() {
 		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stochastic game formalisms");
 	}
 
 
 	@Override
-	public SGAgentAction getSGAgentAction(String name) {
+	public SGAgentActionType getSGAgentAction(String name) {
 		throw new UnsupportedOperationException("Single Agent domain does not contain any action for stochastic game formalisms");
 	}
 
-	
+	public SampleModel getModel() {
+		return model;
+	}
+
+	public void setModel(SampleModel model) {
+		this.model = model;
+	}
 }

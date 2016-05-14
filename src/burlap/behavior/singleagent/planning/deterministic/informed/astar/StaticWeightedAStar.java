@@ -1,13 +1,12 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
-import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.Action;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 /**
  * Statically weighted A* [1] implementation. Epsilon is a parameter &gt; 1. The larger the value the more greedy the search. The returned solution
@@ -33,26 +32,23 @@ public class StaticWeightedAStar extends AStar {
 	
 	
 	/**
-	 * Initializes the valueFunction. Returned solution will be at most \epsilon times the optimal solution cost.
+	 * Initializes. Returned solution will be at most \epsilon times the optimal solution cost.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function that represents costs as negative reward
 	 * @param gc should evaluate to true for goal states; false otherwise
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 * @param epsilon parameter &gt; 1. The larger the value the more greedy.
 	 */
-	public StaticWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double epsilon) {
-		super(domain, rf, gc, hashingFactory, heuristic);
+	public StaticWeightedAStar(SADomain domain, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double epsilon) {
+		super(domain, gc, hashingFactory, heuristic);
 		this.epsilonP1 = 1. + epsilon;
 	}
 	
 	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
+	public double computeF(PrioritizedSearchNode parentNode, Action generatingAction, HashableState successorState, double r) {
 		double cumR = 0.;
-		double r;
 		if(parentNode != null){
 			double pCumR = cumulatedRewardMap.get(parentNode.s);
-			r = rf.reward(parentNode.s.s, generatingAction, successorState.s);
 			cumR = pCumR + r;
 		}
 		

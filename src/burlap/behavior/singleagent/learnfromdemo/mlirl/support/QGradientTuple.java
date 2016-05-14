@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.functionapproximation.FunctionGradient;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
@@ -18,7 +18,7 @@ public class QGradientTuple {
 	/**
 	 * The action
 	 */
-	public AbstractGroundedAction a;
+	public Action a;
 
 	/**
 	 * The gradient for the state and action.
@@ -32,7 +32,7 @@ public class QGradientTuple {
 	 * @param a the action
 	 * @param gradient the gradient for the state an action
 	 */
-	public QGradientTuple(State s, AbstractGroundedAction a, FunctionGradient gradient){
+	public QGradientTuple(State s, Action a, FunctionGradient gradient){
 		this.s = s;
 		this.a = a;
 		this.gradient = gradient;

@@ -1,16 +1,15 @@
 package burlap.behavior.policy;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.model.SampleModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,7 @@ import java.util.Random;
  * {@link #isDefinedFor(State)}.
  * <p>
  * The {@link #getAction(State)} should return the action (specified by an
- * {@link AbstractGroundedAction}; e.g., a {@link burlap.mdp.singleagent.GroundedAction} for
- * single agent domains) this policy defines for the
+ * {@link Action} if this policy is defined for the
  * input {@link State}. If this {@link Policy} is a stochastic policy,
  * then the {@link #getAction(State)} method should sample an action from its probability distribution
  * and return it.
@@ -36,7 +34,7 @@ import java.util.Random;
  * The {@link #getActionDistributionForState(State)} should return this {@link Policy}'s
  * action selection probability distribution for the input {@link State}. The probability distribution is
  * specified by returning a {@link java.util.List} of {@link Policy.ActionProb} instances.
- * An {@link Policy.ActionProb} is a pair consisting of an {@link AbstractGroundedAction}
+ * An {@link Policy.ActionProb} is a pair consisting of an {@link Action}
  * specifying the action and a double specifying the probability that this {@link Policy} would
  * select that action.
  * <p>
@@ -57,43 +55,24 @@ import java.util.Random;
  * return the result of {@link #getDeterministicPolicy(State)}, which will call {@link #getAction(State)}
  * and wrap the result in an {@link Policy.ActionProb} object with assigned probability of 1.0.
  * <p>
- * <b>Superclass method</b><p>
+ * <b>Superclass methods</b><p>
  * This class also has many superclass methods for interacting with policy. These include
- * {@link #getProbOfAction(State, AbstractGroundedAction)},
- * {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction)}
- * (and other variants of the method signature), and {@link #evaluateBehavior(burlap.mdp.singleagent.environment.Environment)} (and
- * other variants of the method signature).
+ * {@link #getProbOfAction(State, Action)} and
+ * {@link #evaluateBehavior(Environment)}
+ * (and other variants of evaluateBehavior, such as ones that use a model).
  * <p>
- * The {@link #getProbOfAction(State, AbstractGroundedAction)} method
- * takes as input a {@link State} and {@link AbstractGroundedAction} and returns
+ * The {@link #getProbOfAction(State, Action)} method
+ * takes as input a {@link State} and {@link Action} and returns
  * the probability of this {@link Policy} selecting that action. It uses the result of the
  * {@link #getActionDistributionForState(State)} method to determine the full distribution, finds
- * the matching {@link AbstractGroundedAction} in the returned list, and then returns its assigned probability.
+ * the matching {@link Action} in the returned list, and then returns its assigned probability.
  * It may be possible to return this value in a more efficient way than enumerating the full probability distribution,
  * in which case you may want to consider overriding the method.
  * <p>
- * The {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction)},
- * {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, int)}, and
- * {@link #evaluateBehavior(State, burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}
- * methods will all evaluate this policy by rolling it out from the input {@link State} or until
+ * The {@link #evaluateBehavior(Environment)} and its variants
+ * will all evaluate this policy by rolling it out from the input {@link State} or until
  * it reaches a terminal state or executes for the maximum number of steps (depending on which version of the method you use).
  * The resulting behavior will be saved in an {@link burlap.behavior.singleagent.EpisodeAnalysis} object that is returned.
- * Note that this method requires that the returned {@link AbstractGroundedAction} instances are
- * able to be executed using the action's defined transition dynamics. For single agent domains in which the actions
- * are {@link burlap.mdp.singleagent.GroundedAction} instances, this will work as long as the corresponding
- * {@link burlap.mdp.singleagent.Action#sample(State, burlap.mdp.singleagent.GroundedAction)} method is implemented. If this
- * policy defines the policy for an agent in a stochastic game, returning {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} instances
- * for the action, then the policy cannot be rolled out since the outcome state would depend on the action selection of
- * other agents.
- * <p>
- * The {@link #evaluateBehavior(burlap.mdp.singleagent.environment.Environment)} and
- * {@link #evaluateBehavior(burlap.mdp.singleagent.environment.Environment, int)}
- * methods will execute this policy in some input {@link burlap.mdp.singleagent.environment.Environment} until either
- * the {@link burlap.mdp.singleagent.environment.Environment} reaches a terminal state or the maximum number of
- * steps are taken (depending on which method signature is used). This method is useful if a policy was computed
- * with a planning algorithm using some model of the world and then needs to be executed in an environment which may
- * have slightly different transitions; for example, planning a policy for a robot using a model of the world and then
- * executing it on the actual robot by following the policy in an {@link burlap.mdp.singleagent.environment.Environment}.
  * <p>
  * All of the evaluateBehavior methods also know how to work with {@link burlap.behavior.singleagent.options.Option}s.
  * In particular, they also are able to record
@@ -101,9 +80,9 @@ import java.util.Random;
  * for better debugging. By default, when an option is selected in an evaluateBehavior method, each primitive step
  * will be recorded in the {@link burlap.behavior.singleagent.EpisodeAnalysis} object, rather than only recording that
  * the option was taken. Additionally, in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis}, each primitive
- * step by default will be annotated with the option the executed and which step in the option execution that it was.
- * If you would like to disable option decomposition and/or the option annotation, you can do so with the
- * {@link #evaluateMethodsShouldDecomposeOption(boolean)} and {@link #evaluateMethodsShouldAnnotateOptionDecomposition(boolean)}
+ * will be annotated with the option that executed it and which step in the option execution that it was.
+ * If you would like to disable option decomposition you can do so with the
+ * {@link #evaluateMethodsShouldDecomposeOption(boolean)}
  * methods.
  *
  *
@@ -113,7 +92,6 @@ import java.util.Random;
 public abstract class Policy {
 
 	protected boolean evaluateDecomposesOptions = true;
-	protected boolean annotateOptionDecomposition = true;
 	
 	/**
 	 * This method will return an action sampled by the policy for the given state. If the defined policy is
@@ -122,7 +100,7 @@ public abstract class Policy {
 	 * @param s the state for which an action should be returned
 	 * @return a sample action from the action distribution; null if the policy is undefined for s
 	 */
-	public abstract AbstractGroundedAction getAction(State s);
+	public abstract Action getAction(State s);
 	
 	/**
 	 * This method will return action probability distribution defined by the policy. The action distribution is represented
@@ -153,7 +131,7 @@ public abstract class Policy {
 	 * @param ga the action being queried
 	 * @return the probability of this policy taking action ga in state s
 	 */
-	public double getProbOfAction(State s, AbstractGroundedAction ga){
+	public double getProbOfAction(State s, Action ga){
 		List <ActionProb> probs = this.getActionDistributionForState(s);
 		if(probs == null || probs.isEmpty()){
 			throw new PolicyUndefinedException();
@@ -170,11 +148,11 @@ public abstract class Policy {
 
 	/**
 	 * Searches the input distribution for the occurrence of the input action and returns its probability.
-	 * @param ga the {@link AbstractGroundedAction} for which its probability in specified distribution should be returned.
+	 * @param ga the {@link Action} for which its probability in specified distribution should be returned.
 	 * @param distribution the probability distribution over actions.
 	 * @return the probability of selecting action ga according to the probability specified in distribution.
 	 */
-	public static double getProbOfActionGivenDistribution(AbstractGroundedAction ga, List<ActionProb> distribution){
+	public static double getProbOfActionGivenDistribution(Action ga, List<ActionProb> distribution){
 		if(distribution == null || distribution.isEmpty()){
 			throw new RuntimeException("Distribution is null or empty, cannot return probability for given action.");
 		}
@@ -195,7 +173,7 @@ public abstract class Policy {
 	 * @return a deterministic action distribution for the action returned by the getAction method.
 	 */
 	protected List <ActionProb> getDeterministicPolicy(State s){
-		AbstractGroundedAction ga = this.getAction(s);
+		Action ga = this.getAction(s);
 		if(ga == null){
 			throw new PolicyUndefinedException();
 		}
@@ -215,9 +193,9 @@ public abstract class Policy {
 	 * the {@link #getAction(State)} method can simply
 	 * call this method to return an action.
 	 * @param s the input state from which an action should be selected.
-	 * @return an {@link AbstractGroundedAction} to take
+	 * @return an {@link Action} to take
 	 */
-	protected AbstractGroundedAction sampleFromActionDistribution(State s){
+	protected Action sampleFromActionDistribution(State s){
 		Random rand = RandomFactory.getMapped(0);
 		double roll = rand.nextDouble();
 		List <ActionProb> probs = this.getActionDistributionForState(s);
@@ -246,93 +224,32 @@ public abstract class Policy {
 	public void evaluateMethodsShouldDecomposeOption(boolean toggle){
 		this.evaluateDecomposesOptions = toggle;
 	}
-	
-	/**
-	 * Sets whether options that are decomposed into primitives will have the option that produced them and listed.
-	 * The default value is true. If option decomposition is not enabled, changing this value will do nothing. When it
-	 * is enabled and this is set to true, primitive actions taken by an option in EpisodeAnalysis objects will be
-	 * recorded with a special action name that indicates which option was called to produce the primitive action
-	 * as well as which step of the option the primitive action is. When set to false, recorded names of primitives
-	 * will be only the primitive aciton's name it will be unclear which option was taken to generate it.
-	 * @param toggle whether to annotate the primitive actions of options with the calling option's name.
-	 */
-	public void evaluateMethodsShouldAnnotateOptionDecomposition(boolean toggle){
-		this.annotateOptionDecomposition = toggle;
-	}
+
 	
 	
 	/**
 	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
-	 * when the policy reaches a terminal state defined by tf.
+	 * when the policy reaches a terminal state
 	 * @param s the state from which to roll out the policy
-	 * @param rf the reward function used to track rewards accumulated during the episode
-	 * @param tf the terminal function defining when the policy should stop being followed.
 	 * @return an EpisodeAnalysis object that records the events from following the policy.
 	 */
-	public EpisodeAnalysis evaluateBehavior(State s, RewardFunction rf, TerminalFunction tf){
-		EpisodeAnalysis res = new EpisodeAnalysis();
-		res.addState(s); //add initial state
-		
-		State cur = s;
-		while(!tf.isTerminal(cur)){
-			cur = this.followAndRecordPolicy(res, cur, rf);
-		}
-		
-		return res;
+	public EpisodeAnalysis evaluateBehavior(State s, SampleModel model){
+		return this.evaluateBehavior(new SimulatedEnvironment(model, s));
 	}
 	
 	
 	
 	/**
 	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
-	 * when the policy reaches a terminal state defined by tf or when the number of steps surpasses maxSteps.
+	 * when the policy reaches a terminal state or when the number of steps surpasses maxSteps.
 	 * @param s the state from which to roll out the policy
-	 * @param rf the reward function used to track rewards accumulated during the episode
-	 * @param tf the terminal function defining when the policy should stop being followed.
 	 * @param maxSteps the maximum number of steps to take before terminating the policy rollout.
 	 * @return an EpisodeAnalysis object that records the events from following the policy.
 	 */
-	public EpisodeAnalysis evaluateBehavior(State s, RewardFunction rf, TerminalFunction tf, int maxSteps){
-		EpisodeAnalysis res = new EpisodeAnalysis();
-		res.addState(s); //add initial state
-		
-		State cur = s;
-		int nSteps = 0;
-		while(!tf.isTerminal(cur) && nSteps < maxSteps){
-			
-			cur = this.followAndRecordPolicy(res, cur, rf);
-			
-			nSteps = res.numTimeSteps();
-			
-		}
-		
-		return res;
+	public EpisodeAnalysis evaluateBehavior(State s, SampleModel model, int maxSteps){
+		return this.evaluateBehavior(new SimulatedEnvironment(model, s), maxSteps);
 	}
-	
-	/**
-	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
-	 * when the number of steps taken is &gt;= numSteps.
-	 * @param s the state from which to roll out the policy
-	 * @param rf the reward function used to track rewards accumulated during the episode
-	 * @param numSteps the number of steps to take before terminating the policy rollout
-	 * @return an EpisodeAnalysis object that records the events from following the policy.
-	 */
-	public EpisodeAnalysis evaluateBehavior(State s, RewardFunction rf, int numSteps){
-		EpisodeAnalysis res = new EpisodeAnalysis();
-		res.addState(s);
-		
-		State cur = s;
-		int nSteps = 0;
-		while(nSteps < numSteps){
-			
-			cur = this.followAndRecordPolicy(res, cur, rf);
-			
-			nSteps = res.numTimeSteps();
-			
-		}
-		
-		return res;
-	}
+
 
 
 	/**
@@ -389,121 +306,24 @@ public abstract class Policy {
 
 
 		//follow policy
-		AbstractGroundedAction aga = this.getAction(env.currentObservation());
-		if(aga == null){
+		Action a = this.getAction(env.currentObservation());
+		if(a == null){
 			throw new PolicyUndefinedException();
 		}
-		if(!(aga instanceof GroundedAction)){
-			throw new RuntimeException("cannot folow policy for non-single agent actions");
-		}
-		GroundedAction ga = (GroundedAction)aga;
 
-		if(ga.action.isPrimitive()|| !this.evaluateDecomposesOptions){
-			EnvironmentOutcome eo = ga.executeIn(env);
-			ea.recordTransitionTo(ga, eo.op, eo.r);
+
+		EnvironmentOutcome eo = env.executeAction(a);
+
+
+		if(a instanceof Option && evaluateDecomposesOptions){
+			ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);
 		}
 		else{
-			//then we need to decompose the option
-			State cur = env.currentObservation();
-			Option o = (Option)ga.action;
-			o.initiateInState(cur, ga);
-			int ns = 0;
-			do{
-				//do step of option
-				GroundedAction cga = o.oneStepActionSelection(cur, ga);
-				EnvironmentOutcome eo = cga.executeIn(env);
-				State next = eo.op;
-				double r = eo.r;
-
-				if(annotateOptionDecomposition){
-					//setup a null action to record the option and primitive action taken
-					GroundedAction annotatedPrimitiveGA = new GroundedAnnotatedAction(ga.toString() + "(" + ns + ")", cga);
-
-					//record it
-					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
-				}
-				else{
-					//otherwise just record the primitive that was taken
-					ea.recordTransitionTo(cga, next, r);
-				}
-
-				cur = env.currentObservation();
-				ns++;
-			}while(o.continueFromState(cur, ga));
+			ea.recordTransitionTo(a, eo.op, eo.r);
 		}
 
 	}
 
-
-	/**
-	 * Follows this policy for one time step from the provided {@link State} and
-	 * records the interaction in the provided {@link burlap.behavior.singleagent.EpisodeAnalysis} object. If the policy
-	 * selects an {@link burlap.behavior.singleagent.options.Option}, then how the option's interaction in the environment
-	 * is recorded depends on this object's {@link #evaluateDecomposesOptions} and {@link #annotateOptionDecomposition} flags.
-	 * If {@link #evaluateDecomposesOptions} is false, then the option is recorded as a single action. If it is true, then
-	 * the individual primitive actions selected by the environment are recorded. If {@link #annotateOptionDecomposition} is
-	 * also true, then each primitive action selected but the option is also given a unique name specifying the option
-	 * which controlled it and its step in the option's execution.
-	 * @param ea The {@link burlap.behavior.singleagent.EpisodeAnalysis} object to which the action selection will be recorded.
-	 * @param cur The {@link State} from which the policy will be followed
-	 * @param rf The {@link burlap.mdp.singleagent.RewardFunction} to keep track of reward
-	 * @return the next {@link State} that is a consequence of following this policy for one action selection.
-	 */
-	protected State followAndRecordPolicy(EpisodeAnalysis ea, State cur, RewardFunction rf){
-		
-		State next;
-		
-		//follow policy
-		AbstractGroundedAction aga = this.getAction(cur);
-		if(aga == null){
-			throw new PolicyUndefinedException();
-		}
-		if(!(aga instanceof GroundedAction)){
-			throw new RuntimeException("cannot folow policy for non-single agent actions");
-		}
-		GroundedAction ga = (GroundedAction)aga;
-		
-		if(ga.action.isPrimitive() || !this.evaluateDecomposesOptions){
-			next = ga.sample(cur);
-			double r = rf.reward(cur, ga, next);
-			
-			//record result
-			ea.recordTransitionTo(ga, next, r);
-		}
-		else{
-			//then we need to decompose the option
-			Option o = (Option)ga.action;
-			o.initiateInState(cur, ga);
-			int ns = 0;
-			do{
-				//do step of option
-				GroundedAction cga = o.oneStepActionSelection(cur, ga);
-				next = cga.sample(cur);
-				double r = rf.reward(cur, cga, next);
-				
-				if(annotateOptionDecomposition){
-					//setup a null action to record the option and primitive action taken
-					GroundedAction annotatedPrimitiveGA = new GroundedAnnotatedAction(ga.toString() + "(" + ns + ")", cga);
-					
-					//record it
-					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
-				}
-				else{
-					//otherwise just record the primitive that was taken
-					ea.recordTransitionTo(cga, next, r);
-				}
-				
-				cur = next;
-				ns++;
-				
-				
-			}while(o.continueFromState(cur, ga));
-			
-		}
-		
-		//return outcome state
-		return next;
-	}
 	
 	
 	
@@ -517,20 +337,22 @@ public abstract class Policy {
 		/**
 		 * The action to be considered.
 		 */
-		public AbstractGroundedAction ga;
+		public Action ga;
 		
 		/**
 		 * The probability of the action being selected.
 		 */
 		public double pSelection;
-		
-		
+
+		public ActionProb() {
+		}
+
 		/**
 		 * Initializes the action, probability tuple.
 		 * @param ga the action to be considered
 		 * @param p the probability of the action being selected.
 		 */
-		public ActionProb(AbstractGroundedAction ga, double p){
+		public ActionProb(Action ga, double p){
 			this.ga = ga;
 			this.pSelection = p;
 		}
@@ -542,110 +364,59 @@ public abstract class Policy {
 	}
 
 
-	/**
-	 * A class for annotating an action selection, specified with a {@link burlap.mdp.singleagent.GroundedAction}, with a string.
-	 * The resulting {@link #toString()} method will produce a string of the following form:<p>
-	 * "*annotation--action.toString()" where annotation is the user input annotation and action.toString()
-	 * is the result from the input {@link burlap.mdp.singleagent.GroundedAction} that is being annotated. The
-	 * leading * character indicates to {@link burlap.mdp.singleagent.GroundedAction} serializers (such as
-	 * the {@link burlap.behavior.singleagent.EpisodeAnalysis} serialization) that this {@link burlap.mdp.singleagent.GroundedAction}
-	 * is an {@link burlap.behavior.policy.Policy.GroundedAnnotatedAction}.
-	 * <p>
-	 * All other {@link burlap.mdp.singleagent.GroundedAction} methods are delegated to the inputted
-	 * {@link burlap.mdp.singleagent.GroundedAction}.
-	 */
-	public static class GroundedAnnotatedAction extends GroundedAction{
-
-		/**
-		 * The string annotation to return in the {@link #toString()} method.
-		 */
+	public static class AnnotatedAction implements Action{
+		public Action srcAction;
 		public String annotation;
 
-		/**
-		 * The {@link burlap.mdp.singleagent.GroundedAction} delegate to be annotated that handles all
-		 * methods except the {@link #toString()} method.
-		 */
-		public GroundedAction delegate;
 
+		public AnnotatedAction() {
+		}
 
-		/**
-		 * Initializes.
-		 * @param annotation the String annotation to be returned by the {@link #toString()} method.
-		 * @param delegate the {@link burlap.mdp.singleagent.GroundedAction} delegate to be annotated.
-		 */
-		public GroundedAnnotatedAction(String annotation, GroundedAction delegate) {
-			super(delegate.action);
+		public AnnotatedAction(Action srcAction, String annotation) {
+			this.srcAction = srcAction;
 			this.annotation = annotation;
-			this.delegate = delegate;
 		}
 
 		@Override
 		public String actionName() {
-			return delegate.actionName();
+			return srcAction.actionName();
 		}
 
 		@Override
-		public boolean isParameterized() {
-			return delegate.isParameterized();
-		}
-
-		@Override
-		public void initParamsWithStringRep(String[] params) {
-			delegate.initParamsWithStringRep(params);
-		}
-
-		@Override
-		public String[] getParametersAsString() {
-			return delegate.getParametersAsString();
-		}
-
-		@Override
-		public String toString() {
-			return "*" + this.annotation + "--" + this.delegate.toString();
+		public Action copy() {
+			return new AnnotatedAction(srcAction, annotation);
 		}
 
 		@Override
 		public boolean applicableInState(State s) {
-			return delegate.applicableInState(s);
+			return srcAction.applicableInState(s);
 		}
 
-		@Override
-		public GroundedAction copy() {
-			GroundedAction selCopy = (GroundedAction)this.delegate.copy();
-			return new GroundedAnnotatedAction(this.annotation, selCopy);
-		}
-
-		@Override
-		public EnvironmentOutcome executeIn(Environment env) {
-			return delegate.executeIn(env);
-		}
-
-		@Override
-		public State sample(State s) {
-			return delegate.sample(s);
-		}
-
-		@Override
-		public List<TransitionProbability> transitions(State s) {
-			return delegate.transitions(s);
-		}
-
-		@Override
-		public GroundedAction translateParameters(State source, State target) {
-			GroundedAction transSel = delegate.translateParameters(source, target);
-			return new GroundedAnnotatedAction(this.annotation, transSel);
-		}
 
 		@Override
 		public int hashCode() {
-			return delegate.hashCode();
+			return srcAction.hashCode();
 		}
 
 		@Override
-		public boolean equals(Object other) {
-			return delegate.equals(other);
+		public boolean equals(Object o) {
+			if(this == o) return true;
+			if(o == null || getClass() != o.getClass()) return false;
+
+			AnnotatedAction that = (AnnotatedAction) o;
+
+			if(srcAction != null ? !srcAction.equals(that.srcAction) : that.srcAction != null) return false;
+			return annotation != null ? annotation.equals(that.annotation) : that.annotation == null;
+
+		}
+
+		@Override
+		public String toString() {
+			return "*" + this.annotation + "--" + this.srcAction.toString();
 		}
 	}
+
+
 
 	
 	/**

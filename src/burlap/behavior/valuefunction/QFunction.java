@@ -1,11 +1,11 @@
 package burlap.behavior.valuefunction;
 
-import java.util.List;
-
 import burlap.behavior.policy.Policy;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.state.State;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+
+import java.util.List;
 
 /**
  * An interface for MDP solvers that can return/compute Q-values.
@@ -27,7 +27,7 @@ public interface QFunction extends ValueFunction{
 	 * @param a the input action
 	 * @return the {@link burlap.behavior.valuefunction.QValue} for the given state-action pair.
 	 */
-	public QValue getQ(State s, AbstractGroundedAction a);
+	public QValue getQ(State s, Action a);
 
 
 	/**

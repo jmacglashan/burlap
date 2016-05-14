@@ -1,23 +1,21 @@
 package burlap.behavior.singleagent.planning.stochastic.valueiteration;
 
-import java.util.HashMap;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.debugtools.DPrint;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
-import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
-import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.debugtools.DPrint;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.RewardFunction;
 
 
 
@@ -68,17 +66,14 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	/**
 	 * Initializers the valueFunction.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param maxDelta when the maximum change in the value function is smaller than this value, VI will terminate.
 	 * @param maxIterations when the number of VI iterations exceeds this value, VI will terminate.
 	 */
-	public ValueIteration(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
+	public ValueIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
 		
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
-		
+		this.DPPInit(domain, gamma, hashingFactory);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -91,7 +86,6 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	 */
 	public void recomputeReachableStates(){
 		this.foundReachableStates = false;
-		this.transitionDynamics = new HashMap<HashableState, List<ActionTransitions>>();
 	}
 	
 	
@@ -113,7 +107,6 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	 */
 	@Override
 	public GreedyQPolicy planFromState(State initialState){
-		this.initializeOptionsForExpectationComputations();
 		if(this.performReachabilityFrom(initialState) || !this.hasRunVI){
 			this.runVI();
 		}
@@ -140,7 +133,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use the planFromState or performReachabilityFrom method at least once before calling runVI.");
 		}
 		
-		Set <HashableState> states = mapToStateIndex.keySet();
+		Set <HashableState> states = valueFunction.keySet();
 		
 		int i;
 		for(i = 0; i < this.maxIterations; i++){
@@ -179,7 +172,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 		
 		HashableState sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
-		if(mapToStateIndex.containsKey(sih) && this.foundReachableStates){
+		if(valueFunction.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
 		}
 		
@@ -196,35 +189,34 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 			HashableState sh = openList.poll();
 			
 			//skip this if it's already been expanded
-			if(mapToStateIndex.containsKey(sh)){
+			if(valueFunction.containsKey(sh)){
 				continue;
 			}
-			
-			mapToStateIndex.put(sh, sh);
 			
 			//do not need to expand from terminal states if set to prune
-			if(this.tf.isTerminal(sh.s) && stopReachabilityFromTerminalStates){
+			if(this.model.terminalState(sh.s) && stopReachabilityFromTerminalStates){
 				continue;
 			}
+
+			this.valueFunction.put(sh, this.valueInitializer.value(sh.s));
 			
-			
-			//get the transition dynamics for each action and queue up new states
-			List <ActionTransitions> transitions = this.getActionsTransitions(sh);
-			for(ActionTransitions at : transitions){
-				for(HashedTransitionProbability tp : at.transitions){
-					HashableState tsh = tp.sh;
-					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
+
+			List<Action> actions = this.getAllGroundedActions(sh.s);
+			for(Action a : actions){
+				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, a);
+				for(TransitionProb tp : tps){
+					HashableState tsh = this.stateHash(tp.eo.op);
+					if(!openedSet.contains(tsh) && !valueFunction.containsKey(tsh)){
 						openedSet.add(tsh);
 						openList.offer(tsh);
 					}
 				}
-				
 			}
-			
+
 			
 		}
 		
-		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + mapToStateIndex.size());
+		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + valueFunction.size());
 		
 		this.foundReachableStates = true;
 		this.hasRunVI = false;

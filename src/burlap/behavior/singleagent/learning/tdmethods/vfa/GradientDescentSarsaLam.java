@@ -1,5 +1,7 @@
 package burlap.behavior.singleagent.learning.tdmethods.vfa;
 
+import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
+import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.EpsilonGreedy;
@@ -8,20 +10,14 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
-import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -35,7 +31,7 @@ import java.util.*;
  * {@link DifferentiableStateActionValue} implementation provided. <p>
  * The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.mdp.singleagent.environment.SimulatedEnvironment}.
- * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}
+ * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(int)}
  * method before calling {@link #planFromState(State)}. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the VFA weight threshold.
  * <p>
@@ -114,16 +110,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 */
 	protected double												minEligibityForUpdate = 0.01;
 	
-	
-	/**
-	 * the saved previous learning episodes
-	 */
-	protected LinkedList<EpisodeAnalysis>							episodeHistory;
-	
-	/**
-	 * The number of the most recent learning episodes to store.
-	 */
-	protected int													numEpisodesToStore;
+
 	
 	
 	/**
@@ -135,12 +122,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * Whether options should be decomposed into actions in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
 	 */
 	protected boolean												shouldDecomposeOptions = true;
-	
-	
-	/**
-	 * Whether decomposed options should have their primitive actions annotated with the options name in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
-	 */
-	protected boolean												shouldAnnotateOptions = true;
+
 	
 	
 	/**
@@ -160,7 +142,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param learningRate the learning rate
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, double gamma, DifferentiableStateActionValue vfa,
+	public GradientDescentSarsaLam(SADomain domain, double gamma, DifferentiableStateActionValue vfa,
 			double learningRate, double lambda) {
 		
 		this.GDSLInit(domain, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE, lambda);
@@ -179,7 +161,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, double gamma, DifferentiableStateActionValue vfa,
+	public GradientDescentSarsaLam(SADomain domain, double gamma, DifferentiableStateActionValue vfa,
 			double learningRate, int maxEpisodeSize, double lambda) {
 		
 		this.GDSLInit(domain, gamma, vfa, learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize, lambda);
@@ -199,7 +181,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public GradientDescentSarsaLam(Domain domain, double gamma, DifferentiableStateActionValue vfa,
+	public GradientDescentSarsaLam(SADomain domain, double gamma, DifferentiableStateActionValue vfa,
 			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 	
 		this.GDSLInit(domain, gamma, vfa, learningRate, learningPolicy, maxEpisodeSize, lambda);
@@ -218,18 +200,16 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in an episode before terminating
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	protected void GDSLInit(Domain domain, double gamma, DifferentiableStateActionValue vfa,
-			double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda){
+	protected void GDSLInit(SADomain domain, double gamma, DifferentiableStateActionValue vfa,
+							double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda){
 		
-		this.solverInit(domain, null, null, gamma, null);
+		this.solverInit(domain, gamma, null);
 		this.vfa = vfa;
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
 		this.maxEpisodeSize = maxEpisodeSize;
 		this.lambda = lambda;
-		
-		numEpisodesToStore = 1;
-		episodeHistory = new LinkedList<EpisodeAnalysis>();
+
 		
 		numEpisodesForPlanning = 1;
 		maxWeightChangeForPlanningTermination = 0.;
@@ -243,13 +223,9 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	 * the {@link #planFromState(State)} method is called. If the
 	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
-	 * @param rf the reward function to use for planning
-	 * @param tf the terminal function to use for planning
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.
 	 */
-	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numEpisodesForPlanning){
-		this.rf = rf;
-		this.tf = tf;
+	public void initializeForPlanning(int numEpisodesForPlanning){
 		this.numEpisodesForPlanning = numEpisodesForPlanning;
 	}
 	
@@ -335,30 +311,8 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	public void toggleShouldDecomposeOption(boolean toggle){
 		
 		this.shouldDecomposeOptions = toggle;
-		for(Action a : actions){
-			if(a instanceof Option){
-				((Option)a).toggleShouldRecordResults(toggle);
-			}
-		}
 	}
-	
-	/**
-	 * Sets whether options that are decomposed into primitives will have the option that produced them and listed.
-	 * The default value is true. If option decomposition is not enabled, changing this value will do nothing. When it
-	 * is enabled and this is set to true, primitive actions taken by an option in EpisodeAnalysis objects will be
-	 * recorded with a special action name that indicates which option was called to produce the primitive action
-	 * as well as which step of the option the primitive action is. When set to false, recorded names of primitives
-	 * will be only the primitive aciton's name it will be unclear which option was taken to generate it.
-	 * @param toggle whether to annotate the primitive actions of options with the calling option's name.
-	 */
-	public void toggleShouldAnnotateOptionDecomposition(boolean toggle){
-		shouldAnnotateOptions = toggle;
-		for(Action a : actions){
-			if(a instanceof Option){
-				((Option)a).toggleShouldAnnotateResults(toggle);
-			}
-		}
-	}
+
 
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env) {
@@ -377,19 +331,24 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		eStepCounter = 0;
 		Map <Integer, EligibilityTraceVector> traces = new HashMap<Integer, EligibilityTraceVector>();
 
-		GroundedAction action = (GroundedAction)this.learningPolicy.getAction(curState);
+		Action action = this.learningPolicy.getAction(curState);
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
 			//get Q-value and gradient
 			double curQ = this.vfa.evaluate(curState, action);
 			FunctionGradient gradient = this.vfa.gradient(curState, action);
 
-			//execute our action choice
-			EnvironmentOutcome eo = action.executeIn(env);
+			EnvironmentOutcome eo;
+			if(!(action instanceof Option)){
+				eo = env.executeAction(action);
+			}
+			else{
+				eo = ((Option)action).control(env, this.gamma);
+			}
 			State nextState = eo.op;
 
 			//determine next Q-value for outcome state
-			GroundedAction nextAction = (GroundedAction)this.learningPolicy.getAction(nextState);
+			Action nextAction = this.learningPolicy.getAction(nextState);
 			double nextQV = 0.;
 			if(!eo.terminated){
 				nextQV = this.vfa.evaluate(nextState, nextAction);
@@ -398,13 +357,14 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			//manage option specifics
 			double r = eo.r;
 			double discount = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).discount : this.gamma;
-			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps : 1;
+			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps() : 1;
 			eStepCounter += stepInc;
-			if(action.action.isPrimitive() || !this.shouldAnnotateOptions){
+
+			if(!(action instanceof Option) || !this.shouldDecomposeOptions){
 				ea.recordTransitionTo(action, nextState, r);
 			}
 			else{
-				ea.appendAndMergeEpisodeAnalysis(((Option)action.action).getLastExecutionResults());
+				ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);
 			}
 
 			//compute function delta
@@ -414,8 +374,8 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			//manage replacing traces by zeroing out features for actions
 			//also zero out selected action, since it will be put back in later code
 			if(this.useReplacingTraces){
-				List<GroundedAction> allActions = this.getAllGroundedActions(curState);
-				for(GroundedAction oa : allActions){
+				List<Action> allActions = this.getAllGroundedActions(curState);
+				for(Action oa : allActions){
 
 					//get non-zero parameters and zero them
 					this.vfa.evaluate(curState, oa);
@@ -490,38 +450,17 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 		}
 
-		if(episodeHistory.size() >= numEpisodesToStore){
-			episodeHistory.poll();
-			episodeHistory.offer(ea);
-		}
 
 		return ea;
 	}
 
 
-	public EpisodeAnalysis getLastLearningEpisode() {
-		return episodeHistory.getLast();
-	}
-
-	public void setNumEpisodesToStore(int numEps) {
-		if(numEps > 0){
-			numEpisodesToStore = numEps;
-		}
-		else{
-			numEpisodesToStore = 1;
-		}
-	}
-
-	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
-		return episodeHistory;
-	}
-
 	@Override
 	public List<QValue> getQs(State s) {
-		List<GroundedAction> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.getAllGroundedActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
 
-		for(GroundedAction ga : gas){
+		for(Action ga : gas){
 			qs.add(new QValue(s, ga, this.vfa.evaluate(s, ga)));
 		}
 		
@@ -529,7 +468,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 		return new QValue(s, a, this.vfa.evaluate(s, a));
 	}
 
@@ -550,11 +489,11 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	@Override
 	public GreedyQPolicy planFromState(State initialState) {
 
-		if(this.rf == null || this.tf == null){
-			throw new RuntimeException("QLearning (and its subclasses) cannot execute planFromState because the reward function and terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
+		if(this.model == null){
+			throw new RuntimeException("Planning requires a model, but none is provided.");
 		}
 
-		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, initialState);
+		SimulatedEnvironment env = new SimulatedEnvironment(domain, initialState);
 
 		int eCount = 0;
 		do{
@@ -571,7 +510,6 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		this.vfa.resetParameters();
 		this.eStepCounter = 0;
 		this.maxWeightChangeInLastEpisode = Double.POSITIVE_INFINITY;
-		this.episodeHistory.clear();
 	}
 	
 	

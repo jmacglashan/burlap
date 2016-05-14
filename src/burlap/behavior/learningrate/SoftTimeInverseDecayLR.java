@@ -1,12 +1,12 @@
 package burlap.behavior.learningrate;
 
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.state.State;
 
 
 /**
@@ -157,7 +157,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	
 	
 	@Override
-	public double peekAtLearningRate(State s, AbstractGroundedAction ga) {
+	public double peekAtLearningRate(State s, Action ga) {
 		if(!useStateWise){
 			return this.learningRate(this.universalTime);
 		}
@@ -171,7 +171,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 	}
 
 	@Override
-	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, Action ga) {
 		if(!useStateWise){
 			double oldVal = this.learningRate(this.universalTime);
 			if(agentTime > this.lastPollTime){
@@ -321,7 +321,7 @@ public class SoftTimeInverseDecayLR implements LearningRate {
 		 * @param ga the input action for which the learning rate is returned.
 		 * @return the mutable int entry for the time index for the action for the state with which this object is associated.
 		 */
-		public MutableInt getActionTimeIndexEntry(AbstractGroundedAction ga){
+		public MutableInt getActionTimeIndexEntry(Action ga){
 			MutableInt entry = this.actionLearningRates.get(ga);
 			if(entry == null){
 				entry = new MutableInt(1);

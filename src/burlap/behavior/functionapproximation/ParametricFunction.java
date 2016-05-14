@@ -1,6 +1,6 @@
 package burlap.behavior.functionapproximation;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
@@ -8,7 +8,7 @@ import burlap.mdp.core.state.State;
  * for value function approximation implementations. This highest-level of the interface does not define the input
  * domain, which is left to subclasses of this interface. For example, the {@link ParametricStateFunction} operates
  * on {@link State} inputs and the {@link ParametricFunction.ParametricStateActionFunction}
- * operates on {@link State}-{@link AbstractGroundedAction} inputs.
+ * operates on {@link State}-{@link Action} inputs.
  *
  *
  * @author James MacGlashan.
@@ -79,12 +79,12 @@ public interface ParametricFunction {
 
 		/**
 		 * Sets the input of this function to the given {@link State} and
-		 * {@link AbstractGroundedAction} and returns the value of it.
+		 * {@link Action} and returns the value of it.
 		 * @param s the input {@link State}
 		 * @param a the input action
-		 * @return the value of this function evaluated on the {@link State} and {@link AbstractGroundedAction}
+		 * @return the value of this function evaluated on the {@link State} and {@link Action}
 		 */
-		double evaluate(State s, AbstractGroundedAction a);
+		double evaluate(State s, Action a);
 
 	}
 

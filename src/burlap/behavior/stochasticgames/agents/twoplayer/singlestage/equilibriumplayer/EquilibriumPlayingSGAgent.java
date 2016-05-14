@@ -8,11 +8,11 @@ import burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriump
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.JointActionModel;
 import burlap.mdp.stochasticgames.JointReward;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 
 /**
@@ -57,13 +57,13 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
+	public SGAgentAction getAction(State s) {
 
-		List<GroundedSGAgentAction> myActions = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, this.worldAgentName, this.agentType.actions);
+		List<SGAgentAction> myActions = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, this.worldAgentName, this.agentType.actions);
 		BimatrixTuple bimatrix = this.constructBimatrix(s, myActions);
 		solver.solve(bimatrix.rowPayoffs, bimatrix.colPayoffs);
 		double [] strategy = solver.getLastComputedRowStrategy();
-		GroundedSGAgentAction selection = myActions.get(this.sampleStrategy(strategy));
+		SGAgentAction selection = myActions.get(this.sampleStrategy(strategy));
 		
 		return selection;
 	}
@@ -85,10 +85,10 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	 * action set is determined by retreiving the corresponding agent object from the world. Similarly for the joint action model.
 	 * If this agent has an internal reward function, they use that; otherwise the world reward function is used.
 	 * @param s the state from which the joint rewards are based
-	 * @param myActions the set of {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction}s the agent can taken in s.
+	 * @param myActions the set of {@link SGAgentAction}s the agent can taken in s.
 	 * @return a {@link BimatrixTuple} for the joint reward function.
 	 */
-	protected BimatrixTuple constructBimatrix(State s, List<GroundedSGAgentAction> myActions){
+	protected BimatrixTuple constructBimatrix(State s, List<SGAgentAction> myActions){
 		
 		JointReward jr = this.world.getRewardModel();
 		if(this.internalRewardFunction != null){
@@ -99,13 +99,13 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 		
 		
 		SGAgent opponent = this.getOpponent();
-		List<GroundedSGAgentAction> opponentActions = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, opponent.getAgentName(), opponent.getAgentType().actions);
+		List<SGAgentAction> opponentActions = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, opponent.getAgentName(), opponent.getAgentType().actions);
 		
 		BimatrixTuple bimatrix = new BimatrixTuple(myActions.size(), opponentActions.size());
 		for(int i = 0; i < bimatrix.nRows(); i++){
-			GroundedSGAgentAction ma = myActions.get(i);
+			SGAgentAction ma = myActions.get(i);
 			for(int j = 0; j < bimatrix.nCols(); j++){
-				GroundedSGAgentAction oa = opponentActions.get(j);
+				SGAgentAction oa = opponentActions.get(j);
 				JointAction ja = new JointAction();
 				ja.addAction(ma);
 				ja.addAction(oa);

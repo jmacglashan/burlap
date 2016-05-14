@@ -12,9 +12,8 @@ import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
@@ -232,11 +231,11 @@ public class FrostbiteDomain implements DomainGenerator{
 				.addStateClass(CLASS_PLATFORM, FrostbitePlatform.class);
 
 		//add actions
-		new MovementAction(ACTION_SOUTH, domain, this.transitionDynamics[0]);
-		new MovementAction(ACTION_NORTH, domain, this.transitionDynamics[1]);
-		new MovementAction(ACTION_EAST, domain, this.transitionDynamics[2]);
-		new MovementAction(ACTION_WEST, domain, this.transitionDynamics[3]);
-		new ActionIdle(ACTION_IDLE, domain);
+		new MovementActionType(ACTION_SOUTH, domain, this.transitionDynamics[0]);
+		new MovementActionType(ACTION_NORTH, domain, this.transitionDynamics[1]);
+		new MovementActionType(ACTION_EAST, domain, this.transitionDynamics[2]);
+		new MovementActionType(ACTION_WEST, domain, this.transitionDynamics[3]);
+		new ActionTypeIdle(ACTION_IDLE, domain);
 
 
 		//add pfs
@@ -460,7 +459,7 @@ public class FrostbiteDomain implements DomainGenerator{
 	/**
 	 * An action class for moving the agent.
 	 */
-	public class MovementAction extends SimpleAction implements FullActionModel{
+	public class MovementActionType extends SimpleActionType implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go
@@ -480,7 +479,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * @param domain     the domain of the action
 		 * @param directions the probability for each direction (index 0,1,2,3 corresponds to north,south,east,west, respectively).
 		 */
-		public MovementAction(String name, Domain domain, double[] directions) {
+		public MovementActionType(String name, Domain domain, double[] directions) {
 			super(name, domain);
 			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);
@@ -542,7 +541,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		}
 	}
 
-	public class ActionIdle extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public class ActionTypeIdle extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		/**
 		 * Initializes the idle action.
@@ -550,7 +549,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * @param name   the name of the action
 		 * @param domain the domain of the action.
 		 */
-		public ActionIdle(String name, Domain domain) {
+		public ActionTypeIdle(String name, Domain domain) {
 			super(name, domain);
 		}
 

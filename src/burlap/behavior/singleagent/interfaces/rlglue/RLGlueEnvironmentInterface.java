@@ -327,19 +327,19 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 	}
 
 	@Override
-	public EnvironmentOutcome executeAction(GroundedAction ga) {
+	public EnvironmentOutcome executeAction(burlap.mdp.core.Action ga) {
 
 		if(this.curState == null){
 			this.blockUntilStateReceived();
 		}
 
-		if(!(ga.action instanceof RLGlueDomain.RLGlueActionSpecification)){
+		if(!(ga.actionType instanceof RLGlueDomain.RLGlueActionType)){
 			throw new RuntimeException("RLGlueEnvironment cannot execute actions that are not instances of RLGlueDomain.RLGlueSpecification.");
 		}
 
 		State prevState = this.curState;
 
-		int actionId = ((RLGlueDomain.RLGlueActionSpecification)ga.action).getInd();
+		int actionId = ((RLGlueDomain.RLGlueActionType)ga.actionType).getInd();
 		synchronized (nextAction) {
 			this.nextStateReference.val = null;
 			this.nextAction.val = actionId;

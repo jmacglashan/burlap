@@ -1,8 +1,8 @@
 package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 import java.util.*;
 
@@ -18,9 +18,9 @@ public class SGDomain implements Domain{
 
 
 	/**
-	 * A map from action names to their corresponding {@link SGAgentAction}
+	 * A map from action names to their corresponding {@link SGAgentActionType}
 	 */
-	protected Map <String, SGAgentAction>				singleActionMap = new HashMap<String, SGAgentAction>();
+	protected Map <String, SGAgentActionType>				singleActionMap = new HashMap<String, SGAgentActionType>();
 
 
 	/**
@@ -46,39 +46,38 @@ public class SGDomain implements Domain{
 	}
 
 	@Override
-	public void addSGAgentAction(SGAgentAction sa){
-		singleActionMap.put(sa.actionName, sa);
+	public void addSGAgentAction(SGAgentActionType sa){
+		singleActionMap.put(sa.typeName(), sa);
 	}
 
 	
 	
 	@Override
-	public List <SGAgentAction> getAgentActions(){
-		return new ArrayList<SGAgentAction>(this.singleActionMap.values());
+	public List <SGAgentActionType> getAgentActions(){
+		return new ArrayList<SGAgentActionType>(this.singleActionMap.values());
 	}
 
 
 	@Override
-	public SGAgentAction getSGAgentAction(String name) {
+	public SGAgentActionType getSGAgentAction(String name) {
 		return singleActionMap.get(name);
 	}
 
 	@Override
-	public void addAction(Action act) {
+	public void addAction(ActionType act) {
 		throw new UnsupportedOperationException("Stochastic Games domain cannot add actions designed for single agent formalisms");
 	}
 
 
 
-	@Override
-	public List<Action> getActions() {
+	public List<ActionType> getActionTypes() {
 		throw new UnsupportedOperationException("Stochastic Games domain does not contain any action for single agent formalisms");
 	}
 
 
 
 	@Override
-	public Action getAction(String name) {
+	public ActionType getAction(String name) {
 		throw new UnsupportedOperationException("Stochastic Games domain does not contain any action for single agent formalisms");
 	}
 

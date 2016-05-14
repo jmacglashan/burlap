@@ -4,10 +4,10 @@ import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSamp
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.auxiliary.common.NullTermination;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
@@ -36,7 +36,7 @@ import java.util.List;
  * If it's SOURCESTATE, then it returns rf.reward(s, null, null). If it is STATEACTION or ONESTEP,
  * then the {@link burlap.mdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(burlap.mdp.singleagent.RewardFunction, burlap.behavior.singleagent.learnfromdemo.RewardValueProjection.RewardProjectionType, burlap.mdp.core.Domain)}
  * constructor so that the actions can be enumerated (and in the case of ONESTEP, the transitions enumerated) and the max reward taken.
- * Similarly, the {@link #getQ(State, AbstractGroundedAction)} and
+ * Similarly, the {@link #getQ(State, Action)} and
  * {@link #getQs(State)} methods may need the {@link Domain} provided to properly answer the query.
  *
  *
@@ -99,7 +99,7 @@ public class RewardValueProjection implements QFunction{
 	public List<QValue> getQs(State s) {
 
 		if(this.domain != null){
-			List<GroundedAction> actions = Action.getAllApplicableGroundedActionsFromActionList(this.domain.getActions(), s);
+			List<GroundedAction> actions = ActionType.getAllApplicableGroundedActionsFromActionList(this.domain.getActionTypes(), s);
 			List<QValue> qs = new ArrayList<QValue>(actions.size());
 			for(GroundedAction ga : actions){
 				qs.add(this.getQ(s, ga));
@@ -123,7 +123,7 @@ public class RewardValueProjection implements QFunction{
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 
 		switch(this.projectionType){
 			case DESTINATIONSTATE: return new QValue(s, a, this.rf.reward(null, (GroundedAction)a, s));

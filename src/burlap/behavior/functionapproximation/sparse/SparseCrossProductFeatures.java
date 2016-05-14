@@ -1,6 +1,6 @@
 package burlap.behavior.functionapproximation.sparse;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.ArrayList;
@@ -18,21 +18,21 @@ import java.util.Map;
 public class SparseCrossProductFeatures implements SparseStateActionFeatures{
 
 	protected SparseStateFeatures sFeatures;
-	protected Map<AbstractGroundedAction, FeaturesMap> actionFeatures = new HashMap<AbstractGroundedAction, FeaturesMap>();
+	protected Map<Action, FeaturesMap> actionFeatures = new HashMap<Action, FeaturesMap>();
 	protected int nextFeatureId = 0;
 
 	public SparseCrossProductFeatures(SparseStateFeatures sFeatures) {
 		this.sFeatures = sFeatures;
 	}
 
-	protected SparseCrossProductFeatures(SparseStateFeatures sFeatures, Map<AbstractGroundedAction, FeaturesMap> actionFeatures, int nextFeatureId) {
+	protected SparseCrossProductFeatures(SparseStateFeatures sFeatures, Map<Action, FeaturesMap> actionFeatures, int nextFeatureId) {
 		this.sFeatures = sFeatures;
 		this.actionFeatures = actionFeatures;
 		this.nextFeatureId = nextFeatureId;
 	}
 
 	@Override
-	public List<StateFeature> features(State s, AbstractGroundedAction a) {
+	public List<StateFeature> features(State s, Action a) {
 		List<StateFeature> sfs = sFeatures.features(s);
 		List<StateFeature> safs = new ArrayList<StateFeature>(sfs.size());
 		for(StateFeature sf : sfs){
@@ -44,8 +44,8 @@ public class SparseCrossProductFeatures implements SparseStateActionFeatures{
 
 	@Override
 	public SparseCrossProductFeatures copy() {
-		Map<AbstractGroundedAction, FeaturesMap> nfeatures = new HashMap<AbstractGroundedAction, FeaturesMap>(actionFeatures.size());
-		for(Map.Entry<AbstractGroundedAction, FeaturesMap> e : actionFeatures.entrySet()){
+		Map<Action, FeaturesMap> nfeatures = new HashMap<Action, FeaturesMap>(actionFeatures.size());
+		for(Map.Entry<Action, FeaturesMap> e : actionFeatures.entrySet()){
 			nfeatures.put(e.getKey(), e.getValue().copy());
 		}
 		return new SparseCrossProductFeatures(sFeatures.copy(), nfeatures, nextFeatureId);
@@ -56,7 +56,7 @@ public class SparseCrossProductFeatures implements SparseStateActionFeatures{
 		return this.sFeatures.numFeatures()*nextFeatureId;
 	}
 
-	protected int actionFeature(AbstractGroundedAction a, int from){
+	protected int actionFeature(Action a, int from){
 		FeaturesMap fmap = this.actionFeatures.get(a);
 		if(fmap == null){
 			fmap = new FeaturesMap();

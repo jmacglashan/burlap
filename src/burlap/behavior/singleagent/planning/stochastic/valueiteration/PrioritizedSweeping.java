@@ -1,23 +1,16 @@
 package burlap.behavior.singleagent.planning.stochastic.valueiteration;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
-import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 
 /**
@@ -28,7 +21,7 @@ import burlap.mdp.singleagent.RewardFunction;
  * but if large gains can be achieved by the ordeing of the states, then this cost may be worth it.
  * 
  * 
- * 1. Li, Lihong, Michael L. Littman, and L. Littman. Prioritized sweeping converges to the optimal value function. Tech. Rep. DCS-TR-631, 2008.
+ * 1. Li, Lihong, Michael L. Littman. Prioritized sweeping converges to the optimal value function. Tech. Rep. DCS-TR-631, 2008.
  * @author James MacGlashan
  *
  */
@@ -48,17 +41,14 @@ public class PrioritizedSweeping extends ValueIteration{
 	/**
 	 * Initializes
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param maxDelta when the maximum change in the value function is smaller than this value, VI will terminate.
 	 * @param maxBackups the maximum number of Bellman backups. If set to -1, then there is no hard limit.
 	 */
-	public PrioritizedSweeping(Domain domain, RewardFunction rf,
-			TerminalFunction tf, double gamma, HashableStateFactory hashingFactory,
-			double maxDelta, int maxBackups) {
-		super(domain, rf, tf, gamma, hashingFactory, maxDelta, 0);
+	public PrioritizedSweeping(SADomain domain, double gamma, HashableStateFactory hashingFactory,
+							   double maxDelta, int maxBackups) {
+		super(domain, gamma, hashingFactory, maxDelta, 0);
 		this.priorityNodes = new HashIndexedHeap<PrioritizedSweeping.BPTRNode>(new BPTRNodeComparator());
 		this.maxBackups = maxBackups;
 	}
@@ -109,7 +99,7 @@ public class PrioritizedSweeping extends ValueIteration{
 		
 		HashableState sih = this.stateHash(si);
 		//if this is not a new state and we are not required to perform a new reachability analysis, then this method does not need to do anything.
-		if(mapToStateIndex.containsKey(sih) && this.foundReachableStates){
+		if(valueFunction.containsKey(sih) && this.foundReachableStates){
 			return false; //no need for additional reachability testing
 		}
 		
@@ -128,37 +118,36 @@ public class PrioritizedSweeping extends ValueIteration{
 			
 			
 			//skip this if it's already been expanded
-			if(mapToStateIndex.containsKey(node.sh)){
+			if(valueFunction.containsKey(node.sh)){
 				continue;
 			}
-			
-			mapToStateIndex.put(node.sh, node.sh);
+
 			
 			//do not need to expand from terminal states if set to prune
-			if(this.tf.isTerminal(node.sh.s) && stopReachabilityFromTerminalStates){
+			if(model.terminalState(node.sh.s) && stopReachabilityFromTerminalStates){
 				continue;
 			}
-			
-			
-			//get the transition dynamics for each action and queue up new states
-			List <ActionTransitions> transitions = this.getActionsTransitions(node.sh);
-			for(ActionTransitions at : transitions){
-				for(HashedTransitionProbability tp : at.transitions){
-					HashableState tsh = tp.sh;
+
+			this.valueFunction.put(node.sh, this.valueInitializer.value(node.sh.s));
+
+
+			List<Action> actions = this.getAllGroundedActions(node.sh.s);
+			for(Action a : actions){
+				List<TransitionProb> tps = ((FullModel)model).transitions(node.sh.s, a);
+				for(TransitionProb tp : tps){
+					HashableState tsh = this.stateHash(tp.eo.op);
 					BPTRNode tnode = this.getNodeFor(tsh);
-					tnode.addBackTransition(node);
-					if(!openedSet.contains(tsh) && !transitionDynamics.containsKey(tsh)){
+					if(!openedSet.contains(tsh) && !valueFunction.containsKey(tsh)){
 						openedSet.add(tnode);
 						openList.offer(tnode);
 					}
 				}
-				
 			}
 			
 			
 		}
 		
-		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + mapToStateIndex.size());
+		DPrint.cl(this.debugCode, "Finished reachability analysis; # states: " + valueFunction.size());
 		
 		this.foundReachableStates = true;
 		this.hasRunVI = false;
@@ -278,14 +267,14 @@ public class PrioritizedSweeping extends ValueIteration{
 		 */
 		public BPTR(BPTRNode backNode, HashableState forwardState){
 			this.backNode = backNode;
-			List<GroundedAction> actions = PrioritizedSweeping.this.getAllGroundedActions(backNode.sh.s);
+			List<Action> actions = PrioritizedSweeping.this.getAllGroundedActions(backNode.sh.s);
 			double maxProb = 0.;
 			//find action with maximum transition probability
-			for(GroundedAction ga : actions){
+			for(Action ga : actions){
 				//search for match
-				List<TransitionProbability> tps = ga.transitions(backNode.sh.s);
-				for(TransitionProbability tp : tps){
-					HashableState tpsh = PrioritizedSweeping.this.hashingFactory.hashState(tp.s);
+				List<TransitionProb> tps = ((FullModel)PrioritizedSweeping.this.model).transitions(backNode.sh.s, ga);
+				for(TransitionProb tp : tps){
+					HashableState tpsh = PrioritizedSweeping.this.hashingFactory.hashState(tp.eo.op);
 					if(tpsh.equals(forwardState)){
 						maxProb = Math.max(maxProb, tp.p);
 						break;

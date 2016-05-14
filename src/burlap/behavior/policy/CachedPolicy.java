@@ -2,7 +2,7 @@ package burlap.behavior.policy;
 
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.HashMap;
@@ -58,7 +58,7 @@ public class CachedPolicy extends Policy{
 	}
 
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		return this.sampleFromActionDistribution(s);
 	}
 

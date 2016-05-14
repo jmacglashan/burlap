@@ -1,13 +1,13 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.mdp.core.state.State;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.stochasticgames.JointAction;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
 
 
 
@@ -66,20 +66,6 @@ public interface QSourceForSingleAgent {
 			JAQValue q = jaQS.get(ja);
 			if(q != null){
 				return q;
-			}
-			
-			
-			//we didn't find a joint action match that is sorted, but
-			//first make sure it's not an object identifier difference between states that is causing a failure of matching
-			if(ja.isParameterized()){
-				//is there a matching joint action after we translate?
-				for(JAQValue sq : jaQS.values()){
-					JointAction translated = (JointAction)ja.translateParameters(s, sq.s);
-					if(translated.equals(sq.ja)){
-						//there is a stored Q value, so return it
-						return sq;
-					}
-				}
 			}
 			
 			//if we got here then we need to create the q-value

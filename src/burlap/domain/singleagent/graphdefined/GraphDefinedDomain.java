@@ -6,10 +6,9 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.shell.EnvironmentShell;
 
 import java.util.*;
@@ -344,7 +343,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> ctd = this.copyTransitionDynamics();
 
 		for(int i = 0; i < this.maxActions; i++){
-			new GraphAction(domain, i, ctd);
+			new GraphActionType(domain, i, ctd);
 		}
 		
 		
@@ -416,7 +415,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class GraphAction extends SimpleAction implements FullActionModel{
+	public static class GraphActionType extends SimpleActionType implements FullActionModel{
 
 		/**
 		 * Random object for sampling the stochastic graph transitions
@@ -441,7 +440,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		 * @param aId the action identifier number
 		 * @param transitionDynamics the graph transition dynamics
 		 */
-		public GraphAction(Domain domain, int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics){
+		public GraphActionType(Domain domain, int aId, Map<Integer, Map<Integer, Set<NodeTransitionProbability>>> transitionDynamics){
 			super(BASE_ACTION_NAME +aId, domain);
 			this.aId = aId;
 			rand = RandomFactory.getMapped(0);

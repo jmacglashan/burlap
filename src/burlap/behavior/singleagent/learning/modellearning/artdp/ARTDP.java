@@ -1,29 +1,29 @@
 package burlap.behavior.singleagent.learning.modellearning.artdp;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
+import burlap.behavior.singleagent.learning.modellearning.LearnedModel;
+import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.modellearning.Model;
-import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
-import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.policy.SolverDerivedPolicy;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.policy.BoltzmannQPolicy;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
+
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
+
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -43,7 +43,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	/**
 	 * The model of the world that is being learned.
 	 */
-	protected Model								model;
+	protected LearnedModel model;
 	
 	/**
 	 * The valueFunction used on the modeled world to update the value function
@@ -82,16 +82,16 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, double vInit){
+	public ARTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, double vInit){
 		
-		this.solverInit(domain, null, null, gamma, hashingFactory);
+		this.solverInit(domain, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new DynamicProgramming();
-		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
+		this.modelPlanner.DPPInit(domain, gamma, hashingFactory);
+		this.modelPlanner.setModel(this.model);
 		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
@@ -106,16 +106,16 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit){
+	public ARTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit){
 		
-		this.solverInit(domain, null, null, gamma, hashingFactory);
+		this.solverInit(domain, gamma, hashingFactory);
 		
 		this.model = new TabularModel(domain, hashingFactory, 1);
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new DynamicProgramming();
-		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
+		this.modelPlanner.DPPInit(domain, gamma, hashingFactory);
+		this.modelPlanner.setModel(this.model);
 		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
@@ -131,16 +131,15 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param model the model algorithm to use
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(Domain domain, double gamma, HashableStateFactory hashingFactory, Model model, ValueFunctionInitialization vInit){
+	public ARTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, LearnedModel model, ValueFunctionInitialization vInit){
 		
-		this.solverInit(domain, null, null, gamma, hashingFactory);
+		this.solverInit(domain, gamma, hashingFactory);
 		
 		this.model = model;
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
 		
 		//initializing the value function planning mechanisms to use our model and not the real world
 		this.modelPlanner = new DynamicProgramming();
-		this.modelPlanner.DPPInit(mdg.generateDomain(), this.model.getModelRF(), this.model.getModelTF(), gamma, hashingFactory);
+		this.modelPlanner.DPPInit(domain, gamma, hashingFactory);
 		this.modelPlanner.toggleUseCachedTransitionDynamics(false);
 		this.policy = new BoltzmannQPolicy(this, 0.1);
 		
@@ -175,8 +174,8 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		State curState = initialState;
 		int steps = 0;
 		while(!env.isInTerminalState() && (steps < maxSteps || maxSteps == -1)){
-			GroundedAction ga = (GroundedAction)policy.getAction(curState);
-			EnvironmentOutcome eo = ga.executeIn(env);
+			Action ga = policy.getAction(curState);
+			EnvironmentOutcome eo = env.executeAction(ga);
 
 
 			ea.recordTransitionTo(ga, eo.op, eo.r);
@@ -216,39 +215,33 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	@Override
 	public List<QValue> getQs(State s) {
 		List<QValue> qs = this.modelPlanner.getQs(s);
-		for(QValue q : qs){
-			
-			//if Q for unknown action, use value initialization of curent state
-			if(!this.model.transitionIsModeled(s, (GroundedAction)q.a)){
-				q.q = this.modelPlanner.getValueFunctionInitialization().qValue(s, q.a);
+
+		if(this.model instanceof KWIKModel){
+			for(QValue q : qs){
+				//if Q for unknown action, use value initialization of current state
+				if(!((KWIKModel)this.model).transitionIsModeled(s, q.a)){
+					q.q = this.modelPlanner.getValueFunctionInitialization().qValue(s, q.a);
+				}
 			}
-			
-			//update action to real world action
-			Action realWorldAction = this.domain.getAction(q.a.actionName());
-			GroundedAction nga = (GroundedAction)q.a.copy();
-			nga.action = realWorldAction;
-			q.a = nga;
-			
 		}
+
+
 		return qs;
 	}
 
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 		
 		QValue q = this.modelPlanner.getQ(s, a);
-		
-		//if Q for unknown action, use value initialization of curent state
-		if(!this.model.transitionIsModeled(s, (GroundedAction)q.a)){
-			q.q = this.modelPlanner.getValueFunctionInitialization().qValue(s, q.a);
+
+		if(this.model instanceof KWIKModel){
+			//if Q for unknown action, use value initialization of curent state
+			if(!((KWIKModel)this.model).transitionIsModeled(s, q.a)){
+				q.q = this.modelPlanner.getValueFunctionInitialization().qValue(s, q.a);
+			}
 		}
-		
-		//update action to real world action
-		Action realWorldAction = this.domain.getAction(q.a.actionName());
-		GroundedAction nga = (GroundedAction)q.a.copy();
-		nga.action = realWorldAction;
-		q.a = nga;
+
 		return q;
 	}
 

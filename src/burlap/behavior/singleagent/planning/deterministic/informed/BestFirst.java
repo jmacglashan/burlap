@@ -1,17 +1,18 @@
 package burlap.behavior.singleagent.planning.deterministic.informed;
 
+import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
+import burlap.datastructures.HashIndexedHeap;
+import burlap.debugtools.DPrint;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableState;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.mdp.statehashing.HashableState;
-import burlap.datastructures.HashIndexedHeap;
-import burlap.debugtools.DPrint;
-import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
 
 
 /**
@@ -38,9 +39,10 @@ public abstract class BestFirst extends DeterministicPlanner {
 	 * @param parentNode the parent search node (and its priority) that from which the next state was generated.
 	 * @param generatingAction the action that was used to generate the next state.
 	 * @param successorState the next state that was generated
+	 * @param r the reward received for the transition
 	 * @return the f-score for the next state.
 	 */
-	public abstract double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState);
+	public abstract double computeF(PrioritizedSearchNode parentNode, Action generatingAction, HashableState successorState, double r);
 	
 	
 	/**
@@ -112,7 +114,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 		HashIndexedHeap<PrioritizedSearchNode> openQueue = new HashIndexedHeap<PrioritizedSearchNode>(new PrioritizedSearchNode.PSNComparator());
 		Map<PrioritizedSearchNode, PrioritizedSearchNode> closedSet = new HashMap<PrioritizedSearchNode,PrioritizedSearchNode>();
 		
-		PrioritizedSearchNode ipsn = new PrioritizedSearchNode(sih, this.computeF(null, null, sih));
+		PrioritizedSearchNode ipsn = new PrioritizedSearchNode(sih, this.computeF(null, null, sih, 0.));
 		this.insertIntoOpen(openQueue, ipsn);
 		
 		int nexpanded = 0;
@@ -135,19 +137,20 @@ public abstract class BestFirst extends DeterministicPlanner {
 				break;
 			}
 			
-			if(this.tf.isTerminal(s)){
+			if(this.model.terminalState(s)){
 				continue; //do not expand nodes from a terminal state
 			}
 		
 			//generate successors
-			for(Action a : actions){
+			for(ActionType a : actionTypes){
 				//List<GroundedAction> gas = s.getAllGroundedActionsFor(a);
-				List<GroundedAction> gas = a.allApplicableGroundedActions(s);
-				for(GroundedAction ga : gas){
-					State ns = ga.sample(s);
+				List<Action> gas = a.allApplicableActions(s);
+				for(Action ga : gas){
+					EnvironmentOutcome eo = this.model.sampleTransition(s, ga);
+					State ns = eo.op;
 					HashableState nsh = this.stateHash(ns);
 					
-					double F = this.computeF(node, ga, nsh);
+					double F = this.computeF(node, ga, nsh, eo.r);
 					PrioritizedSearchNode npsn = new PrioritizedSearchNode(nsh, ga, node, F);
 					
 					//check closed

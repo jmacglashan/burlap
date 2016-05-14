@@ -12,7 +12,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.domain.singleagent.pomdp.tiger.TigerDomain;
 import burlap.domain.singleagent.pomdp.tiger.TigerState;
 import burlap.mdp.auxiliary.common.NullTermination;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.RewardFunction;
@@ -100,7 +100,7 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 		QValue bq =  this.mdpPlanner.getQ(s, a);
 		return new QValue(s, ((BeliefMDPGenerator.GroundedBeliefAction)bq.a).pomdpAction, bq.q);
 	}

@@ -1,15 +1,13 @@
 package burlap.behavior.policy;
 
-import java.util.List;
+import burlap.behavior.singleagent.MDPSolverInterface;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
 
 import javax.management.RuntimeErrorException;
-
-import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import java.util.List;
 
 
 /**
@@ -45,7 +43,7 @@ public class GreedyDeterministicQPolicy extends Policy implements SolverDerivedP
 	
 
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		
 		List<QValue> qValues = this.qplanner.getQs(s);
 		double maxQV = Double.NEGATIVE_INFINITY;
@@ -57,7 +55,7 @@ public class GreedyDeterministicQPolicy extends Policy implements SolverDerivedP
 			}
 		}
 		
-		return ((GroundedAction)maxQ.a).translateParameters(maxQ.s, s);
+		return maxQ.a;
 	}
 
 	@Override

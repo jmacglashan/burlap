@@ -5,7 +5,7 @@ import java.util.List;
 
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 
 /**
@@ -42,10 +42,10 @@ public class UCTStateNode {
 	 * Initializes the UCT state node.
 	 * @param s the state that this node wraps
 	 * @param d the depth of the node
-	 * @param actions the possible OO-MDP actions that can be taken
+	 * @param actionTypes the possible OO-MDP actions that can be taken
 	 * @param constructor a {@link UCTActionNode} factory that can be used to create ActionNodes for each of the actions.
 	 */
-	public UCTStateNode(HashableState s, int d, List <Action> actions, UCTActionConstructor constructor){
+	public UCTStateNode(HashableState s, int d, List <ActionType> actionTypes, UCTActionConstructor constructor){
 		
 		state = s;
 		depth = d;
@@ -54,9 +54,9 @@ public class UCTStateNode {
 		
 		actionNodes = new ArrayList<UCTActionNode>();
 		
-		for(Action a : actions){
+		for(ActionType a : actionTypes){
 			//List <GroundedAction> gas = s.s.getAllGroundedActionsFor(a);
-			List<GroundedAction> gas = a.allApplicableGroundedActions(s.s);
+			List<GroundedAction> gas = a.allApplicableActions(s.s);
 			for(GroundedAction ga : gas){
 				UCTActionNode an = constructor.generate(ga);
 				actionNodes.add(an);
@@ -107,12 +107,12 @@ public class UCTStateNode {
 		 * Generates an instance of a {@link UCTStateNode}
 		 * @param s the state that this node wraps
 		 * @param d the depth of the node
-		 * @param actions the possible OO-MDP actions that can be taken
+		 * @param actionTypes the possible OO-MDP actions that can be taken
 		 * @param constructor a {@link UCTActionNode} factory that can be used to create ActionNodes for each of the actions.
 		 * @return a {@link UCTStateNode} instance.
 		 */
-		public UCTStateNode generate(HashableState s, int d, List <Action> actions, UCTActionConstructor constructor){
-			return new UCTStateNode(s, d, actions, constructor);
+		public UCTStateNode generate(HashableState s, int d, List <ActionType> actionTypes, UCTActionConstructor constructor){
+			return new UCTStateNode(s, d, actionTypes, constructor);
 		}
 		
 		

@@ -1,6 +1,6 @@
 package burlap.mdp.visualizer;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
 
@@ -8,8 +8,8 @@ import java.awt.*;
 
 /**
  * A class for rendering state-action events. This class will maintain the current {@link State}
- * and {@link AbstractGroundedAction} to render. Subclasses need to implement the
- * {@link #renderStateAction(java.awt.Graphics2D, State, AbstractGroundedAction, float, float)}
+ * and {@link Action} to render. Subclasses need to implement the
+ * {@link #renderStateAction(java.awt.Graphics2D, State, Action, float, float)}
  * method.
  * @author James MacGlashan.
  */
@@ -21,9 +21,9 @@ public abstract class StateActionRenderLayer implements RenderLayer {
 	protected State renderState = null;
 
 	/**
-	 * The current {@link AbstractGroundedAction} to render
+	 * The current {@link Action} to render
 	 */
-	protected AbstractGroundedAction renderAction = null;
+	protected Action renderAction = null;
 
 
 	/**
@@ -36,29 +36,29 @@ public abstract class StateActionRenderLayer implements RenderLayer {
 
 
 	/**
-	 * Returns the {@link AbstractGroundedAction} that is/will be rendered
-	 * @return a {@link AbstractGroundedAction}
+	 * Returns the {@link Action} that is/will be rendered
+	 * @return a {@link Action}
 	 */
-	public AbstractGroundedAction getRenderAction() {
+	public Action getRenderAction() {
 		return renderAction;
 	}
 
 
 	/**
-	 * Updates the {@link State} and {@link AbstractGroundedAction} that will
+	 * Updates the {@link State} and {@link Action} that will
 	 * be rendered the next time this class draws
 	 * @param s a {@link State} to render
-	 * @param a a {@link AbstractGroundedAction} to render
+	 * @param a a {@link Action} to render
 	 */
-	public void updateRenderedStateAction(State s, AbstractGroundedAction a){
+	public void updateRenderedStateAction(State s, Action a){
 		this.renderState = s;
 		this.renderAction = a;
 	}
 
 
 	/**
-	 * Sets the {@link State} and {@link AbstractGroundedAction} to
-	 * render to null, which will prevent calls to the method {@link #renderStateAction(java.awt.Graphics2D, State, AbstractGroundedAction, float, float)}
+	 * Sets the {@link State} and {@link Action} to
+	 * render to null, which will prevent calls to the method {@link #renderStateAction(java.awt.Graphics2D, State, Action, float, float)}
 	 * to be made.
 	 */
 	public void clearRenderedStateAction(){
@@ -78,10 +78,10 @@ public abstract class StateActionRenderLayer implements RenderLayer {
 	 * Method to be implemented by subclasses that will render the input state-action to the given graphics context.
 	 * @param g2 the {@link java.awt.Graphics2D} to which to render
 	 * @param s the {@link State} to render
-	 * @param a the {@link AbstractGroundedAction} to render
+	 * @param a the {@link Action} to render
 	 * @param width the width of the graphics context
 	 * @param height the height of hte graphics context
 	 */
-	public abstract void renderStateAction(Graphics2D g2, State s, AbstractGroundedAction a, float width, float height);
+	public abstract void renderStateAction(Graphics2D g2, State s, Action a, float width, float height);
 
 }

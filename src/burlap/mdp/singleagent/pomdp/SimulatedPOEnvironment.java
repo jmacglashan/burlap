@@ -1,12 +1,10 @@
 package burlap.mdp.singleagent.pomdp;
 
 import burlap.mdp.auxiliary.StateGenerator;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
@@ -16,7 +14,7 @@ import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
  * An {@link burlap.mdp.singleagent.environment.Environment} specifically for simulating interaction with a POMDP
  * environments ({@link burlap.mdp.singleagent.pomdp.PODomain}). In this case, the {@link #currentObservation()}
  * returns the last observation made from the {@link burlap.mdp.singleagent.environment.Environment}, not the hidden
- * state, and the {@link #executeAction(burlap.mdp.singleagent.GroundedAction)}
+ * state, and the {@link #executeAction(Action)}
  * method does not return {@link burlap.mdp.singleagent.environment.EnvironmentOutcome} objects that contain the full state
  * of the environment, but an observation drawn from the POMDP {@link ObservationFunction} following
  * the execution of the action. If you would like to access the true hidden state of the environment, use the
@@ -30,33 +28,25 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	 */
 	protected State curObservation = NullState.instance;
 
+	protected PODomain poDomain;
 
 
-
-	public SimulatedPOEnvironment(PODomain domain, RewardFunction rf, TerminalFunction tf) {
-		super(domain, rf, tf);
+	public SimulatedPOEnvironment(PODomain domain) {
+		super(domain);
+		this.poDomain = domain;
 	}
 
-	public SimulatedPOEnvironment(PODomain domain, RewardFunction rf, TerminalFunction tf, State initialHiddenState) {
-		super(domain, rf, tf, initialHiddenState);
+	public SimulatedPOEnvironment(PODomain domain, State initialHiddenState) {
+		super(domain, initialHiddenState);
+		this.poDomain = domain;
 	}
 
-	public SimulatedPOEnvironment(PODomain domain, RewardFunction rf, TerminalFunction tf, StateGenerator hiddenStateGenerator) {
-		super(domain, rf, tf, hiddenStateGenerator);
+	public SimulatedPOEnvironment(PODomain domain, StateGenerator hiddenStateGenerator) {
+		super(domain, hiddenStateGenerator);
+		this.poDomain = domain;
 	}
 
 
-	public PODomain getPODomain(){
-		return (PODomain)this.domain;
-	}
-
-	@Override
-	public void setDomain(Domain domain) {
-		if(!(domain instanceof PODomain)){
-			throw new RuntimeException("Cannot set the POSimulatedEnvironment domain to a domain that is not a PODomain instance");
-		}
-		super.setDomain(domain);
-	}
 
 	/**
 	 * Overrides the current observation of this environment to the specified value
@@ -82,30 +72,37 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 	}
 
 	@Override
-	public EnvironmentOutcome executeAction(GroundedAction ga) {
+	public EnvironmentOutcome executeAction(Action a) {
 
-		GroundedAction simGA = ga.copy();
-		simGA.action = this.domain.getAction(ga.actionName());
-		if(simGA.action == null){
-			throw new RuntimeException("Cannot execute action " + ga.toString() + " in this SimulatedEnvironment because the action is to known in this Environment's domain");
+
+
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentActionInitiation(this.currentObservation(), a);
 		}
-		State nextState = this.curState;
-		State nextObservation = this.curObservation;
+
+		State nextObservation = curObservation;
+
+		EnvironmentOutcome eo;
 		if(this.allowActionFromTerminalStates || !this.isInTerminalState()) {
-			nextState = simGA.sample(this.curState);
-			this.lastReward = this.rf.reward(this.curState, simGA, nextState);
-			nextObservation = ((PODomain)domain).getObservationFunction().sample(nextState, simGA);
+			eo = model.sampleTransition(this.curState, a);
+			nextObservation = poDomain.getObservationFunction().sample(eo.op, a);
 		}
 		else{
-			this.lastReward = 0.;
+			eo = new EnvironmentOutcome(this.curState, a, this.curState.copy(), 0., true);
 		}
+		this.lastReward = eo.r;
+		this.terminated = eo.terminated;
+		this.curState = eo.op;
 
-		EnvironmentOutcome eo = new EnvironmentOutcome(this.curObservation.copy(), ga, nextObservation.copy(), this.lastReward, this.tf.isTerminal(nextState));
-
-		this.curState = nextState;
+		EnvironmentOutcome observedOutcome = new EnvironmentOutcome(this.curObservation, a, nextObservation, eo.r, this.terminated);
 		this.curObservation = nextObservation;
 
-		return eo;
+		for(EnvironmentObserver observer : this.observers){
+			observer.observeEnvironmentInteraction(observedOutcome);
+		}
+
+		return observedOutcome;
+
 
 	}
 

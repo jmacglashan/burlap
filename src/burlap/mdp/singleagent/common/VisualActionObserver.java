@@ -1,14 +1,12 @@
 package burlap.mdp.singleagent.common;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionObserver;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
@@ -22,7 +20,7 @@ import java.util.List;
 
 /**
  * This class enables the live rendering of action calls or environment interactions, by implementing the
- * {@link burlap.mdp.singleagent.ActionObserver} and {@link burlap.mdp.singleagent.environment.EnvironmentObserver} interfaces.
+ * {@link burlap.mdp.singleagent.environment.EnvironmentObserver} interface.
  * It updates the visualizer to show the resulting state of an action call. After rendering, the client thread is blocked
  * for a specified interval of time to allow the state to be observed (by default the value is set to 17ms, which is about 60FPS).
  * This class will also render the new state of an {@link burlap.mdp.singleagent.environment.Environment} after
@@ -39,7 +37,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class VisualActionObserver extends JFrame implements ActionObserver, EnvironmentObserver {
+public class VisualActionObserver extends JFrame implements EnvironmentObserver {
 
 
 	private static final long serialVersionUID = 1L;
@@ -84,7 +82,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 
 	/**
-	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(State, burlap.mdp.singleagent.GroundedAction)}
+	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(State, burlap.mdp.core.Action)}
 	 * so long as the input {@link burlap.mdp.visualizer.Visualizer} has a set {@link burlap.mdp.visualizer.StateActionRenderLayer}. Default value is false.
 	 */
 	protected boolean			repaintOnActionInitiation = false;
@@ -138,7 +136,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 	/**
 	 * Sets whether the state should be updated on environment interactions events (the {@link #observeEnvironmentInteraction(burlap.mdp.singleagent.environment.EnvironmentOutcome)}
-	 * or only with state-actions in the {@link #observeEnvironmentActionInitiation(State, burlap.mdp.singleagent.GroundedAction)}.
+	 * or only with state-actions in the {@link #observeEnvironmentActionInitiation(State, Action)}.
 	 * @param repaintStateOnEnvironmentInteraction if true, then update states with environment interactions; if false then only with environment action initiation.
 	 */
 	public void setRepaintStateOnEnvironmentInteraction(boolean repaintStateOnEnvironmentInteraction) {
@@ -148,7 +146,7 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 
 	/**
 	 * Sets whether the state-action should be updated when an action is initiated in an {@link burlap.mdp.singleagent.environment.Environment} via the
-	 * {@link #observeEnvironmentActionInitiation(State, burlap.mdp.singleagent.GroundedAction)} method.
+	 * {@link #observeEnvironmentActionInitiation(State, burlap.mdp.core.Action)} method.
 	 * @param repaintOnActionInitiation if true, then state-action's are painted on action initiation; if false, they are not.
 	 */
 	public void setRepaintOnActionInitiation(boolean repaintOnActionInitiation) {
@@ -174,34 +172,9 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 		setVisible(true);
 	}
 
-	
-	@Override
-	public void actionEvent(State s, GroundedAction ga, State sp) {
-		this.painter.updateState(sp);
-		this.updatePropTextArea(sp);
-		Thread waitThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(actionRenderDelay);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
-		waitThread.start();
-		
-		try {
-			waitThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 
 	@Override
-	public void observeEnvironmentActionInitiation(State o, GroundedAction action) {
+	public void observeEnvironmentActionInitiation(State o, burlap.mdp.core.Action action) {
 		if(this.repaintOnActionInitiation) {
 			this.painter.updateStateAction(o, action);
 			this.updatePropTextArea(o);
@@ -263,40 +236,6 @@ public class VisualActionObserver extends JFrame implements ActionObserver, Envi
 		}
 	}
 
-	/**
-	 * Causes the visualizer to replay through the provided {@link EpisodeAnalysis} object. The initial state
-	 * of the provided episode is first rendered for the given refresh delay of this object, and then each
-	 * action and resulting state in the episode is feed through the {@link #actionEvent(State, GroundedAction, State)}
-	 * method of this object.
-	 * @param ea the episode to be replayed.
-	 */
-	public void replayEpisode(EpisodeAnalysis ea){
-		this.painter.updateState(ea.getState(0));
-		this.updatePropTextArea(ea.getState(0));
-		Thread waitThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(actionRenderDelay);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
-		waitThread.start();
-		
-		try {
-			waitThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		for(int i = 0; i < ea.maxTimeStep(); i++){
-			this.actionEvent(ea.getState(i), ea.getAction(i), ea.getState(i+1));
-		}
-	}
 	
 	
 	private void updatePropTextArea(State s){

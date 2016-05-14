@@ -9,16 +9,16 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -185,8 +185,8 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
-		return (GroundedSGAgentAction)this.policy.getAction(s);
+	public SGAgentAction getAction(State s) {
+		return (SGAgentAction)this.policy.getAction(s);
 	}
 
 	@Override
@@ -196,7 +196,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			jointReward = internalRewardFunction.reward(s, jointAction, sprime);
 		}
 		
-		GroundedSGAgentAction myAction = jointAction.action(worldAgentName);
+		SGAgentAction myAction = jointAction.action(worldAgentName);
 
 		double r = jointReward.get(worldAgentName);
 		QValue qv = this.getQ(s, myAction);
@@ -255,26 +255,26 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @param matching the matching between objects from the source state in which the action was generated to objects in another state.
 	 * @return an action with its object parameters mapped according to the state object matching.
 	 */
-	protected GroundedSGAgentAction translateAction(GroundedSGAgentAction a, Map <String,String> matching){
-		if(!(a instanceof AbstractObjectParameterizedGroundedAction)){
+	protected SGAgentAction translateAction(SGAgentAction a, Map <String,String> matching){
+		if(!(a instanceof ObjectParameterizedAction)){
 			return a;
 		}
-		String [] params = ((AbstractObjectParameterizedGroundedAction) a).getObjectParameters();
+		String [] params = ((ObjectParameterizedAction) a).getObjectParameters();
 		String [] newParams = new String[params.length];
 		for(int i = 0; i < params.length; i++){
 			newParams[i] = matching.get(params[i]);
 		}
-		AbstractObjectParameterizedGroundedAction result = (AbstractObjectParameterizedGroundedAction)a.copy();
+		ObjectParameterizedAction result = (ObjectParameterizedAction)a.copy();
 		result.setObjectParameters(newParams);
 
-		return (GroundedSGAgentAction)result;
+		return (SGAgentAction)result;
 	}
 
 
 	@Override
 	public List<QValue> getQs(State s) {
 		
-		List<GroundedSGAgentAction> gsas = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, worldAgentName, agentType.actions);
+		List<SGAgentAction> gsas = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, worldAgentName, agentType.actions);
 		
 		HashableState shq = this.stateHash(s);
 		
@@ -283,7 +283,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			//no existing entry so we can create it
 			stateRepresentations.put(shq, shq.s);
 			List <QValue> entries = new ArrayList<QValue>();
-			for(GroundedSGAgentAction gsa : gsas){
+			for(SGAgentAction gsa : gsas){
 				QValue q = new QValue(shq.s, gsa, this.qInit.qValue(shq.s, gsa));
 				entries.add(q);
 			}
@@ -297,11 +297,11 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		List <QValue> entries = qMap.get(shq);
 		List <QValue> returnedEntries = new ArrayList<QValue>(gsas.size());
 		Map <String, String> matching = null;
-		for(GroundedSGAgentAction gsa :gsas){
-			GroundedSGAgentAction transgsa = gsa;
+		for(SGAgentAction gsa :gsas){
+			SGAgentAction transgsa = gsa;
 
-			if(gsa instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
-				transgsa = (GroundedSGAgentAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(gsa, shq.s, storedRep);
+			if(gsa instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
+				transgsa = (SGAgentAction) ObjectParameterizedAction.Helper.translateParameters(gsa, shq.s, storedRep);
 			}
 			
 			//find matching action in entry list
@@ -339,9 +339,9 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 		
-		GroundedSGAgentAction gsa = (GroundedSGAgentAction)a;
+		SGAgentAction gsa = (SGAgentAction)a;
 		
 		HashableState shq = this.stateHash(s);
 		
@@ -356,9 +356,9 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			return q;
 		}
 		
-		if(gsa instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
+		if(gsa instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)gsa).actionDomainIsObjectIdentifierIndependent()){
 			//then we'll need to translate this action to match the internal state representation
-			gsa = (GroundedSGAgentAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(gsa, shq.s, storedRep);
+			gsa = (SGAgentAction) ObjectParameterizedAction.Helper.translateParameters(gsa, shq.s, storedRep);
 
 		}
 		

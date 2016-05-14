@@ -1,6 +1,6 @@
 package burlap.behavior.valuefunction;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 
@@ -9,7 +9,7 @@ import burlap.mdp.core.state.State;
  * A common implementation for initializing all values to the same constant is provided. This class extends the
  * {@link ValueFunction} class, so the initialization for the value function.
  * may be retrieved with the standard {@link ValueFunction#value(State)} method.
- * It also adds a {@link #qValue(State, AbstractGroundedAction)} method for initializing
+ * It also adds a {@link #qValue(State, Action)} method for initializing
  * Q-values.
  * @author James MacGlashan
  *
@@ -23,7 +23,7 @@ public interface ValueFunctionInitialization extends ValueFunction {
 	 * @param a the action for which to get the initial value of the Q-value function.
 	 * @return the initialization value of the Q-value function for a given state and action pair.
 	 */
-	public double qValue(State s, AbstractGroundedAction a);
+	double qValue(State s, Action a);
 
 	
 	
@@ -34,7 +34,7 @@ public interface ValueFunctionInitialization extends ValueFunction {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ConstantValueFunctionInitialization implements ValueFunctionInitialization{
+	class ConstantValueFunctionInitialization implements ValueFunctionInitialization{
 
 		/**
 		 * The constant value to return for all initializations.
@@ -64,7 +64,7 @@ public interface ValueFunctionInitialization extends ValueFunction {
 		}
 
 		@Override
-		public double qValue(State s, AbstractGroundedAction a) {
+		public double qValue(State s, Action a) {
 			return value;
 		}
 		

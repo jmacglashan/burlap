@@ -1,7 +1,7 @@
 package burlap.mdp.singleagent.common;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 
 
@@ -18,7 +18,7 @@ public class UniformCostRF implements RewardFunction {
 	}
 	
 	@Override
-	public double reward(State s, GroundedAction a, State sprime) {
+	public double reward(State s, Action a, State sprime) {
 		return -1;
 	}
 

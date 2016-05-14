@@ -10,7 +10,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
 
@@ -119,7 +119,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		
 		if(policy == null){
 			this.computePolicyFromTree();

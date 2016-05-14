@@ -3,21 +3,15 @@ package burlap.behavior.singleagent;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.RandomPolicy;
 import burlap.datastructures.AlphanumericSorting;
-import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
-import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.NullAction;
-import burlap.mdp.singleagent.common.NullRewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.AbstractConstruct;
-import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
@@ -35,7 +29,7 @@ import java.util.Scanner;
 /**
  * This class is used to keep track of all events that occur in an episode. This class should be created by either calling the constructor with the initial state of the episode,
  * or by calling the default constructor and then calling the {@link #initializeEpisideWithInitialState(State)} method to set the initial state of the episode, before recording
- * any transitions. It is then advised that transitions are recorded with the {@link #recordTransitionTo(GroundedAction, State, double)} method, which takes as input
+ * any transitions. It is then advised that transitions are recorded with the {@link #recordTransitionTo(Action, State, double)} method, which takes as input
  * the next state to which the agent transitioned, the action applied in the last recorded state, and the reward received fro the transition.
  * <p>
  * When querying about the state, action, and reward sequences, use the {@link #getState(int)}, {@link #getAction(int)}, and {@link #getReward(int)} methods.
@@ -57,7 +51,7 @@ public class EpisodeAnalysis {
 	/**
 	 * The sequence of actions taken
 	 */
-	public List<GroundedAction>							actionSequence;
+	public List<Action>							actionSequence;
 	
 	/**
 	 * The sequence of rewards received. Note the reward stored at index i is the reward received at time step i+1.
@@ -93,14 +87,14 @@ public class EpisodeAnalysis {
 	
 	protected void initializeDatastructures(){
 		stateSequence = new ArrayList<State>();
-		actionSequence = new ArrayList<GroundedAction>();
+		actionSequence = new ArrayList<Action>();
 		rewardSequence = new ArrayList<Double>();
 	}
 	
 	
 	/**
 	 * Adds a state to the state sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link #recordTransitionTo(GroundedAction, State, double)} method is used instead, but this
+	 * along with subsequent calls to the {@link #recordTransitionTo(Action, State, double)} method is used instead, but this
 	 * method can be used to manually add a state.
 	 * @param s the state to add
 	 */
@@ -110,17 +104,17 @@ public class EpisodeAnalysis {
 	
 	/**
 	 * Adds a GroundedAction to the action sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link #recordTransitionTo(GroundedAction, State, double)} method is used instead, but this
+	 * along with subsequent calls to the {@link #recordTransitionTo(Action, State, double)} method is used instead, but this
 	 * method can be used to manually add a GroundedAction.
 	 * @param ga the GroundedAction to add
 	 */
-	public void addAction(GroundedAction ga){
+	public void addAction(Action ga){
 		actionSequence.add(ga);
 	}
 	
 	/**
 	 * Adds a reward to the reward sequence. In general, it is recommended that {@link #initializeEpisideWithInitialState(State)} method
-	 * along with subsequent calls to the {@link #recordTransitionTo(GroundedAction, State, double)} method is used instead, but this
+	 * along with subsequent calls to the {@link #recordTransitionTo(Action, State, double)} method is used instead, but this
 	 * method can be used to manually add a reward.
 	 * @param r the reward to add
 	 */
@@ -137,7 +131,7 @@ public class EpisodeAnalysis {
 	 * @param r the reward the agent received for this transition.
 	 */
 	@Deprecated
-	public void recordTransitionTo(State next, GroundedAction usingAction, double r){
+	public void recordTransitionTo(State next, Action usingAction, double r){
 		stateSequence.add(next);
 		actionSequence.add(usingAction);
 		rewardSequence.add(r);
@@ -151,7 +145,7 @@ public class EpisodeAnalysis {
 	 * @param nextState the next state to which the agent transitioned
 	 * @param r the reward the agent received for this transition.
 	 */
-	public void recordTransitionTo(GroundedAction usingAction, State nextState, double r){
+	public void recordTransitionTo(Action usingAction, State nextState, double r){
 		stateSequence.add(nextState);
 		actionSequence.add(usingAction);
 		rewardSequence.add(r);
@@ -173,7 +167,7 @@ public class EpisodeAnalysis {
 	 * @param t the time step of the episode
 	 * @return the action taken at time step t
 	 */
-	public GroundedAction getAction(int t){
+	public Action getAction(int t){
 		return actionSequence.get(t);
 	}
 	
@@ -259,7 +253,7 @@ public class EpisodeAnalysis {
 	public String getActionSequenceString(String delimiter){
 		StringBuilder buf = new StringBuilder();
 		boolean first = true;
-		for(GroundedAction ga : actionSequence){
+		for(Action ga : actionSequence){
 			if(!first){
 				buf.append(delimiter);
 			}
@@ -400,7 +394,7 @@ public class EpisodeAnalysis {
 
 		public EpisodeAnalysisYamlRepresenter() {
 			super();
-			for(GroundedAction ga : actionSequence){
+			for(Action ga : actionSequence){
 				this.representers.put(ga.getClass(), new ActionYamlRepresent());
 			}
 
@@ -417,71 +411,24 @@ public class EpisodeAnalysis {
 
 	public static EpisodeAnalysis parseEpisode(Domain domain, String episodeString){
 
-		Yaml yaml = new Yaml(new EpisodeAnalysisConstructor(domain));
+		Yaml yaml = new Yaml();
 		EpisodeAnalysis ea = (EpisodeAnalysis)yaml.load(episodeString);
 		return ea;
 	}
 
-	private static class EpisodeAnalysisConstructor extends Constructor{
 
-		Domain domain;
 
-		public EpisodeAnalysisConstructor(Domain domain) {
-			this.domain = domain;
-			yamlConstructors.put(new Tag("!action"), new ActionConstruct());
-		}
 
-		private class ActionConstruct extends AbstractConstruct{
-
-			@Override
-			public Object construct(Node node) {
-				String val = (String) constructScalar((ScalarNode)node);
-				GroundedAction ga = getGAFromSpaceDelimGAString(domain, val);
-				return ga;
-			}
-		}
-	}
-
-	
-	
-	private static GroundedAction getGAFromSpaceDelimGAString(Domain d, String str){
-
-		//handle option annotated grounded actions
-		if(str.startsWith("*")){
-			String [] annotatedParts = str.split("--");
-			GroundedAction primitivePart = getGAFromSpaceDelimGAString(d, annotatedParts[1]);
-			String annotation = annotatedParts[0].substring(1);
-			Policy.GroundedAnnotatedAction ga = new Policy.GroundedAnnotatedAction(annotation, primitivePart);
-			return ga;
-		}
-		else {
-
-			String[] scomps = str.split(" ");
-			Action a = d.getAction(scomps[0]);
-			if(a == null) {
-				//the domain does not have a reference, so create a null action in its place
-				a = new NullAction(scomps[0]);
-			}
-			String[] params = new String[scomps.length - 1];
-			for(int i = 1; i < scomps.length; i++) {
-				params[i - 1] = scomps[i];
-			}
-
-			GroundedAction ga = a.associatedGroundedAction();
-			ga.initParamsWithStringRep(params);
-			return ga;
-		}
-	}
 
 
 
 	public static void main(String[] args) {
 		GridWorldDomain gwd = new GridWorldDomain(11, 11);
-		Domain domain = gwd.generateDomain();
+		SADomain domain = gwd.generateDomain();
 		State s = new GridWorldState(new GridAgent(1, 3));
 
 		Policy p = new RandomPolicy(domain);
-		EpisodeAnalysis ea = p.evaluateBehavior(s, new NullRewardFunction(), new NullTermination(), 30);
+		EpisodeAnalysis ea = p.evaluateBehavior(s, domain.getModel(), 30);
 
 		String yamlOut = ea.serialize();
 

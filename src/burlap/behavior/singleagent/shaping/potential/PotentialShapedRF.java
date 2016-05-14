@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.shaping.potential;
 
 import burlap.behavior.singleagent.shaping.ShapedRewardFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 
 
@@ -47,7 +47,7 @@ public class PotentialShapedRF extends ShapedRewardFunction {
 	}
 
 	@Override
-	public double additiveReward(State s, GroundedAction a, State sprime) {
+	public double additiveReward(State s, Action a, State sprime) {
 		return (this.discount * this.potentialFunction.potentialValue(sprime)) - this.potentialFunction.potentialValue(s);
 	}
 

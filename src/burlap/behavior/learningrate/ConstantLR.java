@@ -1,6 +1,6 @@
 package burlap.behavior.learningrate;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 
@@ -29,12 +29,12 @@ public class ConstantLR implements LearningRate {
 	}
 	
 	@Override
-	public double peekAtLearningRate(State s, AbstractGroundedAction ga) {
+	public double peekAtLearningRate(State s, Action ga) {
 		return this.learningRate;
 	}
 
 	@Override
-	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, Action ga) {
 		return this.learningRate;
 	}
 

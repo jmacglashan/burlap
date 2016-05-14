@@ -5,12 +5,11 @@ import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.statehashing.HashableState;
@@ -135,7 +134,7 @@ public class TDLambda implements Critic, ValueFunction {
 
 	
 	@Override
-	public void addNonDomainReferencedAction(Action a) {
+	public void addNonDomainReferencedAction(ActionType a) {
 		if(a instanceof Option && !(this.rf instanceof OptionEvaluatingRF)){
 		    this.rf = new OptionEvaluatingRF(this.rf);
 		}
@@ -176,8 +175,8 @@ public class TDLambda implements Critic, ValueFunction {
 		
 		double r = this.rf.reward(s, ga, sprime);
 		double discount = gamma;
-		if(ga.action instanceof Option){
-			Option o = (Option)ga.action;
+		if(ga.actionType instanceof Option){
+			Option o = (Option)ga.actionType;
 			discount = Math.pow(gamma, o.getLastNumSteps());
 		}
 		

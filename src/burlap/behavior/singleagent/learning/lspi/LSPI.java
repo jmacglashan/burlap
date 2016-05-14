@@ -15,13 +15,9 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.mdp.auxiliary.common.ConstantStateGenerator;
-import burlap.mdp.auxiliary.common.NullTermination;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import org.ejml.simple.SimpleMatrix;
 
@@ -40,8 +36,8 @@ import java.util.List;
  * method.
  * <p>
  * If you do use the {@link #planFromState(State)} method, you should first initialize the parameters for it using the
- * {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int, SARSCollector)} or
- * {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)} method.
+ * {@link #initializeForPlanning(int, SARSCollector)} or
+ * {@link #initializeForPlanning(int)} method.
  * If you do not set a {@link burlap.behavior.singleagent.learning.lspi.SARSCollector} to use for planning
  * a {@link UniformRandomSARSCollector} will be automatically created. After collecting data, it will call
  * the {@link #runPolicyIteration(int, double)} method using a maximum of 30 policy iterations. You can change the {@link SARSCollector} this method uses, the number of samples it acquires, the maximum weight change for PI termination,
@@ -162,12 +158,11 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * @param gamma the discount factor
 	 * @param saFeatures the state-action features to use
 	 */
-	public LSPI(Domain domain, double gamma, DenseStateActionFeatures saFeatures){
-		this.solverInit(domain, rf, tf, gamma, null);
+	public LSPI(SADomain domain, double gamma, DenseStateActionFeatures saFeatures){
+		this.solverInit(domain, gamma, null);
 		this.saFeatures = saFeatures;
 		this.vfa = new DenseStateActionLinearVFA(saFeatures, 0.);
 		this.learningPolicy = new EpsilonGreedy(this, 0.1);
-		this.tf = new NullTermination();
 	}
 
 	/**
@@ -177,47 +172,36 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * @param saFeatures the state-action features
 	 * @param dataset the dataset of transitions to use
 	 */
-	public LSPI(Domain domain, double gamma, DenseStateActionFeatures saFeatures, SARSData dataset){
-		this.solverInit(domain, rf, tf, gamma, null);
+	public LSPI(SADomain domain, double gamma, DenseStateActionFeatures saFeatures, SARSData dataset){
+		this.solverInit(domain, gamma, null);
 		this.saFeatures = saFeatures;
 		this.vfa = new DenseStateActionLinearVFA(saFeatures, 0.);
 		this.learningPolicy = new EpsilonGreedy(this, 0.1);
 		this.dataset = dataset;
-		this.tf = new NullTermination();
 	}
 
 
 	/**
-	 * Sets the {@link burlap.mdp.singleagent.RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
-	 * and the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples to use for planning when
+	 * Sets the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples to use for planning when
 	 * the {@link #planFromState(State)} method is called. If the
 	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
-	 * @param rf the reward function to use for planning
-	 * @param tf the terminal function to use for planning
 	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
 	 */
-	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numSamplesForPlanning){
-		this.rf = rf;
-		this.tf = tf;
+	public void initializeForPlanning(int numSamplesForPlanning){
 		this.numSamplesForPlanning = numSamplesForPlanning;
 	}
 
 	/**
-	 * Sets the {@link burlap.mdp.singleagent.RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
-	 * the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples, and the {@link burlap.behavior.singleagent.learning.lspi.SARSCollector} to use
+	 * Sets the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples, and the {@link burlap.behavior.singleagent.learning.lspi.SARSCollector} to use
 	 * to collect samples for planning when
 	 * the {@link #planFromState(State)} method is called. If the
 	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
-	 * @param rf the reward function to use for planning
-	 * @param tf the terminal function to use for planning
 	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
 	 * @param planningCollector the dataset collector to use for planning
 	 */
-	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numSamplesForPlanning, SARSCollector planningCollector){
-		this.rf = rf;
-		this.tf = tf;
+	public void initializeForPlanning(int numSamplesForPlanning, SARSCollector planningCollector){
 		this.numSamplesForPlanning = numSamplesForPlanning;
 		this.planningCollector = planningCollector;
 	}
@@ -491,11 +475,11 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	@Override
 	public List<QValue> getQs(State s) {
 		
-		List<GroundedAction> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.getAllGroundedActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
 
 
-		for(GroundedAction ga : gas){
+		for(Action ga : gas){
 			double q = this.vfa.evaluate(s, ga);
 			qs.add(new QValue(s, ga, q));
 		}
@@ -506,7 +490,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 		return new QValue(s, a, this.vfa.evaluate(s, a));
 	}
 
@@ -524,14 +508,14 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	@Override
 	public GreedyQPolicy planFromState(State initialState) {
 
-		if(this.rf == null || this.tf == null){
+		if(this.model == null){
 			throw new RuntimeException("LSPI cannot execute planFromState because the reward function and/or terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
 		}
 
 		if(planningCollector == null){
-			this.planningCollector = new SARSCollector.UniformRandomSARSCollector(this.actions);
+			this.planningCollector = new SARSCollector.UniformRandomSARSCollector(this.actionTypes);
 		}
-		this.dataset = this.planningCollector.collectNInstances(new ConstantStateGenerator(initialState), this.rf, this.numSamplesForPlanning, Integer.MAX_VALUE, this.tf, this.dataset);
+		this.dataset = this.planningCollector.collectNInstances(new ConstantStateGenerator(initialState), this.model, this.numSamplesForPlanning, Integer.MAX_VALUE, this.dataset);
 		return this.runPolicyIteration(this.maxNumPlanningIterations, this.maxChange);
 
 

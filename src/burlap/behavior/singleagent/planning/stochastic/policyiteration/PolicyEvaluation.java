@@ -1,9 +1,7 @@
 package burlap.behavior.singleagent.planning.stochastic.policyiteration;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.stochastic.ActionTransitions;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.singleagent.planning.stochastic.HashedTransitionProbability;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;

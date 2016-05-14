@@ -12,10 +12,10 @@ import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
@@ -103,7 +103,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 		BeliefState bs = (BeliefState)s;
 
 		//get actions for any underlying MDP state
-		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.domain.getActions(), bs.sampleStateFromBelief());
+		List<GroundedAction> gas = ActionType.getAllApplicableGroundedActionsFromActionList(this.domain.getActionTypes(), bs.sampleStateFromBelief());
 		List<QValue> result = new ArrayList<QValue>(gas.size());
 
 		List<EnumerableBeliefState.StateBelief> beliefs = ((EnumerableBeliefState)bs).getStatesAndBeliefsWithNonZeroProbability();
@@ -118,7 +118,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 
 		if(!(s instanceof BeliefState) || !(s instanceof EnumerableBeliefState)){
 			throw new RuntimeException("QMDP cannot return the Q-values for the given state, because the given state is not a EnumerableBeliefState instance. It is a " + s.getClass().getName());

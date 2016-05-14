@@ -3,7 +3,7 @@ package burlap.behavior.functionapproximation.dense;
 import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
 import burlap.behavior.functionapproximation.DifferentiableStateValue;
 import burlap.behavior.functionapproximation.FunctionGradient;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import java.util.Map;
  * <p>
  * This class can be used for either state-value functions or state-action-value functions, but only one of them.
  * Which one is used is determined implicitly by whether the first function input is set with the
- * {@link #evaluate(State)} method or the {@link #evaluate(State, AbstractGroundedAction)}
+ * {@link #evaluate(State)} method or the {@link #evaluate(State, Action)}
  * method.
  * @author James MacGlashan.
  */
@@ -33,7 +33,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	/**
 	 * A feature index offset for each action when using Q-value function approximation.
 	 */
-	protected Map<AbstractGroundedAction, Integer> 		actionOffset = new HashMap<AbstractGroundedAction, Integer>();
+	protected Map<Action, Integer> 		actionOffset = new HashMap<Action, Integer>();
 
 	/**
 	 * The function weights when performing state value function approximation.
@@ -63,7 +63,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	/**
 	 * Initializes. This object will be set to perform either state value function approximation or state-action
 	 * function approximation once a call to either {@link #evaluate(State)}
-	 * or {@link #evaluate(State, AbstractGroundedAction)} is made.
+	 * or {@link #evaluate(State, Action)} is made.
 	 * If the former method is called
 	 * first, then this object will be tasked with state value function approximation. If the latter
 	 * method is called first, then this object will be tasked with state-action value function approximation.
@@ -77,7 +77,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 
 
 	@Override
-	public double evaluate(State s, AbstractGroundedAction a) {
+	public double evaluate(State s, Action a) {
 		this.currentStateFeatures = this.stateFeatures.features(s);
 		this.currentActionOffset = this.getActionOffset(a);
 		int indOff = this.currentActionOffset*this.currentStateFeatures.length;
@@ -142,7 +142,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	}
 
 	@Override
-	public FunctionGradient gradient(State s, AbstractGroundedAction a){
+	public FunctionGradient gradient(State s, Action a){
 
 		double [] features;
 		if(this.lastState == s){
@@ -224,7 +224,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	}
 
 
-	public int getActionOffset(AbstractGroundedAction a){
+	public int getActionOffset(Action a){
 		Integer offset = this.actionOffset.get(a);
 		if(offset == null){
 			offset = this.actionOffset.size();
@@ -304,7 +304,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	 * Returns the {@link java.util.Map} of feature index offsets into the full feature vector for each action
 	 * @return the {@link java.util.Map} of feature index offsets into the full feature vector for each action
 	 */
-	public Map<AbstractGroundedAction, Integer> getActionOffset() {
+	public Map<Action, Integer> getActionOffset() {
 		return actionOffset;
 	}
 
@@ -313,7 +313,7 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	 * Sets the {@link java.util.Map} of feature index offsets into the full feature vector for each action
 	 * @param actionOffset the {@link java.util.Map} of feature index offsets into the full feature vector for each action
 	 */
-	public void setActionOffset(Map<AbstractGroundedAction, Integer> actionOffset) {
+	public void setActionOffset(Map<Action, Integer> actionOffset) {
 		this.actionOffset = actionOffset;
 	}
 
@@ -322,14 +322,14 @@ public class DenseLinearVFA implements DifferentiableStateValue, DifferentiableS
 	 * @param a the action whose feature vector index is to be set
 	 * @param offset the feature index offset for the action
 	 */
-	public void setActionOffset(AbstractGroundedAction a, int offset){
+	public void setActionOffset(Action a, int offset){
 		this.actionOffset.put(a, offset);
 	}
 
 	@Override
 	public DenseLinearVFA copy() {
 		DenseLinearVFA vfa = new DenseLinearVFA(this.stateFeatures, this.defaultWeight);
-		vfa.actionOffset = new HashMap<AbstractGroundedAction, Integer>(this.actionOffset);
+		vfa.actionOffset = new HashMap<Action, Integer>(this.actionOffset);
 
 		if(this.stateWeights != null) {
 			vfa.stateWeights = new double[this.stateWeights.length];

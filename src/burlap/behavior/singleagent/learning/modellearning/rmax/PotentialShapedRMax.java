@@ -1,26 +1,25 @@
 package burlap.behavior.singleagent.learning.modellearning.rmax;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.modellearning.Model;
+import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
 import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
-import burlap.behavior.singleagent.learning.modellearning.ModeledDomainGenerator;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelLearningPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -29,7 +28,7 @@ import burlap.mdp.singleagent.environment.EnvironmentOutcome;
  *
  * The default constructor will use value iteration for planning, but you can provide any valueFunction you'd like. Similarly,
  * the default constructor will use a tabular transition/reward model, but you can also provide your own model learning.
- * See the {@link burlap.behavior.singleagent.learning.modellearning.Model} class for more information on defining your
+ * See the {@link burlap.behavior.singleagent.learning.modellearning.KWIKModel} class for more information on defining your
  * own model.
  * 
  * 1. John Asmuth, Michael L. Littman, and Robert Zinkov. "Potential-based Shaping in Model-based Reinforcement Learning." AAAI. 2008.
@@ -42,12 +41,8 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	/**
 	 * The model of the world that is being learned.
 	 */
-	protected Model								model;
-	
-	/**
-	 * The modeled domain object containing the modeled actions that a valueFunction will use.
-	 */
-	protected Domain							modeledDomain;
+	protected RMaxModel model;
+
 	
 	/**
 	 * The modeled reward function that is being learned.
@@ -92,19 +87,15 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
-	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, double maxReward, int nConfident,
-			double maxVIDelta, int maxVIPasses){
+	public PotentialShapedRMax(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxReward, int nConfident,
+							   double maxVIDelta, int maxVIPasses){
 		
-		this.solverInit(domain, null, null, gamma, hashingFactory);
-		this.model = new TabularModel(domain, hashingFactory, nConfident);
+		this.solverInit(domain, gamma, hashingFactory);
+		this.model = new RMaxModel(new TabularModel(domain, hashingFactory, nConfident),
+				new RMaxPotential(maxReward, gamma), gamma, domain.getActionTypes());
+
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
-		this.modeledDomain = mdg.generateDomain();
-		
-		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
-		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), new RMaxPotential(maxReward, gamma));
-		
-		this.modelPlanner = new VIModelLearningPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
+		this.modelPlanner = new VIModelLearningPlanner(domain, this.model, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
 	}
 	
@@ -119,19 +110,16 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * @param maxVIDelta the maximum change in value function for VI to terminate
 	 * @param maxVIPasses the maximum number of VI iterations per replan.
 	 */
-	public PotentialShapedRMax(Domain domain, double gamma, HashableStateFactory hashingFactory, PotentialFunction potential, int nConfident,
+	public PotentialShapedRMax(SADomain domain, double gamma, HashableStateFactory hashingFactory, PotentialFunction potential, int nConfident,
 			double maxVIDelta, int maxVIPasses){
 		
-		this.solverInit(domain, null, null, gamma, hashingFactory);
-		this.model = new TabularModel(domain, hashingFactory, nConfident);
+		this.solverInit(domain, gamma, hashingFactory);
+		this.model = new RMaxModel(new TabularModel(domain, hashingFactory, nConfident),
+				potential, gamma, domain.getActionTypes());
+
+
 		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
-		this.modeledDomain = mdg.generateDomain();
-		
-		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
-		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
-		
-		this.modelPlanner = new VIModelLearningPlanner(modeledDomain, modeledRewardFunction, modeledTerminalFunction, gamma, hashingFactory, maxVIDelta, maxVIPasses);
+		this.modelPlanner = new VIModelLearningPlanner(domain, this.model, gamma, hashingFactory, maxVIDelta, maxVIPasses);
 		
 	}
 	
@@ -144,22 +132,17 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * @param model the model/model-learning algorithm to use
 	 * @param plannerGenerator a generator for a model valueFunction
 	 */
-	public PotentialShapedRMax(Domain domain, HashableStateFactory hashingFactory, PotentialFunction potential,
-			Model model, ModelLearningPlanner plannerGenerator){
+	public PotentialShapedRMax(SADomain domain, HashableStateFactory hashingFactory, PotentialFunction potential,
+			KWIKModel model, ModelLearningPlanner plannerGenerator){
 		
-		this.solverInit(domain, null, null, gamma, hashingFactory);
-		this.model = model;
-		
-		ModeledDomainGenerator mdg = new ModeledDomainGenerator(domain, this.model);
-		this.modeledDomain = mdg.generateDomain();
-		
-		this.modeledTerminalFunction = new PotentialShapedRMaxTerminal(this.model.getModelTF());
-		this.modeledRewardFunction = new PotentialShapedRMaxRF(this.model.getModelRF(), potential);
+		this.solverInit(domain, gamma, hashingFactory);
+		this.model = new RMaxModel(model,
+				potential, gamma, domain.getActionTypes());
+
 
 		this.modelPlanner = plannerGenerator;
-		this.modelPlanner.setDomain(modeledDomain);
-		this.modelPlanner.setRf(modeledRewardFunction);
-		this.modelPlanner.setTf(modeledTerminalFunction);
+		this.modelPlanner.setModel(this.model);
+
 		
 	}
 
@@ -167,18 +150,10 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	 * Returns the model learning algorithm being used.
 	 * @return the model learning algorithm being used.
 	 */
-	public Model getModel() {
+	public RMaxModel getModel() {
 		return model;
 	}
 
-
-	/**
-	 * Returns the model domain for planning. This model domain may differ from the real domain in the actions it uses for planning.
-	 * @return the model domain for planning
-	 */
-	public Domain getModeledDomain() {
-		return modeledDomain;
-	}
 
 
 	/**
@@ -228,15 +203,16 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		int steps = 0;
 		while(!env.isInTerminalState() && (steps < maxSteps || maxSteps == -1)){
 
-			GroundedAction ga = (GroundedAction)policy.getAction(curState);
-			EnvironmentOutcome eo = ga.executeIn(env);
+			Action ga = policy.getAction(curState);
+			EnvironmentOutcome eo = env.executeAction(ga);
 			ea.recordTransitionTo(ga, eo.op, eo.r);
 
-			boolean modeledTerminal = this.model.getModelTF().isTerminal(eo.op);
+			boolean modeledTerminal = this.model.terminalState(eo.op);
 
-			if(!this.model.transitionIsModeled(curState, ga) || (!this.model.stateTransitionsAreModeled(eo.op) && !modeledTerminal)){
+			if(!this.model.transitionIsModeled(curState, ga)
+					|| (!KWIKModel.Helper.stateTransitionsModeled(model, this.getActionTypes(), eo.op) && !modeledTerminal)){
 				this.model.updateModel(eo);
-				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.getModelTF().isTerminal(eo.op))){
+				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.terminalState(eo.op))){
 					this.modelPlanner.modelChanged(curState);
 					policy = this.createUnmodeledFavoredPolicy();
 				}
@@ -264,7 +240,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		return new UnmodeledFavoredPolicy(
 				this.modelPlanner.modelPlannedPolicy(),
 				this.model,
-				this.modeledDomain.getActions());
+				this.getActionTypes());
 	}
 
 	public EpisodeAnalysis getLastLearningEpisode() {
@@ -292,41 +268,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		this.episodeHistory.clear();
 	}
 	
-	
-	
-	/**
-	 * A Terminal function that treats transitions to RMax fictious nodes as terminal states as well as what the model reports as terminal states.
-	 * @author James MacGlashan
-	 *
-	 */
-	public class PotentialShapedRMaxTerminal implements TerminalFunction{
 
-		/**
-		 * The modeled terminal function
-		 */
-		TerminalFunction sourceModelTF;
-		
-		
-		/**
-		 * Initializes with a modeled terminal function
-		 * @param sourceModelTF the model terminal function.
-		 */
-		public PotentialShapedRMaxTerminal(TerminalFunction sourceModelTF){
-			this.sourceModelTF = sourceModelTF;
-		}
-		
-		@Override
-		public boolean isTerminal(State s) {
-			//states with unmodeled transitions are terminal states; bias will be captured by the potential function
-			if(!PotentialShapedRMax.this.model.stateTransitionsAreModeled(s)){
-				return true;
-			}
-			
-			return this.sourceModelTF.isTerminal(s);
-		}
-			
-		
-	}
 	
 	/**
 	 * A potential function for vanilla RMax; all states have a potential value of R_max/(1-gamma)
@@ -365,52 +307,6 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		
 	}
 	
-	
-	
-	/**
-	 * This class is a special version of a potential shaped reward function that does not remove the potential value for transitions to states with uknown action transitions
-	 * that are followed. This is accomplished by returning a value of zero when the fictious RMax state is recached, rather than subtracting off the previous
-	 * states potential.
-	 * @author James MacGlashan
-	 *
-	 */
-	protected class PotentialShapedRMaxRF implements RewardFunction{
 
-		/**
-		 * The source reward function
-		 */
-		protected RewardFunction sourceRF;
-		
-		/**
-		 * The state potential function
-		 */
-		protected PotentialFunction potential;
-		
-		
-		/**
-		 * Initializes.
-		 * @param sourceRF the source reward function to which the potential is added.
-		 * @param potential the state potential function
-		 */
-		public PotentialShapedRMaxRF(RewardFunction sourceRF, PotentialFunction potential){
-			this.sourceRF = sourceRF;
-			this.potential = potential;
-		}
-		
-		@Override
-		public double reward(State s, GroundedAction a, State sprime) {
-			double nextStatePotential = 0.;
-			if(!PotentialShapedRMax.this.model.getModelTF().isTerminal(sprime)){
-				nextStatePotential = this.potential.potentialValue(sprime);
-			}
-			
-			return this.sourceRF.reward(s, a, sprime) 
-					+ (PotentialShapedRMax.this.gamma * nextStatePotential) - this.potential.potentialValue(s);
-			
-		}
-		
-		
-		
-	}
 	
 }

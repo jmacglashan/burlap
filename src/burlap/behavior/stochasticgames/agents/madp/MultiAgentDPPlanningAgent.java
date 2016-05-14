@@ -8,7 +8,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.World;
@@ -97,9 +97,9 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
+	public SGAgentAction getAction(State s) {
 		this.planner.planFromState(s);
-		return (GroundedSGAgentAction)this.policy.getAction(s);
+		return (SGAgentAction)this.policy.getAction(s);
 	}
 
 	@Override

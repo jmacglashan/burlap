@@ -14,8 +14,8 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.statehashing.HashableState;
 import burlap.datastructures.BoltzmannDistribution;
@@ -238,7 +238,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 
 		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
@@ -247,7 +247,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			qvs = this.rootLevelQValues.get(sh);
 		}
 
-		if(a instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)a).actionDomainIsObjectIdentifierIndependent()){
+		if(a instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)a).actionDomainIsObjectIdentifierIndependent()){
 			HashableState storedSh = this.mapToStateIndex.get(sh);
 			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
 		}
@@ -286,7 +286,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			qvs = this.rootLevelQValues.get(sh);
 		}
 
-		if(a instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)a).actionDomainIsObjectIdentifierIndependent()){
+		if(a instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)a).actionDomainIsObjectIdentifierIndependent()){
 			HashableState storedSh = this.mapToStateIndex.get(sh);
 			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
 		}

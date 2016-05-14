@@ -1,7 +1,7 @@
 package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.util.Map;
 
@@ -92,7 +92,7 @@ public abstract class SGAgent {
 	 * @param s the current state of the world
 	 * @return the action this agent wishes to take
 	 */
-	public abstract GroundedSGAgentAction getAction(State s);
+	public abstract SGAgentAction getAction(State s);
 	
 	/**
 	 * This method is called by the world when every agent in the world has taken their action. It conveys the result of

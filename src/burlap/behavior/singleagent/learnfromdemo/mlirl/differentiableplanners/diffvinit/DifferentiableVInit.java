@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.d
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
@@ -29,7 +29,7 @@ public interface DifferentiableVInit extends ValueFunctionInitialization, Parame
 	 * @param ga the action on which the Q-value is to be evaluated.
 	 * @return the Q-value function gradient
 	 */
-	public FunctionGradient getQGradient(State s, AbstractGroundedAction ga);
+	public FunctionGradient getQGradient(State s, Action ga);
 
 
 }

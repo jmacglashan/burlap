@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learning.modellearning;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.core.state.State;
 
@@ -11,7 +12,7 @@ import burlap.mdp.core.state.State;
  * @author James MacGlashan
  *
  */
-public interface ModelLearningPlanner extends Planner{
+public interface ModelLearningPlanner extends Planner, MDPSolverInterface{
 
 	/**
 	 * This is method is expected to be called at the beginning of any new learning episode. This may be useful for planning algorithms
@@ -19,19 +20,19 @@ public interface ModelLearningPlanner extends Planner{
 	 * before a learning episode begins.
 	 * @param s the input state
 	 */
-	public void initializePlannerIn(State s);
+	void initializePlannerIn(State s);
 	
 	/**
 	 * Tells the valueFunction that the model has changed and that it will need to replan accordingly
 	 * @param changedState the source state that caused a change in the model.
 	 */
-	public void modelChanged(State changedState);
+	void modelChanged(State changedState);
 	
 	/**
 	 * Returns a policy encoding the planner's results.
 	 * @return a policy object
 	 */
-	public Policy modelPlannedPolicy();
+	Policy modelPlannedPolicy();
 
 	
 }

@@ -1,15 +1,15 @@
 package burlap.behavior.stochasticgames;
 
+import burlap.behavior.policy.Policy;
+import burlap.datastructures.HashedAggregator;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import burlap.behavior.policy.Policy;
-import burlap.datastructures.HashedAggregator;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.mdp.stochasticgames.JointAction;
 
 
 /**
@@ -132,7 +132,7 @@ public class PolicyFromJointPolicy extends Policy {
 	}
 	
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		if(!this.synchronizeJointActionSelectionAmongAgents){
 			return ((JointAction)this.jointPolicy.getAction(s)).action(this.actingAgentName);
 		}
@@ -145,15 +145,15 @@ public class PolicyFromJointPolicy extends Policy {
 	public List<ActionProb> getActionDistributionForState(State s) {
 		
 		List<ActionProb> jaProbs = this.jointPolicy.getActionDistributionForState(s);
-		HashedAggregator<GroundedSGAgentAction> marginalized = new HashedAggregator<GroundedSGAgentAction>();
+		HashedAggregator<SGAgentAction> marginalized = new HashedAggregator<SGAgentAction>();
 		for(ActionProb ap : jaProbs){
 			JointAction ja = (JointAction)ap.ga;
-			GroundedSGAgentAction thisAgentsAction = ja.action(this.actingAgentName);
+			SGAgentAction thisAgentsAction = ja.action(this.actingAgentName);
 			marginalized.add(thisAgentsAction, ap.pSelection);
 		}
 		
 		List<ActionProb> finalProbs = new ArrayList<Policy.ActionProb>(marginalized.size());
-		for(Map.Entry<GroundedSGAgentAction, Double> e : marginalized.entrySet()){
+		for(Map.Entry<SGAgentAction, Double> e : marginalized.entrySet()){
 			ActionProb ap = new ActionProb(e.getKey(), e.getValue());
 			finalProbs.add(ap);
 		}

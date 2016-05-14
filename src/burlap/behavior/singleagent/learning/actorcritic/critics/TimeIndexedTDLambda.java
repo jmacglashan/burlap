@@ -139,8 +139,8 @@ public class TimeIndexedTDLambda extends TDLambda {
 		double r = this.rf.reward(s, ga, sprime);
 		double discount = gamma;
 		int n = 1;
-		if(ga.action instanceof Option){
-			Option o = (Option)ga.action;
+		if(ga.actionType instanceof Option){
+			Option o = (Option)ga.actionType;
 			discount = Math.pow(gamma, o.getLastNumSteps());
 			n = o.getLastNumSteps();
 		}

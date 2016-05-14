@@ -6,15 +6,11 @@ import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.*;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.AbstractConstruct;
-import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
@@ -156,9 +152,9 @@ public class GameAnalysis {
 	 * @param agentName the name of the agent
 	 * @return the action taken by the specified agent in the given time step
 	 */
-	public GroundedSGAgentAction getActionForAgent(int t, String agentName){
+	public SGAgentAction getActionForAgent(int t, String agentName){
 		JointAction ja = this.getJointAction(t);
-		GroundedSGAgentAction gsa = ja.action(agentName);
+		SGAgentAction gsa = ja.action(agentName);
 		if(gsa == null){
 			throw new RuntimeException("Agent " + agentName + " did not take an action in joint action " + t);
 		}
@@ -294,31 +290,11 @@ public class GameAnalysis {
 
 	public static GameAnalysis parseGame(SGDomain domain, String episodeString){
 
-		Yaml yaml = new Yaml(new GameAnalysisConstructor(domain));
+		Yaml yaml = new Yaml();
 		GameAnalysis ga = (GameAnalysis)yaml.load(episodeString);
 		return ga;
 	}
 
-	private static class GameAnalysisConstructor extends Constructor {
-
-		SGDomain domain;
-
-		public GameAnalysisConstructor(SGDomain domain) {
-			this.domain = domain;
-			yamlConstructors.put(new Tag("!action"), new ActionConstruct());
-		}
-
-
-		private class ActionConstruct extends AbstractConstruct {
-
-			@Override
-			public Object construct(Node node) {
-				String val = (String) constructScalar((ScalarNode)node);
-				JointAction ja = parseStringIntoJointAction(val, domain);
-				return ja;
-			}
-		}
-	}
 
 
 
@@ -377,72 +353,10 @@ public class GameAnalysis {
 
 
 	
-	/**
-	 * returns a string representation of a joint reward in the form:
-	 * <p>
-	 * agent1:r1;agent2:r2
-	 * @param jointReward the joint reward
-	 * @return a string representation of the joint reward
-	 */
-	private static String jointRewardStringRep(Map<String, Double> jointReward){
-	    StringBuilder buf = new StringBuilder();
-		boolean doneFirst = false;
-		for(Map.Entry<String, Double> e : jointReward.entrySet()){
-			if(doneFirst){
-				buf.append(";");
-			}
-			buf.append(e.getKey()).append(":").append(e.getValue().toString());
-			doneFirst = true;
-		}
-		
-		return buf.toString();
-	}
+
 	
 	
-	/**
-	 * Parses a string representation into a joint action aassumign the same {@link JointAction#toString()} format.
-	 * @param str the string representation
-	 * @param domain the stochastic games domain for the relevant actions
-	 * @return a joint action
-	 */
-	private static JointAction parseStringIntoJointAction(String str, SGDomain domain){
-		
-		JointAction ja = new JointAction();
-		
-		String [] agentWiseComps = str.split(";");
-		for(String aa : agentWiseComps){
-			String [] agentActionComps = aa.split(":");
-			String agentName = agentActionComps[0];
-			String [] actionElements = agentActionComps[1].split(" ");
-			String actionName = actionElements[0];
-			String [] actionParams = new String[actionElements.length-1];
-			for(int i = 1; i < actionElements.length; i++){
-				actionParams[i-1] = actionElements[i];
-			}
-			SGAgentAction sa = domain.getSGAgentAction(actionName);
-			GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(agentName);
-			gsa.initParamsWithStringRep(actionParams);
-			ja.addAction(gsa);
-		}
-		
-		return ja;
-	}
-	
-	
-	/**
-	 * Parses a string formatted according to {@link #jointRewardStringRep(Map)} into a Joint reward map.
-	 * @param str the string rep of the joint reward
-	 * @return the joint reward map
-	 */
-	private static Map<String, Double> parseStringIntoJointReward(String str){
-		Map<String, Double> jointReward  = new HashMap<String, Double>();
-		String [] arComps = str.split(";");
-		for(String ar : arComps){
-			String [] comps = ar.split(":");
-			jointReward.put(comps[0], Double.parseDouble(comps[1]));
-		}
-		return jointReward;
-	}
+
 
 
 	public static void main(String[] args) {

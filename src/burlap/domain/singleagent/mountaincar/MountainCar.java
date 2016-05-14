@@ -5,10 +5,9 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.visualizer.Visualizer;
 
@@ -148,9 +147,9 @@ public class MountainCar implements DomainGenerator {
 		
 		MCPhysicsParams cphys = this.physParams.copy();
 
-		new MovementAction(ACTIONFORWARD, domain, 1, cphys);
-		new MovementAction(ACTIONBACKWARDS, domain, -1, cphys);
-		new MovementAction(ACTIONCOAST, domain, 0, cphys);
+		new MovementActionType(ACTIONFORWARD, domain, 1, cphys);
+		new MovementActionType(ACTIONBACKWARDS, domain, -1, cphys);
+		new MovementActionType(ACTIONCOAST, domain, 0, cphys);
 		
 		
 		return domain;
@@ -212,7 +211,7 @@ public class MountainCar implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	class MovementAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	class MovementActionType extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		int dir;
 		MCPhysicsParams physParams;
@@ -223,7 +222,7 @@ public class MountainCar implements DomainGenerator {
 		 * @param domain the domain of this action
 		 * @param dir the direction of acceleration; +1 for forward acceleration, -1 for backwards acceleration, 0 for no acceleration (coast).
 		 */
-		public MovementAction(String name, Domain domain, int dir, MCPhysicsParams physParams){
+		public MovementActionType(String name, Domain domain, int dir, MCPhysicsParams physParams){
 			super(name, domain);
 			this.dir = dir;
 			this.physParams = physParams;

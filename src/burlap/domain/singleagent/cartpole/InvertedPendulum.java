@@ -7,11 +7,10 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.visualizer.Visualizer;
 
@@ -139,9 +138,9 @@ public class InvertedPendulum implements DomainGenerator {
 
 		IPPhysicsParams cphys = this.physParams.copy();
 
-		new ForceAction(ACTION_LEFT, domain, -this.physParams.actionForce, cphys);
-		new ForceAction(ACTION_RIGHT, domain, this.physParams.actionForce, cphys);
-		new ForceAction(ACTION_NO_FORCE, domain, 0., cphys);
+		new ForceActionType(ACTION_LEFT, domain, -this.physParams.actionForce, cphys);
+		new ForceActionType(ACTION_RIGHT, domain, this.physParams.actionForce, cphys);
+		new ForceActionType(ACTION_NO_FORCE, domain, 0., cphys);
 		
 		return domain;
 	}
@@ -199,7 +198,7 @@ public class InvertedPendulum implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ForceAction extends SimpleAction implements FullActionModel{
+	public class ForceActionType extends SimpleActionType implements FullActionModel{
 
 		/**
 		 * The base noise to which noise will be added.
@@ -218,7 +217,7 @@ public class InvertedPendulum implements DomainGenerator {
 		 * @param force the base force this action applies; noise will be added to this force according to the {@link InvertedPendulum#physParams} data member.
 		 * @param physParams the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.IPPhysicsParams} object specifying the physics to use for movement
 		 */
-		public ForceAction(String name, Domain domain, double force, IPPhysicsParams physParams){
+		public ForceActionType(String name, Domain domain, double force, IPPhysicsParams physParams){
 			super(name, domain);
 			this.baseForce = force;
 			this.physParams = physParams;

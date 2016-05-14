@@ -7,7 +7,7 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.*;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SimpleSGAgentAction;
 import burlap.mdp.stochasticgames.common.StaticRepeatedGameActionModel;
 import burlap.shell.SGWorldShell;
@@ -606,14 +606,14 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			Map<String, Double> rewards = new HashMap<String, Double>();
 			
 			String [] profile = new String[this.nPlayers];
-			for(GroundedSGAgentAction sa : ja){
+			for(SGAgentAction sa : ja){
 				String name = sa.actingAgent;
 				int pn = ns.playerIndex(name);
 				profile[pn] = sa.action.actionName;
 			}
 			
 			StrategyProfile stprofile = SingleStageNormalFormGame.getStrategyProfile(this.actionNameToIndex, profile);
-			for(GroundedSGAgentAction sa : ja){
+			for(SGAgentAction sa : ja){
 				String name = sa.actingAgent;
 				int pn = ns.playerIndex(name);
 				rewards.put(name, this.payouts[pn].getPayout(stprofile));
@@ -644,7 +644,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 
 		@Override
-		public boolean applicableInState(State s, GroundedSGAgentAction gsa) {
+		public boolean applicableInState(State s, SGAgentAction gsa) {
 
 			NFGameState ns = (NFGameState)s;
 

@@ -5,13 +5,11 @@ import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.mdp.core.oo.state.OOState;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -37,7 +35,7 @@ public class BoltzmannActor extends Actor {
 	/**
 	 * The actions the agent can perform
 	 */
-	protected List<Action>							actions;
+	protected List<ActionType> actionTypes;
 	
 	/**
 	 * The hashing factory used to hash states and evaluate state equality
@@ -76,19 +74,12 @@ public class BoltzmannActor extends Actor {
 	 */
 	public BoltzmannActor(Domain domain, HashableStateFactory hashingFactory, double learningRate) {
 		this.domain = domain;
-		this.actions = new ArrayList<Action>(domain.getActions());
+		this.actionTypes = new ArrayList<ActionType>(domain.getActionTypes());
 		this.hashingFactory = hashingFactory;
 		this.learningRate = new ConstantLR(learningRate);
 		
 		this.preferences = new HashMap<HashableState, BoltzmannActor.PolicyNode>();
-		
-		
-		for(Action a : actions){
-			if(a.isParameterized()){
-				containsParameterizedActions = true;
-				break;
-			}
-		}
+
 		
 	}
 	
@@ -118,18 +109,15 @@ public class BoltzmannActor extends Actor {
 	}
 
 	@Override
-	public void addNonDomainReferencedAction(Action a) {
+	public void addNonDomainReferencedAction(ActionType a) {
 		
-		if(!actions.contains(a)){
-			this.actions.add(a);
-			if(a.isParameterized()){
-				containsParameterizedActions = true;
-			}
+		if(!actionTypes.contains(a)){
+			this.actionTypes.add(a);
 		}
 	}
 
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		return this.sampleFromActionDistribution(s);
 	}
 
@@ -152,26 +140,6 @@ public class BoltzmannActor extends Actor {
 			ActionPreference ap = node.preferences.get(i);
 			probs.add(new ActionProb(ap.ga, probsArray[i]));
 		}
-
-
-
-		
-		if(this.containsParameterizedActions && s instanceof OOState){
-
-
-			List <ActionProb> translated = new ArrayList<ActionProb>(probs.size());
-
-			for(ActionProb ap : probs){
-
-				GroundedAction nga = (GroundedAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(ap.ga, node.sh.s, s);
-
-				ActionProb tap = new ActionProb(nga, ap.pSelection);
-				translated.add(tap);
-			}
-
-			return translated;
-			
-		}
 		
 		
 		return probs;
@@ -186,12 +154,12 @@ public class BoltzmannActor extends Actor {
 	protected PolicyNode getNode(HashableState sh){
 		
 		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
-		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, sh.s);
+		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, sh.s);
 		
 		PolicyNode node = this.preferences.get(sh);
 		if(node == null){
 			node = new PolicyNode(sh);
-			for(GroundedAction ga : gas){
+			for(Action ga : gas){
 				node.addPreference(new ActionPreference(ga, 0.0));
 			}
 			this.preferences.put(sh, node);
@@ -223,16 +191,14 @@ public class BoltzmannActor extends Actor {
 	 * Returns the stored {@link BoltzmannActor.ActionPreference} that is stored in a policy node. If actions are parameterized and the domain is not name dependent,
 	 * then a matching between the input state and stored state is first found and used to match the input action parameters to the stored action parameters.
 	 * @param sh the input state on which the input action was applied
-	 * @param ga the input action for which the {@link BoltzmannActor.ActionPreference} object should be returned.
+	 * @param a the input action for which the {@link BoltzmannActor.ActionPreference} object should be returned.
 	 * @param node the {@link BoltzmannActor.PolicyNode} object that contains the Action preference.
 	 * @return the {@link BoltzmannActor.ActionPreference} object for the given action stored in the given {@link BoltzmannActor.PolicyNode}; null if it does not exist.
 	 */
-	protected ActionPreference getMatchingPreference(HashableState sh, GroundedAction ga, PolicyNode node){
-		
-		GroundedAction translatedAction = ga.translateParameters(sh.s, node.sh.s);
-		
+	protected ActionPreference getMatchingPreference(HashableState sh, Action a, PolicyNode node){
+
 		for(ActionPreference p : node.preferences){
-			if(p.ga.equals(translatedAction)){
+			if(p.ga.equals(a)){
 				return p;
 			}
 		}
@@ -302,7 +268,7 @@ public class BoltzmannActor extends Actor {
 		/**
 		 * The action being evaluated.
 		 */
-		public GroundedAction 	ga;
+		public Action 	ga;
 		
 		/**
 		 * the preference for action ga.
@@ -315,7 +281,7 @@ public class BoltzmannActor extends Actor {
 		 * @param ga the action to be evaluated.
 		 * @param preference the preference for the action ga.
 		 */
-		public ActionPreference(GroundedAction ga, double preference){
+		public ActionPreference(Action ga, double preference){
 			this.ga = ga;
 			this.preference = preference;
 		}

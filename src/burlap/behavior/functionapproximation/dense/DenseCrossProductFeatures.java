@@ -1,6 +1,6 @@
 package burlap.behavior.functionapproximation.dense;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class DenseCrossProductFeatures implements DenseStateActionFeatures {
 	/**
 	 * A feature index offset for each action when using Q-value function approximation.
 	 */
-	protected Map<AbstractGroundedAction, Integer> actionOffset = new HashMap<AbstractGroundedAction, Integer>();
+	protected Map<Action, Integer> actionOffset = new HashMap<Action, Integer>();
 
 
 	public DenseCrossProductFeatures(DenseStateFeatures stateFeatures, int numActions) {
@@ -33,7 +33,7 @@ public class DenseCrossProductFeatures implements DenseStateActionFeatures {
 		this.numActions = numActions;
 	}
 
-	public DenseCrossProductFeatures(DenseStateFeatures stateFeatures, int numActions, Map<AbstractGroundedAction, Integer> actionOffset) {
+	public DenseCrossProductFeatures(DenseStateFeatures stateFeatures, int numActions, Map<Action, Integer> actionOffset) {
 		this.stateFeatures = stateFeatures;
 		this.numActions = numActions;
 		this.actionOffset = actionOffset;
@@ -56,7 +56,7 @@ public class DenseCrossProductFeatures implements DenseStateActionFeatures {
 	}
 
 	@Override
-	public double[] features(State s, AbstractGroundedAction a) {
+	public double[] features(State s, Action a) {
 
 		double [] sFeatures = stateFeatures.features(s);
 		double [] saFeatures = new double[sFeatures.length*numActions];
@@ -75,7 +75,7 @@ public class DenseCrossProductFeatures implements DenseStateActionFeatures {
 
 
 
-	public int getActionOffset(AbstractGroundedAction a){
+	public int getActionOffset(Action a){
 		Integer offset = this.actionOffset.get(a);
 		if(offset == null){
 			offset = this.actionOffset.size();

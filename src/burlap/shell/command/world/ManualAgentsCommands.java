@@ -4,8 +4,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -107,14 +107,14 @@ public class ManualAgentsCommands {
 
 			String aclass = args.get(0);
 			List<String> actionNames = args.subList(1, args.size());
-			List<SGAgentAction> actions = new ArrayList<SGAgentAction>();
+			List<SGAgentActionType> actions = new ArrayList<SGAgentActionType>();
 
 			if(actionNames.isEmpty()){
 				actions = shell.getDomain().getAgentActions();
 			}
 			else{
 				for(String aname : actionNames){
-					SGAgentAction action = shell.getDomain().getSGAgentAction(aname);
+					SGAgentActionType action = shell.getDomain().getSGAgentAction(aname);
 					if(action != null){
 						actions.add(action);
 					}
@@ -196,19 +196,14 @@ public class ManualAgentsCommands {
 			String agentName = args.get(0);
 
 			String aname = args.get(1);
-			String [] aParams = new String[args.size()-2];
-			for(int i = 2; i < args.size(); i++){
-				aParams[i] = args.get(i);
-			}
 
-			SGAgentAction action = shell.getDomain().getSGAgentAction(aname);
+			SGAgentActionType action = shell.getDomain().getSGAgentAction(aname);
 			if(action == null){
 				os.println("Cannot set action to " + aname + " because that action name is not known.");
 				return 0;
 			}
 
-			GroundedSGAgentAction ga = action.getAssociatedGroundedAction(agentName);
-			ga.initParamsWithStringRep(aParams);
+			SGAgentAction ga = action.associatedAction(agentName, this.actionArgs(args));
 
 			ManualSGAgent agent = manualAgents.get(agentName);
 			if(agent == null){
@@ -219,6 +214,17 @@ public class ManualAgentsCommands {
 			agent.setNextAction(ga);
 
 			return 0;
+		}
+
+		protected String actionArgs(List<String> commandArgs){
+			StringBuilder buf = new StringBuilder();
+			for(int i = 1; i < commandArgs.size(); i++){
+				if(i > 1){
+					buf.append(" ");
+				}
+				buf.append(commandArgs.get(i));
+			}
+			return buf.toString();
 		}
 	}
 
@@ -253,7 +259,7 @@ public class ManualAgentsCommands {
 	public static class ManualSGAgent extends SGAgent{
 
 
-		protected volatile GroundedSGAgentAction nextAction = null;
+		protected volatile SGAgentAction nextAction = null;
 
 		@Override
 		public void gameStarting() {
@@ -261,7 +267,7 @@ public class ManualAgentsCommands {
 		}
 
 		@Override
-		public GroundedSGAgentAction getAction(State s) {
+		public SGAgentAction getAction(State s) {
 
 			synchronized(this){
 				while(this.nextAction == null){
@@ -272,7 +278,7 @@ public class ManualAgentsCommands {
 					}
 				}
 			}
-			GroundedSGAgentAction toTake = this.nextAction;
+			SGAgentAction toTake = this.nextAction;
 			this.nextAction = null;
 			return toTake;
 		}
@@ -287,17 +293,19 @@ public class ManualAgentsCommands {
 			//do nothing
 		}
 
-		public void setNextAction(GroundedSGAgentAction nextAction){
+		public void setNextAction(SGAgentAction nextAction){
 			synchronized(this){
 				this.nextAction = nextAction;
 				this.notifyAll();
 			}
 		}
 
-		protected GroundedSGAgentAction getNextAction(){
+		protected SGAgentAction getNextAction(){
 			return this.nextAction;
 		}
 
 	}
+
+
 
 }

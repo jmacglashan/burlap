@@ -1,22 +1,20 @@
 package burlap.behavior.singleagent.planning.stochastic.rtdp;
 
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.debugtools.DPrint;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.debugtools.DPrint;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
 
 
 /**
@@ -83,13 +81,11 @@ public class RTDP extends DynamicProgramming implements Planner{
 	
 	
 	/**
-	 * Initializes the valueFunction. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
+	 * Initializes. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
 	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
 	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param vInit the value to the the value function for all states will be initialized
@@ -97,9 +93,9 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
-	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth){
+	public RTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, double vInit, int numRollouts, double maxDelta, int maxDepth){
 		
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, gamma, hashingFactory);
 		
 		this.numRollouts = numRollouts;
 		this.maxDelta = maxDelta;
@@ -114,13 +110,11 @@ public class RTDP extends DynamicProgramming implements Planner{
 	
 	
 	/**
-	 * Initializes the valueFunction. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
+	 * Initializes. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
 	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
 	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factor to use
 	 * @param vInit the object which defines how the value function will be initialized for each individual state.
@@ -128,9 +122,9 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
-	public RTDP(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
+	public RTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
 		
-		this.DPPInit(domain, rf, tf, gamma, hashingFactory);
+		this.DPPInit(domain, gamma, hashingFactory);
 		
 		this.numRollouts = numRollouts;
 		this.maxDelta = maxDelta;
@@ -238,12 +232,12 @@ public class RTDP extends DynamicProgramming implements Planner{
 			State curState = initialState;
 			int nSteps = 0;
 			double delta = 0;
-			while(!this.tf.isTerminal(curState) && nSteps < this.maxDepth){
+			while(!model.terminalState(curState) && nSteps < this.maxDepth){
 				
 				HashableState sh = this.hashingFactory.hashState(curState);
 				
 				//select an action
-				GroundedAction ga = (GroundedAction)this.rollOutPolicy.getAction(curState);
+				Action ga = this.rollOutPolicy.getAction(curState);
 				
 				//update this state's value
 				double curV = this.value(sh);
@@ -252,7 +246,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 				this.numberOfBellmanUpdates++;
 				
 				//take the action
-				curState = ga.sample(curState);
+				curState = model.sampleTransition(curState, ga).op;
 				nSteps++;
 			}
 			
@@ -287,7 +281,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 		int consecutiveSmallDeltas = 0;
 		for(int i = 0; i < numRollouts; i++){
 			
-			EpisodeAnalysis ea = this.rollOutPolicy.evaluateBehavior(initialState, rf, tf, maxDepth);
+			EpisodeAnalysis ea = this.rollOutPolicy.evaluateBehavior(initialState, model, maxDepth);
 			LinkedList <HashableState> orderedStates = new LinkedList<HashableState>();
 			for(State s : ea.stateSequence){
 				orderedStates.addFirst(this.stateHash(s));

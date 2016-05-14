@@ -3,7 +3,7 @@ package burlap.behavior.functionapproximation.dense.fourier;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 
@@ -15,7 +15,7 @@ import burlap.mdp.core.state.State;
  * this implementation will return alpha(j) / ||c_j||, where c_j is the coefficient vector associated with Fourier baiss function j.
  * <p>
  * Since this wrapper operates on state-action features, it will throw a runtime exception if it is queried for OO-MDP {@link State}-wise learning rate peek and poll
- * methods ({@link #peekAtLearningRate(State, AbstractGroundedAction)} and {@link #pollLearningRate(int, State, AbstractGroundedAction)}, repsectively). Instead, clients
+ * methods ({@link #peekAtLearningRate(State, Action)} and {@link #pollLearningRate(int, State, Action)}, repsectively). Instead, clients
  * should only call the {@link #peekAtLearningRate(int)} and {@link #pollLearningRate(int, int)} methods.
  * 
  * 
@@ -47,12 +47,12 @@ public class FourierBasisLearningRateWrapper implements LearningRate {
 	}
 	
 	@Override
-	public double peekAtLearningRate(State s, AbstractGroundedAction ga) {
+	public double peekAtLearningRate(State s, Action ga) {
 		throw new UnsupportedOperationException("FourierBasisLearningRateWrapper is not defined for returning learning rates on whole OO-MDP state objects. Client code should use the feature-wise peek method instead");
 	}
 
 	@Override
-	public double pollLearningRate(int agentTime, State s, AbstractGroundedAction ga) {
+	public double pollLearningRate(int agentTime, State s, Action ga) {
 		throw new UnsupportedOperationException("FourierBasisLearningRateWrapper is not defined for returning learning rates on whole OO-MDP state objects. Client code should use the feature-wise poll method instead");
 	}
 

@@ -1,30 +1,30 @@
 package burlap.mdp.singleagent.pomdp;
 
+import burlap.datastructures.HashedAggregator;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.*;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
+import burlap.mdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
+import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
-import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
+import burlap.mdp.statehashing.HashableState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * A class for taking an input POMDP (defined by a {@link burlap.mdp.singleagent.pomdp.PODomain} and turning it into
- * a BeliefMDP, which can then be input to any MDP solver to solve the POMDP. To get the belief MDP reward function,
- * create and instance of the static inner class {@link burlap.mdp.singleagent.pomdp.BeliefMDPGenerator.BeliefRF}.
- * <p>
- * The generated Belief MDP action getTransitions method, and the BeliefRF require that the input state object classes
- * implement the {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState} and {@link burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}
- * interfaces. The getTransitions method (used by planning algorithms that require the full transition dynamics)
- * also operates by iterating over all possible observations. If your domain has many observations, consider using
- * a sample-based MDP planning algorithm.
+ * a BeliefMDP, which can then be input to any MDP solver to solve the POMDP.
  * <p>
  * For more information on Belief MDPs, see the POMDP wikipedia page: https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process#Belief_MDP
  *
@@ -52,418 +52,131 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		SADomain domain = new SADomain();
 
 
-		
-		for(Action mdpAction : this.podomain.getActions()){
-			new BeliefAction(podomain, mdpAction, domain);
+		for(ActionType mdpActionType : this.podomain.getActionTypes()){
+			domain.addAction(mdpActionType);
 		}
+
+		domain.setModel(new BeliefModel(podomain));
 		
 		return domain;
 	}
 
 
-	/**
-	 * A Belief MDP action. (transitions between belief states). This requires that the input states on which the action
-	 * operates be an instance of {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState} and
-	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.  The {@link #transitions(State, burlap.mdp.singleagent.GroundedAction)} method
-	 * (used by planning algorithms that require the full transition dynamics)
-	 * operates by iterating over all possible observations.
-	 */
-	public class BeliefAction extends Action implements FullActionModel{
 
-		/**
-		 * The source POMDP action this action will turn into a Belief MDP action.
-		 */
-		protected Action pomdpAction;
+	public static class BeliefModel implements FullModel {
 
-		/**
-		 * The source POMDP domain
-		 */
+
 		protected PODomain poDomain;
 
-
-		/**
-		 * Initializes
-		 * @param poDomain the POMDP {@link burlap.mdp.singleagent.pomdp.PODomain}
-		 * @param pomdpAction the POMDP {@link burlap.mdp.singleagent.Action} that this {@link burlap.mdp.singleagent.pomdp.BeliefMDPGenerator.BeliefAction} will wrap.
-		 * @param domain the Belief MDP {@link burlap.mdp.core.Domain} to which this {@link burlap.mdp.singleagent.pomdp.BeliefMDPGenerator.BeliefAction} will be associated..
-		 */
-		public BeliefAction(PODomain poDomain, Action pomdpAction, SADomain domain){
-			super(pomdpAction.getName(), domain);
-			this.pomdpAction = pomdpAction;
+		public BeliefModel(PODomain poDomain) {
 			this.poDomain = poDomain;
 		}
-		
-		@Override
-		public boolean applicableInState(State s, GroundedAction ga){
-			//belief actions must be applicable everywhere
-			return true; 
-		}
 
 		@Override
-		public boolean isParameterized() {
-			return pomdpAction.isParameterized();
-		}
+		public List<TransitionProb> transitions(State s, Action a) {
 
-		@Override
-		public GroundedAction associatedGroundedAction() {
-			GroundedAction mga = this.pomdpAction.associatedGroundedAction();
-			if(mga instanceof AbstractObjectParameterizedGroundedAction){
-				return new ObjectParameterizedGroundedBeliefAction(this, mga);
-			}
-			else{
-				return new GroundedBeliefAction(this, mga);
+			if(!(s instanceof TabularBeliefState)) {
+				throw new RuntimeException("transitions for Belief MDP  must operate on TabularBeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");
 			}
 
-		}
-
-		@Override
-		public List<GroundedAction> allApplicableGroundedActions(State s){
-			State anMDPState = ((BeliefState)s).sampleStateFromBelief();
-			List<GroundedAction> mdpGAs = this.pomdpAction.allApplicableGroundedActions(anMDPState);
-			List<GroundedAction> beliefGAs = new ArrayList<GroundedAction>(mdpGAs.size());
-			for(GroundedAction mga : mdpGAs){
-
-				if(mga instanceof AbstractObjectParameterizedGroundedAction){
-					beliefGAs.add(new ObjectParameterizedGroundedBeliefAction(this, mga));
-				}
-				else{
-					beliefGAs.add(new GroundedBeliefAction(this, mga));
-				}
-			}
-			return beliefGAs;
-		}
-
-		@Override
-		protected State sampleHelper(State s, GroundedAction ga) {
-
-			if(!(s instanceof BeliefState)){
-				throw new RuntimeException("Belief MDP actions must operate on BeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");
-			}
-
-			BeliefState bs = (BeliefState)s;
-			
-			GroundedAction mdpGA = ((GroundedBeliefAction)ga).pomdpAction;
-			
-			//sample a current state
-			State mdpS = bs.sampleStateFromBelief();
-			//sample a next state
-			State mdpSP = mdpGA.sample(mdpS);
-			//sample an observations
-			State observation = BeliefMDPGenerator.this.podomain.getObservationFunction().sample(mdpSP, mdpGA);
-			
-			//get next belief state
-			BeliefState nbs = bs.getUpdatedBeliefState(observation, mdpGA);
-
-			
-			return nbs;
-		}
-
-		@Override
-		public boolean isPrimitive() {
-			return this.pomdpAction.isPrimitive();
-		}
-
-		@Override
-		public List<TransitionProbability> transitions(State s, GroundedAction ga){
-
-			if(!(s instanceof BeliefState) || !(s instanceof EnumerableBeliefState)){
-				throw new RuntimeException("getTransitions for Belief MDP actions must operate on EnumerableBeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");
-			}
-
-			if(!(this.poDomain.getObservationFunction() instanceof DiscreteObservationFunction)){
+			if(!(this.poDomain.getObservationFunction() instanceof DiscreteObservationFunction)) {
 				throw new RuntimeException("BeliefAction cannot return the full BeliefMDP transition dynamics distribution, because" +
 						"the POMDP observation function is not a DiscreteObservationFunction instance. Consider sampling" +
 						"with the performAction method instead.");
 			}
 
-			DiscreteObservationFunction of = (DiscreteObservationFunction)this.poDomain.getObservationFunction();
+			DiscreteObservationFunction of = (DiscreteObservationFunction) this.poDomain.getObservationFunction();
+			FullModel model = (FullModel) poDomain.getModel();
 
-			BeliefState bs = (BeliefState)s;
+			TabularBeliefState bs = (TabularBeliefState) s;
 
-			//mdp action
-			GroundedAction mdpGA = ((GroundedBeliefAction)ga).pomdpAction;
-
-			
-			List<State> observations = of.allObservations();
-			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(observations.size());
-			for(State observation : observations){
-				double p = this.probObservation(bs, observation, mdpGA);
-				if(p > 0){
-					BeliefState nbs = bs.getUpdatedBeliefState(observation, mdpGA);
-					TransitionProbability tp = new TransitionProbability(nbs, p);
-					tps.add(tp);
-				}
-			}
-			
-			List<TransitionProbability> collapsed = this.collapseTransitionProbabilityDuplicates(tps);
-			
-			return collapsed;
-		}
-
-
-		/**
-		 * Computes and returns the probability of observing an observation in a given BeleifState when a specific action is taken.
-		 * @param bs the previous belief state
-		 * @param observation the observation that will be observed
-		 * @param ga the pomdp action that would be selected in the previous belief state
-		 * @return the probability of observing the given observation
-		 */
-		protected double probObservation(BeliefState bs, State observation, GroundedAction ga){
-
-			ObservationFunction of = this.poDomain.getObservationFunction();
-			double sum = 0.;
-			List <EnumerableBeliefState.StateBelief> beliefs =((EnumerableBeliefState)bs).getStatesAndBeliefsWithNonZeroProbability();
-			for(EnumerableBeliefState.StateBelief sb : beliefs){
-				List<TransitionProbability> mdpTps = ga.transitions(sb.s);
-				for(TransitionProbability tp : mdpTps){
-					double op = of.probability(observation, tp.s, ga);
-					double term = sb.belief * tp.p * op;
-					sum += term;
-				}
-			}
-
-			return sum;
-
-		}
-
-		/**
-		 * Finds transitions that go to the same state and collapses them into a single {@link burlap.mdp.core.TransitionProbability} object
-		 * with the sum of their probabilities.
-		 * @param tps the {@link java.util.List} of transitions specified by {@link burlap.mdp.core.TransitionProbability} objects.
-		 * @return the collapsed list of {@link burlap.mdp.core.TransitionProbability} with any duplicate transitions aggregated into a single {@link burlap.mdp.core.TransitionProbability} object.
-		 */
-		protected List<TransitionProbability> collapseTransitionProbabilityDuplicates(List<TransitionProbability> tps){
-			List<TransitionProbability> collapsed = new ArrayList<TransitionProbability>(tps.size());
-			for(TransitionProbability tp : tps){
-				TransitionProbability stored = this.matchingStateTP(collapsed, tp.s);
-				if(stored == null){
-					collapsed.add(tp);
-				}
-				else{
-					stored.p += tp.p;
-				}
-			}
-			return collapsed;
-		}
-
-
-		/**
-		 * Finds a transition in the input list of transitions that matches the input state and returns it. If no match is found
-		 * then null is returned.
-		 * @param tps The input {@link java.util.List} of transitions to search.
-		 * @param s the query state for which a matching transition is to be found.
-		 * @return the {@link burlap.mdp.core.TransitionProbability} in tps that matches state s or null if one does not exist.
-		 */
-		protected TransitionProbability matchingStateTP(List<TransitionProbability> tps, State s){
-			
-			for(TransitionProbability tp : tps){
-				if(tp.s.equals(s)){
-					return tp;
-				}
-			}
-			
-			return null;
-			
-		}
-
-
-
-
-		
-	}
-
-
-	/**
-	 * A {@link burlap.mdp.singleagent.GroundedAction} implementation for a Belief MDP that curries the
-	 * {@link burlap.mdp.singleagent.GroundedAction} for the underlying POMDP. The underlying
-	 * POMDP. {@link burlap.mdp.singleagent.GroundedAction} and its parameters is stored in the
-	 * {@link #pomdpAction} datamember.
-	 */
-	public static class GroundedBeliefAction extends GroundedAction{
-
-		public GroundedAction pomdpAction;
-
-		public GroundedBeliefAction(Action action, GroundedAction pomdpAction) {
-			super(action);
-			this.pomdpAction = pomdpAction;
-		}
-
-		@Override
-		public void initParamsWithStringRep(String[] params) {
-			pomdpAction.initParamsWithStringRep(params);
-		}
-
-		@Override
-		public String[] getParametersAsString() {
-			return pomdpAction.getParametersAsString();
-		}
-
-		@Override
-		public String toString() {
-			return pomdpAction.toString();
-		}
-
-		@Override
-		public GroundedAction copy() {
-			return new GroundedBeliefAction(this.action, (GroundedAction)pomdpAction.copy());
-		}
-	}
-
-
-	/**
-	 * A {@link burlap.mdp.singleagent.GroundedAction} implementation for a Belief MDP that curries
-	 * an {@link AbstractObjectParameterizedGroundedAction} {@link burlap.mdp.singleagent.GroundedAction} for the underlying POMDP.
-	 */
-	public static class ObjectParameterizedGroundedBeliefAction extends GroundedBeliefAction implements AbstractObjectParameterizedGroundedAction{
-
-
-		public ObjectParameterizedGroundedBeliefAction(Action action, GroundedAction pomdpAction) {
-			super(action, pomdpAction);
-		}
-
-
-		@Override
-		public GroundedAction copy() {
-			return new ObjectParameterizedGroundedBeliefAction(this.action, (GroundedAction)pomdpAction.copy());
-		}
-
-		@Override
-		public String[] getObjectParameters() {
-			return ((AbstractObjectParameterizedGroundedAction)pomdpAction).getObjectParameters();
-		}
-
-		@Override
-		public void setObjectParameters(String[] params) {
-			((AbstractObjectParameterizedGroundedAction)this.pomdpAction).setObjectParameters(params);
-		}
-
-		@Override
-		public boolean actionDomainIsObjectIdentifierIndependent() {
-			return ((AbstractObjectParameterizedGroundedAction)this.pomdpAction).actionDomainIsObjectIdentifierIndependent();
-		}
-	}
-
-
-	/**
-	 * A class for turning a POMDP reward function into a Belief MDP reward function. This class requires that
-	 * the input {@link State} objects are classes that implement {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}
-	 * and {@link burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState}.
-	 * If the POMDP reward function does not depend on the next state, then this can be declared with the srcRFIsNextStateIndependent
-	 * flag in the
-	 * constructor, which will decrease the computational demands since the next states do not have to be marginalized over.
-	 */
-	public static class BeliefRF implements RewardFunction{
-
-		/**
-		 * The source POMDP domain
-		 */
-		protected PODomain			podomain;
-
-		/**
-		 * The source POMDP reward function to turn into a belief MDP reward function
-		 */
-		protected RewardFunction 	pomdpRF;
-
-		/**
-		 * A boolean flag indicating whether the POMDP reward function is independent of the next state transition.
-		 */
-		protected boolean 			srcRFIsNextStateIndependent;
-
-
-		/**
-		 * Initializes. Class will take the safe (but more computationally demanding) assumption that the POMDP reward
-		 * function depends on the next state transition.
-		 * @param podomain the source POMDP domain
-		 * @param pomdpRF the source POMDP reward function
-		 */
-		public BeliefRF(PODomain podomain, RewardFunction pomdpRF){
-			this(podomain, pomdpRF, false);
-		}
-
-
-		/**
-		 * Initializes.
-		 * @param podomain the source POMDP domain
-		 * @param pomdpRF the source POMDP reward function
-		 * @param srcRFIsNextStateIndependent a boolean flag indicating whether the POMDP reward function is independent of the next state transition.
-		 */
-		public BeliefRF(PODomain podomain, RewardFunction pomdpRF, boolean srcRFIsNextStateIndependent){
-			this.podomain = podomain;
-			this.pomdpRF = pomdpRF;
-			this.srcRFIsNextStateIndependent = srcRFIsNextStateIndependent;
-		}
-		
-		@Override
-		public double reward(State s, GroundedAction a, State sprime) {
-
-			GroundedAction mdpGA = ((GroundedBeliefAction)a).pomdpAction;
-
-			if(this.srcRFIsNextStateIndependent){
-				return this.saOnlyReward(s, mdpGA);
-			}
-			
-			return this.sasReward(s, mdpGA);
-			
-		}
-
-
-		/**
-		 * Returns the belief MDP reward when the POMDP reward function is independent from the next state transition.
-		 * @param s the input belief state
-		 * @param a the action selected.
-		 * @return the belief MDP reward
-		 */
-		protected double saOnlyReward(State s, GroundedAction a){
-
-			if(!(s instanceof BeliefState) || !(s instanceof EnumerableBeliefState)){
-				throw new RuntimeException("Belief MDP reward function must operate on EnumerableBeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");
-			}
-
-			EnumerableBeliefState bs = (EnumerableBeliefState)s;
-
-			List<EnumerableBeliefState.StateBelief> beliefs = bs.getStatesAndBeliefsWithNonZeroProbability();
-			double sum = 0.;
-			for(EnumerableBeliefState.StateBelief sb : beliefs){
-				double r = this.pomdpRF.reward(sb.s, a, null);
-				sum += sb.belief*r;
-			}
-			
-			return sum;
-		}
-
-		/**
-		 * Returns the belief MDP reward when the POMDP reward function is dependent on the next state transition. Requires marginalizing over the possible
-		 * next states.
-		 * @param s the input belief state
-		 * @param a the action selected.
-		 * @return the belief MDP reward
-		 */
-		protected double sasReward(State s, GroundedAction a){
-
-			if(!(s instanceof BeliefState) || !(s instanceof EnumerableBeliefState)){
-				throw new RuntimeException("Belief MDP reward function must operate on EnumerableBeliefState instances, but was requested to be operated on a " + s.getClass().getName() + " instance.");
-			}
-
-			BeliefState bs = (BeliefState)s;
-
-			List<EnumerableBeliefState.StateBelief> beliefs = ((EnumerableBeliefState)bs).getStatesAndBeliefsWithNonZeroProbability();
-			double sum = 0.;
-			for(EnumerableBeliefState.StateBelief sb : beliefs){
-				List<TransitionProbability> tps = a.transitions(sb.s);
+			TabularBeliefState nbsTemp = (TabularBeliefState) bs.copy();
+			nbsTemp.zeroOutBeliefVector();
+			double sumR = 0.;
+			for(EnumerableBeliefState.StateBelief sb : bs.getStatesAndBeliefsWithNonZeroProbability()) {
 				double sumTransR = 0.;
-				for(TransitionProbability tp : tps){
-					double r = this.pomdpRF.reward(sb.s, a, tp.s);
-					double wr = r*tp.p;
-					sumTransR += wr;
+				List<TransitionProb> tps = model.transitions(sb.s, a);
+				for(TransitionProb tp : tps) {
+					sumTransR += tp.p * tp.eo.r;
+					double bstProd = sb.belief * tp.p;
+					double oldSum = nbsTemp.belief(tp.eo.op);
+					nbsTemp.setBelief(tp.eo.op, bstProd + oldSum);
 				}
-				sum += sb.belief*sumTransR;
+				sumR += sumTransR;
 			}
-			
-			return sum;
+
+
+			HashableTabularBeliefStateFactory factory = new HashableTabularBeliefStateFactory();
+			HashedAggregator<HashableState> aggregator = new HashedAggregator<HashableState>();
+			List<EnumerableBeliefState.StateBelief> nsBeliefs = nbsTemp.getStatesAndBeliefsWithNonZeroProbability();
+			for(State obs : of.allObservations()) {
+
+				TabularBeliefState nbs = (TabularBeliefState) nbsTemp.copy();
+				double norm = 0.;
+
+				for(EnumerableBeliefState.StateBelief sb : nsBeliefs) {
+					double op = of.probability(obs, sb.s, a);
+					double p = op * sb.belief;
+					nbs.setBelief(sb.s, p);
+					norm += p;
+				}
+
+				if(norm != 1) {
+					for(EnumerableBeliefState.StateBelief sb : nsBeliefs) {
+						double oldP = nbs.belief(sb.s);
+						double p = oldP / norm;
+						nbs.setBelief(sb.s, p);
+					}
+				}
+
+				aggregator.add(factory.hashState(nbs), norm);
+			}
+
+			List<TransitionProb> tps = new ArrayList<TransitionProb>(aggregator.size());
+			double sumP = 0.;
+			for(Map.Entry<HashableState, Double> e : aggregator.entrySet()) {
+				State nsb = e.getKey().getSourceState();
+				double p = e.getValue();
+				sumP += p;
+				EnvironmentOutcome eo = new EnvironmentOutcome(s, a, nsb, sumR, false);
+				TransitionProb tp = new TransitionProb(p, eo);
+				tps.add(tp);
+			}
+			if(Math.abs(1 - sumP) > 1e-15) {
+				throw new RuntimeException("Final transition probabilities did not sum to 1");
+			}
+
+			return tps;
+
+
 		}
-		
-		
-		
+
+		@Override
+		public EnvironmentOutcome sampleTransition(State s, Action a) {
+
+			FullModel model = (FullModel) poDomain.getModel();
+
+			double sumR = 0.;
+			for(EnumerableBeliefState.StateBelief sb : ((EnumerableBeliefState) s).getStatesAndBeliefsWithNonZeroProbability()) {
+				double sumTransR = 0.;
+				List<TransitionProb> tps = model.transitions(sb.s, a);
+				for(TransitionProb tp : tps) {
+					sumTransR += tp.p * tp.eo.r;
+				}
+				sumR += sumTransR;
+			}
+
+
+			State curS = ((BeliefState) s).sampleStateFromBelief();
+			EnvironmentOutcome hiddenEO = model.sampleTransition(curS, a);
+			State obs = this.poDomain.obsevationFunction.sample(hiddenEO.op, a);
+
+			BeliefState nbs = ((BeliefState) s).getUpdatedBeliefState(obs, a);
+			EnvironmentOutcome eo = new EnvironmentOutcome(s, a, nbs, sumR, false);
+
+			return eo;
+		}
+
 	}
 
 

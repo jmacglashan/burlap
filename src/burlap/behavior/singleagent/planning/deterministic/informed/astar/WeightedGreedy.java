@@ -1,13 +1,13 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
-import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.Action;
 import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 
 /**
@@ -41,19 +41,17 @@ public class WeightedGreedy extends AStar {
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 * @param costWeight a fraction 0 &lt;= w &lt;= 1. When w = 0, the search is fully greedy. When w = 1, the search is optimal and equivalent to A*.
 	 */
-	public WeightedGreedy(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double costWeight) {
-		super(domain, rf, gc, hashingFactory, heuristic);
+	public WeightedGreedy(SADomain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double costWeight) {
+		super(domain, gc, hashingFactory, heuristic);
 		this.costWeight = costWeight;
 	}
 	
 	
 	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
+	public double computeF(PrioritizedSearchNode parentNode, Action generatingAction, HashableState successorState, double r) {
 		double cumR = 0.;
-		double r;
 		if(parentNode != null){
 			double pCumR = cumulatedRewardMap.get(parentNode.s);
-			r = rf.reward(parentNode.s.s, generatingAction, successorState.s);
 			cumR = pCumR + r;
 		}
 		

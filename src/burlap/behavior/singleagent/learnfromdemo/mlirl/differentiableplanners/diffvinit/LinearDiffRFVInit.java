@@ -4,7 +4,7 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
 
@@ -196,7 +196,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	}
 
 	@Override
-	public FunctionGradient getQGradient(State s, AbstractGroundedAction ga){
+	public FunctionGradient getQGradient(State s, Action ga){
 		return this.getVGradient(s);
 	}
 
@@ -214,7 +214,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	}
 
 	@Override
-	public double qValue(State s, AbstractGroundedAction a) {
+	public double qValue(State s, Action a) {
 		return this.value(s);
 	}
 

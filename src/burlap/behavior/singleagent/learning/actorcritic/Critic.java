@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.learning.actorcritic;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
 
 
 /**
@@ -20,19 +20,19 @@ public interface Critic {
 	 * This method allows the critic to critique actions that are not apart of the domain definition.
 	 * @param a a an action not apart of the of the domain definition that this critic should be able to crique.
 	 */
-	public void addNonDomainReferencedAction(Action a);
+	void addNonDomainReferencedAction(ActionType a);
 	
 	
 	/**
 	 * This method is called whenever a new learning episode begins
 	 * @param s the initial state of the new learning episode
 	 */
-	public void initializeEpisode(State s);
+	void initializeEpisode(State s);
 	
 	/**
 	 * This method is called whenever a learning episode terminates
 	 */
-	public void endEpisode();
+	void endEpisode();
 
 	
 	/**
@@ -42,11 +42,11 @@ public interface Critic {
 	 * @param sprime the state the agent transitioned to for taking action ga in state s
 	 * @return the critique of this behavior.
 	 */
-	public CritiqueResult critiqueAndUpdate(State s, GroundedAction ga, State sprime);
+	CritiqueResult critiqueAndUpdate(State s, Action ga, State sprime);
 	
 	/**
 	 * Used to reset any data that was created/modified during learning so that learning can be begin anew.
 	 */
-	public abstract void resetData();
+	void resetData();
 	
 }

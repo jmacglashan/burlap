@@ -14,5 +14,5 @@ public interface ValueFunction {
 	 * @param s the state to evaluate.
 	 * @return the value function evaluation of the given state.
 	 */
-	public double value(State s);
+	double value(State s);
 }

@@ -1,22 +1,18 @@
 package burlap.behavior.singleagent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.options.support.OptionEvaluatingRF;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.SampleModel;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The abstract super class to use for various MDP solving algorithms, including both planning and learning algorithms.
@@ -31,22 +27,15 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	/**
 	 * The domain to solve
 	 */
-	protected Domain												domain;
+	protected SADomain domain;
+
+	protected SampleModel model;
 	
 	/**
 	 * The hashing factory to use for hashing states in tabular solvers
 	 */
 	protected HashableStateFactory hashingFactory;
-	
-	/**
-	 * The task reward function
-	 */
-	protected RewardFunction										rf;
-	
-	/**
-	 * The terminal function for identifying terminal states
-	 */
-	protected TerminalFunction										tf;
+
 	
 	/**
 	 * The MDP discount factor
@@ -57,20 +46,15 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	/**
 	 * The list of actions this solver can use. May include non-domain specified actions like {@link burlap.behavior.singleagent.options.Option}s.
 	 */
-	protected List <Action>											actions;
+	protected List <ActionType> actionTypes;
 	
 	/**
 	 * A mapping to internal stored hashed states ({@link burlap.mdp.statehashing.HashableState}) that are stored.
 	 * Useful since two identical states may have different object instance name identifiers
 	 * that can affect the parameters in GroundedActions.
 	 */
-	protected Map <HashableState, HashableState>					mapToStateIndex;
-	
-//	/**
-//	 * Indicates whether the action set for this valueFunction includes object-parametrized actions that are object identifier independent
-//	 */
-//	protected boolean												containsParameterizedActions;
-	
+	//protected Map <HashableState, HashableState>					mapToStateIndex;
+
 	
 	/**
 	 * The debug code use for calls to {@link burlap.debugtools.DPrint}
@@ -78,20 +62,19 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	protected int													debugCode;
 
 	
-	
+	protected boolean usingOptionModel = false;
 
 	@Override
 	public abstract void resetSolver();
 	
 	@Override
-	public void solverInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory){
+	public void solverInit(SADomain domain, double gamma, HashableStateFactory hashingFactory){
 
-		this.rf = rf;
-		this.tf = tf;
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
+		this.model = domain.getModel();
 		
-		mapToStateIndex = new HashMap<HashableState, HashableState>();
+		//mapToStateIndex = new HashMap<HashableState, HashableState>();
 
 		this.setDomain(domain);
 		
@@ -99,38 +82,26 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	
 	
 	@Override
-	public void addNonDomainReferencedAction(Action a){
+	public void addNonDomainReferencedAction(ActionType a){
 		//make sure it doesn't already exist in the list
-		if(!actions.contains(a)){
-			actions.add(a);
-			if(a instanceof Option){
-				Option o = (Option)a;
-				o.keepTrackOfRewardWith(rf, gamma);
-				o.setExernalTermination(tf);
-				if(!(this.rf instanceof OptionEvaluatingRF)){
-					this.rf = new OptionEvaluatingRF(this.rf);
-				}
-			}
-//			if(a.isParameterized()){
-//				containsParameterizedActions = true;
-//			}
-//			if(a.getParameterClasses().length > 0){
-//				this.containsParameterizedActions = true;
-//			}
+		if(!actionTypes.contains(a)){
+			actionTypes.add(a);
 		}
 		
 	}
-	
-	
+
 	@Override
-	public void setActions(List<Action> actions){
-		this.actions = actions;
+	public void setModel(SampleModel model) {
+		this.model = model;
+	}
+
+	public void setActionTypes(List<ActionType> actionTypes){
+		this.actionTypes = actionTypes;
 	}
 
 
-	@Override
-	public List<Action> getActions(){
-		return new ArrayList<Action>(this.actions);
+	public List<ActionType> getActionTypes(){
+		return new ArrayList<ActionType>(this.actionTypes);
 	}
 
 	@Override
@@ -144,16 +115,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	}
 	
 	
-	
-	@Override
-	public void setRf(RewardFunction rf) {
-		this.rf = rf;
-	}
 
-	@Override
-	public void setTf(TerminalFunction tf) {
-		this.tf = tf;
-	}
 
 	@Override
 	public double getGamma(){
@@ -184,30 +146,21 @@ public abstract class MDPSolver implements MDPSolverInterface{
 
 
 	@Override
-	public void setDomain(Domain domain) {
+	public void setDomain(SADomain domain) {
 		this.domain = domain;
 		if(this.domain != null) {
 
-			if(this.actions != null) {
-				this.actions.clear();
+			if(this.actionTypes != null) {
+				this.actionTypes.clear();
 			}
 			else{
-				this.actions = new ArrayList<Action>(domain.getActions().size());
+				this.actionTypes = new ArrayList<ActionType>(domain.getActionTypes().size());
 			}
 
-			List<Action> actions = domain.getActions();
-			this.actions = new ArrayList<Action>(actions.size());
-			for(Action a : actions) {
-				this.actions.add(a);
-				if(a instanceof Option) {
-					Option o = (Option) a;
-					o.keepTrackOfRewardWith(rf, gamma);
-					o.setExernalTermination(tf);
-					o.setExpectationHashingFactory(hashingFactory);
-					if(!(this.rf instanceof OptionEvaluatingRF)) {
-						this.rf = new OptionEvaluatingRF(this.rf);
-					}
-				}
+			List<ActionType> actionTypes = domain.getActionTypes();
+			this.actionTypes = new ArrayList<ActionType>(actionTypes.size());
+			for(ActionType a : actionTypes) {
+				this.actionTypes.add(a);
 			}
 		}
 	}
@@ -217,41 +170,8 @@ public abstract class MDPSolver implements MDPSolverInterface{
 		return domain;
 	}
 
-	@Override
-	public RewardFunction getRf() {
-		return rf;
-	}
 
-	@Override
-	public TerminalFunction getTf() {
-		return tf;
-	}
 
-	/**
-	 * Takes a source GroundedAction and a matching between object instances of two different states and returns a GroundedAction
-	 * with parameters using the matched parameters if the GroundedAction is an instance of {@link AbstractObjectParameterizedGroundedAction}.
-	 * This method is useful a stored state and action pair in the valueFunction data structure has different
-	 * object name identifiers than a query state that is otherwise identical. The matching is from the state in which the source action is applied
-	 * to some target state that is not provided to this method.
-	 * @param a the source action that needs to be translated
-	 * @param matching a map from object instance names to other object instance names.
-	 * @return and new GroundedAction with object parametrization that follow from the matching
-	 */
-	protected GroundedAction translateAction(GroundedAction a, Map <String,String> matching){
-		if(!(a instanceof AbstractObjectParameterizedGroundedAction)){
-			return a;
-		}
-
-		GroundedAction nga = (GroundedAction)a.copy();
-		String [] params = ((AbstractObjectParameterizedGroundedAction)a).getObjectParameters();
-
-		String [] newParams = new String[params.length];
-		for(int i = 0; i < params.length; i++){
-			newParams[i] = matching.get(params[i]);
-		}
-		((AbstractObjectParameterizedGroundedAction)nga).setObjectParameters(newParams);
-		return nga;
-	}
 	
 	/**
 	 * A shorthand method for hashing a state.
@@ -268,9 +188,9 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	 * @param s the source state for which to get all GroundedActions.
 	 * @return all GroundedActions.
 	 */
-	protected List <GroundedAction> getAllGroundedActions(State s){
+	protected List <Action> getAllGroundedActions(State s){
 
-		return Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
+		return ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
 		
 	}
 	

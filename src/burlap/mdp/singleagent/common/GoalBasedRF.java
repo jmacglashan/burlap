@@ -2,9 +2,9 @@ package burlap.mdp.singleagent.common;
 
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.auxiliary.stateconditiontest.TFGoalCondition;
-import burlap.mdp.core.state.State;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.RewardFunction;
 
 
@@ -112,7 +112,7 @@ public class GoalBasedRF implements RewardFunction {
 	}
 
 	@Override
-	public double reward(State s, GroundedAction a, State sprime) {
+	public double reward(State s, Action a, State sprime) {
 		
 		if(gc.satisfies(sprime)){
 			return goalReward;

@@ -1,17 +1,15 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.management.RuntimeErrorException;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner.PlanningFailedException;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+
+import javax.management.RuntimeErrorException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -54,13 +52,13 @@ public class DDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 	
 	
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		return dp.querySelectedActionForState(s);
 	}
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		GroundedAction selectedAction = (GroundedAction)this.getAction(s);
+		Action selectedAction = this.getAction(s);
 		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
 		ActionProb ap = new ActionProb(selectedAction, 1.);
 		res.add(ap);
@@ -75,7 +73,7 @@ public class DDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 
 	@Override
 	public boolean isDefinedFor(State s) {
-		GroundedAction ga = null;
+		Action ga = null;
 		try{
 			ga = dp.querySelectedActionForState(s);
 		}catch(PlanningFailedException e){

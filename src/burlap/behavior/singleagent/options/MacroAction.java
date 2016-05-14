@@ -1,54 +1,39 @@
 package burlap.behavior.singleagent.options;
 
+import burlap.behavior.policy.Policy.ActionProb;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.environment.Environment;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import burlap.behavior.policy.Policy.ActionProb;
-import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.SimpleGroundedAction;
-
 
 /**
- * A macro action is an action that always executes a sequence of actions.
+ * A macro action is a non-Markov option that always executes a fixed sequence of actions
  * @author James MacGlashan
  *
  */
-public class MacroAction extends Option {
+public class MacroAction implements Option {
 
-	
+
+	/**
+	 * The name of the action
+	 */
+	protected String name;
+
 	/**
 	 * The list of actions that will be executed in order when this macro-action is called.
 	 */
-	protected List<GroundedAction>				actionSequence;
+	protected List<Action> actionSequence;
 	
 	/**
 	 * the current execution index of the macro-action sequence. Every time this action is executed,
 	 * it will start at index 0.
 	 */
-	protected int								curIndex;
+	protected int curIndex;
 
-	@Override
-	public boolean applicableInState(State s, GroundedAction groundedAction) {
-		return this.actionSequence.get(0).applicableInState(s);
-	}
-
-	@Override
-	public boolean isParameterized() {
-		return false;
-	}
-
-	@Override
-	public GroundedAction associatedGroundedAction() {
-		return new SimpleGroundedAction(this);
-	}
-
-	@Override
-	public List<GroundedAction> allApplicableGroundedActions(State s) {
-		GroundedAction ga = new SimpleGroundedAction(this);
-		return this.applicableInState(s, ga) ? Arrays.asList(ga) : new ArrayList<GroundedAction>(0);
-	}
 
 	/**
 	 * Instantiates a macro action with a given name and action sequence. The name of the macro action
@@ -56,53 +41,84 @@ public class MacroAction extends Option {
 	 * @param name the name of the macro action.
 	 * @param actionSequence the sequence of actions the macro action will execute.
 	 */
-	public MacroAction(String name, List<GroundedAction> actionSequence){
+	public MacroAction(String name, List<Action> actionSequence){
 		this.name = name;
-		this.actionSequence = new ArrayList<GroundedAction>(actionSequence);
-	}
-	
-	@Override
-	public boolean isMarkov() {
-		return false;
+		this.actionSequence = new ArrayList<Action>(actionSequence);
 	}
 
-	@Override
-	public boolean usesDeterministicTermination() {
-		return true;
-	}
 
 	@Override
-	public boolean usesDeterministicPolicy() {
-		return true;
+	public boolean applicableInState(State s) {
+		return this.actionSequence.get(0).applicableInState(s);
 	}
 
+
 	@Override
-	public double probabilityOfTermination(State s, GroundedAction groundedAction) {
+	public double probabilityOfTermination(State s) {
 		if(curIndex >= actionSequence.size()){
 			return 1.;
 		}
-		return 0.;
+		return actionSequence.get(curIndex).applicableInState(s) ? 0 : 1.;
 	}
 
 	@Override
-	public void initiateInStateHelper(State s, GroundedAction groundedAction) {
+	public void initiateInState(State s) {
 		curIndex = 0;
 	}
 
 	@Override
-	public GroundedAction oneStepActionSelection(State s, GroundedAction groundedAction) {
+	public Action oneStep(State s) {
 		
-		GroundedAction a = actionSequence.get(curIndex);
-		curIndex++;
-		
+		Action a = actionSequence.get(curIndex++);
 		return a;
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s, GroundedAction groundedAction) {
-		return this.getDeterministicPolicy(s, groundedAction);
+	public List<ActionProb> oneStepProbabilities(State s) {
+		return Arrays.asList(new ActionProb(actionSequence.get(curIndex), 1.));
 	}
 
-	
+	@Override
+	public EnvironmentOptionOutcome control(Environment env, double discount) {
+		return Option.Helper.control(this, env, discount);
+	}
 
+	@Override
+	public boolean markov() {
+		return false;
+	}
+
+	@Override
+	public String actionName() {
+		return this.name;
+	}
+
+	@Override
+	public Action copy() {
+		return new MacroAction(name, this.actionSequence);
+	}
+
+	public int actionSequenceSize(){
+		return this.actionSequence.size();
+	}
+
+	public void setCurActionSequenceIndex(int ind){
+		this.curIndex = ind;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(this == o) return true;
+		if(o == null || getClass() != o.getClass()) return false;
+
+		MacroAction that = (MacroAction) o;
+
+		return name.equals(that.name);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

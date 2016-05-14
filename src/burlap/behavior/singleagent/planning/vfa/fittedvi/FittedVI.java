@@ -9,7 +9,7 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.TerminalFunction;
@@ -88,7 +88,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 	/**
 	 * The {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} depth used when
-	 * computing Q-values for the {@link #getQs(State)} and {@link #getQ(State, AbstractGroundedAction)}
+	 * computing Q-values for the {@link #getQs(State)} and {@link #getQ(State, Action)}
 	 * methods used for control.
 	 */
 	protected int controlDepth = 1;
@@ -202,8 +202,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	}
 
 	/**
-	 * Returns the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
-	 * @return the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
+	 * Returns the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
+	 * @return the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
 	 */
 	public int getControlDepth() {
 		return controlDepth;
@@ -211,8 +211,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 
 	/**
-	 * Sets the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
-	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
+	 * Sets the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
+	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
 	 */
 	public void setControlDepth(int controlDepth) {
 		this.controlDepth = controlDepth;
@@ -220,8 +220,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 
 	/**
-	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
-	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, AbstractGroundedAction)} and {@link #getQ(State, AbstractGroundedAction)} methods).
+	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
+	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
 	 */
 	public void setPlanningAndControlDepth(int depth){
 		this.planningDepth = depth;
@@ -321,7 +321,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 		SparseSampling ss = new SparseSampling(this.domain, this.rf, this.tf, this.gamma, this.hashingFactory, this.controlDepth, this.transitionSamples);
 		ss.setValueForLeafNodes(this.leafNodeInit);
 		ss.toggleDebugPrinting(false);
@@ -345,7 +345,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 		}
 
 		@Override
-		public double qValue(State s, AbstractGroundedAction a) {
+		public double qValue(State s, Action a) {
 			return this.value(s);
 		}
 	}

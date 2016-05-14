@@ -10,11 +10,10 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
-import burlap.mdp.singleagent.common.NullAction;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.NullActionType;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.pomdp.PODomain;
@@ -151,11 +150,11 @@ public class TigerDomain implements DomainGenerator {
 		PODomain domain = new PODomain();
 
 		
-		new OpenAction(ACTION_LEFT, domain);
-		new OpenAction(ACTION_RIGHT, domain);
-		new NullAction(ACTION_LISTEN, domain);
+		new OpenActionType(ACTION_LEFT, domain);
+		new OpenActionType(ACTION_RIGHT, domain);
+		new NullActionType(ACTION_LISTEN, domain);
 		if(this.includeDoNothing){
-			new NullAction(ACTION_DO_NOTHING, domain);
+			new NullActionType(ACTION_DO_NOTHING, domain);
 		}
 
 		ObservationFunction of = new TigerObservations(this.listenAccuracy);
@@ -215,9 +214,9 @@ public class TigerDomain implements DomainGenerator {
 	 * Specifies an action for opening a door. When a door is opened, then the agent automatically faces a new pair of doors.
 	 * With the tiger's position randomly specified
 	 */
-	public class OpenAction extends SimpleAction implements FullActionModel{
+	public class OpenActionType extends SimpleActionType implements FullActionModel{
 
-		public OpenAction(String actionName, Domain domain){
+		public OpenActionType(String actionName, Domain domain){
 			super(actionName, domain);
 		}
 		

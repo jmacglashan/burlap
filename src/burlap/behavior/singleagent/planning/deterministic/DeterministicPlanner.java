@@ -1,21 +1,20 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
 
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
 
 
 /**
@@ -39,24 +38,21 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	/**
 	 * Stores the action plan found by the valueFunction as a deterministic policy
 	 */
-	protected Map <HashableState, GroundedAction>		internalPolicy;
+	protected Map <HashableState, Action>		internalPolicy;
 	
 	
 	
 	/**
-	 * Initializes the valueFunction. For some planners the reward function is not necessary, but for others that account for cost, like UFC, it should
-	 * be provided. This method will automatically call the OOMDPPlanner init with the discount factor set to 1.
+	 * Initializes the valueFunction. Automatically sets discount factor 1.
 	 * @param domain the domain in which to plan.
-	 * @param rf the reward function to use (probably should be negative to be compatible with most forward search planners)
-	 * @param tf the terminal function
 	 * @param gc test for goal conditions that should return true for goal states and false for non-goal states.
 	 * @param hashingFactory the hashing factory to use for states.
 	 */
-	public void deterministicPlannerInit(Domain domain, RewardFunction rf, TerminalFunction tf, StateConditionTest gc, HashableStateFactory hashingFactory){
+	public void deterministicPlannerInit(SADomain domain, StateConditionTest gc, HashableStateFactory hashingFactory){
 		
-		this.solverInit(domain, rf, tf, 1., hashingFactory); //goal condition doubles as termination function for deterministic planners
+		this.solverInit(domain, 1., hashingFactory); //goal condition doubles as termination function for deterministic planners
 		this.gc = gc;
-		this.internalPolicy = new HashMap<HashableState, GroundedAction>();
+		this.internalPolicy = new HashMap<HashableState, Action>();
 	
 
 	}
@@ -86,7 +82,7 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	 * @param s the state for which the suggested action is to be returned.
 	 * @return The suggested action for the given state.
 	 */
-	public GroundedAction querySelectedActionForState(State s){
+	public Action querySelectedActionForState(State s){
 		
 		HashableState sh = this.stateHash(s);
 		HashableState indexSH = mapToStateIndex.get(sh);
@@ -96,12 +92,9 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 		}
 		
 		//otherwise it's already computed
-		GroundedAction res = internalPolicy.get(sh);
-		
-		//do object matching from returned result to this query state and return result
-		res = (GroundedAction)res.translateParameters(indexSH.s, sh.s);
-		
-				
+		Action res = internalPolicy.get(sh);
+
+
 		return res;
 		
 		
@@ -148,7 +141,7 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 		SearchNode curNode = lastVisitedNode;
 		while(curNode.backPointer != null){
 			
-			if(!curNode.generatingAction.action.isPrimitive()){
+			if(curNode.generatingAction instanceof Option){
 				return true;
 			}
 			

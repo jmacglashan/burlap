@@ -1,8 +1,9 @@
 package burlap.shell.command.env;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.shell.BurlapShell;
@@ -46,8 +47,8 @@ public class ListActionsCommand implements ShellCommand{
 
 
 		if(oset.has("n")){
-			for(Action a : shell.getDomain().getActions()){
-				os.println(a.getName());
+			for(ActionType a : shell.getDomain().getActionTypes()){
+				os.println(a.typeName());
 			}
 			return 0;
 		}
@@ -63,8 +64,8 @@ public class ListActionsCommand implements ShellCommand{
 			qs = ((SimulatedPOEnvironment)env).getCurrentHiddenState();
 		}
 
-		List<GroundedAction> actions = Action.getAllApplicableGroundedActionsFromActionList(shell.getDomain().getActions(), qs);
-		for(GroundedAction ga : actions){
+		List<Action> actions = ActionUtils.allApplicableActionsForTypes(shell.getDomain().getActionTypes(), qs);
+		for(Action ga : actions){
 			os.println(ga.toString());
 		}
 

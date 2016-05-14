@@ -1,9 +1,8 @@
 package burlap.shell;
 
-import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.common.NullRewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.shell.command.ShellCommand;
@@ -63,8 +62,8 @@ public class EnvironmentShell extends BurlapShell{
 	 * @param domain the BURLAP domain
 	 * @param s the initial state for the simulated environment that will be created.
 	 */
-	public EnvironmentShell(Domain domain, State s){
-		this(domain, new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), s), System.in, System.out);
+	public EnvironmentShell(SADomain domain, State s){
+		this(domain, new SimulatedEnvironment(domain, s), System.in, System.out);
 	}
 
 

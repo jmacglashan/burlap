@@ -11,7 +11,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
@@ -137,7 +137,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		numVisits = 0;
 		
 		HashableState shi = this.stateHash(initialState);
-		root = stateNodeConstructor.generate(shi, 0, actions, actionNodeConstructor);
+		root = stateNodeConstructor.generate(shi, 0, actionTypes, actionNodeConstructor);
 		
 		uniqueStatesInTree = new HashSet<HashableState>();
 		
@@ -200,7 +200,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 
 		//if we haven't done any planning, then do so now
 		if(this.root == null){
@@ -286,8 +286,8 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		HashableState shprime = this.stateHash(anode.action.sample(node.state.s));
 		double r = rf.reward(node.state.s, anode.action, shprime.s);
 		int depthChange = 1;
-		if(!anode.action.action.isPrimitive()){
-			Option o = (Option)anode.action.action;
+		if(!anode.action.actionType.isPrimitive()){
+			Option o = (Option)anode.action.actionType;
 			depthChange = o.getLastNumSteps();
 		}
 		
@@ -313,7 +313,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		else{
 			
 			//this state is not in the tree at this depth so create it
-			snprime = stateNodeConstructor.generate(shprime, depth+1, actions, actionNodeConstructor);
+			snprime = stateNodeConstructor.generate(shprime, depth+1, actionTypes, actionNodeConstructor);
 			
 			//store it in the tree depending on how many new nodes have already been stored in this roll out
 			if(childrenLeftToAdd > 0){

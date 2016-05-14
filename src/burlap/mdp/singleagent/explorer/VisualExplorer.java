@@ -1,16 +1,13 @@
 package burlap.mdp.singleagent.explorer;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
-import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.NullRewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -69,7 +66,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 
 	protected Environment									env;
 	protected Domain										domain;
-	protected Map <String, GroundedAction>					keyActionMap;
+	protected Map <String, Action>							keyActionMap;
 	protected Map <String, String>							keyShellMap = new HashMap<String, String>();
 
 	
@@ -79,20 +76,12 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	protected JButton										actionButton;
 	protected int											cWidth;
 	protected int											cHeight;
-	
-	protected int											numSteps;
+
 
 	protected JFrame										consoleFrame;
 	protected JTextArea										stateConsole;
-	
-	//recording data members
-	protected EpisodeAnalysis 								currentEpisode = null;
-	protected List<EpisodeAnalysis>							recordedEpisodes = null;
 
-	protected double										lastReward;
-	protected String										warningMessage = "";
 
-	protected boolean										isRecording = false;
 
 	protected boolean										runLivePolling = false;
 	protected long											pollInterval;
@@ -109,8 +98,8 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 * @param painter the 2D state visualizer
 	 * @param baseState the initial state from which to explore
 	 */
-	public VisualExplorer(Domain domain, Visualizer painter, State baseState){
-		Environment env = new SimulatedEnvironment(domain, new NullRewardFunction(), new NullTermination(), baseState);
+	public VisualExplorer(SADomain domain, Visualizer painter, State baseState){
+		Environment env = new SimulatedEnvironment(domain, baseState);
 		this.init(domain, env, painter, 800, 800);
 	}
 
@@ -121,7 +110,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 * @param env the {@link burlap.mdp.singleagent.environment.Environment} with which to interact.
 	 * @param painter the 2D state visualizer
 	 */
-	public VisualExplorer(Domain domain, Environment env, Visualizer painter){
+	public VisualExplorer(SADomain domain, Environment env, Visualizer painter){
 		this.init(domain, env, painter, 800, 800);
 	}
 
@@ -134,16 +123,16 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 * @param w the width of the visualizer canvas
 	 * @param h the height of the visualizer canvas
 	 */
-	public VisualExplorer(Domain domain, Environment env, Visualizer painter, int w, int h){
+	public VisualExplorer(SADomain domain, Environment env, Visualizer painter, int w, int h){
 		this.init(domain, env, painter, w, h);
 	}
 	
-	protected void init(Domain domain, Environment env, Visualizer painter, int w, int h){
+	protected void init(SADomain domain, Environment env, Visualizer painter, int w, int h){
 		
 		this.domain = domain;
 		this.env = env;
 		this.painter = painter;
-		this.keyActionMap = new HashMap <String, GroundedAction>();
+		this.keyActionMap = new HashMap <String, Action>();
 		
 		this.keyShellMap.put("`", "reset");
 		
@@ -152,8 +141,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		
 		this.propViewer = new TextArea();
 		this.propViewer.setEditable(false);
-		
-		this.numSteps = 0;
+
 		
 	}
 
@@ -174,31 +162,14 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		return shell;
 	}
 
-	/**
-	 * Specifies a string representation of an action to execute when the specified key is pressed.
-	 * The string representation should have the first word be the action name, with spaces separating
-	 * the parameters of the string representation of each parameter value.
-	 * @param key the key that is pressed by the user
-	 * @param actionStringRep the {@link burlap.mdp.singleagent.GroundedAction} to take when the key is pressed
-	 */
-	public void addKeyAction(String key, String actionStringRep){
-		GroundedAction ga = this.getGroundedActionFromStringComps(actionStringRep.split(" "));
-		if(ga == null){
-			System.out.println("Could not parse GroundedAction string representation of " + actionStringRep + ".\n" +
-					"It is not being assigned to VisualExplorer key " + key + ".");
-		}
-		else {
-			this.keyActionMap.put(key, ga);
-		}
-	}
 
 
 	/**
 	 * Specifies which action to execute for a given key press
 	 * @param key the key that is pressed by the user
-	 * @param action the {@link burlap.mdp.singleagent.GroundedAction} to take when the key is pressed
+	 * @param action the {@link burlap.mdp.core.Action} to take when the key is pressed
 	 */
-	public void addKeyAction(String key, GroundedAction action){
+	public void addKeyAction(String key, Action action){
 		keyActionMap.put(key, action);
 	}
 
@@ -414,9 +385,9 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		if(actionCommand.length() == 0){
 			return ;
 		}
-		
-		String [] comps = actionCommand.split(" ");
-		this.executeAction(comps);
+
+		this.shell.executeCommand("ex " + actionCommand);
+
 	}
 
 
@@ -429,7 +400,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		String key = String.valueOf(e.getKeyChar());
 
 		//otherwise this could be an action, see if there is an action mapping
-		GroundedAction mappedAction = keyActionMap.get(key);
+		Action mappedAction = keyActionMap.get(key);
 		if(mappedAction != null){
 
 			this.executeAction(mappedAction);
@@ -446,92 +417,22 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		
 	}
 
-	/**
-	 * Executes the action defined in string array with the first component being the action name and the rest the parameters.
-	 * @param comps the string array defining hte action to be executed.
-	 */
-	protected void executeAction(String [] comps){
-		String actionName = comps[0];
 
-		//construct parameter list as all that remains
-		String[] params;
-		if(comps.length > 1){
-			params = new String[comps.length-1];
-			for(int i = 1; i < comps.length; i++){
-				params[i-1] = comps[i];
-			}
-		}
-		else{
-			params = new String[0];
-		}
-
-		Action action = domain.getAction(actionName);
-		if(action == null){
-			this.warningMessage = "Unknown action: " + actionName + "; nothing changed";
-			System.out.println(warningMessage);
-			this.updateState(env.currentObservation());
-		}
-		else{
-			GroundedAction ga = action.associatedGroundedAction();
-			ga.initParamsWithStringRep(params);
-			executeAction(ga);
-
-		}
-	}
-
-	/**
-	 * Gets the {@link burlap.mdp.singleagent.GroundedAction} described by the
-	 * String components where the first component is the action name and the rest
-	 * are the string representations of the parameters.
-	 * @param comps the string components that define the {@link burlap.mdp.singleagent.GroundedAction}
-	 * @return the associated {@link burlap.mdp.singleagent.GroundedAction} or null if it cannot be constructed.
-	 */
-	protected GroundedAction getGroundedActionFromStringComps(String [] comps){
-		String actionName = comps[0];
-
-		//construct parameter list as all that remains
-		String[] params;
-		if(comps.length > 1){
-			params = new String[comps.length-1];
-			for(int i = 1; i < comps.length; i++){
-				params[i-1] = comps[i];
-			}
-		}
-		else{
-			params = new String[0];
-		}
-
-		Action action = domain.getAction(actionName);
-		if(action == null){
-			return null;
-		}
-		GroundedAction ga = action.associatedGroundedAction();
-		ga.initParamsWithStringRep(params);
-		return ga;
-	}
 
 
 	/**
-	 * Executes the provided {@link burlap.mdp.singleagent.GroundedAction} in the explorer's environment and records
+	 * Executes the provided {@link burlap.mdp.core.Action} in the explorer's environment and records
 	 * the result if episodes are being recorded.
-	 * @param ga the {@link burlap.mdp.singleagent.GroundedAction} to execute.
+	 * @param ga the {@link burlap.mdp.core.Action} to execute.
 	 */
-	protected void executeAction(GroundedAction ga){
+	protected void executeAction(Action ga){
 		if(ga.applicableInState(env.currentObservation())){
 
-			EnvironmentOutcome eo = ga.executeIn(env);
-			if(this.currentEpisode != null){
-				this.currentEpisode.recordTransitionTo(ga, eo.op, eo.r);
-			}
-
-			this.lastReward = eo.r;
-
-
-			numSteps++;
+			EnvironmentOutcome eo = env.executeAction(ga);
 			this.updateState(this.env.currentObservation());
 		}
 		else{
-			this.warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
+			String warningMessage = ga.toString() + " is not applicable in the current state; nothing changed";
 			System.out.println(warningMessage);
 			this.updateState(this.env.currentObservation());
 		}

@@ -1,10 +1,10 @@
 package burlap.behavior.singleagent.learning.lspi;
 
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 
 /**
@@ -68,7 +68,7 @@ public class SARSData {
 	 * @param r the resulting reward received
 	 * @param sp the next state
 	 */
-	public void add(State s, GroundedAction a, double r, State sp){
+	public void add(State s, Action a, double r, State sp){
 		this.dataset.add(new SARS(s, a, r, sp));
 	}
 	
@@ -103,7 +103,7 @@ public class SARSData {
 		/**
 		 * The action taken inthe previous state
 		 */
-		public GroundedAction	a;
+		public Action a;
 		
 		/**
 		 * The resulting reward received
@@ -123,7 +123,7 @@ public class SARSData {
 		 * @param r the resulting reward received
 		 * @param sp the next state
 		 */
-		public SARS(State s, GroundedAction a, double r, State sp){
+		public SARS(State s, Action a, double r, State sp){
 			this.s = s;
 			this.a = a;
 			this.r = r;

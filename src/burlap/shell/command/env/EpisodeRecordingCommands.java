@@ -2,8 +2,8 @@ package burlap.shell.command.env;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.environment.*;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
@@ -44,7 +44,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 	}
 
 	@Override
-	public void observeEnvironmentActionInitiation(State o, GroundedAction action) {
+	public void observeEnvironmentActionInitiation(State o, Action action) {
 
 	}
 

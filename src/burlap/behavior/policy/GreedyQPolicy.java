@@ -1,18 +1,16 @@
 package burlap.behavior.policy;
 
+import burlap.behavior.singleagent.MDPSolverInterface;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
+import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+
+import javax.management.RuntimeErrorException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import javax.management.RuntimeErrorException;
-
-import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.mdp.core.state.State;
 
 
 
@@ -53,7 +51,7 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		List<QValue> qValues = this.qplanner.getQs(s);
 		List <QValue> maxActions = new ArrayList<QValue>();
 		maxActions.add(qValues.get(0));
@@ -70,9 +68,8 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 			}
 		}
 		int selected = rand.nextInt(maxActions.size());
-		//return translated action parameters if the action is parameterized with objects in a object identifier independent domain
-		AbstractGroundedAction srcA = maxActions.get(selected).a;
-		return AbstractObjectParameterizedGroundedAction.Helper.translateParameters(srcA, maxActions.get(selected).s, s);
+		Action srcA = maxActions.get(selected).a;
+		return srcA;
 	}
 
 	@Override
@@ -99,7 +96,7 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 			if(q.q == maxQ){
 				p = uniformMax;
 			}
-			ActionProb ap = new ActionProb(AbstractObjectParameterizedGroundedAction.Helper.translateParameters(q.a, q.s, s), p);
+			ActionProb ap = new ActionProb(q.a, p);
 			res.add(ap);
 		}
 		

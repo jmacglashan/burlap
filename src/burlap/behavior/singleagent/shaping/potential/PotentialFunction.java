@@ -17,5 +17,5 @@ public interface PotentialFunction {
 	 * @param s the input state for which to get the reward potential.
 	 * @return the reward potential from the given state.
 	 */
-	public double potentialValue(State s);
+	double potentialValue(State s);
 }

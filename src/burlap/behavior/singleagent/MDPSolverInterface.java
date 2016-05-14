@@ -1,10 +1,10 @@
 package burlap.behavior.singleagent;
 
-import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.SampleModel;
+import burlap.mdp.statehashing.HashableStateFactory;
 
 import java.util.List;
 
@@ -20,12 +20,10 @@ public interface MDPSolverInterface {
 	/**
 	 * Initializes the solver with the common elements.
 	 * @param domain the domain to be solved.
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the MDP discount factor
 	 * @param hashingFactory the hashing factory used to store states (may be set to null if the solver is not tabular)
 	 */
-	void solverInit(Domain domain, RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory);
+	void solverInit(SADomain domain, double gamma, HashableStateFactory hashingFactory);
 
 
 	/**
@@ -36,12 +34,18 @@ public interface MDPSolverInterface {
 
 	/**
 	 * Sets the domain of this solver. NOTE: this will also reset the actions this solver uses to the actions of the
-	 * provided domain. If you have previously added non-domain referenced actions through the {@link #addNonDomainReferencedAction(burlap.mdp.singleagent.Action)}
+	 * provided domain. If you have previously added non-domain referenced actions through the {@link #addNonDomainReferencedAction(ActionType)}
 	 * method, you will have to do so again.
 	 * @param domain the domain this solver should use.
 	 */
-	void setDomain(Domain domain);
+	void setDomain(SADomain domain);
 
+
+	/**
+	 * Sets the model to use for this solver
+	 * @param model the model to use
+	 */
+	void setModel(SampleModel model);
 
 	/**
 	 * Returns the {@link Domain} this solver solves.
@@ -54,13 +58,13 @@ public interface MDPSolverInterface {
 	 * should be added using this method.
 	 * @param a the action to add to the solver
 	 */
-	void addNonDomainReferencedAction(Action a);
+	void addNonDomainReferencedAction(ActionType a);
 
 	/**
 	 * Sets the action set the solver should use.
-	 * @param actions the actions the solver should use.
+	 * @param actionTypes the actions the solver should use.
 	 */
-	void setActions(List<Action> actions);
+	void setActionTypes(List<ActionType> actionTypes);
 
 	/**
 	 * Returns a copy of all actions this solver uses for reasoning; including added actions that are not part of the
@@ -68,7 +72,7 @@ public interface MDPSolverInterface {
 	 * the returned list will not modify the action list this solver uses.
 	 * @return a {@link java.util.List} of all actions this solver uses.
 	 */
-	List<Action> getActions();
+	List<ActionType> getActionTypes();
 
 
 	/**
@@ -83,32 +87,6 @@ public interface MDPSolverInterface {
 	 */
 	HashableStateFactory getHashingFactory();
 
-
-	/**
-	 * Sets the reward function used by this solver
-	 * @param rf the reward function to be used by this solver
-	 */
-	void setRf(RewardFunction rf);
-
-
-	/**
-	 * Returns the {@link burlap.mdp.singleagent.RewardFunction} this solver uses.
-	 * @return the {@link burlap.mdp.singleagent.RewardFunction} this solver uses.
-	 */
-	RewardFunction getRf();
-
-	/**
-	 * Sets the terminal state function used by this solver
-	 * @param tf the terminal function to be used by this solver
-	 */
-	void setTf(TerminalFunction tf);
-
-
-	/**
-	 * Returns the {@link burlap.mdp.core.TerminalFunction} this solver uses.
-	 * @return the {@link burlap.mdp.core.TerminalFunction} this solver uses.
-	 */
-	TerminalFunction getTf();
 
 	/**
 	 * Returns gamma, the discount factor used by this solver

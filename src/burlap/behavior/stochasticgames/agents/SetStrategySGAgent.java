@@ -6,7 +6,7 @@ import burlap.behavior.policy.Policy;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.AgentFactory;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 
@@ -40,8 +40,8 @@ public class SetStrategySGAgent extends SGAgent {
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
-		GroundedSGAgentAction actSelection = (GroundedSGAgentAction)this.policy.getAction(s);
+	public SGAgentAction getAction(State s) {
+		SGAgentAction actSelection = (SGAgentAction)this.policy.getAction(s);
 		actSelection.actingAgent = this.worldAgentName;
 		return actSelection;
 	}

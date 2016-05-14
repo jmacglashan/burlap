@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
@@ -7,11 +8,11 @@ import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSe
 import burlap.datastructures.HashIndexedHeap;
 import burlap.debugtools.DPrint;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -68,17 +69,16 @@ public class DynamicWeightedAStar extends AStar {
 	
 	
 	/**
-	 * Initializes the valueFunction.
+	 * Initializes
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function that represents costs as negative reward
 	 * @param gc should evaluate to true for goal states; false otherwise
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 * @param epsilon parameter &gt; 1 indicating greediness; the larger the value the more greedy.
 	 * @param expectedDepth the expected depth of the plan
 	 */
-	public DynamicWeightedAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double epsilon, int expectedDepth) {
-		super(domain, rf, gc, hashingFactory, heuristic);
+	public DynamicWeightedAStar(SADomain domain, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic, double epsilon, int expectedDepth) {
+		super(domain, gc, hashingFactory, heuristic);
 		this.epsilon = epsilon;
 		this.expectedDepth = expectedDepth;
 	}
@@ -139,7 +139,7 @@ public class DynamicWeightedAStar extends AStar {
 		HashIndexedHeap<PrioritizedSearchNode> openQueue = new HashIndexedHeap<PrioritizedSearchNode>(new PrioritizedSearchNode.PSNComparator());
 		Map<PrioritizedSearchNode, PrioritizedSearchNode> closedSet = new HashMap<PrioritizedSearchNode,PrioritizedSearchNode>();
 		
-		PrioritizedSearchNode ipsn = new PrioritizedSearchNode(sih, this.computeF(null, null, sih));
+		PrioritizedSearchNode ipsn = new PrioritizedSearchNode(sih, this.computeF(null, null, sih, new EnvironmentOutcome(null, null, sih.s, 0., false)));
 		this.insertIntoOpen(openQueue, ipsn);
 		
 		int nexpanded = 0;
@@ -163,19 +163,20 @@ public class DynamicWeightedAStar extends AStar {
 				break;
 			}
 			
-			if(this.tf.isTerminal(s)){
+			if(this.model.terminalState(s)){
 				continue; //do not expand terminal state
 			}
 		
 			//generate successors
-			for(Action a : actions){
+			for(ActionType a : actionTypes){
 				//List<GroundedAction> gas = s.getAllGroundedActionsFor(a);
-				List<GroundedAction> gas = a.allApplicableGroundedActions(s);
-				for(GroundedAction ga : gas){
-					State ns = ga.sample(s);
+				List<Action> gas = a.allApplicableActions(s);
+				for(Action ga : gas){
+					EnvironmentOutcome eo = this.model.sampleTransition(s, ga);
+					State ns = eo.op;
 					HashableState nsh = this.stateHash(ns);
 					
-					double F = this.computeF(node, ga, nsh);
+					double F = this.computeF(node, ga, nsh, eo.r);
 					PrioritizedSearchNode npsn = new PrioritizedSearchNode(nsh, ga, node, F);
 					
 					//check closed
@@ -221,23 +222,20 @@ public class DynamicWeightedAStar extends AStar {
 	
 	
 	
-	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
+
+	public double computeF(PrioritizedSearchNode parentNode, Action generatingAction, HashableState successorState, EnvironmentOutcome eo) {
 		double cumR = 0.;
-		double r;
 		int d = 0;
 		if(parentNode != null){
 			double pCumR = cumulatedRewardMap.get(parentNode.s);
-			r = rf.reward(parentNode.s.s, generatingAction, successorState.s);
-			cumR = pCumR + r;
+			cumR = pCumR + eo.r;
 			
 			int pD = depthMap.get(parentNode.s);
-			if(generatingAction.action.isPrimitive()){
+			if(!(generatingAction instanceof Option)){
 				d = pD + 1;
 			}
 			else{
-				Option o = (Option)generatingAction.action;
-				d = pD + o.getLastNumSteps();
+				d = pD + ((EnvironmentOptionOutcome)eo).numSteps();
 			}
 		}
 		

@@ -1,25 +1,23 @@
 package burlap.behavior.singleagent.planning.deterministic.informed.astar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode.PSNComparator;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
-import burlap.mdp.auxiliary.common.NullTermination;
-import burlap.mdp.core.Domain;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -47,16 +45,15 @@ public class IDAStar extends DeterministicPlanner {
 	
 	
 	/**
-	 * Initializes the valueFunction.
+	 * Initializes.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function that represents costs as negative reward
 	 * @param gc should evaluate to true for goal states; false otherwise
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 */
-	public IDAStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic){
+	public IDAStar(SADomain domain, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic){
 		
-		this.deterministicPlannerInit(domain, rf, new NullTermination(), gc, hashingFactory);
+		this.deterministicPlannerInit(domain, gc, hashingFactory);
 		
 		this.heuristic = heuristic;
 		nodeComparator = new PrioritizedSearchNode.PSNComparator();
@@ -133,7 +130,7 @@ public class IDAStar extends DeterministicPlanner {
 		if(this.planEndNode(lastNode)){
 			return lastNode; //succeed condition
 		}
-		if(this.tf.isTerminal(lastNode.s.s)){
+		if(this.model.terminalState(lastNode.s.s)){
 			return null; //treat like a dead end if we're at a terminal state
 		}
 		
@@ -141,21 +138,18 @@ public class IDAStar extends DeterministicPlanner {
 		State s = lastNode.s.s;
 		
 		//get all actions
-		/*List <GroundedAction> gas = new ArrayList<GroundedAction>();
-		for(Action a : actions){
-			gas.addAll(s.getAllGroundedActionsFor(a));
-		}*/
-		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
+		List<Action> gas = this.getAllGroundedActions(s);
 		
 		//generate successor nodes
 		List <PrioritizedSearchNode> successors = new ArrayList<PrioritizedSearchNode>(gas.size());
 		List <Double> successorGs = new ArrayList<Double>(gas.size());
-		for(GroundedAction ga : gas){
-			
-			State ns = ga.sample(s);
+		for(Action ga : gas){
+
+			EnvironmentOutcome eo = this.model.sampleTransition(s, ga);
+			State ns = eo.op;
 			HashableState nsh = this.stateHash(ns);
 			
-			double r = rf.reward(s, ga, ns);
+			double r = eo.r;
 			double g = cumulatedReward + r;
 			double hr = heuristic.h(ns);
 			double f = g + hr;

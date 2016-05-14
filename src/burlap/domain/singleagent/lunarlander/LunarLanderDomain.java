@@ -9,9 +9,8 @@ import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
@@ -517,13 +516,13 @@ public class LunarLanderDomain implements DomainGenerator {
 		LLPhysicsParams cphys = this.physParams.copy();
 		
 		//add actions
-		new ActionTurn(ACTION_TURN_LEFT, domain, -1., cphys);
-		new ActionTurn(ACTION_TURN_RIGHT, domain, 1., cphys);
-		new ActionIdle(ACTION_IDLE, domain, cphys);
+		new ActionTypeTurn(ACTION_TURN_LEFT, domain, -1., cphys);
+		new ActionTypeTurn(ACTION_TURN_RIGHT, domain, 1., cphys);
+		new ActionTypeIdle(ACTION_IDLE, domain, cphys);
 		
 		for(int i = 0; i < thrustValuesTemp.size(); i++){
 			double t = thrustValuesTemp.get(i);
-			new ActionThrust(ACTION_THRUST +i, domain, t, cphys);
+			new ActionTypeThrust(ACTION_THRUST +i, domain, t, cphys);
 		}
 		
 		
@@ -733,7 +732,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionTurn extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public class ActionTypeTurn extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		LLPhysicsParams physParams;
 		double dir;
@@ -745,7 +744,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param dir the direction this action will turn; +1 for clockwise, -1 for counterclockwise.
 		 * @param physParams the physics parameters being used
 		 */
-		public ActionTurn(String name, Domain domain, double dir, LLPhysicsParams physParams) {
+		public ActionTypeTurn(String name, Domain domain, double dir, LLPhysicsParams physParams) {
 			super(name, domain);
 			this.dir = dir;
 			this.physParams = physParams;
@@ -777,7 +776,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionIdle extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public class ActionTypeIdle extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		LLPhysicsParams physParams;
 		
@@ -787,7 +786,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param domain the domain of the action.
 		 * @param physParams the physics parameters being used
 		 */
-		public ActionIdle(String name, Domain domain, LLPhysicsParams physParams) {
+		public ActionTypeIdle(String name, Domain domain, LLPhysicsParams physParams) {
 			super(name, domain);
 			this.physParams = physParams;
 		}
@@ -816,7 +815,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class ActionThrust extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public class ActionTypeThrust extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		protected double thrustValue;
 		LLPhysicsParams physParams;
@@ -829,7 +828,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		 * @param thrustValue the force of thrust for this thrust action
 		 * @param physParams the physics parameters being used
 		 */
-		public ActionThrust(String name, Domain domain, double thrustValue, LLPhysicsParams physParams){
+		public ActionTypeThrust(String name, Domain domain, double thrustValue, LLPhysicsParams physParams){
 			super(name, domain);
 			this.thrustValue = thrustValue;
 			this.physParams = physParams;

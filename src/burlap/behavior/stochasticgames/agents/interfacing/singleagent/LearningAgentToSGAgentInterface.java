@@ -4,12 +4,12 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.stochasticgames.*;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.util.Map;
 
@@ -86,9 +86,9 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 		if(this.learningAgent instanceof MDPSolver){
 			SGToSADomain dgen = new SGToSADomain(this.domain, as);
 			Domain saDomain = dgen.generateDomain();
-			for(Action a : saDomain.getActions()){
-				if(a instanceof SGToSADomain.SAActionWrapper){
-					((SGToSADomain.SAActionWrapper) a).agentName = this.getAgentName();
+			for(ActionType a : saDomain.getActionTypes()){
+				if(a instanceof SGToSADomain.SAActionTypeWrapper){
+					((SGToSADomain.SAActionTypeWrapper) a).agentName = this.getAgentName();
 				}
 			}
 
@@ -103,7 +103,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
+	public SGAgentAction getAction(State s) {
 
 
 		synchronized(this.nextState){
@@ -124,7 +124,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 			this.saThread.start();
 		}
 
-		GroundedSGAgentAction toRet;
+		SGAgentAction toRet;
 		synchronized(nextAction){
 			while(nextAction.val == null){
 				try{
@@ -176,7 +176,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 		State prevState = this.currentState;
 		synchronized(this.nextAction){
-			GroundedSGAgentAction gsa = ((SGToSADomain.GroundedSAAActionWrapper)ga).wrappedSGAction;
+			SGAgentAction gsa = ((SGToSADomain.GroundedSAAActionWrapper)ga).wrappedSGAction;
 			gsa.actingAgent = this.getAgentName();
 			this.nextAction.val = gsa;
 			this.nextAction.notifyAll();
@@ -216,10 +216,10 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 
 	/**
-	 *  A wrapper that maintains a reference to a {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction} or null.
+	 *  A wrapper that maintains a reference to a {@link SGAgentAction} or null.
 	 */
 	protected static class ActionReference{
-		protected GroundedSGAgentAction val;
+		protected SGAgentAction val;
 	}
 
 

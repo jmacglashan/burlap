@@ -1,26 +1,26 @@
 package burlap.behavior.singleagent.learning.tdmethods;
 
-import java.util.LinkedList;
-
-import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
+import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
-import burlap.behavior.singleagent.options.Option;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.LinkedList;
 
 
 /**
  * Tabular SARSA(\lambda) implementation [1]. This implementation will work correctly with options [2]. The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.mdp.singleagent.environment.SimulatedEnvironment}.
- * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}
+ * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(int)}
  * method before calling {@link #planFromState(State)}. The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
  * <p>
@@ -59,8 +59,8 @@ public class SarsaLam extends QLearning {
 	 * @param learningRate the learning rate
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
-			double qInit, double learningRate, double lambda) {
+	public SarsaLam(SADomain domain, double gamma, HashableStateFactory hashingFactory,
+					double qInit, double learningRate, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate);
 		this.sarsalamInit(lambda);
@@ -80,7 +80,7 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
+	public SarsaLam(SADomain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, int maxEpisodeSize, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate, maxEpisodeSize);
@@ -105,7 +105,7 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
+	public SarsaLam(SADomain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
@@ -129,7 +129,7 @@ public class SarsaLam extends QLearning {
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
-	public SarsaLam(Domain domain, double gamma, HashableStateFactory hashingFactory,
+	public SarsaLam(SADomain domain, double gamma, HashableStateFactory hashingFactory,
 			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
@@ -155,17 +155,23 @@ public class SarsaLam extends QLearning {
 		eStepCounter = 0;
 		LinkedList<EligibilityTrace> traces = new LinkedList<SarsaLam.EligibilityTrace>();
 
-		GroundedAction action = (GroundedAction)learningPolicy.getAction(curState.s);
+		Action action = learningPolicy.getAction(curState.s);
 		QValue curQ = this.getQ(curState, action);
 
 
 
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
-			EnvironmentOutcome eo = action.executeIn(env);
+			EnvironmentOutcome eo;
+			if(!(action instanceof Option)){
+				eo = env.executeAction(action);
+			}
+			else{
+				eo = ((Option)action).control(env, this.gamma);
+			}
 
 			HashableState nextState = this.stateHash(eo.op);
-			GroundedAction nextAction = (GroundedAction)learningPolicy.getAction(nextState.s);
+			Action nextAction = learningPolicy.getAction(nextState.s);
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
 
@@ -177,14 +183,14 @@ public class SarsaLam extends QLearning {
 			//manage option specifics
 			double r = eo.r;
 			double discount = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).discount : this.gamma;
-			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps : 1;
+			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps() : 1;
 			eStepCounter += stepInc;
 
-			if(action.action.isPrimitive() || !this.shouldAnnotateOptions){
+			if(!(action instanceof Option) || !this.shouldDecomposeOptions){
 				ea.recordTransitionTo(action, nextState.s, r);
 			}
 			else{
-				ea.appendAndMergeEpisodeAnalysis(((Option)action.action).getLastExecutionResults());
+				ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);
 			}
 
 
@@ -243,12 +249,6 @@ public class SarsaLam extends QLearning {
 
 		}
 
-
-
-		if(episodeHistory.size() >= numEpisodesToStore){
-			episodeHistory.poll();
-		}
-		episodeHistory.offer(ea);
 
 		return ea;
 	}

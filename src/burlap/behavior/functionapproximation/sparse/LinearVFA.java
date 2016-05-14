@@ -3,7 +3,7 @@ package burlap.behavior.functionapproximation.sparse;
 import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
 import burlap.behavior.functionapproximation.DifferentiableStateValue;
 import burlap.behavior.functionapproximation.FunctionGradient;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 	protected FunctionGradient currentGradient = null;
 
 	protected State									lastState = null;
-	protected AbstractGroundedAction				lastAction = null;
+	protected Action lastAction = null;
 
 
 	/**
@@ -89,7 +89,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 
 
 	@Override
-	public double evaluate(State s, AbstractGroundedAction a) {
+	public double evaluate(State s, Action a) {
 
 		List<StateFeature> features = this.stateActionFeatures.features(s, a);
 		double val = 0.;
@@ -150,7 +150,7 @@ public class LinearVFA implements DifferentiableStateValue, DifferentiableStateA
 	}
 
 	@Override
-	public FunctionGradient gradient(State s, AbstractGroundedAction a) {
+	public FunctionGradient gradient(State s, Action a) {
 
 		List<StateFeature> features;
 

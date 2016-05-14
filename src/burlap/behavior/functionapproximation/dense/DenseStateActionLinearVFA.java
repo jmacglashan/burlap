@@ -2,7 +2,7 @@ package burlap.behavior.functionapproximation.dense;
 
 import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
 import burlap.behavior.functionapproximation.FunctionGradient;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
@@ -41,7 +41,7 @@ public class DenseStateActionLinearVFA implements DifferentiableStateActionValue
 	}
 
 	@Override
-	public FunctionGradient gradient(State s, AbstractGroundedAction a) {
+	public FunctionGradient gradient(State s, Action a) {
 
 		double [] features;
 		if(this.lastState == s){
@@ -68,7 +68,7 @@ public class DenseStateActionLinearVFA implements DifferentiableStateActionValue
 	}
 
 	@Override
-	public double evaluate(State s, AbstractGroundedAction a) {
+	public double evaluate(State s, Action a) {
 		this.currentFeatures = this.features.features(s, a);
 
 		if(this.stateActionWeights == null){

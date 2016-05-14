@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.shaping;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 
 
@@ -31,7 +31,7 @@ public abstract class ShapedRewardFunction implements RewardFunction {
 	 * @param sprime the successor state
 	 * @return the reward value to add to the base objective reward function.
 	 */
-	public abstract double additiveReward(State s, GroundedAction a, State sprime);
+	public abstract double additiveReward(State s, Action a, State sprime);
 	
 	
 	/**
@@ -43,7 +43,7 @@ public abstract class ShapedRewardFunction implements RewardFunction {
 	}
 	
 	@Override
-	public double reward(State s, GroundedAction a, State sprime) {
+	public double reward(State s, Action a, State sprime) {
 		return this.baseRF.reward(s, a, sprime) + this.additiveReward(s, a, sprime);
 	}
 

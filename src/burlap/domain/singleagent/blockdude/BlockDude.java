@@ -10,9 +10,8 @@ import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
@@ -167,11 +166,11 @@ public class BlockDude implements DomainGenerator{
 				.addStateClass(CLASS_BLOCK, BlockDudeCell.class);
 
 
-		new MoveAction(ACTION_EAST, domain, 1, maxx);
-		new MoveAction(ACTION_WEST, domain, -1, maxx);
-		new MoveUpAction(domain, maxx);
-		new PickupAction(domain, maxx);
-		new PutdownAction(domain, maxx);
+		new MoveActionType(ACTION_EAST, domain, 1, maxx);
+		new MoveActionType(ACTION_WEST, domain, -1, maxx);
+		new MoveUpActionType(domain, maxx);
+		new PickupActionType(domain, maxx);
+		new PutdownActionType(domain, maxx);
 
 		new HoldingBlockPF(domain);
 		new AtExitPF(domain);
@@ -491,7 +490,7 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * A class for performing a horizontal movement either east or west.
 	 */
-	public static class MoveAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class MoveActionType extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		protected int dir;
 		protected int maxx;
@@ -503,7 +502,7 @@ public class BlockDude implements DomainGenerator{
 		 * @param dir the direction of movement: +1 for east; -1 for west.
 		 * @param maxx the max x size of the world
 		 */
-		public MoveAction(String name, Domain domain, int dir, int maxx){
+		public MoveActionType(String name, Domain domain, int dir, int maxx){
 			super(name, domain);
 			this.dir = dir;
 			this.maxx = maxx;
@@ -522,12 +521,12 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * And action class for performing an up movement action.
 	 */
-	public static class MoveUpAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class MoveUpActionType extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
-		public MoveUpAction(Domain domain, int maxx){
+		public MoveUpActionType(Domain domain, int maxx){
 			super(ACTION_UP, domain);
 			this.maxx = maxx;
 		}
@@ -546,12 +545,12 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * An action class for performing a pickup action.
 	 */
-	public static class PickupAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class PickupActionType extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
-		public PickupAction(Domain domain, int maxx){
+		public PickupActionType(Domain domain, int maxx){
 			super(ACTION_PICKUP, domain);
 			this.maxx = maxx;
 		}
@@ -569,12 +568,12 @@ public class BlockDude implements DomainGenerator{
 	/**
 	 * An action class for performing a put down action.
 	 */
-	public static class PutdownAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	public static class PutdownActionType extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		protected boolean useSemiDeep;
 		protected int maxx;
 
-		public PutdownAction(Domain domain, int maxx){
+		public PutdownActionType(Domain domain, int maxx){
 			super(ACTION_PUT_DOWN, domain);
 			this.maxx = maxx;
 		}

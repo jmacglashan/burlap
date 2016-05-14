@@ -11,7 +11,6 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.World;
 import burlap.mdp.stochasticgames.WorldObserver;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.common.NullJointReward;
 import burlap.mdp.visualizer.Visualizer;
@@ -55,7 +54,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	
 	protected SGDomain								domain;
 	protected World									w;
-	protected Map <String, GroundedSGAgentAction>		keyActionMap;
+	protected Map <String, SGAgentAction>		keyActionMap;
 	protected Map <String, String>						keyShellMap;
 
 
@@ -125,7 +124,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		this.domain = domain;
 		this.w = world;
 		this.painter = painter;
-		this.keyActionMap = new HashMap <String, GroundedSGAgentAction>();
+		this.keyActionMap = new HashMap <String, SGAgentAction>();
 		this.keyShellMap = new HashMap <String, String>();
 
 		this.keyShellMap.put("`", "gs");
@@ -145,23 +144,6 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 
 
 
-	/**
-	 * Specifies the action to set for a given key press. Actions should be formatted to include
-	 * the agent name as follows: "agentName::actionName" This means
-	 * that different key presses will have to specified for different agents.
-	 * @param key the key that will cause the action to be set
-	 * @param actionStringRep the action to set when the specified key is pressed.
-	 */
-	public void addKeyAction(String key, String actionStringRep){
-		GroundedSGAgentAction action = this.parseIntoSingleActions(actionStringRep);
-		if(action != null){
-			keyActionMap.put(key, action);
-		}
-		else{
-			System.out.println("Could not parse action string representation " + actionStringRep + ". SGVisualExplorer will not add a mapping to it from key " + key);
-		}
-
-	}
 
 	
 	/**
@@ -171,7 +153,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	 * @param key the key that will cause the action to be set
 	 * @param action the action to set when the specified key is pressed.
 	 */
-	public void addKeyAction(String key, GroundedSGAgentAction action){
+	public void addKeyAction(String key, SGAgentAction action){
 		keyActionMap.put(key, action);
 	}
 
@@ -364,7 +346,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		
 
 		//otherwise this could be an action, see if there is an action mapping
-		GroundedSGAgentAction toAdd = keyActionMap.get(key);
+		SGAgentAction toAdd = keyActionMap.get(key);
 		if(toAdd != null) {
 			((JointActionCommand)this.shell.resolveCommand("ja")).addGroundedActionToJoint(toAdd);
 		}
@@ -407,38 +389,6 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		
 	}
 
-	/**
-	 * Parses a string into a {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction}. Expects format:
-	 * "agentName:actionName param1 parm2 ... paramn" If there is no SingleAction by that name or
-	 * the action and parameters are not applicable in the current state, null is returned.
-	 * @param str string rep of a grounding action in the form  "agentName:actionName param1 parm2 ... paramn"
-	 * @return a {@link burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction}
-	 */
-	protected GroundedSGAgentAction parseIntoSingleActions(String str){
-
-		String [] agentActionComps = str.split(":");
-		String aname = agentActionComps[0];
-
-		String [] actionAndParams = agentActionComps[1].split(" ");
-		String singleActionName = actionAndParams[0];
-
-		String [] params = new String[actionAndParams.length-1];
-		for(int i = 1; i < actionAndParams.length; i++){
-			params[i-1] = actionAndParams[i];
-		}
-
-		SGAgentAction sa = domain.getSGAgentAction(singleActionName);
-		if(sa == null){
-			return null;
-		}
-		GroundedSGAgentAction gsa = sa.getAssociatedGroundedAction(aname);
-		gsa.initParamsWithStringRep(params);
-		if(!sa.applicableInState(this.w.getCurrentWorldState(), gsa)){
-			return null;
-		}
-
-		return gsa;
-	}
 
 
 }

@@ -1,18 +1,14 @@
 package burlap.behavior.stochasticgames;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import burlap.behavior.policy.Policy;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.World;
+
+import java.util.*;
 
 
 /**
@@ -119,7 +115,7 @@ public abstract class JointPolicy extends Policy {
 	 * @param s the state in which the action is to be selected.
 	 * @return the single agent action to be taken according to the synchonrized joint action that was selected.
 	 */
-	public AbstractGroundedAction getAgentSynchronizedActionSelection(String agentName, State s){
+	public Action getAgentSynchronizedActionSelection(String agentName, State s){
 		
 		if(this.lastSyncedState == null || !this.lastSyncedState.equals(s)){
 			//then reset syncrhonization
@@ -128,7 +124,7 @@ public abstract class JointPolicy extends Policy {
 			this.lastSynchronizedJointAction = (JointAction)this.getAction(s);
 		}
 		
-		AbstractGroundedAction a = this.lastSynchronizedJointAction.action(agentName);
+		Action a = this.lastSynchronizedJointAction.action(agentName);
 		this.agentsSyncrhonizedSoFar.add(agentName);
 		if(this.agentsSyncrhonizedSoFar.containsAll(this.agentsInJointPolicy.keySet())){
 			//then we're finished getting the actions for all agents and enable the next query

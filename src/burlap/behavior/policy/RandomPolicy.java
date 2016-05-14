@@ -1,11 +1,11 @@
 package burlap.behavior.policy;
 
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.ActionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Random;
  * A uniform random policy for single agent domains. You may set the actions between which it randomly
  * selects by providing a domain (from which the domains primitive actions are copied into an internal list)
  * or from a list of Action objects (from which the action references are copied into an internal list).
- * You may also add additional actions with the {@link #addAction(burlap.mdp.singleagent.Action)} method
+ * You may also add additional actions with the {@link #addAction(ActionType)} method
  * or remove or clear the actions.
  * <p>
  * Upon action selection, all applicable grounded actions for the state are generated and an action is selected
@@ -27,7 +27,7 @@ public class RandomPolicy extends Policy{
 	/**
 	 * The actions from which selection is performed
 	 */
-	protected List<Action> actions;
+	protected List<ActionType> actionTypes;
 
 	/**
 	 * The random factory used to randomly select actions.
@@ -41,7 +41,7 @@ public class RandomPolicy extends Policy{
 	 * @param domain the domain containing all the primitive actions.
 	 */
 	public RandomPolicy(Domain domain){
-		this.actions = new ArrayList<Action>(domain.getActions());
+		this.actionTypes = new ArrayList<ActionType>(domain.getActionTypes());
 	}
 
 	/**
@@ -49,17 +49,17 @@ public class RandomPolicy extends Policy{
 	 * list for this policy.
 	 * @param acitons the actions to select between.
 	 */
-	public RandomPolicy(List<Action> acitons){
-		this.actions = new ArrayList<Action>(actions);
+	public RandomPolicy(List<ActionType> acitons){
+		this.actionTypes = new ArrayList<ActionType>(actionTypes);
 	}
 
 
 	/**
 	 * Adds an aciton to consider in selection.
-	 * @param action an action to consider in selection
+	 * @param actionType an action to consider in selection
 	 */
-	public void addAction(Action action){
-		this.actions.add(action);
+	public void addAction(ActionType actionType){
+		this.actionTypes.add(actionType);
 	}
 
 
@@ -68,7 +68,7 @@ public class RandomPolicy extends Policy{
 	 * calling this method then the policy will be undefined everywhere.
 	 */
 	public void clearActions(){
-		this.actions.clear();
+		this.actionTypes.clear();
 	}
 
 
@@ -77,15 +77,15 @@ public class RandomPolicy extends Policy{
 	 * @param actionName the name of the action to remove.
 	 */
 	public void removeAction(String actionName){
-		Action toRemove = null;
-		for(Action a : this.actions){
-			if(a.getName().equals(actionName)){
+		ActionType toRemove = null;
+		for(ActionType a : this.actionTypes){
+			if(a.typeName().equals(actionName)){
 				toRemove = a;
 				break;
 			}
 		}
 		if(toRemove != null){
-			this.actions.remove(toRemove);
+			this.actionTypes.remove(toRemove);
 		}
 	}
 
@@ -93,8 +93,8 @@ public class RandomPolicy extends Policy{
 	 * Returns of the list of actions that can be randomly selected.
 	 * @return the list of actions that can be randomly selected.
 	 */
-	public List<Action> getSelectionActions(){
-		return this.actions;
+	public List<ActionType> getSelectionActions(){
+		return this.actionTypes;
 	}
 
 
@@ -117,24 +117,24 @@ public class RandomPolicy extends Policy{
 
 
 	@Override
-	public AbstractGroundedAction getAction(State s) {
-		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
+	public Action getAction(State s) {
+		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
 		if(gas.isEmpty()){
 			throw new PolicyUndefinedException();
 		}
-		GroundedAction selection = gas.get(this.rand.nextInt(this.actions.size()));
+		Action selection = gas.get(this.rand.nextInt(this.actionTypes.size()));
 		return selection;
 	}
 
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
-		List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
+		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
 		if(gas.isEmpty()){
 			throw new PolicyUndefinedException();
 		}
 		double p = 1./gas.size();
 		List<ActionProb> aps = new ArrayList<ActionProb>(gas.size());
-		for(GroundedAction ga : gas){
+		for(Action ga : gas){
 			ActionProb ap = new ActionProb(ga, p);
 			aps.add(ap);
 		}
@@ -148,6 +148,6 @@ public class RandomPolicy extends Policy{
 
 	@Override
 	public boolean isDefinedFor(State s) {
-		return Action.getAllApplicableGroundedActionsFromActionList(this.actions, s).size() > 0;
+		return ActionUtils.allApplicableActionsForTypes(this.actionTypes, s).size() > 0;
 	}
 }

@@ -14,8 +14,9 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.core.*;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.oo.ObjectParameterizedAction;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.statehashing.HashableState;
 import burlap.debugtools.DPrint;
@@ -55,7 +56,7 @@ import burlap.mdp.singleagent.RewardFunction;
  * <p>
  * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is,
- * all {@link burlap.mdp.singleagent.Action} instances implement the {@link burlap.mdp.singleagent.FullActionModel} interface.). To set this class to compute the exact finite horizon value function, use the
+ * all {@link ActionType} instances implement the {@link burlap.mdp.singleagent.FullActionModel} interface.). To set this class to compute the exact finite horizon value function, use the
  * {@link #setComputeExactValueFunction(boolean)} method. Note that you cannot use {@link Option}s when using the fully Bellman update, because that would
  * required factored access to the probability of each length of each transition, which is not available from Options (it's aggregated into the transition function
  * itself). An exception will be thrown if {@link Option}s are used with the full Bellman transitions.
@@ -349,7 +350,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
+	public QValue getQ(State s, Action a) {
 		
 		HashableState sh = this.hashingFactory.hashState(s);
 		List<QValue> qs = this.rootLevelQValues.get(sh);
@@ -358,7 +359,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			qs = this.rootLevelQValues.get(sh);
 		}
 
-		if(a instanceof AbstractObjectParameterizedGroundedAction && ((AbstractObjectParameterizedGroundedAction)a).actionDomainIsObjectIdentifierIndependent()){
+		if(a instanceof ObjectParameterizedAction && ((ObjectParameterizedAction)a).actionDomainIsObjectIdentifierIndependent()){
 			HashableState storedSh = this.mapToStateIndex.get(sh);
 			a = ((GroundedAction)a).translateParameters(s, storedSh.s);
 		}
@@ -503,8 +504,8 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 				
 				//manage option stepsize modifications
 				int k = 1;
-				if(ga.action instanceof Option){
-					k = ((Option)ga.action).getLastNumSteps();
+				if(ga.actionType instanceof Option){
+					k = ((Option)ga.actionType).getLastNumSteps();
 				}
 				
 				//get reward; our rf will automatically do cumumative discounted if it's an option
@@ -532,7 +533,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			double sum = 0.;
 			List<TransitionProbability> tps = ga.transitions(sh.s);
 			
-			if(!(ga.action instanceof Option)){
+			if(!(ga.actionType instanceof Option)){
 				
 				for(TransitionProbability tp : tps){
 					

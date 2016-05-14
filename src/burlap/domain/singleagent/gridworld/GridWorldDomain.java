@@ -17,9 +17,8 @@ import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.vardomain.VariableDomain;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
@@ -470,10 +469,10 @@ public class GridWorldDomain implements DomainGenerator {
 		domain.addStateClass(CLASS_AGENT, GridAgent.class).addStateClass(CLASS_LOCATION, GridLocation.class);
 
 
-		new MovementAction(ACTION_NORTH, domain, this.transitionDynamics[0], cmap);
-		new MovementAction(ACTION_SOUTH, domain, this.transitionDynamics[1], cmap);
-		new MovementAction(ACTION_EAST, domain, this.transitionDynamics[2], cmap);
-		new MovementAction(ACTION_WEST, domain, this.transitionDynamics[3], cmap);
+		new MovementActionType(ACTION_NORTH, domain, this.transitionDynamics[0], cmap);
+		new MovementActionType(ACTION_SOUTH, domain, this.transitionDynamics[1], cmap);
+		new MovementActionType(ACTION_EAST, domain, this.transitionDynamics[2], cmap);
+		new MovementActionType(ACTION_WEST, domain, this.transitionDynamics[3], cmap);
 		
 		
 		new AtLocationPF(PF_AT_LOCATION, domain, new String[]{CLASS_AGENT, CLASS_LOCATION});
@@ -589,7 +588,7 @@ public class GridWorldDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class MovementAction extends SimpleAction implements FullActionModel{
+	public class MovementActionType extends SimpleActionType implements FullActionModel{
 
 		/**
 		 * Probabilities of the actual direction the agent will go
@@ -614,7 +613,7 @@ public class GridWorldDomain implements DomainGenerator {
 		 * @param directions the probability for each direction (index 0,1,2,3 corresponds to north,south,east,west, respectively).
 		 * @param map the map of the world
 		 */
-		public MovementAction(String name, Domain domain, double [] directions, int [][] map){
+		public MovementActionType(String name, Domain domain, double [] directions, int [][] map){
 			super(name, domain);
 			this.directionProbs = directions.clone();
 			this.rand = RandomFactory.getMapped(0);

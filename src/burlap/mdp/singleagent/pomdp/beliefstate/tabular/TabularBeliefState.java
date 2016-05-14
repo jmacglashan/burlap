@@ -1,16 +1,18 @@
 package burlap.mdp.singleagent.pomdp.beliefstate.tabular;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
+import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.TransitionProbability;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.DenseBeliefVector;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
+import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 
 import java.util.*;
 
@@ -144,39 +146,42 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public BeliefState getUpdatedBeliefState(State observation, GroundedAction ga) {
+	public BeliefState getUpdatedBeliefState(State observation, Action a) {
+		FullModel model = (FullModel)this.domain.getModel();
 		ObservationFunction of = this.domain.getObservationFunction();
-		double [] newBeliefStateVector = new double[this.numStates()];
-		double sum = 0.;
-		for(int i = 0; i < newBeliefStateVector.length; i++){
-			State ns = this.stateForId(i);
-			double op = of.probability(observation, ns, ga);
-			double transitionSum = 0.;
-			for(Map.Entry<Integer, Double> srcStateEntry : this.beliefValues.entrySet()){
-				double srcB = srcStateEntry.getValue();
-				State srcState = this.stateEnumerator.getStateForEnumerationId(srcStateEntry.getKey());
-				double tp = this.getTransitionProb(srcState, ga, ns);
-				transitionSum += srcB * tp;
+		HashedAggregator<Integer> probs = new HashedAggregator<Integer>(this.beliefValues.size());
+		for(Map.Entry<Integer, Double> bs : this.beliefValues.entrySet()){
+			List<TransitionProb> tps = model.transitions(this.stateEnumerator.getStateForEnumerationId(bs.getKey()), a);
+			for(TransitionProb tp : tps){
+				double prodProb = tp.p * bs.getValue();
+				int nsid = this.stateEnumerator.getEnumeratedID(tp.eo.op);
+				probs.add(nsid, prodProb);
 			}
-			double numerator = op * transitionSum;
-			sum += numerator;
-			newBeliefStateVector[i] = numerator;
-
 		}
 
-		if(sum == 0. || Double.isNaN(sum)){
-			throw new RuntimeException("getUpdatedBeliefState for TaubularBeliefState failed because the probability normalization is " + sum + "." +
-					"\nFailed for action: " + ga.toString() + "\nAnd observation:\n" + observation.toString());
+		double norm = 0.;
+		for(Map.Entry<Integer, Double> e : probs.entrySet()){
+			State ns = this.stateEnumerator.getStateForEnumerationId(e.getKey());
+			double ofp = of.probability(observation, ns, a);
+			double nval = ofp*e.getValue();
+			norm += nval;
 		}
 
-		TabularBeliefState newBeliefState = new TabularBeliefState(this.domain, this.stateEnumerator);
-		for(int i = 0; i < newBeliefStateVector.length; i++){
-			double nb = newBeliefStateVector[i] / sum;
-			newBeliefState.setBelief(i, nb);
+		if(norm == 0){
+			throw new RuntimeException("Cannot get updated belief state, because probabilities summed to 0");
 		}
 
+		TabularBeliefState nbs = new TabularBeliefState(domain, stateEnumerator);
+		for(Map.Entry<Integer, Double> e : probs.entrySet()){
+			double p = e.getValue() / norm;
+			if(p > 0) {
+				nbs.setBelief(e.getKey(), p);
+			}
+		}
 
-		return newBeliefState;
+		return nbs;
+
+
 	}
 
 	@Override
@@ -243,23 +248,6 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 
-	/**
-	 * Returns the probability that the underlying MDP will transition from state s to sp when taking action a in state s.
-	 * @param s the previous MDP state defined by a {@link State}
-	 * @param ga the taken action defined by a {@link burlap.mdp.singleagent.GroundedAction}
-	 * @param sp The next MDP state observed defined by a {@link State}.
-	 * @return the probability that the underlying MDP will transition from state s to sp when taking action a in state s.
-	 */
-	protected double getTransitionProb(State s, GroundedAction ga, State sp){
-		List<TransitionProbability> tps = ga.transitions(s);
-		for(TransitionProbability tp : tps){
-			if(tp.s.equals(sp)){
-				return tp.p;
-			}
-		}
-		return 0.;
-
-	}
 
 	/**
 	 * Sets this belief state to the provided. Dense belief vector. If the belief vector dimensionality does not match

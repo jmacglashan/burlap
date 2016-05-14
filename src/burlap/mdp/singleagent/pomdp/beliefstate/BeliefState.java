@@ -1,14 +1,14 @@
 package burlap.mdp.singleagent.pomdp.beliefstate;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 /**
  * An interface for defining a belief state, which is a probability distribution over MDP states. This interface
  * does not require enumerating all states, because it is possible to have a belief state over an infinite number of MDP
  * states. However, it does require that the probability density function be returnable ({@link #belief(State)},
  * to be able to sample an MDP state from the belief distribution {@link #sampleStateFromBelief()},
- * and a mechanism to update the belief state with respect to some observation and action {@link #getUpdatedBeliefState(State, burlap.mdp.singleagent.GroundedAction)}.
+ * and a mechanism to update the belief state with respect to some observation and action {@link #getUpdatedBeliefState(State, Action)}.
  *
  * @author James MacGlashan and Nakul Gopalan
  */
@@ -32,10 +32,11 @@ public interface BeliefState extends State {
 	 * Computes a new belief distribution using this BeliefState as the prior and conditioned on the given POMDP observation
 	 * and action taken.
 	 * @param observation the conditioned POMDP observation defined by a {@link State} instance.
-	 * @param ga the conditioned action selection in the previous time step.
+	 * @param a the conditioned action selection in the previous time step.
 	 * @return the new belief state distribution represented by a new {@link BeliefState} instance.
 	 */
-	BeliefState getUpdatedBeliefState(State observation, GroundedAction ga);
+	BeliefState getUpdatedBeliefState(State observation, Action a);
+
 
 	
 }

@@ -3,13 +3,13 @@ package burlap.behavior.singleagent.auxiliary;
 import burlap.behavior.policy.Policy;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.MyTimer;
-import burlap.mdp.auxiliary.common.NullTermination;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -43,27 +43,9 @@ public class StateReachability {
 	 * @return the list of {@link State} objects that are reachable from a source state.
 	 */
 	public static List <State> getReachableStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
-		return getReachableStates(from, inDomain, usingHashFactory, new NullTermination());
+		return new ArrayList<State>(getReachableHashedStates(from, inDomain, usingHashFactory));
 	}
-	
-	
-	/**
-	 * Returns the list of {@link State} objects that are reachable from a source state.
-	 * @param from the source state
-	 * @param inDomain the domain of the state
-	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the list of {@link State} objects that are reachable from a source state.
-	 */
-	public static List <State> getReachableStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
-		Set <HashableState> hashedStates = getReachableHashedStates(from, inDomain, usingHashFactory, tf);
-		List <State> states = new ArrayList<State>(hashedStates.size());
-		for(HashableState sh : hashedStates){
-			states.add(sh.s);
-		}
-		
-		return states;
-	}
+
 	
 	
 	/**
@@ -74,24 +56,16 @@ public class StateReachability {
 	 * @return the set of {@link State} objects that are reachable from a source state.
 	 */
 	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
-		return getReachableHashedStates(from, inDomain, usingHashFactory, new NullTermination());
-	}
-	
-	
-	
-	/**
-	 * Returns the set of {@link State} objects that are reachable from a source state.
-	 * @param from the source state
-	 * @param inDomain the domain of the state
-	 * @param usingHashFactory the state hashing factory to use for indexing states and testing equality.
-	 * @param tf a terminal function that prevents expansion from terminal states.
-	 * @return the set of {@link State} objects that are reachable from a source state.
-	 */
-	public static Set <HashableState> getReachableHashedStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory, TerminalFunction tf){
-		
+
+		if(!(inDomain.getModel() instanceof FullModel)){
+			throw new RuntimeException( "State reachablity requires a domain with a FullModel, but one is not provided");
+		}
+
+		FullModel model = (FullModel)inDomain.getModel();
+
 		Set<HashableState> hashedStates = new HashSet<HashableState>();
 		HashableState shi = usingHashFactory.hashState(from);
-		List <Action> actions = inDomain.getActions();
+		List <ActionType> actionTypes = inDomain.getActionTypes();
 		int nGenerated = 0;
 		
 		LinkedList <HashableState> openList = new LinkedList<HashableState>();
@@ -101,18 +75,16 @@ public class StateReachability {
 		long lastTime = firstTime;
 		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
-			if(tf.isTerminal(sh.s)){
-				continue; //don't expand
-			}
+
 			
-			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
-			for(GroundedAction ga : gas){
-				List <TransitionProbability> tps = ga.transitions(sh.s);
+			List<Action> gas = ActionUtils.allApplicableActionsForTypes(actionTypes, sh.s);
+			for(Action ga : gas){
+				List <TransitionProb> tps = model.transitions(sh.s, ga);
 				nGenerated += tps.size();
-				for(TransitionProbability tp : tps){
-					HashableState nsh = usingHashFactory.hashState(tp.s);
+				for(TransitionProb tp : tps){
+					HashableState nsh = usingHashFactory.hashState(tp.eo.op);
 					
-					if (hashedStates.add(nsh)) {
+					if (hashedStates.add(nsh) && !tp.eo.terminated) {
 						openList.offer(nsh);
 					}
 				}
@@ -142,58 +114,28 @@ public class StateReachability {
 	 * @param usingHashFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states and test equality.
 	 * @return a {@link java.util.List} of {@link State} objects that could be reached.
 	 */
-	public static List<State> getPolicyReachableStates(Policy p, State from, HashableStateFactory usingHashFactory){
-		return getPolicyReachableStates(p, from, usingHashFactory, new NullTermination());
+	public static List<State> getPolicyReachableStates(SADomain domain, Policy p, State from, HashableStateFactory usingHashFactory){
+		return new ArrayList<State>(getPolicyReachableHashedStates(domain, p, from, usingHashFactory));
 	}
 
 
+
 	/**
-	 * Finds the set of states that are reachable under a policy from a source state. Reachability under a source policy means
+	 * Finds the set of states ({@link burlap.mdp.statehashing.HashableState}) that are reachable under a policy from a source state. Reachability under a source policy means
 	 * that the space of actions considered are those that have non-zero probability of being selected by the
 	 * policy and all possible outcomes of those states are considered.
 	 * @param p the policy that must be followed
 	 * @param from the source {@link State} from which the policy would be initiated.
 	 * @param usingHashFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states and test equality.
-	 * @param tf a {@link burlap.mdp.core.TerminalFunction} that prevents further state expansion from states that are terminal states.
-	 * @return a {@link java.util.List} of {@link State} objects that could be reached.
+	 * @return a {@link java.util.Set} of {@link burlap.mdp.statehashing.HashableState} objects that could be reached.
 	 */
-	public static List<State> getPolicyReachableStates(Policy p, State from, HashableStateFactory usingHashFactory, TerminalFunction tf){
-		Set<HashableState> hashedStates = getPolicyReachableHashedStates(p, from, usingHashFactory, tf);
-		List <State> states = new ArrayList<State>(hashedStates.size());
-		for(HashableState sh : hashedStates){
-			states.add(sh.s);
+	public static Set<HashableState> getPolicyReachableHashedStates(SADomain domain, Policy p, State from, HashableStateFactory usingHashFactory){
+
+		if(!(domain.getModel() instanceof FullModel)){
+			throw new RuntimeException( "State reachablity requires a domain with a FullModel, but one is not provided");
 		}
 
-		return states;
-	}
-
-
-
-	/**
-	 * Finds the set of states ({@link burlap.mdp.statehashing.HashableState}) that are reachable under a policy from a source state. Reachability under a source policy means
-	 * that the space of actions considered are those that have non-zero probability of being selected by the
-	 * policy and all possible outcomes of those states are considered.
-	 * @param p the policy that must be followed
-	 * @param from the source {@link State} from which the policy would be initiated.
-	 * @param usingHashFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states and test equality.
-	 * @return a {@link java.util.Set} of {@link burlap.mdp.statehashing.HashableState} objects that could be reached.
-	 */
-	public static Set<HashableState> getPolicyReachableHashedStates(Policy p, State from, HashableStateFactory usingHashFactory){
-		return getPolicyReachableHashedStates(p, from, usingHashFactory, new NullTermination());
-	}
-
-
-	/**
-	 * Finds the set of states ({@link burlap.mdp.statehashing.HashableState}) that are reachable under a policy from a source state. Reachability under a source policy means
-	 * that the space of actions considered are those that have non-zero probability of being selected by the
-	 * policy and all possible outcomes of those states are considered.
-	 * @param p the policy that must be followed
-	 * @param from the source {@link State} from which the policy would be initiated.
-	 * @param usingHashFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states and test equality.
-	 * @param tf a {@link burlap.mdp.core.TerminalFunction} that prevents further state expansion from states that are terminal states.
-	 * @return a {@link java.util.Set} of {@link burlap.mdp.statehashing.HashableState} objects that could be reached.
-	 */
-	public static Set<HashableState> getPolicyReachableHashedStates(Policy p, State from, HashableStateFactory usingHashFactory, TerminalFunction tf){
+		FullModel model = (FullModel)domain.getModel();
 
 		Set<HashableState> hashedStates = new HashSet<HashableState>();
 		HashableState shi = usingHashFactory.hashState(from);
@@ -206,19 +148,17 @@ public class StateReachability {
 		MyTimer timer = new MyTimer(true);
 		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
-			if(tf.isTerminal(sh.s)){
-				continue; //don't expand
-			}
+
 
 			List<Policy.ActionProb> policyActions = p.getActionDistributionForState(sh.s);
 			for(Policy.ActionProb ap : policyActions){
 				if(ap.pSelection > 0){
-					List <TransitionProbability> tps = ((GroundedAction)ap.ga).transitions(sh.s);
+					List <TransitionProb> tps = model.transitions(sh.s, ap.ga);
 					nGenerated += tps.size();
-					for(TransitionProbability tp : tps){
-						HashableState nsh = usingHashFactory.hashState(tp.s);
+					for(TransitionProb tp : tps){
+						HashableState nsh = usingHashFactory.hashState(tp.eo.op);
 
-						if (hashedStates.add(nsh)) {
+						if (hashedStates.add(nsh) && !tp.eo.terminated) {
 							openList.offer(nsh);
 						}
 					}

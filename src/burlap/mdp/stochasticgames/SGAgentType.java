@@ -1,6 +1,6 @@
 package burlap.mdp.stochasticgames;
 
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 public class SGAgentType {
 
 	public String						typeName;
-	public List<SGAgentAction>			actions;
+	public List<SGAgentActionType>			actions;
 	
 	
 	/**
@@ -22,7 +22,7 @@ public class SGAgentType {
 	 * @param typeName the type name
 	 * @param actionsAvailableToType the available actions that this agent can take in the world.
 	 */
-	public SGAgentType(String typeName, List<SGAgentAction> actionsAvailableToType){
+	public SGAgentType(String typeName, List<SGAgentActionType> actionsAvailableToType){
 		this.typeName = typeName;
 		this.actions = actionsAvailableToType;
 	}

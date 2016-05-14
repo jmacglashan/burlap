@@ -1,6 +1,6 @@
 package burlap.behavior.functionapproximation.dense;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
@@ -14,7 +14,7 @@ public interface DenseStateActionFeatures {
 	 * @param a the input action
 	 * @return the feature vector represented as a double array.
 	 */
-	double [] features(State s, AbstractGroundedAction a);
+	double [] features(State s, Action a);
 
 	/**
 	 * Returns a copy of this {@link DenseStateActionFeatures}

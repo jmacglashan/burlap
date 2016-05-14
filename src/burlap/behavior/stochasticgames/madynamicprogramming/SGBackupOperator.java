@@ -1,9 +1,9 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
-import java.util.Map;
-
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGAgentType;
+
+import java.util.Map;
 
 
 /**
@@ -16,6 +16,6 @@ import burlap.mdp.stochasticgames.SGAgentType;
  */
 public interface SGBackupOperator {
 
-	public double performBackup(State s, String forAgent, Map<String, SGAgentType> agentDefinitions, AgentQSourceMap qSourceMap);
+	double performBackup(State s, String forAgent, Map<String, SGAgentType> agentDefinitions, AgentQSourceMap qSourceMap);
 	
 }

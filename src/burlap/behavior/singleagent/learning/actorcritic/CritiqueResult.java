@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning.actorcritic;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 
 /**
@@ -22,7 +22,7 @@ public class CritiqueResult {
 	/**
 	 * The action taken in state s
 	 */
-	protected GroundedAction		a;
+	protected Action a;
 	
 	/**
 	 * The state to which the agent transitioned for when it took action a in state s.
@@ -42,7 +42,7 @@ public class CritiqueResult {
 	 * @param sprime the state to which the agent transitioned for when it took action a in state s
 	 * @param critique the critique of this behavior.
 	 */
-	public CritiqueResult(State s, GroundedAction a, State sprime, double critique) {
+	public CritiqueResult(State s, Action a, State sprime, double critique) {
 		this.s = s;
 		this.a = a;
 		this.sprime = sprime;
@@ -62,7 +62,7 @@ public class CritiqueResult {
 	 * Returns the action of this behavior.
 	 * @return the action of this behavior.
 	 */
-	public GroundedAction getA() {
+	public Action getA() {
 		return a;
 	}
 

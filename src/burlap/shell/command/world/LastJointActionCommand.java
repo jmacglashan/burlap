@@ -2,7 +2,7 @@ package burlap.shell.command.world;
 
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.World;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -42,7 +42,7 @@ public class LastJointActionCommand implements ShellCommand {
 			os.println("No joint actions have been executed.");
 			return 0;
 		}
-		for(GroundedSGAgentAction a : ja){
+		for(SGAgentAction a : ja){
 			os.println(a.toString());
 		}
 

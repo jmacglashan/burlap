@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.learning.modellearning.rmax;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.learning.modellearning.Model;
+import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +16,20 @@ import java.util.List;
 public class UnmodeledFavoredPolicy extends Policy{
 
 	protected Policy sourcePolicy;
-	protected Model model;
-	protected List<Action> allActions;
+	protected KWIKModel model;
+	protected List<ActionType> allActionTypes;
 
 
-	public UnmodeledFavoredPolicy(Policy sourcePolicy, Model model, List <Action> actions){
+	public UnmodeledFavoredPolicy(Policy sourcePolicy, KWIKModel model, List <ActionType> actionTypes){
 		this.sourcePolicy = sourcePolicy;
 		this.model = model;
-		this.allActions = actions;
+		this.allActionTypes = actionTypes;
 	}
 
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 
-		List<AbstractGroundedAction> unmodeled = this.model.getUnmodeledActionsForState(s);
+		List<Action> unmodeled = KWIKModel.Helper.unmodeledActions(model, allActionTypes, s);
 
 		if(!unmodeled.isEmpty()){
 			return unmodeled.get(RandomFactory.getMapped(0).nextInt(unmodeled.size()));
@@ -41,12 +41,12 @@ public class UnmodeledFavoredPolicy extends Policy{
 	@Override
 	public List<ActionProb> getActionDistributionForState(State s) {
 
-		List<AbstractGroundedAction> unmodeled = this.model.getUnmodeledActionsForState(s);
+		List<Action> unmodeled = KWIKModel.Helper.unmodeledActions(model, allActionTypes, s);
 
 		if(!unmodeled.isEmpty()){
 			List<ActionProb> aps = new ArrayList<ActionProb>(unmodeled.size());
 			double p = 1./(double)unmodeled.size();
-			for(AbstractGroundedAction ga : unmodeled){
+			for(Action ga : unmodeled){
 				aps.add(new ActionProb(ga, p));
 			}
 			return aps;

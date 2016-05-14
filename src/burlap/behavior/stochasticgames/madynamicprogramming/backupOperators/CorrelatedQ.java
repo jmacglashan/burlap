@@ -11,9 +11,9 @@ import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.Corre
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 
 /**
@@ -60,8 +60,8 @@ public class CorrelatedQ implements SGBackupOperator {
 		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(forAgent);
 		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
 		
-		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, forAgent, agentDefinitions.get(forAgent).actions);
-		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, agentDefinitions.get(otherAgentName).actions);
+		List<SGAgentAction> forAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, forAgent, agentDefinitions.get(forAgent).actions);
+		List<SGAgentAction> otherAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, agentDefinitions.get(otherAgentName).actions);
 		
 		double [][] forPlayerPaoyff = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		double [][] otherPlayerPaoyff = new double[forAgentGSAs.size()][otherAgentGSAs.size()];

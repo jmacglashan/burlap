@@ -3,16 +3,14 @@ package burlap.domain.singleagent.blocksworld;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TransitionProbability;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.mdp.singleagent.oo.ObjectParameterizedAction;
+import burlap.mdp.singleagent.oo.ObjectParameterizedActionType;
 import burlap.shell.EnvironmentShell;
 
 import java.awt.*;
@@ -93,8 +91,8 @@ public class BlocksWorld implements DomainGenerator {
 		domain.addStateClass(CLASS_BLOCK, BlocksWorldBlock.class);
 		
 		
-		new StackAction(ACTION_STACK, domain);
-		new UnstackAction(ACTION_UNSTACK, domain);
+		new StackActionType(ACTION_STACK, domain);
+		new UnstackActionType(ACTION_UNSTACK, domain);
 		
 		
 		new OnBlockPF(PF_ON_BLOCK, domain);
@@ -131,16 +129,16 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class StackAction extends ObjectParameterizedAction implements FullActionModel{
+	public class StackActionType extends ObjectParameterizedActionType implements FullActionModel{
 
-		public StackAction(String name, Domain domain){
+		public StackActionType(String name, Domain domain){
 			super(name, domain, new String[]{CLASS_BLOCK, CLASS_BLOCK});
 		}
 		
 		@Override
 		public boolean applicableInState(State st, GroundedAction groundedAction){
 
-			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
 
 			//block must be clear
 			BlocksWorldState s = (BlocksWorldState)st;
@@ -158,7 +156,7 @@ public class BlocksWorld implements DomainGenerator {
 		@Override
 		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
-			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
 
 			BlocksWorldState s = (BlocksWorldState)st;
 			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
@@ -206,15 +204,15 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class UnstackAction extends ObjectParameterizedAction implements FullActionModel{
+	public class UnstackActionType extends ObjectParameterizedActionType implements FullActionModel{
 		
-		public UnstackAction(String name, Domain domain){
+		public UnstackActionType(String name, Domain domain){
 			super(name, domain, new String[]{CLASS_BLOCK});
 		}
 		
 		public boolean applicableInState(State st, GroundedAction groundedAction){
 
-			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
 
 			//block must be clear
 			BlocksWorldState s = (BlocksWorldState)st;
@@ -231,7 +229,7 @@ public class BlocksWorld implements DomainGenerator {
 		@Override
 		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
-			String [] params = ((AbstractObjectParameterizedGroundedAction)groundedAction).getObjectParameters();
+			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
 
 			BlocksWorldState s = (BlocksWorldState)st;
 			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);

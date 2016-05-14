@@ -8,20 +8,16 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.singleagent.options.support.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -104,28 +100,14 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * The maximum Q-value change that occurred in the last learning episode.
 	 */
 	protected double												maxQChangeInLastEpisode = Double.POSITIVE_INFINITY;
-	
-	
-	/**
-	 * the saved previous learning episodes
-	 */
-	protected LinkedList<EpisodeAnalysis>							episodeHistory;
-	
-	/**
-	 * The number of the most recent learning episodes to store.
-	 */
-	protected int													numEpisodesToStore;
+
 	
 	
 	/**
 	 * Whether options should be decomposed into actions in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
 	 */
 	protected boolean												shouldDecomposeOptions = true;
-	
-	/**
-	 * Whether decomposed options should have their primitive actions annotated with the options name in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
-	 */
-	protected boolean												shouldAnnotateOptions = true;
+
 	
 	
 	/**
@@ -145,7 +127,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param qInit the initial Q-value to user everywhere
 	 * @param learningRate the learning rate
 	 */
-	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
+	public QLearning(SADomain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate) {
 		this.QLInit(domain, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE);
 	}
@@ -162,7 +144,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningRate the learning rate
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
+	public QLearning(SADomain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, int maxEpisodeSize) {
 		this.QLInit(domain, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, new EpsilonGreedy(this, 0.1), maxEpisodeSize);
 	}
@@ -182,7 +164,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
+	public QLearning(SADomain domain, double gamma, HashableStateFactory hashingFactory,
 			double qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
 		this.QLInit(domain, gamma, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), learningRate, learningPolicy, maxEpisodeSize);
 	}
@@ -202,7 +184,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	public QLearning(Domain domain, double gamma, HashableStateFactory hashingFactory,
+	public QLearning(SADomain domain, double gamma, HashableStateFactory hashingFactory,
 			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize) {
 		this.QLInit(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
 	}
@@ -221,18 +203,15 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 */
-	protected void QLInit(Domain domain, double gamma, HashableStateFactory hashingFactory,
-			ValueFunctionInitialization qInitFunction, double learningRate, Policy learningPolicy, int maxEpisodeSize){
+	protected void QLInit(SADomain domain, double gamma, HashableStateFactory hashingFactory,
+						  ValueFunctionInitialization qInitFunction, double learningRate, Policy learningPolicy, int maxEpisodeSize){
 		
-		this.solverInit(domain, null, null, gamma, hashingFactory);
+		this.solverInit(domain, gamma, hashingFactory);
 		this.qIndex = new HashMap<HashableState, QLearningStateNode>();
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
 		this.maxEpisodeSize = maxEpisodeSize;
 		this.qInitFunction = qInitFunction;
-		
-		numEpisodesToStore = 1;
-		episodeHistory = new LinkedList<EpisodeAnalysis>();
 		
 		numEpisodesForPlanning = 1;
 		maxQChangeForPlanningTermination = 0.;
@@ -244,16 +223,10 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	/**
 	 * Sets the {@link burlap.mdp.singleagent.RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
 	 * and the number of simulated episodes to use for planning when
-	 * the {@link #planFromState(State)} method is called. If the
-	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
-	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
-	 * @param rf the reward function to use for planning
-	 * @param tf the terminal function to use for planning
+	 * the {@link #planFromState(State)} method is called.
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.
 	 */
-	public void initializeForPlanning(RewardFunction rf, TerminalFunction tf, int numEpisodesForPlanning){
-		this.rf = rf;
-		this.tf = tf;
+	public void initializeForPlanning(int numEpisodesForPlanning){
 		this.numEpisodesForPlanning = numEpisodesForPlanning;
 	}
 	
@@ -320,7 +293,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	
 	
 	/**
-	 * Sets whether the primitive actions taken during an options will be included as steps in produced EpisodeAnalysis objects.
+	 * Sets whether the primitive actions taken during an options will be included as steps in returned EpisodeAnalysis objects.
 	 * The default value is true. If this is set to false, then EpisodeAnalysis objects returned from a learning episode will record options
 	 * as a single "action" and the steps taken by the option will be hidden. 
 	 * @param toggle whether to decompose options into the primitive actions taken by them or not.
@@ -328,41 +301,8 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	public void toggleShouldDecomposeOption(boolean toggle){
 		
 		this.shouldDecomposeOptions = toggle;
-		for(Action a : actions){
-			if(a instanceof Option){
-				((Option)a).toggleShouldRecordResults(toggle);
-			}
-		}
 	}
-	
-	/**
-	 * Sets whether options that are decomposed into primitives will have the option that produced them and listed.
-	 * The default value is true. If option decomposition is not enabled, changing this value will do nothing. When it
-	 * is enabled and this is set to true, primitive actions taken by an option in EpisodeAnalysis objects will be
-	 * recorded with a special action name that indicates which option was called to produce the primitive action
-	 * as well as which step of the option the primitive action is. When set to false, recorded names of primitives
-	 * will be only the primitive aciton's name it will be unclear which option was taken to generate it.
-	 * @param toggle whether to annotate the primitive actions of options with the calling option's name.
-	 */
-	public void toggleShouldAnnotateOptionDecomposition(boolean toggle){
-		shouldAnnotateOptions = toggle;
-		for(Action a : actions){
-			if(a instanceof Option){
-				((Option)a).toggleShouldAnnotateResults(toggle);
-			}
-		}
-	}
-	
-	
-	
-	
-	
 
-
-
-
-	
-	
 
 	@Override
 	public List<QValue> getQs(State s) {
@@ -370,8 +310,8 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	}
 
 	@Override
-	public QValue getQ(State s, AbstractGroundedAction a) {
-		return this.getQ(this.stateHash(s), (GroundedAction)a);
+	public QValue getQ(State s, Action a) {
+		return this.getQ(this.stateHash(s), a);
 	}
 	
 	
@@ -392,17 +332,9 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 * @param a the action
 	 * @return the Q-value for a given hashed state and action; null is returned if there is not Q-value currently stored.
 	 */
-	protected QValue getQ(HashableState s, GroundedAction a) {
+	protected QValue getQ(HashableState s, Action a) {
 		QLearningStateNode node = this.getStateNode(s);
 
-		a = (GroundedAction)AbstractObjectParameterizedGroundedAction.Helper.translateParameters(a, s.s, node.s.s);
-
-		//legacy method
-//		if(a.params.length > 0 && !this.domain.isObjectIdentifierDependent() && a.parametersAreObjects()){
-//			Map<String, String> matching = s.s.getObjectMatchingTo(node.s.s, false);
-//			a = this.translateAction(a, matching);
-//		}
-		
 		for(QValue qv : node.qEntry){
 			if(qv.a.equals(a)){
 				return qv;
@@ -430,12 +362,12 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		
 		if(node == null){
 			node = new QLearningStateNode(s);
-			List<GroundedAction> gas = this.getAllGroundedActions(s.s);
+			List<Action> gas = this.getAllGroundedActions(s.s);
 			if(gas.isEmpty()){
 				gas = this.getAllGroundedActions(s.s);
 				throw new RuntimeErrorException(new Error("No possible actions in this state, cannot continue Q-learning"));
 			}
-			for(GroundedAction ga : gas){
+			for(Action ga : gas){
 				node.addQValue(ga, qInitFunction.qValue(s.s, ga));
 			}
 			
@@ -471,11 +403,11 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	@Override
 	public GreedyQPolicy planFromState(State initialState) {
 
-		if(this.rf == null || this.tf == null){
-			throw new RuntimeException("QLearning (and its subclasses) cannot execute planFromState because the reward function and/or terminal function for planning have not been set. Use the initializeForPlanning method to set them.");
+		if(this.model == null){
+			throw new RuntimeException("QLearning (and its subclasses) cannot execute planFromState because a model is not specified.");
 		}
 
-		SimulatedEnvironment env = new SimulatedEnvironment(this.domain, this.rf, this.tf, initialState);
+		SimulatedEnvironment env = new SimulatedEnvironment(this.domain, initialState);
 
 		int eCount = 0;
 		do{
@@ -496,8 +428,6 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	@Override
 	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
 
-		this.toggleShouldAnnotateOptionDecomposition(shouldAnnotateOptions);
-
 		State initialState = env.currentObservation();
 
 		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
@@ -507,10 +437,19 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		maxQChangeInLastEpisode = 0.;
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
-			GroundedAction action = (GroundedAction)learningPolicy.getAction(curState.s);
+			Action action = learningPolicy.getAction(curState.s);
 			QValue curQ = this.getQ(curState, action);
 
-			EnvironmentOutcome eo = action.executeIn(env);
+
+
+			EnvironmentOutcome eo;
+			if(!(action instanceof Option)){
+				eo = env.executeAction(action);
+			}
+			else{
+				eo = ((Option)action).control(env, this.gamma);
+			}
+
 
 
 			HashableState nextState = this.stateHash(eo.op);
@@ -523,14 +462,14 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			//manage option specifics
 			double r = eo.r;
 			double discount = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).discount : this.gamma;
-			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps : 1;
+			int stepInc = eo instanceof EnvironmentOptionOutcome ? ((EnvironmentOptionOutcome)eo).numSteps() : 1;
 			eStepCounter += stepInc;
 
-			if(action.action.isPrimitive() || !this.shouldAnnotateOptions){
+			if(!(action instanceof Option) || !this.shouldDecomposeOptions){
 				ea.recordTransitionTo(action, nextState.s, r);
 			}
 			else{
-				ea.appendAndMergeEpisodeAnalysis(((Option)action.action).getLastExecutionResults());
+				ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);
 			}
 
 
@@ -552,42 +491,18 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 
 		}
 
-		if(episodeHistory.size() >= numEpisodesToStore){
-			episodeHistory.poll();
-		}
-		episodeHistory.offer(ea);
 
 		return ea;
 
 	}
 
 
-
-	public EpisodeAnalysis getLastLearningEpisode() {
-		return episodeHistory.getLast();
-	}
-
-
-	public void setNumEpisodesToStore(int numEps) {
-		if(numEps > 0){
-			numEpisodesToStore = numEps;
-		}
-		else{
-			numEpisodesToStore = 1;
-		}
-	}
-
-
-	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
-		return episodeHistory;
-	}
 	
 	
 	@Override
 	public void resetSolver(){
 		this.mapToStateIndex.clear();
 		this.qIndex.clear();
-		this.episodeHistory.clear();
 		this.eStepCounter = 0;
 		this.maxQChangeInLastEpisode = Double.POSITIVE_INFINITY;
 	}

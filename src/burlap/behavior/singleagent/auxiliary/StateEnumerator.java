@@ -1,15 +1,14 @@
 package burlap.behavior.singleagent.auxiliary;
 
+import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.SADomain;
 
 
 /**
@@ -71,20 +70,7 @@ public class StateEnumerator {
 			this.getEnumeratedID(sh);
 		}
 	}
-	
-	
-	/**
-	 * Finds all states that are reachable from an input state and enumerates them. 
-	 * Will not search from states that are marked as terminal states.
-	 * @param from the state from which all reachable states should be searched
-	 * @param tf the terminal function that prevents expanding from terminal states
-	 */
-	public void findReachableStatesAndEnumerate(State from, TerminalFunction tf){
-		Set<HashableState> reachable = StateReachability.getReachableHashedStates(from, (SADomain)this.domain, this.hashingFactory, tf);
-		for(HashableState sh : reachable){
-			this.getEnumeratedID(sh);
-		}
-	}
+
 	
 	
 	/**

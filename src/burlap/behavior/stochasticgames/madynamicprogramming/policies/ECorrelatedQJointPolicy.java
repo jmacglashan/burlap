@@ -10,11 +10,11 @@ import burlap.behavior.stochasticgames.madynamicprogramming.MultiAgentQSourcePro
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
-import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 
 /**
@@ -85,7 +85,7 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 	}
 
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		return sampleFromActionDistribution(s);
 	}
 
@@ -101,8 +101,8 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(targetAgentName);
 		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
 		
-		List<GroundedSGAgentAction> forAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, targetAgentName, this.agentsInJointPolicy.get(targetAgentName).actions);
-		List<GroundedSGAgentAction> otherAgentGSAs = SGAgentAction.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
+		List<SGAgentAction> forAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, targetAgentName, this.agentsInJointPolicy.get(targetAgentName).actions);
+		List<SGAgentAction> otherAgentGSAs = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, otherAgentName, this.agentsInJointPolicy.get(otherAgentName).actions);
 		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		double [][] payout2 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];

@@ -5,10 +5,10 @@ import java.util.Map;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.AgentFactory;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 import burlap.mdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
 
 
@@ -23,17 +23,17 @@ public class GrimTrigger extends SGAgent {
 	/**
 	 * This agent's cooperate action
 	 */
-	protected SGAgentAction myCoop;
+	protected SGAgentActionType myCoop;
 	
 	/**
 	 * This agent's defect action
 	 */
-	protected SGAgentAction myDefect;
+	protected SGAgentActionType myDefect;
 	
 	/**
 	 * The opponent's defect action
 	 */
-	protected SGAgentAction opponentDefect;
+	protected SGAgentActionType opponentDefect;
 	
 	
 	/**
@@ -48,7 +48,7 @@ public class GrimTrigger extends SGAgent {
 	 * @param coop the cooperate action for both players
 	 * @param defect the defect action for both players
 	 */
-	public GrimTrigger(SGDomain domain, SGAgentAction coop, SGAgentAction defect){
+	public GrimTrigger(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
 		this.init(domain);
 		this.myCoop = coop;
 		this.myDefect = defect;
@@ -63,7 +63,7 @@ public class GrimTrigger extends SGAgent {
 	 * @param myDefect this agent's defect action
 	 * @param opponentDefect the opponent's defect action
 	 */
-	public GrimTrigger(SGDomain domain, SGAgentAction myCoop, SGAgentAction myDefect, SGAgentAction opponentDefect){
+	public GrimTrigger(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentDefect){
 		this.init(domain);
 		this.myCoop = myCoop;
 		this.myDefect = myDefect;
@@ -76,7 +76,7 @@ public class GrimTrigger extends SGAgent {
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
+	public SGAgentAction getAction(State s) {
 		if(this.grimTrigger){
 			return new SimpleGroundedSGAgentAction(this.worldAgentName, myDefect);
 		}
@@ -87,7 +87,7 @@ public class GrimTrigger extends SGAgent {
 	public void observeOutcome(State s, JointAction jointAction,
 			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		
-		for(GroundedSGAgentAction gsa : jointAction){
+		for(SGAgentAction gsa : jointAction){
 			if(!gsa.actingAgent.equals(this.worldAgentName) && this.opponentDefect.actionName.equals(gsa.action.actionName)){
 			    grimTrigger = true;
 			}
@@ -111,17 +111,17 @@ public class GrimTrigger extends SGAgent {
 		/**
 		 * The agent's cooperate action
 		 */
-		protected SGAgentAction myCoop;
+		protected SGAgentActionType myCoop;
 		
 		/**
 		 * The agent's defect action
 		 */
-		protected SGAgentAction myDefect;
+		protected SGAgentActionType myDefect;
 		
 		/**
 		 * The opponent's defect action
 		 */
-		protected SGAgentAction opponentDefect;
+		protected SGAgentActionType opponentDefect;
 		
 		/**
 		 * The domain in which the agent will play
@@ -135,7 +135,7 @@ public class GrimTrigger extends SGAgent {
 		 * @param coop the cooperate action for both players
 		 * @param defect the defect action for both players
 		 */
-		public GrimTriggerAgentFactory(SGDomain domain, SGAgentAction coop, SGAgentAction defect){
+		public GrimTriggerAgentFactory(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
 			this.domain = domain;
 			this.myCoop = coop;
 			this.myDefect = defect;
@@ -150,7 +150,7 @@ public class GrimTrigger extends SGAgent {
 		 * @param myDefect the agent's defect action
 		 * @param opponentDefect the opponent's defect action
 		 */
-		public GrimTriggerAgentFactory(SGDomain domain, SGAgentAction myCoop, SGAgentAction myDefect, SGAgentAction opponentDefect){
+		public GrimTriggerAgentFactory(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentDefect){
 			this.domain = domain;
 			this.myCoop = myCoop;
 			this.myDefect = myDefect;

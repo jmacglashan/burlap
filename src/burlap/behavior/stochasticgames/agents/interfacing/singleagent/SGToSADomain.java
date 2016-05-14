@@ -1,17 +1,17 @@
 package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.core.oo.ObjectParameterizedAction;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.stochasticgames.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +19,13 @@ import java.util.List;
 
 /**
  * This domain generator is used to produce single agent domain version of a stochastic games domain for an agent of a given type
- * (specified by an {@link burlap.mdp.stochasticgames.SGAgentType} object or for a given list of stochastic games agent actions ({@link burlap.mdp.stochasticgames.agentactions.SGAgentAction}).
- * Each of the stochastic game agent actions is converted into a single agent {@link burlap.mdp.singleagent.Action} object with the same
- * action name and parametrization. The created {@link burlap.mdp.singleagent.SADomain}'s {@link burlap.mdp.singleagent.Action} objects maintain the action specification of
- * the input {@link burlap.mdp.stochasticgames.SGDomain}'s {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} (that is, their name and parameter types), but
- * the {@link burlap.mdp.singleagent.Action#sample(State, burlap.mdp.singleagent.GroundedAction)}
+ * (specified by an {@link burlap.mdp.stochasticgames.SGAgentType} object or for a given list of stochastic games agent actions ({@link SGAgentActionType}).
+ * Each of the stochastic game agent actions is converted into a single agent {@link ActionType} object with the same
+ * action name and parametrization. The created {@link burlap.mdp.singleagent.SADomain}'s {@link ActionType} objects maintain the action specification of
+ * the input {@link burlap.mdp.stochasticgames.SGDomain}'s {@link SGAgentActionType} (that is, their name and parameter types), but
+ * the {@link ActionType#sample(State, burlap.mdp.singleagent.GroundedAction)}
  * method is undefined since the transition dynamics would depend on the action selection of other agents, which is unknown. Instead, actions can only
- * be executed through the {@link burlap.mdp.singleagent.Action#executeIn(burlap.mdp.singleagent.environment.Environment, burlap.mdp.singleagent.GroundedAction)} method only
+ * be executed through the {@link ActionType#executeIn(burlap.mdp.singleagent.environment.Environment, burlap.mdp.singleagent.GroundedAction)} method only
  * in which the specified {@link burlap.mdp.singleagent.environment.Environment} handles the decisions of the other agents. For example, this domain
  * can typically be paired with the {@link LearningAgentToSGAgentInterface}, which will handle these calls
  * indirectly by simultaneously acting as a stochastic game {@link burlap.mdp.stochasticgames.SGAgent}.
@@ -36,7 +36,7 @@ public class SGToSADomain implements DomainGenerator {
 
 
 	SGDomain srcDomain;
-	List<SGAgentAction> useableActions;
+	List<SGAgentActionType> useableActions;
 	
 	
 	/**
@@ -54,7 +54,7 @@ public class SGToSADomain implements DomainGenerator {
 	 * @param srcDomain the source stochastic games domain
 	 * @param useableActions the stochastic game actions for which single agent actions should be created created in the single agent domain.
 	 */
-	public SGToSADomain(SGDomain srcDomain, List<SGAgentAction> useableActions){
+	public SGToSADomain(SGDomain srcDomain, List<SGAgentActionType> useableActions){
 		
 		this.srcDomain = srcDomain;
 		this.useableActions = useableActions;
@@ -67,8 +67,8 @@ public class SGToSADomain implements DomainGenerator {
 		SADomain domainWrapper = new SADomain();
 
 
-		for(SGAgentAction sa : useableActions){
-			new SAActionWrapper(sa, domainWrapper);
+		for(SGAgentActionType sa : useableActions){
+			new SAActionTypeWrapper(sa, domainWrapper);
 		}
 
 
@@ -79,21 +79,21 @@ public class SGToSADomain implements DomainGenerator {
 	/**
 	 * A single agent action wrapper for a stochastic game action. Calling this action will cause it to call the corresponding single interface to inform it
 	 * of the action selection. The constructed action will have the same name and object parametrization specification as the source stochastic game
-	 * {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} object.
+	 * {@link SGAgentActionType} object.
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class SAActionWrapper extends Action{
+	public static class SAActionTypeWrapper extends ActionType {
 
 		public String agentName = "tmpAgentNAme";
-		public SGAgentAction srcAction;
+		public SGAgentActionType srcAction;
 
 		/**
 		 * Initializes for a given stochastic games action.
-		 * @param srcAction the source stochastic games {@link burlap.mdp.stochasticgames.agentactions.SGAgentAction} object.
+		 * @param srcAction the source stochastic games {@link SGAgentActionType} object.
 		 * @param domainWrapper SADomain to which this action will be attached
 		 */
-		public SAActionWrapper(SGAgentAction srcAction, Domain domainWrapper){
+		public SAActionTypeWrapper(SGAgentActionType srcAction, Domain domainWrapper){
 			super(srcAction.actionName, domainWrapper);
 			this.srcAction = srcAction;
 		}
@@ -115,8 +115,8 @@ public class SGToSADomain implements DomainGenerator {
 
 		@Override
 		public GroundedAction associatedGroundedAction() {
-			GroundedSGAgentAction tmp = this.srcAction.getAssociatedGroundedAction(agentName);
-			if(tmp instanceof AbstractObjectParameterizedGroundedAction){
+			SGAgentAction tmp = this.srcAction.getAssociatedGroundedAction(agentName);
+			if(tmp instanceof ObjectParameterizedAction){
 				return new GroundedSObParamedAAActionWrapper(this, tmp);
 			}
 			return new GroundedSAAActionWrapper(this, null);
@@ -125,10 +125,10 @@ public class SGToSADomain implements DomainGenerator {
 		@Override
 		public List<GroundedAction> allApplicableGroundedActions(State s) {
 
-			List<GroundedSGAgentAction> sgGroundigns = this.srcAction.getAllApplicableGroundedActions(s, agentName);
+			List<SGAgentAction> sgGroundigns = this.srcAction.getAllApplicableGroundedActions(s, agentName);
 			List<GroundedAction> gas = new ArrayList<GroundedAction>(sgGroundigns.size());
-			for(GroundedSGAgentAction gsa : sgGroundigns){
-				if(gsa instanceof AbstractObjectParameterizedGroundedAction){
+			for(SGAgentAction gsa : sgGroundigns){
+				if(gsa instanceof ObjectParameterizedAction){
 					gas.add(new GroundedSObParamedAAActionWrapper(this, gsa));
 				}
 				else {
@@ -147,10 +147,10 @@ public class SGToSADomain implements DomainGenerator {
 
 	public static class GroundedSAAActionWrapper extends GroundedAction{
 
-		GroundedSGAgentAction wrappedSGAction;
+		SGAgentAction wrappedSGAction;
 
-		public GroundedSAAActionWrapper(Action action, GroundedSGAgentAction wrappedSGAction) {
-			super(action);
+		public GroundedSAAActionWrapper(ActionType actionType, SGAgentAction wrappedSGAction) {
+			super(actionType);
 			this.wrappedSGAction = wrappedSGAction;
 		}
 
@@ -171,8 +171,8 @@ public class SGToSADomain implements DomainGenerator {
 
 		@Override
 		public GroundedAction translateParameters(State source, State target) {
-			AbstractGroundedAction translatedWrapped = AbstractObjectParameterizedGroundedAction.Helper.translateParameters(this.wrappedSGAction, source, target);
-			GroundedSAAActionWrapper translated = new GroundedSAAActionWrapper(this.action, (GroundedSGAgentAction)translatedWrapped);
+			Action translatedWrapped = ObjectParameterizedAction.Helper.translateParameters(this.wrappedSGAction, source, target);
+			GroundedSAAActionWrapper translated = new GroundedSAAActionWrapper(this.actionType, (SGAgentAction)translatedWrapped);
 			return translated;
 		}
 
@@ -188,34 +188,34 @@ public class SGToSADomain implements DomainGenerator {
 
 		@Override
 		public GroundedAction copy() {
-			return new GroundedSAAActionWrapper(this.action, this.wrappedSGAction);
+			return new GroundedSAAActionWrapper(this.actionType, this.wrappedSGAction);
 		}
 	}
 
-	public static class GroundedSObParamedAAActionWrapper extends GroundedSAAActionWrapper implements AbstractObjectParameterizedGroundedAction{
+	public static class GroundedSObParamedAAActionWrapper extends GroundedSAAActionWrapper implements ObjectParameterizedAction {
 
-		public GroundedSObParamedAAActionWrapper(Action action, GroundedSGAgentAction wrappedSGAction) {
-			super(action, wrappedSGAction);
+		public GroundedSObParamedAAActionWrapper(ActionType actionType, SGAgentAction wrappedSGAction) {
+			super(actionType, wrappedSGAction);
 		}
 
 		@Override
 		public String[] getObjectParameters() {
-			return ((AbstractObjectParameterizedGroundedAction)this.wrappedSGAction).getObjectParameters();
+			return ((ObjectParameterizedAction)this.wrappedSGAction).getObjectParameters();
 		}
 
 		@Override
 		public void setObjectParameters(String[] params) {
-			((AbstractObjectParameterizedGroundedAction)this.wrappedSGAction).setObjectParameters(params);
+			((ObjectParameterizedAction)this.wrappedSGAction).setObjectParameters(params);
 		}
 
 		@Override
 		public boolean actionDomainIsObjectIdentifierIndependent() {
-			return ((AbstractObjectParameterizedGroundedAction)this.wrappedSGAction).actionDomainIsObjectIdentifierIndependent();
+			return ((ObjectParameterizedAction)this.wrappedSGAction).actionDomainIsObjectIdentifierIndependent();
 		}
 
 		@Override
 		public GroundedAction copy() {
-			return new GroundedSObParamedAAActionWrapper(this.action, this.wrappedSGAction);
+			return new GroundedSObParamedAAActionWrapper(this.actionType, this.wrappedSGAction);
 		}
 	}
 

@@ -5,8 +5,8 @@ import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.functionapproximation.dense.NormalizedVariableFeatures;
 import burlap.behavior.functionapproximation.sparse.StateFeature;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +63,7 @@ public class FourierBasis implements DenseStateFeatures {
 	 * A map for returning a multiplier to the number of state features for each action. Effectively
 	 * this ensures a unique feature ID for each Fourier basis function for each action.
 	 */
-	protected Map<GroundedAction, Integer> actionFeatureMultiplier = new HashMap<GroundedAction, Integer>();
+	protected Map<Action, Integer> actionFeatureMultiplier = new HashMap<Action, Integer>();
 	
 	
 	/**
@@ -256,7 +256,7 @@ public class FourierBasis implements DenseStateFeatures {
 		FourierBasis fb = new FourierBasis(this.inputFeatures, this.order, this.maxNonZeroCoefficients);
 		fb.numStateVariables = this.numStateVariables;
 		fb.coefficientVectors = new ArrayList<short[]>(this.coefficientVectors);
-		fb.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);
+		fb.actionFeatureMultiplier = new HashMap<Action, Integer>(this.actionFeatureMultiplier);
 
 		return fb;
 	}

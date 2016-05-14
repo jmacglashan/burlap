@@ -1,23 +1,21 @@
 package burlap.behavior.singleagent.planning.deterministic.uninformed.bfs;
 
+import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
+import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
+import burlap.behavior.singleagent.planning.deterministic.SearchNode;
+import burlap.debugtools.DPrint;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
-import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.debugtools.DPrint;
-import burlap.mdp.auxiliary.common.NullTermination;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.UniformCostRF;
 
 /**
  * Implements Breadth-first search.
@@ -42,8 +40,8 @@ public class BFS extends DeterministicPlanner {
 	 * @param gc the test for goal states
 	 * @param hashingFactory the state hashing factory to use.
 	 */
-	public BFS(Domain domain, StateConditionTest gc, HashableStateFactory hashingFactory){
-		this.deterministicPlannerInit(domain, new UniformCostRF(), new NullTermination(), gc, hashingFactory);
+	public BFS(SADomain domain, StateConditionTest gc, HashableStateFactory hashingFactory){
+		this.deterministicPlannerInit(domain, gc, hashingFactory);
 	}
 
 
@@ -91,23 +89,17 @@ public class BFS extends DeterministicPlanner {
 				break;
 			}
 			
-			if(this.tf.isTerminal(s)){
+			if(this.model.terminalState(s)){
 				continue; //don't expand terminal states
 			}
 			
 			//first get all grounded actions for this state
-			/*List <GroundedAction> gas = new ArrayList<GroundedAction>();
-			for(Action a : actions){
-				gas.addAll(s.getAllGroundedActionsFor(a));
-				
-			}
-			*/
-			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(this.actions, s);
+			List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
 			
 			
 			//add children reach from each deterministic action
-			for(GroundedAction ga : gas){
-				State ns = ga.sample(s);
+			for(Action ga : gas){
+				State ns = this.model.sampleTransition(s, ga).op;
 				HashableState nsh = this.stateHash(ns);
 				SearchNode nsn = new SearchNode(nsh, ga, node);
 				

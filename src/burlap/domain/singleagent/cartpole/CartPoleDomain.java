@@ -6,11 +6,10 @@ import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.FullActionModel;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleAction;
+import burlap.mdp.singleagent.common.SimpleActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 
 
@@ -222,8 +221,8 @@ public class CartPoleDomain implements DomainGenerator {
 
 		CPPhysicsParams cphys = this.physParams.copy();
 
-		new MovementAction(ACTION_LEFT, domain, -1., cphys);
-		new MovementAction(ACTION_RIGHT, domain, 1., cphys);
+		new MovementActionType(ACTION_LEFT, domain, -1., cphys);
+		new MovementActionType(ACTION_RIGHT, domain, 1., cphys);
 		
 		
 		return domain;
@@ -540,7 +539,7 @@ public class CartPoleDomain implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class MovementAction extends SimpleAction.SimpleDeterministicAction implements FullActionModel{
+	protected static class MovementActionType extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
 
 		CPPhysicsParams physParams;
 		
@@ -556,7 +555,7 @@ public class CartPoleDomain implements DomainGenerator {
 		 * @param dir the direction of force applied to the cart.
 		 * @param physParams the {@link burlap.domain.singleagent.cartpole.CartPoleDomain.CPPhysicsParams} object specifying the physics to use for movement
 		 */
-		public MovementAction(String name, Domain domain, double dir, CPPhysicsParams physParams){
+		public MovementActionType(String name, Domain domain, double dir, CPPhysicsParams physParams){
 			super(name, domain);
 			this.dir = dir;
 			this.physParams = physParams;

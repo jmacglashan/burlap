@@ -10,8 +10,8 @@ import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.AbstractGroundedAction;
-import burlap.mdp.core.oo.AbstractObjectParameterizedGroundedAction;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.state.State;
 
 
@@ -79,7 +79,7 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public AbstractGroundedAction getAction(State s) {
+	public Action getAction(State s) {
 		
 		
 		List<QValue> qValues = this.qplanner.getQs(s);
@@ -88,8 +88,8 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 		double roll = rand.nextDouble();
 		if(roll <= epsilon){
 			int selected = rand.nextInt(qValues.size());
-			AbstractGroundedAction ga = qValues.get(selected).a;
-			return AbstractObjectParameterizedGroundedAction.Helper.translateParameters(ga, qValues.get(selected).s, s);
+			Action ga = qValues.get(selected).a;
+			return ObjectParameterizedAction.Helper.translateParameters(ga, qValues.get(selected).s, s);
 		}
 		
 		
@@ -109,8 +109,8 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 		}
 		int selected = rand.nextInt(maxActions.size());
 		//return translated action parameters if the action is parameterized with objects in a object identifier indepdent domain
-		AbstractGroundedAction ga =  maxActions.get(selected).a;
-		return AbstractObjectParameterizedGroundedAction.Helper.translateParameters(ga, maxActions.get(selected).s, s);
+		Action ga =  maxActions.get(selected).a;
+		return ObjectParameterizedAction.Helper.translateParameters(ga, maxActions.get(selected).s, s);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 			else if(q.q == maxQ){
 				nMax++;
 			}
-			AbstractGroundedAction ta = AbstractObjectParameterizedGroundedAction.Helper.translateParameters(q.a, q.s, s);
+			Action ta = ObjectParameterizedAction.Helper.translateParameters(q.a, q.s, s);
 			ActionProb ap = new ActionProb(ta, this.epsilon*(1. / qValues.size()));
 			dist.add(ap);
 		}

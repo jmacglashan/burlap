@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learning.actorcritic;
 
 
 import burlap.behavior.policy.Policy;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 
 
 /**
@@ -29,7 +29,7 @@ public abstract class Actor extends Policy {
 	 * This method allows the actor to utilize actions that are not apart of the domain definition.
 	 * @param a an action not apart of the of the domain definition that this actor should be able to use.
 	 */
-	public abstract void addNonDomainReferencedAction(Action a);
+	public abstract void addNonDomainReferencedAction(ActionType a);
 	
 	
 	/**

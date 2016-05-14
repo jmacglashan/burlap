@@ -2,11 +2,10 @@ package burlap.mdp.singleagent.interfaces.rlglue;
 
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.auxiliary.StateGenerator;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import org.rlcommunity.rlglue.codec.EnvironmentInterface;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpecVRLGLUE3;
 import org.rlcommunity.rlglue.codec.taskspec.ranges.DoubleRange;
@@ -39,7 +38,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	/**
 	 * The BURLAP domain
 	 */
-	protected Domain domain;
+	protected SADomain domain;
 	
 	/**
 	 * The state generator for generating states for each episode
@@ -57,16 +56,6 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 */
 	protected DoubleRange[] valueRanges;
 
-
-	/**
-	 * The reward function
-	 */
-	protected RewardFunction rf;
-	
-	/**
-	 * The terminal function
-	 */
-	protected TerminalFunction tf;
 
 	/**
 	 * Indicates the number of times a terminal state has been visited by the agent within the same episode.
@@ -101,7 +90,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	/**
 	 * A mapping from action index identifiers (that RLGlue will use) to BURLAP actions and their parametrization specified as the index of objects in a state.
 	 */
-	protected Map<Integer, GroundedAction> actionMap = new HashMap<Integer, GroundedAction>();
+	protected Map<Integer, burlap.mdp.core.Action> actionMap = new HashMap<Integer, burlap.mdp.core.Action>();
 	
 
 	
@@ -121,31 +110,31 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	 * @param stateGenerator a generated for generating states at the start of each episode.
 	 * @param stateFlattener used to flatten states into a numeric representation
 	 * @param valueRanges the value ranges of the flattened vector state
-	 * @param rf the reward function
-	 * @param tf the terminal function
 	 * @param rewardRange the reward function value range
 	 * @param isEpisodic whether the task is episodic or continuing
 	 * @param discount the discount factor to use for the task
 	 */
-	public RLGlueEnvironment(Domain domain, StateGenerator stateGenerator, DenseStateFeatures stateFlattener,
-							 DoubleRange[] valueRanges, RewardFunction rf, TerminalFunction tf,
+	public RLGlueEnvironment(SADomain domain, StateGenerator stateGenerator, DenseStateFeatures stateFlattener,
+							 DoubleRange[] valueRanges,
 							 DoubleRange rewardRange, boolean isEpisodic, double discount){
-		
+
+		if(domain.getModel() == null){
+			throw new RuntimeException("RLGlueEnvironment requires a BURLAP domain with a SampleModel, but the domain does not provide one.");
+		}
+
 		this.domain = domain;
 		this.stateGenerator = stateGenerator;
 		this.stateFlattener = stateFlattener;
 		this.valueRanges = valueRanges;
-		this.rf = rf;
-		this.tf = tf;
 		this.rewardRange = rewardRange;
 		this.isEpisodic = isEpisodic;
 		this.discount = discount;
 		
 		State exampleState = this.stateGenerator.generateState();
 		int actionInd = 0;
-		for(burlap.mdp.singleagent.Action a : this.domain.getActions()){
-			List<GroundedAction> gas = a.allApplicableGroundedActions(exampleState);
-			for(GroundedAction ga : gas){
+		for(ActionType a : this.domain.getActionTypes()){
+			List<burlap.mdp.core.Action> gas = a.allApplicableActions(exampleState);
+			for(burlap.mdp.core.Action ga : gas){
 				this.actionMap.put(actionInd, ga);
 				actionInd++;
 			}
@@ -225,21 +214,24 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 
 	@Override
 	public Reward_observation_terminal env_step(Action arg0) {
-		GroundedAction burlapAction = this.actionMap.get(arg0.getInt(0));
+		burlap.mdp.core.Action burlapAction = this.actionMap.get(arg0.getInt(0));
+		EnvironmentOutcome eo;
 		State nextState;
-		boolean curStateTerminal = this.tf.isTerminal(this.curState);
-		if(!curStateTerminal) {
-			nextState = burlapAction.sample(this.curState);
+		if(this.terminalVisits == 0) {
+			eo = domain.getModel().sampleTransition(curState, burlapAction);
+			if(eo.terminated){
+				this.terminalVisits++;
+			}
 		}
 		else{
-			nextState = this.curState;
+			eo = new EnvironmentOutcome(this.curState, burlapAction, this.curState, 0., true);
 			this.terminalVisits++;
 		}
-		Observation o = this.convertIntoObservation(nextState);
-		double r = curStateTerminal ? 0 : this.rf.reward(curState, burlapAction, nextState);
+		Observation o = this.convertIntoObservation(eo.op);
+		double r = eo.r;
 
-		boolean flagTerminal = this.terminalVisits > 1;
-		this.curState = nextState;
+		boolean flagTerminal = this.terminalVisits > 2;
+		this.curState = eo.op;
 		
 		Reward_observation_terminal toRet = new Reward_observation_terminal(r, o, flagTerminal);
 		

@@ -1,8 +1,8 @@
 package burlap.mdp.singleagent.pomdp;
 
 import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
@@ -66,7 +66,7 @@ public abstract class BeliefAgent {
 	/**
 	 * Causes the agent to act until the environment reaches a termination condition. The agent's belief is automatically
 	 * updated by this method using the the current {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}'s
-	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, burlap.mdp.singleagent.GroundedAction)}
+	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, Action)}
 	 * method. The agent's action selection for the current belief state is defend by
 	 * the {@link #getAction(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
 	 * sequence is saved and {@link burlap.behavior.singleagent.EpisodeAnalysis} object and returned.
@@ -76,8 +76,8 @@ public abstract class BeliefAgent {
 		EpisodeAnalysis ea = new EpisodeAnalysis();
 		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
 		while(!this.environment.isInTerminalState()){
-			GroundedAction ga = this.getAction(this.curBelief);
-			EnvironmentOutcome eo = ga.executeIn(environment);
+			Action ga = this.getAction(this.curBelief);
+			EnvironmentOutcome eo = environment.executeAction(ga);
 			ea.recordTransitionTo(ga, eo.op, eo.r);
 			
 			//update our belief
@@ -91,7 +91,7 @@ public abstract class BeliefAgent {
 	/**
 	 * Causes the agent to act for some fixed number of steps. The agent's belief is automatically
 	 * updated by this method using the the current {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}'s
-	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, burlap.mdp.singleagent.GroundedAction)}
+	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, Action)}
 	 * method. The agent's action selection for the current belief state is defend by
 	 * the {@link #getAction(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
 	 * sequence is saved and {@link burlap.behavior.singleagent.EpisodeAnalysis} object and returned.
@@ -103,8 +103,8 @@ public abstract class BeliefAgent {
 		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
 		int c = 0;
 		while(!this.environment.isInTerminalState() && c < maxSteps){
-			GroundedAction ga = this.getAction(this.curBelief);
-			EnvironmentOutcome eo = ga.executeIn(environment);
+			Action ga = this.getAction(this.curBelief);
+			EnvironmentOutcome eo = environment.executeAction(ga);
 			ea.recordTransitionTo(ga, eo.op, eo.r);
 
 			//update our belief
@@ -121,9 +121,9 @@ public abstract class BeliefAgent {
 	/**
 	 * Returns the action the agent should take for the input {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}.
 	 * @param curBelief the {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState} in which the agent must make a decision.
-	 * @return A {@link burlap.mdp.singleagent.GroundedAction} specifying the agent's decision for the input {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}.
+	 * @return A {@link Action} specifying the agent's decision for the input {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}.
 	 */
-	public abstract GroundedAction getAction(BeliefState curBelief);
+	public abstract Action getAction(BeliefState curBelief);
 	
 	
 }

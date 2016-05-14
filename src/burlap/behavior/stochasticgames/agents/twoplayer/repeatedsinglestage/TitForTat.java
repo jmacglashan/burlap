@@ -5,10 +5,10 @@ import java.util.Map;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.AgentFactory;
-import burlap.mdp.stochasticgames.agentactions.GroundedSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 import burlap.mdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
 
 
@@ -25,29 +25,29 @@ public class TitForTat extends SGAgent {
 	/**
 	 * This agent's cooperate action
 	 */
-	protected SGAgentAction myCoop;
+	protected SGAgentActionType myCoop;
 	
 	/**
 	 * This agent's defect action
 	 */
-	protected SGAgentAction myDefect;
+	protected SGAgentActionType myDefect;
 	
 	/**
 	 * The opponent's cooperate action
 	 */
-	protected SGAgentAction opponentCoop;
+	protected SGAgentActionType opponentCoop;
 	
 	/**
 	 * The opponent's defect action
 	 */
-	protected SGAgentAction opponentDefect;
+	protected SGAgentActionType opponentDefect;
 	
 	
 	
 	/**
 	 * The last opponent's move
 	 */
-	protected SGAgentAction lastOpponentMove;
+	protected SGAgentActionType lastOpponentMove;
 	
 	
 	/**
@@ -56,7 +56,7 @@ public class TitForTat extends SGAgent {
 	 * @param coop the cooperate action for both players
 	 * @param defect the defect action for both players
 	 */
-	public TitForTat(SGDomain domain, SGAgentAction coop, SGAgentAction defect){
+	public TitForTat(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
 		this.init(domain);
 		this.myCoop = coop;
 		this.myDefect = defect;
@@ -74,7 +74,7 @@ public class TitForTat extends SGAgent {
 	 * @param opponentCoop the opponent's cooperate action
 	 * @param opponentDefect the opponent's defect action
 	 */
-	public TitForTat(SGDomain domain, SGAgentAction myCoop, SGAgentAction myDefect, SGAgentAction opponentCoop, SGAgentAction opponentDefect){
+	public TitForTat(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentCoop, SGAgentActionType opponentDefect){
 		this.init(domain);
 		this.myCoop = myCoop;
 		this.myDefect = myDefect;
@@ -90,7 +90,7 @@ public class TitForTat extends SGAgent {
 	}
 
 	@Override
-	public GroundedSGAgentAction getAction(State s) {
+	public SGAgentAction getAction(State s) {
 		if(lastOpponentMove.actionName.equals(opponentCoop.actionName)){
 			return new SimpleGroundedSGAgentAction(this.worldAgentName, myCoop);
 		}
@@ -99,7 +99,7 @@ public class TitForTat extends SGAgent {
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
-		for(GroundedSGAgentAction gsa : jointAction){
+		for(SGAgentAction gsa : jointAction){
 			if(!gsa.actingAgent.equals(this.worldAgentName)){
 				this.lastOpponentMove = gsa.action;
 			}
@@ -124,22 +124,22 @@ public class TitForTat extends SGAgent {
 		/**
 		 * This agent's cooperate action
 		 */
-		protected SGAgentAction myCoop;
+		protected SGAgentActionType myCoop;
 		
 		/**
 		 * This agent's defect action
 		 */
-		protected SGAgentAction myDefect;
+		protected SGAgentActionType myDefect;
 		
 		/**
 		 * The opponent's cooperate action
 		 */
-		protected SGAgentAction opponentCoop;
+		protected SGAgentActionType opponentCoop;
 		
 		/**
 		 * The opponent's defect action
 		 */
-		protected SGAgentAction opponentDefect;
+		protected SGAgentActionType opponentDefect;
 		
 		/**
 		 * The domain in which the agent will play
@@ -153,7 +153,7 @@ public class TitForTat extends SGAgent {
 		 * @param coop the cooperate action for both players
 		 * @param defect the defect action for both players
 		 */
-		public TitForTatAgentFactory(SGDomain domain, SGAgentAction coop, SGAgentAction defect){
+		public TitForTatAgentFactory(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
 			this.domain = domain;
 			this.myCoop = coop;
 			this.myDefect = defect;
@@ -170,7 +170,7 @@ public class TitForTat extends SGAgent {
 		 * @param opponentCoop the opponent's cooperate action
 		 * @param opponentDefect the opponent's defect action
 		 */
-		public TitForTatAgentFactory(SGDomain domain, SGAgentAction myCoop, SGAgentAction myDefect, SGAgentAction opponentCoop, SGAgentAction opponentDefect){
+		public TitForTatAgentFactory(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentCoop, SGAgentActionType opponentDefect){
 			this.domain = domain;
 			this.myCoop = myCoop;
 			this.myDefect = myDefect;

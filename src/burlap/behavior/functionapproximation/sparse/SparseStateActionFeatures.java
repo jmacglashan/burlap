@@ -1,6 +1,6 @@
 package burlap.behavior.functionapproximation.sparse;
 
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public interface SparseStateActionFeatures {
 	 * @param a the action for which features should be returned
 	 * @return the features for state s
 	 */
-	List<StateFeature> features(State s, AbstractGroundedAction a);
+	List<StateFeature> features(State s, Action a);
 
 
 	/**

@@ -4,11 +4,9 @@ import burlap.behavior.singleagent.planning.deterministic.informed.BestFirst;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSearchNode;
 import burlap.datastructures.HashIndexedHeap;
-import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
-import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.core.Action;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -51,14 +49,13 @@ public class AStar extends BestFirst{
 	 * Initializes A*. Goal states are indicated by gc evaluating to true. The costs are stored as negative rewards in the reward function.
 	 * By default there are no terminal states except teh goal states, so a terminal function is not taken.
 	 * @param domain the domain in which to plan
-	 * @param rf the reward function that represents costs as negative reward
 	 * @param gc should evaluate to true for goal states; false otherwise
 	 * @param hashingFactory the state hashing factory to use
 	 * @param heuristic the planning heuristic. Should return non-positive values.
 	 */
-	public AStar(Domain domain, RewardFunction rf, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic){
+	public AStar(SADomain domain, StateConditionTest gc, HashableStateFactory hashingFactory, Heuristic heuristic){
 		
-		this.deterministicPlannerInit(domain, rf, new NullTermination(), gc, hashingFactory);
+		this.deterministicPlannerInit(domain, gc, hashingFactory);
 		
 		this.heuristic = heuristic;
 		
@@ -91,12 +88,10 @@ public class AStar extends BestFirst{
 
 
 	@Override
-	public double computeF(PrioritizedSearchNode parentNode, GroundedAction generatingAction, HashableState successorState) {
+	public double computeF(PrioritizedSearchNode parentNode, Action generatingAction, HashableState successorState, double r) {
 		double cumR = 0.;
-		double r;
 		if(parentNode != null){
 			double pCumR = cumulatedRewardMap.get(parentNode.s);
-			r = rf.reward(parentNode.s.s, generatingAction, successorState.s);
 			cumR = pCumR + r;
 		}
 		

@@ -2,8 +2,8 @@ package burlap.behavior.functionapproximation.dense.rbf;
 
 import burlap.behavior.functionapproximation.dense.DenseLinearVFA;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class RBFFeatures implements DenseStateFeatures {
 	 * A map for returning a multiplier to the number of RBF state features for each action. Effectively
 	 * this ensures a unique feature ID for each RBF for each action.
 	 */
-	protected Map<GroundedAction, Integer> actionFeatureMultiplier = new HashMap<GroundedAction, Integer>();
+	protected Map<Action, Integer> actionFeatureMultiplier = new HashMap<Action, Integer>();
 
 	/**
 	 * The next action RBF size multiplier to use for the next newly seen action.
@@ -143,7 +143,7 @@ public class RBFFeatures implements DenseStateFeatures {
 		RBFFeatures rbf = new RBFFeatures(this.inputFeatures, this.hasOffset);
 		rbf.rbfs = new ArrayList<RBF>(this.rbfs);
 		rbf.nRbfs = this.nRbfs;
-		rbf.actionFeatureMultiplier = new HashMap<GroundedAction, Integer>(this.actionFeatureMultiplier);
+		rbf.actionFeatureMultiplier = new HashMap<Action, Integer>(this.actionFeatureMultiplier);
 		rbf.nextActionMultiplier = this.nextActionMultiplier;
 
 		return rbf;

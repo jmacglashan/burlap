@@ -9,11 +9,11 @@ import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.AbstractGroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.common.UniformCostRF;
@@ -542,7 +542,7 @@ public class ApprenticeshipLearning {
 	 */
 	public static class RandomPolicy extends Policy {
 		Map<HashableState, GroundedAction> stateActionMapping;
-		List<Action> actions;
+		List<ActionType> actionTypes;
 		Map<HashableState, List<ActionProb>> stateActionDistributionMapping;
 		HashableStateFactory hashFactory;
 		Random rando;
@@ -554,7 +554,7 @@ public class ApprenticeshipLearning {
 		private RandomPolicy(Domain domain) {
 			this.stateActionMapping = new HashMap<HashableState, GroundedAction>();
 			this.stateActionDistributionMapping = new HashMap<HashableState, List<ActionProb>>();
-			this.actions = domain.getActions();
+			this.actionTypes = domain.getActionTypes();
 			this.rando = new Random();
 			this.hashFactory = new SimpleHashableStateFactory(true);
 		}
@@ -574,7 +574,7 @@ public class ApprenticeshipLearning {
 
 			// Get all possible actions from this state
 			//List<GroundedAction> groundedActions = state.getAllGroundedActionsFor(this.actions);
-			List<GroundedAction> groundedActions = Action.getAllApplicableGroundedActionsFromActionList(this.actions, state);
+			List<GroundedAction> groundedActions = ActionType.getAllApplicableGroundedActionsFromActionList(this.actionTypes, state);
 			Double[] probabilities = new Double[groundedActions.size()];
 			Double sum = 0.0;
 
@@ -595,7 +595,7 @@ public class ApprenticeshipLearning {
 		}
 
 		@Override
-		public AbstractGroundedAction getAction(State s) {
+		public Action getAction(State s) {
 			HashableState hashableState = this.hashFactory.hashState(s);
 
 			// If this state has not yet been visited, we need to compute a new distribution of actions
