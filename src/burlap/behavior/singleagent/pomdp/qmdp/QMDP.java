@@ -1,13 +1,9 @@
 package burlap.behavior.singleagent.pomdp.qmdp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.QFunction;
@@ -15,13 +11,14 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
-import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.PODomain;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
 import burlap.mdp.statehashing.HashableStateFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -47,7 +44,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	public QMDP(PODomain domain, QFunction mdpQSource){
 		this.mdpQSource = mdpQSource;
 		Planner planner = (Planner)this.mdpQSource;
-		this.solverInit(domain, planner.getRf(), planner.getTf(), planner.getGamma(), planner.getHashingFactory());
+		this.solverInit(domain, planner.getGamma(), planner.getHashingFactory());
 	}
 
 
@@ -66,9 +63,9 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	 */
 	public QMDP(PODomain domain, RewardFunction rf, TerminalFunction tf, double discount, HashableStateFactory hashingFactory, double maxDelta, int maxIterations){
 		this.domain = domain;
-		ValueIteration vi = new ValueIteration(domain, rf, tf, discount, hashingFactory, maxDelta, maxIterations);
+		ValueIteration vi = new ValueIteration(domain, discount, hashingFactory, maxDelta, maxIterations);
 		this.mdpQSource = vi;
-		this.solverInit(domain, rf, tf, discount, hashingFactory);
+		this.solverInit(domain, discount, hashingFactory);
 	}
 
 	/**
@@ -103,12 +100,12 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 		BeliefState bs = (BeliefState)s;
 
 		//get actions for any underlying MDP state
-		List<GroundedAction> gas = ActionType.getAllApplicableGroundedActionsFromActionList(this.domain.getActionTypes(), bs.sampleStateFromBelief());
+		List<Action> gas = this.getAllGroundedActions(bs.sampleStateFromBelief());
 		List<QValue> result = new ArrayList<QValue>(gas.size());
 
 		List<EnumerableBeliefState.StateBelief> beliefs = ((EnumerableBeliefState)bs).getStatesAndBeliefsWithNonZeroProbability();
 
-		for(GroundedAction ga : gas){
+		for(Action ga : gas){
 			double q = this.qForBeliefList(beliefs, ga);
 			QValue Q = new QValue(s, ga, q);
 			result.add(Q);
@@ -127,7 +124,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 		EnumerableBeliefState bs = (EnumerableBeliefState)s;
 
 
-		QValue q = new QValue(s, a, this.qForBelief(bs, (GroundedAction)a));
+		QValue q = new QValue(s, a, this.qForBelief(bs, a));
 		
 		return q;
 	}
@@ -143,7 +140,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	 * @param ga the action whose Q-value is to be computed
 	 * @return the expected Q-value of the underlying hidden MDP by marginalizing over of the states in the belief state.
 	 */
-	public double qForBelief(EnumerableBeliefState bs, GroundedAction ga){
+	public double qForBelief(EnumerableBeliefState bs, Action ga){
 		
 		List<EnumerableBeliefState.StateBelief> beliefs = bs.getStatesAndBeliefsWithNonZeroProbability();
 		return this.qForBeliefList(beliefs, ga);
@@ -157,7 +154,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	 * @param ga the action whose Q-value is to be computed
 	 * @return the expected Q-value of the underlying hidden MDP by marginalizing over of the states in the belief state.
 	 */
-	protected double qForBeliefList(List<EnumerableBeliefState.StateBelief> beliefs, GroundedAction ga){
+	protected double qForBeliefList(List<EnumerableBeliefState.StateBelief> beliefs, Action ga){
 		double q = 0.;
 		for(EnumerableBeliefState.StateBelief sb : beliefs){
 			q += sb.belief * this.mdpQSource.getQ(sb.s, ga).q;

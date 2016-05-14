@@ -1,11 +1,11 @@
 package burlap.behavior.singleagent.pomdp;
 
 import burlap.behavior.policy.Policy;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.core.Action;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.pomdp.BeliefAgent;
-import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.PODomain;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 
 
 /**
@@ -32,10 +32,9 @@ public class BeliefPolicyAgent extends BeliefAgent {
 	
 	
 	@Override
-	public GroundedAction getAction(BeliefState curBelief) {
+	public Action getAction(BeliefState curBelief) {
 
-		GroundedAction ga = (GroundedAction)this.policy.getAction(curBelief);
-		return ga;
+		return this.policy.getAction(curBelief);
 	}
 	
 	

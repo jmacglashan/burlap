@@ -24,7 +24,6 @@ import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
 import burlap.mdp.statehashing.HashableStateFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -39,10 +38,6 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 	 */
 	protected SADomain							beliefMDP;
 
-	/**
-	 * The belief MDP reward function
-	 */
-	protected RewardFunction					beliefRF;
 
 	/**
 	 * The {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} planning instance to solve the problem.
@@ -53,25 +48,24 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 	/**
 	 * Initializes the planner.
 	 * @param domain the POMDP domain
-	 * @param rf the POMDP reward function
 	 * @param discount the discount factor
 	 * @param hashingFactory the Belief MDP {@link burlap.mdp.statehashing.HashableStateFactory} that {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} will use.
 	 * @param h the height of the {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} tree.
 	 * @param c the number of samples {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} will use. Set to -1 to use the full BeliefMDP transition dynamics.
 	 */
-	public BeliefSparseSampling(PODomain domain, RewardFunction rf, double discount, HashableStateFactory hashingFactory, int h, int c){
+	public BeliefSparseSampling(PODomain domain, double discount, HashableStateFactory hashingFactory, int h, int c){
 	
-		this.solverInit(domain, rf, null, discount, hashingFactory);
+		this.solverInit(domain, discount, hashingFactory);
 		BeliefMDPGenerator bdgen = new BeliefMDPGenerator(domain);
 		this.beliefMDP = (SADomain)bdgen.generateDomain();
-		this.beliefRF = new BeliefMDPGenerator.BeliefRF(domain, rf);
 		
-		this.mdpPlanner = new SparseSampling(this.beliefMDP, this.beliefRF, new NullTermination(), discount, hashingFactory, h, Math.max(1, c));
+		this.mdpPlanner = new SparseSampling(this.beliefMDP, discount, hashingFactory, h, Math.max(1, c));
 		if(c < 1){
 			this.mdpPlanner.setComputeExactValueFunction(true);
 		}
 		
 	}
+
 
 	/**
 	 * Returns the generated Belief MDP that will be solved.
@@ -91,18 +85,12 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 
 	@Override
 	public List<QValue> getQs(State s) {
-		List <QValue> beliefQs = this.mdpPlanner.getQs(s);
-		List <QValue> pomdpQs = new ArrayList<QValue>(beliefQs.size());
-		for(QValue bq : beliefQs){
-			pomdpQs.add(new QValue(s, ((BeliefMDPGenerator.GroundedBeliefAction)bq.a).pomdpAction, bq.q));
-		}
-		return pomdpQs;
+		return this.mdpPlanner.getQs(s);
 	}
 
 	@Override
 	public QValue getQ(State s, Action a) {
-		QValue bq =  this.mdpPlanner.getQ(s, a);
-		return new QValue(s, ((BeliefMDPGenerator.GroundedBeliefAction)bq.a).pomdpAction, bq.q);
+		return this.mdpPlanner.getQ(s, a);
 	}
 	
 	@Override
@@ -131,10 +119,10 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 		RewardFunction rf = new TigerDomain.TigerRF();
 		TerminalFunction tf = new NullTermination();
 		
-		BeliefSparseSampling bss = new BeliefSparseSampling(domain, rf, 0.99, new HashableTabularBeliefStateFactory(), 10, -1);
+		BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, new HashableTabularBeliefStateFactory(), 10, -1);
 		Policy p = new GreedyQPolicy(bss);
 
-		SimulatedPOEnvironment env = new SimulatedPOEnvironment(domain, rf, tf);
+		SimulatedPOEnvironment env = new SimulatedPOEnvironment(domain);
 		env.setCurStateTo(new TigerState(TigerDomain.VAL_LEFT));
 		
 		BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, env, p);

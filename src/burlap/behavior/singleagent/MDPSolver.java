@@ -95,6 +95,11 @@ public abstract class MDPSolver implements MDPSolverInterface{
 		this.model = model;
 	}
 
+	@Override
+	public SampleModel getModel() {
+		return this.model;
+	}
+
 	public void setActionTypes(List<ActionType> actionTypes){
 		this.actionTypes = actionTypes;
 	}
