@@ -7,7 +7,6 @@ import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;

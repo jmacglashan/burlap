@@ -1,7 +1,7 @@
 package burlap.mdp.stochasticgames;
 
+import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 
 import java.util.ArrayList;
@@ -45,13 +45,13 @@ public abstract class JointActionModel {
 	
 	/**
 	 * Returns the transition probabilities for applying the provided {@link JointAction} action in the given state.
-	 * Transition probabilities are specified as list of {@link burlap.mdp.core.TransitionProbability} objects. The list
+	 * Transition probabilities are specified as list of {@link StateTransitionProb} objects. The list
 	 * is only required to contain transitions with non-zero probability.
 	 * @param s the state in which the joint action is performed
 	 * @param ja the joint action performed
-	 * @return a list of state {@link burlap.mdp.core.TransitionProbability} objects.
+	 * @return a list of state {@link StateTransitionProb} objects.
 	 */
-	public abstract List<TransitionProbability> transitionProbsFor(State s, JointAction ja);
+	public abstract List<StateTransitionProb> transitionProbsFor(State s, JointAction ja);
 	
 	
 	
@@ -68,17 +68,17 @@ public abstract class JointActionModel {
 	
 	/**
 	 * A helper method for deterministic transition dynamics. This method will return a list containing
-	 * one {@link burlap.mdp.core.TransitionProbability} object which is assigned probability 1
+	 * one {@link StateTransitionProb} object which is assigned probability 1
 	 * and whose state is determined by querying the {@link #performJointAction(State, JointAction)}
 	 * method.
 	 * @param s the state in which the joint action would be executed
 	 * @param ja the joint action to be performed in the state.
-	 * @return a list containing one {@link burlap.mdp.core.TransitionProbability} object which is assigned probability 1
+	 * @return a list containing one {@link StateTransitionProb} object which is assigned probability 1
 	 */
-	protected List<TransitionProbability> deterministicTransitionProbsFor(State s, JointAction ja){
-		List <TransitionProbability> res = new ArrayList<TransitionProbability>();
+	protected List<StateTransitionProb> deterministicTransitionProbsFor(State s, JointAction ja){
+		List <StateTransitionProb> res = new ArrayList<StateTransitionProb>();
 		State sp = performJointAction(s, ja);
-		TransitionProbability tp = new TransitionProbability(sp, 1.);
+		StateTransitionProb tp = new StateTransitionProb(sp, 1.);
 		res.add(tp);
 		return res;
 	}

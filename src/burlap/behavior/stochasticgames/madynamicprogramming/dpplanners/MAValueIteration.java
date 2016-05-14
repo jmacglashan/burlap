@@ -1,24 +1,20 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.dpplanners;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.state.State;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.core.StateTransitionProb;
+import burlap.mdp.core.state.State;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.JointReward;
+import burlap.mdp.stochasticgames.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
+
+import java.util.*;
 
 
 /**
@@ -225,8 +221,8 @@ public class MAValueIteration extends MADynamicProgramming {
 			//expand
 			List<JointAction> jas = JointAction.getAllJointActions(sh.s, this.agentDefinitions);
 			for(JointAction ja : jas){
-				List<TransitionProbability> tps = this.jointActionModel.transitionProbsFor(sh.s, ja);
-				for(TransitionProbability tp : tps){
+				List<StateTransitionProb> tps = this.jointActionModel.transitionProbsFor(sh.s, ja);
+				for(StateTransitionProb tp : tps){
 					HashableState shp = this.hashingFactory.hashState(tp.s);
 					if(!this.states.contains(shp)){
 						this.states.add(shp);

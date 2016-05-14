@@ -7,7 +7,7 @@ import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.model.statemodel.SampleStateModel;
-import burlap.mdp.singleagent.model.statemodel.StateTransitionProb;
+import burlap.mdp.core.StateTransitionProb;
 
 import java.util.ArrayList;
 import java.util.List;

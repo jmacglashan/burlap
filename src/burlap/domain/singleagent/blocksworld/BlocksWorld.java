@@ -2,7 +2,6 @@ package burlap.domain.singleagent.blocksworld;
 
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;

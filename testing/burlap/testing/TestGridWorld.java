@@ -9,7 +9,7 @@ import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import org.junit.After;
@@ -47,21 +47,21 @@ public class TestGridWorld {
 	}
 	
 	public void testGridWorld(State s) {
-		Action northAction = domain.getAction(GridWorldDomain.ACTION_NORTH);
-		Action eastAction = domain.getAction(GridWorldDomain.ACTION_EAST);
-		Action southAction = domain.getAction(GridWorldDomain.ACTION_SOUTH);
-		Action westAction = domain.getAction(GridWorldDomain.ACTION_WEST);
+		ActionType northActionType = domain.getAction(GridWorldDomain.ACTION_NORTH);
+		ActionType eastActionType = domain.getAction(GridWorldDomain.ACTION_EAST);
+		ActionType southActionType = domain.getAction(GridWorldDomain.ACTION_SOUTH);
+		ActionType westActionType = domain.getAction(GridWorldDomain.ACTION_WEST);
 		
-		List<GroundedAction> northActions = northAction.allApplicableGroundedActions(s);
+		List<GroundedAction> northActions = northActionType.allApplicableActions(s);
 		Assert.assertEquals(1, northActions.size());
 		
-		List<GroundedAction> eastActions = eastAction.allApplicableGroundedActions(s);
+		List<GroundedAction> eastActions = eastActionType.allApplicableActions(s);
 		Assert.assertEquals(1, eastActions.size());
 		
-		List<GroundedAction> southActions = southAction.allApplicableGroundedActions(s);
+		List<GroundedAction> southActions = southActionType.allApplicableActions(s);
 		Assert.assertEquals(1, southActions.size());
 		
-		List<GroundedAction> westActions = westAction.allApplicableGroundedActions(s);
+		List<GroundedAction> westActions = westActionType.allApplicableActions(s);
 		Assert.assertEquals(1, westActions.size());
 		
 		GroundedAction north = northActions.get(0);

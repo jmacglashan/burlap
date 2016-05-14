@@ -5,7 +5,6 @@ import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;

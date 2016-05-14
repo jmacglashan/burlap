@@ -4,9 +4,8 @@ import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridLocation;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
-import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.Action;
+import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.HashableState;
@@ -258,7 +257,7 @@ public class TestHashing {
 		
 		Set<HashableState> hashedStates = new HashSet<HashableState>();
 		HashableState shi = usingHashFactory.hashState(from);
-		List <Action> actions = inDomain.getActions();
+		List <ActionType> actionTypes = inDomain.getActionTypes();
 		
 		LinkedList <HashableState> openList = new LinkedList<HashableState>();
 		openList.offer(shi);
@@ -267,7 +266,7 @@ public class TestHashing {
 			HashableState sh = openList.poll();
 			
 			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
-			List<GroundedAction> gas = Action.getAllApplicableGroundedActionsFromActionList(actions, sh.s);
+			List<GroundedAction> gas = ActionType.getAllApplicableGroundedActionsFromActionList(actionTypes, sh.s);
 			for(GroundedAction ga : gas){
 				List <TransitionProbability> tps = ga.transitions(sh.s);
 				for(TransitionProbability tp : tps){

@@ -1,22 +1,18 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
+import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.StateTransitionProb;
+import burlap.mdp.core.state.State;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.mdp.stochasticgames.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.TransitionProbability;
-import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.JointActionModel;
-import burlap.mdp.stochasticgames.JointReward;
-import burlap.mdp.stochasticgames.SGDomain;
 
 
 /**
@@ -203,14 +199,14 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	/**
 	 * A class for holding all of the transition dynamic information for a given joint action in a given state. This includes
 	 * state transitions as well as joint rewards. Information is stored as a triple consisting of the {@link JointAction},
-	 * the list of state transtitions ({@link TransitionProbability} objects), and a list of joint rewards (A map from agent names
+	 * the list of state transtitions ({@link StateTransitionProb} objects), and a list of joint rewards (A map from agent names
 	 * to rewards received).
 	 * @author James MacGlashan
 	 *
 	 */
 	public class JointActionTransitions{
 		public JointAction ja;
-		public List<TransitionProbability> tps;
+		public List<StateTransitionProb> tps;
 		public List<Map<String, Double>> jrs;
 		
 		
@@ -223,7 +219,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 			this.ja = ja;
 			this.tps = MADynamicProgramming.this.jointActionModel.transitionProbsFor(s, ja);
 			this.jrs = new ArrayList<Map<String,Double>>(this.tps.size());
-			for(TransitionProbability tp : this.tps){
+			for(StateTransitionProb tp : this.tps){
 				Map<String, Double> jr = MADynamicProgramming.this.jointReward.reward(s, ja, tp.s);
 				this.jrs.add(jr);
 			}
@@ -270,7 +266,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 			if(!MADynamicProgramming.this.terminalFunction.isTerminal(s)){
 			
 				for(int i = 0; i < jat.tps.size(); i++){
-					TransitionProbability tp = jat.tps.get(i);
+					StateTransitionProb tp = jat.tps.get(i);
 					double p = tp.p;
 					HashableState sh = MADynamicProgramming.this.hashingFactory.hashState(tp.s);
 					double r = jat.jrs.get(i).get(this.agentName);

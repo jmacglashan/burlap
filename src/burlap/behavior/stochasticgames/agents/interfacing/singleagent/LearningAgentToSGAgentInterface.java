@@ -2,10 +2,9 @@ package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.stochasticgames.*;
@@ -84,14 +83,8 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 		super.joinWorld(w, as);
 
 		if(this.learningAgent instanceof MDPSolver){
-			SGToSADomain dgen = new SGToSADomain(this.domain, as);
-			Domain saDomain = dgen.generateDomain();
-			for(ActionType a : saDomain.getActionTypes()){
-				if(a instanceof SGToSADomain.SAActionTypeWrapper){
-					((SGToSADomain.SAActionTypeWrapper) a).agentName = this.getAgentName();
-				}
-			}
-
+			SGToSADomain dgen = new SGToSADomain(this.getAgentName(), this.domain, as);
+			SADomain saDomain = dgen.generateDomain();
 			((MDPSolver) this.learningAgent).setDomain(saDomain);
 
 		}
@@ -172,12 +165,11 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 	}
 
 	@Override
-	public EnvironmentOutcome executeAction(GroundedAction ga) {
+	public EnvironmentOutcome executeAction(Action ga) {
 
 		State prevState = this.currentState;
 		synchronized(this.nextAction){
-			SGAgentAction gsa = ((SGToSADomain.GroundedSAAActionWrapper)ga).wrappedSGAction;
-			gsa.actingAgent = this.getAgentName();
+			SGAgentAction gsa = (SGAgentAction)ga;
 			this.nextAction.val = gsa;
 			this.nextAction.notifyAll();
 		}

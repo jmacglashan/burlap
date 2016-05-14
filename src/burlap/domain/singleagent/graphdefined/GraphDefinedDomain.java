@@ -3,7 +3,6 @@ package burlap.domain.singleagent.graphdefined;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TransitionProbability;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.GroundedAction;

@@ -1,4 +1,4 @@
-package burlap.mdp.singleagent.model.statemodel;
+package burlap.mdp.core;
 
 import burlap.mdp.core.state.State;
 
