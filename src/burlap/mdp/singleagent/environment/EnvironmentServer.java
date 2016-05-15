@@ -1,7 +1,7 @@
 package burlap.mdp.singleagent.environment;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * A {@link burlap.mdp.singleagent.environment.EnvironmentServerInterface} implementation that delegates all {@link burlap.mdp.singleagent.environment.Environment} interactions and request
  * to a provided {@link burlap.mdp.singleagent.environment.Environment} delegate. This class will also
- * intercept all interactions through the {@link #executeAction(burlap.mdp.singleagent.GroundedAction)} and
+ * intercept all interactions through the {@link #executeAction(Action)} and
  * {@link #resetEnvironment()} methods
  * and tell all {@link burlap.mdp.singleagent.environment.EnvironmentOutcome} instances registered with this server
  * about the event.
@@ -129,7 +129,7 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 	}
 
 	@Override
-	public EnvironmentOutcome executeAction(GroundedAction ga) {
+	public EnvironmentOutcome executeAction(Action ga) {
 		for(EnvironmentObserver observer : this.observers){
 			observer.observeEnvironmentActionInitiation(this.delegate.currentObservation(), ga);
 		}

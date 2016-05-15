@@ -1,10 +1,12 @@
 package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -45,41 +47,22 @@ public class SGDomain implements Domain{
 		return this.jam;
 	}
 
-	@Override
 	public void addSGAgentAction(SGAgentActionType sa){
 		singleActionMap.put(sa.typeName(), sa);
 	}
 
 	
-	
-	@Override
+
 	public List <SGAgentActionType> getAgentActions(){
 		return new ArrayList<SGAgentActionType>(this.singleActionMap.values());
 	}
 
 
-	@Override
 	public SGAgentActionType getSGAgentAction(String name) {
 		return singleActionMap.get(name);
 	}
 
-	@Override
-	public void addAction(ActionType act) {
-		throw new UnsupportedOperationException("Stochastic Games domain cannot add actions designed for single agent formalisms");
-	}
 
-
-
-	public List<ActionType> getActionTypes() {
-		throw new UnsupportedOperationException("Stochastic Games domain does not contain any action for single agent formalisms");
-	}
-
-
-
-	@Override
-	public ActionType getAction(String name) {
-		throw new UnsupportedOperationException("Stochastic Games domain does not contain any action for single agent formalisms");
-	}
 
 	
 	
