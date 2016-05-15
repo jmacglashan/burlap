@@ -1,19 +1,17 @@
 package burlap.domain.singleagent.cartpole;
 
-import burlap.debugtools.RandomFactory;
+import burlap.domain.singleagent.cartpole.model.IPModel;
 import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.SimpleActionType;
+import burlap.mdp.singleagent.UniversalActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.visualizer.Visualizer;
-
-import java.util.List;
 
 import static burlap.domain.singleagent.cartpole.CartPoleDomain.ACTION_LEFT;
 import static burlap.domain.singleagent.cartpole.CartPoleDomain.ACTION_RIGHT;
@@ -46,6 +44,9 @@ public class InvertedPendulum implements DomainGenerator {
 	
 	
 	public IPPhysicsParams					physParams = new IPPhysicsParams();
+
+	protected RewardFunction rf;
+	protected TerminalFunction tf;
 	
 	
 	public static class IPPhysicsParams{
@@ -124,125 +125,57 @@ public class InvertedPendulum implements DomainGenerator {
 			return new IPPhysicsParams(angleRange,gravity,cartMass,poleMass,poleLength,actionForce,actionNoise,maxAngleSpeed,timeDelta);
 		}
 	}
-	
 
-	
-	
-	
+
+	public RewardFunction getRf() {
+		return rf;
+	}
+
+	public void setRf(RewardFunction rf) {
+		this.rf = rf;
+	}
+
+	public TerminalFunction getTf() {
+		return tf;
+	}
+
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
+	}
+
 	@Override
-	public Domain generateDomain() {
+	public SADomain generateDomain() {
 		
 		SADomain domain = new SADomain();
 
 
 		IPPhysicsParams cphys = this.physParams.copy();
+		IPModel smodel = new IPModel(cphys);
 
-		new ForceActionType(ACTION_LEFT, domain, -this.physParams.actionForce, cphys);
-		new ForceActionType(ACTION_RIGHT, domain, this.physParams.actionForce, cphys);
-		new ForceActionType(ACTION_NO_FORCE, domain, 0., cphys);
+		RewardFunction rf = this.rf;
+		TerminalFunction tf = this.tf;
+
+		if(rf == null){
+			rf = new InvertedPendulumRewardFunction();
+		}
+		if(tf == null){
+			tf = new InvertedPendulumTerminalFunction();
+		}
+
+		FactoredModel model = new FactoredModel(smodel, rf ,tf);
+		domain.setModel(model);
+
+		domain.addAction(new UniversalActionType(ACTION_LEFT))
+				.addAction(new UniversalActionType(ACTION_RIGHT))
+				.addAction(new UniversalActionType(ACTION_NO_FORCE));
+
 		
 		return domain;
 	}
 	
 	
 	
-	/**
-	 * Updates the given state object given the control force.
-	 * @param s the input state
-	 * @param controlForce the control force acted upon the cart.
-	 * @param physParams the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.IPPhysicsParams} object specifying the physics to use for movement
-	 */
-	public static void updateState(State s, double controlForce, IPPhysicsParams physParams){
 
-		InvertedPendulumState is = (InvertedPendulumState)s;
-		double a0 = is.angle;
-		double av0 = is.angleV;
-
-		
-		double alpha = 1./ (physParams.cartMass + physParams.poleMass);
-		
-		double sinA = Math.sin(a0);
-		double cosA = Math.cos(a0);
-		
-		double num = (physParams.gravity*sinA) -
-				(alpha * physParams.poleMass*physParams.poleLength*av0*av0*Math.sin(2.*a0)*0.5) -
-				(alpha * cosA * controlForce);
-		
-		double denom = ((4./3.)*physParams.poleLength) - alpha*physParams.poleMass*physParams.poleLength*cosA*cosA;
-		
-		double accel = num / denom;
-		
-		//now perform Euler's
-		double af = a0 + physParams.timeDelta*av0;
-		double avf = av0 + physParams.timeDelta*accel;
-		
-		//clamp it
-		if(Math.abs(af) >= physParams.angleRange){
-			af = Math.signum(af) * physParams.angleRange;
-			avf = 0.;
-		}
-		
-		if(Math.abs(avf) > physParams.maxAngleSpeed){
-			avf = Math.signum(avf) * physParams.maxAngleSpeed;
-		}
-		
-		//set it
-		is.angle = af;
-		is.angleV = avf;
-	}
-
-	
-	/**
-	 * An action that applies a given force to the cart + uniform random noise in the range defined in the {@link InvertedPendulum#physParams} data member.
-	 * @author James MacGlashan
-	 *
-	 */
-	public class ForceActionType extends SimpleActionType implements FullActionModel{
-
-		/**
-		 * The base noise to which noise will be added.
-		 */
-		protected double baseForce;
-
-		/**
-		 * The physics parameters to use
-		 */
-		protected IPPhysicsParams physParams;
-		
-		/**
-		 * Initializes the force action
-		 * @param name the name of the action
-		 * @param domain the domain object to which the action will belong.
-		 * @param force the base force this action applies; noise will be added to this force according to the {@link InvertedPendulum#physParams} data member.
-		 * @param physParams the {@link burlap.domain.singleagent.cartpole.InvertedPendulum.IPPhysicsParams} object specifying the physics to use for movement
-		 */
-		public ForceActionType(String name, Domain domain, double force, IPPhysicsParams physParams){
-			super(name, domain);
-			this.baseForce = force;
-			this.physParams = physParams;
-		}
-		
-		@Override
-		protected State sampleHelper(State s, GroundedAction groundedAction) {
-			
-			double roll = RandomFactory.getMapped(0).nextDouble() * (2 * physParams.actionNoise) - physParams.actionNoise;
-			double force = this.baseForce + roll;
-			InvertedPendulum.updateState(s, force, this.physParams);
-			return s;
-		}
-		
-		@Override
-		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction){
-			if(this.physParams.actionNoise != 0.) {
-				throw new RuntimeException("Transition Probabilities for the Inverted Pendulum with continuous action noise cannot be enumerated.");
-			}
-			return this.deterministicTransition(s, groundedAction);
-		}
-		
-		
-		
-		
-	}
 	
 	
 	/**
@@ -316,7 +249,7 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		
 		@Override
-		public double reward(State s, GroundedAction a, State sprime) {
+		public double reward(State s, Action a, State sprime) {
 			
 			double failReward = -1;
 
@@ -343,7 +276,7 @@ public class InvertedPendulum implements DomainGenerator {
 	public static void main(String[] args) {
 
 		InvertedPendulum ivp = new InvertedPendulum();
-		Domain domain = ivp.generateDomain();
+		SADomain domain = ivp.generateDomain();
 		
 		State s = new InvertedPendulumState();
 		
@@ -351,9 +284,9 @@ public class InvertedPendulum implements DomainGenerator {
 		
 		VisualExplorer exp = new VisualExplorer(domain, v, s);
 		
-		exp.addKeyAction("a", ACTION_LEFT);
-		exp.addKeyAction("d", ACTION_RIGHT);
-		exp.addKeyAction("s", ACTION_NO_FORCE);
+		exp.addKeyAction("a", ACTION_LEFT, "");
+		exp.addKeyAction("d", ACTION_RIGHT, "");
+		exp.addKeyAction("s", ACTION_NO_FORCE, "");
 		
 		exp.initGUI();
 

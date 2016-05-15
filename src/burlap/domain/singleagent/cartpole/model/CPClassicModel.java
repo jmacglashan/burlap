@@ -16,6 +16,10 @@ public class CPClassicModel implements FullStateModel {
 
 	protected CartPoleDomain.CPPhysicsParams physParams;
 
+	public CPClassicModel(CartPoleDomain.CPPhysicsParams physParams) {
+		this.physParams = physParams;
+	}
+
 	@Override
 	public List<StateTransitionProb> stateTransitions(State s, Action a) {
 		return FullStateModel.Helper.deterministicTransition(this, s, a);
