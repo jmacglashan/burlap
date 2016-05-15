@@ -6,7 +6,6 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.Di
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -80,7 +79,7 @@ public class MLIRLRequest extends IRLRequest{
 	public MLIRLRequest(SADomain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, HashableStateFactory hashingFactory){
 		super(domain, null, expertEpisodes);
 		this.rf = rf;
-		this.planner = new DifferentiableVI(domain, rf, new NullTermination(), gamma, this.boltzmannBeta, hashingFactory, 0.01, 500);
+		this.planner = new DifferentiableVI(domain, rf, gamma, this.boltzmannBeta, hashingFactory, 0.01, 500);
 
 	}
 

@@ -1,15 +1,14 @@
 package burlap.behavior.stochasticgames.agents.twoplayer.repeatedsinglestage;
 
-import java.util.Map;
-
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.AgentFactory;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
-import burlap.mdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
+
+import java.util.Map;
 
 
 /**
@@ -78,9 +77,9 @@ public class GrimTrigger extends SGAgent {
 	@Override
 	public SGAgentAction getAction(State s) {
 		if(this.grimTrigger){
-			return new SimpleGroundedSGAgentAction(this.worldAgentName, myDefect);
+			return myDefect.associatedAction(this.worldAgentName, "");
 		}
-		return new SimpleGroundedSGAgentAction(this.worldAgentName, myCoop);
+		return myCoop.associatedAction(this.worldAgentName, "");
 	}
 
 	@Override
@@ -88,7 +87,7 @@ public class GrimTrigger extends SGAgent {
 			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		
 		for(SGAgentAction gsa : jointAction){
-			if(!gsa.actingAgent.equals(this.worldAgentName) && this.opponentDefect.actionName.equals(gsa.action.actionName)){
+			if(!gsa.actingAgent().equals(this.worldAgentName) && this.opponentDefect.typeName().equals(gsa.actionName())){
 			    grimTrigger = true;
 			}
 		}

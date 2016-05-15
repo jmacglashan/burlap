@@ -2,16 +2,15 @@ package burlap.behavior.singleagent.learning.actorcritic.critics;
 
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -27,31 +26,8 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class TDLambda implements Critic, ValueFunction {
+public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 
-	/**
-	 * The reward function used for learning.
-	 */
-	protected RewardFunction						rf;
-	
-	/**
-	 * The state termination function to indicate end states
-	 */
-	protected TerminalFunction						tf;
-	
-	/**
-	 * The discount factor
-	 */
-	protected double								gamma;
-	
-	/**
-	 * The state hashing factor used for hashing states and performing state equality checks.
-	 */
-	protected HashableStateFactory hashingFactory;
-	
-	/**
-	 * The learning rate function that affects how quickly the estimated value function changes.
-	 */
 	protected LearningRate							learningRate;
 	
 	/**
@@ -84,19 +60,15 @@ public class TDLambda implements Critic, ValueFunction {
 	
 	/**
 	 * Initializes the algorithm.
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for hashing states and performing equality checks. 
 	 * @param learningRate the learning rate that affects how quickly the estimated value function is adjusted.
 	 * @param vinit a constant value function initialization value to use.
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 */
-	public TDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda) {
-		this.rf = rf;
-		this.tf = tf;
-		this.gamma = gamma;
-		this.hashingFactory = hashingFactory;
+	public TDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda) {
+
+		this.solverInit(null, gamma, hashingFactory);
 		
 		this.learningRate = new ConstantLR(learningRate);
 		vInitFunction = new ValueFunctionInitialization.ConstantValueFunctionInitialization(vinit);
@@ -110,17 +82,13 @@ public class TDLambda implements Critic, ValueFunction {
 	
 	/**
 	 * Initializes the algorithm.
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for hashing states and performing equality checks. 
 	 * @param learningRate the learning rate that affects how quickly the estimated value function is adjusted.
 	 * @param vinit a method of initializing the value function for previously unvisited states.
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 */
-	public TDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda) {
-		this.rf = rf;
-		this.tf = tf;
+	public TDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda) {
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
 		
@@ -132,23 +100,9 @@ public class TDLambda implements Critic, ValueFunction {
 		vIndex = new HashMap<HashableState, VValue>();
 	}
 
-	
-	@Override
-	public void addNonDomainReferencedAction(ActionType a) {
-		if(a instanceof Option && !(this.rf instanceof OptionEvaluatingRF)){
-		    this.rf = new OptionEvaluatingRF(this.rf);
-		}
 
-	}
 
-	/**
-	 * Sets the reward function to use.
-	 * @param rf the reward function to use
-	 */
-	public void setRewardFunction(RewardFunction rf){
-		this.rf = rf;
-	}
-	
+
 	@Override
 	public void initializeEpisode(State s) {
 		this.traces = new LinkedList<TDLambda.StateEligibilityTrace>();
@@ -168,21 +122,20 @@ public class TDLambda implements Critic, ValueFunction {
 	}
 	
 	@Override
-	public CritiqueResult critiqueAndUpdate(State s, GroundedAction ga, State sprime) {
+	public CritiqueResult critiqueAndUpdate(EnvironmentOutcome eo) {
 		
-		HashableState sh = hashingFactory.hashState(s);
-		HashableState shprime = hashingFactory.hashState(sprime);
+		HashableState sh = hashingFactory.hashState(eo.o);
+		HashableState shprime = hashingFactory.hashState(eo.op);
 		
-		double r = this.rf.reward(s, ga, sprime);
+		double r = eo.r;
 		double discount = gamma;
-		if(ga.actionType instanceof Option){
-			Option o = (Option)ga.actionType;
-			discount = Math.pow(gamma, o.getLastNumSteps());
+		if(eo.a instanceof Option){
+			discount = Math.pow(gamma, ((EnvironmentOptionOutcome)eo).numSteps());
 		}
 		
 		VValue vs = this.getV(sh);
 		double nextV = 0.;
-		if(!this.tf.isTerminal(sprime)){
+		if(!eo.terminated){
 			nextV = this.getV(shprime).v;
 		}
 		
@@ -212,7 +165,7 @@ public class TDLambda implements Critic, ValueFunction {
 		}
 		
 		
-		CritiqueResult critique = new CritiqueResult(s, ga, sprime, delta);
+		CritiqueResult critique = new CritiqueResult(eo.o, eo.a, eo.op, delta);
 		
 		this.totalNumberOfSteps++;
 		
@@ -223,6 +176,11 @@ public class TDLambda implements Critic, ValueFunction {
 	@Override
 	public double value(State s) {
 		return this.getV(this.hashingFactory.hashState(s)).v;
+	}
+
+	@Override
+	public void resetSolver() {
+		this.resetData();
 	}
 
 	@Override

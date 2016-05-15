@@ -3,7 +3,6 @@ package burlap.behavior.singleagent.interfaces.rlglue;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import org.rlcommunity.rlglue.codec.AgentInterface;
@@ -333,13 +332,13 @@ public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
 			this.blockUntilStateReceived();
 		}
 
-		if(!(ga.actionType instanceof RLGlueDomain.RLGlueActionType)){
+		if(!(ga instanceof RLGlueDomain.RLGlueActionType)){
 			throw new RuntimeException("RLGlueEnvironment cannot execute actions that are not instances of RLGlueDomain.RLGlueSpecification.");
 		}
 
 		State prevState = this.curState;
 
-		int actionId = ((RLGlueDomain.RLGlueActionType)ga.actionType).getInd();
+		int actionId = ((RLGlueDomain.RLGlueActionType)ga).getInd();
 		synchronized (nextAction) {
 			this.nextStateReference.val = null;
 			this.nextAction.val = actionId;

@@ -1,8 +1,8 @@
 package burlap.behavior.singleagent.learning.actorcritic;
 
-import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 
 /**
@@ -37,12 +37,10 @@ public interface Critic {
 	
 	/**
 	 * This method's implementation provides the critique for some specific instance of the behavior.
-	 * @param s an input state
-	 * @param ga an action taken in s
-	 * @param sprime the state the agent transitioned to for taking action ga in state s
+	 * @param eo the {@link EnvironmentOutcome} specifying the event
 	 * @return the critique of this behavior.
 	 */
-	CritiqueResult critiqueAndUpdate(State s, Action ga, State sprime);
+	CritiqueResult critiqueAndUpdate(EnvironmentOutcome eo);
 	
 	/**
 	 * Used to reset any data that was created/modified during learning so that learning can be begin anew.

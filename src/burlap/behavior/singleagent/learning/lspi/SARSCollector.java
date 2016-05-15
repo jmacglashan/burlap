@@ -3,10 +3,10 @@ package burlap.behavior.singleagent.learning.lspi;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.SampleModel;
@@ -31,7 +31,7 @@ public abstract class SARSCollector {
 	 * Initializes the collector's action set using the actions that are part of the domain.
 	 * @param domain the domain containing the actions to use
 	 */
-	public SARSCollector(Domain domain){
+	public SARSCollector(SADomain domain){
 		this.actionTypes = domain.getActionTypes();
 	}
 	
@@ -137,7 +137,7 @@ public abstract class SARSCollector {
 		 * Initializes the collector's action set using the actions that are part of the domain.
 		 * @param domain the domain containing the actions to use
 		 */
-		public UniformRandomSARSCollector(Domain domain) {
+		public UniformRandomSARSCollector(SADomain domain) {
 			super(domain);
 		}
 		

@@ -131,11 +131,6 @@ public class RLGlueDomain implements DomainGenerator {
 			}
 
 			@Override
-			public boolean applicableInState(State s) {
-				return true;
-			}
-
-			@Override
 			public boolean equals(Object o) {
 				if(this == o) return true;
 				if(o == null || getClass() != o.getClass()) return false;

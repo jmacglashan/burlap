@@ -1,15 +1,14 @@
 package burlap.behavior.stochasticgames.agents.twoplayer.repeatedsinglestage;
 
-import java.util.Map;
-
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.AgentFactory;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
-import burlap.mdp.stochasticgames.agentactions.SimpleGroundedSGAgentAction;
+
+import java.util.Map;
 
 
 /**
@@ -47,7 +46,7 @@ public class TitForTat extends SGAgent {
 	/**
 	 * The last opponent's move
 	 */
-	protected SGAgentActionType lastOpponentMove;
+	protected SGAgentAction lastOpponentMove;
 	
 	
 	/**
@@ -63,7 +62,7 @@ public class TitForTat extends SGAgent {
 		this.opponentCoop = coop;
 		this.opponentDefect = defect;
 		
-		this.lastOpponentMove = opponentCoop;
+		this.lastOpponentMove = opponentCoop.associatedAction("", "");
 	}
 	
 	/**
@@ -80,28 +79,28 @@ public class TitForTat extends SGAgent {
 		this.myDefect = myDefect;
 		this.opponentCoop = opponentCoop;
 		this.opponentDefect = opponentDefect;
-		
-		this.lastOpponentMove = opponentCoop;
+
+		this.lastOpponentMove = opponentCoop.associatedAction("", "");
 	}
 	
 	@Override
 	public void gameStarting() {
-		this.lastOpponentMove = opponentCoop;
+		this.lastOpponentMove = opponentCoop.associatedAction("","");
 	}
 
 	@Override
 	public SGAgentAction getAction(State s) {
-		if(lastOpponentMove.actionName.equals(opponentCoop.actionName)){
-			return new SimpleGroundedSGAgentAction(this.worldAgentName, myCoop);
+		if(lastOpponentMove.actionName().equals(opponentCoop.typeName())){
+			return myCoop.associatedAction(this.worldAgentName, "");
 		}
-		return new SimpleGroundedSGAgentAction(this.worldAgentName, myDefect);
+		return myDefect.associatedAction(this.worldAgentName, "");
 	}
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		for(SGAgentAction gsa : jointAction){
-			if(!gsa.actingAgent.equals(this.worldAgentName)){
-				this.lastOpponentMove = gsa.action;
+			if(!gsa.actingAgent().equals(this.worldAgentName)){
+				this.lastOpponentMove = gsa;
 			}
 		}
 

@@ -1,19 +1,20 @@
 package burlap.behavior.singleagent.learning.actorcritic.critics;
 
+import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
+import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
+import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.statehashing.HashableState;
+import burlap.mdp.statehashing.HashableStateFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
-import burlap.behavior.singleagent.options.Option;
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
 
 
 /**
@@ -46,16 +47,14 @@ public class TimeIndexedTDLambda extends TDLambda {
 	
 	/**
 	 * Initializes the algorithm.
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for hashing states and performing equality checks. 
 	 * @param learningRate the learning rate that affects how quickly the estimated value function is adjusted.
 	 * @param vinit a constant value function initialization value to use.
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 */
-	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda) {
-		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
+	public TimeIndexedTDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda) {
+		super(gamma, hashingFactory, learningRate, vinit, lambda);
 		
 		this.vTIndex = new ArrayList<Map<HashableState,VValue>>();
 		
@@ -74,7 +73,7 @@ public class TimeIndexedTDLambda extends TDLambda {
 	 * @param maxEpisodeSize the maximum number of steps possible in an episode
 	 */
 	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, double vinit, double lambda, int maxEpisodeSize) {
-		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
+		super(gamma, hashingFactory, learningRate, vinit, lambda);
 		
 		this.maxEpisodeSize = maxEpisodeSize;
 		this.vTIndex = new ArrayList<Map<HashableState,VValue>>();
@@ -84,8 +83,6 @@ public class TimeIndexedTDLambda extends TDLambda {
 	
 	/**
 	 * Initializes the algorithm.
-	 * @param rf the reward function
-	 * @param tf the terminal state function
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for hashing states and performing equality checks. 
 	 * @param learningRate the learning rate that affects how quickly the estimated value function is adjusted.
@@ -93,8 +90,8 @@ public class TimeIndexedTDLambda extends TDLambda {
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 * @param maxEpisodeSize the maximum number of steps possible in an episode
 	 */
-	public TimeIndexedTDLambda(RewardFunction rf, TerminalFunction tf, double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda, int maxEpisodeSize) {
-		super(rf, tf, gamma, hashingFactory, learningRate, vinit, lambda);
+	public TimeIndexedTDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda, int maxEpisodeSize) {
+		super(gamma, hashingFactory, learningRate, vinit, lambda);
 		
 		this.maxEpisodeSize = maxEpisodeSize;
 		this.vTIndex = new ArrayList<Map<HashableState,VValue>>();
@@ -131,23 +128,22 @@ public class TimeIndexedTDLambda extends TDLambda {
 	
 	
 	@Override
-	public CritiqueResult critiqueAndUpdate(State s, GroundedAction ga, State sprime) {
+	public CritiqueResult critiqueAndUpdate(EnvironmentOutcome eo) {
 		
-		HashableState sh = hashingFactory.hashState(s);
-		HashableState shprime = hashingFactory.hashState(sprime);
+		HashableState sh = hashingFactory.hashState(eo.o);
+		HashableState shprime = hashingFactory.hashState(eo.op);
 		
-		double r = this.rf.reward(s, ga, sprime);
+		double r = eo.r;
 		double discount = gamma;
 		int n = 1;
-		if(ga.actionType instanceof Option){
-			Option o = (Option)ga.actionType;
-			discount = Math.pow(gamma, o.getLastNumSteps());
-			n = o.getLastNumSteps();
+		if(eo.a instanceof Option){
+			n = ((EnvironmentOptionOutcome)eo).numSteps();
+			discount = Math.pow(gamma, n);
 		}
 		
 		VValue vs = this.getV(sh, curTime);
 		double nextV = 0.;
-		if(!this.tf.isTerminal(sprime) && this.curTime < this.maxEpisodeSize-1){
+		if(!eo.terminated && this.curTime < this.maxEpisodeSize-1){
 			nextV = this.getV(shprime, curTime+n).v;
 		}
 		
@@ -170,7 +166,7 @@ public class TimeIndexedTDLambda extends TDLambda {
 		curTime += n;
 		
 		
-		CritiqueResult critique = new CritiqueResult(s, ga, sprime, delta);
+		CritiqueResult critique = new CritiqueResult(eo.o, eo.a, eo.op, delta);
 		
 		this.totalNumberOfSteps++;
 		
