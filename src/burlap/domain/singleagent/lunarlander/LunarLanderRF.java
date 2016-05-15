@@ -1,10 +1,10 @@
 package burlap.domain.singleagent.lunarlander;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 
 /**
@@ -66,7 +66,7 @@ public class LunarLanderRF implements RewardFunction{
 	}
 
 	@Override
-	public double reward(State s, GroundedAction a, State sprime) {
+	public double reward(State s, Action a, State sprime) {
 		if(onPad.somePFGroundingIsTrue((OOState)sprime)){
 			return goalReward;
 		}

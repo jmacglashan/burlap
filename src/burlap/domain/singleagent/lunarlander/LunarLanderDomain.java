@@ -4,14 +4,18 @@ import burlap.domain.singleagent.lunarlander.state.LLAgent;
 import burlap.domain.singleagent.lunarlander.state.LLBlock;
 import burlap.domain.singleagent.lunarlander.state.LLState;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
+import burlap.mdp.core.Action;
+import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.common.SimpleActionType;
+import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.UniversalActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
 import burlap.shell.EnvironmentShell;
@@ -175,6 +179,9 @@ public class LunarLanderDomain implements DomainGenerator {
 	 */
 	protected LLPhysicsParams				physParams = new LLPhysicsParams();
 
+
+	protected RewardFunction rf;
+	protected TerminalFunction tf;
 
 	/**
 	 * A class for holding the physics parameters
@@ -465,9 +472,24 @@ public class LunarLanderDomain implements DomainGenerator {
 	public void setAnginc(double anginc) {
 		this.physParams.anginc = anginc;
 	}
-	
-	
-	
+
+
+	public TerminalFunction getTf() {
+		return tf;
+	}
+
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
+	}
+
+	public RewardFunction getRf() {
+		return rf;
+	}
+
+	public void setRf(RewardFunction rf) {
+		this.rf = rf;
+	}
+
 	/**
 	 * Sets the domain to use a standard set of physics and with a standard set of two thrust actions.<p>
 	 * gravity = -0.2<p>
@@ -498,7 +520,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	}
 	
 	@Override
-	public Domain generateDomain() {
+	public OOSADomain generateDomain() {
 		
 		OOSADomain domain = new OOSADomain();
 		
@@ -516,15 +538,25 @@ public class LunarLanderDomain implements DomainGenerator {
 		LLPhysicsParams cphys = this.physParams.copy();
 		
 		//add actions
-		new ActionTypeTurn(ACTION_TURN_LEFT, domain, -1., cphys);
-		new ActionTypeTurn(ACTION_TURN_RIGHT, domain, 1., cphys);
-		new ActionTypeIdle(ACTION_IDLE, domain, cphys);
-		
-		for(int i = 0; i < thrustValuesTemp.size(); i++){
-			double t = thrustValuesTemp.get(i);
-			new ActionTypeThrust(ACTION_THRUST +i, domain, t, cphys);
+		domain.addAction(new UniversalActionType(ACTION_TURN_LEFT))
+				.addAction(new UniversalActionType(ACTION_TURN_RIGHT))
+				.addAction(new UniversalActionType(ACTION_IDLE))
+				.addAction(new ThrustType(thrustValues));
+
+
+		LunarLanderModel smodel = new LunarLanderModel(cphys);
+		RewardFunction rf = this.rf;
+		TerminalFunction tf = this.tf;
+		if(rf == null){
+			rf = new LunarLanderRF(domain);
 		}
-		
+		if(tf == null){
+			tf = new LunarLanderTF(domain);
+		}
+
+		FactoredModel model = new FactoredModel(smodel, rf, tf);
+		domain.setModel(model);
+
 		
 		//add pfs
 		new OnPadPF(PF_ON_PAD, domain);
@@ -540,328 +572,79 @@ public class LunarLanderDomain implements DomainGenerator {
 	
 
 	
-	/**
-	 * Turns the lander in the direction indicated by the domains defined change in angle for turn actions.
-	 * @param s the state in which the lander's angle should be changed
-	 * @param dir the direction to turn; +1 is clockwise, -1 is counterclockwise
-	 * @param physParams the physics parameters being used
-	 */
-	protected static void incAngle(LLState s, double dir, LLPhysicsParams physParams){
-
-		LLAgent agent = s.touchAgent();
-
-		double curA = agent.angle;
-		
-		double newa = curA + (dir * physParams.anginc);
-		if(newa > physParams.angmax){
-			newa = physParams.angmax;
-		}
-		else if(newa < -physParams.angmax){
-			newa = -physParams.angmax;
-		}
-
-		agent.angle = newa;
-		
-	}
-	
-	
-	/**
-	 * Updates the position of the agent/lander given the provided thrust force that has been exerted
-	 * @param s the state in which the agent/lander should be modified
-	 * @param thrust the amount of thrust force exerted by the lander.
-	 * @param physParams the physics parameters being used
-	 */
-	protected static void updateMotion(LLState s, double thrust, LLPhysicsParams physParams){
-		
-		double ti = 1.;
-		double tt = ti*ti;
-
-		LLAgent agent = s.touchAgent();
-
-		double ang = agent.angle;
-		double x = agent.x;
-		double y = agent.y;
-		double vx = agent.vx;
-		double vy = agent.vy;
-		
-		double worldAngle = (Math.PI/2.) - ang;
-		
-		double tx = Math.cos(worldAngle)*thrust;
-		double ty = Math.sin(worldAngle)*thrust;
-		
-		double ax = tx;
-		double ay = ty + physParams.gravity;
-		
-		double nx = x + vx*ti + (0.5*ax*tt);
-		double ny = y + vy*ti + (0.5*ay*tt);
-		
-		double nvx = vx + ax*ti;
-		double nvy = vy + ay*ti;
-		
-		double nang = ang;
-		
-		//check for boundaries
-		if(ny > physParams.ymax){
-			ny = physParams.ymax;
-			nvy = 0.;
-		}
-		else if(ny <= physParams.ymin){
-			ny = physParams.ymin;
-			nvy = 0.;
-			nang = 0.;
-			nvx = 0.;
-		}
-		
-		if(nx > physParams.xmax){
-			nx = physParams.xmax;
-			nvx = 0.;
-		}
-		else if(nx < physParams.xmin){
-			nx = physParams.xmin;
-			nvx = 0.;
-		}
-		
-		if(nvx > physParams.vmax){
-			nvx = physParams.vmax;
-		}
-		else if(nvx < -physParams.vmax){
-			nvx = -physParams.vmax;
-		}
-		
-		if(nvy > physParams.vmax){
-			nvy = physParams.vmax;
-		}
-		else if(nvy < -physParams.vmax){
-			nvy = -physParams.vmax;
-		}
-		
-		
-		
-		//check for collisions
-		List <LLBlock.LLObstacle> obstacles = s.obstacles;
-		for(LLBlock.LLObstacle o : obstacles){
-			double l = o.left;
-			double r = o.right;
-			double b = o.bottom;
-			double t = o.top;
-			
-			//are we intersecting?
-			if(nx > l && nx < r && ny >= b && ny < t){
-				//intersection!
-				
-				//from which direction did we hit it (check previous position)?
-				if(x <= l){
-					nx = l;
-					nvx = 0.;
-				}
-				else if(x >= r){
-					nx = r;
-					nvx = 0.;
-				}
-				
-				if(y <= b){
-					ny = b;
-					nvy = 0.;
-				}
-				else if(y >= t){
-					ny = t;
-					nvy = 0.;
-					nang = 0.;
-					nvx = 0.;
-				}
-				
-				
-				//can only hit one obstacle so break out of search
-				break;
-				
-			}
-			
-			
-		}
-		
-		
-		//check the pad collision
-		LLBlock.LLPad pad = s.pad;
-		if(pad != null) {
-			double l = pad.left;
-			double r = pad.right;
-			double b = pad.bottom;
-			double t = pad.top;
-
-			//did we collide?
-			if(nx > l && nx < r && ny >= b && ny < t) {
-				//intersection!
-
-				//from which direction did we hit it (check previous position)?
-				if(x <= l) {
-					nx = l;
-					nvx = 0.;
-				} else if(x >= r) {
-					nx = r;
-					nvx = 0.;
-				}
-
-				if(y <= b) {
-					ny = b;
-					nvy = 0.;
-				} else if(y >= t) {
-					ny = t;
-					nvy = 0.;
-					nang = 0.;
-					nvx = 0.;
-				}
 
 
+	public static class ThrustType implements ActionType{
+
+		List<Action> actions;
+
+		public ThrustType(List<Double> thrustValues) {
+			List<Action> actions = new ArrayList<Action>(thrustValues.size());
+			for(Double t : thrustValues){
+				actions.add(new ThrustAction(t));
 			}
 		}
-		
-
-		//now set the new values
-		agent.x = nx;
-		agent.y = ny;
-		agent.vx = nvx;
-		agent.vy = nvy;
-		agent.angle = nang;
-		
-	}
-	
-	
-	
-	/**
-	 * An action class for turning the lander
-	 * @author James MacGlashan
-	 *
-	 */
-	public class ActionTypeTurn extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
-
-		LLPhysicsParams physParams;
-		double dir;
-		
-		/**
-		 * Creates a turn action for the indicated direction.
-		 * @param name the name of the action
-		 * @param domain the domain in which the action exists
-		 * @param dir the direction this action will turn; +1 for clockwise, -1 for counterclockwise.
-		 * @param physParams the physics parameters being used
-		 */
-		public ActionTypeTurn(String name, Domain domain, double dir, LLPhysicsParams physParams) {
-			super(name, domain);
-			this.dir = dir;
-			this.physParams = physParams;
-		}
-		
-		
 
 		@Override
-		protected State sampleHelper(State st, GroundedAction groundedAction) {
-			incAngle((LLState)st, dir, this.physParams);
-			updateMotion((LLState)st, 0.0, this.physParams);
-			return st;
+		public String typeName() {
+			return ACTION_THRUST;
 		}
-
-
-		public LLPhysicsParams getPhysParams() {
-			return physParams;
-		}
-
-		public void setPhysParams(LLPhysicsParams physParams) {
-			this.physParams = physParams;
-		}
-	}
-	
-	
-	
-	/**
-	 * An action class for having the agent idle (its current velocity and the force of gravity will be all that acts on the lander).
-	 * @author James MacGlashan
-	 *
-	 */
-	public class ActionTypeIdle extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
-
-		LLPhysicsParams physParams;
-		
-		/**
-		 * Initializes the idle action.
-		 * @param name the name of the action
-		 * @param domain the domain of the action.
-		 * @param physParams the physics parameters being used
-		 */
-		public ActionTypeIdle(String name, Domain domain, LLPhysicsParams physParams) {
-			super(name, domain);
-			this.physParams = physParams;
-		}
-		
 
 		@Override
-		protected State sampleHelper(State st, GroundedAction groundedAction) {
-			updateMotion((LLState)st, 0.0, this.physParams);
-			return st;
+		public Action associatedAction(String strRep) {
+			return new ThrustAction(Double.parseDouble(strRep));
 		}
 
-
-		public LLPhysicsParams getPhysParams() {
-			return physParams;
-		}
-
-		public void setPhysParams(LLPhysicsParams physParams) {
-			this.physParams = physParams;
-		}
-	}
-	
-	
-	
-	/**
-	 * An action class for exerting a thrust. 
-	 * @author James MacGlashan
-	 *
-	 */
-	public class ActionTypeThrust extends SimpleActionType.SimpleDeterministicActionType implements FullActionModel{
-
-		protected double thrustValue;
-		LLPhysicsParams physParams;
-		
-		
-		/**
-		 * Initializes a thrust action for a given thrust force
-		 * @param name the name of the action
-		 * @param domain the domain of the action
-		 * @param thrustValue the force of thrust for this thrust action
-		 * @param physParams the physics parameters being used
-		 */
-		public ActionTypeThrust(String name, Domain domain, double thrustValue, LLPhysicsParams physParams){
-			super(name, domain);
-			this.thrustValue = thrustValue;
-			this.physParams = physParams;
-		}
-		
-		
 		@Override
-		protected State sampleHelper(State st, GroundedAction groundedAction) {
-			updateMotion((LLState)st, thrustValue, this.physParams);
-			return st;
+		public List<Action> allApplicableActions(State s) {
+			return actions;
 		}
 
+		public static class ThrustAction implements Action{
 
-		public double getThrustValue() {
-			return thrustValue;
-		}
+			public double thrust;
 
-		public void setThrustValue(double thrustValue) {
-			this.thrustValue = thrustValue;
-		}
+			public ThrustAction() {
+			}
 
-		public LLPhysicsParams getPhysParams() {
-			return physParams;
-		}
+			public ThrustAction(double thrust) {
+				this.thrust = thrust;
+			}
 
-		public void setPhysParams(LLPhysicsParams physParams) {
-			this.physParams = physParams;
+			@Override
+			public String actionName() {
+				return ACTION_THRUST + "_" + thrust;
+			}
+
+			@Override
+			public Action copy() {
+				return new ThrustAction(thrust);
+			}
+
+			@Override
+			public boolean equals(Object o) {
+				if(this == o) return true;
+				if(o == null || getClass() != o.getClass()) return false;
+
+				ThrustAction that = (ThrustAction) o;
+
+				return Double.compare(that.thrust, thrust) == 0;
+
+			}
+
+			@Override
+			public int hashCode() {
+				long temp = Double.doubleToLongBits(thrust);
+				return (int) (temp ^ (temp >>> 32));
+			}
+
+			@Override
+			public String toString() {
+				return this.actionName();
+			}
 		}
 	}
-	
-	
-	
-	
+
 	
 	
 	/**
@@ -1074,7 +857,7 @@ public class LunarLanderDomain implements DomainGenerator {
 	public static void main(String[] args) {
 
 		LunarLanderDomain lld = new LunarLanderDomain();
-		Domain domain = lld.generateDomain();
+		SADomain domain = lld.generateDomain();
 
 
 
@@ -1107,11 +890,11 @@ public class LunarLanderDomain implements DomainGenerator {
 			Visualizer vis = LLVisualizer.getVisualizer(lld);
 			VisualExplorer exp = new VisualExplorer(domain, vis, clean);
 
-			exp.addKeyAction("w", ACTION_THRUST + 0);
-			exp.addKeyAction("s", ACTION_THRUST + 1);
-			exp.addKeyAction("a", ACTION_TURN_LEFT);
-			exp.addKeyAction("d", ACTION_TURN_RIGHT);
-			exp.addKeyAction("x", ACTION_IDLE);
+			exp.addKeyAction("w", ACTION_THRUST, "0.32");
+			exp.addKeyAction("s", ACTION_THRUST, String.valueOf(-lld.physParams.gravity));
+			exp.addKeyAction("a", ACTION_TURN_LEFT, "");
+			exp.addKeyAction("d", ACTION_TURN_RIGHT, "");
+			exp.addKeyAction("x", ACTION_IDLE, "");
 
 			exp.initGUI();
 
