@@ -216,6 +216,14 @@ public class FrostbiteDomain implements DomainGenerator{
 		FrostbiteModel smodel = new FrostbiteModel(scale);
 		RewardFunction rf = this.rf;
 		TerminalFunction tf = this.tf;
+		if(rf == null){
+			rf = new FrostbiteRF(domain);
+		}
+		if(tf == null){
+			tf = new FrostbiteTF(domain);
+		}
+
+
 		FactoredModel model = new FactoredModel(smodel, rf, tf);
 		domain.setModel(model);
 
