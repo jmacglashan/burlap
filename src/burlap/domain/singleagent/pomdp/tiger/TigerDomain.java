@@ -4,30 +4,17 @@ import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.StateGenerator;
-import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
-import burlap.mdp.singleagent.RewardFunction;
-import burlap.mdp.singleagent.common.NullActionType;
-import burlap.mdp.singleagent.common.SimpleActionType;
+import burlap.mdp.singleagent.UniversalActionType;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
-import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
-import burlap.mdp.singleagent.pomdp.observations.ObservationProbability;
-import burlap.mdp.singleagent.pomdp.observations.ObservationUtilities;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
 import burlap.shell.EnvironmentShell;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 
 /**
@@ -118,6 +105,29 @@ public class TigerDomain implements DomainGenerator {
 	 */
 	protected double						listenAccuracy = 0.85;
 
+
+
+	/**
+	 * the reward for opening the correct door
+	 */
+	public double correctDoorReward = 10.;
+
+	/**
+	 * The reward for opening the wrong door
+	 */
+	public double wrongDoorReward = -100.;
+
+	/**
+	 * The reward for listening
+	 */
+	public double listenReward = -1.;
+
+	/**
+	 * The reward for do nothing.
+	 */
+	public double nothingReward = 0.;
+
+
 	/**
 	 * Initializes. There will be no "do nothing" action and the listen accuracy will be set to 0.85
 	 */
@@ -142,22 +152,76 @@ public class TigerDomain implements DomainGenerator {
 		this.includeDoNothing = includeDoNothing;
 		this.listenAccuracy = listenAccuracy;
 	}
-	
+
+	public boolean isIncludeDoNothing() {
+		return includeDoNothing;
+	}
+
+	public void setIncludeDoNothing(boolean includeDoNothing) {
+		this.includeDoNothing = includeDoNothing;
+	}
+
+	public double getListenAccuracy() {
+		return listenAccuracy;
+	}
+
+	public void setListenAccuracy(double listenAccuracy) {
+		this.listenAccuracy = listenAccuracy;
+	}
+
+	public double getCorrectDoorReward() {
+		return correctDoorReward;
+	}
+
+	public void setCorrectDoorReward(double correctDoorReward) {
+		this.correctDoorReward = correctDoorReward;
+	}
+
+	public double getWrongDoorReward() {
+		return wrongDoorReward;
+	}
+
+	public void setWrongDoorReward(double wrongDoorReward) {
+		this.wrongDoorReward = wrongDoorReward;
+	}
+
+	public double getListenReward() {
+		return listenReward;
+	}
+
+	public void setListenReward(double listenReward) {
+		this.listenReward = listenReward;
+	}
+
+	public double getNothingReward() {
+		return nothingReward;
+	}
+
+	public void setNothingReward(double nothingReward) {
+		this.nothingReward = nothingReward;
+	}
+
 	@Override
 	public Domain generateDomain() {
 		
 		PODomain domain = new PODomain();
 
-		
-		new OpenActionType(ACTION_LEFT, domain);
-		new OpenActionType(ACTION_RIGHT, domain);
-		new NullActionType(ACTION_LISTEN, domain);
+
+
+		domain.addAction(new UniversalActionType(ACTION_LEFT))
+				.addAction(new UniversalActionType(ACTION_RIGHT))
+				.addAction(new UniversalActionType(ACTION_LISTEN));
+
 		if(this.includeDoNothing){
-			new NullActionType(ACTION_DO_NOTHING, domain);
+			domain.addAction(new UniversalActionType(ACTION_DO_NOTHING));
 		}
 
-		ObservationFunction of = new TigerObservations(this.listenAccuracy);
+
+		ObservationFunction of = new TigerObservations(this.listenAccuracy, this.includeDoNothing);
 		domain.setObservationFunction(of);
+
+		TigerModel model = new TigerModel(correctDoorReward, wrongDoorReward, listenReward, nothingReward);
+		domain.setModel(model);
 		
 		StateEnumerator senum = new StateEnumerator(domain, new SimpleHashableStateFactory());
 		senum.getEnumeratedID(new TigerState(VAL_LEFT));
@@ -172,21 +236,19 @@ public class TigerDomain implements DomainGenerator {
 	/**
 	 * Returns a {@link burlap.mdp.auxiliary.StateGenerator} that 50% of the time generates an hidden tiger state with the tiger on the
 	 * left side, and 50% time on the right.
-	 * @param domain the Tiger domain object
 	 * @return a {@link burlap.mdp.auxiliary.StateGenerator}
 	 */
-	public static StateGenerator randomSideStateGenerator(final PODomain domain){
-		return randomSideStateGenerator(domain, 0.5);
+	public static StateGenerator randomSideStateGenerator(){
+		return randomSideStateGenerator(0.5);
 	}
 
 	/**
 	 * Returns a {@link burlap.mdp.auxiliary.StateGenerator} that some of the of the time generates an hidden tiger state with the tiger on the
 	 * left side, and others on the right. Probability of left side is specified with the argument probLeft
-	 * @param domain the Tiger domain object
 	 * @param probLeft the probability that a state with the tiger on the left side will be generated
 	 * @return a {@link burlap.mdp.auxiliary.StateGenerator}
 	 */
-	public static StateGenerator randomSideStateGenerator(final PODomain domain, final double probLeft){
+	public static StateGenerator randomSideStateGenerator(final double probLeft){
 		return new StateGenerator() {
 			@Override
 			public State generateState() {
@@ -210,276 +272,6 @@ public class TigerDomain implements DomainGenerator {
 
 
 	/**
-	 * Specifies an action for opening a door. When a door is opened, then the agent automatically faces a new pair of doors.
-	 * With the tiger's position randomly specified
-	 */
-	public class OpenActionType extends SimpleActionType implements FullActionModel{
-
-		public OpenActionType(String actionName, Domain domain){
-			super(actionName, domain);
-		}
-		
-		@Override
-		protected State sampleHelper(State s, GroundedAction ga) {
-			
-			Random random = RandomFactory.getMapped(0);
-			double r = random.nextDouble();
-
-
-
-			if(r < 0.5){
-				((MutableState)s).set(VAR_DOOR, VAL_LEFT);
-			}
-			else{
-				((MutableState)s).set(VAR_DOOR, VAL_RIGHT);
-			}
-			
-			return s;
-		}
-		
-		@Override
-		public List<TransitionProbability> transitions(State s, GroundedAction ga){
-			List<TransitionProbability> tps = new ArrayList<TransitionProbability>(2);
-			
-			State left = s.copy();
-			((MutableState)left).set(VAR_DOOR, VAL_LEFT);
-			tps.add(new TransitionProbability(left, 0.5));
-			
-			State right = s.copy();
-			((MutableState)right).set(VAR_DOOR, VAL_RIGHT);
-			tps.add(new TransitionProbability(right, 0.5));
-			
-			return tps;
-		}
-		
-		
-	}
-
-
-	/**
-	 * Defines the Tiger domain observation function
-	 */
-	public class TigerObservations implements DiscreteObservationFunction{
-
-		protected double listenAccuracy;
-		
-		public TigerObservations(double listenAccuracy){
-			this.listenAccuracy = listenAccuracy;
-		}
-
-		@Override
-		public List<State> allObservations() {
-			
-			List<State> result = new ArrayList<State>(3);
-			
-			result.add(this.observationLeft());
-			result.add(this.observationRight());
-			result.add(this.observationReset());
-			if(TigerDomain.this.includeDoNothing){
-				result.add(this.observationNothing());
-			}
-			
-			return result;
-		}
-		
-		@Override
-		public State sample(State state, GroundedAction action){
-			//override for faster sampling
-			if(action.actionName().equals(ACTION_LEFT) || action.actionName().equals(ACTION_RIGHT)){
-				return this.observationReset();
-			}
-			else if(action.actionName().equals(ACTION_LISTEN)){
-				String tigerVal = (String)state.get(VAR_DOOR);
-				double r = RandomFactory.getMapped(0).nextDouble();
-				if(r < this.listenAccuracy){
-					if(tigerVal.equals(VAL_LEFT)){
-						return this.observationLeft();
-					}
-					else{
-						return this.observationRight();
-					}
-				}
-				else{
-					//then nosiy listen; reverse direction
-					if(tigerVal.equals(VAL_LEFT)){
-						return this.observationRight();
-					}
-					else{
-						return this.observationLeft();
-					}
-				}
-			}
-			else if(action.actionName().equals(ACTION_DO_NOTHING)){
-				return this.observationNothing();
-			}
-			
-			throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation sample.");
-		}
-
-		@Override
-		public double probability(State observation, State state,
-								  GroundedAction action) {
-			
-			
-			String oVal = (String)observation.get(VAR_HEAR);
-			String tigerVal = (String)state.get(VAR_DOOR);
-			
-			if(action.actionName().equals(ACTION_LEFT) || action.actionName().equals(ACTION_RIGHT)){
-				if(oVal.equals(DOOR_RESET)){
-					return 1.;
-				}
-				return 0.;
-			}
-			
-			if(action.actionName().equals(ACTION_LISTEN)){
-				if(tigerVal.equals(VAL_LEFT)){
-					if(oVal.equals(HEAR_LEFT)){
-						return this.listenAccuracy;
-					}
-					else if(oVal.equals(HEAR_RIGHT)){
-						return 1.-this.listenAccuracy;
-					}
-					else{
-						return 0.;
-					}
-				}
-				else{
-					if(oVal.equals(HEAR_LEFT)){
-						return 1.-this.listenAccuracy;
-					}
-					else if(oVal.equals(HEAR_RIGHT)){
-						return this.listenAccuracy;
-					}
-					else{
-						return 0.;
-					}
-				}
-			}
-			
-			//otherwise we're in the noop
-			if(action.actionName().equals(ACTION_DO_NOTHING)){
-				if(oVal.equals(HEAR_NOTHING)){
-					return 1.;
-				}
-				else{
-					return 0.;
-				}
-			}
-			
-			throw new RuntimeException("Unknown action " + action.actionName() + "; cannot return observation probability.");
-		}
-
-		@Override
-		public List<ObservationProbability> probabilities(State state, GroundedAction action) {
-			return ObservationUtilities.probabilitiesByEnumeration(this, state, action);
-		}
-
-		/**
-		 * Returns the observation of hearing the tiger behind the left door
-		 * @return a {@link State} specifying the observation of hearing the tiger behind the left door
-		 */
-		protected State observationLeft(){
-			return new TigerObservation(HEAR_LEFT);
-		}
-
-
-		/**
-		 * Returns the observation of hearing the tiger behind the right door
-		 * @return a {@link State} specifying the observation of hearing the tiger behind the right door
-		 */
-		protected State observationRight(){
-			return new TigerObservation(HEAR_RIGHT);
-		}
-
-
-		/**
-		 * Returns the observation of approaching a new pair of doors
-		 * @return a {@link State} specifying the observation of approaching a new pair of doors
-		 */
-		protected State observationReset(){
-			return new TigerObservation(DOOR_RESET);
-		}
-
-
-		/**
-		 * Returns the observation of hearing nothing; occurs when the do nothing action is selected
-		 * @return a {@link State} specifying the observation of hearing nothing; occurs when the do nothing action is selected
-		 */
-		protected State observationNothing(){
-			return new TigerObservation(HEAR_NOTHING);
-		}
-		
-		
-	}
-
-
-	/**
-	 * Defines the reward function for the tiger domain, which is defined by four values:
-	 * opening the correct door with the prize; opening the wrong door with the tiger; listening; and doing nothing.
-	 * By default these will have the values: 10, -100, -1, 0, respectively.
-	 */
-	public static class TigerRF implements RewardFunction{
-
-		/**
-		 * the reward for opening the correct door
-		 */
-		public double correctDoor = 10.;
-
-		/**
-		 * The reward for opening the wrong door
-		 */
-		public double wrongDoor = -100.;
-
-		/**
-		 * The reward for listening
-		 */
-		public double listen = -1.;
-
-		/**
-		 * The reward for do nothing.
-		 */
-		public double nothing = 0.;
-		
-		@Override
-		public double reward(State s, GroundedAction a, State sprime) {
-			
-			
-			if(a.actionName().equals(ACTION_LEFT)){
-				String tigerVal = (String)s.get(VAR_DOOR);
-				
-				if(tigerVal.equals(VAL_LEFT)){
-					return wrongDoor;
-				}
-				else{
-					return correctDoor;
-				}
-			}
-			else if(a.actionName().equals(ACTION_RIGHT)){
-				String tigerVal = (String)s.get(VAR_DOOR);
-				if(tigerVal.equals(VAL_RIGHT)){
-					return wrongDoor;
-				}
-				else{
-					return correctDoor;
-				}
-			}
-			else if(a.actionName().equals(ACTION_LISTEN)){
-				return listen;
-			}
-			else if(a.actionName().equals(ACTION_DO_NOTHING)){
-				return nothing;
-			}
-			
-			
-			throw new RuntimeException("Cannot return reward; unknown action: " + a.actionName());
-		}
-		
-		
-		
-	}
-
-
-	/**
 	 * Main method for interacting with the tiger domain via an {@link EnvironmentShell}
 	 * By default, the TerminalExplorer interacts with the partially observable environment ({@link burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment}),
 	 * which means you only get to see the observations that the agent would. However, if you set the first command-line argument
@@ -492,12 +284,10 @@ public class TigerDomain implements DomainGenerator {
 		TigerDomain dgen = new TigerDomain(false);
 		PODomain domain = (PODomain)dgen.generateDomain();
 
-		RewardFunction rf = new TigerRF();
-		TerminalFunction tf = new NullTermination();
-		StateGenerator tigerGenerator = TigerDomain.randomSideStateGenerator(domain, 0.5);
+		StateGenerator tigerGenerator = TigerDomain.randomSideStateGenerator(0.5);
 
-		Environment observableEnv = new SimulatedEnvironment(domain, rf, tf, tigerGenerator);
-		Environment poEnv = new SimulatedPOEnvironment(domain, rf, tf, tigerGenerator);
+		Environment observableEnv = new SimulatedEnvironment(domain, tigerGenerator);
+		Environment poEnv = new SimulatedPOEnvironment(domain, tigerGenerator);
 
 		Environment envTouse = poEnv;
 		if(args.length > 0 && args[0].equals("h")){
