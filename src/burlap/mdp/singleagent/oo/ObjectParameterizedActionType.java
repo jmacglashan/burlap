@@ -1,7 +1,6 @@
 package burlap.mdp.singleagent.oo;
 
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.OOStateUtilities;
@@ -16,7 +15,7 @@ import java.util.List;
  *
  * @author James MacGlashan.
  */
-public class ObjectParameterizedActionType implements ActionType {
+public abstract class ObjectParameterizedActionType implements ActionType {
 
 	public String name;
 
@@ -38,6 +37,7 @@ public class ObjectParameterizedActionType implements ActionType {
 	 * @param parameterClasses a String array of the names of the object classes to which bound parameters must belong
 	 */
 	public ObjectParameterizedActionType(String name, String [] parameterClasses){
+		this.name = name;
 		this.parameterClasses = parameterClasses;
 		this.parameterOrderGroup = new String[parameterClasses.length];
 		//without parameter order group specified, all parameters are assumed to be in a different group
@@ -51,11 +51,11 @@ public class ObjectParameterizedActionType implements ActionType {
 	 * Initializes the action with the name of the action, the domain to which it belongs, the parameters it takes, and the parameter order groups.
 	 * The action will also be automatically be added to the domain.
 	 * @param name the name of the action
-	 * @param domain the domain to which the action belongs
 	 * @param parameterClasses a String array of the names of the object classes to which bound parameters must belong
 	 * @param parameterOrderGroups the order group assignments for each of the parameters.
 	 */
-	public ObjectParameterizedActionType(String name, Domain domain, String [] parameterClasses, String [] parameterOrderGroups){
+	public ObjectParameterizedActionType(String name, String [] parameterClasses, String [] parameterOrderGroups){
+		this.name = name;
 		this.parameterClasses = parameterClasses;
 		this.parameterOrderGroup = parameterOrderGroups;
 	}
@@ -103,20 +103,22 @@ public class ObjectParameterizedActionType implements ActionType {
 
 		for(List <String> params : bindings){
 			String [] aprams = params.toArray(new String[params.size()]);
-			Action ga = this.generateAction(aprams);
-			res.add(ga);
+			ObjectParameterizedAction ga = this.generateAction(aprams);
+			if(this.applicableInState(s, ga)) {
+				res.add(ga);
+			}
 		}
 
 		return res;
 
 	}
 
-	protected Action generateAction(String [] params){
+	protected ObjectParameterizedAction generateAction(String [] params){
 		return new SAObjectParameterizedAction(this.typeName(), params);
 	}
 
 
-
+	protected abstract boolean applicableInState(State s, ObjectParameterizedAction a);
 
 
 

@@ -1,19 +1,23 @@
 package burlap.domain.singleagent.blocksworld;
 
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
+import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.OODomain;
+import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.NullRewardFunction;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.singleagent.oo.ObjectParameterizedActionType;
 import burlap.shell.EnvironmentShell;
 
 import java.awt.*;
-import java.util.List;
 
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
@@ -81,19 +85,51 @@ public class BlocksWorld implements DomainGenerator {
 
 
 	protected NamedColor[]  colors = new NamedColor[]{new NamedColor("red", Color.red), new NamedColor("blue", Color.blue), new NamedColor("green", Color.green)};
-	
+
+
+	protected RewardFunction rf;
+	protected TerminalFunction tf;
+
+	public RewardFunction getRf() {
+		return rf;
+	}
+
+	public void setRf(RewardFunction rf) {
+		this.rf = rf;
+	}
+
+	public TerminalFunction getTf() {
+		return tf;
+	}
+
+	public void setTf(TerminalFunction tf) {
+		this.tf = tf;
+	}
+
 	@Override
-	public Domain generateDomain() {
+	public OOSADomain generateDomain() {
 
 		OOSADomain domain = new OOSADomain();
 		
 		domain.addStateClass(CLASS_BLOCK, BlocksWorldBlock.class);
-		
-		
-		new StackActionType(ACTION_STACK, domain);
-		new UnstackActionType(ACTION_UNSTACK, domain);
-		
-		
+
+		domain.addAction(new StackActionType(ACTION_STACK))
+				.addAction(new UnstackActionType(ACTION_UNSTACK));
+
+		RewardFunction rf = this.rf;
+		TerminalFunction tf = this.tf;
+
+		if(rf == null){
+			rf = new NullRewardFunction();
+		}
+		if(tf == null){
+			tf = new NullTermination();
+		}
+
+		BWModel smodel = new BWModel();
+		FactoredModel model = new FactoredModel(smodel, rf , tf);
+		domain.setModel(model);
+
 		new OnBlockPF(PF_ON_BLOCK, domain);
 		new OnTablePF(PF_ON_TABLE, domain);
 		new ClearPF(PF_CLEAR, domain);
@@ -128,16 +164,16 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class StackActionType extends ObjectParameterizedActionType implements FullActionModel{
+	public class StackActionType extends ObjectParameterizedActionType {
 
-		public StackActionType(String name, Domain domain){
-			super(name, domain, new String[]{CLASS_BLOCK, CLASS_BLOCK});
+		public StackActionType(String name){
+			super(name,new String[]{CLASS_BLOCK, CLASS_BLOCK});
 		}
 		
-		@Override
-		public boolean applicableInState(State st, GroundedAction groundedAction){
 
-			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
+		public boolean applicableInState(State st, ObjectParameterizedAction groundedAction){
+
+			String [] params = groundedAction.getObjectParameters();
 
 			//block must be clear
 			BlocksWorldState s = (BlocksWorldState)st;
@@ -147,51 +183,8 @@ public class BlocksWorld implements DomainGenerator {
 			if(!src.clear || !target.clear){
 				return false;
 			}
-			
-			
+
 			return true; 
-		}
-		
-		@Override
-		protected State sampleHelper(State st, GroundedAction groundedAction) {
-
-			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
-
-			BlocksWorldState s = (BlocksWorldState)st;
-			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
-			BlocksWorldBlock target = (BlocksWorldBlock)s.object(params[1]);
-			
-			String srcOnName = src.on;
-
-			BlocksWorldBlock nsrc = src.copy();
-			nsrc.on = target.name;
-			BlocksWorldBlock ntarget = target.copy();
-			target.clear = false;
-
-			s.addObject(nsrc).addObject(ntarget);
-			
-			if(!srcOnName.equals(TABLE_VAL)){
-				BlocksWorldBlock oldTarget = (BlocksWorldBlock)s.object(srcOnName).copy();
-				oldTarget.clear = true;
-				s.addObject(oldTarget);
-			}
-			
-			return st;
-		}
-
-		@Override
-		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction){
-			return this.deterministicTransition(s, groundedAction);
-		}
-
-		@Override
-		public boolean parametersAreObjectIdentifierIndependent() {
-			return false;
-		}
-
-		@Override
-		public boolean isPrimitive() {
-			return true;
 		}
 
 	}
@@ -203,15 +196,15 @@ public class BlocksWorld implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class UnstackActionType extends ObjectParameterizedActionType implements FullActionModel{
+	public class UnstackActionType extends ObjectParameterizedActionType{
 		
-		public UnstackActionType(String name, Domain domain){
-			super(name, domain, new String[]{CLASS_BLOCK});
+		public UnstackActionType(String name){
+			super(name, new String[]{CLASS_BLOCK});
 		}
 		
-		public boolean applicableInState(State st, GroundedAction groundedAction){
+		public boolean applicableInState(State st, ObjectParameterizedAction groundedAction){
 
-			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
+			String [] params = groundedAction.getObjectParameters();
 
 			//block must be clear
 			BlocksWorldState s = (BlocksWorldState)st;
@@ -224,40 +217,7 @@ public class BlocksWorld implements DomainGenerator {
 			
 			return true; 
 		}
-		
-		@Override
-		protected State sampleHelper(State st, GroundedAction groundedAction) {
 
-			String [] params = ((SAObjectParameterizedAction)groundedAction).getObjectParameters();
-
-			BlocksWorldState s = (BlocksWorldState)st;
-			BlocksWorldBlock src = (BlocksWorldBlock)s.object(params[0]);
-			
-			String srcOnName = src.on;
-
-			s.set(src.name() + ":" + VAR_ON, TABLE_VAL);
-			if(!srcOnName.equals(TABLE_VAL)) {
-				s.set(srcOnName + ":" + VAR_CLEAR, true);
-			}
-
-			
-			return st;
-		}
-
-		@Override
-		public List<TransitionProbability> transitions(State s, GroundedAction groundedAction){
-			return this.deterministicTransition(s, groundedAction);
-		}
-
-		@Override
-		public boolean parametersAreObjectIdentifierIndependent() {
-			return false;
-		}
-
-		@Override
-		public boolean isPrimitive() {
-			return true;
-		}
 	}
 	
 	
@@ -373,7 +333,7 @@ public class BlocksWorld implements DomainGenerator {
 	public static void main(String [] args){
 		
 		BlocksWorld bw = new BlocksWorld();
-		Domain domain = bw.generateDomain();
+		SADomain domain = bw.generateDomain();
 		
 		State s = getNewState(3);
 		
