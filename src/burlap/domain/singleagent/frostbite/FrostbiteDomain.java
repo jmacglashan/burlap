@@ -14,6 +14,7 @@ import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.UniversalActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
 
@@ -211,6 +212,12 @@ public class FrostbiteDomain implements DomainGenerator{
 		new InWaterPF(PF_IN_WATER, domain, gameWidth, agentSize, gameHeight, numberPlatformCol, platformSpeed);
 		new OnIcePF(PF_ON_ICE, domain, agentSize, gameIceHeight);
 		new IglooBuiltPF(PF_IGLOO_BUILT, domain);
+
+		FrostbiteModel smodel = new FrostbiteModel(scale);
+		RewardFunction rf = this.rf;
+		TerminalFunction tf = this.tf;
+		FactoredModel model = new FactoredModel(smodel, rf, tf);
+		domain.setModel(model);
 
 		return domain;
 	}

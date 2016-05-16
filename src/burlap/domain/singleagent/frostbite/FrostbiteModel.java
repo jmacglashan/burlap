@@ -16,29 +16,33 @@ import static burlap.domain.singleagent.frostbite.FrostbiteDomain.*;
 /**
  * @author James MacGlashan.
  */
-public class FrosbiteModel implements FullStateModel {
+public class FrostbiteModel implements FullStateModel {
 
 	/**
 	 * Constant to adjust the scale of the game
 	 */
-	protected int SCALE = 5;
+	protected int scale = 5;
 	protected int numberPlatformCol = 4;
 
-	protected int gameHeight = 130 * SCALE;
-	protected int gameWidth = 160 * SCALE;
-	protected int jumpSize = 22 * SCALE;
-	protected int stepSize = 2 * SCALE;
+	protected int gameHeight = 130 * scale;
+	protected int gameWidth = 160 * scale;
+	protected int jumpSize = 22 * scale;
+	protected int stepSize = 2 * scale;
 	protected int jumpSpeed = jumpSize / 4;
-	protected int platformSpeed = 1 * SCALE;
-	protected int agentSize = 8 * SCALE;
+	protected int platformSpeed = 1 * scale;
+	protected int agentSize = 8 * scale;
 
 
-	public int getSCALE() {
-		return SCALE;
+	public FrostbiteModel(int scale) {
+		this.scale = scale;
 	}
 
-	public void setSCALE(int SCALE) {
-		this.SCALE = SCALE;
+	public int getScale() {
+		return scale;
+	}
+
+	public void setScale(int scale) {
+		this.scale = scale;
 		this.initConstants();
 	}
 
@@ -51,13 +55,13 @@ public class FrosbiteModel implements FullStateModel {
 	}
 
 	public void initConstants(){
-		gameHeight = 130 * SCALE;
-		gameWidth = 160 * SCALE;
-		jumpSize = 22 * SCALE;
-		stepSize = 2 * SCALE;
+		gameHeight = 130 * scale;
+		gameWidth = 160 * scale;
+		jumpSize = 22 * scale;
+		stepSize = 2 * scale;
 		jumpSpeed = jumpSize / 4;
-		platformSpeed = 1 * SCALE;
-		agentSize = 8 * SCALE;
+		platformSpeed = 1 * scale;
+		agentSize = 8 * scale;
 	}
 
 	@Override
