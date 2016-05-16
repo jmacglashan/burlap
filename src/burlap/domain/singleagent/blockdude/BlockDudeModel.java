@@ -33,7 +33,7 @@ public class BlockDudeModel implements FullStateModel {
 	@Override
 	public State sampleStateTransition(State s, Action a) {
 
-		BlockDudeState bs = (BlockDudeState)s;
+		BlockDudeState bs = (BlockDudeState)s.copy();
 		String aname = a.actionName();
 		if(aname.equals(ACTION_WEST)){
 			moveHorizontally(bs, -1);
