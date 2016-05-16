@@ -30,6 +30,22 @@ public class FrostbiteState implements MutableOOState {
 
 
 	public FrostbiteState() {
+		this(5, 4, 4);
+	}
+
+	public FrostbiteState(int scale, int numPlatformRow){
+		this(scale, numPlatformRow, 4);
+	}
+
+	public FrostbiteState(int scale, int numberPlatformRow, int numberPlatformCol) {
+
+		int platformSize = 15 * scale;
+		int agentSize = 8 * scale;
+		int gameHeight = 130 * scale;
+		int gameIceHeight = gameHeight / 4;
+		int jumpSize = 22 * scale;
+		int gameWidth = 160 * scale;
+		int spaceBetweenPlatforms = 26 * scale;
 
 		this.agent = new FrostbiteAgent(platformSize / 2 + agentSize / 2, gameIceHeight - jumpSize / 2);
 		this.igloo = new FrostbiteIgloo();
