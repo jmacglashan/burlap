@@ -5,7 +5,7 @@ import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.statehashing.HashableState;
+import burlap.statehashing.HashableState;
 
 import java.util.*;
 

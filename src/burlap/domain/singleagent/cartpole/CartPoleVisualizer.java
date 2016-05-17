@@ -3,9 +3,9 @@ package burlap.domain.singleagent.cartpole;
 import burlap.domain.singleagent.cartpole.states.CartPoleState;
 import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.visualizer.StatePainter;
-import burlap.mdp.visualizer.StateRenderLayer;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.StatePainter;
+import burlap.visualizer.StateRenderLayer;
+import burlap.visualizer.Visualizer;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

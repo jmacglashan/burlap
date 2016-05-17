@@ -7,7 +7,7 @@ import burlap.behavior.singleagent.auxiliary.valuefunctionvis.common.StateValueP
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.vardomain.VariableDomain;
-import burlap.mdp.visualizer.MultiLayerRenderer;
+import burlap.visualizer.MultiLayerRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -149,8 +149,8 @@ public class ValueFunctionVisualizerGUI extends JFrame implements ItemListener {
 
 
 	/**
-	 * Returns the {@link burlap.mdp.visualizer.MultiLayerRenderer} used in this GUI.
-	 * @return the {@link burlap.mdp.visualizer.MultiLayerRenderer} used in this GUI.
+	 * Returns the {@link burlap.visualizer.MultiLayerRenderer} used in this GUI.
+	 * @return the {@link burlap.visualizer.MultiLayerRenderer} used in this GUI.
 	 */
 	public MultiLayerRenderer getMultiLayerRenderer(){
 		return this.visualizer;

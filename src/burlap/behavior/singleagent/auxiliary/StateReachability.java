@@ -10,8 +10,8 @@ import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -111,7 +111,7 @@ public class StateReachability {
 	 * policy and all possible outcomes of those states are considered.
 	 * @param p the policy that must be followed
 	 * @param from the source {@link State} from which the policy would be initiated.
-	 * @param usingHashFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states and test equality.
+	 * @param usingHashFactory the {@link burlap.statehashing.HashableStateFactory} used to hash states and test equality.
 	 * @return a {@link java.util.List} of {@link State} objects that could be reached.
 	 */
 	public static List<State> getPolicyReachableStates(SADomain domain, Policy p, State from, HashableStateFactory usingHashFactory){
@@ -121,13 +121,13 @@ public class StateReachability {
 
 
 	/**
-	 * Finds the set of states ({@link burlap.mdp.statehashing.HashableState}) that are reachable under a policy from a source state. Reachability under a source policy means
+	 * Finds the set of states ({@link burlap.statehashing.HashableState}) that are reachable under a policy from a source state. Reachability under a source policy means
 	 * that the space of actions considered are those that have non-zero probability of being selected by the
 	 * policy and all possible outcomes of those states are considered.
 	 * @param p the policy that must be followed
 	 * @param from the source {@link State} from which the policy would be initiated.
-	 * @param usingHashFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states and test equality.
-	 * @return a {@link java.util.Set} of {@link burlap.mdp.statehashing.HashableState} objects that could be reached.
+	 * @param usingHashFactory the {@link burlap.statehashing.HashableStateFactory} used to hash states and test equality.
+	 * @return a {@link java.util.Set} of {@link burlap.statehashing.HashableState} objects that could be reached.
 	 */
 	public static Set<HashableState> getPolicyReachableHashedStates(SADomain domain, Policy p, State from, HashableStateFactory usingHashFactory){
 

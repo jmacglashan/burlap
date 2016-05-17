@@ -12,8 +12,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -296,7 +296,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		
 		HashableState csh = this.hashingFactory.hashState(s);
 		
-		while(!model.terminalState(csh.s) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
+		while(!model.terminal(csh.s) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
 			
 			if(this.runRolloutsInReverse){
 				trajectory.offerFirst(csh);
@@ -323,7 +323,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 			
 		}
 		
-		if(model.terminalState(csh.s)){
+		if(model.terminal(csh.s)){
 			this.lowerBoundV.put(csh, 0.);
 			this.upperBoundV.put(csh, 0.);
 		}
@@ -373,7 +373,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	protected StateSelectionAndExpectedGap getNextState(State s, Action a){
 		
 		if(this.selectionMode == StateSelectionMode.MODELBASED){
-			HashableState nsh =  this.hashingFactory.hashState(model.sampleTransition(s, a).op);
+			HashableState nsh =  this.hashingFactory.hashState(model.sample(s, a).op);
 			double gap = this.getGap(nsh);
 			return new StateSelectionAndExpectedGap(nsh, gap);
 		}

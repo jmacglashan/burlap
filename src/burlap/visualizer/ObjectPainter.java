@@ -1,4 +1,4 @@
-package burlap.mdp.visualizer;
+package burlap.visualizer;
 
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;

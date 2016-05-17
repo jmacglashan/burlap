@@ -10,8 +10,8 @@ import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -232,7 +232,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 			State curState = initialState;
 			int nSteps = 0;
 			double delta = 0;
-			while(!model.terminalState(curState) && nSteps < this.maxDepth){
+			while(!model.terminal(curState) && nSteps < this.maxDepth){
 				
 				HashableState sh = this.hashingFactory.hashState(curState);
 				
@@ -246,7 +246,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 				this.numberOfBellmanUpdates++;
 				
 				//take the action
-				curState = model.sampleTransition(curState, ga).op;
+				curState = model.sample(curState, ga).op;
 				nSteps++;
 			}
 			

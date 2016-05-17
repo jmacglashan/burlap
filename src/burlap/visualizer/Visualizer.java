@@ -1,4 +1,4 @@
-package burlap.mdp.visualizer;
+package burlap.visualizer;
 
 
 import burlap.mdp.core.Action;
@@ -30,7 +30,7 @@ public class Visualizer extends MultiLayerRenderer{
 	protected StateRenderLayer			srender;
 
 	/**
-	 * An optional {@link burlap.mdp.visualizer.StateActionRenderLayer} so that actions can be visualized on the same screen.
+	 * An optional {@link burlap.visualizer.StateActionRenderLayer} so that actions can be visualized on the same screen.
 	 */
 	protected StateActionRenderLayer	sarender = null;
 	
@@ -56,9 +56,9 @@ public class Visualizer extends MultiLayerRenderer{
 	}
 
 	/**
-	 * Adds a {@link burlap.mdp.visualizer.StateActionRenderLayer} to this {@link burlap.mdp.visualizer.Visualizer}.
-	 * @param sarender The {@link burlap.mdp.visualizer.StateActionRenderLayer} to add.
-	 * @param afterStateRL if true, then the {@link burlap.mdp.visualizer.StateActionRenderLayer} will be drawn after the {@link burlap.mdp.visualizer.StateRenderLayer} is drawn
+	 * Adds a {@link burlap.visualizer.StateActionRenderLayer} to this {@link burlap.visualizer.Visualizer}.
+	 * @param sarender The {@link burlap.visualizer.StateActionRenderLayer} to add.
+	 * @param afterStateRL if true, then the {@link burlap.visualizer.StateActionRenderLayer} will be drawn after the {@link burlap.visualizer.StateRenderLayer} is drawn
 	 *                     If false, then it draws before.
 	 */
 	public void setStateActionRenderLayer(StateActionRenderLayer sarender, boolean afterStateRL){
@@ -113,7 +113,7 @@ public class Visualizer extends MultiLayerRenderer{
 	
 	
 	/**
-	 * Updates the state that needs to be painted and repaints. If a {@link burlap.mdp.visualizer.StateActionRenderLayer} has been specified,
+	 * Updates the state that needs to be painted and repaints. If a {@link burlap.visualizer.StateActionRenderLayer} has been specified,
 	 * then it will have its state-action cleared before repainting.
 	 * @param s the state to paint
 	 */
@@ -126,7 +126,7 @@ public class Visualizer extends MultiLayerRenderer{
 	}
 
 	/**
-	 * Updates the state and action for the {@link burlap.mdp.visualizer.StateRenderLayer} and {@link burlap.mdp.visualizer.StateActionRenderLayer}; then repaints.
+	 * Updates the state and action for the {@link burlap.visualizer.StateRenderLayer} and {@link burlap.visualizer.StateActionRenderLayer}; then repaints.
 	 * @param s the {@link State} to be painted.
 	 * @param a the {@link Action} to be painted.
 	 */

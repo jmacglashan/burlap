@@ -16,7 +16,7 @@ public interface FullStateModel extends SampleStateModel{
 
 	class Helper{
 		public static List<StateTransitionProb> deterministicTransition(SampleStateModel model, State s, Action a){
-			return Arrays.asList(new StateTransitionProb(model.sampleStateTransition(s, a), 1.));
+			return Arrays.asList(new StateTransitionProb(model.sample(s, a), 1.));
 		}
 
 		public static State sampleByEnumeration(FullStateModel model, State s, Action a){

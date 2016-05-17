@@ -11,8 +11,8 @@ import burlap.behavior.valuefunction.ValueFunction;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;

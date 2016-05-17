@@ -13,7 +13,7 @@ import burlap.mdp.stochasticgames.World;
 import burlap.mdp.stochasticgames.WorldObserver;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.common.NullJointReward;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.ShellObserver;
@@ -115,7 +115,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	 * Initializes.
 	 * @param domain the stochastic game domain
 	 * @param world the {@link burlap.mdp.stochasticgames.World} with which to interact
-	 * @param painter the state {@link burlap.mdp.visualizer.Visualizer}
+	 * @param painter the state {@link burlap.visualizer.Visualizer}
 	 * @param w the width of the state visualizer
 	 * @param h the height of the state visualizer
 	 */

@@ -52,9 +52,9 @@ public class FactoredModel implements TaskFactoredModel, FullModel{
 
 
 	@Override
-	public EnvironmentOutcome sampleTransition(State s, Action a) {
+	public EnvironmentOutcome sample(State s, Action a) {
 
-		State sprime = this.stateModel.sampleStateTransition(s, a);
+		State sprime = this.stateModel.sample(s, a);
 		double r = this.rf.reward(s, a, sprime);
 		boolean t = this.tf.isTerminal(sprime);
 
@@ -107,7 +107,7 @@ public class FactoredModel implements TaskFactoredModel, FullModel{
 	}
 
 	@Override
-	public boolean terminalState(State s) {
+	public boolean terminal(State s) {
 		return this.tf.isTerminal(s);
 	}
 }

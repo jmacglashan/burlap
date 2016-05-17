@@ -9,8 +9,8 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -89,7 +89,7 @@ public class BFS extends DeterministicPlanner {
 				break;
 			}
 			
-			if(this.model.terminalState(s)){
+			if(this.model.terminal(s)){
 				continue; //don't expand terminal states
 			}
 			
@@ -99,7 +99,7 @@ public class BFS extends DeterministicPlanner {
 			
 			//add children reach from each deterministic action
 			for(Action ga : gas){
-				State ns = this.model.sampleTransition(s, ga).op;
+				State ns = this.model.sample(s, ga).op;
 				HashableState nsh = this.stateHash(ns);
 				SearchNode nsn = new SearchNode(nsh, ga, node);
 				

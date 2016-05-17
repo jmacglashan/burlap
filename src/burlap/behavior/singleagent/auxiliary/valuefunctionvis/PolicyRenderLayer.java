@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import burlap.behavior.policy.Policy;
 import burlap.mdp.core.state.State;
-import burlap.mdp.visualizer.RenderLayer;
+import burlap.visualizer.RenderLayer;
 
 public class PolicyRenderLayer implements RenderLayer{
 

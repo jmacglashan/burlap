@@ -3,10 +3,10 @@ package burlap.domain.singleagent.frostbite;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.mdp.visualizer.OOStatePainter;
-import burlap.mdp.visualizer.ObjectPainter;
-import burlap.mdp.visualizer.StatePainter;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.OOStatePainter;
+import burlap.visualizer.ObjectPainter;
+import burlap.visualizer.StatePainter;
+import burlap.visualizer.Visualizer;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

@@ -27,7 +27,7 @@ public class LunarLanderModel implements FullStateModel {
 	}
 
 	@Override
-	public State sampleStateTransition(State s, Action a) {
+	public State sample(State s, Action a) {
 
 		LLState ls = (LLState)s.copy();
 

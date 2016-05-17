@@ -181,7 +181,7 @@ public class SimulatedEnvironment implements StateSettableEnvironment, Environme
 
 		EnvironmentOutcome eo;
 		if(this.allowActionFromTerminalStates || !this.isInTerminalState()) {
-			eo = model.sampleTransition(this.curState, a);
+			eo = model.sample(this.curState, a);
 		}
 		else{
 			eo = new EnvironmentOutcome(this.curState, a, this.curState.copy(), 0., true);

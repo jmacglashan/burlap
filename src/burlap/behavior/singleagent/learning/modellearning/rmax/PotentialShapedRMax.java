@@ -16,7 +16,7 @@ import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -207,12 +207,12 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 			EnvironmentOutcome eo = env.executeAction(ga);
 			ea.recordTransitionTo(ga, eo.op, eo.r);
 
-			boolean modeledTerminal = this.model.terminalState(eo.op);
+			boolean modeledTerminal = this.model.terminal(eo.op);
 
 			if(!this.model.transitionIsModeled(curState, ga)
 					|| (!KWIKModel.Helper.stateTransitionsModeled(model, this.getActionTypes(), eo.op) && !modeledTerminal)){
 				this.model.updateModel(eo);
-				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.terminalState(eo.op))){
+				if(this.model.transitionIsModeled(curState, ga) || (eo.terminated != modeledTerminal && modeledTerminal != this.model.terminal(eo.op))){
 					this.modelPlanner.modelChanged(curState);
 					policy = this.createUnmodeledFavoredPolicy();
 				}

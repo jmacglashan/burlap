@@ -33,13 +33,13 @@ public class CustomRewardModel implements FullModel {
 	}
 
 	@Override
-	public EnvironmentOutcome sampleTransition(State s, Action a) {
-		return modifyOutcome(model.sampleTransition(s, a));
+	public EnvironmentOutcome sample(State s, Action a) {
+		return modifyOutcome(model.sample(s, a));
 	}
 
 	@Override
-	public boolean terminalState(State s) {
-		return model.terminalState(s);
+	public boolean terminal(State s) {
+		return model.terminal(s);
 	}
 
 	protected EnvironmentOutcome modifyOutcome(EnvironmentOutcome eo){

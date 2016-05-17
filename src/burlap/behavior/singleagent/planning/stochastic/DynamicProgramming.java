@@ -14,8 +14,8 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -106,7 +106,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 */
 	@Override
 	public double value(State s){
-		if(this.model.terminalState(s)){
+		if(this.model.terminal(s)){
 			return 0.;
 		}
 		HashableState sh = this.hashingFactory.hashState(s);
@@ -120,7 +120,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @return the value function evaluation of the given state.
 	 */
 	public double value(HashableState sh){
-		if(this.model.terminalState(sh.s)){
+		if(this.model.terminal(sh.s)){
 			return 0.;
 		}
 		Double V = valueFunction.get(sh);
@@ -225,7 +225,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 */
 	protected double performBellmanUpdateOn(HashableState sh){
 		
-		if(model.terminalState(sh.s)){
+		if(model.terminal(sh.s)){
 			//terminal states always have a state value of 0
 			valueFunction.put(sh, 0.);
 			return 0.;
@@ -261,7 +261,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	protected double performFixedPolicyBellmanUpdateOn(HashableState sh, Policy p){
 		
 		
-		if(this.model.terminalState(sh.s)){
+		if(this.model.terminal(sh.s)){
 			//terminal states always have a state value of 0
 			valueFunction.put(sh, 0.);
 			return 0.;

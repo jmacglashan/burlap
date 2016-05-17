@@ -9,8 +9,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -194,7 +194,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 			}
 			
 			//do not need to expand from terminal states if set to prune
-			if(this.model.terminalState(sh.s) && stopReachabilityFromTerminalStates){
+			if(this.model.terminal(sh.s) && stopReachabilityFromTerminalStates){
 				continue;
 			}
 

@@ -31,7 +31,7 @@ public class BlockDudeModel implements FullStateModel {
 	}
 
 	@Override
-	public State sampleStateTransition(State s, Action a) {
+	public State sample(State s, Action a) {
 
 		BlockDudeState bs = (BlockDudeState)s.copy();
 		String aname = a.actionName();

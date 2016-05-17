@@ -8,8 +8,8 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -56,15 +56,15 @@ public class RMaxModel implements KWIKModel{
 	}
 
 	@Override
-	public EnvironmentOutcome sampleTransition(State s, Action a) {
-		EnvironmentOutcome eo = sourceModel.sampleTransition(s, a);
+	public EnvironmentOutcome sample(State s, Action a) {
+		EnvironmentOutcome eo = sourceModel.sample(s, a);
 		modifyEO(eo);
 		return eo;
 	}
 
 	@Override
-	public boolean terminalState(State s) {
-		return sourceModel.terminalState(s);
+	public boolean terminal(State s) {
+		return sourceModel.terminal(s);
 	}
 
 	protected void modifyEO(EnvironmentOutcome eo){

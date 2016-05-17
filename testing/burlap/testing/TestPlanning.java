@@ -20,7 +20,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.mdp.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.SimpleHashableStateFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -118,7 +118,7 @@ public class TestPlanning {
 			Assert.assertEquals(-analysis.actionSequence.size(), analysis.getDiscountedReturn(1.0), TestPlanning.delta);
 		}
 
-		Assert.assertEquals(true, domain.getModel().terminalState(analysis.stateSequence.get(analysis.stateSequence.size()-1)));
+		Assert.assertEquals(true, domain.getModel().terminal(analysis.stateSequence.get(analysis.stateSequence.size()-1)));
 		Assert.assertEquals(true, this.goalCondition.satisfies(analysis.stateSequence.get(analysis.stateSequence.size()-1)));
 	}
 	

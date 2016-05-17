@@ -2,10 +2,10 @@ package burlap.domain.singleagent.lunarlander;
 
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
-import burlap.mdp.visualizer.OOStatePainter;
-import burlap.mdp.visualizer.ObjectPainter;
-import burlap.mdp.visualizer.StateRenderLayer;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.OOStatePainter;
+import burlap.visualizer.ObjectPainter;
+import burlap.visualizer.StateRenderLayer;
+import burlap.visualizer.Visualizer;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -26,11 +26,11 @@ public class LLVisualizer {
     }
 
 	/**
-	 * Returns a {@link burlap.mdp.visualizer.Visualizer} for a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} using
+	 * Returns a {@link burlap.visualizer.Visualizer} for a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} using
 	 * the generator's current version of the physics parameters for defining
 	 * the visualized movement space size and rotation degrees.
 	 * @param lld the specific lunar lander domain generator to visualize
-	 * @return a {@link burlap.mdp.visualizer.Visualizer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 * @return a {@link burlap.visualizer.Visualizer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
 	 */
 	public static Visualizer getVisualizer(LunarLanderDomain lld){
 		
@@ -39,11 +39,11 @@ public class LLVisualizer {
 	}
 
 	/**
-	 * Returns a {@link burlap.mdp.visualizer.Visualizer} a the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 * Returns a {@link burlap.visualizer.Visualizer} a the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
 	 * using the provided {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} to define the
 	 * visualized movement space and rotation degrees.
 	 * @param physParams the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} specifying the visualized movement space of the domain and the rotation degrees
-	 * @return a {@link burlap.mdp.visualizer.Visualizer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 * @return a {@link burlap.visualizer.Visualizer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
 	 */
 	public static Visualizer getVisualizer(LunarLanderDomain.LLPhysicsParams physParams){
 		Visualizer v = new Visualizer(getStateRenderLayer(physParams));
@@ -51,11 +51,11 @@ public class LLVisualizer {
 	}
 
 	/**
-	 * Returns a {@link burlap.mdp.visualizer.StateRenderLayer} a the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 * Returns a {@link burlap.visualizer.StateRenderLayer} a the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
 	 * using the provided {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} to define the
 	 * visualized movement space and rotation degrees.
 	 * @param physParams the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain.LLPhysicsParams} specifying the visualized movement space of the domain and the rotation degrees
-	 * @return a {@link burlap.mdp.visualizer.StateRenderLayer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
+	 * @return a {@link burlap.visualizer.StateRenderLayer} for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}
 	 */
 	public static StateRenderLayer getStateRenderLayer(LunarLanderDomain.LLPhysicsParams physParams){
 		StateRenderLayer slr = new StateRenderLayer();

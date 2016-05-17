@@ -27,7 +27,7 @@ import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 import burlap.shell.EnvironmentShell;
 
 import java.util.ArrayList;
@@ -669,7 +669,7 @@ public class GridWorldDomain implements DomainGenerator {
 		}
 
 		@Override
-		public State sampleStateTransition(State s, Action a) {
+		public State sample(State s, Action a) {
 
 			s = s.copy();
 

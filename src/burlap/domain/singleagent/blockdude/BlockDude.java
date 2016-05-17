@@ -16,7 +16,7 @@ import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package burlap.mdp.visualizer;
+package burlap.visualizer;
 
 import java.awt.Canvas;
 import java.awt.Color;

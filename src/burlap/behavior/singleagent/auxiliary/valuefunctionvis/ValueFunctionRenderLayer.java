@@ -8,7 +8,7 @@ import java.util.List;
 
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.visualizer.RenderLayer;
+import burlap.visualizer.RenderLayer;
 
 
 /**

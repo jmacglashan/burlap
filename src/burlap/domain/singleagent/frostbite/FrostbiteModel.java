@@ -70,7 +70,7 @@ public class FrostbiteModel implements FullStateModel {
 	}
 
 	@Override
-	public State sampleStateTransition(State s, Action a) {
+	public State sample(State s, Action a) {
 
 		FrostbiteState fs = (FrostbiteState)s.copy();
 

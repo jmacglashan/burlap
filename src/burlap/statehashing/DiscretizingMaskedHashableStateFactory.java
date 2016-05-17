@@ -1,4 +1,4 @@
-package burlap.mdp.statehashing;
+package burlap.statehashing;
 
 import burlap.mdp.core.state.State;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A class for producing {@link burlap.mdp.statehashing.HashableState} objects that computes hash codes and tests
+ * A class for producing {@link burlap.statehashing.HashableState} objects that computes hash codes and tests
  * for {@link State} equality by discretizing real-valued attributes and by masking (ignoring)
  * either state variables and/or {@link burlap.mdp.core.oo.state.OOState} clasees. For more information
  * on how discretization is performed, see the {@link DiscretizingHashableStateFactory}
@@ -15,9 +15,9 @@ import java.util.Map;
  * masking is performed see the {@link MaskedHashableStateFactory} class
  * documentation.
  * <p>
- * This class extends {@link burlap.mdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
- * to be object identifier/name independent or dependent and can be set to use {@link burlap.mdp.statehashing.HashableState}
- * instances that cache their hash code or not. See the {@link burlap.mdp.statehashing.SimpleHashableStateFactory}
+ * This class extends {@link burlap.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
+ * to be object identifier/name independent or dependent and can be set to use {@link burlap.statehashing.HashableState}
+ * instances that cache their hash code or not. See the {@link burlap.statehashing.SimpleHashableStateFactory}
  * class documentation for more information on those features.
  * @author James MacGlashan.
  */
@@ -61,7 +61,7 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 	/**
 	 * Initializes.
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
-	 * @param useCached if true then the hash code for each produced {@link burlap.mdp.statehashing.HashableState} will be cached; if false then they will not be cached.
+	 * @param useCached if true then the hash code for each produced {@link burlap.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 * @param defaultMultiple The default multiple to use for any continuous variables that have not been specifically set.
 	 * corresponds to integer floor discretization.
 	 */
@@ -74,7 +74,7 @@ public class DiscretizingMaskedHashableStateFactory extends MaskedHashableStateF
 	/**
 	 * Initializes with a specified attribute or object class mask.
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
-	 * @param useCached if true then the hash code for each produced {@link burlap.mdp.statehashing.HashableState} will be cached; if false then they will not be cached.
+	 * @param useCached if true then the hash code for each produced {@link burlap.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
 	 * @param maskNamesAreForVariables whether the specified masks are masks for variables or object classes. True for variables, false for object classes.
 	 * @param masks the names of the variable keys or object classes that will be masked (ignored from state hashing and equality checks)

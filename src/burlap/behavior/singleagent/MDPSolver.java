@@ -8,8 +8,8 @@ import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.SampleModel;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	protected List <ActionType> actionTypes;
 	
 	/**
-	 * A mapping to internal stored hashed states ({@link burlap.mdp.statehashing.HashableState}) that are stored.
+	 * A mapping to internal stored hashed states ({@link burlap.statehashing.HashableState}) that are stored.
 	 * Useful since two identical states may have different object instance name identifiers
 	 * that can affect the parameters in GroundedActions.
 	 */

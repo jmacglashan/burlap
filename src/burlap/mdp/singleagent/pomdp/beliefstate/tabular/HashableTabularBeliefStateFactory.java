@@ -1,14 +1,14 @@
 package burlap.mdp.singleagent.pomdp.beliefstate.tabular;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Map;
 
 /**
- * A {@link burlap.mdp.statehashing.HashableStateFactory} for {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState} instances.
+ * A {@link burlap.statehashing.HashableStateFactory} for {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState} instances.
  * @author James MacGlashan.
  */
 public class HashableTabularBeliefStateFactory implements HashableStateFactory{

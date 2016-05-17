@@ -10,7 +10,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +30,7 @@ import java.util.List;
  * <p>
  * Optionally, this class may also render state-action events in an {@link burlap.mdp.singleagent.environment.Environment}
  * (so that the action is also rendered) so long as
- * the input {@link burlap.mdp.visualizer.Visualizer} has a set {@link burlap.mdp.visualizer.StateActionRenderLayer}.
+ * the input {@link burlap.visualizer.Visualizer} has a set {@link burlap.visualizer.StateActionRenderLayer}.
  * To enable this support, pass the {@link #setRepaintOnActionInitiation(boolean)} true. If you would then
  * like to disable rendering the post-state from the {@link #observeEnvironmentInteraction(burlap.mdp.singleagent.environment.EnvironmentOutcome)}
  * method, pass the {@link #setRepaintStateOnEnvironmentInteraction(boolean)} false.
@@ -83,7 +83,7 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 
 	/**
 	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(State, burlap.mdp.core.Action)}
-	 * so long as the input {@link burlap.mdp.visualizer.Visualizer} has a set {@link burlap.mdp.visualizer.StateActionRenderLayer}. Default value is false.
+	 * so long as the input {@link burlap.visualizer.Visualizer} has a set {@link burlap.visualizer.StateActionRenderLayer}. Default value is false.
 	 */
 	protected boolean			repaintOnActionInitiation = false;
 	

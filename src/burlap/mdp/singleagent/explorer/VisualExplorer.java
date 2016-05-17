@@ -10,7 +10,7 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.ShellObserver;
@@ -145,8 +145,8 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	}
 
 	/**
-	 * Returns the {@link burlap.mdp.visualizer.Visualizer} used by this explorer.
-	 * @return the {@link burlap.mdp.visualizer.Visualizer} used by this explorer.
+	 * Returns the {@link burlap.visualizer.Visualizer} used by this explorer.
+	 * @return the {@link burlap.visualizer.Visualizer} used by this explorer.
 	 */
 	public Visualizer getVisualizer(){
 		return this.painter;

@@ -26,7 +26,7 @@ public class CPClassicModel implements FullStateModel {
 	}
 
 	@Override
-	public State sampleStateTransition(State s, Action a) {
+	public State sample(State s, Action a) {
 		s = s.copy();
 
 		if(a.actionName().equals(CartPoleDomain.ACTION_RIGHT)){

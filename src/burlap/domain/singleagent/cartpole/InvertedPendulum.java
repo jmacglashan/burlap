@@ -11,7 +11,7 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.UniversalActionType;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 
 import static burlap.domain.singleagent.cartpole.CartPoleDomain.ACTION_LEFT;
 import static burlap.domain.singleagent.cartpole.CartPoleDomain.ACTION_RIGHT;

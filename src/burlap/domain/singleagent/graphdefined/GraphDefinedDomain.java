@@ -485,7 +485,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		}
 
 		@Override
-		public State sampleStateTransition(State s, Action a) {
+		public State sample(State s, Action a) {
 
 			s = s.copy();
 

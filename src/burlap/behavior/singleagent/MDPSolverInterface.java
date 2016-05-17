@@ -4,7 +4,7 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.SampleModel;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.List;
 
@@ -83,14 +83,14 @@ public interface MDPSolverInterface {
 
 
 	/**
-	 * Sets the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states for tabular solvers.
-	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to hash states for tabular solvers.
+	 * Sets the {@link burlap.statehashing.HashableStateFactory} used to hash states for tabular solvers.
+	 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} used to hash states for tabular solvers.
 	 */
 	void setHashingFactory(HashableStateFactory hashingFactory);
 
 	/**
-	 * Returns the {@link burlap.mdp.statehashing.HashableStateFactory} this solver uses.
-	 * @return the {@link burlap.mdp.statehashing.HashableStateFactory} this solver uses.
+	 * Returns the {@link burlap.statehashing.HashableStateFactory} this solver uses.
+	 * @return the {@link burlap.statehashing.HashableStateFactory} this solver uses.
 	 */
 	HashableStateFactory getHashingFactory();
 

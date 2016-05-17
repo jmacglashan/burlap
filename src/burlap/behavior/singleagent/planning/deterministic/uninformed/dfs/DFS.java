@@ -12,8 +12,8 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -214,7 +214,7 @@ public class DFS extends DeterministicPlanner {
 			return null; //back track
 		}
 
-		if(this.model.terminalState(n.s.s)){
+		if(this.model.terminal(n.s.s)){
 			return null; //treat like dead end
 		}
 		
@@ -236,7 +236,7 @@ public class DFS extends DeterministicPlanner {
 		
 		//generate a search successors from the order of grounded actions
 		for(Action ga : gas){
-			HashableState shp = this.stateHash(this.model.sampleTransition(n.s.s, ga).op);
+			HashableState shp = this.stateHash(this.model.sample(n.s.s, ga).op);
 			if(!statesOnPath.contains(shp)){
 				SearchNode snp = new SearchNode(shp, ga, n);
 				SearchNode result = this.dfs(snp, depth+1, statesOnPath);

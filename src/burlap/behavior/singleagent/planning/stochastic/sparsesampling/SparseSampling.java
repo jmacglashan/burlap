@@ -16,8 +16,8 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ import java.util.Map;
  * <p>
  * This class will work with {@link Option}s, but including options will necessarily *increase* the computational complexity, so they are not recommended.
  * <p>
- * This class requires a {@link burlap.mdp.statehashing.HashableStateFactory}.
+ * This class requires a {@link burlap.statehashing.HashableStateFactory}.
  * <p>
  * This class can optionally be set to not use sampling and instead use the full Bellman update, which results in the exact finite horizon Q-value being computed.
  * However, this should only be done when the number of possible state transitions is small and when the full model for the domain is defined (that is,
@@ -366,7 +366,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 
 	@Override
 	public double value(State s) {
-		if(model.terminalState(s)){
+		if(model.terminal(s)){
 			return 0.;
 		}
 		return QFunction.QFunctionHelper.getOptimalValue(this, s);
@@ -492,7 +492,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			for(int i = 0; i < c; i++){
 				
 				//execute
-				EnvironmentOutcome eo = model.sampleTransition(sh.s, ga);
+				EnvironmentOutcome eo = model.sample(sh.s, ga);
 				State ns = eo.op;
 				
 				//manage option stepsize modifications
@@ -557,7 +557,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 				return this.v;
 			}
 			
-			if(SparseSampling.this.model.terminalState(sh.s)){
+			if(SparseSampling.this.model.terminal(sh.s)){
 				this.v = 0.;
 				this.closed = true;
 				return this.v;

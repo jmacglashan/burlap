@@ -12,8 +12,8 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -130,7 +130,7 @@ public class IDAStar extends DeterministicPlanner {
 		if(this.planEndNode(lastNode)){
 			return lastNode; //succeed condition
 		}
-		if(this.model.terminalState(lastNode.s.s)){
+		if(this.model.terminal(lastNode.s.s)){
 			return null; //treat like a dead end if we're at a terminal state
 		}
 		
@@ -145,7 +145,7 @@ public class IDAStar extends DeterministicPlanner {
 		List <Double> successorGs = new ArrayList<Double>(gas.size());
 		for(Action ga : gas){
 
-			EnvironmentOutcome eo = this.model.sampleTransition(s, ga);
+			EnvironmentOutcome eo = this.model.sample(s, ga);
 			State ns = eo.op;
 			HashableState nsh = this.stateHash(ns);
 			

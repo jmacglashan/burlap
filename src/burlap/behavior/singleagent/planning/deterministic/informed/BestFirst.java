@@ -8,7 +8,7 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.statehashing.HashableState;
+import burlap.statehashing.HashableState;
 
 import java.util.HashMap;
 import java.util.List;
@@ -137,7 +137,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 				break;
 			}
 			
-			if(this.model.terminalState(s)){
+			if(this.model.terminal(s)){
 				continue; //do not expand nodes from a terminal state
 			}
 		
@@ -146,7 +146,7 @@ public abstract class BestFirst extends DeterministicPlanner {
 				//List<GroundedAction> gas = s.getAllGroundedActionsFor(a);
 				List<Action> gas = a.allApplicableActions(s);
 				for(Action ga : gas){
-					EnvironmentOutcome eo = this.model.sampleTransition(s, ga);
+					EnvironmentOutcome eo = this.model.sample(s, ga);
 					State ns = eo.op;
 					HashableState nsh = this.stateHash(ns);
 					

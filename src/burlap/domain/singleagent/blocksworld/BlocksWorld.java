@@ -24,8 +24,8 @@ import java.util.List;
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
  * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning,
- * the {@link burlap.mdp.statehashing.HashableStateFactory} should be object identifier dependent. For example, if using a
- * {@link burlap.mdp.statehashing.SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
+ * the {@link burlap.statehashing.HashableStateFactory} should be object identifier dependent. For example, if using a
+ * {@link burlap.statehashing.SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
  * @author James MacGlashan
  *
  */

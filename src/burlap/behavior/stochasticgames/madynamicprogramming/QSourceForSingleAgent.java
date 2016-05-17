@@ -2,8 +2,8 @@ package burlap.behavior.stochasticgames.madynamicprogramming;
 
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.state.State;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.HashMap;

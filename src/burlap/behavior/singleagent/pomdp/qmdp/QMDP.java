@@ -15,7 +15,7 @@ import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	 * @param rf the POMDP hidden state reward function
 	 * @param tf the POMDP hidden state terminal function
 	 * @param discount the discount factor
-	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for the {@link burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration} instance to use.
+	 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} to use for the {@link burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration} instance to use.
 	 * @param maxDelta the maximum value function change threshold that will cause planning to terminiate
 	 * @param maxIterations the maximum number of value iteration iterations.
 	 */

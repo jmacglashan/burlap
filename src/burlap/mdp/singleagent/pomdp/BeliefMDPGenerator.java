@@ -15,7 +15,7 @@ import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
 import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
-import burlap.mdp.statehashing.HashableState;
+import burlap.statehashing.HashableState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,7 +152,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		}
 
 		@Override
-		public EnvironmentOutcome sampleTransition(State s, Action a) {
+		public EnvironmentOutcome sample(State s, Action a) {
 
 			FullModel model = (FullModel) poDomain.getModel();
 
@@ -168,7 +168,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 
 
 			State curS = ((BeliefState) s).sampleStateFromBelief();
-			EnvironmentOutcome hiddenEO = model.sampleTransition(curS, a);
+			EnvironmentOutcome hiddenEO = model.sample(curS, a);
 			State obs = this.poDomain.obsevationFunction.sample(hiddenEO.op, a);
 
 			BeliefState nbs = ((BeliefState) s).getUpdatedBeliefState(obs, a);
@@ -178,7 +178,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 		}
 
 		@Override
-		public boolean terminalState(State s) {
+		public boolean terminal(State s) {
 			return false;
 		}
 	}

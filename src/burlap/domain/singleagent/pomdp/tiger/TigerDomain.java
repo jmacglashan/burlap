@@ -13,7 +13,7 @@ import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
-import burlap.mdp.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.SimpleHashableStateFactory;
 import burlap.shell.EnvironmentShell;
 
 

@@ -77,7 +77,7 @@ public class TigerModel implements FullModel {
 	}
 
 	@Override
-	public EnvironmentOutcome sampleTransition(State s, Action a) {
+	public EnvironmentOutcome sample(State s, Action a) {
 
 		String aname = a.actionName();
 		if(aname.equals(ACTION_LEFT)){
@@ -113,7 +113,7 @@ public class TigerModel implements FullModel {
 
 
 	@Override
-	public boolean terminalState(State s) {
+	public boolean terminal(State s) {
 		return false;
 	}
 }

@@ -1,4 +1,4 @@
-package burlap.mdp.statehashing;
+package burlap.statehashing;
 
 
 import burlap.mdp.core.state.State;
@@ -10,7 +10,7 @@ import java.util.List;
  * This class provides a hash value for {@link State} objects. This is useful for tabular
  * planning and learning algorithms that make use of hash-backed sets or maps for fast retrieval. You can
  * access the state it hashes from the public data member {@link #s}. If the {@link State}
- * delegate {@link #s} is a {@link burlap.mdp.statehashing.HashableState} itself, and you wish
+ * delegate {@link #s} is a {@link burlap.statehashing.HashableState} itself, and you wish
  * to get the underlying {@link State}, then you should use the
  * {@link #getSourceState()} method, which will recursively descend and return the base source {@link State}.
  * <p>
@@ -37,7 +37,7 @@ public abstract class HashableState implements State{
 
 	/**
 	 * Returns the underlying source state is hashed. If the delegate {@link State}
-	 * of this {@link burlap.mdp.statehashing.HashableState} is also a {@link burlap.mdp.statehashing.HashableState},
+	 * of this {@link burlap.statehashing.HashableState} is also a {@link burlap.statehashing.HashableState},
 	 * then it recursively returns its {@link #getSourceState()}.
 	 * @return The underlying source {@link State} that this object hashes and evaluates.
 	 */

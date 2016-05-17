@@ -4,7 +4,7 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.mdp.visualizer.*;
+import burlap.visualizer.*;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;

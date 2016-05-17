@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.DifferentiableVI;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.TerminalFunction;
 
@@ -32,7 +32,7 @@ public interface QGradientPlannerFactory {
 	public static class DifferentiableVIFactory implements QGradientPlannerFactory{
 
 		/**
-		 * The {@link burlap.mdp.statehashing.HashableStateFactory} used by the valueFunction.
+		 * The {@link burlap.statehashing.HashableStateFactory} used by the valueFunction.
 		 */
 		protected HashableStateFactory hashingFactory;
 
@@ -54,10 +54,10 @@ public interface QGradientPlannerFactory {
 
 
 		/**
-		 * Initializes the factory with the given {@link burlap.mdp.statehashing.HashableStateFactory}.
+		 * Initializes the factory with the given {@link burlap.statehashing.HashableStateFactory}.
 		 * The terminal function will be defaulted to a {@link burlap.mdp.auxiliary.common.NullTermination};
 		 * value function change threshold to 0.01; and the max VI iterations to 500.
-		 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for planning.
+		 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} to use for planning.
 		 */
 		public DifferentiableVIFactory(HashableStateFactory hashingFactory){
 			this.hashingFactory = hashingFactory;
@@ -66,7 +66,7 @@ public interface QGradientPlannerFactory {
 
 		/**
 		 * Initializes.
-		 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for planning.
+		 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} to use for planning.
 		 * @param tf The terminal function that the generated planners use.
 		 * @param maxDelta The value function change threshold to stop VI.
 		 * @param maxIterations The maximum allowed number of VI iterations

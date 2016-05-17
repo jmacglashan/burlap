@@ -2,10 +2,10 @@ package burlap.domain.singleagent.blockdude;
 
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
-import burlap.mdp.visualizer.OOStatePainter;
-import burlap.mdp.visualizer.ObjectPainter;
-import burlap.mdp.visualizer.StateRenderLayer;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.OOStatePainter;
+import burlap.visualizer.ObjectPainter;
+import burlap.visualizer.StateRenderLayer;
+import burlap.visualizer.Visualizer;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -22,10 +22,10 @@ public class BlockDudeVisualizer {
     }
 
 	/**
-	 * Returns a {@link burlap.mdp.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}.
+	 * Returns a {@link burlap.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}.
 	 * @param maxx the max x dimensionality of the world
 	 * @param maxy the max y dimensionality of the world
-	 * @return a {@link burlap.mdp.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}
+	 * @return a {@link burlap.visualizer.Visualizer} for {@link burlap.domain.singleagent.blockdude.BlockDude}
 	 */
 	public static Visualizer getVisualizer(int maxx, int maxy){
 		Visualizer v = new Visualizer(getStateRenderLayer(maxx, maxy));
@@ -33,10 +33,10 @@ public class BlockDudeVisualizer {
 	}
 
 	/**
-	 * Returns a {@link burlap.mdp.visualizer.StateRenderLayer} for {@link burlap.domain.singleagent.blockdude.BlockDudeVisualizer}.
+	 * Returns a {@link burlap.visualizer.StateRenderLayer} for {@link burlap.domain.singleagent.blockdude.BlockDudeVisualizer}.
 	 * @param maxx the max x dimensionality of the world
 	 * @param maxy the max y dimensionality of the world
-	 * @return a {@link burlap.mdp.visualizer.StateRenderLayer} for {@link burlap.domain.singleagent.blockdude.BlockDudeVisualizer}.
+	 * @return a {@link burlap.visualizer.StateRenderLayer} for {@link burlap.domain.singleagent.blockdude.BlockDudeVisualizer}.
 	 */
 	public static StateRenderLayer getStateRenderLayer(int maxx, int maxy){
 

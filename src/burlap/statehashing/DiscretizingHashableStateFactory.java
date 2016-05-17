@@ -1,4 +1,4 @@
-package burlap.mdp.statehashing;
+package burlap.statehashing;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A factory for producing {@link burlap.mdp.statehashing.HashableState} objects that computes hash codes
+ * A factory for producing {@link burlap.statehashing.HashableState} objects that computes hash codes
  * and test for state equality after discretizing any real values (Float or Double). Discretizing is performed by flooring
  * real values to the nearest user-defined multiple. For example, if the multiple is set to 0.5, then 9.73
  * would become 9.5, and 102.3 would become 102. Note using a
@@ -21,9 +21,9 @@ import java.util.Map;
  * through the constructors or by
  * using the {@link #setDefaultFloorDiscretizingMultiple(double)} method.
  * <p>
- * This class extends {@link burlap.mdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
+ * This class extends {@link burlap.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
  * to be object identifier independent or dependent for {@link burlap.mdp.core.oo.state.OOState}s and to cache hash codes or not.
- * See the {@link burlap.mdp.statehashing.SimpleHashableStateFactory}
+ * See the {@link burlap.statehashing.SimpleHashableStateFactory}
  * class documentation for more information on those features.
  *
  * @author James MacGlashan.
@@ -63,7 +63,7 @@ public class DiscretizingHashableStateFactory extends SimpleHashableStateFactory
 	/**
 	 * Initializes.
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
-	 * @param useCached if true then the hash code for each produced {@link burlap.mdp.statehashing.HashableState} will be cached; if false then they will not be cached.
+	 * @param useCached if true then the hash code for each produced {@link burlap.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 * @param defaultMultiple The default multiple to use for any continuous attributes that have not been specifically set.
 	 */
 	public DiscretizingHashableStateFactory(boolean identifierIndependent, boolean useCached, double defaultMultiple) {

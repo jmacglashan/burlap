@@ -84,7 +84,7 @@ public class SimulatedPOEnvironment extends SimulatedEnvironment {
 
 		EnvironmentOutcome eo;
 		if(this.allowActionFromTerminalStates || !this.isInTerminalState()) {
-			eo = model.sampleTransition(this.curState, a);
+			eo = model.sample(this.curState, a);
 			nextObservation = poDomain.getObservationFunction().sample(eo.op, a);
 		}
 		else{

@@ -8,8 +8,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -49,7 +49,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 	 * Initializes.
 	 * @param domain the domain on which to evaluate a policy
 	 * @param gamma the discount factor
-	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} used to index states and perform state equality
+	 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} used to index states and perform state equality
 	 * @param maxEvalDelta the minimum change in the value function that will cause policy evaluation to terminate
 	 * @param maxEvalIterations the maximum number of evaluation iterations to perform before terminating policy evaluation
 	 */
@@ -145,7 +145,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 
 
 			//do not need to expand from terminal states
-			if(model.terminalState(sh.s)){
+			if(model.terminal(sh.s)){
 				continue;
 			}
 

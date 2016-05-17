@@ -11,7 +11,7 @@ import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.SampleModel;
-import burlap.mdp.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.SimpleHashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -159,7 +159,7 @@ public class RewardValueProjection implements QFunction{
 			super(model, rewardFunction);
 		}
 		@Override
-		public boolean terminalState(State s) {
+		public boolean terminal(State s) {
 			return false; //always non-terminal
 		}
 

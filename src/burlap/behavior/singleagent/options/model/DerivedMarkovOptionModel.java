@@ -10,8 +10,8 @@ import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -85,10 +85,10 @@ public class DerivedMarkovOptionModel implements FullModel{
 	}
 
 	@Override
-	public EnvironmentOutcome sampleTransition(State s, Action a) {
+	public EnvironmentOutcome sample(State s, Action a) {
 
 		if(!(a instanceof Option)){
-			return model.sampleTransition(s, a);
+			return model.sample(s, a);
 		}
 
 		Option o = (Option)a;
@@ -100,8 +100,8 @@ public class DerivedMarkovOptionModel implements FullModel{
 
 
 	@Override
-	public boolean terminalState(State s) {
-		return this.model.terminalState(s);
+	public boolean terminal(State s) {
+		return this.model.terminal(s);
 	}
 
 	/**

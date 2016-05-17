@@ -11,8 +11,8 @@ import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGDomain;
@@ -237,7 +237,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	
 	
 	/**
-	 * First abstracts state s, and then returns the {@link burlap.mdp.statehashing.HashableState} object for the abstracted state.
+	 * First abstracts state s, and then returns the {@link burlap.statehashing.HashableState} object for the abstracted state.
 	 * @param s the state for which the state hash should be returned.
 	 * @return the hashed state.
 	 */

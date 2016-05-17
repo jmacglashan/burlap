@@ -8,8 +8,8 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -105,12 +105,12 @@ public class TabularModel implements KWIKModel {
 	}
 
 	@Override
-	public EnvironmentOutcome sampleTransition(State s, Action a) {
+	public EnvironmentOutcome sample(State s, Action a) {
 		return FullModel.Helper.sampleByEnumeration(this, s, a);
 	}
 
 	@Override
-	public boolean terminalState(State s) {
+	public boolean terminal(State s) {
 		return this.terminalStates.contains(this.hashingFactory.hashState(s));
 	}
 

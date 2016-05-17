@@ -218,7 +218,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		EnvironmentOutcome eo;
 		State nextState;
 		if(this.terminalVisits == 0) {
-			eo = domain.getModel().sampleTransition(curState, burlapAction);
+			eo = domain.getModel().sample(curState, burlapAction);
 			if(eo.terminated){
 				this.terminalVisits++;
 			}

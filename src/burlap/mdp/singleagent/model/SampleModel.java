@@ -8,6 +8,6 @@ import burlap.mdp.singleagent.environment.EnvironmentOutcome;
  * @author James MacGlashan.
  */
 public interface SampleModel {
-	EnvironmentOutcome sampleTransition(State s, Action a);
-	boolean terminalState(State s);
+	EnvironmentOutcome sample(State s, Action a);
+	boolean terminal(State s);
 }

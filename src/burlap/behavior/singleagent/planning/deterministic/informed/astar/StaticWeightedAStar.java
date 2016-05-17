@@ -5,8 +5,8 @@ import burlap.behavior.singleagent.planning.deterministic.informed.PrioritizedSe
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.Action;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 /**
  * Statically weighted A* [1] implementation. Epsilon is a parameter &gt; 1. The larger the value the more greedy the search. The returned solution

@@ -1,4 +1,4 @@
-package burlap.mdp.visualizer;
+package burlap.visualizer;
 
 import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
@@ -90,7 +90,7 @@ public class OOStatePainter implements StatePainter {
 	}
 
 	/**
-	 * A pair of the name of an object class to paint, and the {@link burlap.mdp.visualizer.ObjectPainter} to
+	 * A pair of the name of an object class to paint, and the {@link burlap.visualizer.ObjectPainter} to
 	 * use to paint it.
 	 */
 	public static class ObjectPainterAndClassNamePair{

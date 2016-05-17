@@ -1,4 +1,4 @@
-package burlap.mdp.visualizer;
+package burlap.visualizer;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.NullState;

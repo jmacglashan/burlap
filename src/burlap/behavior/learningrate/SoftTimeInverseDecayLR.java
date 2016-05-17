@@ -2,8 +2,8 @@ package burlap.behavior.learningrate;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.HashMap;
 import java.util.Map;

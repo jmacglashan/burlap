@@ -1,7 +1,7 @@
 package burlap.behavior.policy;
 
-import burlap.mdp.statehashing.HashableStateFactory;
-import burlap.mdp.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
@@ -36,7 +36,7 @@ public class CachedPolicy extends Policy{
 
 	/**
 	 * Initializes
-	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for indexing states
+	 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} to use for indexing states
 	 * @param sourcePolicy the source policy that will be lazily cached.
 	 */
 	public CachedPolicy(HashableStateFactory hashingFactory, Policy sourcePolicy) {
@@ -47,7 +47,7 @@ public class CachedPolicy extends Policy{
 
 	/**
 	 * Initializes
-	 * @param hashingFactory the {@link burlap.mdp.statehashing.HashableStateFactory} to use for indexing states
+	 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} to use for indexing states
 	 * @param sourcePolicy the source policy that will be lazily cached.
 	 * @param cacheCapacity the initial memory capacity to be set aside for the policy cache
 	 */

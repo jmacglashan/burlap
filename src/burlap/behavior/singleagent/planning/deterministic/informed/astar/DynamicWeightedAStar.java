@@ -13,8 +13,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -163,7 +163,7 @@ public class DynamicWeightedAStar extends AStar {
 				break;
 			}
 			
-			if(this.model.terminalState(s)){
+			if(this.model.terminal(s)){
 				continue; //do not expand terminal state
 			}
 		
@@ -172,7 +172,7 @@ public class DynamicWeightedAStar extends AStar {
 				//List<GroundedAction> gas = s.getAllGroundedActionsFor(a);
 				List<Action> gas = a.allApplicableActions(s);
 				for(Action ga : gas){
-					EnvironmentOutcome eo = this.model.sampleTransition(s, ga);
+					EnvironmentOutcome eo = this.model.sample(s, ga);
 					State ns = eo.op;
 					HashableState nsh = this.stateHash(ns);
 					

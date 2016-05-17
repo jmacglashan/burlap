@@ -1,7 +1,7 @@
 package burlap.shell;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.reserved.*;
 

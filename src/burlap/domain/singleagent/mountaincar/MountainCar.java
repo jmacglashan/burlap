@@ -13,7 +13,7 @@ import burlap.mdp.singleagent.common.GoalBasedRF;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 
 import java.util.List;
 
@@ -211,7 +211,7 @@ public class MountainCar implements DomainGenerator {
 		}
 
 		@Override
-		public State sampleStateTransition(State s, Action a) {
+		public State sample(State s, Action a) {
 			s = s.copy();
 			return move(s, dir(a.actionName()));
 		}

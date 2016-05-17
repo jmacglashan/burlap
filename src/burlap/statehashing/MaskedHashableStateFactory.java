@@ -1,4 +1,4 @@
-package burlap.mdp.statehashing;
+package burlap.statehashing;
 
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.oo.state.OOState;
@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.*;
 
 /**
- * This class produces {@link burlap.mdp.statehashing.HashableState} instances in which the hash code and equality
+ * This class produces {@link burlap.statehashing.HashableState} instances in which the hash code and equality
  * of the states masks (ignores) specified state variables. For {@link burlap.mdp.core.oo.state.OOState}s,
  * this class can also be specified to mask entire OO-MDP objects belonging to specified OO-MDP classes.
  * <p>
@@ -18,9 +18,9 @@ import java.util.*;
  * have the same set of variables keys, a single mask for the variable name key will mask variable values for all objects
  * that have that key.
  * <p>
- * This class extends {@link burlap.mdp.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
- * to be object identifier/name independent or dependent and can be set to use {@link burlap.mdp.statehashing.HashableState}
- * instances that cache their hash code or not. See the {@link burlap.mdp.statehashing.SimpleHashableStateFactory}
+ * This class extends {@link burlap.statehashing.SimpleHashableStateFactory}, which means it can be toggled to
+ * to be object identifier/name independent or dependent and can be set to use {@link burlap.statehashing.HashableState}
+ * instances that cache their hash code or not. See the {@link burlap.statehashing.SimpleHashableStateFactory}
  * class documentation for more information on those features.
  *
  * @author James MacGlashan.
@@ -50,7 +50,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 	/**
 	 * Initializes with no object class or variable masks.
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
-	 * @param useCached if true then the hash code for each produced {@link burlap.mdp.statehashing.HashableState} will be cached; if false then they will not be cached.
+	 * @param useCached if true then the hash code for each produced {@link burlap.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 */
 	public MaskedHashableStateFactory(boolean identifierIndependent, boolean useCached) {
 		super(identifierIndependent, useCached);
@@ -60,7 +60,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 	/**
 	 * Initializes with a specified variable or object class mask.
 	 * @param identifierIndependent if true then state evaluations are object identifier independent; if false then dependent.
-	 * @param useCached if true then the hash code for each produced {@link burlap.mdp.statehashing.HashableState} will be cached; if false then they will not be cached.
+	 * @param useCached if true then the hash code for each produced {@link burlap.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 * @param maskNamesAreForVariables whether the specified masks are masks for state variables or object classes. True for variables, false for object classes.
 	 * @param masks the names of the state variables or OO-MDP object class that will be masked (ignored from state hashing and equality checks)
 	 */

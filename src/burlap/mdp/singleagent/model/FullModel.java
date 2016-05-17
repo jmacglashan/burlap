@@ -16,7 +16,7 @@ public interface FullModel extends SampleModel{
 
 	class Helper{
 		public static List<TransitionProb> deterministicTransition(SampleModel model, State s, Action a){
-			EnvironmentOutcome eo = model.sampleTransition(s, a);
+			EnvironmentOutcome eo = model.sample(s, a);
 			return Arrays.asList(new TransitionProb(1., eo));
 		}
 

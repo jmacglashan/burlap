@@ -19,7 +19,7 @@ import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agentactions.UniversalSGActionType;
 import burlap.mdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 
 import java.util.Arrays;
 import java.util.HashMap;

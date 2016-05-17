@@ -16,8 +16,8 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -219,7 +219,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 
 	@Override
 	public double value(State s) {
-		if(model.terminalState(s)){
+		if(model.terminal(s)){
 			return 0.;
 		}
 		return QFunction.QFunctionHelper.getOptimalValue(this, s);
@@ -256,7 +256,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 			return 0.;
 		}
 		
-		if(model.terminalState(node.state.s)){
+		if(model.terminal(node.state.s)){
 			if(goalCondition != null && goalCondition.satisfies(node.state.s)){
 			    foundGoal = true;
                 foundGoalOnRollout = true;
@@ -277,7 +277,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		
 		
 		//sample the action
-		EnvironmentOutcome eo = model.sampleTransition(node.state.s, anode.action);
+		EnvironmentOutcome eo = model.sample(node.state.s, anode.action);
 		HashableState shprime = this.stateHash(eo.op);
 		double r = eo.r;
 		int depthChange = 1;

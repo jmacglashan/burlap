@@ -10,7 +10,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.visualizer.Visualizer;
+import burlap.visualizer.Visualizer;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

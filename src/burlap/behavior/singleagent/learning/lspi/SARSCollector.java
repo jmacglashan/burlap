@@ -163,7 +163,7 @@ public abstract class SARSCollector {
 				
 				List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, curState);
 				Action ga = gas.get(RandomFactory.getMapped(0).nextInt(gas.size()));
-				EnvironmentOutcome eo = model.sampleTransition(curState, ga);
+				EnvironmentOutcome eo = model.sample(curState, ga);
 				intoDataset.add(curState, ga, eo.r, eo.op);
 				curState = eo.op;
 				

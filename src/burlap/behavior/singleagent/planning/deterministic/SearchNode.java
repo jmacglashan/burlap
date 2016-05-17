@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
 import burlap.mdp.core.Action;
-import burlap.mdp.statehashing.HashableState;
+import burlap.statehashing.HashableState;
 
 
 /**

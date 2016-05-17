@@ -1,4 +1,4 @@
-package burlap.mdp.statehashing;
+package burlap.statehashing;
 
 import burlap.mdp.core.state.State;
 
@@ -13,9 +13,9 @@ import burlap.mdp.core.state.State;
 public interface HashableStateFactory {
 
 	/**
-	 * Turns {@link State} s into a {@link burlap.mdp.statehashing.HashableState}
+	 * Turns {@link State} s into a {@link burlap.statehashing.HashableState}
 	 * @param s the input {@link State} to transform.
-	 * @return a {@link burlap.mdp.statehashing.HashableState}.
+	 * @return a {@link burlap.statehashing.HashableState}.
 	 */
 	HashableState hashState(State s);
 
@@ -25,8 +25,8 @@ public interface HashableStateFactory {
 	interface OOHashableStateFactory extends HashableStateFactory{
 
 		/**
-		 * Returns true if the {@link burlap.mdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
-		 * @return true if the {@link burlap.mdp.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
+		 * Returns true if the {@link burlap.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
+		 * @return true if the {@link burlap.statehashing.HashableState} objects returned are object identifier independent; false if they are dependent.
 		 */
 		boolean objectIdentifierIndependent();
 

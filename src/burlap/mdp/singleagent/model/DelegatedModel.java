@@ -33,16 +33,16 @@ public class DelegatedModel implements FullModel {
 	}
 
 	@Override
-	public EnvironmentOutcome sampleTransition(State s, Action a) {
+	public EnvironmentOutcome sample(State s, Action a) {
 		SampleModel delgate = delgates.get(a.actionName());
 		if(delgate == null){
-			return defaultMode.sampleTransition(s, a);
+			return defaultMode.sample(s, a);
 		}
-		return delgate.sampleTransition(s, a);
+		return delgate.sample(s, a);
 	}
 
 	@Override
-	public boolean terminalState(State s) {
-		return defaultMode.terminalState(s);
+	public boolean terminal(State s) {
+		return defaultMode.terminal(s);
 	}
 }

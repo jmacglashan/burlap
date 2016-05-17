@@ -5,7 +5,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.dpplanners.MAValueIteration;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.JointActionModel;
 import burlap.mdp.stochasticgames.JointReward;
 import burlap.mdp.stochasticgames.SGAgentType;

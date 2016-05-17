@@ -24,8 +24,8 @@ import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.statehashing.HashableState;
-import burlap.mdp.statehashing.HashableStateFactory;
+import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -270,7 +270,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 	@Override
 	public double value(State s) {
-		if(model.terminalState(s)){
+		if(model.terminal(s)){
 			return 0.;
 		}
 		return QFunction.QFunctionHelper.getOptimalValue(this, s);
@@ -472,7 +472,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			for(int i = 0; i < c; i++){
 
 				//execute
-				EnvironmentOutcome eo = model.sampleTransition(this.sh.s, ga);
+				EnvironmentOutcome eo = model.sample(this.sh.s, ga);
 				State ns = eo.op;
 				double r = eo.r;
 				FunctionGradient rGradient = DifferentiableSparseSampling.this.rf.gradient(this.sh.s, ga, ns);
@@ -540,7 +540,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 				return new VAndVGradient(this.v, this.vgrad);
 			}
 
-			if(model.terminalState(this.sh.s)){
+			if(model.terminal(this.sh.s)){
 				this.v = 0.;
 				this.vgrad = new FunctionGradient.SparseGradient();
 				this.closed = true;

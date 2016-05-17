@@ -1,4 +1,4 @@
-package burlap.mdp.statehashing;
+package burlap.statehashing;
 
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.oo.state.OOState;
@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.*;
 
 /**
- * A straightforward factory for creating {@link burlap.mdp.statehashing.HashableState} objects from
+ * A straightforward factory for creating {@link burlap.statehashing.HashableState} objects from
  * {@link State} instances. The general approach is that hash values are computed by iterating through each
  * variable key in the order returned by {@link State#variableKeys()} and the has code for values returned by
  * {@link State#get(Object)} are combined. Similarly, two states are evaluated as equal when the values returned by
@@ -21,10 +21,10 @@ import java.util.*;
  * by using the constructor {@link #SimpleHashableStateFactory(boolean)}. If your domain is relational, it may be
  * important to be identifier *dependent* (that is, set the parameter in the constructor to false).
  * <p>
- * Optionally, this factory can be set to produce {@link burlap.mdp.statehashing.HashableState} instances
+ * Optionally, this factory can be set to produce {@link burlap.statehashing.HashableState} instances
  * that cache the hash code so that it does not need to be recomputed on multiple calls of the hashCode method.
  * To enable hash code caching, use the {@link #SimpleHashableStateFactory(boolean, boolean)} constructor.
- * Using caching will use slightly more memory by having to associate an int with each {@link burlap.mdp.statehashing.HashableState}.
+ * Using caching will use slightly more memory by having to associate an int with each {@link burlap.statehashing.HashableState}.
  * <p>
  * This class has multiple aspects of the state equality methods implemented so that it can be easily sub classed
  * by other forms of equality checking and have each method override only what it needs to override.
@@ -39,7 +39,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 	protected boolean identifierIndependent = true;
 
 	/**
-	 * Whether to cache the hash code for each produced {@link burlap.mdp.statehashing.HashableState}.
+	 * Whether to cache the hash code for each produced {@link burlap.statehashing.HashableState}.
 	 * Default is non-cached.
 	 */
 	protected boolean useCached = false;
@@ -64,7 +64,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 	/**
 	 * Initializes.
 	 * @param identifierIndependent if true then state evaluations for {@link burlap.mdp.core.oo.state.OOState}s  are object identifier independent; if false then dependent.
-	 * @param useCached if true then the hash code for each produced {@link burlap.mdp.statehashing.HashableState} will be cached; if false then they will not be cached.
+	 * @param useCached if true then the hash code for each produced {@link burlap.statehashing.HashableState} will be cached; if false then they will not be cached.
 	 */
 	public SimpleHashableStateFactory(boolean identifierIndependent, boolean useCached) {
 		this.identifierIndependent = identifierIndependent;
@@ -293,10 +293,10 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 
 
 	/**
-	 * An interface for {@link burlap.mdp.statehashing.HashableState} instances that are created
-	 * by the {@link burlap.mdp.statehashing.SimpleHashableStateFactory}. It provides a method
+	 * An interface for {@link burlap.statehashing.HashableState} instances that are created
+	 * by the {@link burlap.statehashing.SimpleHashableStateFactory}. It provides a method
 	 * for checking that the parent factory is the same and is used for both cached and non-cached
-	 * hash code {@link burlap.mdp.statehashing.HashableState} instances.
+	 * hash code {@link burlap.statehashing.HashableState} instances.
 	 */
 	public interface SimpleHashableStateInterface{
 		HashableStateFactory getParentHashingFactory();
