@@ -46,7 +46,8 @@ public class OOSADomain extends SADomain implements OODomain {
 	}
 
 	@Override
-	public void addPropFunction(PropositionalFunction prop) {
+	public OOSADomain addPropFunction(PropositionalFunction prop) {
 		this.propFunctionMap.put(prop.getName(), prop);
+		return this;
 	}
 }

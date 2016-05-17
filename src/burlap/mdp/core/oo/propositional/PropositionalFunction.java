@@ -1,9 +1,8 @@
 package burlap.mdp.core.oo.propositional;
 
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.OOStateUtilities;
+import burlap.mdp.core.state.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,144 +43,45 @@ public abstract class PropositionalFunction {
 	 * indicates that the function evaluate the same regardless of which specific object is set to each parameter
 	 */
 	protected String []					parameterOrderGroup;
+
+	
+	
+
 	
 	/**
-	 * optional; allows propositional functions to be grouped by class names
-	 */
-	protected String					pfClass;
-	
-	
-	/**
-	 * Initializes a propositional function with the given name, domain and parameter object classes. The domain
-	 * will automatically have this propositional function added to its definition. Unique parameter order groups
-	 * for each parameter are assumed.
+	 * Initializes a propositional function with the given name and parameter object classes. Unique parameter order groups
+	 * for each parameter are assumed; that is, the order of parameters always matters.
 	 * @param name the name of the propositional function
-	 * @param domain the domain to which this propositional function should be connected.
-	 * @param parameterClasses a comma delineated string specifying the name of object classes that the parameters must satisfy.
-	 */
-	public PropositionalFunction(String name, OODomain domain, String parameterClasses){
-		
-		String [] pClassArray;
-		if(parameterClasses.equals("")){
-			pClassArray = new String[0];
-		}
-		else{
-			pClassArray = parameterClasses.split(",");
-		}
-		
-		String [] pog = new String[pClassArray.length];
-		for(int i = 0; i < pog.length; i++){
-			pog[i] = name + ".P" + i;
-		}
-		
-		this.init(name, domain, pClassArray, pog, name);
-		
-	}
-	
-	/**
-	 * Initializes a propositional function with the given name, domain, parameter object classes, and propositional function class name. The domain
-	 * will automatically have this propositional function added to its definition. Unique parameter order groups
-	 * for each parameter are assumed.
-	 * @param name the name of the propositional function
-	 * @param domain the domain to which this propositional function should be connected.
-	 * @param parameterClasses a comma delineated string specifying the name of object classes that the parameters must satisfy.
-	 * @param pfClassName the name of the propositional function class to which this PF belongs.
-	 */
-	public PropositionalFunction(String name, OODomain domain, String parameterClasses, String pfClassName){
-		
-		String [] pClassArray;
-		if(parameterClasses.equals("")){
-			pClassArray = new String[0];
-		}
-		else{
-			pClassArray = parameterClasses.split(",");
-		}
-		
-		String [] pog = new String[pClassArray.length];
-		for(int i = 0; i < pog.length; i++){
-			pog[i] = name + ".P" + i;
-		}
-		
-		this.init(name, domain, pClassArray, pog, pfClassName);
-		
-	}
-	
-	
-	/**
-	 * Initializes a propositional function with the given name, domain and parameter object classes. The domain
-	 * will automatically have this propositional function added to its definition. Unique parameter order groups
-	 * for each parameter are assumed.
-	 * @param name the name of the propositional function
-	 * @param domain the domain to which this propositional function should be connected.
 	 * @param parameterClasses an array of strings specifying the name of object classes that the parameters must satisfy.
 	 */
-	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses){
+	public PropositionalFunction(String name, String [] parameterClasses){
 		
 		String [] rcn = new String[parameterClasses.length];
 		for(int i = 0; i < rcn.length; i++){
 			rcn[i] = name + ".P" + i;
 		}
 		
-		this.init(name, domain, parameterClasses, rcn, name);
+		this.init(name, parameterClasses, rcn);
 		
 	}
-	
-	
-	/**
-	 * Initializes a propositional function with the given name, domain, parameter object classes, and propositional function class name. The domain
-	 * will automatically have this propositional function added to its definition. Unique parameter order groups
-	 * for each parameter are assumed.
-	 * @param name the name of the propositional function
-	 * @param domain the domain to which this propositional function should be connected.
-	 * @param parameterClasses an array of strings specifying the name of object classes that the parameters must satisfy.
-	 * @param pfClassName the name of the propositional function class to which this PF belongs.
-	 */
-	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses, String pfClassName){
-		
-		String [] rcn = new String[parameterClasses.length];
-		for(int i = 0; i < rcn.length; i++){
-			rcn[i] = name + ".P" + i;
-		}
-		
-		this.init(name, domain, parameterClasses, rcn, pfClassName);
-		
-	}
-	
+
 	
 	/**
-	 * Initializes a propositional function with the given name, domain, parameter object classes, and the parameter order groups of the parameters. The domain
-	 * will automatically have this propositional function added to its definition.
+	 * Initializes a propositional function with the given name, parameter object classes, and the parameter order groups of the parameters.
 	 * @param name the name of the propositional function
-	 * @param domain the domain to which this propositional function should be connected.
 	 * @param parameterClasses an array of strings specifying the name of object classes that the parameters must satisfy.
 	 * @param parameterOrderGroup an array of strings specifying order group names for the parameters
 	 */
-	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses, String [] parameterOrderGroup){
-		this.init(name, domain, parameterClasses, parameterOrderGroup, name);
+	public PropositionalFunction(String name, String [] parameterClasses, String [] parameterOrderGroup){
+		this.init(name, parameterClasses, parameterOrderGroup);
 	}
+
 	
 	
-	/**
-	 * Initializes a propositional function with the given name, domain, parameter object classes, 
-	 * the parameter order groups of the parameters, and the propositional function class name. The domain
-	 * will automatically have this propositional function added to its definition.
-	 * @param name the name of the propositional function
-	 * @param domain the domain to which this propositional function should be connected.
-	 * @param parameterClasses an array of strings specifying the name of object classes that the parameters must satisfy.
-	 * @param parameterOrderGroup an array of strings specifying order group names for the parameters
-	 * @param pfClassName the name of the propositional function class to which this PF belongs.
-	 */
-	public PropositionalFunction(String name, OODomain domain, String [] parameterClasses, String [] parameterOrderGroup, String pfClassName){
-		this.init(name, domain, parameterClasses, parameterOrderGroup, pfClassName);
-	}
-	
-	
-	protected final void init(String name, OODomain domain, String [] parameterClasses, String [] parameterOrderGroup, String pfClass){
+	protected final void init(String name, String [] parameterClasses, String [] parameterOrderGroup){
 		this.name = name;
-		domain.addPropFunction(this);
 		this.parameterClasses = parameterClasses;
 		this.parameterOrderGroup = parameterOrderGroup;
-		this.pfClass = pfClass;
 	}
 	
 	
@@ -207,24 +107,6 @@ public abstract class PropositionalFunction {
 	 */
 	public final String[] getParameterOrderGroups(){
 		return parameterOrderGroup;
-	}
-	
-	
-	/**
-	 * Sets the class name for this propositional function.
-	 * @param cn the propositional function class name to which this PF should be assigned.
-	 */
-	public final void setClassName(String cn){
-		pfClass = cn;
-	}
-	
-	
-	/**
-	 * Returns the propositional function class name of this PF.
-	 * @return the propositional function class name of this PF.
-	 */
-	public final String getClassName(){
-		return pfClass;
 	}
 
 	
@@ -252,6 +134,22 @@ public abstract class PropositionalFunction {
 			res.addAll(gps);
 		}
 		return res;
+	}
+
+
+	/**
+	 * Used to retrieve a {@link PropositionalFunction} with a specified name from a list of them.
+	 * @param pfs The list of {@link PropositionalFunction} objects to search.
+	 * @param pfName The name of the {@link PropositionalFunction}
+	 * @return the {@link PropositionalFunction} with the name or null if it does not exist
+	 */
+	public static PropositionalFunction getPropositionalFunction(List<PropositionalFunction> pfs, String pfName){
+		for(PropositionalFunction pf : pfs){
+			if(pf.getName().equals(pfName)){
+				return pf;
+			}
+		}
+		return null;
 	}
 	
 	

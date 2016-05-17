@@ -21,6 +21,7 @@ import burlap.mdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import burlap.mdp.visualizer.Visualizer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -267,6 +268,10 @@ public class GridGame implements DomainGenerator {
 	}
 	
 
+	List<PropositionalFunction> generatePFs(){
+		return Arrays.asList(new AgentInUGoal(PF_IN_U_GOAL), new AgentInPGoal(PF_IN_P_GOAL));
+	}
+
 	@Override
 	public OOSGDomain generateDomain() {
 		
@@ -287,8 +292,7 @@ public class GridGame implements DomainGenerator {
 
 		
 		
-		new AgentInUGoal(PF_IN_U_GOAL, domain);
-		new AgentInPGoal(PF_IN_P_GOAL, domain);
+		OODomain.Helper.addPfsToDomain(domain, this.generatePFs());
 
 		domain.setJointActionModel(new GridGameStandardMechanics(domain, this.semiWallProb));
 		
@@ -469,10 +473,9 @@ public class GridGame implements DomainGenerator {
 		/**
 		 * Initializes with the given name and domain and is set to evaluate on agent objects
 		 * @param name the name of the propositional function
-		 * @param domain the domain for this propositional function
 		 */
-		public AgentInUGoal(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_AGENT});
+		public AgentInUGoal(String name) {
+			super(name, new String[]{CLASS_AGENT});
 		}
 
 		@Override
@@ -519,10 +522,9 @@ public class GridGame implements DomainGenerator {
 		/**
 		 * Initializes with the given name and domain and is set to evaluate on agent objects
 		 * @param name the name of the propositional function
-		 * @param domain the domain for this propositional function
 		 */
-		public AgentInPGoal(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_AGENT});
+		public AgentInPGoal(String name) {
+			super(name, new String[]{CLASS_AGENT});
 		}
 
 		@Override

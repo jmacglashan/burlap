@@ -372,7 +372,7 @@ public class GraphDefinedDomain implements DomainGenerator {
 		domain.setModel(model);
 
 		for(int i = 0; i < this.maxActions; i++){
-			domain.addAction(new GraphActionType(i, ctd));
+			domain.addActionType(new GraphActionType(i, ctd));
 		}
 		
 		

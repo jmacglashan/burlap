@@ -18,6 +18,8 @@ import burlap.mdp.singleagent.oo.ObjectParameterizedActionType;
 import burlap.shell.EnvironmentShell;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
@@ -106,6 +108,14 @@ public class BlocksWorld implements DomainGenerator {
 		this.tf = tf;
 	}
 
+	public List<PropositionalFunction> generatePfs(){
+		List<PropositionalFunction> pfs =  Arrays.asList(new OnBlockPF(PF_ON_BLOCK), new OnTablePF(PF_ON_TABLE), new ClearPF(PF_CLEAR));
+		for(NamedColor col : colors){
+			pfs.add(new ColorPF(col));
+		}
+		return pfs;
+	}
+
 	@Override
 	public OOSADomain generateDomain() {
 
@@ -113,8 +123,8 @@ public class BlocksWorld implements DomainGenerator {
 		
 		domain.addStateClass(CLASS_BLOCK, BlocksWorldBlock.class);
 
-		domain.addAction(new StackActionType(ACTION_STACK))
-				.addAction(new UnstackActionType(ACTION_UNSTACK));
+		domain.addActionType(new StackActionType(ACTION_STACK))
+				.addActionType(new UnstackActionType(ACTION_UNSTACK));
 
 		RewardFunction rf = this.rf;
 		TerminalFunction tf = this.tf;
@@ -130,12 +140,7 @@ public class BlocksWorld implements DomainGenerator {
 		FactoredModel model = new FactoredModel(smodel, rf , tf);
 		domain.setModel(model);
 
-		new OnBlockPF(PF_ON_BLOCK, domain);
-		new OnTablePF(PF_ON_TABLE, domain);
-		new ClearPF(PF_CLEAR, domain);
-		for(NamedColor col : colors){
-			new ColorPF(col, domain);
-		}
+		OODomain.Helper.addPfsToDomain(domain, this.generatePfs());
 		
 		return domain;
 	}
@@ -229,8 +234,8 @@ public class BlocksWorld implements DomainGenerator {
 	 */
 	public class OnBlockPF extends PropositionalFunction {
 
-		public OnBlockPF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_BLOCK, CLASS_BLOCK});
+		public OnBlockPF(String name) {
+			super(name, new String[]{CLASS_BLOCK, CLASS_BLOCK});
 		}
 
 		@Override
@@ -252,8 +257,8 @@ public class BlocksWorld implements DomainGenerator {
 	 */
 	public class OnTablePF extends PropositionalFunction{
 		
-		public OnTablePF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_BLOCK});
+		public OnTablePF(String name) {
+			super(name, new String[]{CLASS_BLOCK});
 		}
 
 		@Override
@@ -273,8 +278,8 @@ public class BlocksWorld implements DomainGenerator {
 	 */
 	public class ClearPF extends PropositionalFunction{
 		
-		public ClearPF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_BLOCK});
+		public ClearPF(String name) {
+			super(name, new String[]{CLASS_BLOCK});
 		}
 
 		@Override
@@ -297,8 +302,8 @@ public class BlocksWorld implements DomainGenerator {
 
 		protected NamedColor color;
 
-		public ColorPF(NamedColor color, OODomain domain) {
-			super(color.name, domain, new String[]{CLASS_BLOCK});
+		public ColorPF(NamedColor color) {
+			super(color.name, new String[]{CLASS_BLOCK});
 			this.color = color;
 		}
 

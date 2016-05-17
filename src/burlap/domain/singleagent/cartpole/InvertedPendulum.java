@@ -165,9 +165,9 @@ public class InvertedPendulum implements DomainGenerator {
 		FactoredModel model = new FactoredModel(smodel, rf ,tf);
 		domain.setModel(model);
 
-		domain.addAction(new UniversalActionType(ACTION_LEFT))
-				.addAction(new UniversalActionType(ACTION_RIGHT))
-				.addAction(new UniversalActionType(ACTION_NO_FORCE));
+		domain.addActionType(new UniversalActionType(ACTION_LEFT))
+				.addActionType(new UniversalActionType(ACTION_RIGHT))
+				.addActionType(new UniversalActionType(ACTION_NO_FORCE));
 
 		
 		return domain;

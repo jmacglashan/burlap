@@ -242,8 +242,8 @@ public class CartPoleDomain implements DomainGenerator {
 		domain.setModel(model);
 
 
-		domain.addAction(new UniversalActionType(ACTION_LEFT))
-				.addAction(new UniversalActionType(ACTION_RIGHT));
+		domain.addActionType(new UniversalActionType(ACTION_LEFT))
+				.addActionType(new UniversalActionType(ACTION_RIGHT));
 
 
 		return domain;

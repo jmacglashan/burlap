@@ -6,7 +6,6 @@ import burlap.domain.singleagent.frostbite.state.FrostbitePlatform;
 import burlap.domain.singleagent.frostbite.state.FrostbiteState;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
@@ -18,6 +17,7 @@ import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -175,6 +175,28 @@ public class FrostbiteDomain implements DomainGenerator{
 		this.scale = scale;
 	}
 
+
+	public List<PropositionalFunction> generatePFs(){
+
+		int numberPlatformCol = 4;
+
+		int gameHeight = 130 * scale;
+		int gameWidth = 160 * scale;
+		int platformSpeed = 1 * scale;
+		int agentSize = 8 * scale;
+		int gameIceHeight = gameHeight / 4;
+
+		List<PropositionalFunction> pfs = Arrays.asList(
+				new PlatformActivePF(PF_PLATFORM_ACTIVE),
+				new OnPlatformPF(PF_ON_PLATFORM, gameWidth, agentSize),
+				new InWaterPF(PF_IN_WATER, gameWidth, agentSize, gameHeight, numberPlatformCol, platformSpeed),
+				new OnIcePF(PF_ON_ICE, agentSize, gameIceHeight),
+				new IglooBuiltPF(PF_IGLOO_BUILT));
+
+
+		return pfs;
+	}
+
 	/**
 	 * Creates a new frostbite domain.
 	 *
@@ -190,28 +212,20 @@ public class FrostbiteDomain implements DomainGenerator{
 				.addStateClass(CLASS_PLATFORM, FrostbitePlatform.class);
 
 		//add actions
-		domain.addAction(new UniversalActionType(ACTION_NORTH))
-				.addAction(new UniversalActionType(ACTION_SOUTH))
-				.addAction(new UniversalActionType(ACTION_EAST))
-				.addAction(new UniversalActionType(ACTION_WEST))
-				.addAction(new UniversalActionType(ACTION_IDLE));
+		domain.addActionType(new UniversalActionType(ACTION_NORTH))
+				.addActionType(new UniversalActionType(ACTION_SOUTH))
+				.addActionType(new UniversalActionType(ACTION_EAST))
+				.addActionType(new UniversalActionType(ACTION_WEST))
+				.addActionType(new UniversalActionType(ACTION_IDLE));
 
 
-
-		int numberPlatformCol = 4;
-
-		int gameHeight = 130 * scale;
-		int gameWidth = 160 * scale;
-		int platformSpeed = 1 * scale;
-		int agentSize = 8 * scale;
-		int gameIceHeight = gameHeight / 4;
 
 		//add pfs
-		new PlatformActivePF(PF_PLATFORM_ACTIVE, domain);
-		new OnPlatformPF(PF_ON_PLATFORM, domain, gameWidth, agentSize);
-		new InWaterPF(PF_IN_WATER, domain, gameWidth, agentSize, gameHeight, numberPlatformCol, platformSpeed);
-		new OnIcePF(PF_ON_ICE, domain, agentSize, gameIceHeight);
-		new IglooBuiltPF(PF_IGLOO_BUILT, domain);
+		List<PropositionalFunction> pfs = this.generatePFs();
+		for(PropositionalFunction pf : pfs){
+			domain.addPropFunction(pf);
+		}
+
 
 		FrostbiteModel smodel = new FrostbiteModel(scale);
 		RewardFunction rf = this.rf;
@@ -242,10 +256,9 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * Initializes to be evaluated on an agent object and platform object.
 		 *
 		 * @param name   the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public OnPlatformPF(String name, OODomain domain, int width, int agentSize) {
-			super(name, domain, new String[]{CLASS_AGENT, CLASS_PLATFORM});
+		public OnPlatformPF(String name, int width, int agentSize) {
+			super(name, new String[]{CLASS_AGENT, CLASS_PLATFORM});
 			this.width = width;
 			this.agentSize = agentSize;
 		}
@@ -310,10 +323,9 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * Initializes to be evaluated on an agent object and platform object.
 		 *
 		 * @param name   the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public PlatformActivePF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_PLATFORM});
+		public PlatformActivePF(String name) {
+			super(name, new String[]{CLASS_PLATFORM});
 		}
 
 		@Override
@@ -335,10 +347,9 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * Initializes to be evaluated on an agent object.
 		 *
 		 * @param name   the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public InWaterPF(String name, OODomain domain, int width, int agentSize, int gameIceHeight, int numberPlatformCol, int platformSpeed) {
-			super(name, domain, new String[]{CLASS_AGENT});
+		public InWaterPF(String name, int width, int agentSize, int gameIceHeight, int numberPlatformCol, int platformSpeed) {
+			super(name, new String[]{CLASS_AGENT});
 			this.width = width;
 			this.agentSize = agentSize;
 			this.gameIceHeight = gameIceHeight;
@@ -424,10 +435,9 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * Initializes to be evaluated on an agent object.
 		 *
 		 * @param name   the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public OnIcePF(String name, OODomain domain, int agentSize, int gameIceHeight) {
-			super(name, domain, new String[]{CLASS_AGENT});
+		public OnIcePF(String name, int agentSize, int gameIceHeight) {
+			super(name, new String[]{CLASS_AGENT});
 			this.agentSize = agentSize;
 			this.gameIceHeight = gameIceHeight;
 		}
@@ -447,10 +457,9 @@ public class FrostbiteDomain implements DomainGenerator{
 		 * Initializes to be evaluated on an agent object.
 		 *
 		 * @param name   the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public IglooBuiltPF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_IGLOO});
+		public IglooBuiltPF(String name) {
+			super(name, new String[]{CLASS_IGLOO});
 		}
 
 		@Override

@@ -21,6 +21,7 @@ import burlap.mdp.visualizer.Visualizer;
 import burlap.shell.EnvironmentShell;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -518,7 +519,15 @@ public class LunarLanderDomain implements DomainGenerator {
 		this.thrustValues.add(0.32);
 		this.thrustValues.add(-physParams.gravity);
 	}
-	
+
+	public List<PropositionalFunction> generatePfs(){
+		return Arrays.asList(
+				new OnPadPF(PF_ON_PAD),
+				new TouchPadPF(PF_TOUTCH_PAD),
+				new TouchSurfacePF(PF_TOUCH_SURFACE),
+				new TouchGroundPF(PF_ON_GROUND, this.physParams.ymin));
+	}
+
 	@Override
 	public OOSADomain generateDomain() {
 		
@@ -538,10 +547,10 @@ public class LunarLanderDomain implements DomainGenerator {
 		LLPhysicsParams cphys = this.physParams.copy();
 		
 		//add actions
-		domain.addAction(new UniversalActionType(ACTION_TURN_LEFT))
-				.addAction(new UniversalActionType(ACTION_TURN_RIGHT))
-				.addAction(new UniversalActionType(ACTION_IDLE))
-				.addAction(new ThrustType(thrustValues));
+		domain.addActionType(new UniversalActionType(ACTION_TURN_LEFT))
+				.addActionType(new UniversalActionType(ACTION_TURN_RIGHT))
+				.addActionType(new UniversalActionType(ACTION_IDLE))
+				.addActionType(new ThrustType(thrustValues));
 
 
 		LunarLanderModel smodel = new LunarLanderModel(cphys);
@@ -558,11 +567,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		domain.setModel(model);
 
 		
-		//add pfs
-		new OnPadPF(PF_ON_PAD, domain);
-		new TouchPadPF(PF_TOUTCH_PAD, domain);
-		new TouchSurfacePF(PF_TOUCH_SURFACE, domain);
-		new TouchGroundPF(PF_ON_GROUND, domain, physParams.ymin);
+		OODomain.Helper.addPfsToDomain(domain, this.generatePfs());
 		
 		
 		
@@ -658,10 +663,9 @@ public class LunarLanderDomain implements DomainGenerator {
 		/**
 		 * Initializes to be evaluated on an agent object and landing pad object.
 		 * @param name the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public OnPadPF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_AGENT, CLASS_PAD});
+		public OnPadPF(String name) {
+			super(name, new String[]{CLASS_AGENT, CLASS_PAD});
 		}
 		
 
@@ -707,10 +711,9 @@ public class LunarLanderDomain implements DomainGenerator {
 		/**
 		 * Initializes to be evaluated on an agent object and landing pad object.
 		 * @param name the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public TouchPadPF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_AGENT, CLASS_PAD});
+		public TouchPadPF(String name) {
+			super(name, new String[]{CLASS_AGENT, CLASS_PAD});
 		}
 		
 
@@ -757,10 +760,9 @@ public class LunarLanderDomain implements DomainGenerator {
 		/**
 		 * Initializes to be evaluated on an agent object and obstacle object.
 		 * @param name the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public TouchSurfacePF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_AGENT, CLASS_OBSTACLE});
+		public TouchSurfacePF(String name) {
+			super(name, new String[]{CLASS_AGENT, CLASS_OBSTACLE});
 		}
 		
 
@@ -804,21 +806,18 @@ public class LunarLanderDomain implements DomainGenerator {
 		/**
 		 * Initializes to be evaluated on an agent object.
 		 * @param name the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 */
-		public TouchGroundPF(String name, OODomain domain) {
-			super(name, domain, new String[]{CLASS_AGENT});
-			this.ymin = ymin;
+		public TouchGroundPF(String name) {
+			super(name, new String[]{CLASS_AGENT});
 		}
 
 		/**
 		 * Initializes to be evaluated on an agent object.
 		 * @param name the name of the propositional function
-		 * @param domain the domain of the propositional function
 		 * @param ymin the minimum y value
 		 */
-		public TouchGroundPF(String name, OODomain domain, double ymin) {
-			super(name, domain, new String[]{CLASS_AGENT});
+		public TouchGroundPF(String name, double ymin) {
+			super(name, new String[]{CLASS_AGENT});
 			this.ymin = ymin;
 		}
 		

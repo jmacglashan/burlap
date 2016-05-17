@@ -18,6 +18,9 @@ import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.visualizer.Visualizer;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * An implementation of the Block Dude Texas Instruments calculator puzzle game. The goal is for the player to reach
  * an exit. The player has three movement options: west, east, and up if the platform in front of them is only
@@ -174,6 +177,10 @@ public class BlockDude implements DomainGenerator{
 		this.tf = tf;
 	}
 
+	public List<PropositionalFunction> generatePfs(){
+		return Arrays.asList(new HoldingBlockPF(), new AtExitPF());
+	}
+
 	@Override
 	public OOSADomain generateDomain() {
 
@@ -185,14 +192,13 @@ public class BlockDude implements DomainGenerator{
 				.addStateClass(CLASS_BLOCK, BlockDudeCell.class);
 
 
-		domain.addAction(new UniversalActionType(ACTION_EAST))
-				.addAction(new UniversalActionType(ACTION_WEST))
-				.addAction(new UniversalActionType(ACTION_UP))
-				.addAction(new UniversalActionType(ACTION_PICKUP))
-				.addAction(new UniversalActionType(ACTION_PUT_DOWN));
+		domain.addActionType(new UniversalActionType(ACTION_EAST))
+				.addActionType(new UniversalActionType(ACTION_WEST))
+				.addActionType(new UniversalActionType(ACTION_UP))
+				.addActionType(new UniversalActionType(ACTION_PICKUP))
+				.addActionType(new UniversalActionType(ACTION_PUT_DOWN));
 
-		new HoldingBlockPF(domain);
-		new AtExitPF(domain);
+		OODomain.Helper.addPfsToDomain(domain, this.generatePfs());
 
 		RewardFunction rf = this.rf;
 		TerminalFunction tf = this.tf;
@@ -238,8 +244,8 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public class HoldingBlockPF extends PropositionalFunction{
 
-		public HoldingBlockPF(OODomain domain) {
-			super(PF_HOLDING_BLOCK, domain, new String[]{CLASS_AGENT, CLASS_BLOCK});
+		public HoldingBlockPF() {
+			super(PF_HOLDING_BLOCK, new String[]{CLASS_AGENT, CLASS_BLOCK});
 		}
 
 
@@ -273,8 +279,8 @@ public class BlockDude implements DomainGenerator{
 	 */
 	public class AtExitPF extends PropositionalFunction{
 
-		public AtExitPF(OODomain domain) {
-			super(PF_AT_EXIT, domain, new String[]{CLASS_AGENT, CLASS_EXIT});
+		public AtExitPF() {
+			super(PF_AT_EXIT, new String[]{CLASS_AGENT, CLASS_EXIT});
 		}
 
 

@@ -24,10 +24,17 @@ public class SADomain implements Domain {
 
 
 
-	public SADomain addAction(ActionType act){
+	public SADomain addActionType(ActionType act){
 		if(!actionMap.containsKey(act.typeName())){
 			actionTypes.add(act);
 			actionMap.put(act.typeName(), act);
+		}
+		return this;
+	}
+
+	public SADomain addActionTypes(ActionType...actions){
+		for(ActionType action : actions){
+			this.addActionType(action);
 		}
 		return this;
 	}

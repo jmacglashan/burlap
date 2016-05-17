@@ -208,12 +208,12 @@ public class TigerDomain implements DomainGenerator {
 
 
 
-		domain.addAction(new UniversalActionType(ACTION_LEFT))
-				.addAction(new UniversalActionType(ACTION_RIGHT))
-				.addAction(new UniversalActionType(ACTION_LISTEN));
+		domain.addActionType(new UniversalActionType(ACTION_LEFT))
+				.addActionType(new UniversalActionType(ACTION_RIGHT))
+				.addActionType(new UniversalActionType(ACTION_LISTEN));
 
 		if(this.includeDoNothing){
-			domain.addAction(new UniversalActionType(ACTION_DO_NOTHING));
+			domain.addActionType(new UniversalActionType(ACTION_DO_NOTHING));
 		}
 
 

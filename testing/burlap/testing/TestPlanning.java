@@ -16,6 +16,7 @@ import burlap.mdp.auxiliary.common.SinglePFTF;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.oo.OOSADomain;
@@ -24,6 +25,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static burlap.domain.singleagent.gridworld.GridWorldDomain.PF_AT_LOCATION;
 
 public class TestPlanning {
 	public static final double delta = 0.000001;
@@ -36,7 +39,7 @@ public class TestPlanning {
 		this.gw = new GridWorldDomain(11, 11);
 		this.gw.setMapToFourRooms();
 		this.gw.setRf(new UniformCostRF());
-		TerminalFunction tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PF_AT_LOCATION));
+		TerminalFunction tf = new SinglePFTF(PropositionalFunction.getPropositionalFunction(gw.generatePfs(), PF_AT_LOCATION));
 		this.gw.setTf(tf);
 		this.domain = this.gw.generateDomain();
 		this.goalCondition = new TFGoalCondition(tf);

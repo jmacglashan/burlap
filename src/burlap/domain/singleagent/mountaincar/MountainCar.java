@@ -181,9 +181,9 @@ public class MountainCar implements DomainGenerator {
 
 		domain.setModel(model);
 
-		domain.addAction(new UniversalActionType(ACTION_FORWARD))
-				.addAction(new UniversalActionType(ACTION_BACKWARDS))
-				.addAction(new UniversalActionType(ACTION_COAST));
+		domain.addActionType(new UniversalActionType(ACTION_FORWARD))
+				.addActionType(new UniversalActionType(ACTION_BACKWARDS))
+				.addActionType(new UniversalActionType(ACTION_COAST));
 
 		
 		

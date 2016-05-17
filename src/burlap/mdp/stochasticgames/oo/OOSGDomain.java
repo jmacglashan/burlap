@@ -45,7 +45,8 @@ public class OOSGDomain extends SGDomain implements OODomain {
 	}
 
 	@Override
-	public void addPropFunction(PropositionalFunction prop) {
+	public OOSGDomain addPropFunction(PropositionalFunction prop) {
 		this.propFunctionMap.put(prop.getName(), prop);
+		return this;
 	}
 }

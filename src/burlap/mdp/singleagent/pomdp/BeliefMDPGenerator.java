@@ -53,7 +53,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 
 
 		for(ActionType mdpActionType : this.podomain.getActionTypes()){
-			domain.addAction(mdpActionType);
+			domain.addActionType(mdpActionType);
 		}
 
 		domain.setModel(new BeliefModel(podomain));

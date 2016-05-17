@@ -57,7 +57,22 @@ public interface OODomain extends Domain {
 	 * of this domain. The function will not be added if this domain already has a instance with the same name.
 	 * @param prop the propositional function to add.
 	 */
-	void addPropFunction(PropositionalFunction prop);
+	OODomain addPropFunction(PropositionalFunction prop);
+
+
+	class Helper{
+		public static void addPfsToDomain(OODomain domain, List<PropositionalFunction> pfs){
+			for(PropositionalFunction pf : pfs){
+				domain.addPropFunction(pf);
+			}
+		}
+
+		public static void addPfsToDomain(OODomain domain, PropositionalFunction...pfs){
+			for(PropositionalFunction pf : pfs){
+				domain.addPropFunction(pf);
+			}
+		}
+	}
 
 
 }

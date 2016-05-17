@@ -8,6 +8,7 @@ import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridLocation;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.TerminalFunction;
@@ -21,6 +22,7 @@ import burlap.mdp.core.state.vardomain.VariableDomain;
 import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.UniversalActionType;
+import burlap.mdp.singleagent.common.NullRewardFunction;
 import burlap.mdp.singleagent.explorer.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
@@ -29,6 +31,7 @@ import burlap.mdp.visualizer.Visualizer;
 import burlap.shell.EnvironmentShell;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -491,6 +494,17 @@ public class GridWorldDomain implements DomainGenerator {
 		this.tf = tf;
 	}
 
+	public List<PropositionalFunction> generatePfs(){
+		List<PropositionalFunction> pfs = Arrays.asList(
+				new AtLocationPF(PF_AT_LOCATION, new String[]{CLASS_AGENT, CLASS_LOCATION}),
+			new WallToPF(PF_WALL_NORTH, new String[]{CLASS_AGENT}, 0),
+			new WallToPF(PF_WALL_SOUTH, new String[]{CLASS_AGENT}, 1),
+			new WallToPF(PF_WALL_EAST, new String[]{CLASS_AGENT}, 2),
+			new WallToPF(PF_WALL_WEST, new String[]{CLASS_AGENT}, 3));
+
+		return pfs;
+	}
+
 	@Override
 	public OOSADomain generateDomain() {
 
@@ -501,21 +515,28 @@ public class GridWorldDomain implements DomainGenerator {
 		domain.addStateClass(CLASS_AGENT, GridAgent.class).addStateClass(CLASS_LOCATION, GridLocation.class);
 
 		GridWorldModel smodel = new GridWorldModel(cmap, getTransitionDynamics());
+		RewardFunction rf = this.rf;
+		TerminalFunction tf = this.tf;
+
+		if(rf == null){
+			rf = new NullRewardFunction();
+		}
+		if(tf == null){
+			tf = new NullTermination();
+		}
+
+
 		FactoredModel model = new FactoredModel(smodel, rf, tf);
 		domain.setModel(model);
 
-		domain.addAction(new UniversalActionType(ACTION_NORTH))
-				.addAction(new UniversalActionType(ACTION_SOUTH))
-				.addAction(new UniversalActionType(ACTION_EAST))
-				.addAction(new UniversalActionType(ACTION_WEST));
+		domain.addActionTypes(
+				new UniversalActionType(ACTION_NORTH),
+				new UniversalActionType(ACTION_SOUTH),
+				new UniversalActionType(ACTION_EAST),
+				new UniversalActionType(ACTION_WEST));
 
 		
-		new AtLocationPF(PF_AT_LOCATION, domain, new String[]{CLASS_AGENT, CLASS_LOCATION});
-		
-		new WallToPF(PF_WALL_NORTH, domain, new String[]{CLASS_AGENT}, 0);
-		new WallToPF(PF_WALL_SOUTH, domain, new String[]{CLASS_AGENT}, 1);
-		new WallToPF(PF_WALL_EAST, domain, new String[]{CLASS_AGENT}, 2);
-		new WallToPF(PF_WALL_WEST, domain, new String[]{CLASS_AGENT}, 3);
+		OODomain.Helper.addPfsToDomain(domain, this.generatePfs());
 		
 		return domain;
 	}
@@ -732,11 +753,10 @@ public class GridWorldDomain implements DomainGenerator {
 		/**
 		 * Initializes with given name domain and parameter object class types
 		 * @param name name of function
-		 * @param domain the domain of the function
 		 * @param parameterClasses the object class types for the parameters
 		 */
-		public AtLocationPF(String name, OODomain domain, String[] parameterClasses) {
-			super(name, domain, parameterClasses);
+		public AtLocationPF(String name, String[] parameterClasses) {
+			super(name, parameterClasses);
 		}
 
 		@Override
@@ -785,12 +805,11 @@ public class GridWorldDomain implements DomainGenerator {
 		/**
 		 * Initializes the function.
 		 * @param name the name of the function
-		 * @param domain the domain of the function
 		 * @param parameterClasses the object class parameter types
 		 * @param direction the unit distance direction from the agent to check for a wall (0,1,2,3 corresponds to north,south,east,west).
 		 */
-		public WallToPF(String name, OODomain domain, String[] parameterClasses, int direction) {
-			super(name, domain, parameterClasses);
+		public WallToPF(String name, String[] parameterClasses, int direction) {
+			super(name, parameterClasses);
 			int [] dcomps = GridWorldDomain.this.movementDirectionFromIndex(direction);
 			xdelta = dcomps[0];
 			ydelta = dcomps[1];
