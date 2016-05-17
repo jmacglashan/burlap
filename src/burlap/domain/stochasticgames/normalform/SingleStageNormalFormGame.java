@@ -7,10 +7,16 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.*;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
-import burlap.mdp.stochasticgames.agentactions.SimpleSGAction;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.action.SGAgentActionType;
+import burlap.mdp.stochasticgames.action.SimpleSGAction;
 import burlap.mdp.stochasticgames.common.StaticRepeatedGameActionModel;
+import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
+import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.SGWorldShell;
 
 import java.util.*;
@@ -21,9 +27,9 @@ import java.util.*;
  * one attribute, its player number. A state consists simply of an object instance for each player. Different players maybe have different numbers of available
  * actions and the actions available to each player may have different names. The SingleAction's are created such that a player can only execute a single
  * action if that action is available to that player. Therefore, when agents joint a world for one of these games, their 
- * {@link burlap.mdp.stochasticgames.SGAgentType} can be specified to have
+ * {@link SGAgentType} can be specified to have
  * all of the possible actions, because they will only be able to execute the relevant ones. The method {@link #getAgentTypeForAllPlayers(SGDomain)} will return
- * such an {@link burlap.mdp.stochasticgames.SGAgentType} class that can be used for all agents.
+ * such an {@link SGAgentType} class that can be used for all agents.
  * <p>
  * In addition to this generator being able to return the domain object, it may also be used to return the corresponding joint reward function. The method
  * {@link #getRepatedGameActionModel()} will return a joint action mode that always returns to the same state, which can be used for repeated game playing.
@@ -32,7 +38,7 @@ import java.util.*;
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
  * <p>
  * This class also has a method for streamlining the world creation process so that repeated games (or single shot games) can be easily played
- * in the constructed game. For this use either the {@link #createRepeatedGameWorld(burlap.mdp.stochasticgames.SGAgent...)} or {@link #createRepeatedGameWorld(SGDomain, burlap.mdp.stochasticgames.SGAgent...)}
+ * in the constructed game. For this use either the {@link #createRepeatedGameWorld(SGAgent...)} or {@link #createRepeatedGameWorld(SGDomain, SGAgent...)}
  * method. The former method will create an new domain instance using the {@link #generateDomain()} method; the latter will
  * use an already generated version of the domain that you provide to it.
  * <p>
@@ -379,7 +385,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	public World createRepeatedGameWorld(SGDomain domain, SGAgent...agents){
 		
 		//grab the joint reward function from our bimatrix game in the more general BURLAP joint reward function interface
-		JointReward jr = this.getJointRewardFunction(); 
+		JointRewardFunction jr = this.getJointRewardFunction();
 		
 		//game repeats forever unless manually stopped after T times.
 		TerminalFunction tf = new NullTermination();
@@ -407,11 +413,11 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns a {@link burlap.mdp.stochasticgames.JointReward} function for this game.
-	 * @return a {@link burlap.mdp.stochasticgames.JointReward} function for this game.
+	 * Returns a {@link JointRewardFunction} function for this game.
+	 * @return a {@link JointRewardFunction} function for this game.
 	 */
-	public JointReward getJointRewardFunction(){
-		return new SingleStageNormalFormJointReward(this.nPlayers, ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex), AgentPayoutFunction.getDeepCopyOfPayoutArray(this.payouts));
+	public JointRewardFunction getJointRewardFunction(){
+		return new SingleStageNormalFormJointRewardFunction(this.nPlayers, ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex), AgentPayoutFunction.getDeepCopyOfPayoutArray(this.payouts));
 	}
 	
 	
@@ -432,11 +438,11 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * Returns an {@link burlap.mdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
+	 * Returns an {@link SGAgentType} object that can be used by agents being associated with any player number.
 	 * This AgentType permits agents to use any action in the domain, but the action preconditions will prevent the agent from taking actions
 	 * that its player number cannot take.
 	 * @param domain the domain in which the the agents will be playing.
-	 * @return an {@link burlap.mdp.stochasticgames.SGAgentType} object that can be used by agents being associated with any player number.
+	 * @return an {@link SGAgentType} object that can be used by agents being associated with any player number.
 	 */
 	public static SGAgentType getAgentTypeForAllPlayers(SGDomain domain){
 		SGAgentType at = new SGAgentType("player", domain.getAgentActions());
@@ -587,13 +593,13 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class SingleStageNormalFormJointReward implements JointReward{
+	protected static class SingleStageNormalFormJointRewardFunction implements JointRewardFunction {
 
 		int nPlayers;
 		ActionNameMap [] actionNameToIndex;
 		AgentPayoutFunction [] payouts;
 
-		public SingleStageNormalFormJointReward(int nPlayers, ActionNameMap[] actionNameToIndex, AgentPayoutFunction[] payouts) {
+		public SingleStageNormalFormJointRewardFunction(int nPlayers, ActionNameMap[] actionNameToIndex, AgentPayoutFunction[] payouts) {
 			this.nPlayers = nPlayers;
 			this.actionNameToIndex = actionNameToIndex;
 			this.payouts = payouts;
@@ -865,7 +871,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		
 		SingleStageNormalFormGame game = SingleStageNormalFormGame.getPrisonersDilemma();
 		SGDomain domain = (SGDomain)game.generateDomain();
-		JointReward r = game.getJointRewardFunction();
+		JointRewardFunction r = game.getJointRewardFunction();
 
 		World w = new World(domain, r, new NullTermination(), (State)new NFGameState(2));
 

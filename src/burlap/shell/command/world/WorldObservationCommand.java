@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for printing the current observation from the shell's {@link burlap.mdp.stochasticgames.World}.
+ * A {@link burlap.shell.command.ShellCommand} for printing the current observation from the shell's {@link World}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

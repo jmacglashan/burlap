@@ -1,7 +1,11 @@
-package burlap.mdp.stochasticgames;
+package burlap.mdp.stochasticgames.agent;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.world.World;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
 
 import java.util.Map;
 
@@ -20,14 +24,14 @@ import java.util.Map;
  */
 public abstract class SGAgent {
 
-	protected SGDomain				domain;
-	protected JointReward			internalRewardFunction;
+	protected SGDomain domain;
+	protected JointRewardFunction internalRewardFunction;
 	
 	
 	//data members for interaction with the world
 	protected SGAgentType agentType;
 	protected String				worldAgentName;
-	protected World					world;
+	protected World world;
 	
 	
 	protected void init(SGDomain d){
@@ -40,7 +44,7 @@ public abstract class SGAgent {
 	 * Internal reward functions are optional, but can be useful for purposes like reward shaping.
 	 * @param jr the internal reward function the agent should use for reasoning and learning
 	 */
-	public void setInternalRewardFunction(JointReward jr){
+	public void setInternalRewardFunction(JointRewardFunction jr){
 		this.internalRewardFunction = jr;
 	}
 	
@@ -48,7 +52,7 @@ public abstract class SGAgent {
 	 * Returns the internal reward function used by the agent.
 	 * @return the internal reward function used by the agent; null if the agent is not using an internal reward function.
 	 */
-	public JointReward getInternalRewardFunction() {
+	public JointRewardFunction getInternalRewardFunction() {
 		return this.internalRewardFunction;
 	}
 	

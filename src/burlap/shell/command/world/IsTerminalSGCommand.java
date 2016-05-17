@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;

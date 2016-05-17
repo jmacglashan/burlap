@@ -4,8 +4,8 @@ import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.World;
-import burlap.mdp.stochasticgames.common.NullJointReward;
+import burlap.mdp.stochasticgames.world.World;
+import burlap.mdp.stochasticgames.common.NullJointRewardFunction;
 import burlap.shell.command.ShellCommand;
 import burlap.shell.command.world.*;
 
@@ -56,7 +56,7 @@ public class SGWorldShell extends BurlapShell {
 	 * @param s the state in which the world will be rooted
 	 */
 	public SGWorldShell(SGDomain domain, State s){
-		this(domain, System.in, System.out, new World(domain, new NullJointReward(), new NullTermination(), s));
+		this(domain, System.in, System.out, new World(domain, new NullJointRewardFunction(), new NullTermination(), s));
 	}
 
 	public World getWorld() {

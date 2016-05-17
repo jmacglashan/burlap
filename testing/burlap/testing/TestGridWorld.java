@@ -10,7 +10,7 @@ import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import org.junit.After;
 import org.junit.Assert;

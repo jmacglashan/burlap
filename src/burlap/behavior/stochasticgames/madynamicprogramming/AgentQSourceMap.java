@@ -1,7 +1,7 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
-import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +79,7 @@ public interface AgentQSourceMap {
 		 * are expected to be of type {@link MultiAgentQLearning}. This constructor accepts a list of
 		 * regular agents, however, to make construction easier. An exception will be thrown if all of all of the agents
 		 * are not of the right type.
-		 * @param agents a list of {@link burlap.mdp.stochasticgames.SGAgent} objects, each which is an instance {@link MultiAgentQLearning}.
+		 * @param agents a list of {@link SGAgent} objects, each which is an instance {@link MultiAgentQLearning}.
 		 */
 		public MAQLControlledQSourceMap(List<SGAgent> agents){
 			this.qSourceMapping = new HashMap<String, MultiAgentQLearning>(agents.size());

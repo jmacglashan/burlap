@@ -1,7 +1,6 @@
 package burlap.mdp.singleagent.model;
 
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.singleagent.RewardFunction;
 
 /**
  * @author James MacGlashan.

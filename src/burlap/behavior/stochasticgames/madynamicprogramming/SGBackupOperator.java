@@ -1,7 +1,7 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 
 import java.util.Map;
 

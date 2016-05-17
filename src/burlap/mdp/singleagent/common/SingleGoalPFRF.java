@@ -4,7 +4,7 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.model.RewardFunction;
 
 
 /**

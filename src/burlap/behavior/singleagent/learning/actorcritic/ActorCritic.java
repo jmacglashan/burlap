@@ -6,11 +6,12 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.model.RewardFunction;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -106,7 +107,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	/**
 	 * Sets the number of simulated episodes to use for planning when
 	 * the {@link #planFromState(State)} method is called. If the
-	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
+	 * {@link RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.
 	 */

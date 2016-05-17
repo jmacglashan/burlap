@@ -9,10 +9,11 @@ import java.util.Map.Entry;
 
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.AgentFactory;
-import burlap.mdp.stochasticgames.World;
-import burlap.mdp.stochasticgames.WorldGenerator;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.AgentFactory;
+import burlap.mdp.stochasticgames.world.World;
+import burlap.mdp.stochasticgames.world.WorldGenerator;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 
 
 /**
@@ -20,7 +21,7 @@ import burlap.mdp.stochasticgames.WorldGenerator;
  * whose performance is going to be compared in games in which only a subset of the agents can participate at a time, for instance
  * running a tournament of many agents in 2-player games like iterated prisoner's dilemma. The Tournament class requires
  * a list of agents, a world generator and a match selector. The MatchSelector determines which agents will be matched up
- * in a game, which {@link burlap.mdp.stochasticgames.SGAgentType} role they will play as and how many matches there will be.
+ * in a game, which {@link SGAgentType} role they will play as and how many matches there will be.
  * @author James MacGlashan
  *
  */

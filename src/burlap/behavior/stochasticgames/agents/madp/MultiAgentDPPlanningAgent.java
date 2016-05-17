@@ -6,12 +6,12 @@ import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.MAQSourcePolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.action.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.world.World;
 
 
 /**

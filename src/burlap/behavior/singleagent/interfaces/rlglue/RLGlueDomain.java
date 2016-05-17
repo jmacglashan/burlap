@@ -4,7 +4,7 @@ import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.SADomain;
 import org.rlcommunity.rlglue.codec.taskspec.TaskSpec;
 import org.rlcommunity.rlglue.codec.types.Observation;

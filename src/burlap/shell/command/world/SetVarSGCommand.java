@@ -2,7 +2,7 @@ package burlap.shell.command.world;
 
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for setting state variables values for the current {@link burlap.mdp.stochasticgames.World}
+ * A {@link burlap.shell.command.ShellCommand} for setting state variables values for the current {@link World}
  * {@link State}. Use the -h option for help information.
  * @author James MacGlashan.
  */

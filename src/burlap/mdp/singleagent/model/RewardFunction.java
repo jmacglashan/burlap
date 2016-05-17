@@ -1,4 +1,4 @@
-package burlap.mdp.singleagent;
+package burlap.mdp.singleagent.model;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -18,6 +18,6 @@ public interface RewardFunction {
 	 * @param sprime the state to which the agent transitioned
 	 * @return the reward received when action a is executed in state s and the agent transitions to state sprime.
 	 */
-	public abstract double reward(State s, Action a, State sprime);
+	double reward(State s, Action a, State sprime);
 
 }

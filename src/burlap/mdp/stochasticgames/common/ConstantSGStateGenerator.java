@@ -1,7 +1,7 @@
 package burlap.mdp.stochasticgames.common;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.SGStateGenerator;
 
 import java.util.List;

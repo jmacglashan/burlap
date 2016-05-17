@@ -3,14 +3,14 @@ package burlap.mdp.stochasticgames.tournament.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.tournament.MatchEntry;
 import burlap.mdp.stochasticgames.tournament.MatchSelector;
 
 
 /**
  * This class defines a MatchSelctory that plays all pairwise matches of agents in a round robin. It sets
- * all agents to play as the same {@link burlap.mdp.stochasticgames.SGAgentType} and therefore is only valid in symmetric games.
+ * all agents to play as the same {@link SGAgentType} and therefore is only valid in symmetric games.
  * @author James MacGlashan
  *
  */
@@ -25,7 +25,7 @@ public class AllPairWiseSameTypeMS implements MatchSelector {
 	
 	/**
 	 * Initializes the selector
-	 * @param at the {@link burlap.mdp.stochasticgames.SGAgentType} that all agents will play as
+	 * @param at the {@link SGAgentType} that all agents will play as
 	 * @param n the number of agents in the tournament
 	 */
 	public AllPairWiseSameTypeMS(SGAgentType at, int n){

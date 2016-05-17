@@ -1,7 +1,7 @@
 package burlap.shell.command.world;
 
 import burlap.debugtools.DPrint;
-import burlap.mdp.stochasticgames.World;
+import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -12,7 +12,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for starting a game with the agents registered in a {@link burlap.mdp.stochasticgames.World}.
+ * A {@link burlap.shell.command.ShellCommand} for starting a game with the agents registered in a {@link World}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

@@ -7,6 +7,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -176,7 +177,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	/**
 	 * Adds a key action mapping.
 	 * @param key the key that is pressed by the user
-	 * @param actionTypeName the name of the {@link burlap.mdp.singleagent.ActionType}
+	 * @param actionTypeName the name of the {@link ActionType}
 	 * @param paramStringRep the string representation of the action parameters
 	 */
 	public void addKeyAction(String key, String actionTypeName, String paramStringRep){

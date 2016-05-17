@@ -1,10 +1,10 @@
-package burlap.mdp.singleagent;
+package burlap.mdp.stochasticgames.action;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.action.ActionType;
 
 import java.util.List;
-
 
 /**
  *
@@ -12,21 +12,17 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public interface ActionType {
-
+public interface SGAgentActionType {
 
 	String typeName();
 
-	Action associatedAction(String strRep);
+	SGAgentAction associatedAction(String actingAgent, String strRep);
 
 	/**
 	 * Returns all possible actions of this type that can be applied in the provided {@link State}.
 	 * @param s the {@link State} in which all applicable  actions of this {@link ActionType} object should be returned.
 	 * @return a list of all applicable {@link Action}s of this {@link ActionType} object in in the given {@link State}
 	 */
-	List<Action> allApplicableActions(State s);
-	
+	List<SGAgentAction> allApplicableActions(String actingAgent, State s);
 
-	
-	
 }

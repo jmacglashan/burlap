@@ -2,10 +2,10 @@ package burlap.behavior.stochasticgames.agents;
 
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.agentactions.SGActionUtils;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.action.SGActionUtils;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
 
 import java.util.List;
 import java.util.Map;

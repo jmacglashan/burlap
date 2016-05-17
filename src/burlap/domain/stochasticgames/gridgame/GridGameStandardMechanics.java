@@ -8,9 +8,9 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.generic.GenericOOState;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.JointActionModel;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
 
 import java.util.*;
 
@@ -24,7 +24,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class GridGameStandardMechanics extends JointActionModel {
+public class GridGameStandardMechanics implements JointActionModel {
 
 	Random 						rand;
 	Domain						domain;
@@ -54,7 +54,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 	
 	@Override
-	public List<StateTransitionProb> transitionProbsFor(State s, JointAction ja) {
+	public List<StateTransitionProb> stateTransitions(State s, JointAction ja) {
 		
 		List <StateTransitionProb> tps = new ArrayList<StateTransitionProb>();
 		
@@ -116,15 +116,16 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 
 	@Override
-	protected State actionHelper(State s, JointAction ja) {
-		
-		
+	public State sample(State s, JointAction ja) {
+
+		s = s.copy();
+
 		List <SGAgentAction> gsas = ja.getActionList();
-		
+
 		//need to force no movement when trying to enter space of a noop agent
 		List <Location2> previousLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
-		
+
 		for(SGAgentAction gsa : gsas){
 			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent());
 			previousLocations.add(loc);
@@ -132,31 +133,31 @@ public class GridGameStandardMechanics extends JointActionModel {
 				noopLocations.add(loc);
 			}
 		}
-		
+
 		List <Location2> basicMoveResults = new ArrayList<GridGameStandardMechanics.Location2>();
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
 			SGAgentAction gsa = gsas.get(i);
 			basicMoveResults.add(this.sampleBasicMovement((OOState)s, loc, this.attemptedDelta(gsa.actionName()), noopLocations));
 		}
-		
+
 		//resolve swaps
 		basicMoveResults = this.resolvePositionSwaps(previousLocations, basicMoveResults);
-		
+
 		List <Location2> finalPositions = this.resolveCollisions(previousLocations, basicMoveResults);
 		for(int i = 0; i < finalPositions.size(); i++){
 			SGAgentAction gsa = gsas.get(i);
 			Location2 loc = finalPositions.get(i);
-			
+
 			ObjectInstance agent = ((GenericOOState)s).touch(gsa.actingAgent());
 			((MutableState)agent).set(GridGame.VAR_X, loc.x);
 			((MutableState)agent).set(GridGame.VAR_Y, loc.y);
-			
-		}
-		
-		return s;
 
+		}
+
+		return s;
 	}
+
 	
 	
 	/**

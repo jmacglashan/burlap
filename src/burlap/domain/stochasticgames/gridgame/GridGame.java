@@ -12,12 +12,14 @@ import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.generic.GenericOOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.JointReward;
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.UniversalSGActionType;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.action.UniversalSGActionType;
 import burlap.mdp.stochasticgames.explorers.SGVisualExplorer;
+import burlap.mdp.stochasticgames.model.JointActionModel;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import burlap.visualizer.Visualizer;
 
@@ -30,7 +32,7 @@ import java.util.Map;
  * The GridGame domain is much like the GridWorld domain, except for arbitrarily many agents in
  * a stochastic game. Each agent in the world has an OO-MDP object instance of OO-MDP class "agent"
  * which is defined by an x position, a y position, and a player number. Agents can either move north, south, east,
- * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.mdp.stochasticgames.SGAgentType}
+ * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link SGAgentType}
  * to use with this game, use the {@link #getStandardGridGameAgentType(SGDomain)} static method.
  * <p>
  * In this domain, there is also an OO-MDP object class for 1-dimensional walls (both for horizontal
@@ -40,7 +42,7 @@ import java.util.Map;
  * as a universal goal/reward location for all agents (type 0), and type that is only useful to each individual
  * agent (type i is a personal goal for player i-1).
  * <p>
- * The {@link burlap.mdp.stochasticgames.JointActionModel} set for the domain is {@link burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics},
+ * The {@link JointActionModel} set for the domain is {@link burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics},
  * with a default semi-wall probability of passing through of 0.5, which is changeable with the
  *
  * @author James MacGlashan
@@ -449,12 +451,12 @@ public class GridGame implements DomainGenerator {
 
 
 	/**
-	 * Creates and returns a standard {@link burlap.mdp.stochasticgames.SGAgentType} for grid games. This {@link burlap.mdp.stochasticgames.SGAgentType}
+	 * Creates and returns a standard {@link SGAgentType} for grid games. This {@link SGAgentType}
 	 * is assigned the type name "agent", grid game OO-MDP object class for "agent", and has its action space set to all possible actions in the grid game domain.
 	 * Typically, all agents in a grid game should be assigned to the same type.
 	 *
 	 * @param domain the domain object of the grid game.
-	 * @return An {@link burlap.mdp.stochasticgames.SGAgentType} that typically all {@link burlap.mdp.stochasticgames.SGAgent}'s of the grid game should play as.
+	 * @return An {@link SGAgentType} that typically all {@link SGAgent}'s of the grid game should play as.
 	 */
 	public static SGAgentType getStandardGridGameAgentType(SGDomain domain){
 		return new SGAgentType(GridGame.CLASS_AGENT, domain.getAgentActions());
@@ -566,7 +568,7 @@ public class GridGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class GGJointRewardFunction implements JointReward {
+	public static class GGJointRewardFunctionFunction implements JointRewardFunction {
 
 		PropositionalFunction agentInPersonalGoal;
 		PropositionalFunction agentInUniversalGoal;
@@ -581,7 +583,7 @@ public class GridGame implements DomainGenerator {
 		 * Initializes for a given domain. Defaults rewards to 0 reward everywhere except transition to unviersal or personal goals which return a reward 1.
 		 * @param ggDomain the domain
 		 */
-		public GGJointRewardFunction(OODomain ggDomain){
+		public GGJointRewardFunctionFunction(OODomain ggDomain){
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 		}
@@ -593,7 +595,7 @@ public class GridGame implements DomainGenerator {
 		 * @param goalReward the reward returned for transitioning to a personal or universal goal
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 */
-		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double goalReward, boolean noopIncursStepCost){
+		public GGJointRewardFunctionFunction(OODomain ggDomain, double stepCost, double goalReward, boolean noopIncursStepCost){
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 			this.stepCost = stepCost;
@@ -610,7 +612,7 @@ public class GridGame implements DomainGenerator {
 		 * @param universalGoalReward the reward returned for transitions to a universal goal
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 */
-		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double personalGoalReward, double universalGoalReward, boolean noopIncursStepCost){
+		public GGJointRewardFunctionFunction(OODomain ggDomain, double stepCost, double personalGoalReward, double universalGoalReward, boolean noopIncursStepCost){
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 			this.stepCost = stepCost;
@@ -627,7 +629,7 @@ public class GridGame implements DomainGenerator {
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 * @param personalGoalRewards a map from player numbers to their personal goal reward (the first player number is 0)
 		 */
-		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double universalGoalReward, boolean noopIncursStepCost, Map<Integer, Double> personalGoalRewards){
+		public GGJointRewardFunctionFunction(OODomain ggDomain, double stepCost, double universalGoalReward, boolean noopIncursStepCost, Map<Integer, Double> personalGoalRewards){
 			
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);

@@ -5,9 +5,9 @@ import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.stochasticgames.World;
-import burlap.mdp.stochasticgames.WorldGenerator;
-import burlap.mdp.stochasticgames.WorldObserver;
+import burlap.mdp.stochasticgames.world.World;
+import burlap.mdp.stochasticgames.world.WorldGenerator;
+import burlap.mdp.stochasticgames.world.WorldObserver;
 
 
 /**

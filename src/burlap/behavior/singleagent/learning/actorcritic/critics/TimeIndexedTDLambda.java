@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;

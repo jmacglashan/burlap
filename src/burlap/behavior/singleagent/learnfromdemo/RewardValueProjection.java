@@ -6,8 +6,8 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionUtils;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.SampleModel;
@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * This class is a {@link burlap.behavior.valuefunction.QFunction}/{@link burlap.behavior.valuefunction.ValueFunction}
- * wrapper to provide the immediate reward signals for a source {@link burlap.mdp.singleagent.RewardFunction}.
+ * wrapper to provide the immediate reward signals for a source {@link RewardFunction}.
  * It is useful for analyzing learned reward function through IRL, for example, for passing a learned reward function
  * to a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} to visualize what
  * was learned. This class returns values based one of four possible reward projection types
@@ -30,8 +30,8 @@ import java.util.List;
  * ONESTEP: when the reward function depends on a transition of some sort (e.g., from a source state to a target state)<p>
  * The default assumption is DESTINATIONSTATE.<p>
  * When the {@link #value(State)} of a state is queried, it returns the value of the
- * {@link burlap.mdp.singleagent.RewardFunction} using the most minimal information. For example, if the projection
- * type is DESTINATIONSTATE, then the value returned is rf.reward(null, null, s), where rf is the input {@link burlap.mdp.singleagent.RewardFunction}
+ * {@link RewardFunction} using the most minimal information. For example, if the projection
+ * type is DESTINATIONSTATE, then the value returned is rf.reward(null, null, s), where rf is the input {@link RewardFunction}
  * and s is the input {@link State} to the {@link #value(State)} method.
  * If it's SOURCESTATE, then it returns rf.reward(s, null, null). If it is STATEACTION or ONESTEP,
  * then the {@link burlap.mdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(RewardFunction, RewardProjectionType, SADomain)}
@@ -53,8 +53,8 @@ public class RewardValueProjection implements QFunction{
 
 
 	/**
-	 * Initializes for the given {@link burlap.mdp.singleagent.RewardFunction} assuming that it only depends on the destination state.
-	 * @param rf the input {@link burlap.mdp.singleagent.RewardFunction} to project for one step.
+	 * Initializes for the given {@link RewardFunction} assuming that it only depends on the destination state.
+	 * @param rf the input {@link RewardFunction} to project for one step.
 	 */
 	public RewardValueProjection(RewardFunction rf){
 		this.rf = rf;
@@ -65,7 +65,7 @@ public class RewardValueProjection implements QFunction{
 	 * value requires the {@link burlap.mdp.core.Domain} to enumerate the actions and transition dynamics. Use the
 	 * {@link #RewardValueProjection(RewardFunction, RewardProjectionType, SADomain)}
 	 * constructor instead.
-	 * @param rf the input {@link burlap.mdp.singleagent.RewardFunction} to project for one step.
+	 * @param rf the input {@link RewardFunction} to project for one step.
 	 * @param projectionType the type of reward projection to use.
 	 */
 	public RewardValueProjection(RewardFunction rf, RewardProjectionType projectionType){
@@ -80,9 +80,9 @@ public class RewardValueProjection implements QFunction{
 
 	/**
 	 * Initializes.
-	 * @param rf the input {@link burlap.mdp.singleagent.RewardFunction} to project for one step.
+	 * @param rf the input {@link RewardFunction} to project for one step.
 	 * @param projectionType the type of reward projection to use.
-	 * @param domain the {@link burlap.mdp.core.Domain} in which the {@link burlap.mdp.singleagent.RewardFunction} is evaluated.
+	 * @param domain the {@link burlap.mdp.core.Domain} in which the {@link RewardFunction} is evaluated.
 	 */
 	public RewardValueProjection(RewardFunction rf, RewardProjectionType projectionType, SADomain domain){
 		this.rf = rf;

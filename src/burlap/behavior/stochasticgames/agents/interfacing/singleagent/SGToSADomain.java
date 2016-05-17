@@ -3,12 +3,12 @@ package burlap.behavior.stochasticgames.agents.interfacing.singleagent;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.action.SGAgentActionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * This domain generator is used to produce single agent domain version of a stochastic games domain for an agent of a given type
- * (specified by an {@link burlap.mdp.stochasticgames.SGAgentType} object or for a given list of stochastic games agent actions ({@link SGAgentActionType}).
+ * (specified by an {@link SGAgentType} object or for a given list of stochastic games agent actions ({@link SGAgentActionType}).
  * The generating single-agent domain has an {@link ActionType} for every {@link SGAgentActionType} associated with the agent.
  * The {@link ActionType} holds an agent name and generates the corresponding {@link SGAgentAction} objects for that agent name.
  * The constructed domain has no associated model since the model in the single agent context would require knowledge
@@ -35,7 +35,7 @@ public class SGToSADomain implements DomainGenerator {
 	/**
 	 * Initializes.
 	 * @param srcDomain the source stochastic games domain
-	 * @param asAgentType the {@link burlap.mdp.stochasticgames.SGAgentType} object specifying the actions that should be created in the single agent domain.
+	 * @param asAgentType the {@link SGAgentType} object specifying the actions that should be created in the single agent domain.
 	 */
 	public SGToSADomain(String agentName, SGDomain srcDomain, SGAgentType asAgentType){
 		this(agentName, srcDomain, asAgentType.actions);

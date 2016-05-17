@@ -1,4 +1,4 @@
-package burlap.mdp.stochasticgames;
+package burlap.mdp.stochasticgames.world;
 
 import burlap.behavior.stochasticgames.GameAnalysis;
 import burlap.behavior.stochasticgames.JointPolicy;
@@ -8,7 +8,14 @@ import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.IdentityStateMapping;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.SGStateGenerator;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
+import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,22 +36,22 @@ import java.util.Map.Entry;
  */
 public class World {
 
-	protected SGDomain							domain;
+	protected SGDomain domain;
 	protected State								currentState;
 	protected List <SGAgent>						agents;
 	protected Map<SGAgentType, List<SGAgent>>		agentsByType;
 	protected HashedAggregator<String>			agentCumulativeReward;
 	protected Map<String, SGAgentType>			agentDefinitions;
 	
-	protected JointActionModel 					worldModel;
-	protected JointReward						jointRewardModel;
+	protected JointActionModel worldModel;
+	protected JointRewardFunction jointRewardFunction;
 	protected TerminalFunction					tf;
-	protected SGStateGenerator					initialStateGenerator;
+	protected SGStateGenerator initialStateGenerator;
 	
 	protected StateMapping					abstractionForAgents;
 	
 	
-	protected JointAction						lastJointAction;
+	protected JointAction lastJointAction;
 	
 	
 	protected List<WorldObserver>				worldObservers;
@@ -67,7 +74,7 @@ public class World {
 	 * @param tf the terminal function
 	 * @param initialState the initial state of the world every time a new game starts
 	 */
-	public World(SGDomain domain, JointReward jr, TerminalFunction tf, State initialState){
+	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, State initialState){
 		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantSGStateGenerator(initialState), new IdentityStateMapping());
 	}
 
@@ -79,7 +86,7 @@ public class World {
 	 * @param tf the terminal function
 	 * @param sg a state generator for generating initial states of a game
 	 */
-	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg){
+	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg){
 		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new IdentityStateMapping());
 	}
 
@@ -92,14 +99,14 @@ public class World {
 	 * @param sg a state generator for generating initial states of a game
 	 * @param abstractionForAgents the abstract state representation that agents will be provided
 	 */
-	public World(SGDomain domain, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
+	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
 		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents);
 	}
 	
-	protected void init(SGDomain domain, JointActionModel jam, JointReward jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
+	protected void init(SGDomain domain, JointActionModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
 		this.domain = domain;
 		this.worldModel = jam;
-		this.jointRewardModel = jr;
+		this.jointRewardFunction = jr;
 		this.tf = tf;
 		this.initialStateGenerator = sg;
 		this.abstractionForAgents = abstractionForAgents;
@@ -159,10 +166,10 @@ public class World {
 	 * @param at the agent type the agent will be playing as
 	 * @return the unique name that will identify this agent in this world.
 	 */
-	protected String registerAgent(SGAgent a, SGAgentType at){
+	public String registerAgent(SGAgent a, SGAgentType at){
 		//don't register the same agent multiple times
 		if(this.agentInstanceExists(a)){
-			return a.worldAgentName;
+			return a.getAgentName();
 		}
 		
 		String agentName = this.getNewWorldNameForAgentAndIndex(a, at);
@@ -257,7 +264,7 @@ public class World {
 	 * Manually attempts to execute a joint action in the current world state, if a game is currently not running.
 	 * If a game is running, then no action will be taken. Additionally, if the world is currently in a terminal
 	 * state, then no action will be taken either.
-	 * @param ja the {@link burlap.mdp.stochasticgames.JointAction} to execute.
+	 * @param ja the {@link JointAction} to execute.
 	 */
 	public void executeJointAction(JointAction ja){
 
@@ -267,8 +274,8 @@ public class World {
 			}
 
 			State oldState = this.currentState;
-			this.currentState = this.worldModel.performJointAction(this.currentState, ja);
-			Map<String,Double> rewards = this.jointRewardModel.reward(oldState, ja, this.currentState);
+			this.currentState = this.worldModel.sample(this.currentState, ja);
+			Map<String,Double> rewards = this.jointRewardFunction.reward(oldState, ja, this.currentState);
 			this.lastRewards = rewards;
 			this.lastJointAction = ja;
 
@@ -413,9 +420,9 @@ public class World {
 		
 		
 		//now that we have the joint action, perform it
-		State sp = worldModel.performJointAction(currentState, ja);
+		State sp = worldModel.sample(currentState, ja);
 		State abstractedPrime = this.abstractionForAgents.mapState(sp);
-		Map<String, Double> jointReward = jointRewardModel.reward(currentState, ja, sp);
+		Map<String, Double> jointReward = jointRewardFunction.reward(currentState, ja, sp);
 		
 		DPrint.cl(debugId, jointReward.toString());
 		
@@ -463,8 +470,8 @@ public class World {
 		
 		
 		//now that we have the joint action, perform it
-		State sp = worldModel.performJointAction(currentState, this.lastJointAction);
-		Map<String, Double> jointReward = jointRewardModel.reward(currentState, this.lastJointAction, sp);
+		State sp = worldModel.sample(currentState, this.lastJointAction);
+		Map<String, Double> jointReward = jointRewardFunction.reward(currentState, this.lastJointAction, sp);
 		
 		DPrint.cl(debugId, jointReward.toString());
 		
@@ -501,11 +508,11 @@ public class World {
 	
 	
 	/**
-	 * Returns the {@link JointReward} function used in this world.
-	 * @return the {@link JointReward} function used in this world.
+	 * Returns the {@link JointRewardFunction} function used in this world.
+	 * @return the {@link JointRewardFunction} function used in this world.
 	 */
-	public JointReward getRewardModel(){
-		return jointRewardModel;
+	public JointRewardFunction getRewardFunction(){
+		return jointRewardFunction;
 	}
 	
 	/**
@@ -543,7 +550,7 @@ public class World {
 	public int getPlayerNumberForAgent(String aname){
 		for(int i = 0; i < agents.size(); i++){
 			SGAgent a = agents.get(i);
-			if(a.worldAgentName.equals(aname)){
+			if(a.getAgentName().equals(aname)){
 				return i;
 			}
 		}

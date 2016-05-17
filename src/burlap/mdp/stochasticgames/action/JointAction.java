@@ -1,9 +1,9 @@
-package burlap.mdp.stochasticgames;
+package burlap.mdp.stochasticgames.action;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agentactions.SGActionUtils;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 
 import java.util.*;
 
@@ -213,7 +213,7 @@ public class JointAction implements Action, Iterable<SGAgentAction>{
 		//get all possible individual choices
 		List<List<SGAgentAction>> individualActionChoices = new ArrayList<List<SGAgentAction>>(agents.size());
 		for(SGAgent agent : agents){
-			List<SGAgentAction> gsas = SGActionUtils.allApplicableActionsForTypes(agent.agentType.actions, agent.getAgentName(), s);
+			List<SGAgentAction> gsas = SGActionUtils.allApplicableActionsForTypes(agent.getAgentType().actions, agent.getAgentName(), s);
 			individualActionChoices.add(gsas);
 		}
 	

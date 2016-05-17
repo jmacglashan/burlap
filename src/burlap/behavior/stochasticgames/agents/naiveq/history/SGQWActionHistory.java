@@ -4,9 +4,9 @@ import burlap.behavior.stochasticgames.agents.naiveq.SGNaiveQLAgent;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.action.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
 
 import java.util.Map;
 

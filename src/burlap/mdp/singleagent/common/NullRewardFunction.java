@@ -2,7 +2,7 @@ package burlap.mdp.singleagent.common;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.model.RewardFunction;
 
 /**
  * This class defines a reward function that always returns 0

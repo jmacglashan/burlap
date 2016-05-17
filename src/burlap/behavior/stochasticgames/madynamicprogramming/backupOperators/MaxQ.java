@@ -7,8 +7,8 @@ import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.action.JointAction;
 
 
 /**

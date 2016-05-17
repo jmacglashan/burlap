@@ -14,7 +14,7 @@ import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.action.JointAction;
 
 
 /**

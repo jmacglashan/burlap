@@ -3,12 +3,12 @@ package burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibrium
 import burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriumplayer.equilibriumsolvers.MaxMax;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.JointActionModel;
-import burlap.mdp.stochasticgames.JointReward;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.agentactions.SGActionUtils;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.action.SGActionUtils;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
 
 import java.util.List;
 import java.util.Map;
@@ -90,7 +90,7 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	 */
 	protected BimatrixTuple constructBimatrix(State s, List<SGAgentAction> myActions){
 		
-		JointReward jr = this.world.getRewardModel();
+		JointRewardFunction jr = this.world.getRewardFunction();
 		if(this.internalRewardFunction != null){
 			jr = this.internalRewardFunction;
 		}
@@ -109,7 +109,7 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 				JointAction ja = new JointAction();
 				ja.addAction(ma);
 				ja.addAction(oa);
-				State sp = jam.performJointAction(s, ja);
+				State sp = jam.sample(s, ja);
 				Map<String, Double> r = jr.reward(s, ja, sp);
 				bimatrix.setPayoff(i, j, r.get(this.worldAgentName), r.get(opponent.getAgentName()));
 				
@@ -139,8 +139,8 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	
 	
 	/**
-	 * Returns the {@link burlap.mdp.stochasticgames.SGAgent} object in the world for the opponent.
-	 * @return the {@link burlap.mdp.stochasticgames.SGAgent} object in the world for the opponent.
+	 * Returns the {@link SGAgent} object in the world for the opponent.
+	 * @return the {@link SGAgent} object in the world for the opponent.
 	 */
 	protected SGAgent getOpponent(){
 		List<SGAgent> agents = this.world.getRegisteredAgents();

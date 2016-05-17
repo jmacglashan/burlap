@@ -1,4 +1,4 @@
-package burlap.mdp.stochasticgames;
+package burlap.mdp.stochasticgames.agent;
 
 /**
  * An interface for generating agents

@@ -6,13 +6,14 @@ import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.explorer.TextAreaStreams;
-import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.action.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.World;
-import burlap.mdp.stochasticgames.WorldObserver;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.common.NullJointReward;
+import burlap.mdp.stochasticgames.world.World;
+import burlap.mdp.stochasticgames.world.WorldObserver;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.common.NullJointRewardFunction;
 import burlap.visualizer.Visualizer;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
@@ -33,14 +34,14 @@ import java.util.Map;
 
 
 /**
- * This class allows you act as all of the agents in a stochastic game (controlled by a {@link burlap.mdp.stochasticgames.World} object)
+ * This class allows you act as all of the agents in a stochastic game (controlled by a {@link World} object)
  * by choosing actions for each of them to take in specific states. A game with registered agents in the world can also
  * be played out (with some or all of the agents being manually controlled). States are
  * conveyed to the user through a 2D visualization and the user specifies actions for each agent
  * by pressing keys that are mapped to actions or by typing the actions into the action command field. After each
  * action is specified, the corresponding joint action is taken by pressing a special finalizing key that by default is set to "c".
  * The ` key
- * causes the state to reset to the initial state provided to the explorer or the {@link burlap.mdp.stochasticgames.World}'s
+ * causes the state to reset to the initial state provided to the explorer or the {@link World}'s
  * {@link burlap.mdp.stochasticgames.SGStateGenerator}. This explorer also associates itself with a {@link burlap.shell.SGWorldShell} so that additional commands can be given.
  * Keys can also be mapped to execute specific shell commands. You can access the shell with the
  * <p>
@@ -95,7 +96,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	 * @param h the height of the state visualizer
 	 */
 	public SGVisualExplorer(SGDomain domain, Visualizer painter, State baseState, int w, int h){
-		this.init(domain, new World(domain, new NullJointReward(), new NullTermination(), baseState), painter, w, h);
+		this.init(domain, new World(domain, new NullJointRewardFunction(), new NullTermination(), baseState), painter, w, h);
 	}
 
 	/**
@@ -114,7 +115,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	/**
 	 * Initializes.
 	 * @param domain the stochastic game domain
-	 * @param world the {@link burlap.mdp.stochasticgames.World} with which to interact
+	 * @param world the {@link World} with which to interact
 	 * @param painter the state {@link burlap.visualizer.Visualizer}
 	 * @param w the width of the state visualizer
 	 * @param h the height of the state visualizer
@@ -160,7 +161,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	/**
 	 * Adds a key action mapping.
 	 * @param key the key that is pressed by the user
-	 * @param actionTypeName the name of the {@link burlap.mdp.singleagent.ActionType}
+	 * @param actionTypeName the name of the {@link ActionType}
 	 * @param paramStringRep the string representation of the action parameters
 	 */
 	public void addKeyAction(String key, String actingAgent, String actionTypeName, String paramStringRep){
@@ -177,16 +178,16 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	}
 
 	/**
-	 * Returns the {@link burlap.mdp.stochasticgames.World} associated with this explorer.
-	 * @return the {@link burlap.mdp.stochasticgames.World} associated with this explorer.
+	 * Returns the {@link World} associated with this explorer.
+	 * @return the {@link World} associated with this explorer.
 	 */
 	public World getW() {
 		return w;
 	}
 
 	/**
-	 * Sets the {@link burlap.mdp.stochasticgames.World} associated with this visual explorer and shell.
-	 * @param w the {@link burlap.mdp.stochasticgames.World} associated with this visual explorer and shell.
+	 * Sets the {@link World} associated with this visual explorer and shell.
+	 * @param w the {@link World} associated with this visual explorer and shell.
 	 */
 	public void setW(World w) {
 		this.w = w;

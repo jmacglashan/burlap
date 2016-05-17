@@ -4,7 +4,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
-import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.SGStateGenerator;
 
 import java.util.List;

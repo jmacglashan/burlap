@@ -19,6 +19,7 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.model.RewardFunction;
 import org.ejml.simple.SimpleMatrix;
 
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * Sets the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples to use for planning when
 	 * the {@link #planFromState(State)} method is called. If the
-	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
+	 * {@link RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
 	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
 	 */
@@ -196,7 +197,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * Sets the number of {@link burlap.behavior.singleagent.learning.lspi.SARSData.SARS} samples, and the {@link burlap.behavior.singleagent.learning.lspi.SARSCollector} to use
 	 * to collect samples for planning when
 	 * the {@link #planFromState(State)} method is called. If the
-	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
+	 * {@link RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
 	 * @param numSamplesForPlanning the number of SARS samples to collect for planning.
 	 * @param planningCollector the dataset collector to use for planning

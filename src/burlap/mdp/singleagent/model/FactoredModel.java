@@ -3,7 +3,6 @@ package burlap.mdp.singleagent.model;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.model.statemodel.SampleStateModel;

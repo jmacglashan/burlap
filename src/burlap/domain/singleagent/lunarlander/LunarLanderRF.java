@@ -5,7 +5,7 @@ import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.model.RewardFunction;
 
 /**
  * A reward function for the {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain}. By default, this

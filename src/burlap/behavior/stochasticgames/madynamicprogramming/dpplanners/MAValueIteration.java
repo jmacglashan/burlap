@@ -9,9 +9,9 @@ import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.JointReward;
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
 
 import java.util.*;
@@ -59,7 +59,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	/**
 	 * Initializes.
 	 * @param domain the domain in which to perform planing
-	 * @param jointReward the joint reward function
+	 * @param jointRewardFunction the joint reward function
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount
 	 * @param hashingFactory the hashing factory to use for storing states
@@ -68,10 +68,10 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
-	public MAValueIteration(SGDomain domain, JointReward jointReward, TerminalFunction terminalFunction,
-			double discount, HashableStateFactory hashingFactory, double qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+	public MAValueIteration(SGDomain domain, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+							double discount, HashableStateFactory hashingFactory, double qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, null, jointReward, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), backupOperator);
+		this.initMAVF(domain, null, jointRewardFunction, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -81,7 +81,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	/**
 	 * Initializes.
 	 * @param domain the domain in which to perform planing
-	 * @param jointReward the joint reward function
+	 * @param jointRewardFunction the joint reward function
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount
 	 * @param hashingFactory the hashing factory to use for storing states
@@ -90,10 +90,10 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
-	public MAValueIteration(SGDomain domain, JointReward jointReward, TerminalFunction terminalFunction,
-			double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+	public MAValueIteration(SGDomain domain, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+							double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, null, jointReward, terminalFunction, discount, hashingFactory, qInit, backupOperator);
+		this.initMAVF(domain, null, jointRewardFunction, terminalFunction, discount, hashingFactory, qInit, backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -105,7 +105,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * Initializes.
 	 * @param domain the domain in which to perform planing
 	 * @param agentDefinitions the agents involved in the planning problem
-	 * @param jointReward the joint reward function
+	 * @param jointRewardFunction the joint reward function
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount
 	 * @param hashingFactory the hashing factory to use for storing states
@@ -114,10 +114,10 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
-	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointReward jointReward, TerminalFunction terminalFunction,
-			double discount, HashableStateFactory hashingFactory, double vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+							double discount, HashableStateFactory hashingFactory, double vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, agentDefinitions, jointReward, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit), backupOperator);
+		this.initMAVF(domain, agentDefinitions, jointRewardFunction, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit), backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -129,7 +129,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * Initializes.
 	 * @param domain the domain in which to perform planing
 	 * @param agentDefinitions the agents involved in the planning problem
-	 * @param jointReward the joint reward function
+	 * @param jointRewardFunction the joint reward function
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount
 	 * @param hashingFactory the hashing factory to use for storing states
@@ -138,10 +138,10 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
-	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointReward jointReward, TerminalFunction terminalFunction,
-			double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+							double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, agentDefinitions, jointReward, terminalFunction, discount, hashingFactory, vInit, backupOperator);
+		this.initMAVF(domain, agentDefinitions, jointRewardFunction, terminalFunction, discount, hashingFactory, vInit, backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -221,7 +221,7 @@ public class MAValueIteration extends MADynamicProgramming {
 			//expand
 			List<JointAction> jas = JointAction.getAllJointActions(sh.s, this.agentDefinitions);
 			for(JointAction ja : jas){
-				List<StateTransitionProb> tps = this.jointActionModel.transitionProbsFor(sh.s, ja);
+				List<StateTransitionProb> tps = this.jointActionModel.stateTransitions(sh.s, ja);
 				for(StateTransitionProb tp : tps){
 					HashableState shp = this.hashingFactory.hashState(tp.s);
 					if(!this.states.contains(shp)){

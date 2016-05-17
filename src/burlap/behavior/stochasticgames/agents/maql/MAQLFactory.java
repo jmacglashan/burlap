@@ -10,8 +10,8 @@ import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.CoCo
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MaxQ;
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyMaxWellfare;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.AgentFactory;
 import burlap.mdp.stochasticgames.SGDomain;
 
 

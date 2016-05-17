@@ -8,19 +8,23 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.stochasticgames.*;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.world.World;
 
 import java.util.Map;
 
 /**
- * A stochastic games {@link burlap.mdp.stochasticgames.SGAgent} that takes as input a single agent {@link burlap.behavior.singleagent.learning.LearningAgent}
+ * A stochastic games {@link SGAgent} that takes as input a single agent {@link burlap.behavior.singleagent.learning.LearningAgent}
  * to handle behavior. The interface from the single agent paradigm to the multi-agent paradigm is handled by this class
  * also implementing the {@link burlap.mdp.singleagent.environment.Environment} interface. When a game starts, a new
  * thread is launched in which the provided {@link burlap.behavior.singleagent.learning.LearningAgent} interacts with this
  * class's {@link burlap.mdp.singleagent.environment.Environment} methods.
  * <p>
  * When constructing a {@link burlap.behavior.singleagent.learning.LearningAgent} to use with this class, you should
- * set its {@link burlap.mdp.core.Domain} to null. Then, when this class joins a world through the {@link #joinWorld(burlap.mdp.stochasticgames.World, burlap.mdp.stochasticgames.SGAgentType)}
+ * set its {@link burlap.mdp.core.Domain} to null. Then, when this class joins a world through the {@link #joinWorld(World, SGAgentType)}
  * method, it will automatically use the {@link burlap.behavior.stochasticgames.agents.interfacing.singleagent.SGToSADomain} to create a {@link burlap.mdp.singleagent.SADomain}
  * and will then set then {@link burlap.behavior.singleagent.learning.LearningAgent} to use it.
  * @author James MacGlashan.
@@ -71,7 +75,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 	/**
 	 * Initializes.
 	 * @param domain The stochastic games {@link burlap.mdp.stochasticgames.SGDomain} in which this agent will interact.
-	 * @param learningAgent the {@link burlap.behavior.singleagent.learning.LearningAgent} that will handle this {@link burlap.mdp.stochasticgames.SGAgent}'s control.
+	 * @param learningAgent the {@link burlap.behavior.singleagent.learning.LearningAgent} that will handle this {@link SGAgent}'s control.
 	 */
 	public LearningAgentToSGAgentInterface(SGDomain domain, LearningAgent learningAgent){
 		this.init(domain);

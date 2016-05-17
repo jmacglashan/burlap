@@ -2,10 +2,10 @@ package burlap.domain.singleagent.graphdefined;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.model.RewardFunction;
 
 /**
- * An abstract class for more easily defining {@link burlap.mdp.singleagent.RewardFunction}s for {@link burlap.domain.singleagent.graphdefined.GraphDefinedDomain}
+ * An abstract class for more easily defining {@link RewardFunction}s for {@link burlap.domain.singleagent.graphdefined.GraphDefinedDomain}
  * {@link burlap.mdp.core.Domain}s. This class implements the standard {@link #reward(State, Action, State)}
  * method by converting the {@link State} objects to their graph node integer representation and the {@link Action} to its
  * integer representation and then returning the value of {@link #reward(int, int, int)}, which is an abstract method

@@ -20,6 +20,7 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 
@@ -219,7 +220,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 
 
 	/**
-	 * Sets the {@link burlap.mdp.singleagent.RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
+	 * Sets the {@link RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
 	 * and the number of simulated episodes to use for planning when
 	 * the {@link #planFromState(State)} method is called.
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.

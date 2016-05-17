@@ -1,10 +1,10 @@
 package burlap.shell.command.world;
 
-import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.action.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.World;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.world.World;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.action.SGAgentActionType;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * A {@link burlap.shell.command.ShellCommand} for manually setting and executing a {@link burlap.mdp.stochasticgames.JointAction}
- * for the shell's {@link burlap.mdp.stochasticgames.World}. Use the -h option for help information.
+ * A {@link burlap.shell.command.ShellCommand} for manually setting and executing a {@link JointAction}
+ * for the shell's {@link World}. Use the -h option for help information.
  * @author James MacGlashan.
  */
 public class JointActionCommand implements ShellCommand{
@@ -107,9 +107,9 @@ public class JointActionCommand implements ShellCommand{
 	}
 
 	/**
-	 * Adds a {@link SGAgentAction} to the {@link burlap.mdp.stochasticgames.JointAction}
+	 * Adds a {@link SGAgentAction} to the {@link JointAction}
 	 * being built and to be executed.
-	 * @param action the {@link SGAgentAction} to add to the {@link burlap.mdp.stochasticgames.JointAction}.
+	 * @param action the {@link SGAgentAction} to add to the {@link JointAction}.
 	 */
 	public void addGroundedActionToJoint(SGAgentAction action){
 		this.ja.addAction(action);

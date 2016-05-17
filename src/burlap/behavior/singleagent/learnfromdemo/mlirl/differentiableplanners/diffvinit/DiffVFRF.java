@@ -5,7 +5,7 @@ import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
+import burlap.mdp.singleagent.model.RewardFunction;
 
 /**
  * A differentiable reward function wrapper for use with {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRL} when

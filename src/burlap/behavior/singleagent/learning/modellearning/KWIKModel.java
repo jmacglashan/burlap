@@ -2,8 +2,8 @@ package burlap.behavior.singleagent.learning.modellearning;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.singleagent.action.ActionUtils;
 
 import java.util.ArrayList;
 import java.util.List;

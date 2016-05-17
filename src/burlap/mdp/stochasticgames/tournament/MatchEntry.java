@@ -1,9 +1,9 @@
 package burlap.mdp.stochasticgames.tournament;
 
-import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 
 /**
- * This class indicates which player in a tournament is to play in a match and what {@link burlap.mdp.stochasticgames.SGAgentType} role they will play.
+ * This class indicates which player in a tournament is to play in a match and what {@link SGAgentType} role they will play.
  * @author James MacGlashan
  *
  */
@@ -14,7 +14,7 @@ public class MatchEntry {
 	
 	/**
 	 * Initializes the MatchEntry
-	 * @param at the {@link burlap.mdp.stochasticgames.SGAgentType} the agent will play as
+	 * @param at the {@link SGAgentType} the agent will play as
 	 * @param ai the index of this agent in the tournament
 	 */
 	public MatchEntry(SGAgentType at, int ai){

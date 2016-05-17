@@ -1,6 +1,6 @@
-package burlap.mdp.stochasticgames;
+package burlap.mdp.stochasticgames.agent;
 
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.action.SGAgentActionType;
 
 import java.util.List;
 

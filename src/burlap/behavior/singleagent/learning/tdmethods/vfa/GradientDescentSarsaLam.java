@@ -21,6 +21,7 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.model.RewardFunction;
 
 import java.util.*;
 
@@ -218,10 +219,10 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	}
 
 	/**
-	 * Sets the {@link burlap.mdp.singleagent.RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
+	 * Sets the {@link RewardFunction}, {@link burlap.mdp.core.TerminalFunction},
 	 * and the number of simulated episodes to use for planning when
 	 * the {@link #planFromState(State)} method is called. If the
-	 * {@link burlap.mdp.singleagent.RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
+	 * {@link RewardFunction} and {@link burlap.mdp.core.TerminalFunction}
 	 * are not set, the {@link #planFromState(State)} method will throw a runtime exception.
 	 * @param numEpisodesForPlanning the number of simulated episodes to run for planning.
 	 */

@@ -2,10 +2,9 @@ package burlap.mdp.stochasticgames.common;
 
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.JointActionModel;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.model.JointActionModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,25 +14,20 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class StaticRepeatedGameActionModel extends JointActionModel {
+public class StaticRepeatedGameActionModel implements JointActionModel {
 
 	public StaticRepeatedGameActionModel() {
-		//nothing to do
+
 	}
 
 	@Override
-	public List<StateTransitionProb> transitionProbsFor(State s, JointAction ja) {
-		List <StateTransitionProb> res = new ArrayList<StateTransitionProb>();
-		StateTransitionProb tp = new StateTransitionProb(s.copy(), 1.);
-		res.add(tp);
-		
-		return res;
+	public State sample(State s, JointAction ja) {
+		return s.copy();
 	}
 
 	@Override
-	protected State actionHelper(State s, JointAction ja) {
-		//do nothing, the state simply repeats itself
-		return s;
+	public List<StateTransitionProb> stateTransitions(State s, JointAction ja) {
+		return JointActionModel.Helper.deterministicTransition(this, s, ja);
 	}
 
 }

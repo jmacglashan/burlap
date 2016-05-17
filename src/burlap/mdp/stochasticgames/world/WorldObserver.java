@@ -1,11 +1,12 @@
-package burlap.mdp.stochasticgames;
+package burlap.mdp.stochasticgames.world;
 
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.action.JointAction;
 
 import java.util.Map;
 
 /**
- * An interface for defining {@link burlap.mdp.stochasticgames.World} observers. Observers
+ * An interface for defining {@link World} observers. Observers
  * are told when a game states and in what state, what each interaction in the world was as they happen, and
  * what the final state of the world is when a game ends.
  */

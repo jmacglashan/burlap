@@ -5,6 +5,10 @@ import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.*;
@@ -44,12 +48,12 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	/**
 	 * The joint action model to use in planning.
 	 */
-	protected JointActionModel				jointActionModel;
+	protected JointActionModel jointActionModel;
 	
 	/**
 	 * The joint reward function
 	 */
-	protected JointReward					jointReward;
+	protected JointRewardFunction jointRewardFunction;
 	
 	/**
 	 * The state terminal function.
@@ -94,19 +98,19 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * Initializes all the main datstructres of the value function valueFunction
 	 * @param domain the domain in which to perform planning
 	 * @param agentDefinitions the definitions of the agents involved in the planning problem.
-	 * @param jointReward the joint reward function
+	 * @param jointRewardFunction the joint reward function
 	 * @param terminalFunction the terminal state function
 	 * @param discount the discount factor
 	 * @param hashingFactory the state hashing factorying to use to lookup Q-values for individual states
 	 * @param vInit the value function initialization function to use
 	 * @param backupOperator the solution concept backup operator to use.
 	 */
-	public void initMAVF(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointReward jointReward, TerminalFunction terminalFunction,
-			double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
+	public void initMAVF(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+						 double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
 	
 		this.domain = domain;
 		this.jointActionModel = domain.getJointActionModel();
-		this.jointReward = jointReward;
+		this.jointRewardFunction = jointRewardFunction;
 		this.terminalFunction = terminalFunction;
 		this.discount = discount;
 		this.hashingFactory = hashingFactory;
@@ -217,10 +221,10 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		 */
 		public JointActionTransitions(State s, JointAction ja){
 			this.ja = ja;
-			this.tps = MADynamicProgramming.this.jointActionModel.transitionProbsFor(s, ja);
+			this.tps = MADynamicProgramming.this.jointActionModel.stateTransitions(s, ja);
 			this.jrs = new ArrayList<Map<String,Double>>(this.tps.size());
 			for(StateTransitionProb tp : this.tps){
-				Map<String, Double> jr = MADynamicProgramming.this.jointReward.reward(s, ja, tp.s);
+				Map<String, Double> jr = MADynamicProgramming.this.jointRewardFunction.reward(s, ja, tp.s);
 				this.jrs.add(jr);
 			}
 		}

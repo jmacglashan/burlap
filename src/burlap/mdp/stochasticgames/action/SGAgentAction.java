@@ -1,4 +1,4 @@
-package burlap.mdp.stochasticgames.agentactions;
+package burlap.mdp.stochasticgames.action;
 
 import burlap.mdp.core.Action;
 

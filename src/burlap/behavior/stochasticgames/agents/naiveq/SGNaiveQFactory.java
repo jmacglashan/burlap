@@ -2,8 +2,8 @@ package burlap.behavior.stochasticgames.agents.naiveq;
 
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.AgentFactory;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.AgentFactory;
 import burlap.mdp.stochasticgames.SGDomain;
 
 

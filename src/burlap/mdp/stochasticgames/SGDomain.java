@@ -1,7 +1,8 @@
 package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.action.SGAgentActionType;
+import burlap.mdp.stochasticgames.model.JointActionModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class SGDomain implements Domain{
 	/**
 	 * The joint action model of the domain
 	 */
-	protected JointActionModel							jam;
+	protected JointActionModel jam;
 	
 
 	/**

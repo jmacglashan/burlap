@@ -1,15 +1,16 @@
-package burlap.mdp.stochasticgames;
-
-import java.util.Map;
+package burlap.mdp.stochasticgames.model;
 
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.action.JointAction;
+
+import java.util.Map;
 
 /**
  * This interface defines the method needed to return the reward received by each agent.
  * @author James MacGlashan
  *
  */
-public interface JointReward {
+public interface JointRewardFunction {
 	
 	/**
 	 * Returns the reward received by each agent specified in the joint action. The returned

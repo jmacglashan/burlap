@@ -1,12 +1,12 @@
 package burlap.behavior.stochasticgames.agents.twoplayer.repeatedsinglestage;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.AgentFactory;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.agent.AgentFactory;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.action.SGAgentActionType;
 
 import java.util.Map;
 

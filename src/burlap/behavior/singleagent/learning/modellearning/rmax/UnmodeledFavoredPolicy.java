@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.action.ActionType;
 
 import java.util.ArrayList;
 import java.util.List;
