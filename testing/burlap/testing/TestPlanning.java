@@ -8,16 +8,15 @@ import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
 import burlap.behavior.singleagent.planning.deterministic.informed.astar.AStar;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
 import burlap.behavior.singleagent.planning.deterministic.uninformed.dfs.DFS;
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridLocation;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.common.SinglePFTF;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
@@ -30,18 +29,17 @@ public class TestPlanning {
 	public static final double delta = 0.000001;
 	GridWorldDomain gw;
 	OOSADomain domain;
-	RewardFunction rf;
-	TerminalFunction tf;
 	StateConditionTest goalCondition;
 	SimpleHashableStateFactory hashingFactory;
 	@Before
 	public void setup() {
 		this.gw = new GridWorldDomain(11, 11);
-		this.gw.setMapToFourRooms(); 
+		this.gw.setMapToFourRooms();
+		this.gw.setRf(new UniformCostRF());
+		TerminalFunction tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PF_AT_LOCATION));
+		this.gw.setTf(tf);
 		this.domain = this.gw.generateDomain();
-		this.rf = new UniformCostRF();
-		this.tf = new SinglePFTF(this.domain.getPropFunction(GridWorldDomain.PF_AT_LOCATION));
-		this.goalCondition = new TFGoalCondition(this.tf);
+		this.goalCondition = new TFGoalCondition(tf);
 		this.hashingFactory = new SimpleHashableStateFactory();
 	}
 	
@@ -52,7 +50,7 @@ public class TestPlanning {
 		DeterministicPlanner planner = new BFS(this.domain, this.goalCondition, this.hashingFactory);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
-		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, this.rf, this.tf);
+		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, domain.getModel());
 		this.evaluateEpisode(analysis, true);
 	}
 	
@@ -63,7 +61,7 @@ public class TestPlanning {
 		DeterministicPlanner planner = new DFS(this.domain, this.goalCondition, this.hashingFactory, -1 , true);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
-		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, this.rf, this.tf);
+		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, domain.getModel());
 		this.evaluateEpisode(analysis);
 	}
 	
@@ -96,12 +94,12 @@ public class TestPlanning {
 		
 		//provide A* the heuristic as well as the reward function so that it can keep
 		//track of the actual cost
-		DeterministicPlanner planner = new AStar(domain, rf, goalCondition, 
+		DeterministicPlanner planner = new AStar(domain, goalCondition,
 			hashingFactory, mdistHeuristic);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
 		
-		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, this.rf, this.tf);
+		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, domain.getModel());
 		this.evaluateEpisode(analysis, true);
 	}
 	
@@ -117,7 +115,7 @@ public class TestPlanning {
 			Assert.assertEquals(-analysis.actionSequence.size(), analysis.getDiscountedReturn(1.0), TestPlanning.delta);
 		}
 
-		Assert.assertEquals(true, this.tf.isTerminal(analysis.stateSequence.get(analysis.stateSequence.size()-1)));
+		Assert.assertEquals(true, domain.getModel().terminalState(analysis.stateSequence.get(analysis.stateSequence.size()-1)));
 		Assert.assertEquals(true, this.goalCondition.satisfies(analysis.stateSequence.get(analysis.stateSequence.size()-1)));
 	}
 	

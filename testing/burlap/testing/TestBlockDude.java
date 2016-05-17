@@ -1,10 +1,5 @@
 package burlap.testing;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
@@ -15,15 +10,17 @@ import burlap.domain.singleagent.blockdude.BlockDudeLevelConstructor;
 import burlap.domain.singleagent.blockdude.BlockDudeTF;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.auxiliary.stateconditiontest.TFGoalCondition;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
-import burlap.mdp.singleagent.common.UniformCostRF;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TestBlockDude {
-		Domain domain;
+		SADomain domain;
 		BlockDude constructor;
 		
 		@Before
@@ -50,15 +47,14 @@ public class TestBlockDude {
 		
 		public void testDude(State s) {
 			TerminalFunction tf = new BlockDudeTF();
-			RewardFunction rf = new UniformCostRF();
 			StateConditionTest sc = new TFGoalCondition(tf);
 
-			AStar astar = new AStar(domain, rf, sc, new SimpleHashableStateFactory(), new NullHeuristic());
+			AStar astar = new AStar(domain, sc, new SimpleHashableStateFactory(), new NullHeuristic());
 			astar.toggleDebugPrinting(false);
 			astar.planFromState(s);
 
 			Policy p = new SDPlannerPolicy(astar);
-			EpisodeAnalysis ea = p.evaluateBehavior(s, rf, tf, 100);
+			EpisodeAnalysis ea = p.evaluateBehavior(s, domain.getModel(), 100);
 
 			State lastState = ea.stateSequence.get(ea.stateSequence.size() - 1);
 			Assert.assertEquals(true, tf.isTerminal(lastState));

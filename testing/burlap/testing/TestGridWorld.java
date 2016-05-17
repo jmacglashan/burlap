@@ -1,16 +1,16 @@
 package burlap.testing;
 
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridLocation;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import org.junit.After;
 import org.junit.Assert;
@@ -52,56 +52,56 @@ public class TestGridWorld {
 		ActionType southActionType = domain.getAction(GridWorldDomain.ACTION_SOUTH);
 		ActionType westActionType = domain.getAction(GridWorldDomain.ACTION_WEST);
 		
-		List<GroundedAction> northActions = northActionType.allApplicableActions(s);
+		List<Action> northActions = northActionType.allApplicableActions(s);
 		Assert.assertEquals(1, northActions.size());
 		
-		List<GroundedAction> eastActions = eastActionType.allApplicableActions(s);
+		List<Action> eastActions = eastActionType.allApplicableActions(s);
 		Assert.assertEquals(1, eastActions.size());
 		
-		List<GroundedAction> southActions = southActionType.allApplicableActions(s);
+		List<Action> southActions = southActionType.allApplicableActions(s);
 		Assert.assertEquals(1, southActions.size());
 		
-		List<GroundedAction> westActions = westActionType.allApplicableActions(s);
+		List<Action> westActions = westActionType.allApplicableActions(s);
 		Assert.assertEquals(1, westActions.size());
-		
-		GroundedAction north = northActions.get(0);
-		GroundedAction south = southActions.get(0);
-		GroundedAction east = eastActions.get(0);
-		GroundedAction west = westActions.get(0);
+
+		Action north = northActions.get(0);
+		Action south = southActions.get(0);
+		Action east = eastActions.get(0);
+		Action west = westActions.get(0);
 		
 		// AtLocation, WallNorth, WallSouth, WallEast, WallWest
 		this.assertPFs(s, new boolean[] {false, false, true, false, true});
-		s = north.sample(s);
+		s = domain.getModel().sampleTransition(s, north).op;
 		this.assertPFs(s, new boolean[] {false, false, false, false, true});
-		s = east.sample(s);
+		s = domain.getModel().sampleTransition(s, east).op;
 		this.assertPFs(s, new boolean[] {false, false, false, false, false});
-		s = north.sample(s);
-		s = north.sample(s);
-		s = north.sample(s);
-		s = north.sample(s);
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, north).op;
 		this.assertPFs(s, new boolean[] {false, false, false, true, true});
-		s = north.sample(s);
-		s = east.sample(s);
-		s = east.sample(s);
-		s = east.sample(s);
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, east).op;
+		s = domain.getModel().sampleTransition(s, east).op;
+		s = domain.getModel().sampleTransition(s, east).op;
 		this.assertPFs(s, new boolean[] {false, false, true, true, false});
-		s = north.sample(s);
-		s = north.sample(s);
-		s = east.sample(s);
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, east).op;
 		this.assertPFs(s, new boolean[] {false, true, true, false, false});
-		s = east.sample(s);
-		s = north.sample(s);
-		s = north.sample(s);
+		s = domain.getModel().sampleTransition(s, east).op;
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, north).op;
 		this.assertPFs(s, new boolean[] {false, true, false, false, true});
-		s = east.sample(s);
-		s = south.sample(s);
-		s = north.sample(s);
-		s = west.sample(s);
+		s = domain.getModel().sampleTransition(s, east).op;
+		s = domain.getModel().sampleTransition(s, south).op;
+		s = domain.getModel().sampleTransition(s, north).op;
+		s = domain.getModel().sampleTransition(s, west).op;
 		this.assertPFs(s, new boolean[] {false, true, false, false, true});
-		s = east.sample(s);
-		s = east.sample(s);
-		s = east.sample(s);
-		s = east.sample(s);
+		s = domain.getModel().sampleTransition(s, east).op;
+		s = domain.getModel().sampleTransition(s, east).op;
+		s = domain.getModel().sampleTransition(s, east).op;
+		s = domain.getModel().sampleTransition(s, east).op;
 		this.assertPFs(s, new boolean[] {true, true, false, true, false});
 	}
 	

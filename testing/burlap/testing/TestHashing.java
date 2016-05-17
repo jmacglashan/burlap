@@ -1,13 +1,16 @@
 package burlap.testing;
 
+import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridLocation;
-import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
-import burlap.mdp.singleagent.GroundedAction;
+import burlap.mdp.singleagent.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 import burlap.mdp.statehashing.SimpleHashableStateFactory;
@@ -264,13 +267,12 @@ public class TestHashing {
 		hashedStates.add(shi);
 		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
-			
-			//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(actions);
-			List<GroundedAction> gas = ActionType.getAllApplicableGroundedActionsFromActionList(actionTypes, sh.s);
-			for(GroundedAction ga : gas){
-				List <TransitionProbability> tps = ga.transitions(sh.s);
-				for(TransitionProbability tp : tps){
-					HashableState nsh = usingHashFactory.hashState(tp.s);
+
+			List<Action> gas = ActionUtils.allApplicableActionsForTypes(actionTypes, sh.s);
+			for(Action ga : gas){
+				List <TransitionProb> tps = ((FullModel)inDomain.getModel()).transitions(sh.s, ga);
+				for(TransitionProb tp : tps){
+					HashableState nsh = usingHashFactory.hashState(tp.eo.op);
 					
 					for (HashableState hashedState : hashedStates) {
 						boolean sameObject = (hashedState == nsh);
