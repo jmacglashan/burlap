@@ -2,6 +2,7 @@ package burlap.domain.stochasticgames.gridgame;
 
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Domain;
+import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.generic.GenericOOState;
@@ -53,9 +54,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 	}
 	
 	@Override
-	public List<TransitionProbability> transitionProbsFor(State s, JointAction ja) {
+	public List<StateTransitionProb> transitionProbsFor(State s, JointAction ja) {
 		
-		List <TransitionProbability> tps = new ArrayList<TransitionProbability>();
+		List <StateTransitionProb> tps = new ArrayList<StateTransitionProb>();
 		
 		List <SGAgentAction> gsas = ja.getActionList();
 		
@@ -64,9 +65,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		
 		for(SGAgentAction gsa : gsas){
-			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent);
+			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent());
 			previousLocations.add(loc);
-			if(gsa.action.actionName.equals(GridGame.ACTION_NOOP)){
+			if(gsa.actionName().equals(GridGame.ACTION_NOOP)){
 				noopLocations.add(loc);
 			}
 		}
@@ -75,7 +76,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
 			SGAgentAction gsa = gsas.get(i);
-			possibleOutcomes.add(this.getPossibleLocationsFromWallCollisions((OOState)s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
+			possibleOutcomes.add(this.getPossibleLocationsFromWallCollisions((OOState)s, loc, this.attemptedDelta(gsa.actionName()), noopLocations));
 		}
 		
 		List <LocationSetProb> outcomeSets = this.getAllLocationSets(possibleOutcomes);
@@ -96,13 +97,13 @@ public class GridGameStandardMechanics extends JointActionModel {
 					SGAgentAction gsa = gsas.get(i);
 					Location2 loc = csp.locs.get(i);
 					
-					ObjectInstance agent = ns.touch(gsa.actingAgent);
+					ObjectInstance agent = ns.touch(gsa.actingAgent());
 					((MutableState)agent).set(GridGame.VAR_X, loc.x);
 					((MutableState)agent).set(GridGame.VAR_Y, loc.y);
 				}
 				
 				double totalProb = sp.p * csp.p;
-				TransitionProbability tp = new TransitionProbability(ns, totalProb);
+				StateTransitionProb tp = new StateTransitionProb(ns, totalProb);
 				tps.add(tp);
 				
 			}
@@ -125,9 +126,9 @@ public class GridGameStandardMechanics extends JointActionModel {
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		
 		for(SGAgentAction gsa : gsas){
-			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent);
+			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent());
 			previousLocations.add(loc);
-			if(gsa.action.actionName.equals(GridGame.ACTION_NOOP)){
+			if(gsa.actionName().equals(GridGame.ACTION_NOOP)){
 				noopLocations.add(loc);
 			}
 		}
@@ -136,7 +137,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
 			SGAgentAction gsa = gsas.get(i);
-			basicMoveResults.add(this.sampleBasicMovement((OOState)s, loc, this.attemptedDelta(gsa.action.actionName), noopLocations));
+			basicMoveResults.add(this.sampleBasicMovement((OOState)s, loc, this.attemptedDelta(gsa.actionName()), noopLocations));
 		}
 		
 		//resolve swaps
@@ -147,7 +148,7 @@ public class GridGameStandardMechanics extends JointActionModel {
 			SGAgentAction gsa = gsas.get(i);
 			Location2 loc = finalPositions.get(i);
 			
-			ObjectInstance agent = ((GenericOOState)s).touch(gsa.actingAgent);
+			ObjectInstance agent = ((GenericOOState)s).touch(gsa.actingAgent());
 			((MutableState)agent).set(GridGame.VAR_X, loc.x);
 			((MutableState)agent).set(GridGame.VAR_Y, loc.y);
 			
@@ -795,28 +796,28 @@ public class GridGameStandardMechanics extends JointActionModel {
 	 * @param srcTPs and initial list of transition probability objects
 	 * @return an output list of transition probability objects in which any duplicate states have been mereged
 	 */
-	protected List <TransitionProbability> combineDuplicateTransitionProbabilities(List <TransitionProbability> srcTPs){
+	protected List <StateTransitionProb> combineDuplicateTransitionProbabilities(List <StateTransitionProb> srcTPs){
 		
 		double totalProb = 0.;
-		List <TransitionProbability> result = new ArrayList<TransitionProbability>(srcTPs.size());
+		List <StateTransitionProb> result = new ArrayList<StateTransitionProb>(srcTPs.size());
 		Set <Integer> marked = new HashSet<Integer>();
 		for(int i = 0; i < srcTPs.size(); i++){
 			if(marked.contains(i)){
 				continue;
 			}
-			TransitionProbability tp = srcTPs.get(i);
+			StateTransitionProb tp = srcTPs.get(i);
 			double sumP = tp.p;
 			for(int j = i+1; j < srcTPs.size(); j++){
 				if(marked.contains(j)){
 					continue;
 				}
-				TransitionProbability cmpTP = srcTPs.get(j);
+				StateTransitionProb cmpTP = srcTPs.get(j);
 				if(this.agentsEqual((OOState)tp.s, (OOState)cmpTP.s)){
 					sumP += cmpTP.p;
 					marked.add(j);
 				}
 			}
-			result.add(new TransitionProbability(tp.s, sumP));
+			result.add(new StateTransitionProb(tp.s, sumP));
 			totalProb += sumP;
 		}
 		

@@ -8,7 +8,8 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.*;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
-import burlap.mdp.stochasticgames.agentactions.SimpleSGAgentAction;
+import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.agentactions.SimpleSGAction;
 import burlap.mdp.stochasticgames.common.StaticRepeatedGameActionModel;
 import burlap.shell.SGWorldShell;
 
@@ -45,10 +46,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	/**
 	 * When this generator is constructed with a generic bimatrix or zero sum definition ({@link #SingleStageNormalFormGame(String[][], double[][][])} or
 	 * {@link #SingleStageNormalFormGame(String[][])}, respectively), action names for each row/column
-	 * will take the form of: DEFAULTBIMATRIXACTIONBASENAMEi where i is the row/column index. More specifically,
-	 * it will be "actioni", since DEFAULTBIMATRIXACTIONBASENAME = "action"
+	 * will take the form of: BIMATRIX_ACTION_BASE_NAMEi where i is the row/column index. More specifically,
+	 * it will be "actioni", since BIMATRIX_ACTION_BASE_NAME = "action"
 	 */
-	public static final String				DEFAULTBIMATRIXACTIONBASENAME = "action";
+	public static final String BIMATRIX_ACTION_BASE_NAME = "action";
 
 	
 	/**
@@ -142,13 +143,13 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		this.actionSets = new ArrayList<List<String>>();
 		List <String> actionsP1 = new ArrayList<String>();
 		for(int i = 0; i < nRows; i++){
-			actionsP1.add(DEFAULTBIMATRIXACTIONBASENAME + i);
+			actionsP1.add(BIMATRIX_ACTION_BASE_NAME + i);
 		}
 		this.actionSets.add(actionsP1);
 		
 		List <String> actionsP2 = new ArrayList<String>();
 		for(int i = 0; i < nCols; i++){
-			actionsP2.add(DEFAULTBIMATRIXACTIONBASENAME + i);
+			actionsP2.add(BIMATRIX_ACTION_BASE_NAME + i);
 		}
 		this.actionSets.add(actionsP2);
 		
@@ -348,7 +349,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 
 		ActionNameMap [] cnames = ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex);
 		for(String aname : this.uniqueActionNames){
-			new NFGAgentAction(domain, aname, cnames);
+			new NFGAgentAction(aname, cnames);
 		}
 
 		domain.setJointActionModel(new StaticRepeatedGameActionModel());
@@ -607,14 +608,14 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			
 			String [] profile = new String[this.nPlayers];
 			for(SGAgentAction sa : ja){
-				String name = sa.actingAgent;
+				String name = sa.actingAgent();
 				int pn = ns.playerIndex(name);
-				profile[pn] = sa.action.actionName;
+				profile[pn] = sa.actionName();
 			}
 			
 			StrategyProfile stprofile = SingleStageNormalFormGame.getStrategyProfile(this.actionNameToIndex, profile);
 			for(SGAgentAction sa : ja){
-				String name = sa.actingAgent;
+				String name = sa.actingAgent();
 				int pn = ns.playerIndex(name);
 				rewards.put(name, this.payouts[pn].getPayout(stprofile));
 			}
@@ -634,28 +635,41 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	protected static class NFGAgentAction extends SimpleSGAgentAction {
+	protected static class NFGAgentAction implements SGAgentActionType {
 
+		protected String typeName;
 		ActionNameMap [] actionNameToIndex;
 
-		public NFGAgentAction(SGDomain d, String name, ActionNameMap[] actionNameToIndex) {
-			super(d, name);
+		public NFGAgentAction(String name, ActionNameMap[] actionNameToIndex) {
+			this.typeName = name;
 			this.actionNameToIndex = actionNameToIndex;
 		}
 
+
 		@Override
-		public boolean applicableInState(State s, SGAgentAction gsa) {
+		public String typeName() {
+			return typeName;
+		}
+
+		@Override
+		public SGAgentAction associatedAction(String actingAgent, String strRep) {
+			return new SimpleSGAction(typeName, actingAgent);
+		}
+
+		@Override
+		public List<SGAgentAction> allApplicableActions(String actingAgent, State s) {
 
 			NFGameState ns = (NFGameState)s;
 
-			int pn = ns.playerIndex(gsa.actingAgent);
-			
-			if(this.actionNameToIndex[pn].containsKey(this.actionName)){
-				return true;
+			int pn = ns.playerIndex(actingAgent);
+
+			if(this.actionNameToIndex[pn].containsKey(typeName)){
+				return Arrays.<SGAgentAction>asList(new SimpleSGAction(typeName, actingAgent));
 			}
-			
-			return false;
+
+			return Arrays.asList();
 		}
+
 		
 		
 		
