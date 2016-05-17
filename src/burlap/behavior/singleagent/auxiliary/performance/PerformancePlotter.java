@@ -1,7 +1,6 @@
 package burlap.behavior.singleagent.auxiliary.performance;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
@@ -342,7 +341,7 @@ public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 	}
 
 	@Override
-	public void observeEnvironmentActionInitiation(State o, GroundedAction action) {
+	public void observeEnvironmentActionInitiation(State o, burlap.mdp.core.Action action) {
 		//do nothing
 	}
 

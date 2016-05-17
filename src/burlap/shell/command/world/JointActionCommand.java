@@ -1,6 +1,7 @@
 package burlap.shell.command.world;
 
 import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.World;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
@@ -51,7 +52,7 @@ public class JointActionCommand implements ShellCommand{
 
 			String aname = args.get(1);
 
-			SGAgentActionType action = shell.getDomain().getSGAgentAction(aname);
+			SGAgentActionType action = ((SGDomain)shell.getDomain()).getSGAgentAction(aname);
 			if(action == null){
 				os.println("Cannot set action to " + aname + " because that action name is not known.");
 				return 0;

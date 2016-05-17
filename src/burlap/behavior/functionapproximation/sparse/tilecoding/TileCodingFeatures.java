@@ -5,8 +5,8 @@ import burlap.behavior.functionapproximation.sparse.LinearVFA;
 import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
 import burlap.behavior.functionapproximation.sparse.StateFeature;
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 
 import java.util.*;
 
@@ -263,12 +263,12 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	
 	
 	/**
-	 * Returns the {@link ActionFeatureID} with an equivalent {@link GroundedAction} in the given list or null if there is none.
+	 * Returns the {@link ActionFeatureID} with an equivalent {@link Action} in the given list or null if there is none.
 	 * @param actionFeatures the list of {@link ActionFeatureID} objects to search.
-	 * @param forAction the {@link GroundedAction} for which a match is to be found.
-	 * @return the {@link ActionFeatureID} with an equivalent {@link GroundedAction} in the given list or null if there is none.
+	 * @param forAction the {@link Action} for which a match is to be found.
+	 * @return the {@link ActionFeatureID} with an equivalent {@link Action} in the given list or null if there is none.
 	 */
-	protected ActionFeatureID matchingActionFeature(List<ActionFeatureID> actionFeatures, GroundedAction forAction){
+	protected ActionFeatureID matchingActionFeature(List<ActionFeatureID> actionFeatures, Action forAction){
 		
 		for(ActionFeatureID aid : actionFeatures){
 			if(aid.ga.equals(forAction)){
@@ -281,15 +281,15 @@ public class TileCodingFeatures implements SparseStateFeatures {
 	
 	
 	/**
-	 * A class for associating a {@link GroundedAction} with a feature id.
+	 * A class for associating a {@link Action} with a feature id.
 	 * @author James MacGlashan
 	 *
 	 */
 	protected class ActionFeatureID{
 		public int id;
-		public GroundedAction ga;
+		public Action ga;
 		
-		public ActionFeatureID(GroundedAction ga, int id){
+		public ActionFeatureID(Action ga, int id){
 			this.id = id;
 			this.ga = ga;
 		}

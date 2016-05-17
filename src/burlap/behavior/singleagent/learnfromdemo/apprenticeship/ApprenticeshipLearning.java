@@ -11,7 +11,6 @@ import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.ActionUtils;
@@ -551,7 +550,7 @@ public class ApprenticeshipLearning {
 		 * Constructor initializes the policy, doesn't compute anything here.
 		 * @param domain Domain object for which we need to plan
 		 */
-		private StationaryRandomDistributionPolicy(Domain domain) {
+		private StationaryRandomDistributionPolicy(SADomain domain) {
 			this.stateActionMapping = new HashMap<HashableState, Action>();
 			this.stateActionDistributionMapping = new HashMap<HashableState, List<ActionProb>>();
 			this.actionTypes = domain.getActionTypes();
@@ -559,7 +558,7 @@ public class ApprenticeshipLearning {
 			this.hashFactory = new SimpleHashableStateFactory(true);
 		}
 
-		public static Policy generateRandomPolicy(Domain domain) {
+		public static Policy generateRandomPolicy(SADomain domain) {
 			return new burlap.behavior.policy.RandomPolicy(domain);
 		}
 

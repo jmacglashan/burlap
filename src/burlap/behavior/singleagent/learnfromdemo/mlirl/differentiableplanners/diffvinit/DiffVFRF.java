@@ -1,10 +1,10 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit;
 
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 
 /**
@@ -32,7 +32,7 @@ public class DiffVFRF implements DifferentiableRF {
 	}
 
 	@Override
-	public FunctionGradient gradient(State s, GroundedAction a, State sprime) {
+	public FunctionGradient gradient(State s, Action a, State sprime) {
 		return new FunctionGradient.SparseGradient();
 	}
 
@@ -63,7 +63,7 @@ public class DiffVFRF implements DifferentiableRF {
 
 
 	@Override
-	public double reward(State s, GroundedAction a, State sprime) {
+	public double reward(State s, Action a, State sprime) {
 		return this.objectiveRF.reward(s, a, sprime);
 	}
 

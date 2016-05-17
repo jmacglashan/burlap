@@ -108,6 +108,11 @@ public class ObParamSGAgentActionType implements SGAgentActionType {
 		}
 
 		@Override
+		public void setActingAgent(String actingAgent) {
+			this.actingAgent = actingAgent;
+		}
+
+		@Override
 		public String[] getObjectParameters() {
 			return params;
 		}

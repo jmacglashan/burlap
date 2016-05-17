@@ -15,7 +15,6 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
@@ -26,7 +25,6 @@ import burlap.mdp.statehashing.HashableStateFactory;
 
 import javax.management.RuntimeErrorException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +32,7 @@ import java.util.Map;
 /**
  * Tabular Q-learning algorithm [1]. This implementation will work correctly with Options [2]. The implementation can either be used for learning or planning,
  * the latter of which is performed by running many learning episodes in succession in a {@link burlap.mdp.singleagent.environment.SimulatedEnvironment}.
- * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(burlap.mdp.singleagent.RewardFunction, burlap.mdp.core.TerminalFunction, int)}
+ * If you are going to use this algorithm for planning, call the {@link #initializeForPlanning(int)}
  * method before calling {@link #planFromState(State)}.
  * The number of episodes used for planning can be determined
  * by a threshold maximum number of episodes, or by a maximum change in the Q-function threshold.
@@ -501,7 +499,6 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	
 	@Override
 	public void resetSolver(){
-		this.mapToStateIndex.clear();
 		this.qIndex.clear();
 		this.eStepCounter = 0;
 		this.maxQChangeInLastEpisode = Double.POSITIVE_INFINITY;

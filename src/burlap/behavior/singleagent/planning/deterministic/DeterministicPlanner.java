@@ -59,7 +59,6 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	
 	@Override
 	public void resetSolver(){
-		this.mapToStateIndex.clear();
 		this.internalPolicy.clear();
 	}
 
@@ -70,14 +69,13 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	 */
 	public boolean hasCachedPlanForState(State s){
 		HashableState sh = this.stateHash(s);
-		HashableState indexSH = mapToStateIndex.get(sh);
-		
-		return indexSH != null;
+		boolean contains = internalPolicy.containsKey(sh);
+		return contains;
 	}
 	
 	
 	/**
-	 * Returns the action suggested by the valueFunction for the given state. If a plan including this state
+	 * Returns the action suggested by the internal plan for the given state. If a plan including this state
 	 * has not already been computed, the valueFunction will be called from this state to find one.
 	 * @param s the state for which the suggested action is to be returned.
 	 * @return The suggested action for the given state.
@@ -85,15 +83,11 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 	public Action querySelectedActionForState(State s){
 		
 		HashableState sh = this.stateHash(s);
-		HashableState indexSH = mapToStateIndex.get(sh);
-		if(indexSH == null){
-			this.planFromState(s);
-			return internalPolicy.get(sh); //no need to translate because if the state didn't exist then it got indexed with this state's rep
-		}
-		
-		//otherwise it's already computed
 		Action res = internalPolicy.get(sh);
-
+		if(res == null){
+			this.planFromState(s);
+			return internalPolicy.get(sh);
+		}
 
 		return res;
 		
@@ -117,9 +111,8 @@ public abstract class DeterministicPlanner extends MDPSolver implements Planner{
 		SearchNode curNode = lastVisitedNode;
 		while(curNode.backPointer != null){
 			HashableState bpsh = curNode.backPointer.s;
-			if(!mapToStateIndex.containsKey(bpsh)){ //makes sure earlier plan duplicate nodes do not replace the correct later visits
+			if(!internalPolicy.containsKey(bpsh)){ //makes sure earlier plan duplicate nodes do not replace the correct later visits
 				internalPolicy.put(bpsh, curNode.generatingAction);
-				mapToStateIndex.put(bpsh, bpsh);
 			}
 			
 			curNode = curNode.backPointer;

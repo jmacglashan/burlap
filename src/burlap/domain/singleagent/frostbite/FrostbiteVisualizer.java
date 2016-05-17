@@ -24,43 +24,52 @@ public class FrostbiteVisualizer {
 	private FrostbiteVisualizer() {
 	    // do nothing
 	}
-	
+
+
+	public static Visualizer getVisualizer() {
+		return getVisualizer(5);
+	}
 	/**
 	 * Returns a visualizer for a lunar lander domain.
 	 *
-	 * @param fd the specific frostbite domain generator to visualize
+	 * @param scale the scale of the domain
 	 * @return a visualizer for a lunar lander domain.
 	 */
-	public static Visualizer getVisualizer(FrostbiteDomain fd) {
+	public static Visualizer getVisualizer(int scale) {
+
+		final int gameHeight = 130 * scale;
+		final int gameWidth = 160 * scale;
+		int agentSize = 8 * scale;
 
 		Visualizer v = new Visualizer();
+
 
 		v.addStatePainter(new StatePainter() {
 			@Override
 			public void paint(Graphics2D g2, State s, float cWidth, float cHeight) {
 				g2.setColor(waterColor);
-				g2.fill(new Rectangle2D.Double(0, 0, FrostbiteDomain.gameWidth, FrostbiteDomain.gameHeight));
+				g2.fill(new Rectangle2D.Double(0, 0, gameWidth, gameHeight));
 				g2.setColor(Color.white);
-				g2.fill(new Rectangle2D.Double(0, 0, FrostbiteDomain.gameWidth, FrostbiteDomain.gameIceHeight));
+				g2.fill(new Rectangle2D.Double(0, 0, gameWidth, gameHeight));
 			}
 		});
 
 		OOStatePainter ooStatePainter = new OOStatePainter();
 		v.addStatePainter(ooStatePainter);
 
-		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_PLATFORM, new PlatformPainter(fd));
-		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_IGLOO, new IglooPainter(fd));
-		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_AGENT, new AgentPainter(fd));
+		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_PLATFORM, new PlatformPainter(gameWidth));
+		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_IGLOO, new IglooPainter(gameWidth, gameHeight));
+		ooStatePainter.addObjectClassPainter(FrostbiteDomain.CLASS_AGENT, new AgentPainter(agentSize));
 
 		return v;
 	}
 
 	public static class PlatformPainter implements ObjectPainter {
 
-		protected FrostbiteDomain fd;
+		int gameWidth;
 
-		public PlatformPainter(FrostbiteDomain fd) {
-			this.fd = fd;
+		public PlatformPainter(int gameWidth) {
+			this.gameWidth = gameWidth;
 		}
 
 		@Override
@@ -80,19 +89,20 @@ public class FrostbiteVisualizer {
 
 			g2.fill(new Rectangle2D.Double(x, y, size, size));
 
-			if (x + size > FrostbiteDomain.gameWidth)
-				g2.fill(new Rectangle2D.Double(x - FrostbiteDomain.gameWidth, y, size, size));
+			if (x + size > gameWidth)
+				g2.fill(new Rectangle2D.Double(x - gameWidth, y, size, size));
 			else if (x < 0)
-				g2.fill(new Rectangle2D.Double(x + FrostbiteDomain.gameWidth, y, size, size));
+				g2.fill(new Rectangle2D.Double(x + gameWidth, y, size, size));
 		}
 	}
 
 	public static class AgentPainter implements ObjectPainter {
 
 		protected FrostbiteDomain fd;
+		protected int agentSize;
 
-		public AgentPainter(FrostbiteDomain fd) {
-			this.fd = fd;
+		public AgentPainter(int agentSize) {
+			this.agentSize = agentSize;
 		}
 
 		@Override
@@ -103,7 +113,7 @@ public class FrostbiteVisualizer {
 
 			int x = (Integer)ob.get(FrostbiteDomain.VAR_X);
 			int y = (Integer)ob.get(FrostbiteDomain.VAR_Y);
-			int size = fd.getAgentSize();
+			int size = agentSize;
 
 			g2.fill(new Rectangle2D.Double(x, y, size, size));
 		}
@@ -111,10 +121,12 @@ public class FrostbiteVisualizer {
 
 	public static class IglooPainter implements ObjectPainter {
 
-		protected FrostbiteDomain fd;
+		protected int gameWidth;
+		protected int gameHeight;
 
-		public IglooPainter(FrostbiteDomain fd) {
-			this.fd = fd;
+		public IglooPainter(int gameWidth, int gameHeight) {
+			this.gameWidth = gameWidth;
+			this.gameHeight = gameHeight;
 		}
 
 		@Override
@@ -126,9 +138,9 @@ public class FrostbiteVisualizer {
 			int building = (Integer)ob.get(FrostbiteDomain.VAR_BUILDING);
 
 			int layer = -1; // just because ;)
-			int maxLayer = fd.buildingStepsToWin;
-			int brickHeight = FrostbiteDomain.gameHeight / (5 * maxLayer);
-			int iglooWidth = FrostbiteDomain.gameWidth / 6;
+			int maxLayer = 16;
+			int brickHeight = gameHeight / (5 * maxLayer);
+			int iglooWidth = gameWidth / 6;
 			int iglooOffsetx = 0;
 			int iglooOffsety = 0;
 			for (; layer < Math.min(maxLayer, building) - 1; layer++) {
@@ -137,19 +149,19 @@ public class FrostbiteVisualizer {
 					iglooOffsety = -(layer - 1) * brickHeight;
 				}
 				if (layer >= maxLayer / 3) {
-					iglooWidth -= FrostbiteDomain.gameWidth / (4 * maxLayer);
-					iglooOffsetx += FrostbiteDomain.gameWidth / (8 * maxLayer);
+					iglooWidth -= gameWidth / (4 * maxLayer);
+					iglooOffsetx += gameWidth / (8 * maxLayer);
 				}
-				g2.fill(new Rectangle2D.Double(iglooOffsetx + 3 * FrostbiteDomain.gameWidth / 4,
-						iglooOffsety + FrostbiteDomain.gameHeight / 5 - brickHeight * layer,
+				g2.fill(new Rectangle2D.Double(iglooOffsetx + 3 * gameWidth / 4,
+						iglooOffsety + gameHeight / 5 - brickHeight * layer,
 						iglooWidth, brickHeight));
 			}
 			if (building >= maxLayer) {
 				g2.setColor(Color.black);
-				int doorWidth = FrostbiteDomain.gameWidth / 28;
-				int doorHeight = FrostbiteDomain.gameHeight / 20;
-				g2.fill(new Rectangle2D.Double(3 * FrostbiteDomain.gameWidth / 4 + FrostbiteDomain.gameWidth / 12 - doorWidth / 2,
-						FrostbiteDomain.gameHeight / 5 - doorHeight/2, doorWidth, doorHeight));
+				int doorWidth = gameWidth / 28;
+				int doorHeight = gameHeight / 20;
+				g2.fill(new Rectangle2D.Double(3 * gameWidth / 4 + gameWidth / 12 - doorWidth / 2,
+						gameHeight / 5 - doorHeight/2, doorWidth, doorHeight));
 			}
 		}
 	}

@@ -12,4 +12,5 @@ import burlap.mdp.core.Action;
 public interface SGAgentAction extends Action {
 
 	String actingAgent();
+	void setActingAgent(String actingAgent);
 }

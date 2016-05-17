@@ -80,7 +80,7 @@ public interface QGradientPlannerFactory {
 
 		@Override
 		public QGradientPlanner generateDifferentiablePlannerForRequest(MLIRLRequest request) {
-			return new DifferentiableVI(request.getDomain(), request.getRf(), this.tf, request.getGamma(),
+			return new DifferentiableVI(request.getDomain(), request.getRf(), request.getGamma(),
 					request.getBoltzmannBeta(), this.hashingFactory, this.maxDelta, this.maxIterations);
 		}
 	}

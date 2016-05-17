@@ -168,7 +168,7 @@ public class DFS extends DeterministicPlanner {
 		
 		HashableState sih = this.stateHash(initialState);
 		
-		if(mapToStateIndex.containsKey(sih)){
+		if(internalPolicy.containsKey(sih)){
 			return new SDPlannerPolicy(this); //no need to plan since this is already solved
 		}
 		

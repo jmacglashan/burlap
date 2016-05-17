@@ -10,7 +10,6 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.visualizer.Visualizer;
 
 import javax.swing.*;
@@ -311,7 +310,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//add each action (which is taken in the state being renderd)
-		for(GroundedAction ga : curEA.actionSequence){
+		for(burlap.mdp.core.Action ga : curEA.actionSequence){
 			iterationListModel.addElement(ga.toString());
 		}
 		

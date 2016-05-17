@@ -3,6 +3,7 @@ package burlap.shell.command.env;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.singleagent.ActionType;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.shell.BurlapShell;
@@ -66,11 +67,11 @@ public class ExecuteActionCommand implements ShellCommand {
 			return -1;
 		}
 
-		ActionType actionType = this.domain.getAction(args.get(0));
+		ActionType actionType = ((SADomain)this.domain).getAction(args.get(0));
 		if(actionType == null){
 			String actionName = this.actionNameMap.get(args.get(0));
 			if(actionName != null){
-				actionType = this.domain.getAction(actionName);
+				actionType = ((SADomain)this.domain).getAction(actionName);
 			}
 		}
 		if(actionType != null){

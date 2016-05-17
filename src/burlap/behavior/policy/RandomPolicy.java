@@ -2,10 +2,10 @@ package burlap.behavior.policy;
 
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.SADomain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class RandomPolicy extends Policy{
 	 * list for this policy.
 	 * @param domain the domain containing all the primitive actions.
 	 */
-	public RandomPolicy(Domain domain){
+	public RandomPolicy(SADomain domain){
 		this.actionTypes = new ArrayList<ActionType>(domain.getActionTypes());
 	}
 

@@ -99,8 +99,10 @@ public class DerivedMarkovOptionModel implements FullModel{
 	}
 
 
-
-
+	@Override
+	public boolean terminalState(State s) {
+		return this.model.terminalState(s);
+	}
 
 	/**
 	 * This method will recursively determine all possible paths that could occur from execution of the option as well

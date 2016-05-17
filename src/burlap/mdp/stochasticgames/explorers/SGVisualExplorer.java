@@ -157,6 +157,16 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		keyActionMap.put(key, action);
 	}
 
+	/**
+	 * Adds a key action mapping.
+	 * @param key the key that is pressed by the user
+	 * @param actionTypeName the name of the {@link burlap.mdp.singleagent.ActionType}
+	 * @param paramStringRep the string representation of the action parameters
+	 */
+	public void addKeyAction(String key, String actingAgent, String actionTypeName, String paramStringRep){
+		keyActionMap.put(key, this.domain.getSGAgentAction(actionTypeName).associatedAction(actingAgent, paramStringRep));
+	}
+
 
 	/**
 	 * Returns the {@link burlap.shell.SGWorldShell} associated with this visual explorer.

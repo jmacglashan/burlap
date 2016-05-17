@@ -10,6 +10,7 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionType;
 import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.statehashing.HashableState;
 import burlap.mdp.statehashing.HashableStateFactory;
 
@@ -72,7 +73,7 @@ public class BoltzmannActor extends Actor {
 	 * @param hashingFactory the state hashing factory to use for state hashing and equality checks
 	 * @param learningRate the learning rate that affects how quickly the agent adjusts its action preferences.
 	 */
-	public BoltzmannActor(Domain domain, HashableStateFactory hashingFactory, double learningRate) {
+	public BoltzmannActor(SADomain domain, HashableStateFactory hashingFactory, double learningRate) {
 		this.domain = domain;
 		this.actionTypes = new ArrayList<ActionType>(domain.getActionTypes());
 		this.hashingFactory = hashingFactory;

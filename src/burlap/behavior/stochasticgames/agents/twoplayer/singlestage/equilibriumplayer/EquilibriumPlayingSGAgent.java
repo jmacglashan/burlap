@@ -1,18 +1,18 @@
 package burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriumplayer;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriumplayer.equilibriumsolvers.MaxMax;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.JointActionModel;
 import burlap.mdp.stochasticgames.JointReward;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.agentactions.SGActionUtils;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 
 /**
@@ -59,7 +59,7 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	@Override
 	public SGAgentAction getAction(State s) {
 
-		List<SGAgentAction> myActions = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, this.worldAgentName, this.agentType.actions);
+		List<SGAgentAction> myActions = SGActionUtils.allApplicableActionsForTypes(this.agentType.actions, this.worldAgentName, s);
 		BimatrixTuple bimatrix = this.constructBimatrix(s, myActions);
 		solver.solve(bimatrix.rowPayoffs, bimatrix.colPayoffs);
 		double [] strategy = solver.getLastComputedRowStrategy();
@@ -99,7 +99,7 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 		
 		
 		SGAgent opponent = this.getOpponent();
-		List<SGAgentAction> opponentActions = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, opponent.getAgentName(), opponent.getAgentType().actions);
+		List<SGAgentAction> opponentActions = SGActionUtils.allApplicableActionsForTypes(opponent.getAgentType().actions, opponent.getAgentName(), s);
 		
 		BimatrixTuple bimatrix = new BimatrixTuple(myActions.size(), opponentActions.size());
 		for(int i = 0; i < bimatrix.nRows(); i++){

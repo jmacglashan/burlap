@@ -1,8 +1,8 @@
 package burlap.domain.singleagent.gridworld;
 
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.GroundedAction;
 import burlap.mdp.singleagent.RewardFunction;
 
 
@@ -96,7 +96,7 @@ public class GridWorldRewardFunction implements RewardFunction {
 	}
 	
 	@Override
-	public double reward(State s, GroundedAction a, State sprime) {
+	public double reward(State s, Action a, State sprime) {
 
 		int x = ((GridWorldState)s).agent.x;
 		int y = ((GridWorldState)s).agent.y;

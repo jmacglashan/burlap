@@ -133,14 +133,15 @@ public class MLIRL {
 	 */
 	public void performIRL(){
 
+		DifferentiableRF rf = this.request.getRf();
+
 		//reset valueFunction
 		this.request.getPlanner().resetSolver();
+		this.request.getPlanner().setModel(new CustomRewardModel(request.getDomain().getModel(), rf));
 		double lastLikelihood = this.logLikelihood();
 		DPrint.cl(this.debugCode, "RF: " + this.request.getRf().toString());
 		DPrint.cl(this.debugCode, "Log likelihood: " + lastLikelihood);
-
-
-		DifferentiableRF rf = this.request.getRf();
+		
 
 		int i;
 		for(i = 0; i < maxSteps || this.maxSteps == -1; i++){

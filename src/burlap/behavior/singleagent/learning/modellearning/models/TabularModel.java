@@ -2,9 +2,9 @@ package burlap.behavior.singleagent.learning.modellearning.models;
 
 import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.ActionUtils;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
@@ -26,7 +26,7 @@ public class TabularModel implements KWIKModel {
 	/**
 	 * The source actual domain object for which actions will be modeled.
 	 */
-	protected Domain							sourceDomain;
+	protected SADomain sourceDomain;
 	
 	/**
 	 * The hashing factory to use for indexing states
@@ -55,7 +55,7 @@ public class TabularModel implements KWIKModel {
 	 * @param hashingFactory the hashing factory to index states
 	 * @param nConfident the number of observed transitions to be confident in the model's prediction.
 	 */
-	public TabularModel(Domain sourceDomain, HashableStateFactory hashingFactory, int nConfident){
+	public TabularModel(SADomain sourceDomain, HashableStateFactory hashingFactory, int nConfident){
 		this.sourceDomain = sourceDomain;
 		this.hashingFactory = hashingFactory;
 		this.stateNodes = new HashMap<HashableState, TabularModel.StateNode>();

@@ -11,11 +11,8 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.domain.singleagent.pomdp.tiger.TigerDomain;
 import burlap.domain.singleagent.pomdp.tiger.TigerState;
-import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.pomdp.BeliefMDPGenerator;
 import burlap.mdp.singleagent.pomdp.PODomain;
@@ -116,8 +113,6 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 		TigerDomain tiger = new TigerDomain(true);
 		PODomain domain = (PODomain)tiger.generateDomain();
 		BeliefState initialBelief = TigerDomain.getInitialBeliefState(domain);
-		RewardFunction rf = new TigerDomain.TigerRF();
-		TerminalFunction tf = new NullTermination();
 		
 		BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, new HashableTabularBeliefStateFactory(), 10, -1);
 		Policy p = new GreedyQPolicy(bss);

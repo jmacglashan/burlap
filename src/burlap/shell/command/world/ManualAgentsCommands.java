@@ -4,6 +4,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGAgent;
 import burlap.mdp.stochasticgames.SGAgentType;
+import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
 import burlap.shell.BurlapShell;
@@ -110,11 +111,11 @@ public class ManualAgentsCommands {
 			List<SGAgentActionType> actions = new ArrayList<SGAgentActionType>();
 
 			if(actionNames.isEmpty()){
-				actions = shell.getDomain().getAgentActions();
+				actions = ((SGDomain)shell.getDomain()).getAgentActions();
 			}
 			else{
 				for(String aname : actionNames){
-					SGAgentActionType action = shell.getDomain().getSGAgentAction(aname);
+					SGAgentActionType action = ((SGDomain)shell.getDomain()).getSGAgentAction(aname);
 					if(action != null){
 						actions.add(action);
 					}
@@ -197,7 +198,7 @@ public class ManualAgentsCommands {
 
 			String aname = args.get(1);
 
-			SGAgentActionType action = shell.getDomain().getSGAgentAction(aname);
+			SGAgentActionType action = ((SGDomain)shell.getDomain()).getSGAgentAction(aname);
 			if(action == null){
 				os.println("Cannot set action to " + aname + " because that action name is not known.");
 				return 0;

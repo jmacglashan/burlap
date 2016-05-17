@@ -139,7 +139,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		SADomain d = fd.generateDomain();
 		State s = new FrostbiteState();
 
-		Visualizer vis = FrostbiteVisualizer.getVisualizer(fd);
+		Visualizer vis = FrostbiteVisualizer.getVisualizer();
 		VisualExplorer exp = new VisualExplorer(d, vis, s);
 
 		exp.addKeyAction("a", ACTION_WEST, "");

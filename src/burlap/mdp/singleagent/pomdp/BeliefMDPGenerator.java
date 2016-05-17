@@ -177,6 +177,10 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			return eo;
 		}
 
+		@Override
+		public boolean terminalState(State s) {
+			return false;
+		}
 	}
 
 

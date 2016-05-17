@@ -1,14 +1,14 @@
 package burlap.behavior.stochasticgames.agents;
 
-import java.util.List;
-import java.util.Map;
-
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGAgent;
-import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
 import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.agentactions.SGAgentActionType;
+import burlap.mdp.stochasticgames.SGAgent;
+import burlap.mdp.stochasticgames.agentactions.SGActionUtils;
+import burlap.mdp.stochasticgames.agentactions.SGAgentAction;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,7 +27,7 @@ public class RandomSGAgent extends SGAgent {
 	@Override
 	public SGAgentAction getAction(State s) {
 		
-		List<SGAgentAction> gsas = SGAgentActionType.getAllApplicableGroundedActionsFromActionList(s, this.worldAgentName, this.agentType.actions);
+		List<SGAgentAction> gsas = SGActionUtils.allApplicableActionsForTypes(this.agentType.actions, this.worldAgentName, s);
 		
 		int r = RandomFactory.getMapped(0).nextInt(gsas.size());
 		SGAgentAction gsa = gsas.get(r);

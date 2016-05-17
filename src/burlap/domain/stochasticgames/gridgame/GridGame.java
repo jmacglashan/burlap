@@ -4,7 +4,6 @@ import burlap.domain.stochasticgames.gridgame.state.GGAgent;
 import burlap.domain.stochasticgames.gridgame.state.GGGoal;
 import burlap.domain.stochasticgames.gridgame.state.GGWall;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
@@ -16,7 +15,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.JointReward;
 import burlap.mdp.stochasticgames.SGAgentType;
-import burlap.mdp.stochasticgames.agentactions.SimpleSGAgentAction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agentactions.UniversalSGActionType;
 import burlap.mdp.stochasticgames.explorers.SGVisualExplorer;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import burlap.mdp.visualizer.Visualizer;
@@ -30,7 +30,7 @@ import java.util.Map;
  * a stochastic game. Each agent in the world has an OO-MDP object instance of OO-MDP class "agent"
  * which is defined by an x position, a y position, and a player number. Agents can either move north, south, east,
  * west, or do nothing, therefore the game is symmetric for all agents. To get a standard {@link burlap.mdp.stochasticgames.SGAgentType}
- * to use with this game, use the {@link #getStandardGridGameAgentType(burlap.mdp.core.Domain)} static method.
+ * to use with this game, use the {@link #getStandardGridGameAgentType(SGDomain)} static method.
  * <p>
  * In this domain, there is also an OO-MDP object class for 1-dimensional walls (both for horizontal
  * walls or vertical walls). Each wall can take on a different type; a solid wall that can never be passed (type 0),
@@ -278,12 +278,13 @@ public class GridGame implements DomainGenerator {
 				.addStateClass(CLASS_DIM_H_WALL, GGWall.GGHorizontalWall.class)
 				.addStateClass(CLASS_DIM_V_WALL, GGWall.GGVerticalWall.class);
 		
-		
-		new SimpleSGAgentAction(domain, ACTION_NORTH);
-		new SimpleSGAgentAction(domain, ACTION_SOUTH);
-		new SimpleSGAgentAction(domain, ACTION_EAST);
-		new SimpleSGAgentAction(domain, ACTION_WEST);
-		new SimpleSGAgentAction(domain, ACTION_NOOP);
+
+		domain.addSGAgentAction(new UniversalSGActionType(ACTION_NORTH))
+				.addSGAgentAction(new UniversalSGActionType(ACTION_SOUTH))
+				.addSGAgentAction(new UniversalSGActionType(ACTION_EAST))
+				.addSGAgentAction(new UniversalSGActionType(ACTION_WEST))
+				.addSGAgentAction(new UniversalSGActionType(ACTION_NOOP));
+
 		
 		
 		new AgentInUGoal(PF_IN_U_GOAL, domain);
@@ -451,7 +452,7 @@ public class GridGame implements DomainGenerator {
 	 * @param domain the domain object of the grid game.
 	 * @return An {@link burlap.mdp.stochasticgames.SGAgentType} that typically all {@link burlap.mdp.stochasticgames.SGAgent}'s of the grid game should play as.
 	 */
-	public static SGAgentType getStandardGridGameAgentType(Domain domain){
+	public static SGAgentType getStandardGridGameAgentType(SGDomain domain){
 		return new SGAgentType(GridGame.CLASS_AGENT, domain.getAgentActions());
 	}
 	
@@ -687,7 +688,7 @@ public class GridGame implements DomainGenerator {
 			if(this.noopIncursCost){
 				return this.stepCost;
 			}
-			else if(ja.action(aname) == null || ja.action(aname).action.actionName.equals(GridGame.ACTION_NOOP)){
+			else if(ja.action(aname) == null || ja.action(aname).actionName().equals(GridGame.ACTION_NOOP)){
 				return 0.;
 			}
 			return this.stepCost;
@@ -789,17 +790,17 @@ public class GridGame implements DomainGenerator {
 		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
 
 
-		exp.addKeyAction("w", CLASS_AGENT +"0:"+ ACTION_NORTH);
-		exp.addKeyAction("s", CLASS_AGENT +"0:"+ ACTION_SOUTH);
-		exp.addKeyAction("d", CLASS_AGENT +"0:"+ ACTION_EAST);
-		exp.addKeyAction("a", CLASS_AGENT +"0:"+ ACTION_WEST);
-		exp.addKeyAction("q", CLASS_AGENT +"0:"+ ACTION_NOOP);
+		exp.addKeyAction("w", CLASS_AGENT +"0", ACTION_NORTH, "");
+		exp.addKeyAction("s", CLASS_AGENT +"0", ACTION_SOUTH, "");
+		exp.addKeyAction("d", CLASS_AGENT +"0", ACTION_EAST, "");
+		exp.addKeyAction("a", CLASS_AGENT +"0", ACTION_WEST, "");
+		exp.addKeyAction("q", CLASS_AGENT +"0", ACTION_NOOP, "");
 
-		exp.addKeyAction("i", CLASS_AGENT +"1:"+ ACTION_NORTH);
-		exp.addKeyAction("k", CLASS_AGENT +"1:"+ ACTION_SOUTH);
-		exp.addKeyAction("l", CLASS_AGENT +"1:"+ ACTION_EAST);
-		exp.addKeyAction("j", CLASS_AGENT +"1:"+ ACTION_WEST);
-		exp.addKeyAction("u", CLASS_AGENT +"1:"+ ACTION_NOOP);
+		exp.addKeyAction("i", CLASS_AGENT +"1", ACTION_NORTH, "");
+		exp.addKeyAction("k", CLASS_AGENT +"1", ACTION_SOUTH, "");
+		exp.addKeyAction("l", CLASS_AGENT +"1", ACTION_EAST, "");
+		exp.addKeyAction("j", CLASS_AGENT +"1", ACTION_WEST, "");
+		exp.addKeyAction("u", CLASS_AGENT +"1", ACTION_NOOP, "");
 
 		exp.initGUI();
 

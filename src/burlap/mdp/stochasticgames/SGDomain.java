@@ -47,8 +47,9 @@ public class SGDomain implements Domain{
 		return this.jam;
 	}
 
-	public void addSGAgentAction(SGAgentActionType sa){
+	public SGDomain addSGAgentAction(SGAgentActionType sa){
 		singleActionMap.put(sa.typeName(), sa);
+		return this;
 	}
 
 	
