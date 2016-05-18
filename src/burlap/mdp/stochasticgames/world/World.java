@@ -14,7 +14,7 @@ import burlap.mdp.stochasticgames.SGStateGenerator;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class World {
 	protected HashedAggregator<String>			agentCumulativeReward;
 	protected Map<String, SGAgentType>			agentDefinitions;
 	
-	protected JointActionModel worldModel;
+	protected JointModel worldModel;
 	protected JointRewardFunction jointRewardFunction;
 	protected TerminalFunction					tf;
 	protected SGStateGenerator initialStateGenerator;
@@ -103,7 +103,7 @@ public class World {
 		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents);
 	}
 	
-	protected void init(SGDomain domain, JointActionModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
+	protected void init(SGDomain domain, JointModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
 		this.domain = domain;
 		this.worldModel = jam;
 		this.jointRewardFunction = jr;
@@ -499,10 +499,10 @@ public class World {
 	}
 	
 	/**
-	 * Returns the {@link JointActionModel} used in this world.
-	 * @return the {@link JointActionModel} used in this world.
+	 * Returns the {@link JointModel} used in this world.
+	 * @return the {@link JointModel} used in this world.
 	 */
-	public JointActionModel getActionModel(){
+	public JointModel getActionModel(){
 		return worldModel;
 	}
 	

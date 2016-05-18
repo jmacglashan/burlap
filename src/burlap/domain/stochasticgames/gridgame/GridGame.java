@@ -18,8 +18,8 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.action.UniversalSGActionType;
-import burlap.mdp.stochasticgames.explorers.SGVisualExplorer;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.shell.visual.SGVisualExplorer;
+import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import burlap.visualizer.Visualizer;
 
@@ -42,7 +42,7 @@ import java.util.Map;
  * as a universal goal/reward location for all agents (type 0), and type that is only useful to each individual
  * agent (type i is a personal goal for player i-1).
  * <p>
- * The {@link JointActionModel} set for the domain is {@link burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics},
+ * The {@link JointModel} set for the domain is {@link burlap.domain.stochasticgames.gridgame.GridGameStandardMechanics},
  * with a default semi-wall probability of passing through of 0.5, which is changeable with the
  *
  * @author James MacGlashan

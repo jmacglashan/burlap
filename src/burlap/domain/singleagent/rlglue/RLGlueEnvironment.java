@@ -1,4 +1,4 @@
-package burlap.mdp.singleagent.interfaces.rlglue;
+package burlap.domain.singleagent.rlglue;
 
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.auxiliary.StateGenerator;

@@ -20,7 +20,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

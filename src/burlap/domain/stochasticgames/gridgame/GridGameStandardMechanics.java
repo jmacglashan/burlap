@@ -9,8 +9,8 @@ import burlap.mdp.core.oo.state.generic.GenericOOState;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.model.JointActionModel;
 import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.model.FullJointModel;
 
 import java.util.*;
 
@@ -24,7 +24,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class GridGameStandardMechanics implements JointActionModel {
+public class GridGameStandardMechanics implements FullJointModel {
 
 	Random 						rand;
 	Domain						domain;

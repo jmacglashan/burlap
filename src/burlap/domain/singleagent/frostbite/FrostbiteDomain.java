@@ -12,7 +12,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.action.UniversalActionType;
-import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.shell.visual.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.visualizer.Visualizer;

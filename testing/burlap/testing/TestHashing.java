@@ -13,7 +13,7 @@ import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import burlap.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,24 +77,7 @@ public class TestHashing {
 		hashedStates.addAll(renamedStates);
 		assert(hashedStates.size() == 208);
 	}
-	
-	@Test
-	public void testSimpleHashFactoryCached() {
-		SADomain domain = (SADomain)this.gridWorldTest.getDomain();
-		State startState = this.gridWorldTest.generateState();
-		HashableStateFactory factory = new SimpleHashableStateFactory(false, true);
-		Set<HashableState> hashedStates = this.getReachableHashedStates(startState, domain, factory);
-		assert(hashedStates.size() == 104);
-	}
-	
-	@Test
-	public void testSimpleHashFactoryIdentifierDependentCached() {
-		SADomain domain = (SADomain)this.gridWorldTest.getDomain();
-		State startState = this.gridWorldTest.generateState();
-		HashableStateFactory factory = new SimpleHashableStateFactory(true, true);
-		Set<HashableState> hashedStates = this.getReachableHashedStates(startState, domain, factory);
-		assert(hashedStates.size() == 104);
-	}
+
 
 	
 	@Test

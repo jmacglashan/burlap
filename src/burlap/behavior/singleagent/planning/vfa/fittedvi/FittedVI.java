@@ -13,7 +13,7 @@ import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import burlap.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;

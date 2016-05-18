@@ -13,8 +13,8 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.action.SGAgentAction;
 import burlap.mdp.stochasticgames.action.SGAgentActionType;
 import burlap.mdp.stochasticgames.action.SimpleSGAction;
-import burlap.mdp.stochasticgames.common.StaticRepeatedGameActionModel;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.common.StaticRepeatedGameModel;
+import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.SGWorldShell;
@@ -358,7 +358,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 			new NFGAgentAction(aname, cnames);
 		}
 
-		domain.setJointActionModel(new StaticRepeatedGameActionModel());
+		domain.setJointActionModel(new StaticRepeatedGameModel());
 		
 		return domain;
 	}
@@ -454,8 +454,8 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 * Returns a repeated game joint action model. This action model always returns to the same state.
 	 * @return a repeated game joint action model.
 	 */
-	public static JointActionModel getRepatedGameActionModel(){
-		return new StaticRepeatedGameActionModel();
+	public static JointModel getRepatedGameActionModel(){
+		return new StaticRepeatedGameModel();
 	}
 	
 	

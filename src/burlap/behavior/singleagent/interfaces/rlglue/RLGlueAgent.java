@@ -12,13 +12,10 @@ import org.rlcommunity.rlglue.codec.types.Observation;
 import org.rlcommunity.rlglue.codec.util.AgentLoader;
 
 /**
- * A BURLAP {@link burlap.mdp.singleagent.environment.Environment} that manages the interface to an RLGlue
- * Environment. To implement this interface, it requires that this class is both a BURLAP {@link burlap.mdp.singleagent.environment.Environment}
- * and an RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface}, since BURLAP agents will communicate to the RL Glue
- * Environment through the an RLGlue {@link org.rlcommunity.rlglue.codec.AgentInterface}. However, you can use this
- * class like a normal BURLAP {@link burlap.mdp.singleagent.environment.Environment}.
+ * An RLGlue Agent that is implemented as a BURLAP {@link burlap.mdp.singleagent.environment.Environment}, so that
+ * any BURLAP RL agent can control the RLGlue agent.
  * <p>
- * To initialize this environment, use the {@link #loadAgent()} or {@link #loadAgent(String, String)} methods so that
+ * To initialize this BURLAP environment, use the {@link #loadAgent()} or {@link #loadAgent(String, String)} methods so that
  * RLGlue knows to tell this class about the environment this class is wrapping. After the load method,
  * you can get the corresponding BURLAP domain that represents it by calling the {@link #getDomain()} method.
  * You can also get the RLGlue preferred discount factor using the {@link #getDiscountFactor()} method.
@@ -30,7 +27,7 @@ import org.rlcommunity.rlglue.codec.util.AgentLoader;
  * experiment has finished manually, use the {@link #rlGlueExperimentFinished} method.
  * @author James MacGlashan.
  */
-public class RLGlueEnvironmentInterface implements Environment, AgentInterface {
+public class RLGlueAgent implements Environment, AgentInterface {
 
 	/**
 	 * Debug code used for printing debug information.

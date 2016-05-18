@@ -11,7 +11,7 @@ import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.SampleModel;
-import burlap.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;

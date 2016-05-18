@@ -7,6 +7,7 @@ import burlap.debugtools.DPrint;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.model.FullJointModel;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.action.JointAction;
@@ -203,7 +204,9 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @return true if input s was not previously indexed resulting in new states being found; false if s was already previously indexed resulting in no change in the discovered state set.
 	 */
 	public boolean performStateReachabilityFrom(State s){
-		
+
+		FullJointModel model = (FullJointModel)this.jointModel;
+
 		HashableState shi = this.hashingFactory.hashState(s);
 		if(this.states.contains(shi)){
 			return false;
@@ -217,11 +220,11 @@ public class MAValueIteration extends MADynamicProgramming {
 		while(!openQueue.isEmpty()){
 			
 			HashableState sh = openQueue.poll();
-			
+
 			//expand
 			List<JointAction> jas = JointAction.getAllJointActions(sh.s, this.agentDefinitions);
 			for(JointAction ja : jas){
-				List<StateTransitionProb> tps = this.jointActionModel.stateTransitions(sh.s, ja);
+				List<StateTransitionProb> tps = model.stateTransitions(sh.s, ja);
 				for(StateTransitionProb tp : tps){
 					HashableState shp = this.hashingFactory.hashState(tp.s);
 					if(!this.states.contains(shp)){

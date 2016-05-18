@@ -5,7 +5,7 @@ import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.HashableStateFactory;
-import burlap.statehashing.SimpleHashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 import java.util.List;
 import java.util.Random;
@@ -23,7 +23,7 @@ public class RandomStartStateGenerator implements StateGenerator {
 	private Random 		random;
 
 	/**
-	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link burlap.statehashing.SimpleHashableStateFactory} with identifier dependence.
+	 * Will discover the reachable states from which to randomly select. Reachable states found using a {@link SimpleHashableStateFactory} with identifier dependence.
 	 * @param domain the domain from which states will be drawn.
 	 * @param seedState the seed state from which the reachable states will be found.
 	 */

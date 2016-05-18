@@ -4,7 +4,7 @@ import burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriump
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.action.SGActionUtils;
@@ -95,7 +95,7 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 			jr = this.internalRewardFunction;
 		}
 		
-		JointActionModel jam = this.world.getActionModel();
+		JointModel jam = this.world.getActionModel();
 		
 		
 		SGAgent opponent = this.getOpponent();

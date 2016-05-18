@@ -7,7 +7,8 @@ import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.action.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.FullJointModel;
+import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
@@ -48,7 +49,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	/**
 	 * The joint action model to use in planning.
 	 */
-	protected JointActionModel jointActionModel;
+	protected JointModel jointModel;
 	
 	/**
 	 * The joint reward function
@@ -109,7 +110,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 						 double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
 	
 		this.domain = domain;
-		this.jointActionModel = domain.getJointActionModel();
+		this.jointModel = domain.getJointActionModel();
 		this.jointRewardFunction = jointRewardFunction;
 		this.terminalFunction = terminalFunction;
 		this.discount = discount;
@@ -220,8 +221,9 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		 * @param ja the joint action applied to the given state
 		 */
 		public JointActionTransitions(State s, JointAction ja){
+			FullJointModel model = (FullJointModel)MADynamicProgramming.this.jointModel;
 			this.ja = ja;
-			this.tps = MADynamicProgramming.this.jointActionModel.stateTransitions(s, ja);
+			this.tps = model.stateTransitions(s, ja);
 			this.jrs = new ArrayList<Map<String,Double>>(this.tps.size());
 			for(StateTransitionProb tp : this.tps){
 				Map<String, Double> jr = MADynamicProgramming.this.jointRewardFunction.reward(s, ja, tp.s);

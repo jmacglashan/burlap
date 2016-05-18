@@ -31,6 +31,9 @@ public abstract class HashableState implements State{
 	 */
 	public State s;
 
+	public HashableState() {
+	}
+
 	public HashableState(State s){
 		this.s = s;
 	}
@@ -65,49 +68,6 @@ public abstract class HashableState implements State{
 
 	@Override
 	public abstract boolean equals(Object obj);
-
-
-
-
-	/**
-	 * A hash code cached abstract implementation of {@link HashableState}.
-	 * Once a hash code is computed, it is saved so that it does not need to be used again. Implementing
-	 * this class only requires implementing {@link #computeHashCode()}.
-	 */
-	public static abstract class CachedHashableState extends HashableState {
-
-		protected int								hashCode;
-		protected boolean							needToRecomputeHashCode;
-
-
-
-		/**
-		 * Initializes the StateHashTuple with the given {@link State} object.
-		 * @param s the state object this object will wrap
-		 */
-		public CachedHashableState(State s){
-			super(s);
-			needToRecomputeHashCode = true;
-		}
-
-
-		/**
-		 * This method computes the hashCode for this {@link HashableState}
-		 * @return the hashcode for this state
-		 */
-		public abstract int computeHashCode();
-
-
-		@Override
-		public int hashCode(){
-			if(needToRecomputeHashCode){
-				this.hashCode = this.computeHashCode();
-				this.needToRecomputeHashCode = false;
-			}
-			return hashCode;
-		}
-
-	}
 
 
 }

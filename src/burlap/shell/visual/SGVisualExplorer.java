@@ -1,4 +1,4 @@
-package burlap.mdp.stochasticgames.explorers;
+package burlap.shell.visual;
 
 import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.oo.OODomain;
@@ -7,7 +7,6 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.action.ActionType;
-import burlap.mdp.singleagent.explorer.TextAreaStreams;
 import burlap.mdp.stochasticgames.action.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.world.World;

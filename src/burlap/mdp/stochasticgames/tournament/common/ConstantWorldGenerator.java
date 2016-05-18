@@ -3,7 +3,7 @@ package burlap.mdp.stochasticgames.tournament.common;
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.IdentityStateMapping;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.SGStateGenerator;
@@ -20,7 +20,7 @@ import burlap.mdp.stochasticgames.world.WorldGenerator;
 public class ConstantWorldGenerator implements WorldGenerator {
 
 	protected SGDomain							domain;
-	protected JointActionModel 					worldModel;
+	protected JointModel worldModel;
 	protected JointRewardFunction jointRewardFunctionModel;
 	protected TerminalFunction					tf;
 	protected SGStateGenerator					initialStateGenerator;
@@ -31,7 +31,7 @@ public class ConstantWorldGenerator implements WorldGenerator {
 	
 	/**
 	 * This constructor is deprecated, because {@link burlap.mdp.stochasticgames.SGDomain} objects are now expected
-	 * to have a {@link JointActionModel} associated with them, making the constructor parameter for it
+	 * to have a {@link JointModel} associated with them, making the constructor parameter for it
 	 * unnecessary. Instead use the constructor {@link #ConstantWorldGenerator(burlap.mdp.stochasticgames.SGDomain, JointRewardFunction, burlap.mdp.core.TerminalFunction, burlap.mdp.stochasticgames.SGStateGenerator)}
 	 * @param domain the SGDomain the world will use
 	 * @param jam the joint action model that specifies the transition dynamics
@@ -40,7 +40,7 @@ public class ConstantWorldGenerator implements WorldGenerator {
 	 * @param sg a state generator for generating initial states of a game
 	 */
 	@Deprecated
-	public ConstantWorldGenerator(SGDomain domain, JointActionModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg){
+	public ConstantWorldGenerator(SGDomain domain, JointModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg){
 		this.CWGInit(domain, jr, tf, sg, new IdentityStateMapping());
 	}
 
@@ -58,7 +58,7 @@ public class ConstantWorldGenerator implements WorldGenerator {
 	
 	/**
 	 * This constructor is deprecated, because {@link burlap.mdp.stochasticgames.SGDomain} objects are now expected
-	 * to have a {@link JointActionModel} associated with them, making the constructor parameter for it
+	 * to have a {@link JointModel} associated with them, making the constructor parameter for it
 	 * unnecessary. Instead use the constructor {@link #ConstantWorldGenerator(burlap.mdp.stochasticgames.SGDomain, JointRewardFunction, burlap.mdp.core.TerminalFunction, burlap.mdp.stochasticgames.SGStateGenerator, burlap.mdp.auxiliary.StateMapping)}
 	 * @param domain the SGDomain the world will use
 	 * @param jam the joint action model that specifies the transition dynamics
@@ -68,7 +68,7 @@ public class ConstantWorldGenerator implements WorldGenerator {
 	 * @param abstractionForAgents the abstract state representation that agents will be provided
 	 */
 	@Deprecated
-	public ConstantWorldGenerator(SGDomain domain, JointActionModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
+	public ConstantWorldGenerator(SGDomain domain, JointModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
 		this.CWGInit(domain, jr, tf, sg, abstractionForAgents);
 	}
 

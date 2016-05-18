@@ -11,11 +11,12 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.common.NullRewardFunction;
-import burlap.mdp.singleagent.explorer.VisualExplorer;
+import burlap.shell.visual.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.mdp.singleagent.oo.ObjectParameterizedActionType;
 import burlap.shell.EnvironmentShell;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ import java.util.List;
  * This is a domain generator for the classic relational blocks world domain. There exists a single table and any number of blocks that can be stacked
  * on each other. Blocks can be specified to have the color red, green, or blue. Because this is a relational domain, when performing planning,
  * the {@link burlap.statehashing.HashableStateFactory} should be object identifier dependent. For example, if using a
- * {@link burlap.statehashing.SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
+ * {@link SimpleHashableStateFactory}, in its constructor specify identifierIndependent=false,
  * @author James MacGlashan
  *
  */

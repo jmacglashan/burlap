@@ -6,7 +6,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.dpplanners.MAValueIt
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.TerminalFunction;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
@@ -87,7 +87,7 @@ public interface MADPPlannerFactory {
 		/**
 		 * The joint action model to use in planning.
 		 */
-		protected JointActionModel				jointActionModel;
+		protected JointModel jointModel;
 		
 		/**
 		 * The joint reward function
@@ -134,7 +134,7 @@ public interface MADPPlannerFactory {
 		/**
 		 * Initializes.
 		 * @param domain the domain in which to perform planing
-		 * @param jointActionModel the joint action model
+		 * @param jointModel the joint action model
 		 * @param jointRewardFunction the joint reward function
 		 * @param terminalFunction the terminal state function
 		 * @param discount the discount
@@ -144,11 +144,11 @@ public interface MADPPlannerFactory {
 		 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 		 * @param maxIterations the maximum number of iterations allowed
 		 */
-		public MAVIPlannerFactory(SGDomain domain, JointActionModel jointActionModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+		public MAVIPlannerFactory(SGDomain domain, JointModel jointModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 								  double discount, HashableStateFactory hashingFactory, double qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 			
 			this.domain = domain;
-			this.jointActionModel = jointActionModel;
+			this.jointModel = jointModel;
 			this.jointRewardFunction = jointRewardFunction;
 			this.terminalFunction = terminalFunction;
 			this.discount = discount;
@@ -163,7 +163,7 @@ public interface MADPPlannerFactory {
 		/**
 		 * Initializes.
 		 * @param domain the domain in which to perform planing
-		 * @param jointActionModel the joint action model
+		 * @param jointModel the joint action model
 		 * @param jointRewardFunction the joint reward function
 		 * @param terminalFunction the terminal state function
 		 * @param discount the discount
@@ -173,11 +173,11 @@ public interface MADPPlannerFactory {
 		 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 		 * @param maxIterations the maximum number of iterations allowed
 		 */
-		public MAVIPlannerFactory(SGDomain domain, JointActionModel jointActionModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+		public MAVIPlannerFactory(SGDomain domain, JointModel jointModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 								  double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 			
 			this.domain = domain;
-			this.jointActionModel = jointActionModel;
+			this.jointModel = jointModel;
 			this.jointRewardFunction = jointRewardFunction;
 			this.terminalFunction = terminalFunction;
 			this.discount = discount;
@@ -194,7 +194,7 @@ public interface MADPPlannerFactory {
 		 * Initializes.
 		 * @param domain the domain in which to perform planing
 		 * @param agentDefinitions the definitions of the agent types
-		 * @param jointActionModel the joint action model
+		 * @param jointModel the joint action model
 		 * @param jointRewardFunction the joint reward function
 		 * @param terminalFunction the terminal state function
 		 * @param discount the discount
@@ -204,12 +204,12 @@ public interface MADPPlannerFactory {
 		 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 		 * @param maxIterations the maximum number of iterations allowed
 		 */
-		public MAVIPlannerFactory(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointActionModel jointActionModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+		public MAVIPlannerFactory(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointModel jointModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 								  double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 			
 			this.domain = domain;
 			this.agentDefinitions = agentDefinitions;
-			this.jointActionModel = jointActionModel;
+			this.jointModel = jointModel;
 			this.jointRewardFunction = jointRewardFunction;
 			this.terminalFunction = terminalFunction;
 			this.discount = discount;

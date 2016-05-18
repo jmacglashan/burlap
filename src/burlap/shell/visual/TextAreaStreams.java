@@ -1,4 +1,4 @@
-package burlap.mdp.singleagent.explorer;
+package burlap.shell.visual;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 /**
  * Object that provides an {@link java.io.InputStream} and {@link java.io.OutputStream} that affect the content
  * of a {@link javax.swing.JTextArea}. Specifically, this code is used to instantiate a GUI for the {@link burlap.shell.EnvironmentShell}
- * used by a {@link burlap.mdp.singleagent.explorer.VisualExplorer}.
+ * used by a {@link VisualExplorer}.
  * @author James MacGlashan.
  */
 public class TextAreaStreams {
@@ -27,7 +27,7 @@ public class TextAreaStreams {
 
 	/**
 	 * Returns the {@link java.io.OutputStream} for the {@link javax.swing.JTextArea}
-	 * @return the {@link burlap.mdp.singleagent.explorer.TextAreaStreams.TextOut} {@link java.io.OutputStream}
+	 * @return the {@link TextAreaStreams.TextOut} {@link java.io.OutputStream}
 	 */
 	public TextOut getTout() {
 		return tout;
@@ -36,7 +36,7 @@ public class TextAreaStreams {
 
 	/**
 	 * Returns the {@link java.io.InputStream} for the {@link javax.swing.JTextArea}.
-	 * @return the {@link burlap.mdp.singleagent.explorer.TextAreaStreams.TextIn} {@link java.io.InputStream}
+	 * @return the {@link TextAreaStreams.TextIn} {@link java.io.InputStream}
 	 */
 	public TextIn getTin() {
 		return tin;

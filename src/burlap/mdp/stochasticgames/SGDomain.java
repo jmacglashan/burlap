@@ -2,7 +2,7 @@ package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.Domain;
 import burlap.mdp.stochasticgames.action.SGAgentActionType;
-import burlap.mdp.stochasticgames.model.JointActionModel;
+import burlap.mdp.stochasticgames.model.JointModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,14 +29,14 @@ public class SGDomain implements Domain{
 	/**
 	 * The joint action model of the domain
 	 */
-	protected JointActionModel jam;
+	protected JointModel jam;
 	
 
 	/**
 	 * Sets the joint action model associated with this domain.
 	 * @param jam the joint action model to associate with this domain.
 	 */
-	public void setJointActionModel(JointActionModel jam){
+	public void setJointActionModel(JointModel jam){
 		this.jam = jam;
 	}
 
@@ -44,7 +44,7 @@ public class SGDomain implements Domain{
 	 * Returns the joint action model associated with this domain.
 	 * @return the joint action model associated with this domain.
 	 */
-	public JointActionModel getJointActionModel(){
+	public JointModel getJointActionModel(){
 		return this.jam;
 	}
 

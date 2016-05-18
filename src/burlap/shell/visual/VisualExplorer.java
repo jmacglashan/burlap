@@ -1,4 +1,4 @@
-package burlap.mdp.singleagent.explorer;
+package burlap.shell.visual;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.oo.OODomain;
@@ -469,7 +469,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 
 
 	/**
-	 * Shell command that allow live polling of the {@link burlap.mdp.singleagent.explorer.VisualExplorer} to be polled.
+	 * Shell command that allow live polling of the {@link VisualExplorer} to be polled.
 	 */
 	public class LivePollCommand implements ShellCommand{
 
