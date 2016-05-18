@@ -355,7 +355,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 
 		ActionNameMap [] cnames = ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex);
 		for(String aname : this.uniqueActionNames){
-			new NFGAgentAction(aname, cnames);
+			domain.addSGAgentAction(new NFGAgentAction(aname, cnames));
 		}
 
 		domain.setJointActionModel(new StaticRepeatedGameModel());
