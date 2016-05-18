@@ -54,6 +54,7 @@ public class IPModel implements FullStateModel {
 	 * Updates the given state object given the control force.
 	 * @param s the input state
 	 * @param controlForce the control force acted upon the cart.
+	 * @return the updated {@link State}
 	 */
 	protected State updateState(State s, double controlForce){
 

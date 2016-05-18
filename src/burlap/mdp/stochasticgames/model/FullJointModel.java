@@ -30,6 +30,7 @@ public interface FullJointModel extends JointModel {
 		 * one {@link StateTransitionProb} object which is assigned probability 1
 		 * and whose state is determined by querying the {@link #sample(State, JointAction)}
 		 * method.
+		 * @param model the {@link JointModel} to use.
 		 * @param s the state in which the joint action would be executed
 		 * @param ja the joint action to be performed in the state.
 		 * @return a list containing one {@link StateTransitionProb} object which is assigned probability 1

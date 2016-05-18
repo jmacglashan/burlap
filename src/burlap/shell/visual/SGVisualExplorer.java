@@ -160,6 +160,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	/**
 	 * Adds a key action mapping.
 	 * @param key the key that is pressed by the user
+	 * @param actingAgent the name of the acting agent for whom the action is specified
 	 * @param actionTypeName the name of the {@link ActionType}
 	 * @param paramStringRep the string representation of the action parameters
 	 */

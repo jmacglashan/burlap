@@ -243,6 +243,7 @@ public abstract class Policy {
 	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
 	 * when the policy reaches a terminal state or when the number of steps surpasses maxSteps.
 	 * @param s the state from which to roll out the policy
+	 * @param model the model from which to same state transitions
 	 * @param maxSteps the maximum number of steps to take before terminating the policy rollout.
 	 * @return an EpisodeAnalysis object that records the events from following the policy.
 	 */
@@ -294,11 +295,9 @@ public abstract class Policy {
 	 * Follows this policy for one time step in the provided {@link burlap.mdp.singleagent.environment.Environment} and
 	 * records the interaction in the provided {@link burlap.behavior.singleagent.EpisodeAnalysis} object. If the policy
 	 * selects an {@link burlap.behavior.singleagent.options.Option}, then how the option's interaction in the environment
-	 * is recorded depends on this object's {@link #evaluateDecomposesOptions} and {@link #annotateOptionDecomposition} flags.
+	 * is recorded depends on this object's {@link #evaluateDecomposesOptions} flag.
 	 * If {@link #evaluateDecomposesOptions} is false, then the option is recorded as a single action. If it is true, then
-	 * the individual primitive actions selected by the environment are recorded. If {@link #annotateOptionDecomposition} is
-	 * also true, then each primitive action selected but the option is also given a unique name specifying the option
-	 * which controlled it and its step in the option's execution.
+	 * the individual primitive actions selected by the environment are recorded.
 	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} in which this policy should be followed.
 	 * @param ea The {@link burlap.behavior.singleagent.EpisodeAnalysis} object to which the action selection will be recorded.
 	 */

@@ -34,6 +34,7 @@ public class SGToSADomain implements DomainGenerator {
 	
 	/**
 	 * Initializes.
+	 * @param agentName the name of the agent for which this single agent interface is being generated
 	 * @param srcDomain the source stochastic games domain
 	 * @param asAgentType the {@link SGAgentType} object specifying the actions that should be created in the single agent domain.
 	 */
@@ -44,7 +45,8 @@ public class SGToSADomain implements DomainGenerator {
 	
 	/**
 	 * Initializes.
-	 * @param srcDomain the source stochastic games domain
+	 * @param agentName the name of the agent for which this single agent interface is being generated
+	 * @param srcDomain the underlying stochastic games {@link SGDomain} on which a single agent domain will be generated
 	 * @param useableActions the stochastic game actions for which single agent actions should be created created in the single agent domain.
 	 */
 	public SGToSADomain(String agentName, SGDomain srcDomain, List<SGAgentActionType> useableActions){
@@ -85,6 +87,7 @@ public class SGToSADomain implements DomainGenerator {
 
 		/**
 		 * Initializes for a given stochastic games action.
+		 * @param agentName the name of the agent for the actions generated
 		 * @param srcAction the source stochastic games {@link SGAgentActionType} object.
 		 */
 		public SAActionTypeWrapper(String agentName, SGAgentActionType srcAction){

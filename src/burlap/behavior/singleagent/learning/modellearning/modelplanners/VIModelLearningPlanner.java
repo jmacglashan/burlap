@@ -46,6 +46,7 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 	/**
 	 * Initializes
 	 * @param domain model domain
+	 * @param model the learned model to use for planning
 	 * @param gamma discount factor
 	 * @param hashingFactory the hashing factory
 	 * @param maxDelta max value function delta in VI

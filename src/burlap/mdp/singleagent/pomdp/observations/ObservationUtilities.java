@@ -20,6 +20,7 @@ public class ObservationUtilities {
 	 * and assigning their probability according to the {@link ObservationFunction#probability(State, State, Action)}
 	 * method. Note that because this method requires enumerating all observations, it may be more computationally efficient to instead directly implement domain specific code
 	 * for the {@link DiscreteObservationFunction#probabilities(State, Action)} method.
+	 * @param of the {@link ObservationFunction} to use.
 	 * @param state the true MDP state that generated the observations
 	 * @param action the action that led to the MDP state and which generated the observations.
 	 * @return the observation probability mass/density function represented by a {@link java.util.List} of {@link ObservationProbability} objects.
@@ -45,6 +46,7 @@ public class ObservationUtilities {
 	 * method, and then sampling from the enumerated distribution. Note that enumerating all observation probabilities may be computationally
 	 * inefficient; therefore, it may be better to directly implement the {@link ObservationFunction#sample(State, Action)}
 	 * method with efficient domain specific code.
+	 * @param of the {@link ObservationFunction} to use.
 	 * @param state the true MDP state
 	 * @param action the action that led to the MDP state
 	 * @return an observation represented with a {@link State}.

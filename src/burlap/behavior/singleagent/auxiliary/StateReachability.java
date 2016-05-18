@@ -124,6 +124,7 @@ public class StateReachability {
 	 * Finds the set of states ({@link burlap.statehashing.HashableState}) that are reachable under a policy from a source state. Reachability under a source policy means
 	 * that the space of actions considered are those that have non-zero probability of being selected by the
 	 * policy and all possible outcomes of those states are considered.
+	 * @param domain the domain containing the model to use for evaluating reachable states
 	 * @param p the policy that must be followed
 	 * @param from the source {@link State} from which the policy would be initiated.
 	 * @param usingHashFactory the {@link burlap.statehashing.HashableStateFactory} used to hash states and test equality.

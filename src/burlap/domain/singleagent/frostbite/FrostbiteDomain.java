@@ -252,11 +252,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		int agentSize;
 
 
-		/**
-		 * Initializes to be evaluated on an agent object and platform object.
-		 *
-		 * @param name   the name of the propositional function
-		 */
+
 		public OnPlatformPF(String name, int width, int agentSize) {
 			super(name, new String[]{CLASS_AGENT, CLASS_PLATFORM});
 			this.width = width;
@@ -343,11 +339,7 @@ public class FrostbiteDomain implements DomainGenerator{
 		int numberPlatformCol;
 		int platformSpeed;
 
-		/**
-		 * Initializes to be evaluated on an agent object.
-		 *
-		 * @param name   the name of the propositional function
-		 */
+
 		public InWaterPF(String name, int width, int agentSize, int gameIceHeight, int numberPlatformCol, int platformSpeed) {
 			super(name, new String[]{CLASS_AGENT});
 			this.width = width;
@@ -431,11 +423,6 @@ public class FrostbiteDomain implements DomainGenerator{
 		int agentSize;
 		int gameIceHeight;
 
-		/**
-		 * Initializes to be evaluated on an agent object.
-		 *
-		 * @param name   the name of the propositional function
-		 */
 		public OnIcePF(String name, int agentSize, int gameIceHeight) {
 			super(name, new String[]{CLASS_AGENT});
 			this.agentSize = agentSize;

@@ -56,6 +56,7 @@ public interface OODomain extends Domain {
 	 * Add a propositional function that can be used to evaluate objects that belong to object classes
 	 * of this domain. The function will not be added if this domain already has a instance with the same name.
 	 * @param prop the propositional function to add.
+	 * @return this {@link OODomain}
 	 */
 	OODomain addPropFunction(PropositionalFunction prop);
 
