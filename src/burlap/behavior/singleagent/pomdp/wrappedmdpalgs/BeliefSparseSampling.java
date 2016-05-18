@@ -113,18 +113,18 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 		TigerDomain tiger = new TigerDomain(true);
 		PODomain domain = (PODomain)tiger.generateDomain();
 		BeliefState initialBelief = TigerDomain.getInitialBeliefState(domain);
-		
+
 		BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, new HashableTabularBeliefStateFactory(), 10, -1);
 		Policy p = new GreedyQPolicy(bss);
 
 		SimulatedPOEnvironment env = new SimulatedPOEnvironment(domain);
 		env.setCurStateTo(new TigerState(TigerDomain.VAL_LEFT));
-		
+
 		BeliefPolicyAgent agent = new BeliefPolicyAgent(domain, env, p);
 		agent.setBeliefState(initialBelief);
-		
 
-		
+
+
 		agent.setEnvironment(env);
 		
 		/*
@@ -134,10 +134,9 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 			System.out.println(q.a.toString() + ": " + q.q);
 		}
 		*/
-		
-		
+
 		EpisodeAnalysis ea = agent.actUntilTerminalOrMaxSteps(30);
-		
+
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
 			System.out.println(ea.getAction(i) + " " + ea.getReward(i+1));
 		}

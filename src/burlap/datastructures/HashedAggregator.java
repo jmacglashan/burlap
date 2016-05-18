@@ -41,6 +41,16 @@ public class HashedAggregator <K>{
 		this.storage = new HashMap<K, Double>();
 		this.initialValue = initialValue;
 	}
+
+	/**
+	 * Initializes with the given initial value for each key and the initial capacity for the table.
+	 * @param initialValue the initial value associated with each key.
+	 * @param capacity the initial memory capacity of the storing table
+	 */
+	public HashedAggregator(double initialValue, int capacity){
+		this.storage = new HashMap<K, Double>(capacity);
+		this.initialValue = initialValue;
+	}
 	
 	
 	/**

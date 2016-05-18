@@ -3,10 +3,9 @@ package burlap.mdp.singleagent.pomdp;
 import burlap.datastructures.HashedAggregator;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
@@ -47,7 +46,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 	
 	
 	@Override
-	public Domain generateDomain() {
+	public SADomain generateDomain() {
 		
 		SADomain domain = new SADomain();
 
@@ -90,6 +89,10 @@ public class BeliefMDPGenerator implements DomainGenerator {
 
 			TabularBeliefState bs = (TabularBeliefState) s;
 
+
+
+			//this block will compute the expected reward in sumR
+			//and it will compute \sum_s b(s) * T(s' |s, a), held in nbsTemp (each element is for the s' value)
 			TabularBeliefState nbsTemp = (TabularBeliefState) bs.copy();
 			nbsTemp.zeroOutBeliefVector();
 			double sumR = 0.;
@@ -102,7 +105,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 					double oldSum = nbsTemp.belief(tp.eo.op);
 					nbsTemp.setBelief(tp.eo.op, bstProd + oldSum);
 				}
-				sumR += sumTransR;
+				sumR += sb.belief * sumTransR;
 			}
 
 
@@ -121,7 +124,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 					norm += p;
 				}
 
-				if(norm != 1) {
+				if(norm != 1 && norm != 0.) {
 					for(EnumerableBeliefState.StateBelief sb : nsBeliefs) {
 						double oldP = nbs.belief(sb.s);
 						double p = oldP / norm;
@@ -129,7 +132,9 @@ public class BeliefMDPGenerator implements DomainGenerator {
 					}
 				}
 
-				aggregator.add(factory.hashState(nbs), norm);
+				if(norm != 0.) {
+					aggregator.add(factory.hashState(nbs), norm);
+				}
 			}
 
 			List<TransitionProb> tps = new ArrayList<TransitionProb>(aggregator.size());
@@ -143,7 +148,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 				tps.add(tp);
 			}
 			if(Math.abs(1 - sumP) > 1e-15) {
-				throw new RuntimeException("Final transition probabilities did not sum to 1");
+				throw new RuntimeException("Final transition probabilities did not sum to 1, they summed to " + sumP);
 			}
 
 			return tps;
@@ -163,7 +168,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 				for(TransitionProb tp : tps) {
 					sumTransR += tp.p * tp.eo.r;
 				}
-				sumR += sumTransR;
+				sumR += sb.belief * sumTransR;
 			}
 
 

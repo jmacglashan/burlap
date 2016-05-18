@@ -20,6 +20,7 @@ public class TigerObservations implements DiscreteObservationFunction {
 
 	public TigerObservations(double listenAccuracy, boolean includeDoNothing){
 		this.listenAccuracy = listenAccuracy;
+		this.includeDoNothing = includeDoNothing;
 	}
 
 	@Override

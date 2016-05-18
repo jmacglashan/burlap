@@ -149,7 +149,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	public BeliefState getUpdatedBeliefState(State observation, Action a) {
 		FullModel model = (FullModel)this.domain.getModel();
 		ObservationFunction of = this.domain.getObservationFunction();
-		HashedAggregator<Integer> probs = new HashedAggregator<Integer>(this.beliefValues.size());
+		HashedAggregator<Integer> probs = new HashedAggregator<Integer>(0., 2);
 		for(Map.Entry<Integer, Double> bs : this.beliefValues.entrySet()){
 			List<TransitionProb> tps = model.transitions(this.stateEnumerator.getStateForEnumerationId(bs.getKey()), a);
 			for(TransitionProb tp : tps){
@@ -159,11 +159,13 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 			}
 		}
 
+		TabularBeliefState nbs = new TabularBeliefState(domain, stateEnumerator);
 		double norm = 0.;
 		for(Map.Entry<Integer, Double> e : probs.entrySet()){
 			State ns = this.stateEnumerator.getStateForEnumerationId(e.getKey());
 			double ofp = of.probability(observation, ns, a);
 			double nval = ofp*e.getValue();
+			nbs.setBelief(e.getKey(), nval);
 			norm += nval;
 		}
 
@@ -171,9 +173,10 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 			throw new RuntimeException("Cannot get updated belief state, because probabilities summed to 0");
 		}
 
-		TabularBeliefState nbs = new TabularBeliefState(domain, stateEnumerator);
+
+
 		for(Map.Entry<Integer, Double> e : probs.entrySet()){
-			double p = e.getValue() / norm;
+			double p = nbs.belief(e.getKey()) / norm;
 			if(p > 0) {
 				nbs.setBelief(e.getKey(), p);
 			}
