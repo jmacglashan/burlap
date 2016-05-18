@@ -19,7 +19,6 @@ public class FrostbiteVisualizer {
 	private final static Color activatedPlatformColor = new Color(0.73333335f, 0.84313726f, 0.9411765f);
 	private final static Color iglooColor = new Color(0.7294118f, 0.827451f, 0.84313726f);
 	private final static Color waterColor = new Color(0.34509805f, 0.43529412f, 0.60784316f);
-	static int glob = 0;
 
 	private FrostbiteVisualizer() {
 	    // do nothing
@@ -39,6 +38,7 @@ public class FrostbiteVisualizer {
 
 		final int gameHeight = 130 * scale;
 		final int gameWidth = 160 * scale;
+		final int iceHeight = gameHeight / 4;
 		int agentSize = 8 * scale;
 
 		Visualizer v = new Visualizer();
@@ -50,7 +50,7 @@ public class FrostbiteVisualizer {
 				g2.setColor(waterColor);
 				g2.fill(new Rectangle2D.Double(0, 0, gameWidth, gameHeight));
 				g2.setColor(Color.white);
-				g2.fill(new Rectangle2D.Double(0, 0, gameWidth, gameHeight));
+				g2.fill(new Rectangle2D.Double(0, 0, gameWidth, iceHeight));
 			}
 		});
 
@@ -98,7 +98,6 @@ public class FrostbiteVisualizer {
 
 	public static class AgentPainter implements ObjectPainter {
 
-		protected FrostbiteDomain fd;
 		protected int agentSize;
 
 		public AgentPainter(int agentSize) {

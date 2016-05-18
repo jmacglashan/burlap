@@ -82,10 +82,10 @@ public class FrostbiteModel implements FullStateModel {
 			move(fs, -1, 0);
 		}
 		else if(aname.equals(ACTION_NORTH)){
-			move(fs, 0, 1);
+			move(fs, 0, -1);
 		}
 		else if(aname.equals(ACTION_SOUTH)){
-			move(fs, 0, -1);
+			move(fs, 0, 1);
 		}
 		else if(aname.equals(ACTION_IDLE)){
 			move(fs, 0, 0);

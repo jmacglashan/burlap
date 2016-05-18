@@ -19,6 +19,7 @@ import burlap.shell.EnvironmentShell;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -110,7 +111,8 @@ public class BlocksWorld implements DomainGenerator {
 	}
 
 	public List<PropositionalFunction> generatePfs(){
-		List<PropositionalFunction> pfs =  Arrays.asList(new OnBlockPF(PF_ON_BLOCK), new OnTablePF(PF_ON_TABLE), new ClearPF(PF_CLEAR));
+		List<PropositionalFunction> pfsI =  Arrays.asList(new OnBlockPF(PF_ON_BLOCK), new OnTablePF(PF_ON_TABLE), new ClearPF(PF_CLEAR));
+		List<PropositionalFunction> pfs = new ArrayList<PropositionalFunction>(pfsI);
 		for(NamedColor col : colors){
 			pfs.add(new ColorPF(col));
 		}

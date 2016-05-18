@@ -10,15 +10,15 @@ import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionType;
-import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.action.UniversalActionType;
-import burlap.shell.visual.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;
+import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.visualizer.Visualizer;
 import burlap.shell.EnvironmentShell;
+import burlap.shell.visual.VisualExplorer;
+import burlap.visualizer.Visualizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -553,6 +553,8 @@ public class LunarLanderDomain implements DomainGenerator {
 				.addActionType(new ThrustType(thrustValues));
 
 
+		OODomain.Helper.addPfsToDomain(domain, this.generatePfs());
+
 		LunarLanderModel smodel = new LunarLanderModel(cphys);
 		RewardFunction rf = this.rf;
 		TerminalFunction tf = this.tf;
@@ -565,11 +567,6 @@ public class LunarLanderDomain implements DomainGenerator {
 
 		FactoredModel model = new FactoredModel(smodel, rf, tf);
 		domain.setModel(model);
-
-		
-		OODomain.Helper.addPfsToDomain(domain, this.generatePfs());
-		
-		
 		
 		return domain;
 		
@@ -584,7 +581,7 @@ public class LunarLanderDomain implements DomainGenerator {
 		List<Action> actions;
 
 		public ThrustType(List<Double> thrustValues) {
-			List<Action> actions = new ArrayList<Action>(thrustValues.size());
+			actions = new ArrayList<Action>(thrustValues.size());
 			for(Double t : thrustValues){
 				actions.add(new ThrustAction(t));
 			}

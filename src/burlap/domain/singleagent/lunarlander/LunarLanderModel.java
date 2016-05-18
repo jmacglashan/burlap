@@ -36,7 +36,7 @@ public class LunarLanderModel implements FullStateModel {
 			incAngle(ls, -1);
 		}
 		else if(a.actionName().equals(LunarLanderDomain.ACTION_TURN_RIGHT)){
-			incAngle(ls, -1);
+			incAngle(ls, 1);
 		}
 		else if(a instanceof LunarLanderDomain.ThrustType.ThrustAction){
 			force = ((LunarLanderDomain.ThrustType.ThrustAction)a).thrust;
@@ -44,7 +44,7 @@ public class LunarLanderModel implements FullStateModel {
 
 		updateMotion(ls, force);
 
-		return s;
+		return ls;
 	}
 
 
