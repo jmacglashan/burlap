@@ -4,11 +4,11 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
- * An interface for defining a belief state, which is a probability distribution over MDP states. This interface
+ * An interface for defining a belief state, which is a probability distribution over states. This interface
  * does not require enumerating all states, because it is possible to have a belief state over an infinite number of MDP
- * states. However, it does require that the probability density function be returnable ({@link #belief(State)},
- * to be able to sample an MDP state from the belief distribution {@link #sampleStateFromBelief()},
- * and a mechanism to update the belief state with respect to some observation and action {@link #getUpdatedBeliefState(State, Action)}.
+ * states. However, it does require that the probability density function for a specified state be returnable ({@link #belief(State)},
+ * to be able to sample an MDP state from the belief distribution with {@link #sample()},
+ * and a mechanism to update the belief state with respect to some observation and action with {@link #update(State, Action)}.
  *
  * @author James MacGlashan and Nakul Gopalan
  */
@@ -26,7 +26,7 @@ public interface BeliefState extends State {
 	 * Samples an MDP state state from this belief distribution.
 	 * @return an MDP state defined by a {@link State} instance.
 	 */
-	State sampleStateFromBelief();
+	State sample();
 
 	/**
 	 * Computes a new belief distribution using this BeliefState as the prior and conditioned on the given POMDP observation
@@ -35,7 +35,7 @@ public interface BeliefState extends State {
 	 * @param a the conditioned action selection in the previous time step.
 	 * @return the new belief state distribution represented by a new {@link BeliefState} instance.
 	 */
-	BeliefState getUpdatedBeliefState(State observation, Action a);
+	BeliefState update(State observation, Action a);
 
 
 	

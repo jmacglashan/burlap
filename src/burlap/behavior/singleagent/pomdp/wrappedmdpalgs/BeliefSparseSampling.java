@@ -18,8 +18,8 @@ import burlap.mdp.singleagent.pomdp.BeliefMDPGenerator;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.SimulatedPOEnvironment;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
-import burlap.mdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
 import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.ReflectiveHashableStateFactory;
 
 import java.util.List;
 
@@ -114,7 +114,7 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 		PODomain domain = (PODomain)tiger.generateDomain();
 		BeliefState initialBelief = TigerDomain.getInitialBeliefState(domain);
 
-		BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, new HashableTabularBeliefStateFactory(), 10, -1);
+		BeliefSparseSampling bss = new BeliefSparseSampling(domain, 0.99, new ReflectiveHashableStateFactory(), 10, -1);
 		Policy p = new GreedyQPolicy(bss);
 
 		SimulatedPOEnvironment env = new SimulatedPOEnvironment(domain);

@@ -12,14 +12,14 @@ import java.util.List;
  * a double.
  * @author James MacGlashan.
  */
-public interface EnumerableBeliefState {
+public interface EnumerableBeliefState extends BeliefState {
 
 	/**
 	 * Returns the states, and their probability mass, that have non-zero probability mass. States that are not
 	 * included in the returned listed are assumed to have probability mass zero.
 	 * @return a {@link java.util.List} of {@link burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState.StateBelief} objects specifying the enumerated probability mass function.
 	 */
-	List<StateBelief> getStatesAndBeliefsWithNonZeroProbability();
+	List<StateBelief> nonZeroBeliefs();
 
 
 	/**

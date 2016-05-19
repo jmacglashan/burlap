@@ -11,7 +11,7 @@ public interface DenseBeliefVector extends EnumerableBeliefState{
 	 * Returns a dense belief vector representation of the this belief state.
 	 * @return a double array specifying the dense belief vector representation.
 	 */
-	double [] getBeliefVector();
+	double [] beliefVector();
 
 	/**
 	 * Sets this belief state to the provided. Dense belief vector. If the belief vector dimensionality does not match

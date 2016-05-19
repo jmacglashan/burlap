@@ -11,8 +11,7 @@ import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
-import burlap.mdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory;
-import burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState;
+import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
 import burlap.statehashing.HashableState;
 
@@ -96,7 +95,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			TabularBeliefState nbsTemp = (TabularBeliefState) bs.copy();
 			nbsTemp.zeroOutBeliefVector();
 			double sumR = 0.;
-			for(EnumerableBeliefState.StateBelief sb : bs.getStatesAndBeliefsWithNonZeroProbability()) {
+			for(EnumerableBeliefState.StateBelief sb : bs.nonZeroBeliefs()) {
 				double sumTransR = 0.;
 				List<TransitionProb> tps = model.transitions(sb.s, a);
 				for(TransitionProb tp : tps) {
@@ -109,9 +108,8 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			}
 
 
-			HashableTabularBeliefStateFactory factory = new HashableTabularBeliefStateFactory();
 			HashedAggregator<HashableState> aggregator = new HashedAggregator<HashableState>();
-			List<EnumerableBeliefState.StateBelief> nsBeliefs = nbsTemp.getStatesAndBeliefsWithNonZeroProbability();
+			List<EnumerableBeliefState.StateBelief> nsBeliefs = nbsTemp.nonZeroBeliefs();
 			for(State obs : of.allObservations()) {
 
 				TabularBeliefState nbs = (TabularBeliefState) nbsTemp.copy();
@@ -133,7 +131,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 				}
 
 				if(norm != 0.) {
-					aggregator.add(factory.hashState(nbs), norm);
+					aggregator.add(nbs, norm);
 				}
 			}
 
@@ -162,7 +160,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			FullModel model = (FullModel) poDomain.getModel();
 
 			double sumR = 0.;
-			for(EnumerableBeliefState.StateBelief sb : ((EnumerableBeliefState) s).getStatesAndBeliefsWithNonZeroProbability()) {
+			for(EnumerableBeliefState.StateBelief sb : ((EnumerableBeliefState) s).nonZeroBeliefs()) {
 				double sumTransR = 0.;
 				List<TransitionProb> tps = model.transitions(sb.s, a);
 				for(TransitionProb tp : tps) {
@@ -172,11 +170,11 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			}
 
 
-			State curS = ((BeliefState) s).sampleStateFromBelief();
+			State curS = ((BeliefState) s).sample();
 			EnvironmentOutcome hiddenEO = model.sample(curS, a);
 			State obs = this.poDomain.obsevationFunction.sample(hiddenEO.op, a);
 
-			BeliefState nbs = ((BeliefState) s).getUpdatedBeliefState(obs, a);
+			BeliefState nbs = ((BeliefState) s).update(obs, a);
 			EnvironmentOutcome eo = new EnvironmentOutcome(s, a, nbs, sumR, false);
 
 			return eo;

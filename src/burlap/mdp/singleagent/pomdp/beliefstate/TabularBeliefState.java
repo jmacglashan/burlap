@@ -1,4 +1,4 @@
-package burlap.mdp.singleagent.pomdp.beliefstate.tabular;
+package burlap.mdp.singleagent.pomdp.beliefstate;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.datastructures.HashedAggregator;
@@ -9,10 +9,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.pomdp.PODomain;
-import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
-import burlap.mdp.singleagent.pomdp.beliefstate.DenseBeliefVector;
-import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
+import burlap.statehashing.HashableState;
 
 import java.util.*;
 
@@ -21,13 +19,11 @@ import java.util.*;
  * identifier using a {@link burlap.behavior.singleagent.auxiliary.StateEnumerator} and this class uses a {@link java.util.Map}
  * to associated the probability mass with each state. MDP states that have zero mass are not stored in the map.
  * <p>
- * If using a BeliefMDP solver with a {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState},
- * it is recommended that you use {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.HashableTabularBeliefStateFactory}
- * which will compute hash codes and perform state equality checks with the sparse Map representation
- * (rather than the dense OO-MDP representation)
- * @author James MacGlashan.
+ * If using a BeliefMDP solver with a {@link TabularBeliefState},
+ * it is recommended that you use the {@link burlap.statehashing.ReflectiveHashableStateFactory}, since {@link TabularBeliefState}
+ * implements {@link HashableState} and since you probably do not want to do abstraction of the belief state.
  */
-public class TabularBeliefState implements BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState{
+public class TabularBeliefState implements BeliefState, EnumerableBeliefState, DenseBeliefVector, MutableState, HashableState{
 
 
 	/**
@@ -51,10 +47,10 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	/**
-	 * Constructs a new {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState} from a source
-	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState}. Changes to the new state or source
+	 * Constructs a new {@link TabularBeliefState} from a source
+	 * {@link TabularBeliefState}. Changes to the new state or source
 	 * state will not affect the other.
-	 * @param srcBeliefState the source {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState} to copy.
+	 * @param srcBeliefState the source {@link TabularBeliefState} to copy.
 	 */
 	public TabularBeliefState(TabularBeliefState srcBeliefState){
 		this(srcBeliefState.domain, srcBeliefState.stateEnumerator);
@@ -78,7 +74,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	/**
-	 * Constructs a new {@link burlap.mdp.singleagent.pomdp.beliefstate.tabular.TabularBeliefState}.
+	 * Constructs a new {@link TabularBeliefState}.
 	 * @param domain the {@link burlap.mdp.singleagent.pomdp.PODomain} domain to which the belief state is associated.
 	 * @param stateEnumerator a {@link burlap.behavior.singleagent.auxiliary.StateEnumerator} to index the states in the belief vector.
 	 */
@@ -132,7 +128,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public State sampleStateFromBelief() {
+	public State sample() {
 		double sumProb = 0.;
 		double r = RandomFactory.getMapped(0).nextDouble();
 		for(Map.Entry<Integer, Double> e : this.beliefValues.entrySet()){
@@ -146,7 +142,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public BeliefState getUpdatedBeliefState(State observation, Action a) {
+	public BeliefState update(State observation, Action a) {
 		FullModel model = (FullModel)this.domain.getModel();
 		ObservationFunction of = this.domain.getObservationFunction();
 		HashedAggregator<Integer> probs = new HashedAggregator<Integer>(0., 2);
@@ -188,7 +184,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	}
 
 	@Override
-	public List<StateBelief> getStatesAndBeliefsWithNonZeroProbability(){
+	public List<StateBelief> nonZeroBeliefs(){
 		List<StateBelief> result = new LinkedList<StateBelief>();
 		for(Map.Entry<Integer, Double> e : this.beliefValues.entrySet()){
 			StateBelief sb = new StateBelief(this.stateForId(e.getKey()), e.getValue());
@@ -274,7 +270,7 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 	 * @return a double array specifying this belief state as a dense (non-sparse) belief vector.
 	 */
 	@Override
-	public double [] getBeliefVector(){
+	public double [] beliefVector(){
 		double [] b = new double[this.numStates()];
 		for(int i = 0; i < b.length; i++){
 			b[i] = this.belief(i);
@@ -397,10 +393,22 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 		return new TabularBeliefState(this);
 	}
 
+	@Override
+	public State s() {
+		return this;
+	}
 
+	@Override
+	public int hashCode() {
+		return beliefValues.hashCode();
+	}
 
 	@Override
 	public boolean equals(Object obj) {
+
+		if(obj == this){
+			return true;
+		}
 
 		if(!(obj instanceof TabularBeliefState)){
 			return false;
@@ -408,7 +416,6 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 
 		TabularBeliefState otb = (TabularBeliefState)obj;
 		if(this.beliefValues.size() == otb.beliefValues.size()) {
-			boolean match = true;
 			for(Map.Entry<Integer, Double> e : this.beliefValues.entrySet()) {
 				Double otherVal = otb.beliefValues.get(e.getKey());
 				if(otherVal == null){
