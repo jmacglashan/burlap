@@ -47,7 +47,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 
 	@Override
 	public HashableState hashState(State s) {
-		if(s instanceof HashableState){
+		if(s instanceof IISimpleHashableState || s instanceof IDSimpleHashableState){
 			return (HashableState)s;
 		}
 
