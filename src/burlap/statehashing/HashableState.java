@@ -9,7 +9,7 @@ import burlap.mdp.core.state.State;
  * for these operations than the underlying state can be useful since it is often the case that different algorithms may want to pose abstractions
  * on the underlying state or handle equality in different ways than the raw {@link State} implementation.
  * Primarily, this is a marker interface to indicate that the object has implementations of
- * {@link #hashCode()} and {@link #equals(Object)}, but it does also require implementing the
+ * {@link Object#hashCode()} and {@link Object#equals(Object)}, but it does also require implementing the
  * {@link #s()} method, which should return the underlying state on which the hash and equals operations of this object are
  * performed.
  *

@@ -10,16 +10,16 @@ package burlap.behavior.singleagent.auxiliary.performance;
  *
  */
 public enum TrialMode {
-	MOSTRECENTTTRIALONLY,
-	TRIALAVERAGESONLY,
-	MOSTRECENTANDAVERAGE;
+	MOST_RECENT_TRIAL_ONLY,
+	TRIAL_AVERAGES_ONLY,
+	MOST_RECENT_AND_AVERAGE;
 	
 	/**
 	 * Returns true if the most recent trial plots will be plotted by this mode.
 	 * @return true if the most recent trial plots will be plotted by this mode; false otherwise.
 	 */
 	public boolean mostRecentTrialEnabled(){
-		return this == MOSTRECENTTTRIALONLY || this == MOSTRECENTANDAVERAGE;
+		return this == MOST_RECENT_TRIAL_ONLY || this == MOST_RECENT_AND_AVERAGE;
 	}
 	
 	
@@ -28,6 +28,6 @@ public enum TrialMode {
 	 * @return true if the trial average plots will be plotted by this mode; false otherwise.
 	 */
 	public boolean averagesEnabled(){
-		return this == TRIALAVERAGESONLY || this == MOSTRECENTANDAVERAGE;
+		return this == TRIAL_AVERAGES_ONLY || this == MOST_RECENT_AND_AVERAGE;
 	}
 }

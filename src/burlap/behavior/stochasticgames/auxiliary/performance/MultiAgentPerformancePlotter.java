@@ -243,9 +243,9 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		
 		
 		if(metrics.length == 0){
-			metricsSet.add(PerformanceMetric.CUMULATIVEREWARDPERSTEP);
+			metricsSet.add(PerformanceMetric.CUMULATIVE_REWARD_PER_STEP);
 			
-			metrics = new PerformanceMetric[]{PerformanceMetric.CUMULATIVEREWARDPERSTEP};
+			metrics = new PerformanceMetric[]{PerformanceMetric.CUMULATIVE_REWARD_PER_STEP};
 		}
 		
 		this.trialMode = trialMode;
@@ -261,22 +261,22 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
         	
         	this.metricsSet.add(m);
         	
-        	if(m == PerformanceMetric.CUMULATIVEREWARDPERSTEP){
+        	if(m == PerformanceMetric.CUMULATIVE_REWARD_PER_STEP){
         		this.insertChart(plotContainer, c, columns, chartWidth, chartHeight, "Cumulative Reward", "Time Step", "Cumulative Reward", colCSR, colCSRAvg);
         	}
-        	else if(m == PerformanceMetric.CUMULTAIVEREWARDPEREPISODE){
+        	else if(m == PerformanceMetric.CUMULATIVE_REWARD_PER_EPISODE){
         		this.insertChart(plotContainer, c, columns, chartWidth, chartHeight, "Cumulative Reward", "Episode", "Cumulative Reward", colCER, colCERAvg);
         	}
-        	else if(m == PerformanceMetric.AVERAGEEPISODEREWARD){
+        	else if(m == PerformanceMetric.AVERAGE_EPISODE_REWARD){
         		this.insertChart(plotContainer, c, columns, chartWidth, chartHeight, "Average Reward", "Episode", "Average Reward", colAER, colAERAvg);
         	}
-        	else if(m == PerformanceMetric.MEDIANEPISODEREWARD){
+        	else if(m == PerformanceMetric.MEDIAN_EPISODE_REWARD){
         		this.insertChart(plotContainer, c, columns, chartWidth, chartHeight, "Median Reward", "Episode", "Median Reward", colMER, colMERAvg);
         	}
-        	else if(m == PerformanceMetric.CUMULATIVESTEPSPEREPISODE){
+        	else if(m == PerformanceMetric.CUMULATIVE_STEPS_PER_EPISODE){
         		this.insertChart(plotContainer, c, columns, chartWidth, chartHeight, "Cumulative Steps", "Episode", "Cumulative Steps", colCSE, colCSEAvg);
         	}
-        	else if(m == PerformanceMetric.STEPSPEREPISODE){
+        	else if(m == PerformanceMetric.STEPS_PER_EPISODE){
         		this.insertChart(plotContainer, c, columns, chartWidth, chartHeight, "Number of Steps", "Episode", "Number of Steps", colSE, colSEAvg);
         	}
         	
@@ -695,7 +695,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		int [] n = MultiAgentPerformancePlotter.this.minStepAndEpisodes(trials);
 		
 		
-		if(this.metricsSet.contains(PerformanceMetric.CUMULATIVEREWARDPERSTEP)){
+		if(this.metricsSet.contains(PerformanceMetric.CUMULATIVE_REWARD_PER_STEP)){
 			for(int i = 0; i < n[0]; i++){
 				DescriptiveStatistics avgi = new DescriptiveStatistics();
 				for(Trial t : trials){
@@ -707,7 +707,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		}
 		
 		
-		if(this.metricsSet.contains(PerformanceMetric.CUMULTAIVEREWARDPEREPISODE)){
+		if(this.metricsSet.contains(PerformanceMetric.CUMULATIVE_REWARD_PER_EPISODE)){
 			for(int i = 0; i < n[1]; i++){
 				DescriptiveStatistics avgi = new DescriptiveStatistics();
 				for(Trial t : trials){
@@ -719,7 +719,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		}
 
 
-		if(this.metricsSet.contains(PerformanceMetric.AVERAGEEPISODEREWARD)){
+		if(this.metricsSet.contains(PerformanceMetric.AVERAGE_EPISODE_REWARD)){
 			for(int i = 0; i < n[1]; i++){
 				DescriptiveStatistics avgi = new DescriptiveStatistics();
 				for(Trial t : trials){
@@ -730,7 +730,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 			}
 		}
 
-		if(this.metricsSet.contains(PerformanceMetric.MEDIANEPISODEREWARD)){
+		if(this.metricsSet.contains(PerformanceMetric.MEDIAN_EPISODE_REWARD)){
 			for(int i = 0; i < n[1]; i++){
 				DescriptiveStatistics avgi = new DescriptiveStatistics();
 				for(Trial t : trials){
@@ -741,7 +741,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 			}
 		}
 
-		if(this.metricsSet.contains(PerformanceMetric.CUMULATIVESTEPSPEREPISODE)){
+		if(this.metricsSet.contains(PerformanceMetric.CUMULATIVE_STEPS_PER_EPISODE)){
 			for(int i = 0; i < n[1]; i++){
 				DescriptiveStatistics avgi = new DescriptiveStatistics();
 				for(Trial t : trials){
@@ -753,7 +753,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 		}
 
 
-		if(this.metricsSet.contains(PerformanceMetric.STEPSPEREPISODE)){
+		if(this.metricsSet.contains(PerformanceMetric.STEPS_PER_EPISODE)){
 			for(int i = 0; i < n[1]; i++){
 				DescriptiveStatistics avgi = new DescriptiveStatistics();
 				for(Trial t : trials){
@@ -902,7 +902,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 */
 	protected void updateCSRSeries(DatasetsAndTrials agentData){
 		
-		if(!this.metricsSet.contains(PerformanceMetric.CUMULATIVEREWARDPERSTEP)){
+		if(!this.metricsSet.contains(PerformanceMetric.CUMULATIVE_REWARD_PER_STEP)){
 			return ;
 		}
 		
@@ -922,7 +922,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 */
 	protected void updateCERSeries(DatasetsAndTrials agentData){
 		
-		if(!this.metricsSet.contains(PerformanceMetric.CUMULTAIVEREWARDPEREPISODE)){
+		if(!this.metricsSet.contains(PerformanceMetric.CUMULATIVE_REWARD_PER_EPISODE)){
 			return ;
 		}
 		
@@ -943,7 +943,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 */
 	protected void updateAERSeris(DatasetsAndTrials agentData){
 		
-		if(!this.metricsSet.contains(PerformanceMetric.AVERAGEEPISODEREWARD)){
+		if(!this.metricsSet.contains(PerformanceMetric.AVERAGE_EPISODE_REWARD)){
 			return ;
 		}
 		
@@ -963,7 +963,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 */
 	protected void updateMERSeris(DatasetsAndTrials agentData){
 		
-		if(!this.metricsSet.contains(PerformanceMetric.MEDIANEPISODEREWARD)){
+		if(!this.metricsSet.contains(PerformanceMetric.MEDIAN_EPISODE_REWARD)){
 			return ;
 		}
 		
@@ -983,7 +983,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 */
 	protected void updateCSESeries(DatasetsAndTrials agentData){
 		
-		if(!this.metricsSet.contains(PerformanceMetric.CUMULATIVESTEPSPEREPISODE)){
+		if(!this.metricsSet.contains(PerformanceMetric.CUMULATIVE_STEPS_PER_EPISODE)){
 			return ;
 		}
 		
@@ -1003,7 +1003,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 */
 	protected void updateSESeries(DatasetsAndTrials agentData){
 		
-		if(!this.metricsSet.contains(PerformanceMetric.STEPSPEREPISODE)){
+		if(!this.metricsSet.contains(PerformanceMetric.STEPS_PER_EPISODE)){
 			return ;
 		}
 		

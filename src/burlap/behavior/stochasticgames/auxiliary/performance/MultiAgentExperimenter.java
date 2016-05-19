@@ -208,9 +208,9 @@ public class MultiAgentExperimenter {
 		
 		if(this.plotter == null){
 			
-			TrialMode trialMode = TrialMode.MOSTRECENTANDAVERAGE;
+			TrialMode trialMode = TrialMode.MOST_RECENT_AND_AVERAGE;
 			if(this.nTrials == 1){
-				trialMode = TrialMode.MOSTRECENTTTRIALONLY;
+				trialMode = TrialMode.MOST_RECENT_TRIAL_ONLY;
 			}
 			
 			this.plotter = new MultiAgentPerformancePlotter(this.tf, 500, 250, 2, 500, trialMode);

@@ -147,7 +147,7 @@ public class LearningAlgorithmExperimenter {
 	public void setUpPlottingConfiguration(int chartWidth, int chartHeight, int columns, int maxWindowHeight, TrialMode trialMode, PerformanceMetric...metrics){
 		
 		if(trialMode.averagesEnabled() && this.nTrials == 1){
-			trialMode = TrialMode.MOSTRECENTTTRIALONLY;
+			trialMode = TrialMode.MOST_RECENT_TRIAL_ONLY;
 		}
 		
 		this.displayPlots = true;
@@ -212,9 +212,9 @@ public class LearningAlgorithmExperimenter {
 		
 		if(this.plotter == null){
 			
-			TrialMode trialMode = TrialMode.MOSTRECENTANDAVERAGE;
+			TrialMode trialMode = TrialMode.MOST_RECENT_AND_AVERAGE;
 			if(this.nTrials == 1){
-				trialMode = TrialMode.MOSTRECENTTTRIALONLY;
+				trialMode = TrialMode.MOST_RECENT_TRIAL_ONLY;
 			}
 			
 			this.plotter = new PerformancePlotter(this.agentFactories[0].getAgentName(), 500, 250, 2, 500, trialMode);
