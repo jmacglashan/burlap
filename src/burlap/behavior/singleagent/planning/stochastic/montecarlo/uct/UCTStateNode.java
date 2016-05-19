@@ -55,7 +55,7 @@ public class UCTStateNode {
 		
 		actionNodes = new ArrayList<UCTActionNode>();
 
-		List<Action> actions = ActionUtils.allApplicableActionsForTypes(actionTypes, s.s);
+		List<Action> actions = ActionUtils.allApplicableActionsForTypes(actionTypes, s.s());
 		for(Action a : actions){
 			UCTActionNode an = constructor.generate(a);
 			actionNodes.add(an);

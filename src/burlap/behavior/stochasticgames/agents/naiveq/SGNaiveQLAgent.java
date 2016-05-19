@@ -258,10 +258,10 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		State storedRep = stateRepresentations.get(shq);
 		if(storedRep == null){
 			//no existing entry so we can create it
-			stateRepresentations.put(shq, shq.s);
+			stateRepresentations.put(shq, shq.s());
 			List <QValue> entries = new ArrayList<QValue>();
 			for(SGAgentAction gsa : gsas){
-				QValue q = new QValue(shq.s, gsa, this.qInit.qValue(shq.s, gsa));
+				QValue q = new QValue(shq.s(), gsa, this.qInit.qValue(shq.s(), gsa));
 				entries.add(q);
 			}
 			qMap.put(shq, entries);
@@ -286,7 +286,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			}
 			
 			if(!foundMatch){
-				QValue qe = new QValue(shq.s, gsa, this.qInit.qValue(shq.s, gsa));
+				QValue qe = new QValue(shq.s(), gsa, this.qInit.qValue(shq.s(), gsa));
 				entries.add(qe);
 				returnedEntries.add(qe);
 			}
@@ -319,8 +319,8 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		State storedRep = stateRepresentations.get(shq);
 		if(storedRep == null){
 			//no existing entry so we can create it
-			stateRepresentations.put(shq, shq.s);
-			QValue q = new QValue(storedRep, gsa, this.qInit.qValue(shq.s, gsa));
+			stateRepresentations.put(shq, shq.s());
+			QValue q = new QValue(storedRep, gsa, this.qInit.qValue(shq.s(), gsa));
 			List <QValue> entries = new ArrayList<QValue>();
 			entries.add(q);
 			qMap.put(shq, entries);
@@ -336,7 +336,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		}
 		
 		//if we got here then there are no entries for this action
-		QValue qe = new QValue(shq.s, gsa, this.qInit.qValue(shq.s, gsa));
+		QValue qe = new QValue(shq.s(), gsa, this.qInit.qValue(shq.s(), gsa));
 		entries.add(qe);
 		
 		return qe;

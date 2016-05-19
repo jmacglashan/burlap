@@ -118,7 +118,7 @@ public class StateEnumerator {
 		Integer storedID = this.enumeration.get(sh);
 		if(storedID == null){
 			this.enumeration.put(sh, this.nextEnumeratedID);
-			this.reverseEnumerate.put(this.nextEnumeratedID, sh.s);
+			this.reverseEnumerate.put(this.nextEnumeratedID, sh.s());
 			storedID = this.nextEnumeratedID;
 			this.nextEnumeratedID++;
 		}

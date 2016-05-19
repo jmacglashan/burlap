@@ -256,8 +256,8 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 			return 0.;
 		}
 		
-		if(model.terminal(node.state.s)){
-			if(goalCondition != null && goalCondition.satisfies(node.state.s)){
+		if(model.terminal(node.state.s())){
+			if(goalCondition != null && goalCondition.satisfies(node.state.s())){
 			    foundGoal = true;
                 foundGoalOnRollout = true;
 			}
@@ -277,7 +277,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		
 		
 		//sample the action
-		EnvironmentOutcome eo = model.sample(node.state.s, anode.action);
+		EnvironmentOutcome eo = model.sample(node.state.s(), anode.action);
 		HashableState shprime = this.stateHash(eo.op);
 		double r = eo.r;
 		int depthChange = 1;

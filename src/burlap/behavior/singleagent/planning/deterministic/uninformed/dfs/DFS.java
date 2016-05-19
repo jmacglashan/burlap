@@ -205,7 +205,7 @@ public class DFS extends DeterministicPlanner {
 		
 		numVisted++;
 		
-		if(gc.satisfies(n.s.s)){
+		if(gc.satisfies(n.s.s())){
 			//found goal!
 			return n;
 		}
@@ -214,7 +214,7 @@ public class DFS extends DeterministicPlanner {
 			return null; //back track
 		}
 
-		if(this.model.terminal(n.s.s)){
+		if(this.model.terminal(n.s.s())){
 			return null; //treat like dead end
 		}
 		
@@ -224,7 +224,7 @@ public class DFS extends DeterministicPlanner {
 		
 		
 		//shuffle actions for a random walk, but keep options as priority if set that way
-		List<Action> gas = this.getAllGroundedActions(n.s.s);
+		List<Action> gas = this.getAllGroundedActions(n.s.s());
 		if(optionsFirst){
 			int no = this.numOptionsInGAs(gas);
 			this.shuffleGroundedActions(gas, 0, no);
@@ -236,7 +236,7 @@ public class DFS extends DeterministicPlanner {
 		
 		//generate a search successors from the order of grounded actions
 		for(Action ga : gas){
-			HashableState shp = this.stateHash(this.model.sample(n.s.s, ga).op);
+			HashableState shp = this.stateHash(this.model.sample(n.s.s(), ga).op);
 			if(!statesOnPath.contains(shp)){
 				SearchNode snp = new SearchNode(shp, ga, n);
 				SearchNode result = this.dfs(snp, depth+1, statesOnPath);

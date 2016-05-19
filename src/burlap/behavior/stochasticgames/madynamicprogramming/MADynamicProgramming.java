@@ -307,8 +307,8 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 				return stored;
 			}
 			double v = 0.;
-			if(!MADynamicProgramming.this.terminalFunction.isTerminal(sh.s)){
-				v = MADynamicProgramming.this.vInit.value(sh.s);
+			if(!MADynamicProgramming.this.terminalFunction.isTerminal(sh.s())){
+				v = MADynamicProgramming.this.vInit.value(sh.s());
 			}
 			this.valueFunction.put(sh, v);
 			return v;

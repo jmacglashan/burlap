@@ -42,7 +42,7 @@ public class QLearningStateNode {
 	 * @param q the numeric Q-value
 	 */
 	public void addQValue(Action a, double q){
-		QValue qv = new QValue(s.s, a, q);
+		QValue qv = new QValue(s.s(), a, q);
 		qEntry.add(qv);
 	}
 	

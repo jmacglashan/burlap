@@ -120,11 +120,11 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * @return the value function evaluation of the given state.
 	 */
 	public double value(HashableState sh){
-		if(this.model.terminal(sh.s)){
+		if(this.model.terminal(sh.s())){
 			return 0.;
 		}
 		Double V = valueFunction.get(sh);
-		double v = V == null ? this.getDefaultValue(sh.s) : V;
+		double v = V == null ? this.getDefaultValue(sh.s()) : V;
 		return v;
 	}
 	
@@ -166,7 +166,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		List <State> result = new ArrayList<State>(valueFunction.size());
 		Set<HashableState> shs = valueFunction.keySet();
 		for(HashableState sh : shs){
-			result.add(sh.s);
+			result.add(sh.s());
 		}
 		return result;
 	}
@@ -225,7 +225,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 */
 	protected double performBellmanUpdateOn(HashableState sh){
 		
-		if(model.terminal(sh.s)){
+		if(model.terminal(sh.s())){
 			//terminal states always have a state value of 0
 			valueFunction.put(sh, 0.);
 			return 0.;
@@ -234,9 +234,9 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		
 		double maxQ = Double.NEGATIVE_INFINITY;
 
-		List<Action> gas = this.getAllGroundedActions(sh.s);
+		List<Action> gas = this.getAllGroundedActions(sh.s());
 		for(Action ga : gas){
-			double q = this.computeQ(sh.s, ga);
+			double q = this.computeQ(sh.s(), ga);
 			if(q > maxQ){
 				maxQ = q;
 			}
@@ -261,18 +261,18 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	protected double performFixedPolicyBellmanUpdateOn(HashableState sh, Policy p){
 		
 		
-		if(this.model.terminal(sh.s)){
+		if(this.model.terminal(sh.s())){
 			//terminal states always have a state value of 0
 			valueFunction.put(sh, 0.);
 			return 0.;
 		}
 		
 		double weightedQ = 0.;
-		List<ActionProb> policyDistribution = p.getActionDistributionForState(sh.s);
+		List<ActionProb> policyDistribution = p.getActionDistributionForState(sh.s());
 		
 
 		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
-		List<Action> gas = this.getAllGroundedActions(sh.s);
+		List<Action> gas = this.getAllGroundedActions(sh.s());
 		for(Action ga : gas){
 
 			double policyProb = Policy.getProbOfActionGivenDistribution(ga, policyDistribution);
@@ -280,7 +280,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 				continue; //doesn't contribute
 			}
 
-			double q = this.computeQ(sh.s, ga);
+			double q = this.computeQ(sh.s(), ga);
 			weightedQ += policyProb*q;
 		}
 			

@@ -4,6 +4,7 @@ import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
+import burlap.statehashing.WrappedHashableState;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * @author James MacGlashan.
  */
-public class IDSimpleHashableState extends HashableState {
+public class IDSimpleHashableState extends WrappedHashableState {
 
 	public IDSimpleHashableState() {
 	}
@@ -34,7 +35,7 @@ public class IDSimpleHashableState extends HashableState {
 		if(!(obj instanceof HashableState)){
 			return false;
 		}
-		return statesEqual(this, (HashableState)obj);
+		return statesEqual(this.s, ((HashableState)obj).s());
 	}
 
 	@Override

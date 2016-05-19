@@ -99,7 +99,7 @@ public class BoltzmannActor extends Actor {
 		HashableState sh = this.hashingFactory.hashState(critqiue.getS());
 		PolicyNode node = this.getNode(sh);
 		
-		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s, critqiue.getA());
+		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s(), critqiue.getA());
 		
 		ActionPreference pref = this.getMatchingPreference(sh, critqiue.getA(), node);
 		pref.preference += learningRate * critqiue.getCritique();
@@ -155,7 +155,7 @@ public class BoltzmannActor extends Actor {
 	protected PolicyNode getNode(HashableState sh){
 		
 		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
-		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, sh.s);
+		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, sh.s());
 		
 		PolicyNode node = this.preferences.get(sh);
 		if(node == null){

@@ -361,13 +361,13 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		
 		if(node == null){
 			node = new QLearningStateNode(s);
-			List<Action> gas = this.getAllGroundedActions(s.s);
+			List<Action> gas = this.getAllGroundedActions(s.s());
 			if(gas.isEmpty()){
-				gas = this.getAllGroundedActions(s.s);
+				gas = this.getAllGroundedActions(s.s());
 				throw new RuntimeErrorException(new Error("No possible actions in this state, cannot continue Q-learning"));
 			}
 			for(Action ga : gas){
-				node.addQValue(ga, qInitFunction.qValue(s.s, ga));
+				node.addQValue(ga, qInitFunction.qValue(s.s(), ga));
 			}
 			
 			qIndex.put(s, node);
@@ -436,7 +436,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		maxQChangeInLastEpisode = 0.;
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
-			Action action = learningPolicy.getAction(curState.s);
+			Action action = learningPolicy.getAction(curState.s());
 			QValue curQ = this.getQ(curState, action);
 
 
@@ -465,7 +465,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			eStepCounter += stepInc;
 
 			if(!(action instanceof Option) || !this.shouldDecomposeOptions){
-				ea.recordTransitionTo(action, nextState.s, r);
+				ea.recordTransitionTo(action, nextState.s(), r);
 			}
 			else{
 				ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);
@@ -476,7 +476,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			double oldQ = curQ.q;
 
 			//update Q-value
-			curQ.q = curQ.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState.s, action) * (r + (discount * maxQ) - curQ.q);
+			curQ.q = curQ.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, curState.s(), action) * (r + (discount * maxQ) - curQ.q);
 
 			double deltaQ = Math.abs(oldQ - curQ.q);
 			if(deltaQ > maxQChangeInLastEpisode){

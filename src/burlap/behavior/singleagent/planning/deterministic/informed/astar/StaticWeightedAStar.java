@@ -52,7 +52,7 @@ public class StaticWeightedAStar extends AStar {
 			cumR = pCumR + r;
 		}
 		
-		double H  = heuristic.h(successorState.s);
+		double H  = heuristic.h(successorState.s());
 		lastComputedCumR = cumR;
 		double F = cumR + (this.epsilonP1*H);
 		

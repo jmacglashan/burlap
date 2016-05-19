@@ -139,7 +139,7 @@ public class DynamicWeightedAStar extends AStar {
 		HashIndexedHeap<PrioritizedSearchNode> openQueue = new HashIndexedHeap<PrioritizedSearchNode>(new PrioritizedSearchNode.PSNComparator());
 		Map<PrioritizedSearchNode, PrioritizedSearchNode> closedSet = new HashMap<PrioritizedSearchNode,PrioritizedSearchNode>();
 		
-		PrioritizedSearchNode ipsn = new PrioritizedSearchNode(sih, this.computeF(null, null, sih, new EnvironmentOutcome(null, null, sih.s, 0., false)));
+		PrioritizedSearchNode ipsn = new PrioritizedSearchNode(sih, this.computeF(null, null, sih, new EnvironmentOutcome(null, null, sih.s(), 0., false)));
 		this.insertIntoOpen(openQueue, ipsn);
 		
 		int nexpanded = 0;
@@ -157,7 +157,7 @@ public class DynamicWeightedAStar extends AStar {
 			}
 			
 			
-			State s = node.s.s;
+			State s = node.s.s();
 			if(gc.satisfies(s)){
 				lastVistedNode = node;
 				break;
@@ -239,7 +239,7 @@ public class DynamicWeightedAStar extends AStar {
 			}
 		}
 		
-		double H  = heuristic.h(successorState.s);
+		double H  = heuristic.h(successorState.s());
 		lastComputedCumR = cumR;
 		lastComputedDepth = d;
 		double weightedE = this.epsilon * this.epsilonWeight(d);

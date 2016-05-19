@@ -150,14 +150,14 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 				t.eligibility = 1.;
 			}
 			
-			double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, t.sh.s, null);
+			double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, t.sh.s(), null);
 			t.v.v = t.v.v + learningRate * delta * t.eligibility;
 			t.eligibility = t.eligibility * lambda * discount;
 		}
 		
 		if(!foundTrace){
 			//then add it
-			double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s, null);
+			double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s(), null);
 			vs.v = vs.v + learningRate * delta;
 			StateEligibilityTrace t = new StateEligibilityTrace(sh, discount*this.lambda, vs);
 			
@@ -199,7 +199,7 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 	protected VValue getV(HashableState sh){
 		VValue v = this.vIndex.get(sh);
 		if(v == null){
-			v = new VValue(this.vInitFunction.value(sh.s));
+			v = new VValue(this.vInitFunction.value(sh.s()));
 			this.vIndex.put(sh, v);
 		}
 		return v;

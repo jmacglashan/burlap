@@ -140,7 +140,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			List<TransitionProb> tps = new ArrayList<TransitionProb>(aggregator.size());
 			double sumP = 0.;
 			for(Map.Entry<HashableState, Double> e : aggregator.entrySet()) {
-				State nsb = e.getKey().getSourceState();
+				State nsb = e.getKey().s();
 				double p = e.getValue();
 				sumP += p;
 				EnvironmentOutcome eo = new EnvironmentOutcome(s, a, nsb, sumR, false);

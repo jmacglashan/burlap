@@ -124,16 +124,16 @@ public class PrioritizedSweeping extends ValueIteration{
 
 			
 			//do not need to expand from terminal states if set to prune
-			if(model.terminal(node.sh.s) && stopReachabilityFromTerminalStates){
+			if(model.terminal(node.sh.s()) && stopReachabilityFromTerminalStates){
 				continue;
 			}
 
-			this.valueFunction.put(node.sh, this.valueInitializer.value(node.sh.s));
+			this.valueFunction.put(node.sh, this.valueInitializer.value(node.sh.s()));
 
 
-			List<Action> actions = this.getAllGroundedActions(node.sh.s);
+			List<Action> actions = this.getAllGroundedActions(node.sh.s());
 			for(Action a : actions){
-				List<TransitionProb> tps = ((FullModel)model).transitions(node.sh.s, a);
+				List<TransitionProb> tps = ((FullModel)model).transitions(node.sh.s(), a);
 				for(TransitionProb tp : tps){
 					HashableState tsh = this.stateHash(tp.eo.op);
 					BPTRNode tnode = this.getNodeFor(tsh);
@@ -267,12 +267,12 @@ public class PrioritizedSweeping extends ValueIteration{
 		 */
 		public BPTR(BPTRNode backNode, HashableState forwardState){
 			this.backNode = backNode;
-			List<Action> actions = PrioritizedSweeping.this.getAllGroundedActions(backNode.sh.s);
+			List<Action> actions = PrioritizedSweeping.this.getAllGroundedActions(backNode.sh.s());
 			double maxProb = 0.;
 			//find action with maximum transition probability
 			for(Action ga : actions){
 				//search for match
-				List<TransitionProb> tps = ((FullModel)PrioritizedSweeping.this.model).transitions(backNode.sh.s, ga);
+				List<TransitionProb> tps = ((FullModel)PrioritizedSweeping.this.model).transitions(backNode.sh.s(), ga);
 				for(TransitionProb tp : tps){
 					HashableState tpsh = PrioritizedSweeping.this.hashingFactory.hashState(tp.eo.op);
 					if(tpsh.equals(forwardState)){

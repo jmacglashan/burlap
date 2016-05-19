@@ -95,7 +95,7 @@ public class AStar extends BestFirst{
 			cumR = pCumR + r;
 		}
 		
-		double H  = heuristic.h(successorState.s);
+		double H  = heuristic.h(successorState.s());
 		lastComputedCumR = cumR;
 		double F = cumR + H;
 		

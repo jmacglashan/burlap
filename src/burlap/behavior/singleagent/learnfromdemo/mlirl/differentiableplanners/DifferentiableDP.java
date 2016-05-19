@@ -61,12 +61,12 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	@Override
 	protected double performBellmanUpdateOn(HashableState sh){
 
-		if(model.terminal(sh.s)){
+		if(model.terminal(sh.s())){
 			this.valueFunction.put(sh, 0.);
 			return 0.;
 		}
 
-		List<QValue> qs = this.getQs(sh.s);
+		List<QValue> qs = this.getQs(sh.s());
 		double [] dqs = new double[qs.size()];
 		for(int i = 0; i < qs.size(); i++){
 			dqs[i] = qs.get(i).q;
@@ -96,7 +96,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 		FunctionGradient vGradient = new FunctionGradient.SparseGradient();
 		//get q objects
-		List<QValue> Qs = this.getQs(sh.s);
+		List<QValue> Qs = this.getQs(sh.s());
 		double [] qs = new double[Qs.size()];
 		for(int i = 0; i < Qs.size(); i++){
 			qs[i] = Qs.get(i).q;
@@ -104,7 +104,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 		FunctionGradient [] qGradients = new FunctionGradient[qs.length];
 		for(int i = 0; i < qs.length; i++){
-			qGradients[i] = this.getQGradient(sh.s, Qs.get(i).a).gradient;
+			qGradients[i] = this.getQGradient(sh.s(), Qs.get(i).a).gradient;
 		}
 
 		double maxBetaScaled = BoltzmannPolicyGradient.maxBetaScaled(qs, this.boltzBeta);

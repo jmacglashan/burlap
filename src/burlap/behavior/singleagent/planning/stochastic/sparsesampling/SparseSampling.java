@@ -456,11 +456,11 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @return a {@link List} of the estiamted Q-values for each action.
 		 */
 		public List<QValue> estimateQs(){
-			List<Action> gas = SparseSampling.this.getAllGroundedActions(this.sh.s);
+			List<Action> gas = SparseSampling.this.getAllGroundedActions(this.sh.s());
 			List<QValue> qs = new ArrayList<QValue>(gas.size());
 			for(Action ga : gas){
 				if(this.height <= 0){
-					qs.add(new QValue(this.sh.s, ga, SparseSampling.this.vinit.value(this.sh.s)));
+					qs.add(new QValue(this.sh.s(), ga, SparseSampling.this.vinit.value(this.sh.s())));
 				}
 				else{
 					double q;
@@ -471,7 +471,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 						q = this.fullBelmanQValue(ga);
 					}
 					
-					qs.add(new QValue(this.sh.s, ga, q));
+					qs.add(new QValue(this.sh.s(), ga, q));
 				}
 			}
 			
@@ -492,7 +492,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			for(int i = 0; i < c; i++){
 				
 				//execute
-				EnvironmentOutcome eo = model.sample(sh.s, ga);
+				EnvironmentOutcome eo = model.sample(sh.s(), ga);
 				State ns = eo.op;
 				
 				//manage option stepsize modifications
@@ -524,7 +524,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		protected double fullBelmanQValue(Action ga){
 			
 			double sum = 0.;
-			List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, ga);
+			List<TransitionProb> tps = ((FullModel)model).transitions(sh.s(), ga);
 			
 			if(!(ga instanceof Option)){
 				
@@ -557,7 +557,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 				return this.v;
 			}
 			
-			if(SparseSampling.this.model.terminal(sh.s)){
+			if(SparseSampling.this.model.terminal(sh.s())){
 				this.v = 0.;
 				this.closed = true;
 				return this.v;

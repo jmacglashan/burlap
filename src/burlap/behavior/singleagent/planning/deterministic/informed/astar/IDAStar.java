@@ -130,12 +130,12 @@ public class IDAStar extends DeterministicPlanner {
 		if(this.planEndNode(lastNode)){
 			return lastNode; //succeed condition
 		}
-		if(this.model.terminal(lastNode.s.s)){
+		if(this.model.terminal(lastNode.s.s())){
 			return null; //treat like a dead end if we're at a terminal state
 		}
 		
 		
-		State s = lastNode.s.s;
+		State s = lastNode.s.s();
 		
 		//get all actions
 		List<Action> gas = this.getAllGroundedActions(s);
@@ -194,7 +194,7 @@ public class IDAStar extends DeterministicPlanner {
 	 */
 	protected boolean planEndNode(SearchNode node){
 		
-		if(gc.satisfies(node.s.s)){
+		if(gc.satisfies(node.s.s())){
 			return true;
 		}
 		

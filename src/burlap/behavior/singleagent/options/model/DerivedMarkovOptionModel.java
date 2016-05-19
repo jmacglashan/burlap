@@ -76,7 +76,7 @@ public class DerivedMarkovOptionModel implements FullModel{
 
 		List<TransitionProb> transitions = new ArrayList<TransitionProb>(possibleTerminations.size());
 		for(Map.Entry<HashableState, Double> e : possibleTerminations.entrySet()){
-			EnvironmentOutcome eo = new EnvironmentOutcome(s, a, e.getKey().s, r, srcTerminateStates.contains(e.getKey()));
+			EnvironmentOutcome eo = new EnvironmentOutcome(s, a, e.getKey().s(), r, srcTerminateStates.contains(e.getKey()));
 			TransitionProb tp = new TransitionProb(e.getValue(), eo);
 			transitions.add(tp);
 		}

@@ -155,7 +155,7 @@ public class SarsaLam extends QLearning {
 		eStepCounter = 0;
 		LinkedList<EligibilityTrace> traces = new LinkedList<SarsaLam.EligibilityTrace>();
 
-		Action action = learningPolicy.getAction(curState.s);
+		Action action = learningPolicy.getAction(curState.s());
 		QValue curQ = this.getQ(curState, action);
 
 
@@ -171,7 +171,7 @@ public class SarsaLam extends QLearning {
 			}
 
 			HashableState nextState = this.stateHash(eo.op);
-			Action nextAction = learningPolicy.getAction(nextState.s);
+			Action nextAction = learningPolicy.getAction(nextState.s());
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
 
@@ -187,7 +187,7 @@ public class SarsaLam extends QLearning {
 			eStepCounter += stepInc;
 
 			if(!(action instanceof Option) || !this.shouldDecomposeOptions){
-				ea.recordTransitionTo(action, nextState.s, r);
+				ea.recordTransitionTo(action, nextState.s(), r);
 			}
 			else{
 				ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);
@@ -212,7 +212,7 @@ public class SarsaLam extends QLearning {
 					}
 				}
 
-				double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.sh.s, et.q.a);
+				double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, et.sh.s(), et.q.a);
 
 				et.q.q = et.q.q + (learningRate * et.eligibility * delta);
 				et.eligibility = et.eligibility * lambda * discount;

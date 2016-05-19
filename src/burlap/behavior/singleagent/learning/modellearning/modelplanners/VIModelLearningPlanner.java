@@ -88,7 +88,7 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 		this.resetSolver();
 		//seed state space from what we know exists
 		for(HashableState sh : this.observedStates){
-			this.performReachabilityFrom(sh.s);
+			this.performReachabilityFrom(sh.s());
 		}
 		
 		//run vi

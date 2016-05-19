@@ -296,24 +296,24 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		
 		HashableState csh = this.hashingFactory.hashState(s);
 		
-		while(!model.terminal(csh.s) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
+		while(!model.terminal(csh.s()) && (trajectory.size() < this.maxDepth+1 || this.maxDepth == -1)){
 			
 			if(this.runRolloutsInReverse){
 				trajectory.offerFirst(csh);
 			}
 			
 			this.setValueFunctionToLowerBound();
-			QValue mxL = this.maxQ(csh.s);
+			QValue mxL = this.maxQ(csh.s());
 			this.lowerBoundV.put(csh, mxL.q);
 			
 			this.setValueFunctionToUpperBound();
-			QValue mxU = this.maxQ(csh.s);
+			QValue mxU = this.maxQ(csh.s());
 			this.upperBoundV.put(csh, mxU.q);
 			
 			numBellmanUpdates += 2;
 			this.numSteps++;
 			
-			StateSelectionAndExpectedGap select = this.getNextState(csh.s, mxU.a);
+			StateSelectionAndExpectedGap select = this.getNextState(csh.s(), mxU.a);
 			csh = select.sh;
 			
 			if(select.expectedGap < this.maxDiff){
@@ -323,7 +323,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 			
 		}
 		
-		if(model.terminal(csh.s)){
+		if(model.terminal(csh.s())){
 			this.lowerBoundV.put(csh, 0.);
 			this.upperBoundV.put(csh, 0.);
 		}
@@ -336,11 +336,11 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 			while(!trajectory.isEmpty()){
 				HashableState sh = trajectory.pop();
 				this.setValueFunctionToLowerBound();
-				QValue mxL = this.maxQ(sh.s);
+				QValue mxL = this.maxQ(sh.s());
 				this.lowerBoundV.put(sh, mxL.q);
 				
 				this.setValueFunctionToUpperBound();
-				QValue mxU = this.maxQ(sh.s);
+				QValue mxU = this.maxQ(sh.s());
 				this.upperBoundV.put(sh, mxU.q);
 				
 				numBellmanUpdates += 2;

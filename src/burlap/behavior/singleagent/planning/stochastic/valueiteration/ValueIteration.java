@@ -194,16 +194,16 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 			}
 			
 			//do not need to expand from terminal states if set to prune
-			if(this.model.terminal(sh.s) && stopReachabilityFromTerminalStates){
+			if(this.model.terminal(sh.s()) && stopReachabilityFromTerminalStates){
 				continue;
 			}
 
-			this.valueFunction.put(sh, this.valueInitializer.value(sh.s));
+			this.valueFunction.put(sh, this.valueInitializer.value(sh.s()));
 			
 
-			List<Action> actions = this.getAllGroundedActions(sh.s);
+			List<Action> actions = this.getAllGroundedActions(sh.s());
 			for(Action a : actions){
-				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, a);
+				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s(), a);
 				for(TransitionProb tp : tps){
 					HashableState tsh = this.stateHash(tp.eo.op);
 					if(!openedSet.contains(tsh) && !valueFunction.containsKey(tsh)){

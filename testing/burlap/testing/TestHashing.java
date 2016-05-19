@@ -50,7 +50,7 @@ public class TestHashing {
 		
 		Set<HashableState> renamedStates = new HashSet<HashableState>();
 		for (HashableState state : hashedStates) {
-			State source = state.getSourceState();
+			State source = state.s();
 			State renamed = this.renameObjects((GridWorldState)source.copy());
 			HashableState renamedHashed = factory.hashState(renamed);
 			renamedStates.add(renamedHashed);
@@ -69,7 +69,7 @@ public class TestHashing {
 		
 		Set<HashableState> renamedStates = new HashSet<HashableState>();
 		for (HashableState state : hashedStates) {
-			State source = state.getSourceState();
+			State source = state.s();
 			State renamed = this.renameObjects((GridWorldState)source.copy());
 			HashableState renamedHashed = factory.hashState(renamed);
 			renamedStates.add(renamedHashed);
@@ -163,7 +163,7 @@ public class TestHashing {
 		
 		Set<HashableState> renamedStates = new HashSet<HashableState>();
 		for (HashableState state : hashedStates) {
-			State source = state.getSourceState();
+			State source = state.s();
 			State renamed = this.renameObjects((GridWorldState)source.copy());
 			HashableState renamedHashed = factory.hashState(renamed);
 			renamedStates.add(renamedHashed);
@@ -251,9 +251,9 @@ public class TestHashing {
 		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
 
-			List<Action> gas = ActionUtils.allApplicableActionsForTypes(actionTypes, sh.s);
+			List<Action> gas = ActionUtils.allApplicableActionsForTypes(actionTypes, sh.s());
 			for(Action ga : gas){
-				List <TransitionProb> tps = ((FullModel)inDomain.getModel()).transitions(sh.s, ga);
+				List <TransitionProb> tps = ((FullModel)inDomain.getModel()).transitions(sh.s(), ga);
 				for(TransitionProb tp : tps){
 					HashableState nsh = usingHashFactory.hashState(tp.eo.op);
 					

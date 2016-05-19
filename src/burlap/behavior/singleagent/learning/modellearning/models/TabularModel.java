@@ -93,7 +93,7 @@ public class TabularModel implements KWIKModel {
 		else{
 			double r = san.sumR / san.nTries;
 			for(OutcomeState os : san.outcomes.values()){
-				State sp = os.osh.s;
+				State sp = os.osh.s();
 				double p = (double)os.nTimes / (double)san.nTries;
 				EnvironmentOutcome eo = new EnvironmentOutcome(s, a, sp, r, this.terminalStates.contains(sp));
 				TransitionProb tp = new TransitionProb(p, eo);
@@ -161,7 +161,7 @@ public class TabularModel implements KWIKModel {
 			this.stateNodes.put(sh, sn);
 			
 			//List <GroundedAction> allActions = sh.s.getAllGroundedActionsFor(this.sourceDomain.getActions());
-			List<Action> allActions = ActionUtils.allApplicableActionsForTypes(this.sourceDomain.getActionTypes(), sh.s);
+			List<Action> allActions = ActionUtils.allApplicableActionsForTypes(this.sourceDomain.getActionTypes(), sh.s());
 			for(Action tga : allActions){
 				StateActionNode san = sn.addActionNode(tga);
 				if(tga.equals(ga)){

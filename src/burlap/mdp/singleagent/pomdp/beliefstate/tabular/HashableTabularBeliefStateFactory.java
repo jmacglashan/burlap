@@ -3,6 +3,7 @@ package burlap.mdp.singleagent.pomdp.beliefstate.tabular;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.WrappedHashableState;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Map;
@@ -24,7 +25,7 @@ public class HashableTabularBeliefStateFactory implements HashableStateFactory{
 	}
 
 
-	public static class HashableTabularBeliefState extends HashableState{
+	public static class HashableTabularBeliefState extends WrappedHashableState{
 
 		public HashableTabularBeliefState(State s) {
 			super(s);
@@ -53,7 +54,7 @@ public class HashableTabularBeliefStateFactory implements HashableStateFactory{
 		}
 
 		@Override
-		public State copy() {
+		public HashableState copy() {
 			return new HashableTabularBeliefState(s);
 		}
 	}

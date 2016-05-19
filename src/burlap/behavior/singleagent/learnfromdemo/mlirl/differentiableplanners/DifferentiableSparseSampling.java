@@ -432,17 +432,17 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 			int dim = DifferentiableSparseSampling.this.rfDim;
 
-			List<Action> gas = DifferentiableSparseSampling.this.getAllGroundedActions(this.sh.s);
+			List<Action> gas = DifferentiableSparseSampling.this.getAllGroundedActions(this.sh.s());
 			QAndQGradient qs = new QAndQGradient(gas.size());
 
 			int c = DifferentiableSparseSampling.this.getCAtHeight(this.height);
 			for(Action ga : gas){
 				if(this.height == 0 || c == 0){
-					qs.add(new QValue(this.sh.s, ga, DifferentiableSparseSampling.this.vinit.value(this.sh.s)),
+					qs.add(new QValue(this.sh.s(), ga, DifferentiableSparseSampling.this.vinit.value(this.sh.s())),
 							new QGradientTuple(
-									this.sh.s,
+									this.sh.s(),
 									ga,
-									DifferentiableSparseSampling.this.vinit.getQGradient(this.sh.s, ga)));
+									DifferentiableSparseSampling.this.vinit.getQGradient(this.sh.s(), ga)));
 				}
 				else{
 
@@ -472,10 +472,10 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			for(int i = 0; i < c; i++){
 
 				//execute
-				EnvironmentOutcome eo = model.sample(this.sh.s, ga);
+				EnvironmentOutcome eo = model.sample(this.sh.s(), ga);
 				State ns = eo.op;
 				double r = eo.r;
-				FunctionGradient rGradient = DifferentiableSparseSampling.this.rf.gradient(this.sh.s, ga, ns);
+				FunctionGradient rGradient = DifferentiableSparseSampling.this.rf.gradient(this.sh.s(), ga, ns);
 
 				DiffStateNode nsn = DifferentiableSparseSampling.this.getStateNode(ns, this.height-1);
 
@@ -497,7 +497,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			}
 
 
-			qs.add(new QValue(this.sh.s, ga, sum), new QGradientTuple(this.sh.s, ga, qGradient));
+			qs.add(new QValue(this.sh.s(), ga, sum), new QGradientTuple(this.sh.s(), ga, qGradient));
 
 
 		}
@@ -509,12 +509,12 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
 			double sum = 0.;
-			List<TransitionProb> tps = ((FullModel)model).transitions(sh.s, ga);
+			List<TransitionProb> tps = ((FullModel)model).transitions(sh.s(), ga);
 			for(TransitionProb tp : tps){
 
 				State ns = tp.eo.op;
 				double r = tp.eo.r;
-				FunctionGradient rGradient = DifferentiableSparseSampling.this.rf.gradient(this.sh.s, ga, ns);
+				FunctionGradient rGradient = DifferentiableSparseSampling.this.rf.gradient(this.sh.s(), ga, ns);
 
 				DiffStateNode nsn = DifferentiableSparseSampling.this.getStateNode(ns, this.height-1);
 
@@ -529,7 +529,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 			}
 
-			qs.add(new QValue(this.sh.s, ga, sum), new QGradientTuple(this.sh.s, ga, qGradient));
+			qs.add(new QValue(this.sh.s(), ga, sum), new QGradientTuple(this.sh.s(), ga, qGradient));
 
 		}
 
@@ -540,7 +540,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 				return new VAndVGradient(this.v, this.vgrad);
 			}
 
-			if(model.terminal(this.sh.s)){
+			if(model.terminal(this.sh.s())){
 				this.v = 0.;
 				this.vgrad = new FunctionGradient.SparseGradient();
 				this.closed = true;

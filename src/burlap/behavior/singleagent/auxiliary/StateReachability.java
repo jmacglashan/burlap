@@ -43,7 +43,13 @@ public class StateReachability {
 	 * @return the list of {@link State} objects that are reachable from a source state.
 	 */
 	public static List <State> getReachableStates(State from, SADomain inDomain, HashableStateFactory usingHashFactory){
-		return new ArrayList<State>(getReachableHashedStates(from, inDomain, usingHashFactory));
+		Set<HashableState> hashed = getReachableHashedStates(from, inDomain, usingHashFactory);
+		List<State> states = new ArrayList<State>(hashed.size());
+		for(HashableState sh : hashed){
+			states.add(sh.s());
+		}
+		return states;
+
 	}
 
 	
@@ -77,9 +83,9 @@ public class StateReachability {
 			HashableState sh = openList.poll();
 
 			
-			List<Action> gas = ActionUtils.allApplicableActionsForTypes(actionTypes, sh.s);
+			List<Action> gas = ActionUtils.allApplicableActionsForTypes(actionTypes, sh.s());
 			for(Action ga : gas){
-				List <TransitionProb> tps = model.transitions(sh.s, ga);
+				List <TransitionProb> tps = model.transitions(sh.s(), ga);
 				nGenerated += tps.size();
 				for(TransitionProb tp : tps){
 					HashableState nsh = usingHashFactory.hashState(tp.eo.op);
@@ -115,7 +121,14 @@ public class StateReachability {
 	 * @return a {@link java.util.List} of {@link State} objects that could be reached.
 	 */
 	public static List<State> getPolicyReachableStates(SADomain domain, Policy p, State from, HashableStateFactory usingHashFactory){
-		return new ArrayList<State>(getPolicyReachableHashedStates(domain, p, from, usingHashFactory));
+
+		Set<HashableState> hashed = getPolicyReachableHashedStates(domain, p, from, usingHashFactory);
+		List<State> states = new ArrayList<State>(hashed.size());
+		for(HashableState sh : hashed){
+			states.add(sh.s());
+		}
+		return states;
+
 	}
 
 
@@ -151,10 +164,10 @@ public class StateReachability {
 			HashableState sh = openList.poll();
 
 
-			List<Policy.ActionProb> policyActions = p.getActionDistributionForState(sh.s);
+			List<Policy.ActionProb> policyActions = p.getActionDistributionForState(sh.s());
 			for(Policy.ActionProb ap : policyActions){
 				if(ap.pSelection > 0){
-					List <TransitionProb> tps = model.transitions(sh.s, ap.ga);
+					List <TransitionProb> tps = model.transitions(sh.s(), ap.ga);
 					nGenerated += tps.size();
 					for(TransitionProb tp : tps){
 						HashableState nsh = usingHashFactory.hashState(tp.eo.op);

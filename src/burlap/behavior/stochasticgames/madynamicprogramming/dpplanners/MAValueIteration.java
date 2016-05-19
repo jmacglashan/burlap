@@ -179,7 +179,7 @@ public class MAValueIteration extends MADynamicProgramming {
 			
 			double maxChange = Double.NEGATIVE_INFINITY;
 			for(HashableState sh : this.states){
-				double change = this.backupAllValueFunctions(sh.s);
+				double change = this.backupAllValueFunctions(sh.s());
 				maxChange = Math.max(change, maxChange);
 			}
 			
@@ -222,9 +222,9 @@ public class MAValueIteration extends MADynamicProgramming {
 			HashableState sh = openQueue.poll();
 
 			//expand
-			List<JointAction> jas = JointAction.getAllJointActions(sh.s, this.agentDefinitions);
+			List<JointAction> jas = JointAction.getAllJointActions(sh.s(), this.agentDefinitions);
 			for(JointAction ja : jas){
-				List<StateTransitionProb> tps = model.stateTransitions(sh.s, ja);
+				List<StateTransitionProb> tps = model.stateTransitions(sh.s(), ja);
 				for(StateTransitionProb tp : tps){
 					HashableState shp = this.hashingFactory.hashState(tp.s);
 					if(!this.states.contains(shp)){
