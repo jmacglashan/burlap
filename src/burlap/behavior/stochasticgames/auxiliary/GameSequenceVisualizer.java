@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgames.auxiliary;
 
-import burlap.behavior.stochasticgames.GameAnalysis;
+import burlap.behavior.stochasticgames.GameEpisode;
 import burlap.datastructures.AlphanumericSorting;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.NullState;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * This class is used to visualize a set of games that have been
  * saved to files in a common directory or which are
- * provided to the object as a list of {@link burlap.behavior.stochasticgames.GameAnalysis} objects.
+ * provided to the object as a list of {@link GameEpisode} objects.
  * In the GUI's list of a game's actions, the action name is
  * selected joint action in the currently rendered state.
  * @author James MacGlashan
@@ -59,9 +59,9 @@ public class GameSequenceVisualizer extends JFrame {
 	protected List <String>							episodeFiles;
 	protected DefaultListModel						episodesListModel;
 
-	protected List <GameAnalysis>					directGames;
+	protected List <GameEpisode> directGameEpisodes;
 	
-	protected GameAnalysis							curGA;
+	protected GameEpisode curGA;
 	protected DefaultListModel						iterationListModel;
 	
 	protected SGDomain								domain;
@@ -83,13 +83,13 @@ public class GameSequenceVisualizer extends JFrame {
 
 
 	/**
-	 * Initializes the GameSequenceVisualizer with programatially supplied list of {@link burlap.behavior.stochasticgames.GameAnalysis} objects to view.
+	 * Initializes the GameSequenceVisualizer with programatially supplied list of {@link GameEpisode} objects to view.
 	 * By default the state visualizer will be 800x800 pixels.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the games took place
 	 * @param games the games to view
 	 */
-	public GameSequenceVisualizer(Visualizer v, SGDomain d, List <GameAnalysis> games){
+	public GameSequenceVisualizer(Visualizer v, SGDomain d, List <GameEpisode> games){
 		this.initWithDirectGames(v, d, games, 800, 800);
 	}
 	
@@ -108,14 +108,14 @@ public class GameSequenceVisualizer extends JFrame {
 
 
 	/**
-	 * Initializes the GameSequenceVisualizer with programmatially supplied list of {@link burlap.behavior.stochasticgames.GameAnalysis} objects to view.
+	 * Initializes the GameSequenceVisualizer with programmatially supplied list of {@link GameEpisode} objects to view.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the games took place
 	 * @param games the games to view
 	 * @param w the width of the state visualizer canvas
 	 * @param h the height of the state visualizer canvas
 	 */
-	public GameSequenceVisualizer(Visualizer v, SGDomain d, List<GameAnalysis> games, int w, int h){
+	public GameSequenceVisualizer(Visualizer v, SGDomain d, List<GameEpisode> games, int w, int h){
 		this.initWithDirectGames(v, d, games, w, h);
 	}
 	
@@ -159,15 +159,15 @@ public class GameSequenceVisualizer extends JFrame {
 	 * @param w the width of the state visualizer canvas
 	 * @param h the height of the state visualizer canvas
 	 */
-	public void initWithDirectGames(Visualizer v, SGDomain d, List<GameAnalysis> games, int w, int h){
+	public void initWithDirectGames(Visualizer v, SGDomain d, List<GameEpisode> games, int w, int h){
 
 		painter = v;
 		domain = d;
 
-		this.directGames = games;
+		this.directGameEpisodes = games;
 		this.episodesListModel = new DefaultListModel();
 		int c = 0;
-		for(GameAnalysis ga : this.directGames){
+		for(GameEpisode ga : this.directGameEpisodes){
 			episodesListModel.addElement("game_" + c);
 			c++;
 		}
@@ -319,11 +319,11 @@ public class GameSequenceVisualizer extends JFrame {
        		if (ind != -1) {
        			
 				//System.out.println("Loading Episode File...");
-				if(this.directGames == null) {
-					curGA = GameAnalysis.parseFileIntoGA(episodeFiles.get(ind), domain);
+				if(this.directGameEpisodes == null) {
+					curGA = GameEpisode.parseFileIntoGA(episodeFiles.get(ind), domain);
 				}
 				else{
-					curGA = this.directGames.get(ind);
+					curGA = this.directGameEpisodes.get(ind);
 				}
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");

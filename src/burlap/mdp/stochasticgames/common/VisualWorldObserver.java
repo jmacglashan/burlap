@@ -1,6 +1,6 @@
 package burlap.mdp.stochasticgames.common;
 
-import burlap.behavior.stochasticgames.GameAnalysis;
+import burlap.behavior.stochasticgames.GameEpisode;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
@@ -161,12 +161,12 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 	
 	
 	/**
-	 * Causes the visualizer to be replayed for the given {@link GameAnalysis} object. The initial state
+	 * Causes the visualizer to be replayed for the given {@link GameEpisode} object. The initial state
 	 * of the provided game is first rendered for the given refresh delay of this object, and then each
 	 * joint action is played.
 	 * @param ga the game analysis object to be replayed.
 	 */
-	public void replayGame(GameAnalysis ga){
+	public void replayGame(GameEpisode ga){
 		
 		this.painter.updateState(ga.getState(0));
 		this.updatePropTextArea(ga.getState(0));

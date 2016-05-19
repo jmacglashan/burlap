@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.options;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
@@ -27,7 +27,7 @@ public class EnvironmentOptionOutcome extends EnvironmentOutcome{
 	/**
 	 * The executed episode from this execution
 	 */
-	public EpisodeAnalysis episode;
+	public Episode episode;
 
 
 	/**
@@ -42,7 +42,7 @@ public class EnvironmentOptionOutcome extends EnvironmentOutcome{
 	 * @param discountFactor The discount factor of the MDP.
 	 * @param episode the episode of execution
 	 */
-	public EnvironmentOptionOutcome(State s, Action a, State sp, double r, boolean terminated, double discountFactor, EpisodeAnalysis episode) {
+	public EnvironmentOptionOutcome(State s, Action a, State sp, double r, boolean terminated, double discountFactor, Episode episode) {
 		super(s, a, sp, r, terminated);
 		this.discount = Math.pow(discountFactor, episode.actionSequence.size());
 		this.episode = episode;

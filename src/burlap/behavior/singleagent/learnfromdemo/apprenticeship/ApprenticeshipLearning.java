@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
@@ -53,15 +53,15 @@ public class ApprenticeshipLearning {
 
 	/**
 	 * Calculates the Feature Expectations given one demonstration, a feature mapping and a discount factor gamma
-	 * @param episodeAnalysis An EpisodeAnalysis object that contains a sequence of state-action pairs
+	 * @param episode An EpisodeAnalysis object that contains a sequence of state-action pairs
 	 * @param featureFunctions Feature Mapping which maps states to features
 	 * @param gamma Discount factor gamma
 	 * @return The Feature Expectations generated (double array that matches the length of the featureMapping)
 	 */
 	public static double[] estimateFeatureExpectation(
-			EpisodeAnalysis episodeAnalysis, DenseStateFeatures featureFunctions, Double gamma) {
+			Episode episode, DenseStateFeatures featureFunctions, Double gamma) {
 		return ApprenticeshipLearning.estimateFeatureExpectation(
-				Arrays.asList(episodeAnalysis), featureFunctions, gamma);
+				Arrays.asList(episode), featureFunctions, gamma);
 	}
 
 	/**
@@ -73,13 +73,13 @@ public class ApprenticeshipLearning {
 	 * @return The Feature Expectations generated (double array that matches the length of the featureMapping)
 	 */
 	public static double[] estimateFeatureExpectation(
-			List<EpisodeAnalysis> episodes, DenseStateFeatures featureFunctions, Double gamma) {
+			List<Episode> episodes, DenseStateFeatures featureFunctions, Double gamma) {
 
 		double[] featureExpectations = null;
 
-		for (EpisodeAnalysis episodeAnalysis : episodes) {
-			for (int i = 0; i < episodeAnalysis.stateSequence.size(); ++i) {
-				double [] fvi = featureFunctions.features(episodeAnalysis.stateSequence.get(i));
+		for (Episode episode : episodes) {
+			for (int i = 0; i < episode.stateSequence.size(); ++i) {
+				double [] fvi = featureFunctions.features(episode.stateSequence.get(i));
 				if(featureExpectations == null){
 					featureExpectations = new double[fvi.length];
 				}
@@ -132,10 +132,10 @@ public class ApprenticeshipLearning {
 	 * @param episodes the expert demonstrations
 	 * @return a random episode's initial state
 	 */
-	public static State getInitialState(List<EpisodeAnalysis> episodes) {
+	public static State getInitialState(List<Episode> episodes) {
 		Random rando = new Random();
-		EpisodeAnalysis randomEpisodeAnalysis = episodes.get(rando.nextInt(episodes.size()));
-		return randomEpisodeAnalysis.getState(0);
+		Episode randomEpisode = episodes.get(rando.nextInt(episodes.size()));
+		return randomEpisode.getState(0);
 	}
 
 
@@ -165,8 +165,8 @@ public class ApprenticeshipLearning {
 
 		// Need to evaluate policies with trajectory lengths equal to that of the demonstrated episodes
 		int maximumExpertEpisodeLength = 0;
-		List<EpisodeAnalysis> expertEpisodes = request.getExpertEpisodes();
-		for (EpisodeAnalysis expertEpisode : expertEpisodes) {
+		List<Episode> expertEpisodes = request.getExpertEpisodes();
+		for (Episode expertEpisode : expertEpisodes) {
 			maximumExpertEpisodeLength = 
 					Math.max(maximumExpertEpisodeLength, expertEpisode.numTimeSteps());
 		}
@@ -184,10 +184,10 @@ public class ApprenticeshipLearning {
 				ApprenticeshipLearning.estimateFeatureExpectation(expertEpisodes, featureFunctions, request.getGamma());
 
 		// (1b) Compute u^(0) = u(pi^(0))
-		EpisodeAnalysis episodeAnalysis = 
+		Episode episode =
 				policy.evaluateBehavior(request.getStartStateGenerator().generateState(), request.getPlanner().getModel(), maximumExpertEpisodeLength);
 		double[] featureExpectations = 
-				ApprenticeshipLearning.estimateFeatureExpectation(episodeAnalysis, featureFunctions, request.getGamma());
+				ApprenticeshipLearning.estimateFeatureExpectation(episode, featureFunctions, request.getGamma());
 		featureExpectationsHistory.add(featureExpectations);
 
 		int maxIterations = request.getMaxIterations();
@@ -233,7 +233,7 @@ public class ApprenticeshipLearning {
 
 			// (5) Compute u^(i) = u(pi^(i))
 
-			List<EpisodeAnalysis> evaluatedEpisodes = new ArrayList<EpisodeAnalysis>();
+			List<Episode> evaluatedEpisodes = new ArrayList<Episode>();
 			for (int j = 0; j < policyCount; ++j) {
 				evaluatedEpisodes.add(
 						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));
@@ -267,8 +267,8 @@ public class ApprenticeshipLearning {
 
 		//Max steps that the apprentice will have to learn
 		int maximumExpertEpisodeLength = 0;
-		List<EpisodeAnalysis> expertEpisodes = request.getExpertEpisodes();
-		for (EpisodeAnalysis expertEpisode : expertEpisodes) {
+		List<Episode> expertEpisodes = request.getExpertEpisodes();
+		for (Episode expertEpisode : expertEpisodes) {
 			maximumExpertEpisodeLength = Math.max(maximumExpertEpisodeLength, expertEpisode.numTimeSteps());
 		}
 
@@ -290,7 +290,7 @@ public class ApprenticeshipLearning {
 		policyHistory.add(policy);
 
 		// (1b) Set up initial Feature Expectation based on policy
-		List<EpisodeAnalysis> sampleEpisodes = new ArrayList<EpisodeAnalysis>();
+		List<Episode> sampleEpisodes = new ArrayList<Episode>();
 		for (int j = 0; j < request.getPolicyCount(); ++j) {
 			sampleEpisodes.add(
 					policy.evaluateBehavior(request.getStartStateGenerator().generateState(), domain.getModel(), maximumExpertEpisodeLength));
@@ -350,7 +350,7 @@ public class ApprenticeshipLearning {
 			policyHistory.add(policy);
 
 			// (5) Compute u^(i) = u(pi^(i))
-			List<EpisodeAnalysis> evaluatedEpisodes = new ArrayList<EpisodeAnalysis>();
+			List<Episode> evaluatedEpisodes = new ArrayList<Episode>();
 			for (int j = 0; j < policyCount; ++j) {
 				evaluatedEpisodes.add(
 						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));

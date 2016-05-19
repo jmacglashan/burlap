@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl;
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
@@ -194,7 +194,7 @@ public class MLIRL {
 	public double logLikelihood(){
 
 		double [] weights = this.request.getEpisodeWeights();
-		List<EpisodeAnalysis> exampleTrajectories = this.request.getExpertEpisodes();
+		List<Episode> exampleTrajectories = this.request.getExpertEpisodes();
 
 		double sum = 0.;
 		for(int i = 0; i < exampleTrajectories.size(); i++){
@@ -212,7 +212,7 @@ public class MLIRL {
 	 * @param weight the weight to assign the trajectory
 	 * @return the log-likelihood of the given trajectory under the current reward function parameters and weights it by the given weight.
 	 */
-	public double logLikelihoodOfTrajectory(EpisodeAnalysis ea, double weight){
+	public double logLikelihoodOfTrajectory(Episode ea, double weight){
 		double logLike = 0.;
 		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
@@ -236,10 +236,10 @@ public class MLIRL {
 		HashedAggregator<Integer> gradientSum = new HashedAggregator<Integer>();
 
 		double [] weights = this.request.getEpisodeWeights();
-		List<EpisodeAnalysis> exampleTrajectories = this.request.getExpertEpisodes();
+		List<Episode> exampleTrajectories = this.request.getExpertEpisodes();
 
 		for(int i = 0; i < exampleTrajectories.size(); i++){
-			EpisodeAnalysis ea = exampleTrajectories.get(i);
+			Episode ea = exampleTrajectories.get(i);
 			double weight = weights[i];
 			for(int t = 0; t < ea.numTimeSteps()-1; t++){
 				this.request.getPlanner().planFromState(ea.getState(t));

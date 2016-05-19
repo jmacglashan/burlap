@@ -41,7 +41,7 @@ import java.util.Scanner;
  * @author James MacGlashan
  *
  */
-public class EpisodeAnalysis {
+public class Episode {
 
 	/**
 	 * The sequence of states observed
@@ -63,7 +63,7 @@ public class EpisodeAnalysis {
 	 * Creates a new EpisodeAnalysis object. Before recording transitions, the {@link #initializeEpisideWithInitialState(State)} method
 	 * should be called to set the initial state of the episode.
 	 */
-	public EpisodeAnalysis(){
+	public Episode(){
 		this.initializeDatastructures();
 	}
 	
@@ -72,7 +72,7 @@ public class EpisodeAnalysis {
 	 * Initializes a new EpisodeAnalysis object with the initial state in which the episode started.
 	 * @param initialState the initial state of the episode
 	 */
-	public EpisodeAnalysis(State initialState){
+	public Episode(State initialState){
 		this.initializeEpisideWithInitialState(initialState);
 	}
 	
@@ -227,7 +227,7 @@ public class EpisodeAnalysis {
 	 * to a episode.
 	 * @param e the execution results to append to this episode.
 	 */
-	public void appendAndMergeEpisodeAnalysis(EpisodeAnalysis e){
+	public void appendAndMergeEpisodeAnalysis(Episode e){
 		for(int i = 0; i < e.numTimeSteps()-1; i++){
 			this.recordTransitionTo(e.getAction(i), e.getState(i+1), e.getReward(i+1));
 		}
@@ -266,14 +266,14 @@ public class EpisodeAnalysis {
 
 
 	/**
-	 * Takes a {@link java.util.List} of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects and writes them to a directory.
+	 * Takes a {@link java.util.List} of {@link Episode} objects and writes them to a directory.
 	 * The format of the file names will be "baseFileName{index}.episode" where {index} represents the index of the
 	 * episode in the list. States must be serializable.
 	 * @param episodes the list of episodes to write to disk
 	 * @param directoryPath the directory path in which the episodes will be written
 	 * @param baseFileName the base file name to use for the episode files
 	 */
-	public static void writeEpisodesToDisk(List<EpisodeAnalysis> episodes, String directoryPath, String baseFileName){
+	public static void writeEpisodesToDisk(List<Episode> episodes, String directoryPath, String baseFileName){
 
 
 		if(!directoryPath.endsWith("/")){
@@ -281,7 +281,7 @@ public class EpisodeAnalysis {
 		}
 
 		for(int i = 0; i < episodes.size(); i++){
-			EpisodeAnalysis ea = episodes.get(i);
+			Episode ea = episodes.get(i);
 			ea.writeToFile(directoryPath + baseFileName + i);
 		}
 
@@ -324,12 +324,12 @@ public class EpisodeAnalysis {
 
 	/**
 	 * Takes a path to a directory containing .episode files and reads them all into a {@link java.util.List}
-	 * of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 * of {@link Episode} objects.
 	 * @param directoryPath the path to the directory containing the episode files
 	 * @param d the domain to which the episode states and actions belong
-	 * @return a {@link java.util.List} of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 * @return a {@link java.util.List} of {@link Episode} objects.
 	 */
-	public static List<EpisodeAnalysis> parseFilesIntoEAList(String directoryPath, Domain d){
+	public static List<Episode> parseFilesIntoEAList(String directoryPath, Domain d){
 
 		if(!directoryPath.endsWith("/")){
 			directoryPath = directoryPath + "/";
@@ -349,11 +349,11 @@ public class EpisodeAnalysis {
 		String[] children = dir.list(filter);
 		Arrays.sort(children, new AlphanumericSorting());
 
-		List<EpisodeAnalysis> eas = new ArrayList<EpisodeAnalysis>(children.length);
+		List<Episode> eas = new ArrayList<Episode>(children.length);
 
 		for(int i = 0; i < children.length; i++){
 			String episodeFile = directoryPath + children[i];
-			EpisodeAnalysis ea = parseFileIntoEA(episodeFile, d);
+			Episode ea = parseFileIntoEA(episodeFile, d);
 			eas.add(ea);
 		}
 
@@ -367,7 +367,7 @@ public class EpisodeAnalysis {
 	 * @param d the domain to which the states and actions belong
 	 * @return an EpisodeAnalysis object.
 	 */
-	public static EpisodeAnalysis parseFileIntoEA(String path, Domain d){
+	public static Episode parseFileIntoEA(String path, Domain d){
 
 		//read whole file into string first
 		String fcont = null;
@@ -409,10 +409,10 @@ public class EpisodeAnalysis {
 	}
 
 
-	public static EpisodeAnalysis parseEpisode(Domain domain, String episodeString){
+	public static Episode parseEpisode(Domain domain, String episodeString){
 
 		Yaml yaml = new Yaml();
-		EpisodeAnalysis ea = (EpisodeAnalysis)yaml.load(episodeString);
+		Episode ea = (Episode)yaml.load(episodeString);
 		return ea;
 	}
 
@@ -428,7 +428,7 @@ public class EpisodeAnalysis {
 		State s = new GridWorldState(new GridAgent(1, 3));
 
 		Policy p = new RandomPolicy(domain);
-		EpisodeAnalysis ea = p.evaluateBehavior(s, domain.getModel(), 30);
+		Episode ea = p.evaluateBehavior(s, domain.getModel(), 30);
 
 		String yamlOut = ea.serialize();
 
@@ -436,7 +436,7 @@ public class EpisodeAnalysis {
 
 		System.out.println("\n\n");
 
-		EpisodeAnalysis read = EpisodeAnalysis.parseEpisode(domain, yamlOut);
+		Episode read = Episode.parseEpisode(domain, yamlOut);
 
 		System.out.println(read.getActionSequenceString());
 		System.out.println(read.getState(0).toString());

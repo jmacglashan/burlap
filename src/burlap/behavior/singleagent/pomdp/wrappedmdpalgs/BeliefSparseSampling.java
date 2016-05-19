@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.pomdp.wrappedmdpalgs;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
@@ -135,7 +135,7 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 		}
 		*/
 
-		EpisodeAnalysis ea = agent.actUntilTerminalOrMaxSteps(30);
+		Episode ea = agent.actUntilTerminalOrMaxSteps(30);
 
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
 			System.out.println(ea.getAction(i) + " " + ea.getReward(i+1));

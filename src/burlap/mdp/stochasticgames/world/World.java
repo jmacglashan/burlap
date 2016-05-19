@@ -1,6 +1,6 @@
 package burlap.mdp.stochasticgames.world;
 
-import burlap.behavior.stochasticgames.GameAnalysis;
+import burlap.behavior.stochasticgames.GameEpisode;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
@@ -57,7 +57,7 @@ public class World {
 	protected List<WorldObserver>				worldObservers;
 	
 	
-	protected GameAnalysis						currentGameRecord;
+	protected GameEpisode currentGameEpisodeRecord;
 	protected boolean							isRecordingGame = false;
 	
 	protected int								debugId;
@@ -289,18 +289,18 @@ public class World {
 
 	/**
 	 * Runs a game until a terminal state is hit.
-	 * @return a {@link burlap.behavior.stochasticgames.GameAnalysis} of the game.
+	 * @return a {@link GameEpisode} of the game.
 	 */
-	public GameAnalysis runGame(){
+	public GameEpisode runGame(){
 		return this.runGame(-1);
 	}
 	
 	/**
 	 * Runs a game until a terminal state is hit for maxStages have occurred
 	 * @param maxStages the maximum number of stages to play in the game before its forced to end. If set to -1, then run until a terminal state is hit.
-	 * @return a {@link burlap.behavior.stochasticgames.GameAnalysis} of the game.
+	 * @return a {@link GameEpisode} of the game.
 	 */
-	public GameAnalysis runGame(int maxStages){
+	public GameEpisode runGame(int maxStages){
 		
 		return this.runGame(maxStages, initialStateGenerator.generateState(agents));
 		
@@ -311,16 +311,16 @@ public class World {
 	 * Runs a game starting in the input state until a terminal state is hit.
 	 * @param maxStages the maximum number of stages to play in the game before its forced to end. If set to -1, then run until a terminal state is hit.
 	 * @param s the input {@link State} from which the game will start
-	 * @return a {@link burlap.behavior.stochasticgames.GameAnalysis} of the game.
+	 * @return a {@link GameEpisode} of the game.
 	 */
-	public GameAnalysis runGame(int maxStages, State s){
+	public GameEpisode runGame(int maxStages, State s){
 
 		for(SGAgent a : agents){
 			a.gameStarting();
 		}
 
 		currentState = s;
-		this.currentGameRecord = new GameAnalysis(currentState);
+		this.currentGameEpisodeRecord = new GameEpisode(currentState);
 		this.isRecordingGame = true;
 
 		int t = 0;
@@ -348,18 +348,18 @@ public class World {
 
 		this.isRecordingGame = false;
 
-		return this.currentGameRecord;
+		return this.currentGameEpisodeRecord;
 	}
 	
 	/**
 	 * Rollsout a joint policy until a terminate state is reached for a maximum number of stages.
 	 * @param jp the joint policy to rollout
 	 * @param maxStages the maximum number of stages
-	 * @return a {@link GameAnalysis} that has recorded the result.
+	 * @return a {@link GameEpisode} that has recorded the result.
 	 */
-	public GameAnalysis rolloutJointPolicy(JointPolicy jp, int maxStages){
+	public GameEpisode rolloutJointPolicy(JointPolicy jp, int maxStages){
 		currentState = initialStateGenerator.generateState(agents);
-		this.currentGameRecord = new GameAnalysis(currentState);
+		this.currentGameEpisodeRecord = new GameEpisode(currentState);
 		this.isRecordingGame = true;
 		int t = 0;
 		
@@ -370,7 +370,7 @@ public class World {
 		
 		this.isRecordingGame = false;
 		
-		return this.currentGameRecord;
+		return this.currentGameEpisodeRecord;
 	}
 	
 	
@@ -380,11 +380,11 @@ public class World {
 	 * @param jp the joint policy to rollout
 	 * @param s the state from which the joint policy should be rolled out
 	 * @param maxStages the maximum number of stages
-	 * @return a {@link GameAnalysis} that has recorded the result.
+	 * @return a {@link GameEpisode} that has recorded the result.
 	 */
-	public GameAnalysis rolloutJointPolicyFromState(JointPolicy jp, State s, int maxStages){
+	public GameEpisode rolloutJointPolicyFromState(JointPolicy jp, State s, int maxStages){
 		currentState = s;
-		this.currentGameRecord = new GameAnalysis(currentState);
+		this.currentGameEpisodeRecord = new GameEpisode(currentState);
 		this.isRecordingGame = true;
 		int t = 0;
 		
@@ -395,7 +395,7 @@ public class World {
 		
 		this.isRecordingGame = false;
 		
-		return this.currentGameRecord;
+		return this.currentGameEpisodeRecord;
 	}
 	
 	/**
@@ -448,7 +448,7 @@ public class World {
 		
 		//record events
 		if(this.isRecordingGame){
-			this.currentGameRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
+			this.currentGameEpisodeRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
 		}
 		
 	}
@@ -493,7 +493,7 @@ public class World {
 		
 		//record events
 		if(this.isRecordingGame){
-			this.currentGameRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
+			this.currentGameEpisodeRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
 		}
 		
 	}

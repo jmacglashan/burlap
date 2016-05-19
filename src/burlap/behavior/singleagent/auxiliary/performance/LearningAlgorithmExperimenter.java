@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.auxiliary.performance;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.debugtools.DPrint;
@@ -351,7 +351,7 @@ public class LearningAlgorithmExperimenter {
 		
 		int stepsRemaining = this.trialLength;
 		while(stepsRemaining > 0){
-			EpisodeAnalysis ea = agent.runLearningEpisode(this.environmentSever, stepsRemaining);
+			Episode ea = agent.runLearningEpisode(this.environmentSever, stepsRemaining);
 			stepsRemaining -= ea.numTimeSteps()-1; //-1  because we want to subtract the number of actions, not the number of states seen
 			this.plotter.endEpisode();
 			this.environmentSever.resetEnvironment();

@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.IRLRequest;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.DifferentiableVI;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
@@ -54,7 +54,7 @@ public class MLIRLRequest extends IRLRequest{
 	 * @param expertEpisodes the expert episodes/trajectories to use for training.
 	 * @param rf the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} model to use.
 	 */
-	public MLIRLRequest(SADomain domain, Planner planner, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf){
+	public MLIRLRequest(SADomain domain, Planner planner, List<Episode> expertEpisodes, DifferentiableRF rf){
 		super(domain, planner, expertEpisodes);
 		if(planner != null && !(planner instanceof QGradientPlanner)){
 			throw new RuntimeException("Error: MLIRLRequest requires the valueFunction to be an instance of QGradientPlanner");
@@ -76,7 +76,7 @@ public class MLIRLRequest extends IRLRequest{
 	 * @param rf the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} model to use.
 	 * @param hashingFactory the state hashing factory to use for the created valueFunction.
 	 */
-	public MLIRLRequest(SADomain domain, List<EpisodeAnalysis> expertEpisodes, DifferentiableRF rf, HashableStateFactory hashingFactory){
+	public MLIRLRequest(SADomain domain, List<Episode> expertEpisodes, DifferentiableRF rf, HashableStateFactory hashingFactory){
 		super(domain, null, expertEpisodes);
 		this.rf = rf;
 		this.planner = new DifferentiableVI(domain, rf, gamma, this.boltzmannBeta, hashingFactory, 0.01, 500);

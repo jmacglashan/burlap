@@ -5,7 +5,7 @@ import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
@@ -103,7 +103,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	
 	
 	/**
-	 * Whether options should be decomposed into actions in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+	 * Whether options should be decomposed into actions in the returned {@link Episode} objects.
 	 */
 	protected boolean												shouldDecomposeOptions = true;
 
@@ -420,16 +420,16 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env) {
+	public Episode runLearningEpisode(Environment env) {
 		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+	public Episode runLearningEpisode(Environment env, int maxSteps) {
 
 		State initialState = env.currentObservation();
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
+		Episode ea = new Episode(initialState);
 		HashableState curState = this.stateHash(initialState);
 		eStepCounter = 0;
 

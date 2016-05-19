@@ -1,6 +1,6 @@
 package burlap.mdp.singleagent.pomdp;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
@@ -10,7 +10,7 @@ import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
 
 /**
  * An agent that interacts with a POMDP environment. This class contains methods
- * for acting until environment termination or some fixed number of steps and recording the results in an {@link burlap.behavior.singleagent.EpisodeAnalysis}
+ * for acting until environment termination or some fixed number of steps and recording the results in an {@link Episode}
  * object. These methods will automatically update this agent's {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}, specified by the {@link #curBelief} data member,
  * as observations are made. Before beginning, the
  * agent's initial {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState} will need to be specified with the {@link #setBeliefState(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)}
@@ -69,11 +69,11 @@ public abstract class BeliefAgent {
 	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, Action)}
 	 * method. The agent's action selection for the current belief state is defend by
 	 * the {@link #getAction(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
-	 * sequence is saved and {@link burlap.behavior.singleagent.EpisodeAnalysis} object and returned.
-	 * @return and {@link burlap.behavior.singleagent.EpisodeAnalysis} that recorded the observation, action, and reward sequence.
+	 * sequence is saved and {@link Episode} object and returned.
+	 * @return and {@link Episode} that recorded the observation, action, and reward sequence.
 	 */
-	public EpisodeAnalysis actUntilTerminal(){
-		EpisodeAnalysis ea = new EpisodeAnalysis();
+	public Episode actUntilTerminal(){
+		Episode ea = new Episode();
 		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
 		while(!this.environment.isInTerminalState()){
 			Action ga = this.getAction(this.curBelief);
@@ -94,12 +94,12 @@ public abstract class BeliefAgent {
 	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#getUpdatedBeliefState(State, Action)}
 	 * method. The agent's action selection for the current belief state is defend by
 	 * the {@link #getAction(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
-	 * sequence is saved and {@link burlap.behavior.singleagent.EpisodeAnalysis} object and returned.
+	 * sequence is saved and {@link Episode} object and returned.
 	 * @param maxSteps the maximum number of steps to take in the environment
-	 * @return and {@link burlap.behavior.singleagent.EpisodeAnalysis} that recorded the observation, action, and reward sequence.
+	 * @return and {@link Episode} that recorded the observation, action, and reward sequence.
 	 */
-	public EpisodeAnalysis actUntilTerminalOrMaxSteps(int maxSteps){
-		EpisodeAnalysis ea = new EpisodeAnalysis();
+	public Episode actUntilTerminalOrMaxSteps(int maxSteps){
+		Episode ea = new Episode();
 		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
 		int c = 0;
 		while(!this.environment.isInTerminalState() && c < maxSteps){

@@ -5,7 +5,7 @@ import burlap.behavior.functionapproximation.dense.DenseStateActionLinearVFA;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
@@ -54,7 +54,7 @@ import java.util.List;
  * <p>
  * This data gathering and replanning behavior from learning episodes is not expected to be an especially good choice.
  * Therefore, if you want a better online data acquisition, you should consider subclassing this class
- * and overriding the methods {@link #updateDatasetWithLearningEpisode(EpisodeAnalysis)} and {@link #shouldRereunPolicyIteration(EpisodeAnalysis)}, or
+ * and overriding the methods {@link #updateDatasetWithLearningEpisode(Episode)} and {@link #shouldRereunPolicyIteration(Episode)}, or
  * the {@link #runLearningEpisode(burlap.mdp.singleagent.environment.Environment, int)} method
  * itself.
  * <p>
@@ -141,7 +141,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	/**
 	 * the saved previous learning episodes
 	 */
-	protected LinkedList<EpisodeAnalysis>							episodeHistory = new LinkedList<EpisodeAnalysis>();
+	protected LinkedList<Episode>							episodeHistory = new LinkedList<Episode>();
 	
 	/**
 	 * The number of the most recent learning episodes to store.
@@ -563,14 +563,14 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env) {
+	public Episode runLearningEpisode(Environment env) {
 		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+	public Episode runLearningEpisode(Environment env, int maxSteps) {
 
-		EpisodeAnalysis ea = maxSteps != -1 ? this.learningPolicy.evaluateBehavior(env, maxSteps) : this.learningPolicy.evaluateBehavior(env);
+		Episode ea = maxSteps != -1 ? this.learningPolicy.evaluateBehavior(env, maxSteps) : this.learningPolicy.evaluateBehavior(env);
 
 		this.updateDatasetWithLearningEpisode(ea);
 
@@ -595,9 +595,9 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	
 	/**
 	 * Updates this object's {@link SARSData} to include the results of a learning episode.
-	 * @param ea the learning episode as an {@link EpisodeAnalysis} object.
+	 * @param ea the learning episode as an {@link Episode} object.
 	 */
-	protected void updateDatasetWithLearningEpisode(EpisodeAnalysis ea){
+	protected void updateDatasetWithLearningEpisode(Episode ea){
 		if(this.dataset == null){
 			this.dataset = new SARSData(ea.numTimeSteps()-1);
 		}
@@ -613,14 +613,14 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * @param ea the most recent learning episode
 	 * @return true if LSPI should be rerun; false otherwise.
 	 */
-	protected boolean shouldRereunPolicyIteration(EpisodeAnalysis ea){
+	protected boolean shouldRereunPolicyIteration(Episode ea){
 		if(this.numStepsSinceLastLearningPI+ea.numTimeSteps()-1 > this.minNewStepsForLearningPI){
 			return true;
 		}
 		return false;
 	}
 
-	public EpisodeAnalysis getLastLearningEpisode() {
+	public Episode getLastLearningEpisode() {
 		return this.episodeHistory.getLast();
 	}
 
@@ -628,7 +628,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		this.numEpisodesToStore = numEps;
 	}
 
-	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
+	public List<Episode> getAllStoredLearningEpisodes() {
 		return this.episodeHistory;
 	}
 

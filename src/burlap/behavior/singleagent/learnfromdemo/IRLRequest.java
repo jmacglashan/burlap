@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learnfromdemo;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.singleagent.SADomain;
 
@@ -28,7 +28,7 @@ public class IRLRequest {
 	/**
 	 * The input trajectories/episodes that are to be modeled.
 	 */
-	protected List<EpisodeAnalysis> expertEpisodes;
+	protected List<Episode> expertEpisodes;
 
 	/**
 	 * The discount factor of the problem
@@ -50,7 +50,7 @@ public class IRLRequest {
 	 * @param planner the planning algorithm the IRL algorithm will invoke.
 	 * @param expertEpisodes the example expert trajectories/episodes.
 	 */
-	public IRLRequest(SADomain domain, Planner planner, List<EpisodeAnalysis> expertEpisodes){
+	public IRLRequest(SADomain domain, Planner planner, List<Episode> expertEpisodes){
 		this.setDomain(domain);
 		this.setPlanner(planner);
 		this.setExpertEpisodes(expertEpisodes);
@@ -91,8 +91,8 @@ public class IRLRequest {
 		this.planner = p;
 	}
 
-	public void setExpertEpisodes(List<EpisodeAnalysis> episodeList) {
-		this.expertEpisodes = new ArrayList<EpisodeAnalysis>(episodeList);
+	public void setExpertEpisodes(List<Episode> episodeList) {
+		this.expertEpisodes = new ArrayList<Episode>(episodeList);
 	}
 
 
@@ -107,7 +107,7 @@ public class IRLRequest {
 		return gamma;
 	}
 
-	public List<EpisodeAnalysis> getExpertEpisodes() {
+	public List<Episode> getExpertEpisodes() {
 		return expertEpisodes;
 	}
 }

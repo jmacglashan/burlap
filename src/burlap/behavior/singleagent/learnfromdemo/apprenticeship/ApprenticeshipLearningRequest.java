@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.IRLRequest;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.auxiliary.StateGenerator;
@@ -68,7 +68,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		this.initDefaults();
 	}
 
-	public ApprenticeshipLearningRequest(SADomain domain, Planner planner, DenseStateFeatures featureGenerator, List<EpisodeAnalysis> expertEpisodes, StateGenerator startStateGenerator) {
+	public ApprenticeshipLearningRequest(SADomain domain, Planner planner, DenseStateFeatures featureGenerator, List<Episode> expertEpisodes, StateGenerator startStateGenerator) {
 		super(domain, planner, expertEpisodes);
 		this.initDefaults();
 		this.setFeatureGenerator(featureGenerator);
@@ -114,8 +114,8 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 		this.featureGenerator = stateFeaturesGenerator;
 	}
 
-	public void setExpertEpisodes(List<EpisodeAnalysis> episodeList) {
-		this.expertEpisodes = new ArrayList<EpisodeAnalysis>(episodeList);
+	public void setExpertEpisodes(List<Episode> episodeList) {
+		this.expertEpisodes = new ArrayList<Episode>(episodeList);
 	}
 
 	public void setStartStateGenerator(StateGenerator startStateGenerator) { this.startStateGenerator = startStateGenerator;}
@@ -134,7 +134,7 @@ public class ApprenticeshipLearningRequest extends IRLRequest{
 
 	public DenseStateFeatures getFeatureGenerator() {return this.featureGenerator;}
 
-	public List<EpisodeAnalysis> getExpertEpisodes() { return new ArrayList<EpisodeAnalysis>(this.expertEpisodes);}
+	public List<Episode> getExpertEpisodes() { return new ArrayList<Episode>(this.expertEpisodes);}
 
 	public StateGenerator getStartStateGenerator() {return this.startStateGenerator;}
 

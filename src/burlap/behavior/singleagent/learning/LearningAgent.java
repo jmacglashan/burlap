@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning;
 
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.mdp.singleagent.environment.Environment;
 
 /**
@@ -12,7 +12,7 @@ import burlap.mdp.singleagent.environment.Environment;
  * until the {@link burlap.mdp.singleagent.environment.Environment} transitions to a terminal state. The
  * {@link #runLearningEpisode(burlap.mdp.singleagent.environment.Environment, int)} should have the agent interact
  * with the {@link burlap.mdp.singleagent.environment.Environment} until either a terminal state is reached or
- * the agent has taken maxSteps in the environment. Both methods should return an {@link burlap.behavior.singleagent.EpisodeAnalysis}
+ * the agent has taken maxSteps in the environment. Both methods should return an {@link Episode}
  * object that records the interactions.
  *
  *
@@ -22,9 +22,9 @@ import burlap.mdp.singleagent.environment.Environment;
 public interface LearningAgent {
 
 
-	EpisodeAnalysis runLearningEpisode(Environment env);
+	Episode runLearningEpisode(Environment env);
 
-	EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps);
+	Episode runLearningEpisode(Environment env, int maxSteps);
 
 	
 }

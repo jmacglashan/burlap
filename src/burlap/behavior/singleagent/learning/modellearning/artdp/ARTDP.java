@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learning.modellearning.artdp;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
@@ -58,7 +58,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	/**
 	 * the saved previous learning episodes
 	 */
-	protected LinkedList<EpisodeAnalysis>		episodeHistory = new LinkedList<EpisodeAnalysis>();
+	protected LinkedList<Episode>		episodeHistory = new LinkedList<Episode>();
 	
 	
 	/**
@@ -157,16 +157,16 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env) {
+	public Episode runLearningEpisode(Environment env) {
 		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+	public Episode runLearningEpisode(Environment env, int maxSteps) {
 
 		State initialState = env.currentObservation();
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
+		Episode ea = new Episode(initialState);
 
 		State curState = initialState;
 		int steps = 0;
@@ -191,7 +191,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 
 
-	public EpisodeAnalysis getLastLearningEpisode() {
+	public Episode getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
@@ -204,7 +204,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		}
 	}
 
-	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
+	public List<Episode> getAllStoredLearningEpisodes() {
 		return episodeHistory;
 	}
 

@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.planning.stochastic.rtdp;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
@@ -281,7 +281,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 		int consecutiveSmallDeltas = 0;
 		for(int i = 0; i < numRollouts; i++){
 			
-			EpisodeAnalysis ea = this.rollOutPolicy.evaluateBehavior(initialState, model, maxDepth);
+			Episode ea = this.rollOutPolicy.evaluateBehavior(initialState, model, maxDepth);
 			LinkedList <HashableState> orderedStates = new LinkedList<HashableState>();
 			for(State s : ea.stateSequence){
 				orderedStates.addFirst(this.stateHash(s));

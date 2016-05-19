@@ -1,7 +1,7 @@
 package burlap.testing;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.informed.Heuristic;
@@ -53,7 +53,7 @@ public class TestPlanning {
 		DeterministicPlanner planner = new BFS(this.domain, this.goalCondition, this.hashingFactory);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
-		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, domain.getModel());
+		Episode analysis = p.evaluateBehavior(initialState, domain.getModel());
 		this.evaluateEpisode(analysis, true);
 	}
 	
@@ -64,7 +64,7 @@ public class TestPlanning {
 		DeterministicPlanner planner = new DFS(this.domain, this.goalCondition, this.hashingFactory, -1 , true);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
-		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, domain.getModel());
+		Episode analysis = p.evaluateBehavior(initialState, domain.getModel());
 		this.evaluateEpisode(analysis);
 	}
 	
@@ -102,15 +102,15 @@ public class TestPlanning {
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
 		
-		EpisodeAnalysis analysis = p.evaluateBehavior(initialState, domain.getModel());
+		Episode analysis = p.evaluateBehavior(initialState, domain.getModel());
 		this.evaluateEpisode(analysis, true);
 	}
 	
-	public void evaluateEpisode(EpisodeAnalysis analysis) {
+	public void evaluateEpisode(Episode analysis) {
 		this.evaluateEpisode(analysis, false);
 	}
 	
-	public void evaluateEpisode(EpisodeAnalysis analysis, Boolean expectOptimal) {
+	public void evaluateEpisode(Episode analysis, Boolean expectOptimal) {
 		if (expectOptimal) {
 			Assert.assertEquals(this.gw.getHeight() + this.gw.getWidth() - 1, analysis.stateSequence.size());
 			Assert.assertEquals(analysis.stateSequence.size()-1, analysis.actionSequence.size());

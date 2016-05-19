@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning.tdmethods;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.valuefunction.QValue;
@@ -144,11 +144,11 @@ public class SarsaLam extends QLearning {
 
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps){
+	public Episode runLearningEpisode(Environment env, int maxSteps){
 
 		State initialState = env.currentObservation();
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
+		Episode ea = new Episode(initialState);
 		maxQChangeInLastEpisode = 0.;
 
 		HashableState curState = this.stateHash(initialState);

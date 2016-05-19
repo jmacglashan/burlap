@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory;
 import burlap.behavior.singleagent.planning.Planner;
@@ -123,10 +123,10 @@ public class MultipleIntentionsMLIRL {
 
 	/**
 	 * Returns the probability of each behavior cluster given the trajectory.
-	 * @param t the trajectory (stored as an {@link burlap.behavior.singleagent.EpisodeAnalysis} object) to evaluate.
+	 * @param t the trajectory (stored as an {@link Episode} object) to evaluate.
 	 * @return the probability of each behavior cluster given the trajectory.
 	 */
-	public double [] computeProbabilityOfClustersGivenTrajectory(EpisodeAnalysis t){
+	public double [] computeProbabilityOfClustersGivenTrajectory(Episode t){
 
 		int k = this.clusterPriors.length;
 		double [] probs = new double[k];

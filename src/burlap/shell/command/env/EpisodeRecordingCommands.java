@@ -1,6 +1,6 @@
 package burlap.shell.command.env;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -23,8 +23,8 @@ import java.util.Scanner;
  */
 public class EpisodeRecordingCommands implements EnvironmentObserver {
 
-	protected List<EpisodeAnalysis> episodes = new ArrayList<EpisodeAnalysis>();
-	protected EpisodeAnalysis curEpisode;
+	protected List<Episode> episodes = new ArrayList<Episode>();
+	protected Episode curEpisode;
 	protected boolean finished = false;
 
 	protected boolean autoRecord = false;
@@ -51,7 +51,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 	@Override
 	public void observeEnvironmentInteraction(EnvironmentOutcome eo) {
 		if((finished || curEpisode == null) && recording){
-			curEpisode = new EpisodeAnalysis(eo.o);
+			curEpisode = new Episode(eo.o);
 			curEpisode.recordTransitionTo(eo.a, eo.op, eo.r);
 			finished = false;
 		}
@@ -142,7 +142,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 
 			if(oset.has("i")){
 				if(recording) {
-					curEpisode = new EpisodeAnalysis(env.currentObservation());
+					curEpisode = new Episode(env.currentObservation());
 					finished = false;
 					os.println("Initialized new episode.");
 				}
@@ -156,7 +156,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 				if(EpisodeRecordingCommands.this.curEpisode != null && !EpisodeRecordingCommands.this.recordedLast){
 					EpisodeRecordingCommands.this.episodes.add(EpisodeRecordingCommands.this.curEpisode);
 					EpisodeRecordingCommands.this.recordedLast = true;
-					curEpisode = new EpisodeAnalysis(env.currentObservation());
+					curEpisode = new Episode(env.currentObservation());
 					os.println("Recorded episode since last environment reset or initialization.");
 				}
 				else{
@@ -184,7 +184,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 				if(args.size() != 2){
 					return -1;
 				}
-				EpisodeAnalysis.writeEpisodesToDisk(episodes, args.get(0), args.get(1));
+				Episode.writeEpisodesToDisk(episodes, args.get(0), args.get(1));
 				os.println("Wrote episodes to " + args.get(0));
 				return 0;
 			}
@@ -193,7 +193,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 				if(args.size() != 1){
 					return -1;
 				}
-				List<EpisodeAnalysis> nEpisodes = EpisodeAnalysis.parseFilesIntoEAList(args.get(0), shell.getDomain());
+				List<Episode> nEpisodes = Episode.parseFilesIntoEAList(args.get(0), shell.getDomain());
 				if(oset.has("a")){
 					episodes.addAll(nEpisodes);
 					os.println("Loaded episodes from " + args.get(0) + " and appended them to current episodes list.");
@@ -282,7 +282,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 					os.println("Cannot retrieve information about episode " + which + " because only " + episodes.size() + " episodes are recorded.");
 				}
 				else{
-					EpisodeAnalysis ea = episodes.get(which);
+					Episode ea = episodes.get(which);
 					os.println("The maximum time step in this episode is " + ea.maxTimeStep());
 				}
 			}
@@ -303,7 +303,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 					os.println("Cannot retrieve information about episode " + which + " because only " + episodes.size() + " episodes are recorded.");
 				}
 				else{
-					EpisodeAnalysis ea = episodes.get(which);
+					Episode ea = episodes.get(which);
 					if(i > ea.maxTimeStep() || i < 0){
 						os.println("Cannot print state " + i + " because the episode only has " + ea.maxTimeStep() + " time steps.");
 					}
@@ -329,7 +329,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 					os.println("Cannot retrieve information about episode " + which + " because only " + episodes.size() + " episodes are recorded.");
 				}
 				else{
-					EpisodeAnalysis ea = episodes.get(which);
+					Episode ea = episodes.get(which);
 					if(i > ea.maxTimeStep() || i < 0){
 						os.println("Cannot print action " + i + " because the episode only has " + ea.maxTimeStep() + " time steps (with final time step not having actions taken).");
 					}
@@ -355,7 +355,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 					os.println("Cannot retrieve information about episode " + which + " because only " + episodes.size() + " episodes are recorded.");
 				}
 				else{
-					EpisodeAnalysis ea = episodes.get(which);
+					Episode ea = episodes.get(which);
 					if(i > ea.maxTimeStep() || i < 0){
 						os.println("Cannot print action " + i + " because the episode only has " + ea.maxTimeStep() + " time steps.");
 					}
@@ -383,7 +383,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 					os.println("Cannot load episode state into environment, because the environment does not implement StateSettableEnvironment.");
 				}
 				else{
-					EpisodeAnalysis ea = episodes.get(which);
+					Episode ea = episodes.get(which);
 					if(i > ea.maxTimeStep() || i < 0){
 						os.println("Cannot load state " + i + " into the environment because the episode only has " + ea.maxTimeStep() + " time steps.");
 					}

@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.auxiliary;
 
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.datastructures.AlphanumericSorting;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.OODomain;
@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * This class is used to visualize a set of episodes that have been saved to files in a common directory or which are
- * provided to the object as a list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects.
+ * provided to the object as a list of {@link Episode} objects.
  * In the GUI's list of an episodes actions, the action name is
  * selected action in the currently rendered state.
  * @author James MacGlashan
@@ -60,9 +60,9 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	protected List <String>							episodeFiles;
 	protected DefaultListModel						episodesListModel;
 
-	protected List <EpisodeAnalysis>				directEpisodes;
+	protected List <Episode>				directEpisodes;
 	
-	protected EpisodeAnalysis						curEA;
+	protected Episode curEA;
 	protected DefaultListModel						iterationListModel;
 	
 	protected Domain								domain;
@@ -98,26 +98,26 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	}
 
 	/**
-	 * Initializes the EpisodeSequenceVisualizer with a programatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * Initializes the EpisodeSequenceVisualizer with a programatically supplied list of {@link Episode} objects to view.
 	 * By default the state visualizer will be set to the size 800x800 pixels.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
 	 * @param episodes the episodes to view
 	 */
-	public EpisodeSequenceVisualizer(Visualizer v, Domain d, List<EpisodeAnalysis> episodes){
+	public EpisodeSequenceVisualizer(Visualizer v, Domain d, List<Episode> episodes){
 		this.initWithDirectEpisodes(v, d, episodes, 800, 800);
 	}
 
 
 	/**
-	 * Initializes the EpisodeSequenceVisualizer with a programatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * Initializes the EpisodeSequenceVisualizer with a programatically supplied list of {@link Episode} objects to view.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
 	 * @param episodes the episodes to view
 	 * @param w the width of the state visualizer canvas
 	 * @param h the height of the state visualizer canvas
 	 */
-	public EpisodeSequenceVisualizer(Visualizer v, Domain d, List<EpisodeAnalysis> episodes, int w, int h){
+	public EpisodeSequenceVisualizer(Visualizer v, Domain d, List<Episode> episodes, int w, int h){
 		this.initWithDirectEpisodes(v, d, episodes, w, h);
 	}
 	
@@ -152,14 +152,14 @@ public class EpisodeSequenceVisualizer extends JFrame{
 
 
 	/**
-	 * Initializes the EpisodeSequenceVisualizer with programatically supplied list of {@link burlap.behavior.singleagent.EpisodeAnalysis} objects to view.
+	 * Initializes the EpisodeSequenceVisualizer with programatically supplied list of {@link Episode} objects to view.
 	 * @param v the visualizer used to render states
 	 * @param d the domain in which the episodes took place
 	 * @param episodes the episodes to view
 	 * @param w the width of the state visualizer canvas
 	 * @param h the height of the state visualizer canvas
 	 */
-	public void initWithDirectEpisodes(Visualizer v, Domain d, List <EpisodeAnalysis> episodes, int w, int h){
+	public void initWithDirectEpisodes(Visualizer v, Domain d, List <Episode> episodes, int w, int h){
 
 		painter = v;
 		domain = d;
@@ -167,7 +167,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		this.directEpisodes = episodes;
 		this.episodesListModel = new DefaultListModel();
 		int c = 0;
-		for(EpisodeAnalysis ea : this.directEpisodes){
+		for(Episode ea : this.directEpisodes){
 			episodesListModel.addElement("episode_" + c);
 			c++;
 		}
@@ -329,7 +329,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directEpisodes == null) {
-					curEA = EpisodeAnalysis.parseFileIntoEA(episodeFiles.get(ind), domain);
+					curEA = Episode.parseFileIntoEA(episodeFiles.get(ind), domain);
 				}
 				else{
 					curEA = this.directEpisodes.get(ind);

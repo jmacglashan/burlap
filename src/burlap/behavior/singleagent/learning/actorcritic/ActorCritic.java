@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning.actorcritic;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.Action;
@@ -60,7 +60,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	/**
 	 * The saved and most recent learning episodes this agent has performed. 
 	 */
-	protected LinkedList<EpisodeAnalysis>							episodeHistory;
+	protected LinkedList<Episode>							episodeHistory;
 	
 	/**
 	 * The number of most recent learning episodes to store.
@@ -80,7 +80,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 		this.actor = actor;
 		this.critic = critic;
 		numEpisodesForPlanning = 1;
-		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
+		this.episodeHistory = new LinkedList<Episode>();
 		numEpisodesToStore = 1;
 		this.solverInit(domain, gamma, null);
 	}
@@ -99,7 +99,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 		this.critic = critic;
 		this.maxEpisodeSize = maxEpisodeSize;
 		numEpisodesForPlanning = 1;
-		this.episodeHistory = new LinkedList<EpisodeAnalysis>();
+		this.episodeHistory = new LinkedList<Episode>();
 		numEpisodesToStore = 1;
 		this.solverInit(domain, gamma, null);
 	}
@@ -125,16 +125,16 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env) {
+	public Episode runLearningEpisode(Environment env) {
 		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+	public Episode runLearningEpisode(Environment env, int maxSteps) {
 
 
 		State initialState = env.currentObservation();
-		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
+		Episode ea = new Episode(initialState);
 		State curState = initialState;
 
 		this.critic.initializeEpisode(curState);
@@ -171,7 +171,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 
 
 
-	public EpisodeAnalysis getLastLearningEpisode() {
+	public Episode getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
@@ -179,7 +179,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 		this.numEpisodesToStore = numEps;
 	}
 
-	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
+	public List<Episode> getAllStoredLearningEpisodes() {
 		return this.episodeHistory;
 	}
 

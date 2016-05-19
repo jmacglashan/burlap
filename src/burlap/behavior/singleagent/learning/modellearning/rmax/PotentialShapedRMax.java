@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning.modellearning.rmax;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
@@ -69,7 +69,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 	/**
 	 * the saved previous learning episodes
 	 */
-	protected LinkedList<EpisodeAnalysis>		episodeHistory = new LinkedList<EpisodeAnalysis>();
+	protected LinkedList<Episode>		episodeHistory = new LinkedList<Episode>();
 	
 	/**
 	 * The number of the most recent learning episodes to store.
@@ -184,18 +184,18 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env) {
+	public Episode runLearningEpisode(Environment env) {
 		return this.runLearningEpisode(env, -1);
 	}
 
 	@Override
-	public EpisodeAnalysis runLearningEpisode(Environment env, int maxSteps) {
+	public Episode runLearningEpisode(Environment env, int maxSteps) {
 
 		State initialState = env.currentObservation();
 
 		this.modelPlanner.initializePlannerIn(initialState);
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(initialState);
+		Episode ea = new Episode(initialState);
 
 		Policy policy = this.createUnmodeledFavoredPolicy();
 
@@ -243,7 +243,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 				this.getActionTypes());
 	}
 
-	public EpisodeAnalysis getLastLearningEpisode() {
+	public Episode getLastLearningEpisode() {
 		return episodeHistory.getLast();
 	}
 
@@ -256,7 +256,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		}
 	}
 
-	public List<EpisodeAnalysis> getAllStoredLearningEpisodes() {
+	public List<Episode> getAllStoredLearningEpisodes() {
 		return episodeHistory;
 	}
 

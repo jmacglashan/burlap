@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.options;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -40,7 +40,7 @@ public interface Option extends Action{
 			State initial = env.currentObservation();
 			State cur = initial;
 
-			EpisodeAnalysis episode = new EpisodeAnalysis(cur);
+			Episode episode = new Episode(cur);
 			o.initiateInState(cur);
 			double roll;
 			double pT;

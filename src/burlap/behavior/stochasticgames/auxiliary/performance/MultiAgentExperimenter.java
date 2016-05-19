@@ -2,7 +2,7 @@ package burlap.behavior.stochasticgames.auxiliary.performance;
 
 import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
 import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
-import burlap.behavior.stochasticgames.GameAnalysis;
+import burlap.behavior.stochasticgames.GameEpisode;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.stochasticgames.world.World;
@@ -317,7 +317,7 @@ public class MultiAgentExperimenter {
 		
 		int stepsReamining = this.trialLength;
 		while(stepsReamining > 0){
-			GameAnalysis ga = w.runGame(stepsReamining);
+			GameEpisode ga = w.runGame(stepsReamining);
 			stepsReamining -= ga.numTimeSteps()-1;
 		}
 		

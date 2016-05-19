@@ -1,6 +1,6 @@
 package burlap.behavior.policy;
 
-import burlap.behavior.singleagent.EpisodeAnalysis;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
@@ -72,14 +72,14 @@ import java.util.Random;
  * The {@link #evaluateBehavior(Environment)} and its variants
  * will all evaluate this policy by rolling it out from the input {@link State} or until
  * it reaches a terminal state or executes for the maximum number of steps (depending on which version of the method you use).
- * The resulting behavior will be saved in an {@link burlap.behavior.singleagent.EpisodeAnalysis} object that is returned.
+ * The resulting behavior will be saved in an {@link Episode} object that is returned.
  * <p>
  * All of the evaluateBehavior methods also know how to work with {@link burlap.behavior.singleagent.options.Option}s.
  * In particular, they also are able to record
- * the option execution in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis} object in verbose ways
+ * the option execution in the returned {@link Episode} object in verbose ways
  * for better debugging. By default, when an option is selected in an evaluateBehavior method, each primitive step
- * will be recorded in the {@link burlap.behavior.singleagent.EpisodeAnalysis} object, rather than only recording that
- * the option was taken. Additionally, in the returned {@link burlap.behavior.singleagent.EpisodeAnalysis}, each primitive
+ * will be recorded in the {@link Episode} object, rather than only recording that
+ * the option was taken. Additionally, in the returned {@link Episode}, each primitive
  * will be annotated with the option that executed it and which step in the option execution that it was.
  * If you would like to disable option decomposition you can do so with the
  * {@link #evaluateMethodsShouldDecomposeOption(boolean)}
@@ -233,7 +233,7 @@ public abstract class Policy {
 	 * @param s the state from which to roll out the policy
 	 * @return an EpisodeAnalysis object that records the events from following the policy.
 	 */
-	public EpisodeAnalysis evaluateBehavior(State s, SampleModel model){
+	public Episode evaluateBehavior(State s, SampleModel model){
 		return this.evaluateBehavior(new SimulatedEnvironment(model, s));
 	}
 	
@@ -247,7 +247,7 @@ public abstract class Policy {
 	 * @param maxSteps the maximum number of steps to take before terminating the policy rollout.
 	 * @return an EpisodeAnalysis object that records the events from following the policy.
 	 */
-	public EpisodeAnalysis evaluateBehavior(State s, SampleModel model, int maxSteps){
+	public Episode evaluateBehavior(State s, SampleModel model, int maxSteps){
 		return this.evaluateBehavior(new SimulatedEnvironment(model, s), maxSteps);
 	}
 
@@ -257,11 +257,11 @@ public abstract class Policy {
 	 * Evaluates this policy in the provided {@link burlap.mdp.singleagent.environment.Environment}. The policy will stop being evaluated once a terminal state
 	 * in the environment is reached.
 	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} in which this policy is to be evaluated.
-	 * @return An {@link burlap.behavior.singleagent.EpisodeAnalysis} object specifying the interaction with the environment.
+	 * @return An {@link Episode} object specifying the interaction with the environment.
 	 */
-	public EpisodeAnalysis evaluateBehavior(Environment env){
+	public Episode evaluateBehavior(Environment env){
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(env.currentObservation());
+		Episode ea = new Episode(env.currentObservation());
 
 		do{
 			this.followAndRecordPolicy(env, ea);
@@ -275,11 +275,11 @@ public abstract class Policy {
 	 * in the environment is reached or when the provided number of steps has been taken.
 	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} in which this policy is to be evaluated.
 	 * @param numSteps the maximum number of steps to take in the environment.
-	 * @return An {@link burlap.behavior.singleagent.EpisodeAnalysis} object specifying the interaction with the environment.
+	 * @return An {@link Episode} object specifying the interaction with the environment.
 	 */
-	public EpisodeAnalysis evaluateBehavior(Environment env, int numSteps){
+	public Episode evaluateBehavior(Environment env, int numSteps){
 
-		EpisodeAnalysis ea = new EpisodeAnalysis(env.currentObservation());
+		Episode ea = new Episode(env.currentObservation());
 
 		int nSteps;
 		do{
@@ -293,15 +293,15 @@ public abstract class Policy {
 
 	/**
 	 * Follows this policy for one time step in the provided {@link burlap.mdp.singleagent.environment.Environment} and
-	 * records the interaction in the provided {@link burlap.behavior.singleagent.EpisodeAnalysis} object. If the policy
+	 * records the interaction in the provided {@link Episode} object. If the policy
 	 * selects an {@link burlap.behavior.singleagent.options.Option}, then how the option's interaction in the environment
 	 * is recorded depends on this object's {@link #evaluateDecomposesOptions} flag.
 	 * If {@link #evaluateDecomposesOptions} is false, then the option is recorded as a single action. If it is true, then
 	 * the individual primitive actions selected by the environment are recorded.
 	 * @param env The {@link burlap.mdp.singleagent.environment.Environment} in which this policy should be followed.
-	 * @param ea The {@link burlap.behavior.singleagent.EpisodeAnalysis} object to which the action selection will be recorded.
+	 * @param ea The {@link Episode} object to which the action selection will be recorded.
 	 */
-	protected void followAndRecordPolicy(Environment env, EpisodeAnalysis ea){
+	protected void followAndRecordPolicy(Environment env, Episode ea){
 
 
 		//follow policy
