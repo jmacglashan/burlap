@@ -568,7 +568,7 @@ public class GridGame implements DomainGenerator {
 	 * @author James MacGlashan
 	 *
 	 */
-	public static class GGJointRewardFunctionFunction implements JointRewardFunction {
+	public static class GGJointRewardFunction implements JointRewardFunction {
 
 		PropositionalFunction agentInPersonalGoal;
 		PropositionalFunction agentInUniversalGoal;
@@ -583,7 +583,7 @@ public class GridGame implements DomainGenerator {
 		 * Initializes for a given domain. Defaults rewards to 0 reward everywhere except transition to unviersal or personal goals which return a reward 1.
 		 * @param ggDomain the domain
 		 */
-		public GGJointRewardFunctionFunction(OODomain ggDomain){
+		public GGJointRewardFunction(OODomain ggDomain){
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 		}
@@ -595,7 +595,7 @@ public class GridGame implements DomainGenerator {
 		 * @param goalReward the reward returned for transitioning to a personal or universal goal
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 */
-		public GGJointRewardFunctionFunction(OODomain ggDomain, double stepCost, double goalReward, boolean noopIncursStepCost){
+		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double goalReward, boolean noopIncursStepCost){
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 			this.stepCost = stepCost;
@@ -612,7 +612,7 @@ public class GridGame implements DomainGenerator {
 		 * @param universalGoalReward the reward returned for transitions to a universal goal
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 */
-		public GGJointRewardFunctionFunction(OODomain ggDomain, double stepCost, double personalGoalReward, double universalGoalReward, boolean noopIncursStepCost){
+		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double personalGoalReward, double universalGoalReward, boolean noopIncursStepCost){
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
 			this.stepCost = stepCost;
@@ -629,7 +629,7 @@ public class GridGame implements DomainGenerator {
 		 * @param noopIncursStepCost if true, then noop actions also incur the stepCost reward; if false, then noops always return 0 reward.
 		 * @param personalGoalRewards a map from player numbers to their personal goal reward (the first player number is 0)
 		 */
-		public GGJointRewardFunctionFunction(OODomain ggDomain, double stepCost, double universalGoalReward, boolean noopIncursStepCost, Map<Integer, Double> personalGoalRewards){
+		public GGJointRewardFunction(OODomain ggDomain, double stepCost, double universalGoalReward, boolean noopIncursStepCost, Map<Integer, Double> personalGoalRewards){
 			
 			agentInPersonalGoal = ggDomain.getPropFunction(GridGame.PF_IN_P_GOAL);
 			agentInUniversalGoal = ggDomain.getPropFunction(GridGame.PF_IN_U_GOAL);
