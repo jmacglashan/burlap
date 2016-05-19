@@ -11,8 +11,8 @@ import burlap.mdp.stochasticgames.world.WorldObserver;
 
 
 /**
- * This class is used to simplify the comparison of agent perfomance in a stochastic game world. This class takes as input a {@link WorldGenerator} and
- * a list of {@link AgentFactoryAndType} objects which can be used to generate agents and play them against each other in a world. Perfomance over
+ * This class is used to simplify the comparison of agent performance in a stochastic game world. This class takes as input a {@link WorldGenerator} and
+ * a list of {@link AgentFactoryAndType} objects which can be used to generate agents and play them against each other in a world. Performance over
  * multiple trials is plotted using the {@link MultiAgentPerformancePlotter} {@link WorldObserver} object and the results can also be printed
  * out to CSV files using the {@link #writeEpisodeDataToCSV(String)}, {@link #writeStepDataToCSV(String)}, or {@link #writeStepAndEpisodeDataToCSV(String)}
  * methods. If only the CSV data is desired without plotting, the plotting may be disabled using the {@link #toggleVisualPlots(boolean)} method.
@@ -20,8 +20,8 @@ import burlap.mdp.stochasticgames.world.WorldObserver;
  * To set up the metrics and plots that will be displayed, use the {@link #setUpPlottingConfiguration(int, int, int, int, TrialMode, PerformanceMetric...)}
  * method. If this method is not called, but plots are not disabled, then my default the cumulative reward will be displayed.
  * <p>
- * The length of a trial can have two interpretations, either the number of episodes, or the total number of steps taken across multiple episdes.
- * By default, the trial length will be interpreted as the number of episodes in a trial, but this interpreation can be changed with the
+ * The length of a trial can have two interpretations, either the number of episodes, or the total number of steps taken across multiple episodes.
+ * By default, the trial length will be interpreted as the number of episodes in a trial, but this interpretation can be changed with the
  * {@link #toggleTrialLengthInterpretation(boolean)}
  * <p>
  * To start an experiment once everything is configured, use the {@link #startExperiment()} method.
