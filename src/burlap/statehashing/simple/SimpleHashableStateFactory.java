@@ -20,7 +20,7 @@ import burlap.statehashing.HashableStateFactory;
  * important to be identifier *dependent* (that is, set the parameter in the constructor to false).
  * @author James MacGlashan.
  */
-public class SimpleHashableStateFactory implements HashableStateFactory.OOHashableStateFactory {
+public class SimpleHashableStateFactory implements HashableStateFactory {
 
 	/**
 	 * Whether state evaluations of OO-MDPs are object identifier independent (the names of objects don't matter). By
@@ -57,7 +57,7 @@ public class SimpleHashableStateFactory implements HashableStateFactory.OOHashab
 		return new IDSimpleHashableState(s);
 	}
 
-	@Override
+
 	public boolean objectIdentifierIndependent() {
 		return this.identifierIndependent;
 	}

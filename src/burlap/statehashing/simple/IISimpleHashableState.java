@@ -38,10 +38,6 @@ public class IISimpleHashableState extends WrappedHashableState {
 		return statesEqual(this.s, ((HashableState)obj).s());
 	}
 
-	@Override
-	public IISimpleHashableState copy() {
-		return new IISimpleHashableState(s.copy());
-	}
 
 	/**
 	 * Computes the hash code for the input state.

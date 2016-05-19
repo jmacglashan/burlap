@@ -2,6 +2,8 @@ package burlap.statehashing.masked;
 
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
+import burlap.statehashing.simple.IDSimpleHashableState;
+import burlap.statehashing.simple.IISimpleHashableState;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 /**
@@ -134,7 +136,7 @@ public class MaskedHashableStateFactory extends SimpleHashableStateFactory {
 
 	@Override
 	public HashableState hashState(State s) {
-		if(s instanceof HashableState){
+		if(s instanceof IISimpleHashableState || s instanceof IDSimpleHashableState){
 			return (HashableState)s;
 		}
 

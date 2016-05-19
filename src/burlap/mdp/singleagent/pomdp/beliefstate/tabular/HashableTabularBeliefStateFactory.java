@@ -53,9 +53,5 @@ public class HashableTabularBeliefStateFactory implements HashableStateFactory{
 			return this.s.equals(((HashableTabularBeliefState) obj).s);
 		}
 
-		@Override
-		public HashableState copy() {
-			return new HashableTabularBeliefState(s);
-		}
 	}
 }

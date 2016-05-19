@@ -38,10 +38,6 @@ public class IDSimpleHashableState extends WrappedHashableState {
 		return statesEqual(this.s, ((HashableState)obj).s());
 	}
 
-	@Override
-	public IDSimpleHashableState copy() {
-		return new IDSimpleHashableState(s.copy());
-	}
 
 
 

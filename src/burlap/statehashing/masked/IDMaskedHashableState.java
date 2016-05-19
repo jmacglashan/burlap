@@ -28,10 +28,6 @@ public class IDMaskedHashableState extends IDSimpleHashableState{
 		this.config = config;
 	}
 
-	@Override
-	public IDMaskedHashableState copy() {
-		return new IDMaskedHashableState(s.copy(), config);
-	}
 
 
 

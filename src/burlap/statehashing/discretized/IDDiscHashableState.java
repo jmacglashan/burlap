@@ -110,10 +110,6 @@ public class IDDiscHashableState extends IDSimpleHashableState {
 
 	}
 
-	@Override
-	public IDDiscHashableState copy() {
-		return new IDDiscHashableState(s.copy(), config);
-	}
 
 	/**
 	 * Returns int result of num / mult; that is, (int)(num / mult).

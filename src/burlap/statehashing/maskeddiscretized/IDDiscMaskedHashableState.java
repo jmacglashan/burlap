@@ -28,10 +28,6 @@ public class IDDiscMaskedHashableState extends IDSimpleHashableState {
 		this.config = config;
 	}
 
-	@Override
-	public IDDiscMaskedHashableState copy() {
-		return new IDDiscMaskedHashableState(s.copy(), config);
-	}
 
 	@Override
 	protected int computeOOHashCode(OOState s) {

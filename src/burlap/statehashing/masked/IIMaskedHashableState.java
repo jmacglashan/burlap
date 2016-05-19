@@ -115,8 +115,4 @@ public class IIMaskedHashableState extends IISimpleHashableState {
 		return super.valuesEqual(key, v1, v2);
 	}
 
-	@Override
-	public IISimpleHashableState copy() {
-		return new IIMaskedHashableState(s.copy(), config);
-	}
 }

@@ -5,19 +5,13 @@ import burlap.mdp.core.state.State;
 
 
 /**
- * This class provides a hash value for {@link State} objects. This is useful for tabular
- * planning and learning algorithms that make use of hash-backed sets or maps for fast retrieval. You can
- * access the state it hashes from the public data member {@link #s}. If the {@link State}
- * delegate {@link #s} is a {@link burlap.statehashing.HashableState} itself, and you wish
- * to get the underlying {@link State}, then you should use the
- * {@link #s()} method, which will recursively descend and return the base source {@link State}.
- * <p>
- * Implementing this class requires implementing
- * the {@link #hashCode()} and {@link #equals(Object)} method.
- * <p>
- * Note that this class implements the {@link State} interface; however,
- * because the purpose of this class is to used with hashed data structures, it is not recommended that
- * you modify the state.
+ * An interface for an object that computes hash codes and performs equality checks for states. Having a separate object
+ * for these operations than the underlying state can be useful since it is often the case that different algorithms may want to pose abstractions
+ * on the underlying state or handle equality in different ways than the raw {@link State} implementation.
+ * Primarily, this is a marker interface to indicate that the object has implementations of
+ * {@link #hashCode()} and {@link #equals(Object)}, but it does also require implementing the
+ * {@link #s()} method, which should return the underlying state on which the hash and equals operations of this object are
+ * performed.
  *
  * @author James MacGlashan
  *
@@ -30,7 +24,6 @@ public interface HashableState{
 	 */
 	State s();
 
-	HashableState copy();
 
 
 }

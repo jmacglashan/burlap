@@ -110,10 +110,6 @@ public class IIDiscHashableState extends IISimpleHashableState {
 
 	}
 
-	@Override
-	public IIDiscHashableState copy() {
-		return new IIDiscHashableState(s.copy(), config);
-	}
 
 	/**
 	 * Returns int result of num / mult; that is, (int)(num / mult).

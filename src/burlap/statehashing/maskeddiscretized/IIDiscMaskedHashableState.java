@@ -99,10 +99,6 @@ public class IIDiscMaskedHashableState extends IISimpleHashableState {
 		return true;
 	}
 
-	@Override
-	public IIDiscMaskedHashableState copy() {
-		return new IIDiscMaskedHashableState(s.copy(), config);
-	}
 
 	@Override
 	protected void appendHashCodeForValue(HashCodeBuilder hashCodeBuilder, Object key, Object value) {
