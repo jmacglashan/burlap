@@ -9,6 +9,11 @@ import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.annotations.DeepCopyState;
 
 /**
+ * An alternative implementation of {@link GenericOOState} in which the {@link #copy()} operations performs a deep copy
+ * ({@link DeepCopyState}) of all {@link ObjectInstance} objects, thereby allows safe modification of any of its
+ * {@link ObjectInstance} objects without using the {@link #touch(String)} method. As a result, this implementation
+ * will cause greater memory overhead in your algorithms, but requires less management on a client that is manipulating
+ * the states (e.g., defining transition dynamics).
  * @author James MacGlashan.
  */
 @DeepCopyState

@@ -11,6 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A generic implementation of a {@link OOState}. Stores the set of {@link ObjectInstance}s with a map from
+ * the object name to the instance as well as a list of lists, organizing objects by their object class.
+ * The {@link #copy()} operation will copy the collections, but not the actual {@link ObjectInstance} they hold;
+ * therefore, this is a {@link ShallowCopyState}. If you want to modify the values of an {@link ObjectInstance}
+ * in this state and the state is copied from another state, then you should retrieve the object with the
+ * {@link #touch(String)} method, will update this state's instance of that object with a copy of it and return you
+ * the copy that can be safely modified. This object's {@link #set(Object, Object)} method and other mutable
+ * methods will also perform safe copy-on-write operations.
  * @author James MacGlashan.
  */
 @ShallowCopyState

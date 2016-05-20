@@ -12,7 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
+ * An action type for {@link ObjectParameterizedAction}, that is, an action that is parameterized to objects
+ * in an {@link OOState} that belong to certain OO-MDP classes. This class is abstract and requires
+ * implementing the {@link #applicableInState(State, ObjectParameterizedAction)} method
+ * which defines whether a specific object parameterization can be applied in a given state.
  * @author James MacGlashan.
  */
 public abstract class ObjectParameterizedActionType implements ActionType {
@@ -48,11 +51,12 @@ public abstract class ObjectParameterizedActionType implements ActionType {
 	}
 
 	/**
-	 * Initializes the action with the name of the action, the domain to which it belongs, the parameters it takes, and the parameter order groups.
-	 * The action will also be automatically be added to the domain.
-	 * @param name the name of the action
+	 * Initializes the action with the name of the action type, the parameters it takes, and the parameter order groups.
+	 * @param name the name of the action type
 	 * @param parameterClasses a String array of the names of the object classes to which bound parameters must belong
-	 * @param parameterOrderGroups the order group assignments for each of the parameters.
+	 * @param parameterOrderGroups the order group assignments for each of the parameters. If two parameters are in
+	 *                             the same order group, then shuffling the their parameters is the same action;
+	 *                             that is, the transition probability distributions will be the same
 	 */
 	public ObjectParameterizedActionType(String name, String [] parameterClasses, String [] parameterOrderGroups){
 		this.name = name;
@@ -118,10 +122,19 @@ public abstract class ObjectParameterizedActionType implements ActionType {
 	}
 
 
+	/**
+	 * Indicates whether the input action can be applied in the state
+	 * @param s the input state
+	 * @param a the action under consideration
+	 * @return true if a can be applied in s; false if it cannot be applied.
+	 */
 	protected abstract boolean applicableInState(State s, ObjectParameterizedAction a);
 
 
-
+	/**
+	 * An {@link Action} that has parameters specifying the name of {@link burlap.mdp.core.oo.state.ObjectInstance}s
+	 * to which it is applied.
+	 */
 	public static class SAObjectParameterizedAction implements ObjectParameterizedAction {
 
 		public String name;

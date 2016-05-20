@@ -11,6 +11,7 @@ import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.environment.extensions.StateSettableEnvironment;
 import burlap.visualizer.Visualizer;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
@@ -44,7 +45,7 @@ import java.util.Scanner;
  * <p>
  * Additionally, the VisualExplorer also creates an associated instance of an {@link burlap.shell.EnvironmentShell}
  * that you can access using the "Show Shell" button. You can use the shell to modify the state (assuming the input
- * {@link burlap.mdp.singleagent.environment.Environment} implements {@link burlap.mdp.singleagent.environment.StateSettableEnvironment},
+ * {@link burlap.mdp.singleagent.environment.Environment} implements {@link StateSettableEnvironment},
  * record trajectories that you make in the environment, and any number of other tasks. The shell's "programs," specified with
  * {@link burlap.shell.command.ShellCommand} instances, may also be expanded so that you can create your own runtime tools.
  * See the {@link burlap.shell.BurlapShell} and {@link burlap.shell.EnvironmentShell} Java doc for more information on how

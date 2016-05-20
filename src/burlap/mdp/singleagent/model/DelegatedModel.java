@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * An implementation of {@link FullModel} that will delegate transition estimates for different actions to different
+ * {@link SampleModel} or {@link FullModel} implementations. Also contains a default {@link SampleModel} to use
+ * for actions that do not have specific delegates assigned.
  * @author James MacGlashan.
  */
 public class DelegatedModel implements FullModel {

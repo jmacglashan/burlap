@@ -17,6 +17,6 @@ import burlap.mdp.core.state.State;
  */
 public interface TerminalFunction {
 	
-	public boolean isTerminal(State s);
+	boolean isTerminal(State s);
 	
 }

@@ -1,13 +1,14 @@
-package burlap.mdp.singleagent.environment;
+package burlap.mdp.singleagent.environment.extensions;
 
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.environment.Environment;
 
 /**
  * An interface to be used with {@link burlap.mdp.singleagent.environment.Environment} instances that allows
  * the environment to have its set set to a client specified state.
  * @author James MacGlashan.
  */
-public interface StateSettableEnvironment extends Environment{
+public interface StateSettableEnvironment extends Environment {
 
 	/**
 	 * Sets the current state of the environment to the specified state.

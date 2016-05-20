@@ -1,13 +1,15 @@
-package burlap.mdp.singleagent.environment;
+package burlap.mdp.singleagent.environment.extensions;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A {@link burlap.mdp.singleagent.environment.EnvironmentServerInterface} implementation that delegates all {@link burlap.mdp.singleagent.environment.Environment} interactions and request
+ * A {@link EnvironmentServerInterface} implementation that delegates all {@link burlap.mdp.singleagent.environment.Environment} interactions and request
  * to a provided {@link burlap.mdp.singleagent.environment.Environment} delegate. This class will also
  * intercept all interactions through the {@link #executeAction(Action)} and
  * {@link #resetEnvironment()} methods
@@ -24,19 +26,19 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 	protected Environment delegate;
 
 	/**
-	 * The {@link burlap.mdp.singleagent.environment.EnvironmentObserver} objects that will be notified of {@link burlap.mdp.singleagent.environment.Environment}
+	 * The {@link EnvironmentObserver} objects that will be notified of {@link burlap.mdp.singleagent.environment.Environment}
 	 * events.
 	 */
 	protected List<EnvironmentObserver> observers = new LinkedList<EnvironmentObserver>();
 
 
 	/**
-	 * If the input {@link burlap.mdp.singleagent.environment.Environment} is an instance {@link burlap.mdp.singleagent.environment.EnvironmentServerInterface},
-	 * then all the input observers are added to it and it is returned. Otherwise, a new {@link burlap.mdp.singleagent.environment.EnvironmentServer}
+	 * If the input {@link burlap.mdp.singleagent.environment.Environment} is an instance {@link EnvironmentServerInterface},
+	 * then all the input observers are added to it and it is returned. Otherwise, a new {@link EnvironmentServer}
 	 * is created around it, with all of the observers added.
 	 * @param env the {@link burlap.mdp.singleagent.environment.Environment} that will have observers added to it
-	 * @param observers the {@link burlap.mdp.singleagent.environment.EnvironmentObserver} objects to add.
-	 * @return the input {@link burlap.mdp.singleagent.environment.Environment} or an {@link burlap.mdp.singleagent.environment.EnvironmentServer}.
+	 * @param observers the {@link EnvironmentObserver} objects to add.
+	 * @return the input {@link burlap.mdp.singleagent.environment.Environment} or an {@link EnvironmentServer}.
 	 */
 	public static EnvironmentServerInterface constructServerOrAddObservers(Environment env, EnvironmentObserver...observers){
 		if(env instanceof EnvironmentServerInterface){
@@ -49,11 +51,11 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 	}
 
 	/**
-	 * Constructs an {@link burlap.mdp.singleagent.environment.EnvironmentServer} or {@link burlap.mdp.singleagent.environment.EnvironmentServer.StateSettableEnvironmentServer},
-	 * based on whether the input delegate implements {@link burlap.mdp.singleagent.environment.StateSettableEnvironment}.
+	 * Constructs an {@link EnvironmentServer} or {@link EnvironmentServer.StateSettableEnvironmentServer},
+	 * based on whether the input delegate implements {@link StateSettableEnvironment}.
 	 * @param delegate the delegate {@link burlap.mdp.singleagent.environment.Environment} for most environment interactions.
-	 * @param observers the {@link burlap.mdp.singleagent.environment.EnvironmentObserver} objects notified of Environment events.
-	 * @return an {@link burlap.mdp.singleagent.environment.EnvironmentServer} or {@link burlap.mdp.singleagent.environment.EnvironmentServer.StateSettableEnvironmentServer}.
+	 * @param observers the {@link EnvironmentObserver} objects notified of Environment events.
+	 * @return an {@link EnvironmentServer} or {@link EnvironmentServer.StateSettableEnvironmentServer}.
 	 */
 	public static EnvironmentServer constructor(Environment delegate, EnvironmentObserver...observers){
 		if(delegate instanceof StateSettableEnvironment){
@@ -87,8 +89,8 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 	}
 
 	/**
-	 * Adds one or more {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s
-	 * @param observers and {@link burlap.mdp.singleagent.environment.EnvironmentObserver}
+	 * Adds one or more {@link EnvironmentObserver}s
+	 * @param observers and {@link EnvironmentObserver}
 	 */
 	public void addObservers(EnvironmentObserver...observers){
 		for(EnvironmentObserver observer : observers){
@@ -97,15 +99,15 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 	}
 
 	/**
-	 * Clears all {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s from this server.
+	 * Clears all {@link EnvironmentObserver}s from this server.
 	 */
 	public void clearAllObservers(){
 		this.observers.clear();
 	}
 
 	/**
-	 * Removes one or more {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s from this server.
-	 * @param observers the {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s to remove.
+	 * Removes one or more {@link EnvironmentObserver}s from this server.
+	 * @param observers the {@link EnvironmentObserver}s to remove.
 	 */
 	public void removeObservers(EnvironmentObserver...observers){
 		for(EnvironmentObserver observer : observers){
@@ -115,8 +117,8 @@ public class EnvironmentServer implements EnvironmentServerInterface, Environmen
 
 
 	/**
-	 * Returns all {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s registered with this server.
-	 * @return all {@link burlap.mdp.singleagent.environment.EnvironmentObserver}s registered with this server.
+	 * Returns all {@link EnvironmentObserver}s registered with this server.
+	 * @return all {@link EnvironmentObserver}s registered with this server.
 	 */
 	public List<EnvironmentObserver> observers(){
 		return this.observers;

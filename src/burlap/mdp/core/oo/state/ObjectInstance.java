@@ -3,6 +3,7 @@ package burlap.mdp.core.oo.state;
 import burlap.mdp.core.state.State;
 
 /**
+ * A {@link State} extension for objects that are OO-MDP objects of an {@link OOState}
  * @author James MacGlashan.
  */
 public interface ObjectInstance extends State {

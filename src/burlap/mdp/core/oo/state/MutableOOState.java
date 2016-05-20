@@ -3,6 +3,8 @@ package burlap.mdp.core.oo.state;
 import burlap.mdp.core.state.MutableState;
 
 /**
+ * A {@link MutableState} extension {@link OOState}.
+ * Allows adding new objects ({@link ObjectInstance}), removing them, and renaming them.
  * @author James MacGlashan.
  */
 public interface MutableOOState extends OOState, MutableState{

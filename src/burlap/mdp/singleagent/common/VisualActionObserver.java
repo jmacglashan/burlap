@@ -8,7 +8,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
-import burlap.mdp.singleagent.environment.EnvironmentObserver;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.visualizer.Visualizer;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * This class enables the live rendering of action calls or environment interactions, by implementing the
- * {@link burlap.mdp.singleagent.environment.EnvironmentObserver} interface.
+ * {@link EnvironmentObserver} interface.
  * It updates the visualizer to show the resulting state of an action call. After rendering, the client thread is blocked
  * for a specified interval of time to allow the state to be observed (by default the value is set to 17ms, which is about 60FPS).
  * This class will also render the new state of an {@link burlap.mdp.singleagent.environment.Environment} after

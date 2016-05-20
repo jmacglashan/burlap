@@ -1,6 +1,9 @@
-package burlap.mdp.singleagent.environment;
+package burlap.mdp.singleagent.environment.extensions;
+
+import burlap.mdp.singleagent.environment.Environment;
 
 /**
+ * Provides an interface for an {@link Environment} that delegates its responsibilities to another {@link Environment}
  * @author James MacGlashan.
  */
 public interface EnvironmentDelegation extends Environment {
@@ -23,17 +26,17 @@ public interface EnvironmentDelegation extends Environment {
 	/**
 	 * A class that provides tools for working with Environment delegates
 	 */
-	public static class EnvDelegationTools{
+	class Helper {
 	    
-	    private EnvDelegationTools() {
+	    private Helper() {
 	        // do nothing
 	    }
 
 		/**
 		 * Returns the root {@link burlap.mdp.singleagent.environment.Environment} delegate. Useful
-		 * if an {@link burlap.mdp.singleagent.environment.EnvironmentDelegation} is expected to have
-		 * a delegate that is an {@link burlap.mdp.singleagent.environment.EnvironmentDelegation}.
-		 * @param env the {@link burlap.mdp.singleagent.environment.EnvironmentDelegation} to inspect
+		 * if an {@link EnvironmentDelegation} is expected to have
+		 * a delegate that is an {@link EnvironmentDelegation}.
+		 * @param env the {@link EnvironmentDelegation} to inspect
 		 * @return the root {@link burlap.mdp.singleagent.environment.Environment} delegate
 		 */
 		public static Environment getRootEnvironmentDelegate(EnvironmentDelegation env){

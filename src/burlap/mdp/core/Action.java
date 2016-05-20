@@ -1,7 +1,8 @@
 package burlap.mdp.core;
 
 /**
- *
+ * An interface for action definitions. Should be able to return a unique action name and have copies made.
+ * Implementations of this interface should primarily hold data defining any action parameters.
  * @author James MacGlashan
  *
  */

@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.debugtools.DPrint;
 import burlap.mdp.singleagent.environment.Environment;
-import burlap.mdp.singleagent.environment.EnvironmentServer;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentServer;
 
 
 /**
@@ -43,7 +43,7 @@ public class LearningAlgorithmExperimenter {
 
 
 	/**
-	 * The {@link burlap.mdp.singleagent.environment.EnvironmentServer} that wraps the test {@link burlap.mdp.singleagent.environment.Environment}
+	 * The {@link EnvironmentServer} that wraps the test {@link burlap.mdp.singleagent.environment.Environment}
 	 * and tells a {@link burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter} about the individual interactions.
 	 */
 	protected EnvironmentServer environmentSever;

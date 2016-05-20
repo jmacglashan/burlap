@@ -3,8 +3,8 @@ package burlap.shell.command.env;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
-import burlap.mdp.singleagent.environment.EnvironmentDelegation;
-import burlap.mdp.singleagent.environment.StateSettableEnvironment;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentDelegation;
+import burlap.mdp.singleagent.environment.extensions.StateSettableEnvironment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -43,7 +43,7 @@ public class SetVarCommand implements ShellCommand {
 			return 0;
 		}
 
-		StateSettableEnvironment senv = (StateSettableEnvironment) EnvironmentDelegation.EnvDelegationTools.getDelegateImplementing(env, StateSettableEnvironment.class);
+		StateSettableEnvironment senv = (StateSettableEnvironment) EnvironmentDelegation.Helper.getDelegateImplementing(env, StateSettableEnvironment.class);
 		if(senv == null){
 			os.println("Cannot set object values for environment states, because the environment does not implement StateSettableEnvironment");
 			return 0;

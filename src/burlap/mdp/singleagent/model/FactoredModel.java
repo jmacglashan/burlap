@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A {@link FactoredModel} is an implementation of a {@link SampleModel} or {@link FullModel} that computes transitions
+ * using a {@link SampleStateModel}, {@link RewardFunction} and {@link TerminalFunction}.
  * @author James MacGlashan.
  */
 public class FactoredModel implements TaskFactoredModel, FullModel{
@@ -22,6 +24,12 @@ public class FactoredModel implements TaskFactoredModel, FullModel{
 	public FactoredModel() {
 	}
 
+	/**
+	 * Initializes
+	 * @param stateModel the {@link SampleStateModel} to use
+	 * @param rf the {@link RewardFunction} to use
+	 * @param tf the {@link TerminalFunction} to use
+	 */
 	public FactoredModel(SampleStateModel stateModel, RewardFunction rf, TerminalFunction tf) {
 		this.stateModel = stateModel;
 		this.rf = rf;

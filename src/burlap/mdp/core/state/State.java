@@ -15,23 +15,17 @@ import java.util.List;
  * <br><br>
  * Next the {@link #get(Object)} method should accept any argument that is listed in the {@link #variableKeys()} list
  * and should return the value of that variable. You do *not* have to guarantee that changes the client makes to the
- * returned value will affect the state. In fact, in general, clients should only modify state objects if they
- * implement the MutableState interface through its set method.
+ * returned value will affect the state.
  * <br><br>
  * Finally, the {@link #copy()} method must be implemented so that a copy of this state can be created.
  * State copy operations are often performed when generating state transitions, or when a copy of the information
  * needs to be held by some other data structure. The copy may be a shallow copy
- * or deep copy and is domain/implementation specific. For clarity, the State implementation may indicate its copy depth level with the
+ * or deep copy and is domain/implementation specific. For clarity, the State implementation may indicate its copy mode with the
  * {@link DeepCopyState} or {@link ShallowCopyState} annotations. If it is a shallow copy, you should not *directly*
  * modify any fields of a copied state without copying the fields first, or it could contaminate the state from
  * which the copy was made. Alternatively, use the {@link MutableState#set(Object, Object)} method to modify
  * {@link ShallowCopyState} copied states,
  * which for {@link ShallowCopyState} instances should perform a safe copy-on-write operation.
- *
- *
- * If the state
- * implements MutableState, then a copied state should have the property that changes made to copy do
- * not affect the values of the source state, so make sure copies are as deep as necessary.
  *
  * @author James MacGlashan
  *

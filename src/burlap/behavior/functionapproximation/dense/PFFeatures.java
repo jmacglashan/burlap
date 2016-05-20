@@ -9,6 +9,11 @@ import burlap.mdp.core.state.State;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Binary features that are determined from a list of {@link PropositionalFunction}s. The element for a corresponding
+ * {@link PropositionalFunction} is set to 1, when any possible binding for the {@link PropositionalFunction} is true
+ * for the input state.
+ */
 public class PFFeatures implements DenseStateFeatures {
 
 	protected PropositionalFunction [] pfsToUse;

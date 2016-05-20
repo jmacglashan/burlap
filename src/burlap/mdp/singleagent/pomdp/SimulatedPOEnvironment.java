@@ -4,7 +4,7 @@ import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.NullState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.environment.EnvironmentObserver;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;

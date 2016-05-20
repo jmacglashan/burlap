@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * An {@link OODomain} for {@link SADomain} instances.
  * @author James MacGlashan.
  */
 public class OOSADomain extends SADomain implements OODomain {

@@ -1,16 +1,30 @@
 package burlap.mdp.core.oo.state;
 
 /**
+ * A tuple for referring to the variable of a specific {@link OOState} object.
  * @author James MacGlashan.
  */
 public class OOVariableKey {
+
+	/**
+	 * The name of the {@link OOState} object.
+	 */
 	public String obName;
+
+	/**
+	 * The variable key of the {@link OOState} object.
+	 */
 	public Object obVarKey;
 
 
 	public OOVariableKey() {
 	}
 
+
+	/**
+	 * Initializes when the key is specified in a string form. That is, a string with the format object_name:variable_key
+	 * @param strForm the string form of the key
+	 */
 	public OOVariableKey(String strForm){
 		int ind = strForm.indexOf(':');
 		if(ind == -1){
@@ -20,6 +34,11 @@ public class OOVariableKey {
 		this.obVarKey = strForm.substring(ind+1);
 	}
 
+	/**
+	 * Initializes
+	 * @param obName the name of the {@link OOState} object
+	 * @param obVarKey the variable key of the {@link OOState} object.
+	 */
 	public OOVariableKey(String obName, Object obVarKey) {
 		this.obName = obName;
 		this.obVarKey = obVarKey;

@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A class holding static methods for common {@link Action} and {@link ActionType} operations.
  * @author James MacGlashan.
  */
 public class ActionUtils {
+
 	/**
 	 * Returns all {@link Action}s that are applicable in the given {@link State} for all {@link ActionType} objects in the provided list. This method
 	 * operates by calling the {@link ActionType#allApplicableActions(State)} method on each action and adding all the results

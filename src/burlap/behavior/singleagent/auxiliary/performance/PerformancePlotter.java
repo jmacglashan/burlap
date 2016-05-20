@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.auxiliary.performance;
 
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
-import burlap.mdp.singleagent.environment.EnvironmentObserver;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;

@@ -5,11 +5,19 @@ import burlap.mdp.core.state.StateUtilities;
 import java.util.*;
 
 /**
+ * A class with various static utility methods for working with {@link OOState} instances.
  * @author James MacGlashan.
  */
 public class OOStateUtilities {
 
 
+	/**
+	 * Returns the {@link ObjectInstance} with the given name
+	 * @param objects a list {@link ObjectInstance}s
+	 * @param name the name of the query {@link ObjectInstance}
+	 * @param <T> the type of the {@link ObjectInstance}
+	 * @return the found {@link ObjectInstance} or null if it is not found
+	 */
 	public static <T extends ObjectInstance> T objectWithName(List<T> objects, String name){
 		for(T ob : objects){
 			if(ob.name().equals(name)){
@@ -19,6 +27,13 @@ public class OOStateUtilities {
 		return null;
 	}
 
+	/**
+	 * Returns the index of an {@link ObjectInstance} with the given name in a list
+	 * @param objects a list {@link ObjectInstance}s
+	 * @param name the name of the query {@link ObjectInstance}
+	 * @param <T> the type of the {@link ObjectInstance}
+	 * @return the index of the found {@link ObjectInstance} or -1 if it is not found
+	 */
 	public static <T extends ObjectInstance> int objectIndexWithName(List<T> objects, String name){
 		for(int i = 0; i < objects.size(); i++){
 			T ob = objects.get(i);
@@ -29,6 +44,12 @@ public class OOStateUtilities {
 		return -1;
 	}
 
+
+	/**
+	 * Returns all object-variable_key keys. Useful for implementing the {@link OOState#variableKeys()} method.
+	 * @param s the input state
+	 * @return the list of all keys.
+	 */
 	public static List<Object> flatStateKeys(OOState s){
 		List<Object> flatKeys = new ArrayList<Object>();
 		for(ObjectInstance o : s.objects()){
@@ -41,12 +62,24 @@ public class OOStateUtilities {
 		return flatKeys;
 	}
 
+	/**
+	 * Returns the value of an {@link ObjectInstance} variable, where the key is a {@link OOVariableKey} or a string
+	 * representation of an {@link OOVariableKey}.
+	 * @param s the input state
+	 * @param variableKey the object-variable key
+	 * @return the value of the object variable.
+	 */
 	public static Object get(OOState s, Object variableKey){
 		OOVariableKey key = generateKey(variableKey);
 		ObjectInstance o = s.object(key.obName);
 		return o.get(key.obVarKey);
 	}
 
+	/**
+	 * Generates an {@link OOVariableKey} from a key that is either already an {@link OOVariableKey} or a string representation of one.
+	 * @param key an {@link OOVariableKey} or a string representation of one.
+	 * @return the corresponding {@link OOVariableKey}
+	 */
 	public static OOVariableKey generateKey(Object key){
 		if(key instanceof OOVariableKey){
 			return (OOVariableKey)key;
@@ -57,6 +90,12 @@ public class OOStateUtilities {
 		throw new RuntimeException("An OOState variable Key must either be a OOVariableKey or String that can be parsed into an OOVariableKey, but key was of type " + key.getClass().getName());
 	}
 
+
+	/**
+	 * Returns a list of list of {@link ObjectInstance}s where the objects are organized by their class.
+	 * @param s the input {@link OOState}
+	 * @return the {@link ObjectInstance}s organized by their class
+	 */
 	public static Map<String, List<ObjectInstance>> objectsByClass(OOState s){
 
 		Set<String> classes = objectClassesPresent(s);
@@ -70,6 +109,11 @@ public class OOStateUtilities {
 
 	}
 
+	/**
+	 * Returns the set of object classes that have instantiated {@link ObjectInstance}s in the input state.
+	 * @param s the input state
+	 * @return the set of object classes that have instantiated {@link ObjectInstance}s in the input state.
+	 */
 	public static Set<String> objectClassesPresent(OOState s){
 		List<ObjectInstance> obs = s.objects();
 		Set<String> classes = new HashSet<String>(obs.size());
@@ -79,6 +123,13 @@ public class OOStateUtilities {
 		return classes;
 	}
 
+
+	/**
+	 * A common approach for turning an {@link OOState} into a string representation. Useful for implementing
+	 * {@link OOState#toString()} methods.
+	 * @param s the input {@link OOState}
+	 * @return the string representation
+	 */
 	public static String ooStateToString(OOState s){
 		StringBuilder buf = new StringBuilder();
 		buf.append("{\n");
@@ -89,6 +140,13 @@ public class OOStateUtilities {
 		return buf.toString();
 	}
 
+
+	/**
+	 * A common approach for turning an {@link ObjectInstance} into a string representation. Useful for implementing the
+	 * {@link ObjectInstance#toString()} method.
+	 * @param o the input {@link ObjectInstance}
+	 * @return the string representation
+	 */
 	public static String objectInstanceToString(ObjectInstance o){
 		StringBuilder buf = new StringBuilder();
 		buf.append(o.name()).append(" (").append(o.className()).append("): ")
@@ -96,6 +154,19 @@ public class OOStateUtilities {
 		return buf.toString();
 	}
 
+
+	/**
+	 * Returns all possible object assignments from a {@link OOState} for a given set of parameters that are typed
+	 * to OO-MDP object classes. For example, parameters for a {@link burlap.mdp.core.oo.propositional.PropositionalFunction}
+	 * or {@link burlap.mdp.core.oo.ObjectParameterizedAction}.
+	 * @param s the {@link OOState}
+	 * @param paramClasses the object class type for a parameter array that needs object assignments
+	 * @param paramOrderGroups indicates the order group of a parameter. Parameters in the same
+	 *                         order group can have their object assignments shuffled without affecting the evaluation.
+	 *                         By default, you probably can have a unique order group for each parameters
+	 * @return the list of all object assignments, where each object assignment is a list of object names of equal size
+	 * to the input parameters.
+	 */
 	public static List <List<String>> getPossibleBindingsGivenParamOrderGroups(OOState s, String [] paramClasses, String [] paramOrderGroups){
 
 		List <List <String>> res = new ArrayList<List<String>>();
@@ -124,7 +195,8 @@ public class OOStateUtilities {
 
 	}
 
-	public static List <String> identifyUniqueClassesInParameters(String [] paramClasses){
+
+	private static List <String> identifyUniqueClassesInParameters(String [] paramClasses){
 		List <String> unique = new ArrayList <String>();
 		for(int i = 0; i < paramClasses.length; i++){
 			if(!unique.contains(paramClasses[i])){

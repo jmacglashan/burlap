@@ -1,6 +1,8 @@
 package burlap.mdp.core;
 
 /**
+ * A simple implementation of {@link Action} for unparameterized actions. Contains a single String for the name
+ * of the action and nothing else.
  * @author James MacGlashan.
  */
 public class SimpleAction implements Action{

@@ -5,6 +5,9 @@ import burlap.mdp.auxiliary.common.ConstantStateGenerator;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentObserver;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentServerInterface;
+import burlap.mdp.singleagent.environment.extensions.StateSettableEnvironment;
 import burlap.mdp.singleagent.model.SampleModel;
 
 import java.util.LinkedList;
@@ -30,7 +33,7 @@ import java.util.List;
  * terminal states with the {@link #setAllowActionFromTerminalStates(boolean)} method.
  * @author James MacGlashan.
  */
-public class SimulatedEnvironment implements StateSettableEnvironment, EnvironmentServerInterface{
+public class SimulatedEnvironment implements StateSettableEnvironment, EnvironmentServerInterface {
 
 	protected SampleModel model;
 
@@ -63,7 +66,7 @@ public class SimulatedEnvironment implements StateSettableEnvironment, Environme
 
 
 	/**
-	 * The {@link burlap.mdp.singleagent.environment.EnvironmentObserver} objects that will be notified of {@link burlap.mdp.singleagent.environment.Environment}
+	 * The {@link EnvironmentObserver} objects that will be notified of {@link burlap.mdp.singleagent.environment.Environment}
 	 * events.
 	 */
 	protected List<EnvironmentObserver> observers = new LinkedList<EnvironmentObserver>();

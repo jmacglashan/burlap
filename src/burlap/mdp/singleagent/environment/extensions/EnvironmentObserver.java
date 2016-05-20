@@ -1,10 +1,12 @@
-package burlap.mdp.singleagent.environment;
+package burlap.mdp.singleagent.environment.extensions;
 
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.environment.Environment;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 /**
- * A class that is told of interactions in an environment. This is typically called from an {@link burlap.mdp.singleagent.environment.EnvironmentServer}
+ * A class that is told of interactions in an environment. This is typically called from an {@link EnvironmentServer}
  * which intercepts the environment interactions.
  * @author James MacGlashan.
  */

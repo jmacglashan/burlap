@@ -5,6 +5,7 @@ import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.*;
+import burlap.mdp.singleagent.environment.extensions.*;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -378,7 +379,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 					return -1;
 				}
 
-				StateSettableEnvironment senv = (StateSettableEnvironment)EnvironmentDelegation.EnvDelegationTools.getDelegateImplementing(env, StateSettableEnvironment.class);
+				StateSettableEnvironment senv = (StateSettableEnvironment) EnvironmentDelegation.Helper.getDelegateImplementing(env, StateSettableEnvironment.class);
 				if(senv == null){
 					os.println("Cannot load episode state into environment, because the environment does not implement StateSettableEnvironment.");
 				}

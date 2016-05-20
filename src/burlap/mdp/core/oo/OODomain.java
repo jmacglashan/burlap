@@ -6,6 +6,7 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import java.util.List;
 
 /**
+ * A {@link Domain} for OO-MDP problems.
  * @author James MacGlashan.
  */
 public interface OODomain extends Domain {
@@ -62,12 +63,23 @@ public interface OODomain extends Domain {
 
 
 	class Helper{
+
+		/**
+		 * Adds all {@link PropositionalFunction} objects to the given {@link OODomain}
+		 * @param domain the receiving {@link OODomain}
+		 * @param pfs a list of the {@link PropositionalFunction}s to add.
+		 */
 		public static void addPfsToDomain(OODomain domain, List<PropositionalFunction> pfs){
 			for(PropositionalFunction pf : pfs){
 				domain.addPropFunction(pf);
 			}
 		}
 
+		/**
+		 * Adds all {@link PropositionalFunction} objects to the given {@link OODomain}
+		 * @param domain the receiving {@link OODomain}
+		 * @param pfs the {@link PropositionalFunction}s to add.
+		 */
 		public static void addPfsToDomain(OODomain domain, PropositionalFunction...pfs){
 			for(PropositionalFunction pf : pfs){
 				domain.addPropFunction(pf);

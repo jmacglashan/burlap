@@ -3,6 +3,7 @@ package burlap.mdp.core;
 import burlap.mdp.core.state.State;
 
 /**
+ * A tuple for a {@link State} and a double specifying the probability of transitioning to that state.
  * @author James MacGlashan.
  */
 public class StateTransitionProb {

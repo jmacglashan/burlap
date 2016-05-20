@@ -6,8 +6,8 @@ import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.singleagent.environment.Environment;
-import burlap.mdp.singleagent.environment.EnvironmentDelegation;
-import burlap.mdp.singleagent.environment.StateSettableEnvironment;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentDelegation;
+import burlap.mdp.singleagent.environment.extensions.StateSettableEnvironment;
 import burlap.shell.BurlapShell;
 import burlap.shell.EnvironmentShell;
 import burlap.shell.command.ShellCommand;
@@ -52,7 +52,7 @@ public class AddStateObjectCommand implements ShellCommand {
 			return 0;
 		}
 
-		StateSettableEnvironment senv = (StateSettableEnvironment)EnvironmentDelegation.EnvDelegationTools.getDelegateImplementing(env, StateSettableEnvironment.class);
+		StateSettableEnvironment senv = (StateSettableEnvironment) EnvironmentDelegation.Helper.getDelegateImplementing(env, StateSettableEnvironment.class);
 		if(senv == null){
 			os.println("Cannot add object to environment state, because the environment does not implement StateSettableEnvironment");
 			return 0;
