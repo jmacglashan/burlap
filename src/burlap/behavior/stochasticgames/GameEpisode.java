@@ -5,20 +5,16 @@ import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.*;
+import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
 import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import burlap.mdp.stochasticgames.world.World;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -270,30 +266,13 @@ public class GameEpisode {
 
 	public String serialize(){
 
-		Yaml yaml = new Yaml(new GameAnalysisYamlRepresenter());
+		Yaml yaml = new Yaml();
 		String yamlOut = yaml.dump(this);
 		return yamlOut;
 	}
 
 
-	private class GameAnalysisYamlRepresenter extends Representer {
-
-		public GameAnalysisYamlRepresenter() {
-			super();
-			this.representers.put(JointAction.class, new JointActionYamlRepresent());
-		}
-
-
-		private class JointActionYamlRepresent implements Represent{
-			@Override
-			public Node representData(Object o) {
-				return representScalar(new Tag("!action"), ((JointAction)o).toString());
-			}
-		}
-	}
-
-
-	public static GameEpisode parseGame(SGDomain domain, String episodeString){
+	public static GameEpisode parseGame(String episodeString){
 
 		Yaml yaml = new Yaml();
 		GameEpisode ga = (GameEpisode)yaml.load(episodeString);
@@ -352,7 +331,7 @@ public class GameEpisode {
 			System.out.println(E);
 		}
 
-		return parseGame(domain, fcont);
+		return parseGame(fcont);
 	}
 
 
@@ -370,7 +349,7 @@ public class GameEpisode {
 		OOSGDomain domain = gg.generateDomain();
 		State s = GridGame.getTurkeyInitialState();
 
-		JointRewardFunction jr = new GridGame.GGJointRewardFunctionFunction(domain);
+		JointRewardFunction jr = new GridGame.GGJointRewardFunction(domain);
 		TerminalFunction tf = new GridGame.GGTerminalFunction(domain);
 		World world = new World(domain, jr, tf, new ConstantSGStateGenerator(s));
 		DPrint.toggleCode(world.getDebugId(),false);
@@ -389,7 +368,7 @@ public class GameEpisode {
 		String serialized = ga.serialize();
 		System.out.println(serialized);
 
-		GameEpisode read = GameEpisode.parseGame(domain, serialized);
+		GameEpisode read = GameEpisode.parseGame(serialized);
 		System.out.println(read.maxTimeStep());
 		System.out.println(read.getState(0).toString());
 

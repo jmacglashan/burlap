@@ -329,7 +329,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directEpisodes == null) {
-					curEA = Episode.parseFileIntoEA(episodeFiles.get(ind), domain);
+					curEA = Episode.parseFileIntoEA(episodeFiles.get(ind));
 				}
 				else{
 					curEA = this.directEpisodes.get(ind);

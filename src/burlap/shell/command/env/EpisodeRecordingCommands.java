@@ -193,7 +193,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 				if(args.size() != 1){
 					return -1;
 				}
-				List<Episode> nEpisodes = Episode.parseFilesIntoEAList(args.get(0), shell.getDomain());
+				List<Episode> nEpisodes = Episode.parseFilesIntoEAList(args.get(0));
 				if(oset.has("a")){
 					episodes.addAll(nEpisodes);
 					os.println("Loaded episodes from " + args.get(0) + " and appended them to current episodes list.");

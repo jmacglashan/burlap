@@ -7,14 +7,9 @@ import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -326,10 +321,9 @@ public class Episode {
 	 * Takes a path to a directory containing .episode files and reads them all into a {@link java.util.List}
 	 * of {@link Episode} objects.
 	 * @param directoryPath the path to the directory containing the episode files
-	 * @param d the domain to which the episode states and actions belong
 	 * @return a {@link java.util.List} of {@link Episode} objects.
 	 */
-	public static List<Episode> parseFilesIntoEAList(String directoryPath, Domain d){
+	public static List<Episode> parseFilesIntoEAList(String directoryPath){
 
 		if(!directoryPath.endsWith("/")){
 			directoryPath = directoryPath + "/";
@@ -353,7 +347,7 @@ public class Episode {
 
 		for(int i = 0; i < children.length; i++){
 			String episodeFile = directoryPath + children[i];
-			Episode ea = parseFileIntoEA(episodeFile, d);
+			Episode ea = parseFileIntoEA(episodeFile);
 			eas.add(ea);
 		}
 
@@ -364,10 +358,9 @@ public class Episode {
 	/**
 	 * Reads an episode that was written to a file and turns into an EpisodeAnalysis object.
 	 * @param path the path to the episode file.
-	 * @param d the domain to which the states and actions belong
 	 * @return an EpisodeAnalysis object.
 	 */
-	public static Episode parseFileIntoEA(String path, Domain d){
+	public static Episode parseFileIntoEA(String path){
 
 		//read whole file into string first
 		String fcont = null;
@@ -377,39 +370,20 @@ public class Episode {
 			System.out.println(E);
 		}
 
-		return parseEpisode(d, fcont);
+		return parseEpisode(fcont);
 	}
 
 	
 
 	public String serialize(){
 
-		Yaml yaml = new Yaml(new EpisodeAnalysisYamlRepresenter());
+		Yaml yaml = new Yaml();
 		String yamlOut = yaml.dump(this);
 		return yamlOut;
 	}
 
 
-	private class EpisodeAnalysisYamlRepresenter extends Representer{
-
-		public EpisodeAnalysisYamlRepresenter() {
-			super();
-			for(Action ga : actionSequence){
-				this.representers.put(ga.getClass(), new ActionYamlRepresent());
-			}
-
-		}
-
-		private class ActionYamlRepresent implements Represent{
-			@Override
-			public Node representData(Object o) {
-				return representScalar(new Tag("!action"), o.toString());
-			}
-		}
-	}
-
-
-	public static Episode parseEpisode(Domain domain, String episodeString){
+	public static Episode parseEpisode(String episodeString){
 
 		Yaml yaml = new Yaml();
 		Episode ea = (Episode)yaml.load(episodeString);
@@ -436,7 +410,7 @@ public class Episode {
 
 		System.out.println("\n\n");
 
-		Episode read = Episode.parseEpisode(domain, yamlOut);
+		Episode read = Episode.parseEpisode(yamlOut);
 
 		System.out.println(read.getActionSequenceString());
 		System.out.println(read.getState(0).toString());
