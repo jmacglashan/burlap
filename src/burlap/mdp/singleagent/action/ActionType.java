@@ -25,7 +25,7 @@ public interface ActionType {
 
 	/**
 	 * The unique name of this {@link ActionType}
-	 * @return unique {@link String} name of this {@link ActionType
+	 * @return unique {@link String} name of this {@link ActionType}
 	 */
 	String typeName();
 

@@ -126,7 +126,7 @@ public class OOStateUtilities {
 
 	/**
 	 * A common approach for turning an {@link OOState} into a string representation. Useful for implementing
-	 * {@link OOState#toString()} methods.
+	 * {@link Object#toString()} methods.
 	 * @param s the input {@link OOState}
 	 * @return the string representation
 	 */
@@ -143,7 +143,7 @@ public class OOStateUtilities {
 
 	/**
 	 * A common approach for turning an {@link ObjectInstance} into a string representation. Useful for implementing the
-	 * {@link ObjectInstance#toString()} method.
+	 * {@link Object#toString()} method.
 	 * @param o the input {@link ObjectInstance}
 	 * @return the string representation
 	 */

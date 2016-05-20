@@ -126,6 +126,7 @@ public class PolicyUtils {
 	 * when the policy reaches a terminal state.
 	 * @param p the {@link Policy} to roll out
 	 * @param s the state from which to roll out the policy
+	 * @param model the model from which to sample
 	 * @return an EpisodeAnalysis object that records the events from following the policy.
 	 */
 	public static Episode rollout(Policy p, State s, SampleModel model){
@@ -193,7 +194,7 @@ public class PolicyUtils {
 	 * Follows this policy for one time step in the provided {@link burlap.mdp.singleagent.environment.Environment} and
 	 * records the interaction in the provided {@link Episode} object. If the policy
 	 * selects an {@link burlap.behavior.singleagent.options.Option}, then how the option's interaction in the environment
-	 * is recorded depends on the {@liink #evaluateDecomposesOptions} flag.
+	 * is recorded depends on the {@link #rolloutsDecomposeOptions} flag.
 	 * If {@link #rolloutsDecomposeOptions} is false, then the option is recorded as a single action. If it is true, then
 	 * the individual primitive actions selected by the environment are recorded.
 	 * @param p the {@link Policy}
