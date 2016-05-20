@@ -28,6 +28,8 @@ public class DerivedMarkovOptionModel implements FullModel{
 	protected Map<Option, CachedModel> cachedModels = new HashMap<Option, CachedModel>();
 	protected Set<HashableState> srcTerminateStates = new HashSet<HashableState>();
 
+	protected boolean requireMarkov = true;
+
 
 	/**
 	 * The minimum probability a possible terminal state being reached to be included in the computed transition dynamics
@@ -55,7 +57,7 @@ public class DerivedMarkovOptionModel implements FullModel{
 		}
 
 		Option o = (Option)a;
-		if(!o.markov()){
+		if(!o.markov() && requireMarkov){
 			throw new RuntimeException("DerivedOptionMarkovModel can only compute transition function probability distribution for Markov options, but the input Option is not Markov");
 		}
 
@@ -120,7 +122,7 @@ public class DerivedMarkovOptionModel implements FullModel{
 
 		double probTerm = 0.0; //can never terminate in initiation state
 		if(src.nSteps > 0){
-			probTerm = o.probabilityOfTermination(src.s);
+			probTerm = o.probabilityOfTermination(src.s, null);
 		}
 
 		double probContinue = 1.-probTerm;
@@ -128,22 +130,22 @@ public class DerivedMarkovOptionModel implements FullModel{
 
 		//handle possible termination
 		if(probTerm > 0.){
-			double probOfDiscountedTrajectory = src.probability*stackedDiscount;
+			double probOfDiscountedTrajectory = src.probability*stackedDiscount*probTerm;
 			possibleTerminations.add(hashingFactory.hashState(src.s), probOfDiscountedTrajectory);
-			expectedReturn[0] += src.cumulativeDiscountedReward;
+			expectedReturn[0] += src.cumulativeDiscountedReward*src.probability*probTerm;
 		}
 
 		//handle continuation
 		if(probContinue > 0.){
 
 			//handle option policy selection
-			List <Policy.ActionProb> actionSelction = o.oneStepProbabilities(src.s);
+			List <Policy.ActionProb> actionSelction = o.policyDistribution(src.s, null);
 			for(Policy.ActionProb ap : actionSelction){
 
 				//now get possible outcomes of each action
 				List <TransitionProb> transitions = ((FullModel)model).transitions(src.s, o);
 				for(TransitionProb tp : transitions){
-					double totalTransP = ap.pSelection * tp.p;
+					double totalTransP = ap.pSelection * tp.p * probContinue;
 					double r = stackedDiscount * tp.eo.r;
 					if(tp.eo.terminated){
 						srcTerminateStates.add(hashingFactory.hashState(tp.eo.op));

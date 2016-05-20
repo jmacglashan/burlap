@@ -18,19 +18,7 @@ import java.util.Random;
  * option, initiation set, termination conditions, its policy, whether the option is Markov, and giving it control
  * int an environment.
  * <p>
- * The policy is defined by the interaction of two methods, the {@link #initiateInState(State)} method, and the {@link #oneStep(State)}
- * method. When the policy of an option is to be queried, the {@link #initiateInState(State)} method
- * will always be called first, after which the {@link #oneStep(State)} method can be sequentially queried. This
- * implementation strategy is used to support non-Markov options whose decision depends on the history
- * of actions and states since initiation. Moreover, the {@link #probabilityOfTermination(State)}
- * is also conditioned on the events since {@link #initiateInState(State)} if the Option is not Markov.
- * If your option is Markov (does not depend on a history), then the
- * {@link #initiateInState(State)} can do nothing and the {@link #oneStep(State)} method can simply
- * return the policy of the option in that state.
- * <p>
- * For the {@link #control(Environment, double)} method, you can implement it using the {@link Helper#control(Option, Environment, double)}
- * which will use the {@link #initiateInState(State)} method and then the {@link #oneStep(State)} and terminate
- * randomly with probability according to the {@link #probabilityOfTermination(State)} method.
+ *     .
  * <p>
  * 1. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction 
  * in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
@@ -46,17 +34,12 @@ public interface Option extends Action{
 	 */
 	boolean inInitiationSet(State s);
 
-	/**
-	 * Defines the next action selection for the given state, conditioned on the states and actions observed since
-	 * the {@link #initiateInState(State)} method was called.
-	 * @param s the new current {@link State} in which an action should be selected.
-	 * @return
-	 */
-	Action oneStep(State s);
-	List<Policy.ActionProb> oneStepProbabilities(State s);
-	double probabilityOfTermination(State s);
 
-	void initiateInState(State s);
+	Action policy(State s, Episode history);
+	List<Policy.ActionProb> policyDistribution(State s, Episode history);
+
+	double probabilityOfTermination(State s, Episode history);
+
 	EnvironmentOptionOutcome control(Environment env, double discount);
 
 	boolean markov();
@@ -69,14 +52,14 @@ public interface Option extends Action{
 			State cur = initial;
 
 			Episode episode = new Episode(cur);
-			o.initiateInState(cur);
+			Episode history = new Episode(cur);
 			double roll;
 			double pT;
 			int nsteps = 0;
 			double r = 0.;
 			double cd = 1.;
 			do{
-				Action a = o.oneStep(cur);
+				Action a = o.policy(cur, history);
 				EnvironmentOutcome eo = env.executeAction(a);
 				nsteps++;
 				r += cd*eo.r;
@@ -84,11 +67,13 @@ public interface Option extends Action{
 				cd *= discount;
 
 
-				Policy.AnnotatedAction annotatedAction = new Policy.AnnotatedAction(a, o.toString() + "(" + nsteps + ")");
+				history.recordTransitionTo(a, eo.op, eo.r);
+
+				Policy.AnnotatedAction  annotatedAction = new Policy.AnnotatedAction(a, o.toString() + "(" + nsteps + ")");
 				episode.recordTransitionTo(annotatedAction, eo.op, r);
 
 
-				pT = o.probabilityOfTermination(eo.op);
+				pT = o.probabilityOfTermination(eo.op, history);
 				roll = rand.nextDouble();
 
 			}while(roll > pT && !env.isInTerminalState());

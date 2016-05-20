@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.options;
 
 import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.singleagent.Episode;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
@@ -27,12 +28,6 @@ public class MacroAction implements Option {
 	 * The list of actions that will be executed in order when this macro-action is called.
 	 */
 	protected List<Action> actionSequence;
-	
-	/**
-	 * the current execution index of the macro-action sequence. Every time this action is executed,
-	 * it will start at index 0.
-	 */
-	protected int curIndex;
 
 
 	/**
@@ -49,17 +44,13 @@ public class MacroAction implements Option {
 
 
 	@Override
-	public double probabilityOfTermination(State s) {
-		if(curIndex >= actionSequence.size()){
+	public double probabilityOfTermination(State s, Episode history) {
+		if(history.actionSequence.size() >= actionSequence.size()){
 			return 1.;
 		}
 		return 0.;
 	}
 
-	@Override
-	public void initiateInState(State s) {
-		curIndex = 0;
-	}
 
 	@Override
 	public boolean inInitiationSet(State s) {
@@ -67,15 +58,15 @@ public class MacroAction implements Option {
 	}
 
 	@Override
-	public Action oneStep(State s) {
+	public Action policy(State s, Episode history) {
 		
-		Action a = actionSequence.get(curIndex++);
+		Action a = actionSequence.get(history.actionSequence.size());
 		return a;
 	}
 
 	@Override
-	public List<ActionProb> oneStepProbabilities(State s) {
-		return Arrays.asList(new ActionProb(actionSequence.get(curIndex), 1.));
+	public List<ActionProb> policyDistribution(State s, Episode history) {
+		return Arrays.asList(new ActionProb(actionSequence.get(history.actionSequence.size()), 1.));
 	}
 
 	@Override
@@ -102,9 +93,6 @@ public class MacroAction implements Option {
 		return this.actionSequence.size();
 	}
 
-	public void setCurActionSequenceIndex(int ind){
-		this.curIndex = ind;
-	}
 
 	@Override
 	public boolean equals(Object o) {

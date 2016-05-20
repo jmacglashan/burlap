@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.options;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.singleagent.Episode;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTestIterable;
 import burlap.mdp.core.Action;
@@ -86,7 +87,7 @@ public class SubgoalOption implements Option {
 
 
 	@Override
-	public double probabilityOfTermination(State s) {
+	public double probabilityOfTermination(State s, Episode history) {
 		if(terminationStates.satisfies(s) || !policy.isDefinedFor(s)){
 			return 1.;
 		}
@@ -98,21 +99,16 @@ public class SubgoalOption implements Option {
 		return initiationTest.satisfies(s);
 	}
 
-	
-	
-	@Override
-	public void initiateInState(State s) {
-		//no bookkeeping
-	}
+
 
 	@Override
-	public Action oneStep(State s) {
+	public Action policy(State s, Episode history) {
 		return policy.getAction(s);
 	}
 
 
 	@Override
-	public List<ActionProb> oneStepProbabilities(State s) {
+	public List<ActionProb> policyDistribution(State s, Episode history) {
 		return policy.getActionDistributionForState(s);
 	}
 

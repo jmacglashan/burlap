@@ -383,6 +383,19 @@ public class Episode {
 	}
 
 
+	/**
+	 * Returns a copy of this {@link Episode}.
+	 * @return a copy of this {@link Episode}.
+	 */
+	public Episode copy(){
+		Episode ep = new Episode();
+		ep.stateSequence = new ArrayList<State>(this.stateSequence);
+		ep.actionSequence = new ArrayList<Action>(this.actionSequence);
+		ep.rewardSequence = new ArrayList<Double>(this.rewardSequence);
+		return ep;
+	}
+
+
 	public static Episode parseEpisode(String episodeString){
 
 		Yaml yaml = new Yaml();
