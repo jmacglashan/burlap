@@ -17,8 +17,7 @@ import java.util.List;
  * This class also provides a state generator for RLGLue {@link Observation} objects, using the {@link RLGlueState},
  * which wraps the observation and provides the relevant key values for it so normal BURLAP code and interact with it.
  * <p>
- * Since RLGlue is an RL environment, the created actions, which currently are only supported for 1 dimensional discrete actions,
- * do not support performAction, which would require knowledge of the transition dynamics.
+ * This code only supports single dimensional discrete actions from RL Glue
  * @author James MacGlashan.
  */
 public class RLGlueDomain implements DomainGenerator {

@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.options;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
+import burlap.behavior.policy.support.AnnotatedAction;
 import burlap.behavior.singleagent.Episode;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
@@ -16,9 +17,15 @@ import java.util.Random;
 /**
  * An interface for Options [1] that extends the {@link Action} interface. Requires additional methods for defining the
  * option, initiation set, termination conditions, its policy, whether the option is Markov, and giving it control
- * int an environment.
+ * in an environment.
  * <p>
- *     .
+ * The policy methods {@link #policy(State, Episode)}, {@link #policyDistribution(State, Episode)} and the termination
+ * conditions method {@link #probabilityOfTermination(State, Episode)} take as input a history (provided as an
+ * {@link Episode} object) so that Non Markov options can be supported. If the option is Markov, these history parameters
+ * can be null.
+ * <p>
+ * the {@link #control(Environment, double)} method can generally be implemented using the {@link Helper#control(Environment, double)}
+ * method, but you can also implement it your own way if desired.
  * <p>
  * 1. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction 
  * in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
@@ -36,7 +43,7 @@ public interface Option extends Action{
 
 
 	Action policy(State s, Episode history);
-	List<Policy.ActionProb> policyDistribution(State s, Episode history);
+	List<ActionProb> policyDistribution(State s, Episode history);
 
 	double probabilityOfTermination(State s, Episode history);
 
@@ -69,7 +76,7 @@ public interface Option extends Action{
 
 				history.recordTransitionTo(a, eo.op, eo.r);
 
-				Policy.AnnotatedAction  annotatedAction = new Policy.AnnotatedAction(a, o.toString() + "(" + nsteps + ")");
+				AnnotatedAction annotatedAction = new AnnotatedAction(a, o.toString() + "(" + nsteps + ")");
 				episode.recordTransitionTo(annotatedAction, eo.op, r);
 
 

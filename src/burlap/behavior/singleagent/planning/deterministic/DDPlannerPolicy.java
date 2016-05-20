@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
-import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner.PlanningFailedException;
 import burlap.mdp.core.Action;
@@ -21,7 +21,7 @@ import java.util.List;
  * answer
  * @author James MacGlashan
  */
-public class DDPlannerPolicy extends Policy implements SolverDerivedPolicy {
+public class DDPlannerPolicy implements SolverDerivedPolicy {
 
 	protected DeterministicPlanner dp;
 	
@@ -52,14 +52,14 @@ public class DDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 	
 	
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		return dp.querySelectedActionForState(s);
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
-		Action selectedAction = this.getAction(s);
-		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
+	public List<ActionProb> policyDistribution(State s) {
+		Action selectedAction = this.action(s);
+		List <ActionProb> res = new ArrayList<ActionProb>();
 		ActionProb ap = new ActionProb(selectedAction, 1.);
 		res.add(ap);
 		return res;
@@ -67,12 +67,12 @@ public class DDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return false;
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		Action ga = null;
 		try{
 			ga = dp.querySelectedActionForState(s);

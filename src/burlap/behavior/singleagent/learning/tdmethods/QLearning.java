@@ -436,7 +436,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		maxQChangeInLastEpisode = 0.;
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
-			Action action = learningPolicy.getAction(curState.s());
+			Action action = learningPolicy.action(curState.s());
 			QValue curQ = this.getQ(curState, action);
 
 

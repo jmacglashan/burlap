@@ -4,6 +4,8 @@ import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 
 /**
+ * An interface extension of {@link FullModel} for models that are learned from data. Requires a method for updating the model
+ * and resetting the model.
  * @author James MacGlashan.
  */
 public interface LearnedModel extends FullModel{

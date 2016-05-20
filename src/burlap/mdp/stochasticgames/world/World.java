@@ -464,7 +464,7 @@ public class World {
 			return ; //cannot continue this game
 		}
 		
-		this.lastJointAction = (JointAction)jp.getAction(this.currentState);
+		this.lastJointAction = (JointAction)jp.action(this.currentState);
 		
 		DPrint.cl(debugId, this.lastJointAction.toString());
 		

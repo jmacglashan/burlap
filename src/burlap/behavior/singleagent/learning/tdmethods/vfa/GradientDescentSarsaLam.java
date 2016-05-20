@@ -332,7 +332,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 		eStepCounter = 0;
 		Map <Integer, EligibilityTraceVector> traces = new HashMap<Integer, EligibilityTraceVector>();
 
-		Action action = this.learningPolicy.getAction(curState);
+		Action action = this.learningPolicy.action(curState);
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
 			//get Q-value and gradient
@@ -349,7 +349,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			State nextState = eo.op;
 
 			//determine next Q-value for outcome state
-			Action nextAction = this.learningPolicy.getAction(nextState);
+			Action nextAction = this.learningPolicy.action(nextState);
 			double nextQV = 0.;
 			if(!eo.terminated){
 				nextQV = this.vfa.evaluate(nextState, nextAction);

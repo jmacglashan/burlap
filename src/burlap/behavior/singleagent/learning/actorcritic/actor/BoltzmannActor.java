@@ -2,6 +2,8 @@ package burlap.behavior.singleagent.learning.actorcritic.actor;
 
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.PolicyUtils;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.datastructures.BoltzmannDistribution;
@@ -118,12 +120,12 @@ public class BoltzmannActor extends Actor {
 	}
 
 	@Override
-	public Action getAction(State s) {
-		return this.sampleFromActionDistribution(s);
+	public Action action(State s) {
+		return PolicyUtils.sampleFromActionDistribution(this, s);
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		
 		HashableState sh = this.hashingFactory.hashState(s);
 		PolicyNode node = this.getNode(sh);
@@ -171,13 +173,13 @@ public class BoltzmannActor extends Actor {
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return true;
 	}
 	
 	
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true; //can always create equal-probable action preferences for a new state
 	}
 	

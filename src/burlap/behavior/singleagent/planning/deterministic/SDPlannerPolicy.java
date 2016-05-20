@@ -1,7 +1,8 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
-import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.policy.support.ActionProb;
+import burlap.behavior.policy.support.PolicyUndefinedException;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -16,12 +17,12 @@ import java.util.List;
  * if the source deterministic valueFunction has not already computed
  * and cached the plan for a query state, then this policy
  * is undefined for that state and will cause the policy to throw
- * a corresponding {@link burlap.behavior.policy.Policy.PolicyUndefinedException} exception object.
+ * a corresponding {@link PolicyUndefinedException} exception object.
  * @author James MacGlashan
  */
 
 
-public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
+public class SDPlannerPolicy implements SolverDerivedPolicy {
 
 	protected DeterministicPlanner dp;
 	
@@ -48,7 +49,7 @@ public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		
 		if(this.dp == null){
 			throw new RuntimeException("The valueFunction used by this Policy is not defined; therefore, the policy is undefined.");
@@ -66,12 +67,12 @@ public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
-		Action selectedAction = this.getAction(s);
+	public List<ActionProb> policyDistribution(State s) {
+		Action selectedAction = this.action(s);
 		if(selectedAction == null){
 			throw new PolicyUndefinedException();
 		}
-		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
+		List <ActionProb> res = new ArrayList<ActionProb>();
 		ActionProb ap = new ActionProb(selectedAction, 1.);
 		res.add(ap);
 		return res;
@@ -79,13 +80,13 @@ public class SDPlannerPolicy extends Policy implements SolverDerivedPolicy {
 
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return false;
 	}
 
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		if(this.dp == null){
 			throw new RuntimeException("The valueFunction used by this Policy is not defined; therefore, the policy is undefined.");
 		}

@@ -1,6 +1,7 @@
 package burlap.behavior.valuefunction;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
@@ -71,11 +72,11 @@ public interface QFunction extends ValueFunction{
 		public static double getPolicyValue(QFunction qSource, State s, Policy p){
 
 			double expectedValue = 0.;
-			List <Policy.ActionProb> aps = p.getActionDistributionForState(s);
+			List <ActionProb> aps = p.policyDistribution(s);
 			if(aps.isEmpty()){
 				return 0.;
 			}
-			for(Policy.ActionProb ap : aps){
+			for(ActionProb ap : aps){
 				double q = qSource.getQ(s, ap.ga).q;
 				expectedValue += q * ap.pSelection;
 			}

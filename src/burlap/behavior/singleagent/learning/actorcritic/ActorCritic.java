@@ -142,7 +142,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 		int timeSteps = 0;
 		while(!env.isInTerminalState() && (timeSteps < maxSteps || maxSteps == -1)){
 
-			Action ga = this.actor.getAction(curState);
+			Action ga = this.actor.action(curState);
 			EnvironmentOutcome eo = env.executeAction(ga);
 			State nextState = eo.op;
 			double r = eo.r;

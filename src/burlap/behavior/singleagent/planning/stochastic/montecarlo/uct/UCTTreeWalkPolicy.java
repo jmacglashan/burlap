@@ -1,7 +1,8 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
-import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
+import burlap.behavior.policy.support.ActionProb;
+import burlap.behavior.policy.support.PolicyUndefinedException;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -24,7 +25,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
+public class UCTTreeWalkPolicy implements SolverDerivedPolicy {
 
 	UCT 									planner;
 	
@@ -114,7 +115,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		
 		if(policy == null){
 			this.computePolicyFromTree();
@@ -129,7 +130,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		
 		if(policy == null){
 			this.computePolicyFromTree();
@@ -140,7 +141,7 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 			throw new PolicyUndefinedException();
 		}
 		
-		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
+		List <ActionProb> res = new ArrayList<ActionProb>();
 		res.add(new ActionProb(ga, 1.)); //greedy policy so only need to supply the mapped action
 		
 		return res;
@@ -148,12 +149,12 @@ public class UCTTreeWalkPolicy extends Policy implements SolverDerivedPolicy {
 
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return false; //although UCT solves stochastic MDPs, the policy returned here is deterministic and greedy
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		if(policy == null){
 			this.computePolicyFromTree();
 		}

@@ -1,5 +1,6 @@
 package burlap.behavior.policy;
 
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
@@ -21,7 +22,7 @@ import java.util.Random;
  * @author James MacGlashan
  *
  */
-public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
+public class EpsilonGreedy implements SolverDerivedPolicy {
 
 	protected QFunction qplanner;
 	protected double					epsilon;
@@ -77,7 +78,7 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		
 		
 		List<QValue> qValues = this.qplanner.getQs(s);
@@ -112,11 +113,11 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		
 		List<QValue> qValues = this.qplanner.getQs(s);
 		
-		List <ActionProb> dist = new ArrayList<Policy.ActionProb>(qValues.size());
+		List <ActionProb> dist = new ArrayList<ActionProb>(qValues.size());
 		double maxQ = Double.NEGATIVE_INFINITY;
 		int nMax = 0;
 		for(QValue q : qValues){
@@ -142,12 +143,12 @@ public class EpsilonGreedy extends Policy implements SolverDerivedPolicy {
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return true;
 	}
 	
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true; //can always find q-values with default value
 	}
 

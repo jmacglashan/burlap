@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
@@ -122,7 +122,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	
 
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		
 		List<JointAction> jas = this.getAllJointActions(s);
 		JointAction selected;
@@ -164,7 +164,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		
 		List<JointAction> jas = this.getAllJointActions(s);
 		AgentQSourceMap qSources = this.qSourceProvider.getQSources();
@@ -197,7 +197,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 			sumProb.add(ja, maxCont);
 		}
 		
-		List<ActionProb> aps = new ArrayList<Policy.ActionProb>(jas.size());
+		List<ActionProb> aps = new ArrayList<ActionProb>(jas.size());
 		for(JointAction ja : jas){
 			double p = sumProb.v(ja);
 			if(p > 0.){
@@ -210,12 +210,12 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return this.epsilon > 0. || this.breakTiesRandomly;
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true;
 	}
 

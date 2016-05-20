@@ -243,7 +243,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	public SGAgentAction getAction(State s) {
 		this.updateLatestQValue();
 		this.learningPolicy.getJointPolicy().setAgentsInJointPolicyFromWorld(this.world);
-		return (SGAgentAction)this.learningPolicy.getAction(s);
+		return (SGAgentAction)this.learningPolicy.action(s);
 	}
 
 	@Override

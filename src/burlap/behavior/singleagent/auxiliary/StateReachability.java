@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.auxiliary;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.MyTimer;
 import burlap.mdp.core.Action;
@@ -164,8 +165,8 @@ public class StateReachability {
 			HashableState sh = openList.poll();
 
 
-			List<Policy.ActionProb> policyActions = p.getActionDistributionForState(sh.s());
-			for(Policy.ActionProb ap : policyActions){
+			List<ActionProb> policyActions = p.policyDistribution(sh.s());
+			for(ActionProb ap : policyActions){
 				if(ap.pSelection > 0){
 					List <TransitionProb> tps = model.transitions(sh.s(), ap.ga);
 					nGenerated += tps.size();

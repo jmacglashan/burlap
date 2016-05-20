@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.options.model;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.options.Option;
 import burlap.datastructures.HashedAggregator;
@@ -13,6 +13,9 @@ import burlap.statehashing.HashableStateFactory;
 import java.util.List;
 
 /**
+ * A slightly more memory intensive implementation of {@link DerivedMarkovOptionModel} that can also
+ * compute the transitions of non-Markov options. See the java doc for {@link DerivedMarkovOptionModel}
+ * for more information.
  * @author James MacGlashan.
  */
 public class DerivedNonMarkovOptionModel extends DerivedMarkovOptionModel{
@@ -48,8 +51,8 @@ public class DerivedNonMarkovOptionModel extends DerivedMarkovOptionModel{
 		if(probContinue > 0.){
 
 			//handle option policy selection
-			List<Policy.ActionProb> actionSelection = o.policyDistribution(src.s, history);
-			for(Policy.ActionProb ap : actionSelection){
+			List<ActionProb> actionSelection = o.policyDistribution(src.s, history);
+			for(ActionProb ap : actionSelection){
 
 				//now get possible outcomes of each action
 				List <TransitionProb> transitions = ((FullModel)model).transitions(src.s, o);

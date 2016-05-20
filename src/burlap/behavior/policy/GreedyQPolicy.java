@@ -1,5 +1,6 @@
 package burlap.behavior.policy;
 
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
@@ -19,7 +20,7 @@ import java.util.Random;
  * @author James MacGlashan
  *
  */
-public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
+public class GreedyQPolicy implements SolverDerivedPolicy {
 
 	protected QFunction qplanner;
 	protected Random 					rand;
@@ -51,7 +52,7 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		List<QValue> qValues = this.qplanner.getQs(s);
 		List <QValue> maxActions = new ArrayList<QValue>();
 		maxActions.add(qValues.get(0));
@@ -73,7 +74,7 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		List<QValue> qValues = this.qplanner.getQs(s);
 		int numMax = 1;
 		double maxQ = qValues.get(0).q;
@@ -88,7 +89,7 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 			}
 		}
 		
-		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
+		List <ActionProb> res = new ArrayList<ActionProb>();
 		double uniformMax = 1./(double)numMax;
 		for(int i = 0; i < qValues.size(); i++){
 			QValue q = qValues.get(i);
@@ -105,13 +106,13 @@ public class GreedyQPolicy extends Policy implements SolverDerivedPolicy {
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return true; //although the policy is greedy, it randomly selects between tied actions
 	}
 
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true; //can always find q-values with default value
 	}
 	

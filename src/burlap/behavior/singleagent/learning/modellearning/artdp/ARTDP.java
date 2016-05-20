@@ -171,7 +171,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 		State curState = initialState;
 		int steps = 0;
 		while(!env.isInTerminalState() && (steps < maxSteps || maxSteps == -1)){
-			Action ga = policy.getAction(curState);
+			Action ga = policy.action(curState);
 			EnvironmentOutcome eo = env.executeAction(ga);
 
 

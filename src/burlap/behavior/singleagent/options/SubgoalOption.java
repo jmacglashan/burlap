@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.options;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.Episode;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTestIterable;
@@ -13,7 +13,9 @@ import java.util.List;
 
 
 /**
- * A class for a classic Markov option. Defined by a Markov policy, an initiation set, and a termination set.
+ * A class for a classic subgoal Markov option. The option policy is specified with a {@link Policy} object,
+ * the deterministic termination conditions with a {@link StateConditionTest} and the initiation set with a
+ * {@link StateConditionTest}.
  * @author James MacGlashan
  *
  */
@@ -39,9 +41,15 @@ public class SubgoalOption implements Option {
 	 * The states in which the option terminates deterministically
 	 */
 	protected StateConditionTest			terminationStates;
-	
-	
-	
+
+
+	/**
+	 * A default constructor for serialization purposes. In general, you should use the {@link #SubgoalOption(String, Policy, StateConditionTest, StateConditionTest)}
+	 * constructor.
+	 */
+	public SubgoalOption() {
+	}
+
 	/**
 	 * Initializes.
 	 * @param name the name of the option
@@ -65,17 +73,37 @@ public class SubgoalOption implements Option {
 	public StateConditionTest getInitiationTest(){
 		return this.initiationTest;
 	}
-	
-	
-	/**
-	 * Returns the object defining the termination states.
-	 * @return the object defining the termination states.
-	 */
-	public StateConditionTest getTerminiationStates(){
-		return this.terminationStates;
+
+
+
+	public String getName() {
+		return name;
 	}
-	
-	
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Policy getPolicy() {
+		return policy;
+	}
+
+	public void setPolicy(Policy policy) {
+		this.policy = policy;
+	}
+
+	public void setInitiationTest(StateConditionTest initiationTest) {
+		this.initiationTest = initiationTest;
+	}
+
+	public StateConditionTest getTerminationStates() {
+		return terminationStates;
+	}
+
+	public void setTerminationStates(StateConditionTest terminationStates) {
+		this.terminationStates = terminationStates;
+	}
+
 	/**
 	 * Returns true if the initiation states and termination states of this option are iterable; false if either of them are not.
 	 * @return true if the initiation states and termination states of this option are iterable; false if either of them are not.
@@ -88,7 +116,7 @@ public class SubgoalOption implements Option {
 
 	@Override
 	public double probabilityOfTermination(State s, Episode history) {
-		if(terminationStates.satisfies(s) || !policy.isDefinedFor(s)){
+		if(terminationStates.satisfies(s) || !policy.definedFor(s)){
 			return 1.;
 		}
 		return 0.;
@@ -103,13 +131,13 @@ public class SubgoalOption implements Option {
 
 	@Override
 	public Action policy(State s, Episode history) {
-		return policy.getAction(s);
+		return policy.action(s);
 	}
 
 
 	@Override
 	public List<ActionProb> policyDistribution(State s, Episode history) {
-		return policy.getActionDistributionForState(s);
+		return policy.policyDistribution(s);
 	}
 
 	@Override

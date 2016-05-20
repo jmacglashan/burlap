@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StatePolicyPainter;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.vardomain.VariableDomain;
@@ -195,7 +195,7 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 		yval = cHeight - height - normY*cHeight;
 
 		
-		List<ActionProb> pdist = policy.getActionDistributionForState(s);
+		List<ActionProb> pdist = policy.policyDistribution(s);
 		double maxp = 0.;
 		for(ActionProb ap : pdist){
 			if(ap.pSelection > maxp){

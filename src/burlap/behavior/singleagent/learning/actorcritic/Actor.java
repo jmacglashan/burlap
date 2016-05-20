@@ -17,7 +17,7 @@ import burlap.mdp.singleagent.action.ActionType;
  * @author James MacGlashan
  *
  */
-public abstract class Actor extends Policy {
+public abstract class Actor implements Policy {
 
 	/**
 	 * Causes this object to update its behavior is response to a critique of its behavior.

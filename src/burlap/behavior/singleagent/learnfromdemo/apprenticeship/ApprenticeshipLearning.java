@@ -3,6 +3,8 @@ package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.planning.Planner;
@@ -185,7 +187,7 @@ public class ApprenticeshipLearning {
 
 		// (1b) Compute u^(0) = u(pi^(0))
 		Episode episode =
-				policy.evaluateBehavior(request.getStartStateGenerator().generateState(), request.getPlanner().getModel(), maximumExpertEpisodeLength);
+				PolicyUtils.rollout(policy, request.getStartStateGenerator().generateState(), request.getPlanner().getModel(), maximumExpertEpisodeLength);
 		double[] featureExpectations = 
 				ApprenticeshipLearning.estimateFeatureExpectation(episode, featureFunctions, request.getGamma());
 		featureExpectationsHistory.add(featureExpectations);
@@ -236,7 +238,7 @@ public class ApprenticeshipLearning {
 			List<Episode> evaluatedEpisodes = new ArrayList<Episode>();
 			for (int j = 0; j < policyCount; ++j) {
 				evaluatedEpisodes.add(
-						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));
+						PolicyUtils.rollout(policy, request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));
 			}
 			featureExpectations = 
 					ApprenticeshipLearning.estimateFeatureExpectation(evaluatedEpisodes, featureFunctions, request.getGamma());
@@ -293,7 +295,7 @@ public class ApprenticeshipLearning {
 		List<Episode> sampleEpisodes = new ArrayList<Episode>();
 		for (int j = 0; j < request.getPolicyCount(); ++j) {
 			sampleEpisodes.add(
-					policy.evaluateBehavior(request.getStartStateGenerator().generateState(), domain.getModel(), maximumExpertEpisodeLength));
+					PolicyUtils.rollout(policy, request.getStartStateGenerator().generateState(), domain.getModel(), maximumExpertEpisodeLength));
 		}
 		double[] curFE = 
 				ApprenticeshipLearning.estimateFeatureExpectation(sampleEpisodes, featureFunctions, request.getGamma());
@@ -353,7 +355,7 @@ public class ApprenticeshipLearning {
 			List<Episode> evaluatedEpisodes = new ArrayList<Episode>();
 			for (int j = 0; j < policyCount; ++j) {
 				evaluatedEpisodes.add(
-						policy.evaluateBehavior(request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));
+						PolicyUtils.rollout(policy, request.getStartStateGenerator().generateState(), crModel, maximumExpertEpisodeLength));
 			}
 			curFE = ApprenticeshipLearning.estimateFeatureExpectation(evaluatedEpisodes, featureFunctions, request.getGamma());
 			featureExpectationsHistory.add(curFE.clone());
@@ -539,7 +541,7 @@ public class ApprenticeshipLearning {
 	 * @author Stephen Brawner
 	 *
 	 */
-	public static class StationaryRandomDistributionPolicy extends Policy {
+	public static class StationaryRandomDistributionPolicy implements Policy {
 		Map<HashableState, Action> stateActionMapping;
 		List<ActionType> actionTypes;
 		Map<HashableState, List<ActionProb>> stateActionDistributionMapping;
@@ -594,7 +596,7 @@ public class ApprenticeshipLearning {
 		}
 
 		@Override
-		public Action getAction(State s) {
+		public Action action(State s) {
 			HashableState hashableState = this.hashFactory.hashState(s);
 
 			// If this state has not yet been visited, we need to compute a new distribution of actions
@@ -618,7 +620,7 @@ public class ApprenticeshipLearning {
 		}
 
 		@Override
-		public List<ActionProb> getActionDistributionForState(State s) {
+		public List<ActionProb> policyDistribution(State s) {
 			HashableState hashableState = this.hashFactory.hashState(s);
 
 			// If this state has not yet been visited, we need to compute a new distribution of actions
@@ -629,12 +631,12 @@ public class ApprenticeshipLearning {
 		}
 
 		@Override
-		public boolean isStochastic() {
+		public boolean stochastic() {
 			return true;
 		}
 
 		@Override
-		public boolean isDefinedFor(State s) {
+		public boolean definedFor(State s) {
 			return true;
 		}
 	}

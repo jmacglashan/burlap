@@ -1,7 +1,8 @@
 package burlap.behavior.singleagent.planning.stochastic;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.policy.PolicyUtils;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.valuefunction.QFunction;
@@ -268,14 +269,14 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		}
 		
 		double weightedQ = 0.;
-		List<ActionProb> policyDistribution = p.getActionDistributionForState(sh.s());
+		List<ActionProb> policyDistribution = p.policyDistribution(sh.s());
 		
 
 		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
 		List<Action> gas = this.getAllGroundedActions(sh.s());
 		for(Action ga : gas){
 
-			double policyProb = Policy.getProbOfActionGivenDistribution(ga, policyDistribution);
+			double policyProb = PolicyUtils.actionProbGivenDistribution(ga, policyDistribution);
 			if(policyProb == 0.){
 				continue; //doesn't contribute
 			}

@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learning.modellearning.rmax;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * @author James MacGlashan.
  */
-public class UnmodeledFavoredPolicy extends Policy{
+public class UnmodeledFavoredPolicy implements Policy{
 
 	protected Policy sourcePolicy;
 	protected KWIKModel model;
@@ -27,7 +28,7 @@ public class UnmodeledFavoredPolicy extends Policy{
 	}
 
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 
 		List<Action> unmodeled = KWIKModel.Helper.unmodeledActions(model, allActionTypes, s);
 
@@ -35,11 +36,11 @@ public class UnmodeledFavoredPolicy extends Policy{
 			return unmodeled.get(RandomFactory.getMapped(0).nextInt(unmodeled.size()));
 		}
 
-		return this.sourcePolicy.getAction(s);
+		return this.sourcePolicy.action(s);
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 
 		List<Action> unmodeled = KWIKModel.Helper.unmodeledActions(model, allActionTypes, s);
 
@@ -52,16 +53,16 @@ public class UnmodeledFavoredPolicy extends Policy{
 			return aps;
 		}
 
-		return this.sourcePolicy.getActionDistributionForState(s);
+		return this.sourcePolicy.policyDistribution(s);
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return true;
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true;
 	}
 }

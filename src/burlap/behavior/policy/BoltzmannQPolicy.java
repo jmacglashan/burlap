@@ -1,5 +1,6 @@
 package burlap.behavior.policy;
 
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
@@ -19,7 +20,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
+public class BoltzmannQPolicy implements SolverDerivedPolicy {
 
 	protected QFunction qplanner;
 	double								temperature;
@@ -50,12 +51,12 @@ public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
 	}
 	
 	@Override
-	public Action getAction(State s) {
-		return this.sampleFromActionDistribution(s);
+	public Action action(State s) {
+		return PolicyUtils.sampleFromActionDistribution(this, s);
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		List<QValue> qValues = this.qplanner.getQs(s);
 		return this.getActionDistributionForQValues(s, qValues);
 	}
@@ -64,7 +65,7 @@ public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
 	
 	private List<ActionProb> getActionDistributionForQValues(State queryState, List <QValue> qValues){
 		
-		List <ActionProb> res = new ArrayList<Policy.ActionProb>();
+		List <ActionProb> res = new ArrayList<ActionProb>();
 		
 		double [] rawQs = new double[qValues.size()];
 		for(int i = 0; i < qValues.size(); i++){
@@ -83,7 +84,7 @@ public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return true;
 	}
 
@@ -99,7 +100,7 @@ public class BoltzmannQPolicy extends Policy implements SolverDerivedPolicy {
 
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true; //can always find q-values with default value
 	}
 	

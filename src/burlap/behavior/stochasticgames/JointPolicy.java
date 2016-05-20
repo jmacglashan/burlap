@@ -27,7 +27,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public abstract class JointPolicy extends Policy {
+public abstract class JointPolicy implements Policy {
 
 	/**
 	 * The agent definitions that define the set of possible joint actions in each state.
@@ -121,7 +121,7 @@ public abstract class JointPolicy extends Policy {
 			//then reset syncrhonization
 			this.lastSyncedState = s;
 			this.agentsSyncrhonizedSoFar.clear();
-			this.lastSynchronizedJointAction = (JointAction)this.getAction(s);
+			this.lastSynchronizedJointAction = (JointAction)this.action(s);
 		}
 		
 		Action a = this.lastSynchronizedJointAction.action(agentName);

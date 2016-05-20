@@ -41,7 +41,7 @@ public class SetStrategySGAgent extends SGAgent {
 
 	@Override
 	public SGAgentAction getAction(State s) {
-		SGAgentAction actSelection = (SGAgentAction)this.policy.getAction(s);
+		SGAgentAction actSelection = (SGAgentAction)this.policy.action(s);
 		actSelection.setActingAgent(this.worldAgentName);
 		return actSelection;
 	}

@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.RandomPolicy;
 import burlap.datastructures.AlphanumericSorting;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
@@ -415,7 +416,7 @@ public class Episode {
 		State s = new GridWorldState(new GridAgent(1, 3));
 
 		Policy p = new RandomPolicy(domain);
-		Episode ea = p.evaluateBehavior(s, domain.getModel(), 30);
+		Episode ea = PolicyUtils.rollout(p, s, domain.getModel(), 30);
 
 		String yamlOut = ea.serialize();
 

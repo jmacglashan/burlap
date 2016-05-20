@@ -34,7 +34,7 @@ public class BeliefPolicyAgent extends BeliefAgent {
 	@Override
 	public Action getAction(BeliefState curBelief) {
 
-		return this.policy.getAction(curBelief);
+		return this.policy.action(curBelief);
 	}
 	
 	

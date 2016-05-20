@@ -1,5 +1,6 @@
 package burlap.behavior.policy;
 
+import burlap.behavior.policy.support.ActionProb;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.HashableState;
 import burlap.mdp.core.Action;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * @author James MacGlashan.
  */
-public class CachedPolicy extends Policy{
+public class CachedPolicy implements Policy{
 
 	/**
 	 * The hashing factory to use for indexing states
@@ -26,7 +27,7 @@ public class CachedPolicy extends Policy{
 	/**
 	 * The cached action selection probabilities
 	 */
-	protected Map<HashableState, List<Policy.ActionProb>> actionSelection = new HashMap<HashableState, List<Policy.ActionProb>>();
+	protected Map<HashableState, List<ActionProb>> actionSelection = new HashMap<HashableState, List<ActionProb>>();
 
 	/**
 	 * The source policy that gets cached
@@ -58,29 +59,29 @@ public class CachedPolicy extends Policy{
 	}
 
 	@Override
-	public Action getAction(State s) {
-		return this.sampleFromActionDistribution(s);
+	public Action action(State s) {
+		return PolicyUtils.sampleFromActionDistribution(this, s);
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		HashableState sh = this.hashingFactory.hashState(s);
-		List<Policy.ActionProb> aps = this.actionSelection.get(sh);
+		List<ActionProb> aps = this.actionSelection.get(sh);
 		if(aps == null){
-			aps = this.sourcePolicy.getActionDistributionForState(s);
+			aps = this.sourcePolicy.policyDistribution(s);
 			this.actionSelection.put(sh, aps);
 		}
 		return aps;
 	}
 
 	@Override
-	public boolean isStochastic() {
-		return this.sourcePolicy.isStochastic();
+	public boolean stochastic() {
+		return this.sourcePolicy.stochastic();
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		HashableState sh = this.hashingFactory.hashState(s);
-		return this.actionSelection.containsKey(sh) ? true : this.sourcePolicy.isDefinedFor(s);
+		return this.actionSelection.containsKey(sh) ? true : this.sourcePolicy.definedFor(s);
 	}
 }

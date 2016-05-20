@@ -1,5 +1,7 @@
 package burlap.behavior.policy;
 
+import burlap.behavior.policy.support.ActionProb;
+import burlap.behavior.policy.support.PolicyUndefinedException;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -21,7 +23,7 @@ import java.util.Random;
  * Upon action selection, all applicable grounded actions for the state are generated and an action is selected
  * uniformly randomly from them. The policy is not defined if there are no applicable actions.
  */
-public class RandomPolicy extends Policy{
+public class RandomPolicy implements Policy{
 
 
 	/**
@@ -117,7 +119,7 @@ public class RandomPolicy extends Policy{
 
 
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
 		if(gas.isEmpty()){
 			throw new PolicyUndefinedException();
@@ -127,7 +129,7 @@ public class RandomPolicy extends Policy{
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
 		if(gas.isEmpty()){
 			throw new PolicyUndefinedException();
@@ -142,12 +144,12 @@ public class RandomPolicy extends Policy{
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return true;
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return ActionUtils.allApplicableActionsForTypes(this.actionTypes, s).size() > 0;
 	}
 }

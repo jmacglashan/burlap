@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.options.model;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.options.Option;
 import burlap.datastructures.HashedAggregator;
 import burlap.mdp.core.Action;
@@ -16,6 +16,11 @@ import burlap.statehashing.HashableStateFactory;
 import java.util.*;
 
 /**
+ * A model that can compute a Markov option's transition model, and cache it, from a source {@link SampleModel}. A {@link FullModel} is
+ * required for the {@link #transitions(State, Action)} function. The computation of the transition model can be quite
+ * expensive. To help prune it, the outcome search prunes possible paths that have a probability less than some threshold.
+ * By default that threshold is 0.001, but you can change it with the {@link #setExpectationSearchCutoffProb(double)} method.
+ *
  * @author James MacGlashan.
  */
 public class DerivedMarkovOptionModel implements FullModel{
@@ -40,6 +45,14 @@ public class DerivedMarkovOptionModel implements FullModel{
 		this.model = model;
 		this.discount = discount;
 		this.hashingFactory = hashingFactory;
+	}
+
+	public double getExpectationSearchCutoffProb() {
+		return expectationSearchCutoffProb;
+	}
+
+	public void setExpectationSearchCutoffProb(double expectationSearchCutoffProb) {
+		this.expectationSearchCutoffProb = expectationSearchCutoffProb;
 	}
 
 	@Override
@@ -139,8 +152,8 @@ public class DerivedMarkovOptionModel implements FullModel{
 		if(probContinue > 0.){
 
 			//handle option policy selection
-			List <Policy.ActionProb> actionSelction = o.policyDistribution(src.s, null);
-			for(Policy.ActionProb ap : actionSelction){
+			List <ActionProb> actionSelction = o.policyDistribution(src.s, null);
+			for(ActionProb ap : actionSelction){
 
 				//now get possible outcomes of each action
 				List <TransitionProb> transitions = ((FullModel)model).transitions(src.s, o);

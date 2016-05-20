@@ -185,7 +185,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 
 	@Override
 	public SGAgentAction getAction(State s) {
-		return (SGAgentAction)this.policy.getAction(s);
+		return (SGAgentAction)this.policy.action(s);
 	}
 
 	@Override

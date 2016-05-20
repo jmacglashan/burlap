@@ -5,6 +5,7 @@ import burlap.behavior.functionapproximation.dense.DenseStateActionLinearVFA;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
@@ -391,7 +392,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 		List<SSFeatures> features = new ArrayList<LSPI.SSFeatures>(this.dataset.size());
 		int nf = 0;
 		for(SARS sars : this.dataset.dataset){
-			SSFeatures transitionFeatures = new SSFeatures(this.saFeatures.features(sars.s, sars.a), this.saFeatures.features(sars.sp, p.getAction(sars.sp)));
+			SSFeatures transitionFeatures = new SSFeatures(this.saFeatures.features(sars.s, sars.a), this.saFeatures.features(sars.sp, p.action(sars.sp)));
 			features.add(transitionFeatures);
 			nf = Math.max(nf, transitionFeatures.sActionFeatures.length);
 		}
@@ -570,7 +571,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	@Override
 	public Episode runLearningEpisode(Environment env, int maxSteps) {
 
-		Episode ea = maxSteps != -1 ? this.learningPolicy.evaluateBehavior(env, maxSteps) : this.learningPolicy.evaluateBehavior(env);
+		Episode ea = maxSteps != -1 ? PolicyUtils.rollout(this.learningPolicy, env, maxSteps) : PolicyUtils.rollout(this.learningPolicy, env);
 
 		this.updateDatasetWithLearningEpisode(ea);
 

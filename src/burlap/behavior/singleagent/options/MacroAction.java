@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.options;
 
-import burlap.behavior.policy.Policy.ActionProb;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.Episode;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -12,7 +12,7 @@ import java.util.List;
 
 
 /**
- * A macro action is a non-Markov option that always executes a fixed sequence of actions
+ * A macro action is a non-Markov option that always executes a fixed sequence of actions.
  * @author James MacGlashan
  *
  */
@@ -31,6 +31,12 @@ public class MacroAction implements Option {
 
 
 	/**
+	 * Default constructor for serialization purposes. In general, you should use {@link #MacroAction(String, List)}
+	 */
+	public MacroAction() {
+	}
+
+	/**
 	 * Instantiates a macro action with a given name and action sequence. The name of the macro action
 	 * should be unique from any other action name.
 	 * @param name the name of the macro action.
@@ -42,6 +48,21 @@ public class MacroAction implements Option {
 	}
 
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Action> getActionSequence() {
+		return actionSequence;
+	}
+
+	public void setActionSequence(List<Action> actionSequence) {
+		this.actionSequence = actionSequence;
+	}
 
 	@Override
 	public double probabilityOfTermination(State s, Episode history) {

@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.learning.modellearning.modelplanners;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.mdp.core.Action;
@@ -102,7 +103,7 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 	 * @author James MacGlashan
 	 *
 	 */
-	class ReplanIfUnseenPolicy extends Policy{
+	class ReplanIfUnseenPolicy implements Policy{
 
 		/**
 		 * The source policy to follow for known states
@@ -119,32 +120,32 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 		}
 		
 		@Override
-		public Action getAction(State s) {
+		public Action action(State s) {
 			if(!VIModelLearningPlanner.this.hasComputedValueFor(s)){
 				VIModelLearningPlanner.this.observedStates.add(VIModelLearningPlanner.this.hashingFactory.hashState(s));
 				VIModelLearningPlanner.this.rerunVI();
 			}
-			return p.getAction(s);
+			return p.action(s);
 		}
 
 		@Override
-		public List<ActionProb> getActionDistributionForState(State s) {
+		public List<ActionProb> policyDistribution(State s) {
 			
 			if(!VIModelLearningPlanner.this.hasComputedValueFor(s)){
 				VIModelLearningPlanner.this.observedStates.add(VIModelLearningPlanner.this.hashingFactory.hashState(s));
 				VIModelLearningPlanner.this.rerunVI();
 			}
-			return p.getActionDistributionForState(s);
+			return p.policyDistribution(s);
 		}
 
 		@Override
-		public boolean isStochastic() {
-			return p.isStochastic();
+		public boolean stochastic() {
+			return p.stochastic();
 		}
 
 		@Override
-		public boolean isDefinedFor(State s) {
-			return p.isDefinedFor(s);
+		public boolean definedFor(State s) {
+			return p.definedFor(s);
 		}
 		
 		

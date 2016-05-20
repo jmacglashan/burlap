@@ -99,7 +99,7 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 	@Override
 	public SGAgentAction getAction(State s) {
 		this.planner.planFromState(s);
-		return (SGAgentAction)this.policy.getAction(s);
+		return (SGAgentAction)this.policy.action(s);
 	}
 
 	@Override

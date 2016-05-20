@@ -203,7 +203,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 		int steps = 0;
 		while(!env.isInTerminalState() && (steps < maxSteps || maxSteps == -1)){
 
-			Action ga = policy.getAction(curState);
+			Action ga = policy.action(curState);
 			EnvironmentOutcome eo = env.executeAction(ga);
 			ea.recordTransitionTo(ga, eo.op, eo.r);
 

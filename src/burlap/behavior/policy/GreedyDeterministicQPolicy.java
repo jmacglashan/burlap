@@ -1,5 +1,6 @@
 package burlap.behavior.policy;
 
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
@@ -15,7 +16,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class GreedyDeterministicQPolicy extends Policy implements SolverDerivedPolicy {
+public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
 
 	protected QFunction qplanner;
 	
@@ -43,7 +44,7 @@ public class GreedyDeterministicQPolicy extends Policy implements SolverDerivedP
 	
 
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		
 		List<QValue> qValues = this.qplanner.getQs(s);
 		double maxQV = Double.NEGATIVE_INFINITY;
@@ -59,17 +60,17 @@ public class GreedyDeterministicQPolicy extends Policy implements SolverDerivedP
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
-		return this.getDeterministicPolicy(s);
+	public List<ActionProb> policyDistribution(State s) {
+		return PolicyUtils.deterministicPolicyDistribution(this, s);
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return false;
 	}
 	
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true; //can always find q-values with default value
 	}
 

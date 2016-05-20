@@ -1,5 +1,7 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.policies;
 
+import burlap.behavior.policy.PolicyUtils;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
@@ -82,12 +84,12 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 	}
 
 	@Override
-	public Action getAction(State s) {
-		return this.sampleFromActionDistribution(s);
+	public Action action(State s) {
+		return PolicyUtils.sampleFromActionDistribution(this, s);
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		
 		String otherAgentName = null;
 		for(String aname : this.agentsInJointPolicy.keySet()){
@@ -147,12 +149,12 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 	}
 
 	@Override
-	public boolean isStochastic() {
+	public boolean stochastic() {
 		return true;
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
+	public boolean definedFor(State s) {
 		return true;
 	}
 

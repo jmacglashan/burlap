@@ -1,6 +1,7 @@
 package burlap.testing;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.informed.NullHeuristic;
@@ -54,7 +55,7 @@ public class TestBlockDude {
 			astar.planFromState(s);
 
 			Policy p = new SDPlannerPolicy(astar);
-			Episode ea = p.evaluateBehavior(s, domain.getModel(), 100);
+			Episode ea = PolicyUtils.rollout(p, s, domain.getModel(), 100);
 
 			State lastState = ea.stateSequence.get(ea.stateSequence.size() - 1);
 			Assert.assertEquals(true, tf.isTerminal(lastState));

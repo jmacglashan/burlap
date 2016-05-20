@@ -155,7 +155,7 @@ public class SarsaLam extends QLearning {
 		eStepCounter = 0;
 		LinkedList<EligibilityTrace> traces = new LinkedList<SarsaLam.EligibilityTrace>();
 
-		Action action = learningPolicy.getAction(curState.s());
+		Action action = learningPolicy.action(curState.s());
 		QValue curQ = this.getQ(curState, action);
 
 
@@ -171,7 +171,7 @@ public class SarsaLam extends QLearning {
 			}
 
 			HashableState nextState = this.stateHash(eo.op);
-			Action nextAction = learningPolicy.getAction(nextState.s());
+			Action nextAction = learningPolicy.action(nextState.s());
 			QValue nextQ = this.getQ(nextState, nextAction);
 			double nextQV = nextQ.q;
 

@@ -1,6 +1,7 @@
 package burlap.testing;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.behavior.singleagent.planning.deterministic.SDPlannerPolicy;
@@ -26,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static burlap.behavior.policy.PolicyUtils.rollout;
 import static burlap.domain.singleagent.gridworld.GridWorldDomain.PF_AT_LOCATION;
 
 public class TestPlanning {
@@ -53,7 +55,7 @@ public class TestPlanning {
 		DeterministicPlanner planner = new BFS(this.domain, this.goalCondition, this.hashingFactory);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
-		Episode analysis = p.evaluateBehavior(initialState, domain.getModel());
+		Episode analysis = rollout(p, initialState, domain.getModel());
 		this.evaluateEpisode(analysis, true);
 	}
 	
@@ -64,7 +66,7 @@ public class TestPlanning {
 		DeterministicPlanner planner = new DFS(this.domain, this.goalCondition, this.hashingFactory, -1 , true);
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
-		Episode analysis = p.evaluateBehavior(initialState, domain.getModel());
+		Episode analysis = rollout(p, initialState, domain.getModel());
 		this.evaluateEpisode(analysis);
 	}
 	
@@ -102,7 +104,7 @@ public class TestPlanning {
 		planner.planFromState(initialState);
 		Policy p = new SDPlannerPolicy(planner);
 		
-		Episode analysis = p.evaluateBehavior(initialState, domain.getModel());
+		Episode analysis = PolicyUtils.rollout(p, initialState, domain.getModel());
 		this.evaluateEpisode(analysis, true);
 	}
 	

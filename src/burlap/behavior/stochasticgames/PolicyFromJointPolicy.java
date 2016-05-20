@@ -1,6 +1,7 @@
 package burlap.behavior.stochasticgames;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.support.ActionProb;
 import burlap.datastructures.HashedAggregator;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -29,7 +30,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class PolicyFromJointPolicy extends Policy {
+public class PolicyFromJointPolicy implements Policy {
 
 	/**
 	 * The underlying joint policy from which actions are selected.
@@ -132,9 +133,9 @@ public class PolicyFromJointPolicy extends Policy {
 	}
 	
 	@Override
-	public Action getAction(State s) {
+	public Action action(State s) {
 		if(!this.synchronizeJointActionSelectionAmongAgents){
-			return ((JointAction)this.jointPolicy.getAction(s)).action(this.actingAgentName);
+			return ((JointAction)this.jointPolicy.action(s)).action(this.actingAgentName);
 		}
 		else{
 			return this.jointPolicy.getAgentSynchronizedActionSelection(this.actingAgentName, s);
@@ -142,9 +143,9 @@ public class PolicyFromJointPolicy extends Policy {
 	}
 
 	@Override
-	public List<ActionProb> getActionDistributionForState(State s) {
+	public List<ActionProb> policyDistribution(State s) {
 		
-		List<ActionProb> jaProbs = this.jointPolicy.getActionDistributionForState(s);
+		List<ActionProb> jaProbs = this.jointPolicy.policyDistribution(s);
 		HashedAggregator<SGAgentAction> marginalized = new HashedAggregator<SGAgentAction>();
 		for(ActionProb ap : jaProbs){
 			JointAction ja = (JointAction)ap.ga;
@@ -152,7 +153,7 @@ public class PolicyFromJointPolicy extends Policy {
 			marginalized.add(thisAgentsAction, ap.pSelection);
 		}
 		
-		List<ActionProb> finalProbs = new ArrayList<Policy.ActionProb>(marginalized.size());
+		List<ActionProb> finalProbs = new ArrayList<ActionProb>(marginalized.size());
 		for(Map.Entry<SGAgentAction, Double> e : marginalized.entrySet()){
 			ActionProb ap = new ActionProb(e.getKey(), e.getValue());
 			finalProbs.add(ap);
@@ -163,13 +164,13 @@ public class PolicyFromJointPolicy extends Policy {
 	}
 
 	@Override
-	public boolean isStochastic() {
-		return this.jointPolicy.isStochastic();
+	public boolean stochastic() {
+		return this.jointPolicy.stochastic();
 	}
 
 	@Override
-	public boolean isDefinedFor(State s) {
-		return this.jointPolicy.isDefinedFor(s);
+	public boolean definedFor(State s) {
+		return this.jointPolicy.definedFor(s);
 	}
 	
 	
