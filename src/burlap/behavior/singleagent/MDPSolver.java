@@ -72,11 +72,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
-		this.model = domain.getModel();
-		
-		//mapToStateIndex = new HashMap<HashableState, HashableState>();
 
-		this.setDomain(domain);
 		
 	}
 	
@@ -154,7 +150,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	public void setDomain(SADomain domain) {
 		this.domain = domain;
 		if(this.domain != null) {
-
+			this.model = domain.getModel();
 			if(this.actionTypes != null) {
 				this.actionTypes.clear();
 			}
