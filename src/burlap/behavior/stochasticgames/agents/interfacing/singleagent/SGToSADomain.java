@@ -64,7 +64,7 @@ public class SGToSADomain implements DomainGenerator {
 
 
 		for(SGAgentActionType sa : useableActions){
-			new SAActionTypeWrapper(agentName, sa);
+			domainWrapper.addActionType(new SAActionTypeWrapper(agentName, sa));
 		}
 
 
