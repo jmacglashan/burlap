@@ -156,7 +156,7 @@ public class DerivedMarkovOptionModel implements FullModel{
 			for(ActionProb ap : actionSelction){
 
 				//now get possible outcomes of each action
-				List <TransitionProb> transitions = ((FullModel)model).transitions(src.s, o);
+				List <TransitionProb> transitions = ((FullModel)model).transitions(src.s, ap.ga);
 				for(TransitionProb tp : transitions){
 					double totalTransP = ap.pSelection * tp.p * probContinue;
 					double r = stackedDiscount * tp.eo.r;
