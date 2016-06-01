@@ -7,7 +7,7 @@ import java.util.List;
 
 
 /**
- * An {@link ActionType} acts as a generator for {@link Action} objects. It's job is to define any preconditions for an
+ * An {@link ActionType} acts as a generator for {@link Action} objects. Its job is to define any preconditions for an
  * {@link Action}, so that {@link Action} objects with unsatisfied preconditions for an input state are not generated
  * in the state as well determine the set of valid parameterizations for a given input state. For example, in
  * a {@link burlap.domain.singleagent.blocksworld.BlocksWorld}, the number of stack actions is dependent on the number
