@@ -49,9 +49,9 @@ public class RandomPolicy implements Policy{
 	/**
 	 * Initializes by copying all the actions references defined in the provided list into an internal action
 	 * list for this policy.
-	 * @param acitons the actions to select between.
+	 * @param actionTypes the actions to select between.
 	 */
-	public RandomPolicy(List<ActionType> acitons){
+	public RandomPolicy(List<ActionType> actionTypes){
 		this.actionTypes = new ArrayList<ActionType>(actionTypes);
 	}
 
