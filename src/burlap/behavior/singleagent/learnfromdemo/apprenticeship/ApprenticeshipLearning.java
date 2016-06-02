@@ -52,8 +52,8 @@ public class ApprenticeshipLearning {
 	
 	public static final int								FEATURE_EXPECTATION_SAMPLES = 10;
 	
-	public static final int								debugCodeScore = 746329;
-	public static final int								debugCodeRFWeights = 636392;
+	public static final int								DEBUG_CODE_SCORE = 746329;
+	public static final int								DEBUG_CODE_RF_WEIGHTS = 636392;
 	
 	private ApprenticeshipLearning() {
 	    // do nothing
@@ -211,9 +211,9 @@ public class ApprenticeshipLearning {
 			}
 			
 			for(int z = 0; z < featureWeights.weights.length; z++){
-				DPrint.c(debugCodeRFWeights, z + ": " + featureWeights.weights[z] + "; ");
+				DPrint.c(DEBUG_CODE_RF_WEIGHTS, z + ": " + featureWeights.weights[z] + "; ");
 			}
-			DPrint.cl(debugCodeRFWeights, "");
+			DPrint.cl(DEBUG_CODE_RF_WEIGHTS, "");
 
 			// (3) if t^(i) <= epsilon, terminate
 			if (featureWeights == null || Math.abs(featureWeights.getScore()) <= request.getEpsilon()) {
@@ -221,7 +221,7 @@ public class ApprenticeshipLearning {
 				return policy;
 			}
 			tHistory[i] = featureWeights.getScore();
-			DPrint.cl(debugCodeScore, "Score: "+tHistory[i]);
+			DPrint.cl(DEBUG_CODE_SCORE, "Score: "+tHistory[i]);
 			// (4a) Calculate R = (w^(i))T * phi 
 			RewardFunction rewardFunction = 
 					ApprenticeshipLearning.generateRewardFunction(featureFunctions, featureWeights);
@@ -324,7 +324,7 @@ public class ApprenticeshipLearning {
 			}
 			FeatureWeights featureWeights = getWeightsProjectionMethod(expertExpectations, newProjFE);
 			tHistory[i] = featureWeights.getScore();
-			DPrint.cl(debugCodeScore, "Score: "+tHistory[i]);
+			DPrint.cl(DEBUG_CODE_SCORE, "Score: "+tHistory[i]);
 			lastProjFE = newProjFE; //don't forget to set the old projection to the new one!
 
 
@@ -334,9 +334,9 @@ public class ApprenticeshipLearning {
 			}
 
 			for(int z = 0; z < featureWeights.weights.length; z++){
-				DPrint.c(debugCodeRFWeights, z + ": " + featureWeights.weights[z] + "; ");
+				DPrint.c(DEBUG_CODE_RF_WEIGHTS, z + ": " + featureWeights.weights[z] + "; ");
 			}
-			DPrint.cl(debugCodeRFWeights, "");
+			DPrint.cl(DEBUG_CODE_RF_WEIGHTS, "");
 			
 			
 			// (4a) Calculate R = (w^(i))T * phi 

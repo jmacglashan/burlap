@@ -37,9 +37,9 @@ public class FrostbiteVisualizer {
 			@Override
 			public void paint(Graphics2D g2, State s, float cWidth, float cHeight) {
 				g2.setColor(waterColor);
-				g2.fill(new Rectangle2D.Double(0, 0, FrostbiteDomain.gameWidth, FrostbiteDomain.gameHeight));
+				g2.fill(new Rectangle2D.Double(0, 0, FrostbiteDomain.GAME_WIDTH, FrostbiteDomain.GAME_HEIGHT));
 				g2.setColor(Color.white);
-				g2.fill(new Rectangle2D.Double(0, 0, FrostbiteDomain.gameWidth, FrostbiteDomain.gameIceHeight));
+				g2.fill(new Rectangle2D.Double(0, 0, FrostbiteDomain.GAME_WIDTH, FrostbiteDomain.GAME_ICE_HEIGHT));
 			}
 		});
 
@@ -74,10 +74,10 @@ public class FrostbiteVisualizer {
 
 			g2.fill(new Rectangle2D.Double(x, y, size, size));
 
-			if (x + size > FrostbiteDomain.gameWidth)
-				g2.fill(new Rectangle2D.Double(x - FrostbiteDomain.gameWidth, y, size, size));
+			if (x + size > FrostbiteDomain.GAME_WIDTH)
+				g2.fill(new Rectangle2D.Double(x - FrostbiteDomain.GAME_WIDTH, y, size, size));
 			else if (x < 0)
-				g2.fill(new Rectangle2D.Double(x + FrostbiteDomain.gameWidth, y, size, size));
+				g2.fill(new Rectangle2D.Double(x + FrostbiteDomain.GAME_WIDTH, y, size, size));
 		}
 	}
 
@@ -121,8 +121,8 @@ public class FrostbiteVisualizer {
 
 			int layer = -1; // just because ;)
 			int maxLayer = fd.buildingStepsToWin;
-			int brickHeight = FrostbiteDomain.gameHeight / (5 * maxLayer);
-			int iglooWidth = FrostbiteDomain.gameWidth / 6;
+			int brickHeight = FrostbiteDomain.GAME_HEIGHT / (5 * maxLayer);
+			int iglooWidth = FrostbiteDomain.GAME_WIDTH / 6;
 			int iglooOffsetx = 0;
 			int iglooOffsety = 0;
 			for (; layer < Math.min(maxLayer, building) - 1; layer++) {
@@ -131,19 +131,19 @@ public class FrostbiteVisualizer {
 					iglooOffsety = -(layer - 1) * brickHeight;
 				}
 				if (layer >= maxLayer / 3) {
-					iglooWidth -= FrostbiteDomain.gameWidth / (4 * maxLayer);
-					iglooOffsetx += FrostbiteDomain.gameWidth / (8 * maxLayer);
+					iglooWidth -= FrostbiteDomain.GAME_WIDTH / (4 * maxLayer);
+					iglooOffsetx += FrostbiteDomain.GAME_WIDTH / (8 * maxLayer);
 				}
-				g2.fill(new Rectangle2D.Double(iglooOffsetx + 3 * FrostbiteDomain.gameWidth / 4,
-						iglooOffsety + FrostbiteDomain.gameHeight / 5 - brickHeight * layer,
+				g2.fill(new Rectangle2D.Double(iglooOffsetx + 3 * FrostbiteDomain.GAME_WIDTH / 4,
+						iglooOffsety + FrostbiteDomain.GAME_HEIGHT / 5 - brickHeight * layer,
 						iglooWidth, brickHeight));
 			}
 			if (building >= maxLayer) {
 				g2.setColor(Color.black);
-				int doorWidth = FrostbiteDomain.gameWidth / 28;
-				int doorHeight = FrostbiteDomain.gameHeight / 20;
-				g2.fill(new Rectangle2D.Double(3 * FrostbiteDomain.gameWidth / 4 + FrostbiteDomain.gameWidth / 12 - doorWidth / 2,
-						FrostbiteDomain.gameHeight / 5 - doorHeight/2, doorWidth, doorHeight));
+				int doorWidth = FrostbiteDomain.GAME_WIDTH / 28;
+				int doorHeight = FrostbiteDomain.GAME_HEIGHT / 20;
+				g2.fill(new Rectangle2D.Double(3 * FrostbiteDomain.GAME_WIDTH / 4 + FrostbiteDomain.GAME_WIDTH / 12 - doorWidth / 2,
+						FrostbiteDomain.GAME_HEIGHT / 5 - doorHeight/2, doorWidth, doorHeight));
 			}
 		}
 	}
