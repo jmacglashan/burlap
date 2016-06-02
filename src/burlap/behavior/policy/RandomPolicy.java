@@ -49,7 +49,7 @@ public class RandomPolicy extends Policy{
 	 * list for this policy.
 	 * @param acitons the actions to select between.
 	 */
-	public RandomPolicy(List<Action> acitons){
+	public RandomPolicy(List<Action> actions){
 		this.actions = new ArrayList<Action>(actions);
 	}
 
