@@ -19,16 +19,16 @@ import burlap.mdp.core.oo.state.OOVariableKey;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.vardomain.VariableDomain;
-import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.action.UniversalActionType;
-import burlap.mdp.singleagent.common.NullRewardFunction;
-import burlap.shell.visual.VisualExplorer;
+import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.model.FactoredModel;
+import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.visualizer.Visualizer;
 import burlap.shell.EnvironmentShell;
+import burlap.shell.visual.VisualExplorer;
+import burlap.visualizer.Visualizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -519,7 +519,7 @@ public class GridWorldDomain implements DomainGenerator {
 		TerminalFunction tf = this.tf;
 
 		if(rf == null){
-			rf = new NullRewardFunction();
+			rf = new UniformCostRF();
 		}
 		if(tf == null){
 			tf = new NullTermination();
