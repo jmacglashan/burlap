@@ -31,4 +31,20 @@ public abstract class WrappedHashableState implements HashableState {
 	@Override
 	public abstract boolean equals(Object obj);
 
+
+	/**
+	 * Getter for Java Bean serialization purposes.
+	 * @return the wrapped {@link State}
+	 */
+	public State getS() {
+		return s;
+	}
+
+	/**
+	 * Setter for Java Bean serialization purposes.
+	 * @param s the wrapped {@link State}
+	 */
+	public void setS(State s) {
+		this.s = s;
+	}
 }
