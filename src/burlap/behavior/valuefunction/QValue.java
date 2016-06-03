@@ -25,9 +25,14 @@ public class QValue {
 	 * The numeric Q-value
 	 */
 	public double						q;
-	
-	
-	
+
+
+	/**
+	 * Default constructor for serialization purposes.
+	 */
+	public QValue() {
+	}
+
 	/**
 	 * Creates a Q-value for the given state an action pair with the specified q-value
 	 * @param s the state

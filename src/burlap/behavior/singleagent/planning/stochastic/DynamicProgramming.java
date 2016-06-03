@@ -225,7 +225,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * members) for all relevant fields.
 	 * @param path the path to write the value function
 	 */
-	public void writeValueFunctionTable(String path){
+	public void writeValueTable(String path){
 		Yaml yaml = new Yaml();
 		try {
 			yaml.dump(this.valueFunction, new BufferedWriter(new FileWriter(path)));
@@ -239,7 +239,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * representation of a Java {@link Map} from {@link HashableState} to {@link Double}.
 	 * @param path the path to the save value function table
 	 */
-	public void loadValueFunctionTable(String path){
+	public void loadValueTable(String path){
 		Yaml yaml = new Yaml();
 		try {
 			this.valueFunction = (Map<HashableState, Double>)yaml.load(new FileReader(path));

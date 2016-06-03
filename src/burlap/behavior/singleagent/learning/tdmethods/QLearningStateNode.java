@@ -24,8 +24,14 @@ public class QLearningStateNode {
 	 * The Q-values for this object's state.
 	 */
 	public List<QValue>				qEntry;
-	
-	
+
+
+	/**
+	 * Default constructor for serialization purposes
+	 */
+	public QLearningStateNode() {
+	}
+
 	/**
 	 * Creates a new object for the given hashed state. The list of {@link burlap.behavior.valuefunction.QValue} objects is initialized to be empty.
 	 * @param s the hashed state for which to associate Q-values

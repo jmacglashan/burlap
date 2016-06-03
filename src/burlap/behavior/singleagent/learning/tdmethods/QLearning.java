@@ -23,8 +23,10 @@ import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.management.RuntimeErrorException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +59,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	/**
 	 * The tabular mapping from states to Q-values
 	 */
-	protected Map<HashableState, QLearningStateNode>				qIndex;
+	protected Map<HashableState, QLearningStateNode> 				qFunction;
 	
 	/**
 	 * The object that defines how Q-values are initialized.
@@ -206,7 +208,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 						  ValueFunctionInitialization qInitFunction, double learningRate, Policy learningPolicy, int maxEpisodeSize){
 		
 		this.solverInit(domain, gamma, hashingFactory);
-		this.qIndex = new HashMap<HashableState, QLearningStateNode>();
+		this.qFunction = new HashMap<HashableState, QLearningStateNode>();
 		this.learningRate = new ConstantLR(learningRate);
 		this.learningPolicy = learningPolicy;
 		this.maxEpisodeSize = maxEpisodeSize;
@@ -357,7 +359,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	 */
 	protected QLearningStateNode getStateNode(HashableState s){
 		
-		QLearningStateNode node = qIndex.get(s);
+		QLearningStateNode node = qFunction.get(s);
 		
 		if(node == null){
 			node = new QLearningStateNode(s);
@@ -370,7 +372,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 				node.addQValue(ga, qInitFunction.qValue(s.s(), ga));
 			}
 			
-			qIndex.put(s, node);
+			qFunction.put(s, node);
 		}
 		
 		return node;
@@ -500,9 +502,41 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 	
 	@Override
 	public void resetSolver(){
-		this.qIndex.clear();
+		this.qFunction.clear();
 		this.eStepCounter = 0;
 		this.maxQChangeInLastEpisode = Double.POSITIVE_INFINITY;
+	}
+
+
+	/**
+	 * Writes the q-function table stored in this object to the specified file path.
+	 * Uses a standard YAML approach, which means the HashableState and underlying Domain states
+	 * must have JavaBean like properties; i.e., have a default constructor and getters and setters (or public data
+	 * members) for all relevant fields.
+	 * @param path the path to write the value function
+	 */
+	public void writeQTable(String path){
+		Yaml yaml = new Yaml();
+		try {
+			yaml.dump(this.qFunction, new BufferedWriter(new FileWriter(path)));
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Loads the q-function table located on disk at the specified path. Expects the file to be a Yaml
+	 * representation of a Java {@link Map} from {@link HashableState} to {@link QLearningStateNode}.
+	 * @param path the path to the save value function table
+	 */
+	public void loadQTable(String path){
+		Yaml yaml = new Yaml();
+		try {
+			this.qFunction = (Map<HashableState, QLearningStateNode>)yaml.load(new FileInputStream(path));
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
