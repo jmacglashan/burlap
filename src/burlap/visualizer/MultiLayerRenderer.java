@@ -1,5 +1,6 @@
 package burlap.visualizer;
 
+import javax.swing.*;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class MultiLayerRenderer extends Canvas {
+public class MultiLayerRenderer extends JPanel {
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -106,23 +107,20 @@ public class MultiLayerRenderer extends Canvas {
 	}
 
 	@Override
-	public void paint(Graphics g){
-		
+	protected void paintComponent(Graphics graphics) {
 		this.initializeOffscreen();
-		
+
 		this.bufferedGraphics.setColor(bgColor);
 		this.bufferedGraphics.fill(new Rectangle(this.getWidth(), this.getHeight()));
-		
+
 		for(RenderLayer l : this.renderLayers){
 			l.render(bufferedGraphics, this.getWidth(), this.getHeight());
 		}
-		
-		Graphics2D g2 = (Graphics2D) g;
+
+		Graphics2D g2 = (Graphics2D) graphics;
 		g2.drawImage(offscreen,0,0,this);
-		
 	}
-	
-	
+
 	
 	/**
 	 * Initializes a new offscreen image and context
