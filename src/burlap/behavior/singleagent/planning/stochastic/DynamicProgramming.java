@@ -17,7 +17,9 @@ import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -215,9 +217,38 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	public double performFixedPolicyBellmanUpdateOn(State s, Policy p){
 		return this.performFixedPolicyBellmanUpdateOn(this.stateHash(s), p);
 	}
-	
-	
-	
+
+	/**
+	 * Writes the value function table stored in this object to the specified file path.
+	 * Uses a standard YAML approach, which means the HashableState and underlying Domain states
+	 * must have JavaBean like properties; i.e., have a default constructor and getters and setters (or public data
+	 * members) for all relevant fields.
+	 * @param path the path to write the value function
+	 */
+	public void writeValueFunctionTable(String path){
+		Yaml yaml = new Yaml();
+		try {
+			yaml.dump(this.valueFunction, new BufferedWriter(new FileWriter(path)));
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Loads the value function table located on disk at the specified path. Expects the file to be a Yaml
+	 * representation of a Java {@link Map} from {@link HashableState} to {@link Double}.
+	 * @param path the path to the save value function table
+	 */
+	public void loadValueFunctionTable(String path){
+		Yaml yaml = new Yaml();
+		try {
+			this.valueFunction = (Map<HashableState, Double>)yaml.load(new FileReader(path));
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	/**
 	 * Performs a Bellman value function update on the provided (hashed) state. Results are stored in the value function map as well as returned.
 	 * If this object is set to used cached transition dynamics and the transition dynamics for this state are not cached, then they will be created and cached.
@@ -351,7 +382,6 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	protected double getDefaultValue(State s){
 		return this.valueInitializer.value(s);
 	}
-	
 
-	
+
 }
