@@ -386,7 +386,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).propFunctions();
 		for(PropositionalFunction pf : props){
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);

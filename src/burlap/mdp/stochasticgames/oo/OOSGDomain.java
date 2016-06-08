@@ -35,12 +35,12 @@ public class OOSGDomain extends SGDomain implements OODomain {
 	}
 
 	@Override
-	public List<PropositionalFunction> getPropFunctions() {
+	public List<PropositionalFunction> propFunctions() {
 		return new ArrayList<PropositionalFunction>(this.propFunctionMap.values());
 	}
 
 	@Override
-	public PropositionalFunction getPropFunction(String name) {
+	public PropositionalFunction propFunction(String name) {
 		return this.propFunctionMap.get(name);
 	}
 

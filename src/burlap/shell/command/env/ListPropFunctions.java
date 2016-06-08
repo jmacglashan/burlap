@@ -53,7 +53,7 @@ public class ListPropFunctions implements ShellCommand {
 		}
 
 		if(oset.has("n")){
-			for(PropositionalFunction pf : ((OODomain)shell.getDomain()).getPropFunctions()){
+			for(PropositionalFunction pf : ((OODomain)shell.getDomain()).propFunctions()){
 				os.println(pf.getName());
 			}
 			return 0;
@@ -70,7 +70,7 @@ public class ListPropFunctions implements ShellCommand {
 			qs = ((SimulatedPOEnvironment)env).getCurrentHiddenState();
 		}
 
-		List<GroundedProp> gps = PropositionalFunction.getAllGroundedPropsFromPFList(((OODomain)shell.getDomain()).getPropFunctions(), qs);
+		List<GroundedProp> gps = PropositionalFunction.getAllGroundedPropsFromPFList(((OODomain)shell.getDomain()).propFunctions(), qs);
 		for(GroundedProp gp : gps){
 			if(gp.isTrue((OOState)qs) == !oset.has("f")){
 				os.println(gp.toString());

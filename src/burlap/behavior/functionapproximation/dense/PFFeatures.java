@@ -25,9 +25,9 @@ public class PFFeatures implements DenseStateFeatures {
 	 */
 	public PFFeatures(OODomain domain){
 		
-		this.pfsToUse = new PropositionalFunction[domain.getPropFunctions().size()];
+		this.pfsToUse = new PropositionalFunction[domain.propFunctions().size()];
 		int i = 0;
-		for(PropositionalFunction pf : domain.getPropFunctions()){
+		for(PropositionalFunction pf : domain.propFunctions()){
 			this.pfsToUse[i] = pf;
 			i++;
 		}

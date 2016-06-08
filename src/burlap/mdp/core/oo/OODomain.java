@@ -42,7 +42,7 @@ public interface OODomain extends Domain {
 	 * modify the propositional functions in this domain.
 	 * @return a list of the propositional functions that define this domain
 	 */
-	List <PropositionalFunction> getPropFunctions();
+	List <PropositionalFunction> propFunctions();
 
 
 	/**
@@ -50,7 +50,7 @@ public interface OODomain extends Domain {
 	 * @param name the name of the {@link PropositionalFunction}
 	 * @return the {@link PropositionalFunction} with the given name
 	 */
-	PropositionalFunction getPropFunction(String name);
+	PropositionalFunction propFunction(String name);
 
 
 	/**

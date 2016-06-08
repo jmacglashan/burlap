@@ -112,30 +112,30 @@ public class TestGridWorld {
 	}
 
 	public void assertPFs(State s, boolean[] expectedValues) {
-		PropositionalFunction atLocation = domain.getPropFunction(GridWorldDomain.PF_AT_LOCATION);
+		PropositionalFunction atLocation = domain.propFunction(GridWorldDomain.PF_AT_LOCATION);
 		List<GroundedProp> gpAt = atLocation.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpAt.size());
 		Assert.assertEquals(expectedValues[0], gpAt.get(0).isTrue((OOState)s));
 		
-		PropositionalFunction pfWallNorth = domain.getPropFunction(GridWorldDomain.PF_WALL_NORTH);
+		PropositionalFunction pfWallNorth = domain.propFunction(GridWorldDomain.PF_WALL_NORTH);
 		List<GroundedProp> gpWallNorth = pfWallNorth.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallNorth.size());
 		Assert.assertEquals(expectedValues[1], gpWallNorth.get(0).isTrue((OOState)s));
 		
 		
-		PropositionalFunction pfWallSouth = domain.getPropFunction(GridWorldDomain.PF_WALL_SOUTH);
+		PropositionalFunction pfWallSouth = domain.propFunction(GridWorldDomain.PF_WALL_SOUTH);
 		List<GroundedProp> gpWallSouth = pfWallSouth.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallSouth.size());
 		Assert.assertEquals(expectedValues[2], gpWallSouth.get(0).isTrue((OOState)s));
 		
 		
-		PropositionalFunction pfWallEast = domain.getPropFunction(GridWorldDomain.PF_WALL_EAST);
+		PropositionalFunction pfWallEast = domain.propFunction(GridWorldDomain.PF_WALL_EAST);
 		List<GroundedProp> gpWallEast = pfWallEast.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallEast.size());
 		Assert.assertEquals(expectedValues[3], gpWallEast.get(0).isTrue((OOState)s));
 		
 		
-		PropositionalFunction pfWallWest = domain.getPropFunction(GridWorldDomain.PF_WALL_WEST);
+		PropositionalFunction pfWallWest = domain.propFunction(GridWorldDomain.PF_WALL_WEST);
 		List<GroundedProp> gpWallWest = pfWallWest.getAllGroundedPropsForState(s);
 		Assert.assertEquals(1, gpWallWest.size());
 		Assert.assertEquals(expectedValues[4], gpWallWest.get(0).isTrue((OOState)s));

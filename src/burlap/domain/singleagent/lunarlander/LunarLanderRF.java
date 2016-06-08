@@ -43,10 +43,10 @@ public class LunarLanderRF implements RewardFunction{
 	 * @param domain a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} generated {@link burlap.mdp.core.Domain}.
 	 */
 	public LunarLanderRF(OODomain domain){
-		this.onGround = domain.getPropFunction(LunarLanderDomain.PF_ON_GROUND);
-		this.touchingSurface = domain.getPropFunction(LunarLanderDomain.PF_TOUCH_SURFACE);
-		this.touchingPad = domain.getPropFunction(LunarLanderDomain.PF_TOUTCH_PAD);
-		this.onPad = domain.getPropFunction(LunarLanderDomain.PF_ON_PAD);
+		this.onGround = domain.propFunction(LunarLanderDomain.PF_ON_GROUND);
+		this.touchingSurface = domain.propFunction(LunarLanderDomain.PF_TOUCH_SURFACE);
+		this.touchingPad = domain.propFunction(LunarLanderDomain.PF_TOUTCH_PAD);
+		this.onPad = domain.propFunction(LunarLanderDomain.PF_ON_PAD);
 	}
 
 

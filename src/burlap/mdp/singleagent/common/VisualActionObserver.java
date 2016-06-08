@@ -246,7 +246,7 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).propFunctions();
 		for(PropositionalFunction pf : props){
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){

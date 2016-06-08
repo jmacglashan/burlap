@@ -25,9 +25,9 @@ public class FrostbiteRF implements RewardFunction{
 	private PropositionalFunction iglooBuilt;
 
 	public FrostbiteRF(OODomain domain) {
-		this.inWater = domain.getPropFunction(FrostbiteDomain.PF_IN_WATER);
-		this.onIce = domain.getPropFunction(FrostbiteDomain.PF_ON_ICE);
-		this.iglooBuilt = domain.getPropFunction(FrostbiteDomain.PF_IGLOO_BUILT);
+		this.inWater = domain.propFunction(FrostbiteDomain.PF_IN_WATER);
+		this.onIce = domain.propFunction(FrostbiteDomain.PF_ON_ICE);
+		this.iglooBuilt = domain.propFunction(FrostbiteDomain.PF_IGLOO_BUILT);
 	}
 
 	@Override

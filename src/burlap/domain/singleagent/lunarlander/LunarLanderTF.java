@@ -20,7 +20,7 @@ public class LunarLanderTF implements TerminalFunction{
 	 * @param domain a {@link burlap.domain.singleagent.lunarlander.LunarLanderDomain} generated {@link burlap.mdp.core.Domain} object.
 	 */
 	public LunarLanderTF(OODomain domain){
-		this.onPad = domain.getPropFunction(LunarLanderDomain.PF_ON_PAD);
+		this.onPad = domain.propFunction(LunarLanderDomain.PF_ON_PAD);
 	}
 
 

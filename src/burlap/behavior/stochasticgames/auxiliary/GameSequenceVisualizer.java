@@ -377,7 +377,7 @@ public class GameSequenceVisualizer extends JFrame {
 
 	    StringBuilder buf = new StringBuilder();
 		
-		List <PropositionalFunction> props = ((OODomain)domain).getPropFunctions();
+		List <PropositionalFunction> props = ((OODomain)domain).propFunctions();
 		for(PropositionalFunction pf : props){
 			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
 			for(GroundedProp gp : gps){
