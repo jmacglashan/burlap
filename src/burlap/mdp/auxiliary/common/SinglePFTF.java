@@ -56,7 +56,7 @@ public class SinglePFTF implements TerminalFunction {
 	@Override
 	public boolean isTerminal(State s) {
 		//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
-		List<GroundedProp> gps = this.pf.allGroundings(s);
+		List<GroundedProp> gps = this.pf.allGroundings((OOState)s);
 		if(terminateOnTrue){
 			for(GroundedProp gp : gps){
 				if(gp.isTrue((OOState)s)){

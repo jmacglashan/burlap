@@ -386,7 +386,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		
 		List <PropositionalFunction> props = ((OODomain)domain).propFunctions();
 		for(PropositionalFunction pf : props){
-			List<GroundedProp> gps = pf.allGroundings(s);
+			List<GroundedProp> gps = pf.allGroundings((OOState)s);
 			for(GroundedProp gp : gps){
 				if(gp.isTrue((OOState)s)){
 					buf.append(gp.toString()).append("\n");

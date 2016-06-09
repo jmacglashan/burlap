@@ -656,7 +656,7 @@ public class GridGame implements DomainGenerator {
 			
 			//check for any agents that reached a universal goal location and give them a goal reward if they did
 			//List<GroundedProp> upgps = sp.getAllGroundedPropsFor(agentInUniversalGoal);
-			List<GroundedProp> upgps = agentInUniversalGoal.allGroundings(sp);
+			List<GroundedProp> upgps = agentInUniversalGoal.allGroundings((OOState)sp);
 			for(GroundedProp gp : upgps){
 				String agentName = gp.params[0];
 				if(gp.isTrue(osp)){
@@ -667,7 +667,7 @@ public class GridGame implements DomainGenerator {
 			
 			//check for any agents that reached a personal goal location and give them a goal reward if they did
 			//List<GroundedProp> ipgps = sp.getAllGroundedPropsFor(agentInPersonalGoal);
-			List<GroundedProp> ipgps = agentInPersonalGoal.allGroundings(sp);
+			List<GroundedProp> ipgps = agentInPersonalGoal.allGroundings((OOState)sp);
 			for(GroundedProp gp : ipgps){
 				String agentName = gp.params[0];
 				if(gp.isTrue(osp)){
@@ -745,7 +745,7 @@ public class GridGame implements DomainGenerator {
 			
 			//check personal goals; if anyone reached their personal goal, it's game over
 			//List<GroundedProp> ipgps = s.getAllGroundedPropsFor(agentInPersonalGoal);
-			List<GroundedProp> ipgps = agentInPersonalGoal.allGroundings(s);
+			List<GroundedProp> ipgps = agentInPersonalGoal.allGroundings((OOState)s);
 			for(GroundedProp gp : ipgps){
 				if(gp.isTrue((OOState)s)){
 					return true;
@@ -755,7 +755,7 @@ public class GridGame implements DomainGenerator {
 			
 			//check universal goals; if anyone reached a universal goal, it's game over
 			//List<GroundedProp> upgps = s.getAllGroundedPropsFor(agentInUniversalGoal);
-			List<GroundedProp> upgps = agentInUniversalGoal.allGroundings(s);
+			List<GroundedProp> upgps = agentInUniversalGoal.allGroundings((OOState)s);
 			for(GroundedProp gp : upgps){
 				if(gp.isTrue((OOState)s)){
 					return true;

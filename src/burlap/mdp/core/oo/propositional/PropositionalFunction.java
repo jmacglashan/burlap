@@ -10,18 +10,34 @@ import java.util.List;
 
 /**
  * The propositional function class defines evaluations of object instances in an OO-MDP state and are part of the definition for an OO-MDP domain.
- * Propositional functions have an name to identify them, a set of parameters that they can take, and an optional propositional function class
- * to which they belong. The parameters of a propositional function may also be assigned to order groups that indicate any symmetry in the
- * evaluation of the propositional function. For instance, suppose we were to define a "touching" propositional function that specified whether
- * two objects of a class representing blocks (called BLOCK) were touching in the world or not. For instance, we can imagine evaluating
- * touching(block0, block1). Note that there is a symmetry in this evaluation; that is touching(block0, block1) = touching(block1, block0) in which
- * case there is no point to evaluate both propositional functions. Specifying parameter order groups allows the designer to indicate these
+ * Propositional functions have an name to identify them and a set of typed parameters that they can take. Implementing
+ * this class requires implementing the abstract method {@link #isTrue(OOState, String...)}, which takes an input state,
+ * identifiers to one or more objects in the state, and returns true or false depending on whether the relationship
+ * of the object arguments this propositional function evaluates are satisfied.
+ * <br><br>
+ * If you want to determine all possible parameter bindings on which a PropositionalFunction's {@link #isTrue(OOState, String...)}
+ * method can be evaluated, use the {@link #allGroundings(OOState)} method, which takes as input an {@link OOState}, and detemrines
+ * which combinations of objects in the state can be applied to this object's typed parameters. The returned list will be a list of
+ * {@link GroundedProp} objects, where each {@link GroundedProp} object contains a reference to this {@link PropositionalFunction}
+ * and a list of the object reference on which to evaluate it. Similarly, if you want all possible groundings for a list of different
+ * {@link PropositionalFunction} objects, you can use the static {@link #allGroundingsFromList(List, OOState)} method, which
+ * calls the {@link #allGroundings(OOState)} method on each of the {@link PropositionalFunction} objects in the list, and concatenates
+ * their results into a single List of {@link GroundedProp} objects.
+ * <br><br>
+ * Optionally, the parameters of a propositional function may also be assigned to order groups that indicate any symmetry in the
+ * evaluation of the propositional function. For example, suppose we were to define a "touching" propositional function that specified whether
+ * two objects of a class representing blocks (called BLOCK) were touching in the world or not. Consider then, evaluating
+ * touching(block0, block1). Note that there is a symmetry in this evaluation; that is, touching(block0, block1) = touching(block1, block0) in which
+ * case there is no point to evaluate both argument orders, because evaluating one tells you the value of hte other.
+ * Specifying parameter order groups allows the designer to indicate these
  * kinds of symmetry. If two parameters are set to the same order group, then it indicates that the evaluation for the propositional function
  * will be the same for any order of parameters within that order group. If the order group between two parameters is different, then it indicates
- * that the order of the parameters can change the evaluation. So, in the previous touching example, if the parameter order groups of the two parameters
+ * that the order of the parameters can change the result of the evaluation. So, in the previous touching example, if the parameter order groups of the two parameters
  * were both "p0", then it indicates that touching(block0, block1) = touching(block1, block0); if one parameter was assigned to order group "p0" and the other
- * to "p1", then it is possible that touching(block0, block1) != touching(block1, block0). If the parameter order groups of parameters 
- * are not specified, then they are all assumed to be different.
+ * to "p1", then it is possible that touching(block0, block1) != touching(block1, block0). If the parameter order groups of parameters
+ * are not specified, then they are all assumed to be different. Any specified parameter order groups will be checked in the
+ * {@link #allGroundings(OOState)} method, so that different groundings that necessarily have the same value will only have
+ * one of the groundings included in the returned list.
  * @author James MacGlashan
  *
  */
@@ -126,7 +142,7 @@ public abstract class PropositionalFunction {
 	 * @param s the {@link State} in which all groundings will be returned
 	 * @return a {@link List} of all possible groundings of this {@link PropositionalFunction} for the given {@link State}
 	 */
-	public List<GroundedProp> allGroundings(State s){
+	public List<GroundedProp> allGroundings(OOState s){
 		
 		List <GroundedProp> res = new ArrayList<GroundedProp>();
 		
@@ -195,7 +211,7 @@ public abstract class PropositionalFunction {
 	 * @param s the {@link State} in which the groundings should be produced.
 	 * @return a {@link List} of all possible groundings for all of the {@link PropositionalFunction}s in the provided list for the given {@link State}
 	 */
-	public static List<GroundedProp> allGroundingsFromList(List<PropositionalFunction> pfs, State s){
+	public static List<GroundedProp> allGroundingsFromList(List<PropositionalFunction> pfs, OOState s){
 		List<GroundedProp> res = new ArrayList<GroundedProp>();
 		for(PropositionalFunction pf : pfs){
 			List<GroundedProp> gps = pf.allGroundings(s);
