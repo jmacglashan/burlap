@@ -118,39 +118,7 @@ public abstract class PropositionalFunction {
 	 * @return whether the propositional function is true
 	 */
 	public abstract boolean isTrue(OOState s, String... params);
-	
-	
-	
-	/**
-	 * Returns all possible groundings for all of the {@link PropositionalFunction}s in the provided list for the given {@link State}.
-	 * @param pfs The list of {@link PropositionalFunction}s for which all groundings will be returned.
-	 * @param s the {@link State} in which the groundings should be produced.
-	 * @return a {@link List} of all possible groundings for all of the {@link PropositionalFunction}s in the provided list for the given {@link State}
-	 */
-	public static List<GroundedProp> getAllGroundedPropsFromPFList(List<PropositionalFunction> pfs, State s){
-		List<GroundedProp> res = new ArrayList<GroundedProp>();
-		for(PropositionalFunction pf : pfs){
-			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
-			res.addAll(gps);
-		}
-		return res;
-	}
 
-
-	/**
-	 * Used to retrieve a {@link PropositionalFunction} with a specified name from a list of them.
-	 * @param pfs The list of {@link PropositionalFunction} objects to search.
-	 * @param pfName The name of the {@link PropositionalFunction}
-	 * @return the {@link PropositionalFunction} with the name or null if it does not exist
-	 */
-	public static PropositionalFunction getPropositionalFunction(List<PropositionalFunction> pfs, String pfName){
-		for(PropositionalFunction pf : pfs){
-			if(pf.getName().equals(pfName)){
-				return pf;
-			}
-		}
-		return null;
-	}
 	
 	
 	/**
@@ -158,7 +126,7 @@ public abstract class PropositionalFunction {
 	 * @param s the {@link State} in which all groundings will be returned
 	 * @return a {@link List} of all possible groundings of this {@link PropositionalFunction} for the given {@link State}
 	 */
-	public List<GroundedProp> getAllGroundedPropsForState(State s){
+	public List<GroundedProp> allGroundings(State s){
 		
 		List <GroundedProp> res = new ArrayList<GroundedProp>();
 		
@@ -188,8 +156,8 @@ public abstract class PropositionalFunction {
 	 * @param s the {@link State} to test.
 	 * @return true if there existing a {@link GroundedProp} for the provided {@link State} that is in true in the {@link State}; false otherwise.
 	 */
-	public boolean somePFGroundingIsTrue(OOState s){
-		List<GroundedProp> gps = this.getAllGroundedPropsForState(s);
+	public boolean someGroundingIsTrue(OOState s){
+		List<GroundedProp> gps = this.allGroundings(s);
 		for(GroundedProp gp : gps){
 			if(gp.isTrue(s)){
 				return true;
@@ -218,6 +186,39 @@ public abstract class PropositionalFunction {
 	public int hashCode(){
 		return name.hashCode();
 	}
-	
+
+
+
+	/**
+	 * Returns all possible groundings for all of the {@link PropositionalFunction}s in the provided list for the given {@link State}.
+	 * @param pfs The list of {@link PropositionalFunction}s for which all groundings will be returned.
+	 * @param s the {@link State} in which the groundings should be produced.
+	 * @return a {@link List} of all possible groundings for all of the {@link PropositionalFunction}s in the provided list for the given {@link State}
+	 */
+	public static List<GroundedProp> allGroundingsFromList(List<PropositionalFunction> pfs, State s){
+		List<GroundedProp> res = new ArrayList<GroundedProp>();
+		for(PropositionalFunction pf : pfs){
+			List<GroundedProp> gps = pf.allGroundings(s);
+			res.addAll(gps);
+		}
+		return res;
+	}
+
+
+	/**
+	 * Used to retrieve a {@link PropositionalFunction} with a specified name from a list of them.
+	 * @param pfs The list of {@link PropositionalFunction} objects to search.
+	 * @param pfName The name of the {@link PropositionalFunction}
+	 * @return the {@link PropositionalFunction} with the name or null if it does not exist
+	 */
+	public static PropositionalFunction findPF(List<PropositionalFunction> pfs, String pfName){
+		for(PropositionalFunction pf : pfs){
+			if(pf.getName().equals(pfName)){
+				return pf;
+			}
+		}
+		return null;
+	}
+
 	
 }

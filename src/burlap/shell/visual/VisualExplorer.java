@@ -456,7 +456,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 		
 		List <PropositionalFunction> props = ((OODomain)domain).propFunctions();
 		for(PropositionalFunction pf : props){
-			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
+			List<GroundedProp> gps = pf.allGroundings(s);
 			for(GroundedProp gp : gps){
 				if(gp.isTrue((OOState)s)){
 					buf.append(gp.toString()).append("\n");

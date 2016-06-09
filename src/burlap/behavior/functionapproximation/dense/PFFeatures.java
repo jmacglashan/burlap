@@ -59,7 +59,7 @@ public class PFFeatures implements DenseStateFeatures {
 		List<Double> featureValueList = new LinkedList<Double>();
 		for(PropositionalFunction pf : this.pfsToUse){
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
-			List<GroundedProp> gps = pf.getAllGroundedPropsForState(s);
+			List<GroundedProp> gps = pf.allGroundings(s);
 			for(GroundedProp gp : gps){
 				if(gp.isTrue((OOState)s)){
 					featureValueList.add(1.);

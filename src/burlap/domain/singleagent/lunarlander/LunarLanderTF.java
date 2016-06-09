@@ -26,6 +26,6 @@ public class LunarLanderTF implements TerminalFunction{
 
 	@Override
 	public boolean isTerminal(State s) {
-		return this.onPad.somePFGroundingIsTrue((OOState)s);
+		return this.onPad.someGroundingIsTrue((OOState)s);
 	}
 }

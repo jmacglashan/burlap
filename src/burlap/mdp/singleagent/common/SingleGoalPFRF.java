@@ -50,7 +50,7 @@ public class SingleGoalPFRF implements RewardFunction {
 	@Override
 	public double reward(State s, Action a, State sprime) {
 		
-		if(this.pf.somePFGroundingIsTrue((OOState)sprime)){
+		if(this.pf.someGroundingIsTrue((OOState)sprime)){
 			return goalReward;
 		}
 		return nonGoalReward;

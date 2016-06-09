@@ -41,7 +41,7 @@ public class TestPlanning {
 		this.gw = new GridWorldDomain(11, 11);
 		this.gw.setMapToFourRooms();
 		this.gw.setRf(new UniformCostRF());
-		TerminalFunction tf = new SinglePFTF(PropositionalFunction.getPropositionalFunction(gw.generatePfs(), PF_AT_LOCATION));
+		TerminalFunction tf = new SinglePFTF(PropositionalFunction.findPF(gw.generatePfs(), PF_AT_LOCATION));
 		this.gw.setTf(tf);
 		this.domain = this.gw.generateDomain();
 		this.goalCondition = new TFGoalCondition(tf);

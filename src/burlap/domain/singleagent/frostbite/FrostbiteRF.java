@@ -32,9 +32,9 @@ public class FrostbiteRF implements RewardFunction{
 
 	@Override
 	public double reward(State s, Action a, State sprime) {
-		if (inWater.somePFGroundingIsTrue((OOState)sprime))
+		if (inWater.someGroundingIsTrue((OOState)sprime))
 			return lostReward;
-		if (iglooBuilt.somePFGroundingIsTrue((OOState)sprime) && onIce.somePFGroundingIsTrue((OOState)s))
+		if (iglooBuilt.someGroundingIsTrue((OOState)sprime) && onIce.someGroundingIsTrue((OOState)s))
 			return goalReward;
 		if (numberPlatformsActive((FrostbiteState)s) != numberPlatformsActive((FrostbiteState)sprime))
 			return activatedPlatformReward;

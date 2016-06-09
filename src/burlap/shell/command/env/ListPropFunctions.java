@@ -70,7 +70,7 @@ public class ListPropFunctions implements ShellCommand {
 			qs = ((SimulatedPOEnvironment)env).getCurrentHiddenState();
 		}
 
-		List<GroundedProp> gps = PropositionalFunction.getAllGroundedPropsFromPFList(((OODomain)shell.getDomain()).propFunctions(), qs);
+		List<GroundedProp> gps = PropositionalFunction.allGroundingsFromList(((OODomain)shell.getDomain()).propFunctions(), qs);
 		for(GroundedProp gp : gps){
 			if(gp.isTrue((OOState)qs) == !oset.has("f")){
 				os.println(gp.toString());

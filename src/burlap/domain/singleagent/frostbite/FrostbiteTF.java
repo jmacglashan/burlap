@@ -23,9 +23,9 @@ public class FrostbiteTF implements TerminalFunction{
 
 	@Override
 	public boolean isTerminal(State s) {
-		if (inWater.somePFGroundingIsTrue((OOState)s))
+		if (inWater.someGroundingIsTrue((OOState)s))
 			return true;
-		return iglooBuilt.somePFGroundingIsTrue((OOState)s) && onIce.somePFGroundingIsTrue((OOState)s);
+		return iglooBuilt.someGroundingIsTrue((OOState)s) && onIce.someGroundingIsTrue((OOState)s);
 	}
 
 }

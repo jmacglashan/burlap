@@ -29,7 +29,7 @@ public class SinglePFSCT implements StateConditionTest {
 	public boolean satisfies(State s) {
 		
 		//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
-		List<GroundedProp> gps = this.pf.getAllGroundedPropsForState(s);
+		List<GroundedProp> gps = this.pf.allGroundings(s);
 		
 		for(GroundedProp gp : gps){
 			if(gp.isTrue((OOState)s)){
