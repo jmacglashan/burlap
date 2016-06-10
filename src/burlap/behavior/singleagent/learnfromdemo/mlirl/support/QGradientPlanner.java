@@ -18,7 +18,7 @@ public interface QGradientPlanner extends QFunction {
 	 * @param s the state for which Q-value gradients are to be returned.
 	 * @return the list of Q-value gradients for each action permissible in the given state.
 	 */
-	public List<QGradientTuple> getAllQGradients(State s);
+	List<QGradientTuple> getAllQGradients(State s);
 
 
 	/**
@@ -27,13 +27,7 @@ public interface QGradientPlanner extends QFunction {
 	 * @param a the action for which the Q-value gradient is to be returned.
 	 * @return the Q-value gradient for the given state and action.
 	 */
-	public QGradientTuple getQGradient(State s, Action a);
+	QGradientTuple getQGradient(State s, Action a);
 
-
-	/**
-	 * Sets this valueFunction's Boltzmann beta parameter used to compute gradients. As beta gets larger, the policy becomes more deterministic.
-	 * @param beta the value to which this valueFunction's Boltzmann beta parameter will be set
-	 */
-	public void setBoltzmannBetaParameter(double beta);
 
 }

@@ -1,18 +1,21 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.functionapproximation.FunctionGradient;
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dpoperator.DifferentiableDPOperator;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dpoperator.DifferentiableSoftmaxOperator;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
 import burlap.behavior.valuefunction.QValue;
-import burlap.datastructures.BoltzmannDistribution;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.statehashing.HashableState;
+import burlap.statehashing.HashableStateFactory;
 
 import java.util.*;
 
@@ -33,16 +36,16 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	protected Map<HashableState, FunctionGradient> valueGradient = new HashMap<HashableState, FunctionGradient>();
 
 	/**
-	 * The Boltzmann backup operator beta parameter. The larger the beta, the more deterministic the
-	 * back up.
-	 */
-	protected double										boltzBeta;
-
-	/**
 	 * The differentiable RF
 	 */
 	protected DifferentiableRF 								rf;
 
+
+	@Override
+	public void DPPInit(SADomain domain, double gamma, HashableStateFactory hashingFactory) {
+		super.DPPInit(domain, gamma, hashingFactory);
+		this.operator = new DifferentiableSoftmaxOperator();
+	}
 
 	@Override
 	public void resetSolver(){
@@ -50,39 +53,19 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 		this.valueGradient.clear();
 	}
 
-
-	/**
-	 * Overrides the superclass method to perform a Boltzmann backup operator
-	 * instead of a Bellman backup operator.
-	 * Results are stored in this valueFunction's internal map.
-	 * @param sh the hashed state on which to perform the Boltzmann update.
-	 * @return the new value
-	 */
 	@Override
-	protected double performBellmanUpdateOn(HashableState sh){
-
-		if(model.terminal(sh.s())){
-			this.valueFunction.put(sh, 0.);
-			return 0.;
+	public void setOperator(DPOperator operator) {
+		if(!(operator instanceof DifferentiableDPOperator)){
+			throw new RuntimeException("DPOperator must be a DifferentiableDPOperator");
 		}
-
-		List<QValue> qs = this.getQs(sh.s());
-		double [] dqs = new double[qs.size()];
-		for(int i = 0; i < qs.size(); i++){
-			dqs[i] = qs.get(i).q;
-		}
-		BoltzmannDistribution bd = new BoltzmannDistribution(dqs, 1./this.boltzBeta);
-		double [] dist = bd.getProbabilities();
-
-		double sum = 0.;
-		for(int i = 0; i < dqs.length; i++){
-			sum += dqs[i] * dist[i];
-		}
-
-		this.valueFunction.put(sh, sum);
-
-		return sum;
+		this.operator = operator;
 	}
+
+	@Override
+	public DifferentiableDPOperator getOperator() {
+		return (DifferentiableDPOperator)operator;
+	}
+
 
 	/**
 	 * Performs the Boltzmann value function gradient backup for the given {@link burlap.statehashing.HashableState}.
@@ -91,10 +74,8 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 	 * @return the gradient.
 	 */
 	protected FunctionGradient performDPValueGradientUpdateOn(HashableState sh){
-		//updates gradient of value function for the given state using bellman-like method
 
 
-		FunctionGradient vGradient = new FunctionGradient.SparseGradient();
 		//get q objects
 		List<QValue> Qs = this.getQs(sh.s());
 		double [] qs = new double[Qs.size()];
@@ -107,23 +88,8 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 			qGradients[i] = this.getQGradient(sh.s(), Qs.get(i).a).gradient;
 		}
 
-		double maxBetaScaled = BoltzmannPolicyGradient.maxBetaScaled(qs, this.boltzBeta);
-		double logSum = BoltzmannPolicyGradient.logSum(qs, maxBetaScaled, this.boltzBeta);
-
-		for(int i = 0; i < qs.length; i++){
-
-			double probA = Math.exp(this.boltzBeta * qs[i] - logSum);
-			FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(this.boltzBeta, qs, maxBetaScaled, logSum, qGradients, i);
-
-			for(FunctionGradient.PartialDerivative pd : policyGradient.getNonZeroPartialDerivatives()){
-				double curVal = vGradient.getPartialDerivative(pd.parameterId);
-				double nextVal = curVal + (probA * qGradients[i].getPartialDerivative(pd.parameterId)) + qs[i] * pd.value;
-				vGradient.put(pd.parameterId, nextVal);
-			}
-
-
-		}
-
+		FunctionGradient vGradient = ((DifferentiableDPOperator)operator).gradient(qs, qGradients);
+		this.valueGradient.put(sh, vGradient);
 
 		return vGradient;
 	}
@@ -160,12 +126,6 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 		FunctionGradient gradient = this.computeQGradient(s, a);
 		QGradientTuple tuple = new QGradientTuple(s, a, gradient);
 		return tuple;
-	}
-
-
-	@Override
-	public void setBoltzmannBetaParameter(double beta) {
-		this.boltzBeta = beta;
 	}
 
 

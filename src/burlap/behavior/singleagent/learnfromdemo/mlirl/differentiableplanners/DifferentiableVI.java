@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners;
 
 import burlap.behavior.policy.BoltzmannQPolicy;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dpoperator.DifferentiableSoftmaxOperator;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.debugtools.DPrint;
@@ -55,6 +56,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 	protected boolean												hasRunVI = false;
 
 
+	protected double												boltzBeta;
 
 	/**
 	 * Initializes the valueFunction.
@@ -73,6 +75,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 		this.rf = rf;
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
+		this.operator = new DifferentiableSoftmaxOperator(boltzBeta);
 		this.boltzBeta = boltzBeta;
 
 	}
@@ -208,7 +211,7 @@ public class DifferentiableVI extends DifferentiableDP implements Planner {
 			HashableState sh = openList.poll();
 
 			//skip this if it's already been expanded
-			if(!valueFunction.containsKey(sh)){
+			if(valueFunction.containsKey(sh)){
 				continue;
 			}
 

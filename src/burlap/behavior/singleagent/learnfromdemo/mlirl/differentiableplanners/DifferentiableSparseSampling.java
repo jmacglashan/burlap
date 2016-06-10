@@ -6,7 +6,8 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.DifferentiableVInit;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.diffvinit.VanillaDiffVinit;
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dpoperator.DifferentiableDPOperator;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dpoperator.DifferentiableSoftmaxOperator;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
@@ -15,7 +16,6 @@ import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSamp
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.datastructures.BoltzmannDistribution;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -101,6 +101,8 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	 */
 	protected int numUpdates = 0;
 
+	protected DifferentiableDPOperator operator;
+
 
 	/**
 	 * Initializes. The model of this planner will automatically be set to a {@link CustomRewardModel} using the provided reward function.
@@ -125,6 +127,8 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		this.vinit = new VanillaDiffVinit(new ValueFunctionInitialization.ConstantValueFunctionInitialization(), rf);
 
 		this.model = new CustomRewardModel(domain.getModel(), rf);
+
+		this.operator = new DifferentiableSoftmaxOperator(boltzBeta);
 
 		this.debugCode = 6368290;
 	}
@@ -180,6 +184,15 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		return this.model;
 	}
 
+
+	public DifferentiableDPOperator getOperator() {
+		return operator;
+	}
+
+	public void setOperator(DifferentiableDPOperator operator) {
+		this.operator = operator;
+	}
+
 	/**
 	 * Sets whether previous planning results should be forgetten or resued in subsequent planning. Forgetting results is more memory efficient, but less
 	 * CPU efficient.
@@ -230,10 +243,6 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		return this.numUpdates;
 	}
 
-	@Override
-	public void setBoltzmannBetaParameter(double beta) {
-		this.boltzBeta = beta;
-	}
 
 
 	@Override
@@ -447,10 +456,10 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 				else{
 
 					if(c > 0){
-						this.sampledBellmanQEstimate(ga, qs);
+						this.sampledQEstimate(ga, qs);
 					}
 					else{
-						this.fulldBellmanQEstimate(ga, qs);
+						this.exactQEstimate(ga, qs);
 					}
 
 				}
@@ -463,7 +472,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		}
 
-		public void sampledBellmanQEstimate(Action ga, QAndQGradient qs){
+		public void sampledQEstimate(Action ga, QAndQGradient qs){
 
 			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
 
@@ -503,7 +512,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		}
 
 
-		public void fulldBellmanQEstimate(Action ga, QAndQGradient qs){
+		public void exactQEstimate(Action ga, QAndQGradient qs){
 
 			int dim = DifferentiableSparseSampling.this.rfDim;
 			FunctionGradient qGradient = new FunctionGradient.SparseGradient();
@@ -558,22 +567,14 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 
 		protected void setV(QAndQGradient qvs){
-			double [] qArray = new double[qvs.qs.size()];
+			double [] qs = new double[qvs.qs.size()];
 			for(int i = 0; i < qvs.qs.size(); i++){
-				qArray[i] = qvs.qs.get(i).q;
+				qs[i] = qvs.qs.get(i).q;
 			}
-			BoltzmannDistribution bd = new BoltzmannDistribution(qArray, 1./DifferentiableSparseSampling.this.boltzBeta);
-			double [] probs = bd.getProbabilities();
-			double sum = 0.;
-			for(int i = 0; i < qArray.length; i++){
-				sum += qArray[i] * probs[i];
-			}
-			this.v = sum;
+			this.v = operator.apply(qs);
 		}
 
 		protected void setVGrad(QAndQGradient qvs){
-
-			this.vgrad = new FunctionGradient.SparseGradient();
 
 			//pack qs into double array
 			double [] qs = new double[qvs.qs.size()];
@@ -587,25 +588,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 				gqs[i] = qvs.qGrads.get(i).gradient;
 			}
 
-			double maxBetaScaled = BoltzmannPolicyGradient.maxBetaScaled(qs, DifferentiableSparseSampling.this.boltzBeta);
-			double logSum = BoltzmannPolicyGradient.logSum(qs, maxBetaScaled, DifferentiableSparseSampling.this.boltzBeta);
-
-			for(int i = 0; i < qs.length; i++){
-
-				double probA = Math.exp(DifferentiableSparseSampling.this.boltzBeta * qs[i] - logSum);
-				FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(
-						DifferentiableSparseSampling.this.boltzBeta, qs, maxBetaScaled, logSum, gqs, i);
-
-
-				for(FunctionGradient.PartialDerivative pd : policyGradient.getNonZeroPartialDerivatives()){
-					double curVal = this.vgrad.getPartialDerivative(pd.parameterId);
-					double nextVal = curVal + (probA * gqs[i].getPartialDerivative(pd.parameterId)) + (qs[i] * pd.value);
-					vgrad.put(pd.parameterId, nextVal);
-				}
-
-
-			}
-
+			this.vgrad = operator.gradient(qs, gqs);
 		}
 
 

@@ -150,9 +150,6 @@ public class MLIRLRequest extends IRLRequest{
 
 	public void setBoltzmannBeta(double boltzmannBeta) {
 		this.boltzmannBeta = boltzmannBeta;
-		if(this.planner != null){
-			((QGradientPlanner)this.planner).setBoltzmannBetaParameter(boltzmannBeta);
-		}
 	}
 
 	public void setRf(DifferentiableRF rf) {
