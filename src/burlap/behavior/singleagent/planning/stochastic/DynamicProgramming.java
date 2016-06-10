@@ -5,6 +5,8 @@ import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.planning.stochastic.dpoperator.BellmanOperator;
+import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
@@ -41,6 +43,9 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * The value function initialization to use; defaulted to an initialization of 0 everywhere.
 	 */
 	protected ValueFunctionInitialization valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization();
+
+
+	protected DPOperator operator = new BellmanOperator();
 	
 
 	
@@ -88,8 +93,24 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	public ValueFunctionInitialization getValueFunctionInitialization(){
 		return this.valueInitializer;
 	}
-	
-	
+
+
+	/**
+	 * Returns the dynamic programming operator used
+	 * @return the dynamic programming operator used
+	 */
+	public DPOperator getOperator() {
+		return operator;
+	}
+
+	/**
+	 * Sets the dynamic programming operator use. Note that default setting is {@link BellmanOperator} (max)
+	 * @param operator the dynamic programming operator to use.
+	 */
+	public void setOperator(DPOperator operator) {
+		this.operator = operator;
+	}
+
 	/**
 	 * Returns whether a value for the given state has been computed previously.
 	 * @param s the state to check
@@ -262,23 +283,21 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 			valueFunction.put(sh, 0.);
 			return 0.;
 		}
-		
-		
-		double maxQ = Double.NEGATIVE_INFINITY;
+
 
 		List<Action> gas = this.getAllGroundedActions(sh.s());
+		double [] qs = new double[gas.size()];
+		int i = 0;
 		for(Action ga : gas){
 			double q = this.computeQ(sh.s(), ga);
-			if(q > maxQ){
-				maxQ = q;
-			}
+			qs[i] = q;
+			i++;
 		}
-			
 
+		double nv = operator.apply(qs);
+		valueFunction.put(sh, nv);
 		
-		valueFunction.put(sh, maxQ);
-		
-		return maxQ;
+		return nv;
 	}
 	
 	

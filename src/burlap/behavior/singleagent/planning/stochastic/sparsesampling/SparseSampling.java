@@ -6,6 +6,8 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.dpoperator.BellmanOperator;
+import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
@@ -118,6 +120,11 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	 * The total number of pseudo-Bellman updates
 	 */
 	protected int numUpdates = 0;
+
+	/**
+	 * The operator used for back ups.
+	 */
+	protected DPOperator operator = new BellmanOperator();
 
 	
 	
@@ -252,7 +259,16 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	public void setValueForLeafNodes(ValueFunctionInitialization vinit){
 		this.vinit = vinit;
 	}
-	
+
+
+	public DPOperator getOperator() {
+		return operator;
+	}
+
+	public void setOperator(DPOperator operator) {
+		this.operator = operator;
+	}
+
 	/**
 	 * Returns the debug code used for logging plan results with {@link DPrint}.
 	 * @return the debug code used for logging plan results with {@link DPrint}.
@@ -369,7 +385,13 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		if(model.terminal(s)){
 			return 0.;
 		}
-		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		List<QValue> Qs = this.getQs(s);
+		double [] qs = new double[Qs.size()];
+		for(int i = 0; i < Qs.size(); i++){
+			qs[i] = Qs.get(i).q;
+		}
+		double v = this.operator.apply(qs);
+		return v;
 	}
 	
 	
@@ -465,10 +487,10 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 				else{
 					double q;
 					if(!SparseSampling.this.computeExactValueFunction){
-						q = this.sampledBellmanQEstimate(ga);
+						q = this.sampledQEstimate(ga);
 					}
 					else{
-						q = this.fullBelmanQValue(ga);
+						q = this.exactQValue(ga);
 					}
 					
 					qs.add(new QValue(this.sh.s(), ga, q));
@@ -483,7 +505,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @param ga the action for which the Q-value estimate is to be returned
 		 * @return the Q-value estimate
 		 */
-		protected double sampledBellmanQEstimate(Action ga){
+		protected double sampledQEstimate(Action ga){
 			
 			double sum = 0.;
 			
@@ -516,12 +538,12 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		
 		/**
 		 * Computes the exact Q-value using full Bellman update with the actual transition dynamics. This procedure will cause Sparse Sampling
-		 * to compute the exact Q-values and optimal policy for a finite horizon problem. It is reccommened when the number of transitions from
+		 * to compute the exact Q-values and optimal policy for a finite horizon problem. It is recommended when the number of transitions from
 		 * any given state is small tractable to compute.
 		 * @param ga the action for which the Q-value estimate is to be returned
 		 * @return the exact finite horizon Q-value
 		 */
-		protected double fullBelmanQValue(Action ga){
+		protected double exactQValue(Action ga){
 			
 			double sum = 0.;
 			List<TransitionProb> tps = ((FullModel)model).transitions(sh.s(), ga);
@@ -564,15 +586,15 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 			}
 			
 			
-			List<QValue> qs = this.estimateQs();
-			double max = Double.NEGATIVE_INFINITY;
-			for(QValue q : qs){
-				max = Math.max(max, q.q);
+			List<QValue> Qs = this.estimateQs();
+			double [] qs = new double[Qs.size()];
+			for(int i = 0; i < Qs.size(); i++){
+				qs[i] = Qs.get(i).q;
 			}
 			SparseSampling.this.numUpdates++;
-			this.v = max;
+			this.v = operator.apply(qs);
 			this.closed = true;
-			return max;
+			return this.v;
 		}
 		
 	}

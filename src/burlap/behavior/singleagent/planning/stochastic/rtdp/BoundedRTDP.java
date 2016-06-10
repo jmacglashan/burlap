@@ -3,6 +3,7 @@ package burlap.behavior.singleagent.planning.stochastic.rtdp;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.debugtools.DPrint;
@@ -173,7 +174,12 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 		this.maxRollouts = maxRollouts;
 
 	}
-	
+
+
+	@Override
+	public void setOperator(DPOperator operator) {
+		throw new RuntimeException("Bounded RTDP does not currently support custom operators.");
+	}
 
 	/**
 	 * Sets the maximum number of rollouts permitted before planning is forced to terminate. If set to -1 then there is no limit.
