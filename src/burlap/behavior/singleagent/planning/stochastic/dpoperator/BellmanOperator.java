@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.planning.stochastic.dpoperator;
 
 /**
+ * The standard Bellman operator: max.
  * @author James MacGlashan.
  */
 public class BellmanOperator implements DPOperator{

@@ -6,6 +6,7 @@ import burlap.behavior.singleagent.planning.stochastic.dpoperator.BellmanOperato
 import java.util.Set;
 
 /**
+ * Provides the sub gradient of the {@link BellmanOperator} max operator.
  * @author James MacGlashan.
  */
 public class SubDifferentiableMaxOperator extends BellmanOperator implements DifferentiableDPOperator {

@@ -5,6 +5,7 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGr
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.SoftmaxOperator;
 
 /**
+ * Provides the gradient for the {@link SoftmaxOperator}
  * @author James MacGlashan.
  */
 public class DifferentiableSoftmaxOperator extends SoftmaxOperator implements DifferentiableDPOperator{
