@@ -8,6 +8,9 @@ import java.util.List;
  */
 public class StateUtilities {
 
+	private StateUtilities(){
+
+	}
 
 	/**
 	 * Takes an input object, typically value to which a variable should be set, that is either a String representation of a number, or a

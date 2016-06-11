@@ -10,6 +10,9 @@ import java.util.*;
  */
 public class OOStateUtilities {
 
+	private OOStateUtilities(){
+
+	}
 
 	/**
 	 * Returns the {@link ObjectInstance} with the given name

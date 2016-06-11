@@ -22,6 +22,10 @@ import java.util.Random;
  */
 public class PolicyUtils {
 
+	private PolicyUtils(){
+
+	}
+
 	/**
 	 * Indicates whether rollout methods will decompose {@link burlap.behavior.singleagent.options.Option}
 	 * selections into the primitive {@link Action} objects they execute and annotate them with the name
