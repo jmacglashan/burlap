@@ -10,6 +10,7 @@ import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedWriter;
@@ -129,7 +130,17 @@ public class Episode {
 		actionSequence.add(usingAction);
 		rewardSequence.add(r);
 	}
-	
+
+	/**
+	 * Records a transition event from the {@link EnvironmentOutcome}. Assumes that the last state recorded in
+	 * this {@link Episode} is the same as the previous state ({@link EnvironmentOutcome#o} in the {@link EnvironmentOutcome}
+	 * @param eo an {@link EnvironmentOutcome} specifying a new transition for this episode.
+	 */
+	public void transition(EnvironmentOutcome eo){
+		this.stateSequence.add(eo.op);
+		this.actionSequence.add(eo.a);
+		this.rewardSequence.add(eo.r);
+	}
 	
 	
 	/**
