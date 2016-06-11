@@ -168,8 +168,8 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 	 */
 	public void replayGame(GameEpisode ga){
 		
-		this.painter.updateState(ga.getState(0));
-		this.updatePropTextArea(ga.getState(0));
+		this.painter.updateState(ga.state(0));
+		this.updatePropTextArea(ga.state(0));
 		Thread waitThread = new Thread(new Runnable() {
 			
 			@Override
@@ -191,7 +191,7 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 		}
 		
 		for(int i = 0; i < ga.maxTimeStep(); i++){
-			this.observe(ga.getState(i), ga.getJointAction(i), ga.getJointReward(i+1), ga.getState(i+1));
+			this.observe(ga.state(i), ga.jointAction(i), ga.jointReward(i+1), ga.state(i+1));
 		}
 	}
 	

@@ -60,7 +60,7 @@ public class TestBlockDude {
 			State lastState = ea.stateSequence.get(ea.stateSequence.size() - 1);
 			Assert.assertEquals(true, tf.isTerminal(lastState));
 			Assert.assertEquals(true, sc.satisfies(lastState));
-			Assert.assertEquals(-94.0, ea.getDiscountedReturn(1.0), 0.001);
+			Assert.assertEquals(-94.0, ea.discountedReturn(1.0), 0.001);
 
 			/*
 			BlockDude constructor = new BlockDude();

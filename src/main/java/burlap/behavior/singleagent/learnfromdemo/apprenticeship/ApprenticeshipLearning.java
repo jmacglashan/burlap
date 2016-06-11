@@ -137,7 +137,7 @@ public class ApprenticeshipLearning {
 	public static State getInitialState(List<Episode> episodes) {
 		Random rando = new Random();
 		Episode randomEpisode = episodes.get(rando.nextInt(episodes.size()));
-		return randomEpisode.getState(0);
+		return randomEpisode.state(0);
 	}
 
 

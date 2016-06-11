@@ -205,7 +205,7 @@ public class PotentialShapedRMax extends MDPSolver implements LearningAgent{
 
 			Action ga = policy.action(curState);
 			EnvironmentOutcome eo = env.executeAction(ga);
-			ea.recordTransitionTo(ga, eo.op, eo.r);
+			ea.transition(ga, eo.op, eo.r);
 
 			boolean modeledTerminal = this.model.terminal(eo.op);
 

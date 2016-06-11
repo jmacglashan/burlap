@@ -217,8 +217,8 @@ public class MLIRL {
 		double logLike = 0.;
 		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
-			this.request.getPlanner().planFromState(ea.getState(i));
-			double actProb = PolicyUtils.actionProb(p, ea.getState(i), ea.getAction(i));
+			this.request.getPlanner().planFromState(ea.state(i));
+			double actProb = PolicyUtils.actionProb(p, ea.state(i), ea.action(i));
 			logLike += Math.log(actProb);
 		}
 		logLike *= weight;
@@ -243,8 +243,8 @@ public class MLIRL {
 			Episode ea = exampleTrajectories.get(i);
 			double weight = weights[i];
 			for(int t = 0; t < ea.numTimeSteps()-1; t++){
-				this.request.getPlanner().planFromState(ea.getState(t));
-				FunctionGradient policyGrad = this.logPolicyGrad(ea.getState(t), ea.getAction(t));
+				this.request.getPlanner().planFromState(ea.state(t));
+				FunctionGradient policyGrad = this.logPolicyGrad(ea.state(t), ea.action(t));
 				//weigh it by trajectory strength
 				for(FunctionGradient.PartialDerivative pd : policyGrad.getNonZeroPartialDerivatives()){
 					double newVal = pd.value * weight;

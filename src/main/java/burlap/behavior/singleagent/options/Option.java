@@ -74,10 +74,10 @@ public interface Option extends Action{
 				cd *= discount;
 
 
-				history.recordTransitionTo(a, eo.op, eo.r);
+				history.transition(a, eo.op, eo.r);
 
 				AnnotatedAction annotatedAction = new AnnotatedAction(a, o.toString() + "(" + nsteps + ")");
-				episode.recordTransitionTo(annotatedAction, eo.op, r);
+				episode.transition(annotatedAction, eo.op, r);
 
 
 				pT = o.probabilityOfTermination(eo.op, history);

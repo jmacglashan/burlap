@@ -320,7 +320,7 @@ public class GameSequenceVisualizer extends JFrame {
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directGameEpisodes == null) {
-					curGA = GameEpisode.parseFileIntoGA(episodeFiles.get(ind), domain);
+					curGA = GameEpisode.read(episodeFiles.get(ind));
 				}
 				else{
 					curGA = this.directGameEpisodes.get(ind);
@@ -349,7 +349,7 @@ public class GameSequenceVisualizer extends JFrame {
 				//System.out.println("Changing visualization...");
 				int index = iterationList.getSelectedIndex();
 				
-				State curState = curGA.getState(index);
+				State curState = curGA.state(index);
 				
 				
 				

@@ -117,7 +117,7 @@ public class TestPlanning {
 			Assert.assertEquals(this.gw.getHeight() + this.gw.getWidth() - 1, analysis.stateSequence.size());
 			Assert.assertEquals(analysis.stateSequence.size()-1, analysis.actionSequence.size());
 			Assert.assertEquals(analysis.actionSequence.size(), analysis.rewardSequence.size());
-			Assert.assertEquals(-analysis.actionSequence.size(), analysis.getDiscountedReturn(1.0), TestPlanning.delta);
+			Assert.assertEquals(-analysis.actionSequence.size(), analysis.discountedReturn(1.0), TestPlanning.delta);
 		}
 
 		Assert.assertEquals(true, domain.getModel().terminal(analysis.stateSequence.get(analysis.stateSequence.size()-1)));

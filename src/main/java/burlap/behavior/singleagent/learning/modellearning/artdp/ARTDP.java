@@ -175,7 +175,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 			EnvironmentOutcome eo = env.executeAction(ga);
 
 
-			ea.recordTransitionTo(ga, eo.op, eo.r);
+			ea.transition(ga, eo.op, eo.r);
 
 			this.model.updateModel(eo);
 

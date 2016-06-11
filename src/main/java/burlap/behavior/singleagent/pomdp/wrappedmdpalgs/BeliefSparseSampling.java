@@ -138,7 +138,7 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 		Episode ea = agent.actUntilTerminalOrMaxSteps(30);
 
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
-			System.out.println(ea.getAction(i) + " " + ea.getReward(i+1));
+			System.out.println(ea.action(i) + " " + ea.reward(i+1));
 		}
 		
 		

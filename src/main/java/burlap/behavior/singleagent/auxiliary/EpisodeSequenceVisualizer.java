@@ -329,7 +329,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
        			
 				//System.out.println("Loading Episode File...");
 				if(this.directEpisodes == null) {
-					curEA = Episode.parseFileIntoEA(episodeFiles.get(ind));
+					curEA = Episode.read(episodeFiles.get(ind));
 				}
 				else{
 					curEA = this.directEpisodes.get(ind);
@@ -358,7 +358,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				//System.out.println("Changing visualization...");
 				int index = iterationList.getSelectedIndex();
 				
-				State curState = curEA.getState(index);
+				State curState = curEA.state(index);
 				
 				
 				

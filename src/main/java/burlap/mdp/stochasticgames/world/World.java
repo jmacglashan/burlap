@@ -448,7 +448,7 @@ public class World {
 		
 		//record events
 		if(this.isRecordingGame){
-			this.currentGameEpisodeRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
+			this.currentGameEpisodeRecord.transition(this.lastJointAction, this.currentState, jointReward);
 		}
 		
 	}
@@ -493,7 +493,7 @@ public class World {
 		
 		//record events
 		if(this.isRecordingGame){
-			this.currentGameEpisodeRecord.recordTransitionTo(this.lastJointAction, this.currentState, jointReward);
+			this.currentGameEpisodeRecord.transition(this.lastJointAction, this.currentState, jointReward);
 		}
 		
 	}

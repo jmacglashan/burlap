@@ -362,7 +362,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			eStepCounter += stepInc;
 
 			if(!(action instanceof Option) || !this.shouldDecomposeOptions){
-				ea.recordTransitionTo(action, nextState, r);
+				ea.transition(action, nextState, r);
 			}
 			else{
 				ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);

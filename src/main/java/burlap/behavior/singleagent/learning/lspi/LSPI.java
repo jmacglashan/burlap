@@ -603,7 +603,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 			this.dataset = new SARSData(ea.numTimeSteps()-1);
 		}
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
-			this.dataset.add(ea.getState(i), ea.getAction(i), ea.getReward(i+1), ea.getState(i+1));
+			this.dataset.add(ea.state(i), ea.action(i), ea.reward(i+1), ea.state(i+1));
 		}
 	}
 	

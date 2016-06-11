@@ -218,7 +218,7 @@ public class PolicyUtils {
 			ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);
 		}
 		else{
-			ea.recordTransitionTo(a, eo.op, eo.r);
+			ea.transition(a, eo.op, eo.r);
 		}
 
 	}

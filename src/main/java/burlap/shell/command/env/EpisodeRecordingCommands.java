@@ -53,11 +53,11 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 	public void observeEnvironmentInteraction(EnvironmentOutcome eo) {
 		if((finished || curEpisode == null) && recording){
 			curEpisode = new Episode(eo.o);
-			curEpisode.recordTransitionTo(eo.a, eo.op, eo.r);
+			curEpisode.transition(eo.a, eo.op, eo.r);
 			finished = false;
 		}
 		else if(recording){
-			curEpisode.recordTransitionTo(eo.a, eo.op, eo.r);
+			curEpisode.transition(eo.a, eo.op, eo.r);
 		}
 
 		recordedLast = false;
@@ -185,7 +185,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 				if(args.size() != 2){
 					return -1;
 				}
-				Episode.writeEpisodesToDisk(episodes, args.get(0), args.get(1));
+				Episode.writeEpisodes(episodes, args.get(0), args.get(1));
 				os.println("Wrote episodes to " + args.get(0));
 				return 0;
 			}
@@ -194,7 +194,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 				if(args.size() != 1){
 					return -1;
 				}
-				List<Episode> nEpisodes = Episode.parseFilesIntoEAList(args.get(0));
+				List<Episode> nEpisodes = Episode.readEpisodes(args.get(0));
 				if(oset.has("a")){
 					episodes.addAll(nEpisodes);
 					os.println("Loaded episodes from " + args.get(0) + " and appended them to current episodes list.");
@@ -309,7 +309,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 						os.println("Cannot print state " + i + " because the episode only has " + ea.maxTimeStep() + " time steps.");
 					}
 					else{
-						os.println(ea.getState(i).toString());
+						os.println(ea.state(i).toString());
 					}
 				}
 			}
@@ -335,7 +335,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 						os.println("Cannot print action " + i + " because the episode only has " + ea.maxTimeStep() + " time steps (with final time step not having actions taken).");
 					}
 					else{
-						os.println(ea.getAction(i).toString());
+						os.println(ea.action(i).toString());
 					}
 				}
 			}
@@ -361,7 +361,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 						os.println("Cannot print action " + i + " because the episode only has " + ea.maxTimeStep() + " time steps.");
 					}
 					else{
-						os.println(ea.getReward(i));
+						os.println(ea.reward(i));
 					}
 				}
 			}
@@ -389,7 +389,7 @@ public class EpisodeRecordingCommands implements EnvironmentObserver {
 						os.println("Cannot load state " + i + " into the environment because the episode only has " + ea.maxTimeStep() + " time steps.");
 					}
 					else{
-						senv.setCurStateTo(ea.getState(i));
+						senv.setCurStateTo(ea.state(i));
 						os.println("Loaded state " + i + " into the environment.");
 					}
 				}

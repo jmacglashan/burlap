@@ -467,7 +467,7 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 			eStepCounter += stepInc;
 
 			if(!(action instanceof Option) || !this.shouldDecomposeOptions){
-				ea.recordTransitionTo(action, nextState.s(), r);
+				ea.transition(action, nextState.s(), r);
 			}
 			else{
 				ea.appendAndMergeEpisodeAnalysis(((EnvironmentOptionOutcome)eo).episode);

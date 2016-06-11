@@ -5,7 +5,6 @@ import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.action.JointAction;
 import burlap.mdp.stochasticgames.action.SGAgentAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
@@ -27,17 +26,17 @@ import java.util.*;
  * It also has methods to converting everything to a string/file and parsing a string/file back into this object so that results can be recorded and saved to disk.
  * <p>
  * This class should be used either by constructing with an initial state ({@link #GameEpisode(State)}) or by constructing with the default constructor and then
- * using the {@link #initializeGameWithInitialState(State)} method before recording any further transitions. Transitions should then be recorded with the
- * {@link #recordTransitionTo(JointAction, State, Map)} method which takes as input the next state to which the agent transtions, the joint action taken
+ * using the {@link #initializeInState(State)} method before recording any further transitions. Transitions should then be recorded with the
+ * {@link #transition(JointAction, State, Map)} method which takes as input the next state to which the agent transtions, the joint action taken
  * in the previously recorded state that causes the transition, and the joint reward received for the transition.
  * <p>
- * When querying about the state, joint action, or joint rewards, use the methods {@link #getState(int)}, {@link #getJointAction(int)}, and {@link #getJointReward(int)}
+ * When querying about the state, joint action, or joint rewards, use the methods {@link #state(int)}, {@link #jointAction(int)}, and {@link #jointReward(int)}
  * respectively.
  * These methods take as input the time step of the element you want. Note that t = 0 refers to the initial state step so calling getState(0) and getJointAction(0)
  * will return the initial state and the joint action taken in the initial state, respectively. However, joint rewards are always received in the next time step
  * from the state and action that produced them. Therefore, getJointReward(0) is undefined. Instead, the first reward received will be at time step 1: getReward(1).
- * Additionally, the action and reward for a specific agent in a specific time step can be queried with {@link #getActionForAgent(int, String)} and
- * {@link #getRewardForAgent(int, String)}, respectively.
+ * Additionally, the action and reward for a specific agent in a specific time step can be queried with {@link #agentAction(int, String)} and
+ * {@link #agentReward(int, String)}, respectively.
  * 
  * @author James MacGlashan
  *
@@ -48,31 +47,31 @@ public class GameEpisode {
 	/**
 	 * The sequence of states
 	 */
-	public List<State>							states;
+	public List<State> states = new ArrayList<State>();
 	
 	/**
 	 * The sequence of joint actions
 	 */
-	public List<JointAction>					jointActions;
+	public List<JointAction> jointActions = new ArrayList<JointAction>();
 	
 	/**
 	 * The sequence of joint rewards
 	 */
-	public List<Map<String, Double>>			jointRewards;
+	public List<Map<String, Double>> jointRewards = new ArrayList<Map<String, Double>>();
 	
 	
 	/**
 	 * The set of agents involved in this game
 	 */
-	protected Set<String>						agentsInvolvedInGame;
+	protected Set<String> agentsInGame = new HashSet<String>();
 	
 	
 	/**
-	 * Initialzes the datastructures. Note that the method {@link #initializeGameWithInitialState(State)} should be called
+	 * Initialzes the datastructures. Note that the method {@link #initializeInState(State)} should be called
 	 * to set the initial state of the game before any transitions are recorded.
 	 */
 	public GameEpisode(){
-		this.initializeDatastructures();
+
 	}
 	
 	/**
@@ -80,7 +79,7 @@ public class GameEpisode {
 	 * @param initialState the initial state of the game.
 	 */
 	public GameEpisode(State initialState){
-		this.initializeGameWithInitialState(initialState);
+		this.initializeInState(initialState);
 	}
 	
 	
@@ -88,21 +87,10 @@ public class GameEpisode {
 	 * Clears out any already recorded states, joint actions, and rewards, and sets the initial state of the game.
 	 * @param initialState the initial state of the game.
 	 */
-	public void initializeGameWithInitialState(State initialState){
-		this.initializeDatastructures();
+	public void initializeInState(State initialState){
 		this.states.add(initialState);
 	}
-	
-	
-	/**
-	 * Instantiates the datastructures of this object.
-	 */
-	protected void initializeDatastructures(){
-		this.states = new ArrayList<State>();
-		this.jointActions = new ArrayList<JointAction>();
-		this.jointRewards = new ArrayList<Map<String,Double>>();
-		this.agentsInvolvedInGame = new HashSet<String>();
-	}
+
 	
 	
 	/**
@@ -110,7 +98,7 @@ public class GameEpisode {
 	 * @param t the time step
 	 * @return the state at time step t
 	 */
-	public State getState(int t){
+	public State state(int t){
 		if(t >= this.states.size()){
 			throw new RuntimeException("This game only has " + this.states.size() + " states recorded; cannot return state at time step " + t);
 		}
@@ -123,7 +111,7 @@ public class GameEpisode {
 	 * @param t the time step
 	 * @return the joint action taken in time step t
 	 */
-	public JointAction getJointAction(int t){
+	public JointAction jointAction(int t){
 		if(t >= this.states.size()){
 			throw new RuntimeException("This game only has " + this.jointActions.size() + " joint actions recoreded; cannot return joint action at time step " + t);
 		}
@@ -138,7 +126,7 @@ public class GameEpisode {
 	 * @param t the time step
 	 * @return the joint reward received at time step t
 	 */
-	public Map<String, Double> getJointReward(int t){
+	public Map<String, Double> jointReward(int t){
 		if(t >= this.states.size()){
 			throw new RuntimeException("This game only has " + this.jointRewards.size() + " joint rewards recoreded; cannot return joint reward at time step " + t);
 		}
@@ -153,8 +141,8 @@ public class GameEpisode {
 	 * @param agentName the name of the agent
 	 * @return the action taken by the specified agent in the given time step
 	 */
-	public SGAgentAction getActionForAgent(int t, String agentName){
-		JointAction ja = this.getJointAction(t);
+	public SGAgentAction agentAction(int t, String agentName){
+		JointAction ja = this.jointAction(t);
 		SGAgentAction gsa = ja.action(agentName);
 		if(gsa == null){
 			throw new RuntimeException("Agent " + agentName + " did not take an action in joint action " + t);
@@ -172,8 +160,8 @@ public class GameEpisode {
 	 * @param agentName the name of the agent
 	 * @return the reward received by the agent
 	 */
-	public double getRewardForAgent(int t, String agentName){
-		Map<String, Double> jr = this.getJointReward(t);
+	public double agentReward(int t, String agentName){
+		Map<String, Double> jr = this.jointReward(t);
 		Double r = jr.get(agentName);
 		if(r == null){
 			throw new RuntimeException("Agent "  + agentName + " did not receive a reward in joint reward " + t);
@@ -187,8 +175,8 @@ public class GameEpisode {
 	 * @param agentName the name of the agent
 	 * @return true if the agent took an action in this game; false otherwise.
 	 */
-	public boolean agentIsInvolvedInGame(String agentName){
-		return this.agentsInvolvedInGame.contains(agentName);
+	public boolean agentInGame(String agentName){
+		return this.agentsInGame.contains(agentName);
 	}
 	
 	
@@ -212,17 +200,17 @@ public class GameEpisode {
 	
 	/**
 	 * Records a transition from the last recorded state in this object using the specififed joint action to the specified next state and with the specified joint reward
-	 * being recieved as a result.
+	 * being received as a result.
 	 * @param jointAction the joint action taken in the last recorded state in this object
 	 * @param nextState the next state to which the agents transition
 	 * @param jointReward the joint reward received for the transiton
 	 */
-	public void recordTransitionTo(JointAction jointAction, State nextState,  Map<String, Double> jointReward){
+	public void transition(JointAction jointAction, State nextState, Map<String, Double> jointReward){
 		this.states.add(nextState);
 		this.jointActions.add(jointAction);
 		this.jointRewards.add(jointReward);
 		for(String agent : jointAction.getAgentNames()){
-			this.agentsInvolvedInGame.add(agent);
+			this.agentsInGame.add(agent);
 		}
 	}
 
@@ -257,8 +245,8 @@ public class GameEpisode {
 	 * Returns the set of agents involved in this game
 	 * @return the set of agents involved in this game
 	 */
-	public Set<String> getAgentsInvolvedInGame() {
-		return agentsInvolvedInGame;
+	public Set<String> getAgentsInGame() {
+		return agentsInGame;
 	}
 
 
@@ -272,7 +260,7 @@ public class GameEpisode {
 	}
 
 
-	public static GameEpisode parseGame(String episodeString){
+	public static GameEpisode parse(String episodeString){
 
 		Yaml yaml = new Yaml();
 		GameEpisode ga = (GameEpisode)yaml.load(episodeString);
@@ -288,7 +276,7 @@ public class GameEpisode {
 	 * If the file extension is not ".game" will automatically be added. States must be serializable.
 	 * @param path the path to the file in which to write this game.
 	 */
-	public void writeToFile(String path){
+	public void write(String path){
 		if(!path.endsWith(".game")){
 			path = path + ".game";
 		}
@@ -318,10 +306,9 @@ public class GameEpisode {
 	/**
 	 * Reads a game that was written to a file and turns into a {@link GameEpisode} object.
 	 * @param path the path to the game file.
-	 * @param domain the stochastic games domain to which the states and actions belong
 	 * @return an {@link GameEpisode} object.
 	 */
-	public static GameEpisode parseFileIntoGA(String path, SGDomain domain){
+	public static GameEpisode read(String path){
 
 		//read whole file into string first
 		String fcont = null;
@@ -331,7 +318,7 @@ public class GameEpisode {
 			System.out.println(E);
 		}
 
-		return parseGame(fcont);
+		return parse(fcont);
 	}
 
 
@@ -368,9 +355,9 @@ public class GameEpisode {
 		String serialized = ga.serialize();
 		System.out.println(serialized);
 
-		GameEpisode read = GameEpisode.parseGame(serialized);
+		GameEpisode read = GameEpisode.parse(serialized);
 		System.out.println(read.maxTimeStep());
-		System.out.println(read.getState(0).toString());
+		System.out.println(read.state(0).toString());
 
 
 	}

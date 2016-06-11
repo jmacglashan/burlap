@@ -104,7 +104,7 @@ public class BFSNonMarkovOptionModel extends BFSMarkovOptionModel {
 		public NonMarkovOptionScanNode(NonMarkovOptionScanNode src, State s, double transProb, double discountedR, Action a) {
 			super(src, s, transProb, discountedR);
 			this.episode = src.episode.copy();
-			this.episode.recordTransitionTo(a, s, 0.);
+			this.episode.transition(a, s, 0.);
 		}
 	}
 }

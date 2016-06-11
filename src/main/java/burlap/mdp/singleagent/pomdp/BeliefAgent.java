@@ -74,11 +74,11 @@ public abstract class BeliefAgent {
 	 */
 	public Episode actUntilTerminal(){
 		Episode ea = new Episode();
-		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
+		ea.initializeInState(this.environment.currentObservation());
 		while(!this.environment.isInTerminalState()){
 			Action ga = this.getAction(this.curBelief);
 			EnvironmentOutcome eo = environment.executeAction(ga);
-			ea.recordTransitionTo(ga, eo.op, eo.r);
+			ea.transition(ga, eo.op, eo.r);
 			
 			//update our belief
 			this.curBelief = this.curBelief.update(eo.op, eo.a);
@@ -100,12 +100,12 @@ public abstract class BeliefAgent {
 	 */
 	public Episode actUntilTerminalOrMaxSteps(int maxSteps){
 		Episode ea = new Episode();
-		ea.initializeEpisideWithInitialState(this.environment.currentObservation());
+		ea.initializeInState(this.environment.currentObservation());
 		int c = 0;
 		while(!this.environment.isInTerminalState() && c < maxSteps){
 			Action ga = this.getAction(this.curBelief);
 			EnvironmentOutcome eo = environment.executeAction(ga);
-			ea.recordTransitionTo(ga, eo.op, eo.r);
+			ea.transition(ga, eo.op, eo.r);
 
 			//update our belief
 			this.curBelief = this.curBelief.update(eo.op, eo.a);
