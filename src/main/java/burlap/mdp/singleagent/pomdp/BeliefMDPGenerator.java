@@ -9,9 +9,7 @@ import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
-import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
-import burlap.mdp.singleagent.pomdp.beliefstate.EnumerableBeliefState;
-import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefState;
+import burlap.mdp.singleagent.pomdp.beliefstate.*;
 import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
 import burlap.statehashing.HashableState;
 
@@ -22,7 +20,8 @@ import java.util.Map;
 
 /**
  * A class for taking an input POMDP (defined by a {@link burlap.mdp.singleagent.pomdp.PODomain} and turning it into
- * a BeliefMDP, which can then be input to any MDP solver to solve the POMDP.
+ * a BeliefMDP, which can then be input to any MDP solver to solve the POMDP. This conversion only works if
+ * your belief states are {@link TabularBeliefState} instances.
  * <p>
  * For more information on Belief MDPs, see the POMDP wikipedia page: https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process#Belief_MDP
  *
@@ -33,6 +32,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 	 * The input POMDP domain
 	 */
 	protected PODomain							podomain;
+
 
 
 	/**
@@ -65,9 +65,11 @@ public class BeliefMDPGenerator implements DomainGenerator {
 
 
 		protected PODomain poDomain;
+		protected BeliefUpdate						updater;
 
 		public BeliefModel(PODomain poDomain) {
 			this.poDomain = poDomain;
+			this.updater = new TabularBeliefUpdate(poDomain);
 		}
 
 		@Override
@@ -174,7 +176,7 @@ public class BeliefMDPGenerator implements DomainGenerator {
 			EnvironmentOutcome hiddenEO = model.sample(curS, a);
 			State obs = this.poDomain.obsevationFunction.sample(hiddenEO.op, a);
 
-			BeliefState nbs = ((BeliefState) s).update(obs, a);
+			BeliefState nbs = this.updater.update((BeliefState)s, obs, a);
 			EnvironmentOutcome eo = new EnvironmentOutcome(s, a, nbs, sumR, false);
 
 			return eo;

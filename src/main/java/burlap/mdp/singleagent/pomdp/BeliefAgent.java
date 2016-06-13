@@ -2,10 +2,11 @@ package burlap.mdp.singleagent.pomdp;
 
 import burlap.behavior.singleagent.Episode;
 import burlap.mdp.core.Action;
-import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;
+import burlap.mdp.singleagent.pomdp.beliefstate.BeliefUpdate;
+import burlap.mdp.singleagent.pomdp.beliefstate.TabularBeliefUpdate;
 
 
 /**
@@ -36,14 +37,22 @@ public abstract class BeliefAgent {
 	 */
 	protected PODomain poDomain;
 
+
 	/**
-	 * Initializes
+	 * The belief update to use
+	 */
+	protected BeliefUpdate updater;
+
+	/**
+	 * Initializes. By default will use a {@link TabularBeliefUpdate}, but you can
+	 * change that with the {@link #setUpdater(BeliefUpdate)} method.
 	 * @param poDomain the POMDP domain defining the mechanics of the environment
 	 * @param environment the environment in which the agent will be interacting.
 	 */
 	public BeliefAgent(PODomain poDomain, Environment environment){
 		this.poDomain = poDomain;
 		this.environment = environment;
+		this.updater = new TabularBeliefUpdate(poDomain);
 	}
 
 	/**
@@ -63,11 +72,18 @@ public abstract class BeliefAgent {
 	}
 
 
+	public BeliefUpdate getUpdater() {
+		return updater;
+	}
+
+	public void setUpdater(BeliefUpdate updater) {
+		this.updater = updater;
+	}
+
 	/**
 	 * Causes the agent to act until the environment reaches a termination condition. The agent's belief is automatically
-	 * updated by this method using the the current {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}'s
-	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#update(State, Action)}
-	 * method. The agent's action selection for the current belief state is defend by
+	 * updated by this method using the specified {@link BeliefUpdate}.
+	 * The agent's action selection for the current belief state is defined by
 	 * the {@link #getAction(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
 	 * sequence is saved and {@link Episode} object and returned.
 	 * @return and {@link Episode} that recorded the observation, action, and reward sequence.
@@ -81,8 +97,7 @@ public abstract class BeliefAgent {
 			ea.transition(ga, eo.op, eo.r);
 			
 			//update our belief
-			this.curBelief = this.curBelief.update(eo.op, eo.a);
-			
+			this.curBelief = this.updater.update(this.curBelief, eo.op, eo.a);
 		}
 		
 		return ea;
@@ -90,9 +105,8 @@ public abstract class BeliefAgent {
 
 	/**
 	 * Causes the agent to act for some fixed number of steps. The agent's belief is automatically
-	 * updated by this method using the the current {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState}'s
-	 * {@link burlap.mdp.singleagent.pomdp.beliefstate.BeliefState#update(State, Action)}
-	 * method. The agent's action selection for the current belief state is defend by
+	 * updated by this method using the specified {@link BeliefUpdate}.
+	 * The agent's action selection for the current belief state is defined by
 	 * the {@link #getAction(burlap.mdp.singleagent.pomdp.beliefstate.BeliefState)} method. The observation, action, and reward
 	 * sequence is saved and {@link Episode} object and returned.
 	 * @param maxSteps the maximum number of steps to take in the environment
@@ -108,7 +122,7 @@ public abstract class BeliefAgent {
 			ea.transition(ga, eo.op, eo.r);
 
 			//update our belief
-			this.curBelief = this.curBelief.update(eo.op, eo.a);
+			this.curBelief = this.updater.update(this.curBelief, eo.op, eo.a);
 			
 			c++;
 			

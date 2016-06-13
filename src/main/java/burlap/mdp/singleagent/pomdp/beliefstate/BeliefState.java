@@ -28,15 +28,5 @@ public interface BeliefState extends State {
 	 */
 	State sample();
 
-	/**
-	 * Computes a new belief distribution using this BeliefState as the prior and conditioned on the given POMDP observation
-	 * and action taken.
-	 * @param observation the conditioned POMDP observation defined by a {@link State} instance.
-	 * @param a the conditioned action selection in the previous time step.
-	 * @return the new belief state distribution represented by a new {@link BeliefState} instance.
-	 */
-	BeliefState update(State observation, Action a);
-
-
 	
 }

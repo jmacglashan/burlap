@@ -1,13 +1,9 @@
 package burlap.mdp.singleagent.pomdp.beliefstate;
 
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Action;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.model.FullModel;
-import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.pomdp.PODomain;
 import burlap.mdp.singleagent.pomdp.observations.ObservationFunction;
 import burlap.statehashing.HashableState;
@@ -141,47 +137,6 @@ public class TabularBeliefState implements BeliefState, EnumerableBeliefState, D
 		throw new RuntimeException("Error; could not sample from belief state because the beliefs did not sum to 1; they summed to: " + sumProb);
 	}
 
-	@Override
-	public BeliefState update(State observation, Action a) {
-		FullModel model = (FullModel)this.domain.getModel();
-		ObservationFunction of = this.domain.getObservationFunction();
-		HashedAggregator<Integer> probs = new HashedAggregator<Integer>(0., 2);
-		for(Map.Entry<Integer, Double> bs : this.beliefValues.entrySet()){
-			List<TransitionProb> tps = model.transitions(this.stateEnumerator.getStateForEnumerationId(bs.getKey()), a);
-			for(TransitionProb tp : tps){
-				double prodProb = tp.p * bs.getValue();
-				int nsid = this.stateEnumerator.getEnumeratedID(tp.eo.op);
-				probs.add(nsid, prodProb);
-			}
-		}
-
-		TabularBeliefState nbs = new TabularBeliefState(domain, stateEnumerator);
-		double norm = 0.;
-		for(Map.Entry<Integer, Double> e : probs.entrySet()){
-			State ns = this.stateEnumerator.getStateForEnumerationId(e.getKey());
-			double ofp = of.probability(observation, ns, a);
-			double nval = ofp*e.getValue();
-			nbs.setBelief(e.getKey(), nval);
-			norm += nval;
-		}
-
-		if(norm == 0){
-			throw new RuntimeException("Cannot get updated belief state, because probabilities summed to 0");
-		}
-
-
-
-		for(Map.Entry<Integer, Double> e : probs.entrySet()){
-			double p = nbs.belief(e.getKey()) / norm;
-			if(p > 0) {
-				nbs.setBelief(e.getKey(), p);
-			}
-		}
-
-		return nbs;
-
-
-	}
 
 	@Override
 	public List<StateBelief> nonZeroBeliefs(){
