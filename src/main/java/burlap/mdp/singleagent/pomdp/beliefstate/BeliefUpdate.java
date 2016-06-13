@@ -4,6 +4,8 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
+ * An interface for defining methods that can compute an updated belief state given a prior belief state, a new
+ * observation, and the action that led to that observation.
  * @author James MacGlashan.
  */
 public interface BeliefUpdate {

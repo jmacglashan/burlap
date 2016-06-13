@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A {@link BeliefUpdate} that operates on {@link TabularBeliefState} instances. Computation is exhaustive and
+ * performs the exact Bayesian update.
  * @author James MacGlashan.
  */
 public class TabularBeliefUpdate implements BeliefUpdate{

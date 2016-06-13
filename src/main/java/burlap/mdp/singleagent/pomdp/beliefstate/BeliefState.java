@@ -1,14 +1,12 @@
 package burlap.mdp.singleagent.pomdp.beliefstate;
 
-import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
  * An interface for defining a belief state, which is a probability distribution over states. This interface
  * does not require enumerating all states, because it is possible to have a belief state over an infinite number of MDP
- * states. However, it does require that the probability density function for a specified state be returnable ({@link #belief(State)},
- * to be able to sample an MDP state from the belief distribution with {@link #sample()},
- * and a mechanism to update the belief state with respect to some observation and action with {@link #update(State, Action)}.
+ * states. However, it does require that the probability density function for a specified state be returnable from the ({@link #belief(State)},
+ * method and to be able to sample an MDP state from the belief distribution with {@link #sample()}.
  *
  * @author James MacGlashan and Nakul Gopalan
  */
