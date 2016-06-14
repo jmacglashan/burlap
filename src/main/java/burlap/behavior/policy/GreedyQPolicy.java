@@ -105,10 +105,6 @@ public class GreedyQPolicy implements SolverDerivedPolicy {
 		return res;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true; //although the policy is greedy, it randomly selects between tied actions
-	}
 
 
 	@Override

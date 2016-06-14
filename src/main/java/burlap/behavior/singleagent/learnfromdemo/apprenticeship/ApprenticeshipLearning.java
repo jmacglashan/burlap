@@ -630,10 +630,6 @@ public class ApprenticeshipLearning {
 			return new ArrayList<ActionProb>(this.stateActionDistributionMapping.get(hashableState));
 		}
 
-		@Override
-		public boolean stochastic() {
-			return true;
-		}
 
 		@Override
 		public boolean definedFor(State s) {

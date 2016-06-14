@@ -64,10 +64,6 @@ public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
 		return PolicyUtils.deterministicPolicyDistribution(this, s);
 	}
 
-	@Override
-	public boolean stochastic() {
-		return false;
-	}
 	
 	@Override
 	public boolean definedFor(State s) {

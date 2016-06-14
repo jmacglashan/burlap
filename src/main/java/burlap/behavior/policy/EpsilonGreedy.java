@@ -142,10 +142,6 @@ public class EpsilonGreedy implements SolverDerivedPolicy {
 		return dist;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 	
 	@Override
 	public boolean definedFor(State s) {

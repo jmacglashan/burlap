@@ -138,10 +138,6 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 			return p.policyDistribution(s);
 		}
 
-		@Override
-		public boolean stochastic() {
-			return p.stochastic();
-		}
 
 		@Override
 		public boolean definedFor(State s) {

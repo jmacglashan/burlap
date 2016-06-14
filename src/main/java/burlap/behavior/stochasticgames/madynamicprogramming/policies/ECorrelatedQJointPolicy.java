@@ -145,10 +145,6 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 		return aps;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public boolean definedFor(State s) {

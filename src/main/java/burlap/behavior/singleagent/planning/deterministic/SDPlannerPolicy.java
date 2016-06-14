@@ -79,11 +79,6 @@ public class SDPlannerPolicy implements SolverDerivedPolicy {
 	}
 
 
-	@Override
-	public boolean stochastic() {
-		return false;
-	}
-
 
 	@Override
 	public boolean definedFor(State s) {

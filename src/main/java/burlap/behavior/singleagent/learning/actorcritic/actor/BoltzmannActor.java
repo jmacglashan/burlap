@@ -172,10 +172,6 @@ public class BoltzmannActor extends Actor {
 		
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 	
 	
 	@Override

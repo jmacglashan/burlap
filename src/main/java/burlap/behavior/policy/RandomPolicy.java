@@ -143,10 +143,6 @@ public class RandomPolicy implements Policy{
 		return aps;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public boolean definedFor(State s) {

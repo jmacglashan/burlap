@@ -74,10 +74,6 @@ public class CachedPolicy implements Policy{
 		return aps;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return this.sourcePolicy.stochastic();
-	}
 
 	@Override
 	public boolean definedFor(State s) {

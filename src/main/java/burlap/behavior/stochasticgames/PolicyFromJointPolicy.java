@@ -163,10 +163,6 @@ public class PolicyFromJointPolicy implements Policy {
 		return finalProbs;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return this.jointPolicy.stochastic();
-	}
 
 	@Override
 	public boolean definedFor(State s) {

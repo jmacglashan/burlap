@@ -83,10 +83,6 @@ public class BoltzmannQPolicy implements SolverDerivedPolicy {
 		return res;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public void setSolver(MDPSolverInterface solver) {

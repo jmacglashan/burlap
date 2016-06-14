@@ -1,9 +1,5 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.policies;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
@@ -15,6 +11,10 @@ import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.action.JointAction;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -162,10 +162,6 @@ public class EGreedyJointPolicy extends MAQSourcePolicy {
 		
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public boolean definedFor(State s) {

@@ -148,10 +148,6 @@ public class UCTTreeWalkPolicy implements SolverDerivedPolicy {
 	}
 
 
-	@Override
-	public boolean stochastic() {
-		return false; //although UCT solves stochastic MDPs, the policy returned here is deterministic and greedy
-	}
 
 	@Override
 	public boolean definedFor(State s) {

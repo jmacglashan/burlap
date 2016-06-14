@@ -56,10 +56,6 @@ public class UnmodeledFavoredPolicy implements Policy{
 		return this.sourcePolicy.policyDistribution(s);
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public boolean definedFor(State s) {

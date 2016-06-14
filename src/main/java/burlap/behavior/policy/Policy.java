@@ -41,12 +41,6 @@ public interface Policy {
 	 */
 	List<ActionProb> policyDistribution(State s); //returns null when policy is undefined for s
 	
-	/**
-	 * Indicates whether the policy is stochastic or deterministic.
-	 * @return true when the policy is stochastic; false when it is deterministic.
-	 */
-	boolean stochastic();
-
 
 	/**
 	 * Specifies whether this policy is defined for the input state.
