@@ -2,7 +2,7 @@ package burlap.behavior.policy;
 
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
@@ -22,7 +22,7 @@ import java.util.Random;
  */
 public class GreedyQPolicy implements SolverDerivedPolicy {
 
-	protected QFunction qplanner;
+	protected QProvider qplanner;
 	protected Random 					rand;
 	
 	
@@ -36,7 +36,7 @@ public class GreedyQPolicy implements SolverDerivedPolicy {
 	 * Initializes with a QComputablePlanner
 	 * @param planner the QComputablePlanner to use
 	 */
-	public GreedyQPolicy(QFunction planner){
+	public GreedyQPolicy(QProvider planner){
 		qplanner = planner;
 		rand = RandomFactory.getMapped(0);
 	}
@@ -44,16 +44,16 @@ public class GreedyQPolicy implements SolverDerivedPolicy {
 	@Override
 	public void setSolver(MDPSolverInterface solver){
 		
-		if(!(solver instanceof QFunction)){
+		if(!(solver instanceof QProvider)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction) solver;
+		this.qplanner = (QProvider) solver;
 	}
 	
 	@Override
 	public Action action(State s) {
-		List<QValue> qValues = this.qplanner.getQs(s);
+		List<QValue> qValues = this.qplanner.qValues(s);
 		List <QValue> maxActions = new ArrayList<QValue>();
 		maxActions.add(qValues.get(0));
 		double maxQ = qValues.get(0).q;
@@ -75,7 +75,7 @@ public class GreedyQPolicy implements SolverDerivedPolicy {
 
 	@Override
 	public List<ActionProb> policyDistribution(State s) {
-		List<QValue> qValues = this.qplanner.getQs(s);
+		List<QValue> qValues = this.qplanner.qValues(s);
 		int numMax = 1;
 		double maxQ = qValues.get(0).q;
 		for(int i = 1; i < qValues.size(); i++){

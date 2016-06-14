@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo;
 
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This class is a {@link burlap.behavior.valuefunction.QFunction}/{@link burlap.behavior.valuefunction.ValueFunction}
+ * This class is a {@link QProvider}/{@link burlap.behavior.valuefunction.ValueFunction}
  * wrapper to provide the immediate reward signals for a source {@link RewardFunction}.
  * It is useful for analyzing learned reward function through IRL, for example, for passing a learned reward function
  * to a {@link burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI} to visualize what
@@ -36,13 +36,13 @@ import java.util.List;
  * If it's SOURCESTATE, then it returns rf.reward(s, null, null). If it is STATEACTION or ONESTEP,
  * then the {@link burlap.mdp.core.Domain} will need to have been input with the {@link #RewardValueProjection(RewardFunction, RewardProjectionType, SADomain)}
  * constructor so that the actions can be enumerated (and in the case of ONESTEP, the transitions enumerated) and the max reward taken.
- * Similarly, the {@link #getQ(State, Action)} and
- * {@link #getQs(State)} methods may need the {@link Domain} provided to properly answer the query.
+ * Similarly, the {@link #qValue(State, Action)} and
+ * {@link #qValues(State)} methods may need the {@link Domain} provided to properly answer the query.
  *
  *
  * @author James MacGlashan.
  */
-public class RewardValueProjection implements QFunction{
+public class RewardValueProjection implements QProvider {
 
 	protected RewardFunction rf;
 	protected RewardProjectionType projectionType = RewardProjectionType.ONESTEP.DESTINATIONSTATE;
@@ -97,13 +97,13 @@ public class RewardValueProjection implements QFunction{
 	}
 
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 
 		if(this.domain != null){
 			List<Action> actions = ActionUtils.allApplicableActionsForTypes(this.domain.getActionTypes(), s);
 			List<QValue> qs = new ArrayList<QValue>(actions.size());
 			for(Action ga : actions){
-				qs.add(this.getQ(s, ga));
+				qs.add(new QValue(s, ga, this.qValue(s, ga)));
 			}
 			return qs;
 		}
@@ -124,13 +124,13 @@ public class RewardValueProjection implements QFunction{
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 
 		switch(this.projectionType){
-			case DESTINATIONSTATE: return new QValue(s, a, this.rf.reward(null, a, s));
+			case DESTINATIONSTATE: return this.rf.reward(null, a, s);
 			case SOURCESTATE:
-			case STATEACTION: return new QValue(s, a, this.rf.reward(s, a, null));
-			case ONESTEP: return this.oneStepBellmanPlanner.getQ(s, a);
+			case STATEACTION: return this.rf.reward(s, a, null);
+			case ONESTEP: return this.oneStepBellmanPlanner.qValue(s, a);
 
 		}
 
@@ -144,7 +144,7 @@ public class RewardValueProjection implements QFunction{
 		switch(this.projectionType){
 			case DESTINATIONSTATE: return this.rf.reward(null, null, s);
 			case SOURCESTATE: return this.rf.reward(s, null, null);
-			case STATEACTION: return QFunctionHelper.getOptimalValue(this, s);
+			case STATEACTION: return Helper.maxQ(this, s);
 			case ONESTEP: return this.oneStepBellmanPlanner.value(s);
 		}
 

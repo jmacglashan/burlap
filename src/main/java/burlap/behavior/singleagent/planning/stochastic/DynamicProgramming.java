@@ -7,10 +7,7 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.BellmanOperator;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunction;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.*;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
@@ -29,7 +26,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class DynamicProgramming extends MDPSolver implements ValueFunction, QFunction {
+public class DynamicProgramming extends MDPSolver implements ValueFunction, QProvider {
 
 
 	
@@ -42,7 +39,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	/**
 	 * The value function initialization to use; defaulted to an initialization of 0 everywhere.
 	 */
-	protected ValueFunctionInitialization valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization();
+	protected ValueFunction valueInitializer = new ConstantValueFunction();
 
 
 	protected DPOperator operator = new BellmanOperator();
@@ -82,7 +79,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * Sets the value function initialization to use.
 	 * @param vfInit the object that defines how to initializes the value function.
 	 */
-	public void setValueFunctionInitialization(ValueFunctionInitialization vfInit){
+	public void setValueFunctionInitialization(ValueFunction vfInit){
 		this.valueInitializer = vfInit;
 	}
 	
@@ -90,7 +87,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	 * Returns the value initialization function used.
 	 * @return the value initialization function used.
 	 */
-	public ValueFunctionInitialization getValueFunctionInitialization(){
+	public ValueFunction getValueFunctionInitialization(){
 		return this.valueInitializer;
 	}
 
@@ -156,12 +153,12 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	
 	@Override
-	public List <QValue> getQs(State s){
+	public List <QValue> qValues(State s){
 		
 		List<Action> gas = this.applicableActions(s);
 		List<QValue> qs = new ArrayList<QValue>(gas.size());
 		for(Action ga : gas){
-			QValue q = this.getQ(s, ga);
+			QValue q = new QValue(s, ga, this.qValue(s, ga));
 			qs.add(q);
 		}
 
@@ -172,11 +169,10 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	
 	
 	@Override
-	public QValue getQ(State s, Action a){
+	public double qValue(State s, Action a){
 
 		double dq = this.computeQ(s, a);
-		QValue q = new QValue(s, a, dq);
-		return q;
+		return dq;
 		
 	}
 	

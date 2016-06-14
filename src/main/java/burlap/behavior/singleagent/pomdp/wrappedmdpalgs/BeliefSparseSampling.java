@@ -7,7 +7,7 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.behavior.singleagent.pomdp.BeliefPolicyAgent;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.domain.singleagent.pomdp.tiger.TigerDomain;
 import burlap.domain.singleagent.pomdp.tiger.TigerState;
@@ -28,7 +28,7 @@ import java.util.List;
  * A POMDP planning algorithm that converts a POMDP into a Belief MDP and then uses {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling}
  * to solve it. If the full transition dynamics are used (set c in the constructor to -1), then it provides and optimal finite horizon POMDP policy.
  */
-public class BeliefSparseSampling extends MDPSolver implements Planner, QFunction{
+public class BeliefSparseSampling extends MDPSolver implements Planner, QProvider {
 
 	/**
 	 * The belief MDP domain to solve.
@@ -81,13 +81,13 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 	}
 
 	@Override
-	public List<QValue> getQs(State s) {
-		return this.mdpPlanner.getQs(s);
+	public List<QValue> qValues(State s) {
+		return this.mdpPlanner.qValues(s);
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
-		return this.mdpPlanner.getQ(s, a);
+	public double qValue(State s, Action a) {
+		return this.mdpPlanner.qValue(s, a);
 	}
 	
 	@Override
@@ -103,7 +103,7 @@ public class BeliefSparseSampling extends MDPSolver implements Planner, QFunctio
 
 	@Override
 	public double value(State s) {
-		return QFunctionHelper.getOptimalValue(this, s);
+		return Helper.maxQ(this, s);
 	}
 
 

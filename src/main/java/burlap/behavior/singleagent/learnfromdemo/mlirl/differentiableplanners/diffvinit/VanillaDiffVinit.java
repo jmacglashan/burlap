@@ -2,9 +2,8 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.d
 
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.mdp.core.Action;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
 
 /**
@@ -19,7 +18,7 @@ public class VanillaDiffVinit implements DifferentiableVInit {
 	/**
 	 * The source value function initialization.
 	 */
-	protected ValueFunctionInitialization vinit;
+	protected ValueFunction vinit;
 
 	/**
 	 * The differentiable reward function that defines the parameter space over which this value function
@@ -33,7 +32,7 @@ public class VanillaDiffVinit implements DifferentiableVInit {
 	 * @param vinit The vanilla unparameterized value function initialization
 	 * @param rf the differentiable reward function that defines the total parameter space
 	 */
-	public VanillaDiffVinit(ValueFunctionInitialization vinit, DifferentiableRF rf) {
+	public VanillaDiffVinit(ValueFunction vinit, DifferentiableRF rf) {
 		this.vinit = vinit;
 		this.rf = rf;
 	}
@@ -64,12 +63,7 @@ public class VanillaDiffVinit implements DifferentiableVInit {
 	}
 
 	@Override
-	public FunctionGradient getVGradient(State s) {
-		return new FunctionGradient.SparseGradient();
-	}
-
-	@Override
-	public FunctionGradient getQGradient(State s, Action ga) {
+	public FunctionGradient valueGradient(State s) {
 		return new FunctionGradient.SparseGradient();
 	}
 
@@ -78,9 +72,5 @@ public class VanillaDiffVinit implements DifferentiableVInit {
 		return this.vinit.value(s);
 	}
 
-	@Override
-	public double qValue(State s, Action a) {
-		return this.vinit.qValue(s, a);
-	}
 
 }

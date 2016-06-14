@@ -3,7 +3,6 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.d
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.functionapproximation.ParametricFunction;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
-import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 
 /**
@@ -63,7 +62,7 @@ public class LinearStateDiffVF implements DifferentiableVInit {
 	}
 
 	@Override
-	public FunctionGradient getVGradient(State s){
+	public FunctionGradient valueGradient(State s) {
 		double [] fvec = this.fvgen.features(s);
 		FunctionGradient gradient = new FunctionGradient.SparseGradient();
 		for(int i = 0; i < fvec.length; i++){
@@ -72,12 +71,6 @@ public class LinearStateDiffVF implements DifferentiableVInit {
 		return gradient;
 	}
 
-
-
-	@Override
-	public FunctionGradient getQGradient(State s, Action ga) {
-		return this.getVGradient(s);
-	}
 
 	@Override
 	public double value(State s) {
@@ -91,9 +84,5 @@ public class LinearStateDiffVF implements DifferentiableVInit {
 		return sum;
 	}
 
-	@Override
-	public double qValue(State s, Action a) {
-		return this.value(s);
-	}
 
 }

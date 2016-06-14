@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.learning.actorcritic.critics;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
@@ -90,7 +90,7 @@ public class TimeIndexedTDLambda extends TDLambda {
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 * @param maxEpisodeSize the maximum number of steps possible in an episode
 	 */
-	public TimeIndexedTDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda, int maxEpisodeSize) {
+	public TimeIndexedTDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunction vinit, double lambda, int maxEpisodeSize) {
 		super(gamma, hashingFactory, learningRate, vinit, lambda);
 		
 		this.maxEpisodeSize = maxEpisodeSize;

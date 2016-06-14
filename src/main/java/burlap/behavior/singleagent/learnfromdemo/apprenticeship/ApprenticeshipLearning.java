@@ -10,7 +10,7 @@ import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -229,8 +229,8 @@ public class ApprenticeshipLearning {
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
 			}
-			else if (planner instanceof QFunction) {
-				policy = new GreedyQPolicy((QFunction)planner);
+			else if (planner instanceof QProvider) {
+				policy = new GreedyQPolicy((QProvider)planner);
 			}
 
 			// (5) Compute u^(i) = u(pi^(i))
@@ -346,8 +346,8 @@ public class ApprenticeshipLearning {
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
 			}
-			else if (planner instanceof QFunction) {
-				policy = new GreedyQPolicy((QFunction)planner);
+			else if (planner instanceof QProvider) {
+				policy = new GreedyQPolicy((QProvider)planner);
 			}
 			policyHistory.add(policy);
 

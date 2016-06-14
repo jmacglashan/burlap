@@ -9,13 +9,12 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.di
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dpoperator.DifferentiableDPOperator;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dpoperator.DifferentiableSoftmaxOperator;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableQFunction;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableValueFunction;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientTuple;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.*;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -42,7 +41,7 @@ import java.util.*;
  * 2. Babes, M., Marivate, V., Subramanian, K., and Littman, "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
  * @author James MacGlashan.
  */
-public class DifferentiableSparseSampling extends MDPSolver implements QGradientPlanner, Planner {
+public class DifferentiableSparseSampling extends MDPSolver implements DifferentiableQFunction, QProvider, Planner {
 
 	/**
 	 * The height of the tree
@@ -67,7 +66,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	/**
 	 * The state value used for leaf nodes; default is zero.
 	 */
-	protected DifferentiableVInit vinit;
+	protected DifferentiableValueFunction vinit;
 
 	protected DifferentiableRF rf;
 
@@ -124,7 +123,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		this.rootLevelQValues = new HashMap<HashableState, DifferentiableSparseSampling.QAndQGradient>();
 		this.rfDim = rf.numParameters();
 
-		this.vinit = new VanillaDiffVinit(new ValueFunctionInitialization.ConstantValueFunctionInitialization(), rf);
+		this.vinit = new VanillaDiffVinit(new ConstantValueFunction(), rf);
 
 		this.model = new CustomRewardModel(domain.getModel(), rf);
 
@@ -206,15 +205,15 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	}
 
 	/**
-	 * Sets the {@link ValueFunctionInitialization} object to use for settting the value of leaf nodes.
-	 * @param vinit the {@link ValueFunctionInitialization} object to use for settting the value of leaf nodes.
+	 * Sets the {@link burlap.behavior.valuefunction.ValueFunction} object to use for settting the value of leaf nodes.
+	 * @param vinit the {@link burlap.behavior.valuefunction.ValueFunction} object to use for settting the value of leaf nodes.
 	 */
-	public void setValueForLeafNodes(ValueFunctionInitialization vinit){
+	public void setValueForLeafNodes(ValueFunction vinit){
 		if(vinit instanceof DifferentiableVInit) {
 			this.vinit = (DifferentiableVInit)vinit;
 		}
 		else{
-			this.vinit = new VanillaDiffVinit(vinit, (DifferentiableRF)this.rf);
+			this.vinit = new VanillaDiffVinit((QFunction)vinit, (DifferentiableRF)this.rf);
 		}
 	}
 
@@ -246,7 +245,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 
 		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
@@ -259,7 +258,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 
 		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
@@ -270,11 +269,11 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		for(QValue qv : qvs.qs){
 			if(qv.a.equals(a)){
-				return qv;
+				return qv.q;
 			}
 		}
 
-		return null;
+		throw new RuntimeException("Could not find a Q-value for: " + a.toString());
 	}
 
 	@Override
@@ -282,22 +281,12 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		if(model.terminal(s)){
 			return 0.;
 		}
-		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		return Helper.maxQ(this, s);
 	}
 
-	@Override
-	public List<QGradientTuple> getAllQGradients(State s) {
-		HashableState sh = this.hashingFactory.hashState(s);
-		QAndQGradient qvs = this.rootLevelQValues.get(sh);
-		if(qvs == null){
-			this.planFromState(s);
-			qvs = this.rootLevelQValues.get(sh);
-		}
-		return qvs.qGrads;
-	}
 
 	@Override
-	public QGradientTuple getQGradient(State s, Action a) {
+	public FunctionGradient qGradient(State s, Action a) {
 		HashableState sh = this.hashingFactory.hashState(s);
 		QAndQGradient qvs = this.rootLevelQValues.get(sh);
 		if(qvs == null){
@@ -307,7 +296,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 		for(QGradientTuple qg : qvs.qGrads){
 			if(qg.a.equals(a)){
-				return qg;
+				return qg.gradient;
 			}
 		}
 
@@ -448,10 +437,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 			for(Action ga : gas){
 				if(this.height == 0 || c == 0){
 					qs.add(new QValue(this.sh.s(), ga, DifferentiableSparseSampling.this.vinit.value(this.sh.s())),
-							new QGradientTuple(
-									this.sh.s(),
-									ga,
-									DifferentiableSparseSampling.this.vinit.getQGradient(this.sh.s(), ga)));
+							null);
 				}
 				else{
 
@@ -575,6 +561,11 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 		}
 
 		protected void setVGrad(QAndQGradient qvs){
+
+			if(qvs.qGrads.get(0) == null){ //case when we're at leafs
+				this.vgrad = vinit.valueGradient(this.sh.s());
+				return;
+			}
 
 			//pack qs into double array
 			double [] qs = new double[qvs.qs.size()];

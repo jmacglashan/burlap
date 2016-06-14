@@ -7,7 +7,7 @@ import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.TerminalFunction;
 
 /**
- * A factory for generating {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} objects.
+ * A factory for generating {@link DifferentiableQFunction} objects.
  * This class is use for {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MultipleIntentionsMLIRL}, so that it
  * can generate a different differentiable valueFunction for each cluster; that way, after a maximization step,
  * it can query the policy for each cluster in any state without replanning,rather than using a single valueFunction
@@ -17,13 +17,13 @@ import burlap.mdp.core.TerminalFunction;
 public interface QGradientPlannerFactory {
 
 	/**
-	 * Returns a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} for an
+	 * Returns a {@link DifferentiableQFunction} for an
 	 * {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object's domain,
 	 * reward function, discount factor, and Boltzmann beta parameter.
 	 * @param request the request defining the problem the valueFunction should solve.
-	 * @return a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} instance.
+	 * @return a {@link DifferentiableQFunction} instance.
 	 */
-	public QGradientPlanner generateDifferentiablePlannerForRequest(MLIRLRequest request);
+	public DifferentiableQFunction generateDifferentiablePlannerForRequest(MLIRLRequest request);
 
 
 	/**
@@ -79,7 +79,7 @@ public interface QGradientPlannerFactory {
 		}
 
 		@Override
-		public QGradientPlanner generateDifferentiablePlannerForRequest(MLIRLRequest request) {
+		public DifferentiableQFunction generateDifferentiablePlannerForRequest(MLIRLRequest request) {
 			return new DifferentiableVI(request.getDomain(), request.getRf(), request.getGamma(),
 					request.getBoltzmannBeta(), this.hashingFactory, this.maxDelta, this.maxIterations);
 		}

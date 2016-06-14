@@ -6,7 +6,7 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
@@ -27,21 +27,21 @@ import java.util.List;
  * fully observable MDP, and then setting the Q-value for belief states to be the expected fully observable Q-value. Therefore,
  * planning is only as hard as MDP planning. This implementation can take different sources for the MDP QFunction.
  */
-public class QMDP extends MDPSolver implements Planner, QFunction {
+public class QMDP extends MDPSolver implements Planner, QProvider {
 
 	/**
-	 * The fully observable MDP {@link burlap.behavior.valuefunction.QFunction} source.
+	 * The fully observable MDP {@link QProvider} source.
 	 */
-	protected QFunction mdpQSource;
+	protected QProvider mdpQSource;
 
 
 
 	/**
 	 * Initializes.
 	 * @param domain the POMDP domain
-	 * @param mdpQSource the underlying fully observable MDP {@link burlap.behavior.valuefunction.QFunction} source.
+	 * @param mdpQSource the underlying fully observable MDP {@link QProvider} source.
 	 */
-	public QMDP(PODomain domain, QFunction mdpQSource){
+	public QMDP(PODomain domain, QProvider mdpQSource){
 		this.mdpQSource = mdpQSource;
 		Planner planner = (Planner)this.mdpQSource;
 		this.solverInit(domain, planner.getGamma(), planner.getHashingFactory());
@@ -91,7 +91,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	}
 	
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 
 		if(!(s instanceof BeliefState) || !(s instanceof EnumerableBeliefState)){
 			throw new RuntimeException("QMDP cannot return the Q-values for the given state, because the given state is not a EnumerableBeliefState instance. It is a " + s.getClass().getName());
@@ -115,7 +115,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 
 		if(!(s instanceof BeliefState) || !(s instanceof EnumerableBeliefState)){
 			throw new RuntimeException("QMDP cannot return the Q-values for the given state, because the given state is not a EnumerableBeliefState instance. It is a " + s.getClass().getName());
@@ -123,15 +123,12 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 
 		EnumerableBeliefState bs = (EnumerableBeliefState)s;
 
-
-		QValue q = new QValue(s, a, this.qForBelief(bs, a));
-		
-		return q;
+		return this.qForBelief(bs, a);
 	}
 
 	@Override
 	public double value(State s) {
-		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		return Helper.maxQ(this, s);
 	}
 
 	/**
@@ -157,7 +154,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 	protected double qForBeliefList(List<EnumerableBeliefState.StateBelief> beliefs, Action ga){
 		double q = 0.;
 		for(EnumerableBeliefState.StateBelief sb : beliefs){
-			q += sb.belief * this.mdpQSource.getQ(sb.s, ga).q;
+			q += sb.belief * this.mdpQSource.qValue(sb.s, ga);
 		}
 		return q;
 	}

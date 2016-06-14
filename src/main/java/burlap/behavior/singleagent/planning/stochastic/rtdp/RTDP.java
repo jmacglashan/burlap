@@ -6,7 +6,8 @@ import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -83,7 +84,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 	
 	/**
 	 * Initializes. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
-	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
+	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(burlap.behavior.valuefunction.ValueFunction)} method
 	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
 	 * @param domain the domain in which to plan
@@ -103,7 +104,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 		this.maxDepth = maxDepth;
 		this.rollOutPolicy = new GreedyQPolicy(this);
 		
-		this.valueInitializer = new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit);
+		this.valueInitializer = new ConstantValueFunction(vInit);
 		
 	}
 	
@@ -112,7 +113,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 	
 	/**
 	 * Initializes. The value function will be initialized to vInit by default everywhere and will use a greedy policy with random tie breaks
-	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(ValueFunctionInitialization)} method
+	 * for performing rollouts. Use the {@link #setValueFunctionInitialization(burlap.behavior.valuefunction.ValueFunction)} method
 	 * to change the value function initialization and the {@link #setRollOutPolicy(Policy)} method to change the rollout policy to something else. vInit
 	 * should be set to something optimistic like VMax to ensure convergence.
 	 * @param domain the domain in which to plan
@@ -123,7 +124,7 @@ public class RTDP extends DynamicProgramming implements Planner{
 	 * @param maxDelta when the maximum change in the value function from a rollout is smaller than this value, planning will terminate.
 	 * @param maxDepth the maximum depth/length of a rollout before it is terminated and Bellman updates are performed.
 	 */
-	public RTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, int numRollouts, double maxDelta, int maxDepth){
+	public RTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, ValueFunction vInit, int numRollouts, double maxDelta, int maxDepth){
 		
 		this.DPPInit(domain, gamma, hashingFactory);
 		

@@ -4,8 +4,8 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
@@ -123,14 +123,14 @@ public class SarsaLam extends QLearning {
 	 * @param domain the domain in which to learn
 	 * @param gamma the discount factor
 	 * @param hashingFactory the state hashing factory to use for Q-lookups
-	 * @param qInit a {@link burlap.behavior.valuefunction.ValueFunctionInitialization} object that can be used to initialize the Q-values.
+	 * @param qInit a {@link QFunction} object that can be used to initialize the Q-values.
 	 * @param learningRate the learning rate
 	 * @param learningPolicy the learning policy to follow during a learning episode.
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode for the agent stops trying.
 	 * @param lambda specifies the strength of eligibility traces (0 for one step, 1 for full propagation)
 	 */
 	public SarsaLam(SADomain domain, double gamma, HashableStateFactory hashingFactory,
-			ValueFunctionInitialization qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
+					QFunction qInit, double learningRate, Policy learningPolicy, int maxEpisodeSize, double lambda) {
 		
 		super(domain, gamma, hashingFactory, qInit, learningRate, learningPolicy, maxEpisodeSize);
 		this.sarsalamInit(lambda);

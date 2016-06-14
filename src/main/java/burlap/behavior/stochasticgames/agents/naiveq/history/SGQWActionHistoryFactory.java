@@ -1,7 +1,7 @@
 package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.agent.AgentFactory;
 import burlap.mdp.stochasticgames.agent.SGAgent;
@@ -49,7 +49,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	/**
 	 * A default Q-value initializer
 	 */
-	protected ValueFunctionInitialization								qinit = null;
+	protected QFunction													qinit = null;
 	
 	/**
 	 * The epislon value for epislon greedy policy. If negative, then the policy of the created agent
@@ -78,7 +78,7 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	 * Sets the Q-value initialization function that will be used by the agent.
 	 * @param qinit the Q-value initialization function.
 	 */
-	public void setQValueInitializer(ValueFunctionInitialization qinit){
+	public void setQValueInitializer(QFunction qinit){
 		this.qinit = qinit;
 	}
 	

@@ -2,7 +2,7 @@ package burlap.behavior.policy;
 
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
 
-	protected QFunction qplanner;
+	protected QProvider qplanner;
 	
 	public GreedyDeterministicQPolicy() {
 		qplanner = null;
@@ -28,25 +28,25 @@ public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
 	 * Initializes with a QComputablePlanner
 	 * @param qplanner the QComputablePlanner to use
 	 */
-	public GreedyDeterministicQPolicy(QFunction qplanner){
+	public GreedyDeterministicQPolicy(QProvider qplanner){
 		this.qplanner = qplanner;
 	}
 	
 	@Override
 	public void setSolver(MDPSolverInterface solver){
 		
-		if(!(solver instanceof QFunction)){
+		if(!(solver instanceof QProvider)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction) solver;
+		this.qplanner = (QProvider) solver;
 	}
 	
 
 	@Override
 	public Action action(State s) {
 		
-		List<QValue> qValues = this.qplanner.getQs(s);
+		List<QValue> qValues = this.qplanner.qValues(s);
 		double maxQV = Double.NEGATIVE_INFINITY;
 		QValue maxQ = null;
 		for(QValue q : qValues){

@@ -8,8 +8,8 @@ import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableQFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
@@ -25,7 +25,7 @@ import java.util.Map;
  * and learns the parameters of the reward function model that maximizes the likelihood of the trajectories.
  * The reward function parameter spaces is searched using gradient ascent. Since the policy gradient it uses
  * is non-linear, it's possible that it may get stuck in local optimas. Computing the policy gradient is done
- * by iteratively replanning after each gradient ascent step with a {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner}
+ * by iteratively replanning after each gradient ascent step with a {@link DifferentiableQFunction}
  * instance provided in the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.MLIRLRequest} object.
  * <p>
  * The gradient ascent will stop either after a fixed number of steps or until the change in likelihood is smaller
@@ -215,7 +215,7 @@ public class MLIRL {
 	 */
 	public double logLikelihoodOfTrajectory(Episode ea, double weight){
 		double logLike = 0.;
-		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
+		Policy p = new BoltzmannQPolicy((QProvider)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
 			this.request.getPlanner().planFromState(ea.state(i));
 			double actProb = PolicyUtils.actionProb(p, ea.state(i), ea.action(i));
@@ -275,9 +275,9 @@ public class MLIRL {
 	 */
 	public FunctionGradient logPolicyGrad(State s, Action ga){
 
-		Policy p = new BoltzmannQPolicy((QFunction)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
+		Policy p = new BoltzmannQPolicy((QProvider)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		double invActProb = 1./PolicyUtils.actionProb(p, s, ga);
-		FunctionGradient gradient = BoltzmannPolicyGradient.computeBoltzmannPolicyGradient(s, ga, (QGradientPlanner)this.request.getPlanner(), this.request.getBoltzmannBeta());
+		FunctionGradient gradient = BoltzmannPolicyGradient.computeBoltzmannPolicyGradient(s, ga, (DifferentiableQFunction)this.request.getPlanner(), this.request.getBoltzmannBeta());
 
 		for(FunctionGradient.PartialDerivative pd : gradient.getNonZeroPartialDerivatives()){
 			double newVal = pd.value * invActProb;

@@ -12,7 +12,7 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.lspi.SARSCollector.UniformRandomSARSCollector;
 import burlap.behavior.singleagent.learning.lspi.SARSData.SARS;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.mdp.auxiliary.common.ConstantStateGenerator;
@@ -69,7 +69,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner {
+public class LSPI extends MDPSolver implements QProvider, LearningAgent, Planner {
 
 	/**
 	 * The object that performs value function approximation given the weights that are estimated
@@ -437,7 +437,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	 * Runs LSPI for either numIterations or until the change in the weight matrix is no greater than maxChange.
 	 * @param numIterations the maximum number of policy iterations.
 	 * @param maxChange when the weight change is smaller than this value, LSPI terminates.
-	 * @return a {@link burlap.behavior.policy.GreedyQPolicy} using this object as the {@link burlap.behavior.valuefunction.QFunction} source.
+	 * @return a {@link burlap.behavior.policy.GreedyQPolicy} using this object as the {@link QProvider} source.
 	 */
 	public GreedyQPolicy runPolicyIteration(int numIterations, double maxChange){
 		
@@ -475,7 +475,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	
 	
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 		
 		List<Action> gas = this.applicableActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
@@ -492,13 +492,13 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
-		return new QValue(s, a, this.vfa.evaluate(s, a));
+	public double qValue(State s, Action a) {
+		return this.vfa.evaluate(s, a);
 	}
 
 	@Override
 	public double value(State s) {
-		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		return Helper.maxQ(this, s);
 	}
 
 	/**

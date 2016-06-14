@@ -5,10 +5,7 @@ import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunction;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.*;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -22,7 +19,7 @@ import java.util.List;
  * A class for performing Fitted Value Iteration [1]. This is a variant of value iteration that takes a set of
  * sample states from a domain and performs synchronous value iteration on the samples by using the Bellman operator
  * and a current approximation of the value function. Specifically, the value function is seeded to some initial value
- * (by default zero, but it can be set to something else with the {@link #setVInit(burlap.behavior.valuefunction.ValueFunctionInitialization)}
+ * (by default zero, but it can be set to something else with the {@link #setVInit(burlap.behavior.valuefunction.ValueFunction)}
  * method). For each state sample, a new value for the state is computed by applying the bellman operator (using the model
  * of the world and the current, initially zero-valued, value function approximation). The newly computed values for each
  * state are then used as a supervised instance to train the next iteration of the value function.
@@ -48,7 +45,7 @@ import java.util.List;
  * 1. Gordon, Geoffrey J. "Stable function approximation in dynamic programming." Proceedings of the twelfth international conference on machine learning. 1995.
  * @author James MacGlashan.
  */
-public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Planner {
+public class FittedVI extends MDPSolver implements ValueFunction, QProvider, Planner {
 
 
 	/**
@@ -69,7 +66,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	/**
 	 * The initial value function to use
 	 */
-	protected ValueFunctionInitialization vinit = new ValueFunctionInitialization.ConstantValueFunctionInitialization(0.);
+	protected ValueFunction vinit = new ConstantValueFunction(0.);
 
 
 	/**
@@ -87,7 +84,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 	/**
 	 * The {@link burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling} depth used when
-	 * computing Q-values for the {@link #getQs(State)} and {@link #getQ(State, Action)}
+	 * computing Q-values for the {@link #qValues(State)} and {@link #qValue(State, Action)}
 	 * methods used for control.
 	 */
 	protected int controlDepth = 1;
@@ -163,7 +160,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	 * Returns the value function initialization used at the start of planning.
 	 * @return the value function initialization used at the start of planning.
 	 */
-	public ValueFunctionInitialization getVInit() {
+	public ValueFunction getVInit() {
 		return vinit;
 	}
 
@@ -171,7 +168,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	 * Sets the value function initialization used at the start of planning.
 	 * @param vinit the value function initialization used at the start of planning.
 	 */
-	public void setVInit(ValueFunctionInitialization vinit) {
+	public void setVInit(ValueFunction vinit) {
 		if(this.valueFunction == this.vinit){
 			this.valueFunction = vinit;
 		}
@@ -197,8 +194,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	}
 
 	/**
-	 * Returns the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
-	 * @return the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
+	 * Returns the Bellman operator depth used for computing Q-values (the {@link #qValue(State, Action)} and {@link #qValue(State, Action)} methods).
+	 * @return the Bellman operator depth used for computing Q-values (the {@link #qValue(State, Action)} and {@link #qValue(State, Action)} methods).
 	 */
 	public int getControlDepth() {
 		return controlDepth;
@@ -206,8 +203,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 
 	/**
-	 * Sets the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
-	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
+	 * Sets the Bellman operator depth used for computing Q-values (the {@link #qValue(State, Action)} and {@link #qValue(State, Action)} methods).
+	 * @param controlDepth the Bellman operator depth used for computing Q-values (the {@link #qValue(State, Action)} and {@link #qValue(State, Action)} methods).
 	 */
 	public void setControlDepth(int controlDepth) {
 		this.controlDepth = controlDepth;
@@ -215,8 +212,8 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 
 	/**
-	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
-	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #getQ(State, Action)} and {@link #getQ(State, Action)} methods).
+	 * Sets the Bellman operator depth used during planning for computing Q-values (the {@link #qValue(State, Action)} and {@link #qValue(State, Action)} methods).
+	 * @param depth the Bellman operator depth used during planning for computing Q-values (the {@link #qValue(State, Action)} and {@link #qValue(State, Action)} methods).
 	 */
 	public void setPlanningAndControlDepth(int depth){
 		this.planningDepth = depth;
@@ -274,7 +271,7 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 		List <Double> oldVs = new ArrayList<Double>(this.samples.size());
 		for(State s : this.samples){
 			oldVs.add(this.valueFunction.value(s));
-			instances.add(new SupervisedVFA.SupervisedVFAInstance(s, QFunctionHelper.getOptimalValue(ss, s)));
+			instances.add(new SupervisedVFA.SupervisedVFAInstance(s, Helper.maxQ(ss, s)));
 		}
 
 		this.valueFunction = this.valueFunctionTrainer.train(instances);
@@ -309,21 +306,21 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 	}
 
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 		SparseSampling ss = new SparseSampling(this.domain, this.gamma, this.hashingFactory, this.controlDepth, this.transitionSamples);
 		ss.setModel(model);
 		ss.setValueForLeafNodes(this.leafNodeInit);
 		ss.toggleDebugPrinting(false);
-		return ss.getQs(s);
+		return ss.qValues(s);
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 		SparseSampling ss = new SparseSampling(this.domain, this.gamma, this.hashingFactory, this.controlDepth, this.transitionSamples);
 		ss.setModel(model);
 		ss.setValueForLeafNodes(this.leafNodeInit);
 		ss.toggleDebugPrinting(false);
-		return ss.getQ(s, a);
+		return ss.qValue(s, a);
 	}
 
 	@Override
@@ -333,9 +330,9 @@ public class FittedVI extends MDPSolver implements ValueFunction, QFunction, Pla
 
 
 	/**
-	 * A class for {@link burlap.behavior.valuefunction.ValueFunctionInitialization} that always points to the outer class's current value function approximation.
+	 * A class for {@link burlap.behavior.valuefunction.QFunction} that always points to the outer class's current value function approximation.
 	 */
-	public class VFAVInit implements ValueFunctionInitialization{
+	public class VFAVInit implements QFunction{
 
 		@Override
 		public double value(State s) {
