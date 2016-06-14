@@ -375,7 +375,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			//manage replacing traces by zeroing out features for actions
 			//also zero out selected action, since it will be put back in later code
 			if(this.useReplacingTraces){
-				List<Action> allActions = this.getAllGroundedActions(curState);
+				List<Action> allActions = this.applicableActions(curState);
 				for(Action oa : allActions){
 
 					//get non-zero parameters and zero them
@@ -458,7 +458,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 	@Override
 	public List<QValue> getQs(State s) {
-		List<Action> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.applicableActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
 
 		for(Action ga : gas){

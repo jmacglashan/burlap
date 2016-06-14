@@ -363,9 +363,9 @@ public class QLearning extends MDPSolver implements QFunction, LearningAgent, Pl
 		
 		if(node == null){
 			node = new QLearningStateNode(s);
-			List<Action> gas = this.getAllGroundedActions(s.s());
+			List<Action> gas = this.applicableActions(s.s());
 			if(gas.isEmpty()){
-				gas = this.getAllGroundedActions(s.s());
+				gas = this.applicableActions(s.s());
 				throw new RuntimeErrorException(new Error("No possible actions in this state, cannot continue Q-learning"));
 			}
 			for(Action ga : gas){

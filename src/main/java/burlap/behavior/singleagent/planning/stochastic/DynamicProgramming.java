@@ -158,7 +158,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 	@Override
 	public List <QValue> getQs(State s){
 		
-		List<Action> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.applicableActions(s);
 		List<QValue> qs = new ArrayList<QValue>(gas.size());
 		for(Action ga : gas){
 			QValue q = this.getQ(s, ga);
@@ -285,7 +285,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		}
 
 
-		List<Action> gas = this.getAllGroundedActions(sh.s());
+		List<Action> gas = this.applicableActions(sh.s());
 		double [] qs = new double[gas.size()];
 		int i = 0;
 		for(Action ga : gas){
@@ -323,7 +323,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QFun
 		
 
 		//List <GroundedAction> gas = sh.s.getAllGroundedActionsFor(this.actions);
-		List<Action> gas = this.getAllGroundedActions(sh.s());
+		List<Action> gas = this.applicableActions(sh.s());
 		for(Action ga : gas){
 
 			double policyProb = PolicyUtils.actionProbGivenDistribution(ga, policyDistribution);

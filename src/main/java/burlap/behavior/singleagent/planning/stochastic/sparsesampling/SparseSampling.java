@@ -478,7 +478,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @return a {@link List} of the estiamted Q-values for each action.
 		 */
 		public List<QValue> estimateQs(){
-			List<Action> gas = SparseSampling.this.getAllGroundedActions(this.sh.s());
+			List<Action> gas = SparseSampling.this.applicableActions(this.sh.s());
 			List<QValue> qs = new ArrayList<QValue>(gas.size());
 			for(Action ga : gas){
 				if(this.height <= 0){

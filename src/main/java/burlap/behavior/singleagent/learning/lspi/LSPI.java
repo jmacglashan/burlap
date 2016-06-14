@@ -477,7 +477,7 @@ public class LSPI extends MDPSolver implements QFunction, LearningAgent, Planner
 	@Override
 	public List<QValue> getQs(State s) {
 		
-		List<Action> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.applicableActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
 
 

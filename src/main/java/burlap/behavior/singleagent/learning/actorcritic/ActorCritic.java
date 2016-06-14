@@ -117,8 +117,8 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	
 	
 	@Override
-	public void addNonDomainReferencedAction(ActionType a){
-		super.addNonDomainReferencedAction(a);
+	public void addActionType(ActionType a){
+		super.addActionType(a);
 		this.actor.addNonDomainReferencedAction(a);
 		this.critic.addNonDomainReferencedAction(a);
 		

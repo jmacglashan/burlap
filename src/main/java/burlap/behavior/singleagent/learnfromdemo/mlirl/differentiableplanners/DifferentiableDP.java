@@ -112,7 +112,7 @@ public abstract class DifferentiableDP extends DynamicProgramming implements QGr
 
 	@Override
 	public List<QGradientTuple> getAllQGradients(State s){
-		List<Action> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.applicableActions(s);
 		List<QGradientTuple> res = new ArrayList<QGradientTuple>(gas.size());
 		for(Action ga : gas){
 			res.add(this.getQGradient(s, ga));

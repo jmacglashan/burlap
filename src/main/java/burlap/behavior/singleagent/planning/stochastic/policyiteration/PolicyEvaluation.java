@@ -153,7 +153,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 
 
 
-			List<Action> actions = this.getAllGroundedActions(sh.s());
+			List<Action> actions = this.applicableActions(sh.s());
 			for(Action a : actions){
 				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s(), a);
 				for(TransitionProb tp : tps){

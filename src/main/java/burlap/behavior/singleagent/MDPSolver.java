@@ -78,7 +78,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	
 	
 	@Override
-	public void addNonDomainReferencedAction(ActionType a){
+	public void addActionType(ActionType a){
 		//make sure it doesn't already exist in the list
 		if(!actionTypes.contains(a)){
 			actionTypes.add(a);
@@ -187,11 +187,13 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	
 	
 	/**
-	 * Returns all grounded actions in the provided state for all the actions that this valueFunction can use.
+	 * Returns all applicable actions in the provided state for all the actions that this MDP Solver can use.
+	 * If this solver had {@link ActionType}s not included in the domain added (e.g., types for {@link burlap.behavior.singleagent.options.Option}s),
+	 * this method will include those as well.
 	 * @param s the source state for which to get all GroundedActions.
 	 * @return all GroundedActions.
 	 */
-	protected List <Action> getAllGroundedActions(State s){
+	protected List <Action> applicableActions(State s){
 
 		return ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
 		

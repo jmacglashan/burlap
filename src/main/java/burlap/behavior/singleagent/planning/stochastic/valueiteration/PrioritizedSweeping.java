@@ -131,7 +131,7 @@ public class PrioritizedSweeping extends ValueIteration{
 			this.valueFunction.put(node.sh, this.valueInitializer.value(node.sh.s()));
 
 
-			List<Action> actions = this.getAllGroundedActions(node.sh.s());
+			List<Action> actions = this.applicableActions(node.sh.s());
 			for(Action a : actions){
 				List<TransitionProb> tps = ((FullModel)model).transitions(node.sh.s(), a);
 				for(TransitionProb tp : tps){
@@ -267,7 +267,7 @@ public class PrioritizedSweeping extends ValueIteration{
 		 */
 		public BPTR(BPTRNode backNode, HashableState forwardState){
 			this.backNode = backNode;
-			List<Action> actions = PrioritizedSweeping.this.getAllGroundedActions(backNode.sh.s());
+			List<Action> actions = PrioritizedSweeping.this.applicableActions(backNode.sh.s());
 			double maxProb = 0.;
 			//find action with maximum transition probability
 			for(Action ga : actions){

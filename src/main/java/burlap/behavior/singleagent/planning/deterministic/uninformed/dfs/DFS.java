@@ -224,7 +224,7 @@ public class DFS extends DeterministicPlanner {
 		
 		
 		//shuffle actions for a random walk, but keep options as priority if set that way
-		List<Action> gas = this.getAllGroundedActions(n.s.s());
+		List<Action> gas = this.applicableActions(n.s.s());
 		if(optionsFirst){
 			int no = this.numOptionsInGAs(gas);
 			this.shuffleGroundedActions(gas, 0, no);

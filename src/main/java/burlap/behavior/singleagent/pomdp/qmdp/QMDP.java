@@ -100,7 +100,7 @@ public class QMDP extends MDPSolver implements Planner, QFunction {
 		BeliefState bs = (BeliefState)s;
 
 		//get actions for any underlying MDP state
-		List<Action> gas = this.getAllGroundedActions(bs.sample());
+		List<Action> gas = this.applicableActions(bs.sample());
 		List<QValue> result = new ArrayList<QValue>(gas.size());
 
 		List<EnumerableBeliefState.StateBelief> beliefs = ((EnumerableBeliefState)bs).nonZeroBeliefs();

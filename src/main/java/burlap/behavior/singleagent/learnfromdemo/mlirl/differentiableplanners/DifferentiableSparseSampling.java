@@ -441,7 +441,7 @@ public class DifferentiableSparseSampling extends MDPSolver implements QGradient
 
 			int dim = DifferentiableSparseSampling.this.rfDim;
 
-			List<Action> gas = DifferentiableSparseSampling.this.getAllGroundedActions(this.sh.s());
+			List<Action> gas = DifferentiableSparseSampling.this.applicableActions(this.sh.s());
 			QAndQGradient qs = new QAndQGradient(gas.size());
 
 			int c = DifferentiableSparseSampling.this.getCAtHeight(this.height);
