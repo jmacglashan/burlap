@@ -120,7 +120,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	public void addActionType(ActionType a){
 		super.addActionType(a);
 		this.actor.addNonDomainReferencedAction(a);
-		this.critic.addNonDomainReferencedAction(a);
+		this.critic.addActionType(a);
 		
 	}
 
