@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.stochastic.policyiteration;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.Planner;
@@ -45,7 +46,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	/**
 	 * The current policy to be evaluated
 	 */
-	protected Policy 												evaluativePolicy;
+	protected EnumerablePolicy evaluativePolicy;
 	
 	
 	/**
@@ -119,7 +120,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * the evaluative policy will be {@link burlap.behavior.policy.GreedyQPolicy} on the function evaluation.
 	 * @param p the initial policy to evaluate when planning begins.
 	 */
-	public void setPolicyToEvaluate(Policy p){
+	public void setPolicyToEvaluate(EnumerablePolicy p){
 		this.evaluativePolicy = p;
 	}
 	

@@ -23,7 +23,7 @@ import java.util.Random;
  * Upon action selection, all applicable grounded actions for the state are generated and an action is selected
  * uniformly randomly from them. The policy is not defined if there are no applicable actions.
  */
-public class RandomPolicy implements Policy{
+public class RandomPolicy implements Policy, EnumerablePolicy{
 
 
 	/**
@@ -126,6 +126,12 @@ public class RandomPolicy implements Policy{
 		}
 		Action selection = gas.get(this.rand.nextInt(this.actionTypes.size()));
 		return selection;
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, s);
+		return 1./gas.size();
 	}
 
 	@Override

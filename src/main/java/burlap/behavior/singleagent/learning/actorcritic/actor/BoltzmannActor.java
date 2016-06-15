@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.learning.actorcritic.actor;
 
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
@@ -28,7 +29,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class BoltzmannActor extends Actor {
+public class BoltzmannActor extends Actor implements EnumerablePolicy {
 
 	/**
 	 * The domain in which this agent will act
@@ -96,7 +97,7 @@ public class BoltzmannActor extends Actor {
 	}
 
 	@Override
-	public void updateFromCritqique(CritiqueResult critqiue) {
+	public void updateFromCritique(CritiqueResult critqiue) {
 		
 		HashableState sh = this.hashingFactory.hashState(critqiue.getS());
 		PolicyNode node = this.getNode(sh);
@@ -122,6 +123,11 @@ public class BoltzmannActor extends Actor {
 	@Override
 	public Action action(State s) {
 		return PolicyUtils.sampleFromActionDistribution(this, s);
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
 	}
 
 	@Override

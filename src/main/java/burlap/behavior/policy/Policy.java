@@ -1,10 +1,7 @@
 package burlap.behavior.policy;
 
-import burlap.behavior.policy.support.ActionProb;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-
-import java.util.List;
 
 
 /**
@@ -31,16 +28,14 @@ public interface Policy {
 	 * @return a sample action from the action distribution; null if the policy is undefined for s
 	 */
 	Action action(State s);
-	
+
 	/**
-	 * This method will return action probability distribution defined by the policy. The action distribution is represented
-	 * by a list of ActionProb objects, each which specifies a grounded action and a probability of that grounded action being
-	 * taken. The returned list does not have to include actions with probability 0.
-	 * @param s the state for which an action distribution should be returned
-	 * @return a list of possible actions taken by the policy and their probability. 
+	 * Returns the probability/probability density that the given action will be taken in the given state.
+	 * @param s the state of interest
+	 * @param a the action that may be taken in the state
+	 * @return the probability/probability density
 	 */
-	List<ActionProb> policyDistribution(State s); //returns null when policy is undefined for s
-	
+	double actionProb(State s, Action a);
 
 	/**
 	 * Specifies whether this policy is defined for the input state.

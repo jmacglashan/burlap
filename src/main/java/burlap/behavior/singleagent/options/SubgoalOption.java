@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.options;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.Episode;
@@ -137,7 +138,10 @@ public class SubgoalOption implements Option {
 
 	@Override
 	public List<ActionProb> policyDistribution(State s, Episode history) {
-		return policy.policyDistribution(s);
+		if(!(policy instanceof EnumerablePolicy)){
+			throw new RuntimeException("SubgoalOption cannot return policy distribution because underlying policy is not an EnumberablePolicy");
+		}
+		return ((EnumerablePolicy)policy).policyDistribution(s);
 	}
 
 	@Override

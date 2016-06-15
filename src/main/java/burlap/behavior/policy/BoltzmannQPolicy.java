@@ -20,7 +20,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class BoltzmannQPolicy implements SolverDerivedPolicy {
+public class BoltzmannQPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
 	protected QProvider qplanner;
 	double								temperature;
@@ -53,6 +53,11 @@ public class BoltzmannQPolicy implements SolverDerivedPolicy {
 	@Override
 	public Action action(State s) {
 		return PolicyUtils.sampleFromActionDistribution(this, s);
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
 	}
 
 	@Override

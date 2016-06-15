@@ -3,12 +3,11 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl;
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.policy.BoltzmannQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.BoltzmannPolicyGradient;
-import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableQFunction;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.valuefunction.QProvider;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
@@ -218,7 +217,7 @@ public class MLIRL {
 		Policy p = new BoltzmannQPolicy((QProvider)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
 		for(int i = 0; i < ea.numTimeSteps()-1; i++){
 			this.request.getPlanner().planFromState(ea.state(i));
-			double actProb = PolicyUtils.actionProb(p, ea.state(i), ea.action(i));
+			double actProb = p.actionProb(ea.state(i), ea.action(i));
 			logLike += Math.log(actProb);
 		}
 		logLike *= weight;
@@ -276,7 +275,7 @@ public class MLIRL {
 	public FunctionGradient logPolicyGrad(State s, Action ga){
 
 		Policy p = new BoltzmannQPolicy((QProvider)this.request.getPlanner(), 1./this.request.getBoltzmannBeta());
-		double invActProb = 1./PolicyUtils.actionProb(p, s, ga);
+		double invActProb = 1./p.actionProb(s, ga);
 		FunctionGradient gradient = BoltzmannPolicyGradient.computeBoltzmannPolicyGradient(s, ga, (DifferentiableQFunction)this.request.getPlanner(), this.request.getBoltzmannBeta());
 
 		for(FunctionGradient.PartialDerivative pd : gradient.getNonZeroPartialDerivatives()){

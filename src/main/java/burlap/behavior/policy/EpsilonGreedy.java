@@ -22,7 +22,7 @@ import java.util.Random;
  * @author James MacGlashan
  *
  */
-public class EpsilonGreedy implements SolverDerivedPolicy {
+public class EpsilonGreedy implements SolverDerivedPolicy, EnumerablePolicy {
 
 	protected QProvider qplanner;
 	protected double					epsilon;
@@ -110,6 +110,11 @@ public class EpsilonGreedy implements SolverDerivedPolicy {
 		//return translated action parameters if the action is parameterized with objects in a object identifier indepdent domain
 		Action ga =  maxActions.get(selected).a;
 		return ga;
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
 	}
 
 	@Override

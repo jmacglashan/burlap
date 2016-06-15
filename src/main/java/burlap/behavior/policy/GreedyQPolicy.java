@@ -20,7 +20,7 @@ import java.util.Random;
  * @author James MacGlashan
  *
  */
-public class GreedyQPolicy implements SolverDerivedPolicy {
+public class GreedyQPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
 	protected QProvider qplanner;
 	protected Random 					rand;
@@ -71,6 +71,11 @@ public class GreedyQPolicy implements SolverDerivedPolicy {
 		int selected = rand.nextInt(maxActions.size());
 		Action srcA = maxActions.get(selected).a;
 		return srcA;
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
 	}
 
 	@Override

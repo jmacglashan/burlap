@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.policy.support.PolicyUndefinedException;
@@ -25,7 +26,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class UCTTreeWalkPolicy implements SolverDerivedPolicy {
+public class UCTTreeWalkPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
 	UCT 									planner;
 	
@@ -127,6 +128,14 @@ public class UCTTreeWalkPolicy implements SolverDerivedPolicy {
 		}
 		
 		return ga;
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		if(this.action(s).equals(a)){
+			return 1.;
+		}
+		return 0.;
 	}
 
 	@Override

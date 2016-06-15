@@ -1,6 +1,6 @@
 package burlap.behavior.valuefunction;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.mdp.core.state.State;
 
@@ -60,7 +60,7 @@ public interface QProvider extends QFunction{
 		 * @param p the policy defining the action distribution.
 		 * @return the expected Q-value under the input policy action distribution
 		 */
-		public static double policyValue(QProvider qSource, State s, Policy p){
+		public static double policyValue(QProvider qSource, State s, EnumerablePolicy p){
 
 			double expectedValue = 0.;
 			List <ActionProb> aps = p.policyDistribution(s);

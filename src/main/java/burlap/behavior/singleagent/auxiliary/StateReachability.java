@@ -1,14 +1,14 @@
 package burlap.behavior.singleagent.auxiliary;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.MyTimer;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.action.ActionUtils;
-import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.statehashing.HashableState;
@@ -122,7 +122,7 @@ public class StateReachability {
 	 * @param usingHashFactory the {@link burlap.statehashing.HashableStateFactory} used to hash states and test equality.
 	 * @return a {@link java.util.List} of {@link State} objects that could be reached.
 	 */
-	public static List<State> getPolicyReachableStates(SADomain domain, Policy p, State from, HashableStateFactory usingHashFactory){
+	public static List<State> getPolicyReachableStates(SADomain domain, EnumerablePolicy p, State from, HashableStateFactory usingHashFactory){
 
 		Set<HashableState> hashed = getPolicyReachableHashedStates(domain, p, from, usingHashFactory);
 		List<State> states = new ArrayList<State>(hashed.size());
@@ -145,7 +145,7 @@ public class StateReachability {
 	 * @param usingHashFactory the {@link burlap.statehashing.HashableStateFactory} used to hash states and test equality.
 	 * @return a {@link java.util.Set} of {@link burlap.statehashing.HashableState} objects that could be reached.
 	 */
-	public static Set<HashableState> getPolicyReachableHashedStates(SADomain domain, Policy p, State from, HashableStateFactory usingHashFactory){
+	public static Set<HashableState> getPolicyReachableHashedStates(SADomain domain, EnumerablePolicy p, State from, HashableStateFactory usingHashFactory){
 
 		if(!(domain.getModel() instanceof FullModel)){
 			throw new RuntimeException( "State reachablity requires a domain with a FullModel, but one is not provided");

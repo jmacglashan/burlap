@@ -1,13 +1,16 @@
 package burlap.behavior.singleagent.planning.stochastic;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.BellmanOperator;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
-import burlap.behavior.valuefunction.*;
+import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.behavior.valuefunction.QProvider;
+import burlap.behavior.valuefunction.QValue;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
@@ -231,7 +234,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QPro
 	 * @param p the policy that is being evaluated
 	 * @return the new value of the state
 	 */
-	public double performFixedPolicyBellmanUpdateOn(State s, Policy p){
+	public double performFixedPolicyBellmanUpdateOn(State s, EnumerablePolicy p){
 		return this.performFixedPolicyBellmanUpdateOn(this.stateHash(s), p);
 	}
 
@@ -305,7 +308,7 @@ public class DynamicProgramming extends MDPSolver implements ValueFunction, QPro
 	 * @param p the policy that is being evaluated
 	 * @return the new value of the state
 	 */
-	protected double performFixedPolicyBellmanUpdateOn(HashableState sh, Policy p){
+	protected double performFixedPolicyBellmanUpdateOn(HashableState sh, EnumerablePolicy p){
 		
 		
 		if(this.model.terminal(sh.s())){

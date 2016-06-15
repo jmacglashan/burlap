@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
@@ -541,7 +542,7 @@ public class ApprenticeshipLearning {
 	 * @author Stephen Brawner
 	 *
 	 */
-	public static class StationaryRandomDistributionPolicy implements Policy {
+	public static class StationaryRandomDistributionPolicy implements EnumerablePolicy {
 		Map<HashableState, Action> stateActionMapping;
 		List<ActionType> actionTypes;
 		Map<HashableState, List<ActionProb>> stateActionDistributionMapping;
@@ -617,6 +618,11 @@ public class ApprenticeshipLearning {
 				}
 			}
 			return null;
+		}
+
+		@Override
+		public double actionProb(State s, Action a) {
+			return PolicyUtils.actionProbFromEnum(this, s, a);
 		}
 
 		@Override

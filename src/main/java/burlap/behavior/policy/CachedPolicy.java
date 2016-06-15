@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author James MacGlashan.
  */
-public class CachedPolicy implements Policy{
+public class CachedPolicy implements EnumerablePolicy{
 
 	/**
 	 * The hashing factory to use for indexing states
@@ -32,7 +32,7 @@ public class CachedPolicy implements Policy{
 	/**
 	 * The source policy that gets cached
 	 */
-	protected Policy sourcePolicy;
+	protected EnumerablePolicy sourcePolicy;
 
 
 	/**
@@ -40,7 +40,7 @@ public class CachedPolicy implements Policy{
 	 * @param hashingFactory the {@link burlap.statehashing.HashableStateFactory} to use for indexing states
 	 * @param sourcePolicy the source policy that will be lazily cached.
 	 */
-	public CachedPolicy(HashableStateFactory hashingFactory, Policy sourcePolicy) {
+	public CachedPolicy(HashableStateFactory hashingFactory, EnumerablePolicy sourcePolicy) {
 		this.hashingFactory = hashingFactory;
 		this.sourcePolicy = sourcePolicy;
 	}
@@ -52,7 +52,7 @@ public class CachedPolicy implements Policy{
 	 * @param sourcePolicy the source policy that will be lazily cached.
 	 * @param cacheCapacity the initial memory capacity to be set aside for the policy cache
 	 */
-	public CachedPolicy(HashableStateFactory hashingFactory, Policy sourcePolicy, int cacheCapacity) {
+	public CachedPolicy(HashableStateFactory hashingFactory, EnumerablePolicy sourcePolicy, int cacheCapacity) {
 		this.hashingFactory = hashingFactory;
 		this.sourcePolicy = sourcePolicy;
 		this.actionSelection = new HashMap<HashableState, List<ActionProb>>(cacheCapacity);
@@ -61,6 +61,11 @@ public class CachedPolicy implements Policy{
 	@Override
 	public Action action(State s) {
 		return PolicyUtils.sampleFromActionDistribution(this, s);
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
 	}
 
 	@Override

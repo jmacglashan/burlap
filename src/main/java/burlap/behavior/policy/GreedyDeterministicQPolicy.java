@@ -16,7 +16,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
+public class GreedyDeterministicQPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
 	protected QProvider qplanner;
 	
@@ -57,6 +57,14 @@ public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
 		}
 		
 		return maxQ.a;
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		if(this.action(s).equals(a)){
+			return 1.;
+		}
+		return 0.;
 	}
 
 	@Override
