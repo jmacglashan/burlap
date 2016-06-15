@@ -84,8 +84,8 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 
 
 
-	protected boolean										runLivePolling = false;
-	protected long											pollInterval;
+	protected Timer											livePollingTimer;
+	protected int											pollInterval;
 
 	protected EnvironmentShell								shell;
 	protected TextAreaStreams								tstreams;
@@ -204,38 +204,36 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	 * this method call will only change the poll rate.
 	 * @param msPollDelay the number of milliseconds between environment polls and state updates.
 	 */
-	public void startLiveStatePolling(final long msPollDelay){
+	public void startLiveStatePolling(final int msPollDelay){
 		this.pollInterval = msPollDelay;
-		if(this.runLivePolling){
+
+		if (this.livePollingTimer != null) {
+			if (!this.livePollingTimer.isRunning()) {
+				this.livePollingTimer.start();
+			}
 			return;
 		}
-		this.runLivePolling = true;
-		Thread pollingThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while(runLivePolling) {
-					State s = env.currentObservation();
-					if(s != null) {
-						updateState(s);
-					}
-					try {
-						Thread.sleep(pollInterval);
-					} catch(InterruptedException e) {
-						e.printStackTrace();
-					}
+
+		ActionListener animate = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				State s = env.currentObservation();
+				if(s != null) {
+					updateState(s);
 				}
 			}
-		});
-
-		pollingThread.start();
+		};
+		Timer timer = new Timer(pollInterval, animate);
+		timer.start();
 	}
 
 
 	/**
 	 * Stops this class from live polling this explorer's {@link burlap.mdp.singleagent.environment.Environment}.
 	 */
-	public void stopLivePolling(){
-		this.runLivePolling = false;
+	public void stopLivePolling() {
+		if (this.livePollingTimer.isRunning()) {
+			this.livePollingTimer.stop();
+		}
 	}
 
 
@@ -498,7 +496,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 
 			if(oset.has("t")){
 				String val = (String)oset.valueOf("t");
-				long interval = Long.valueOf(val);
+				int interval = Integer.valueOf(val);
 				startLiveStatePolling(interval);
 			}
 			else if(oset.has("f")){
@@ -506,7 +504,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 			}
 
 			if(oset.has("c")){
-				if(runLivePolling){
+				if(livePollingTimer != null && livePollingTimer.isRunning()){
 					os.println("Live polling is enabled and polls every " + pollInterval + " milliseconds.");
 				}
 				else{
