@@ -24,8 +24,9 @@ import java.util.Random;
  *
  * <p>
  * 1. Babes, Monica, et al. "Apprenticeship learning about multiple intentions." Proceedings of the 28th International Conference on Machine Learning (ICML-11). 2011.
- *
- * @author James MacGlashan; code is modeled from code written by Lei Yang.
+ * <p>
+ * Acknowledgements: Lei Yang for code on which this was based.
+ * @author James MacGlashan
  */
 public class MultipleIntentionsMLIRL {
 

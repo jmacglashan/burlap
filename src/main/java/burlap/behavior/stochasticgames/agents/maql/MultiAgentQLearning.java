@@ -46,8 +46,9 @@ import java.util.Map;
  * in the world, and that this agent is the Q-source provider of the joint policy {@link MAQSourcePolicy}. If the set joint policy
  * is not an instance of {@link MAQSourcePolicy}, then an exception will be thrown.
  * 
- * 
- * @author James MacGlashan; adapted from code provided by Esha Gosh, John Meehan, Michalis Michaelidis
+ * <p>
+ * Acknowledgements: Esha Gosh, John Meehan, Michalis Michaelidis for code on which this was based.
+ * @author James MacGlashan
  *
  */
 public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourceProvider{
