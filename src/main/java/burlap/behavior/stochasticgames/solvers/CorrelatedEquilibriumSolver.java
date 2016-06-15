@@ -1,16 +1,10 @@
 package burlap.behavior.stochasticgames.solvers;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-
 import scpsolver.constraints.LinearBiggerThanEqualsConstraint;
 import scpsolver.constraints.LinearEqualsConstraint;
 import scpsolver.lpsolver.LinearProgramSolver;
 import scpsolver.lpsolver.SolverFactory;
 import scpsolver.problems.LinearProgram;
-
-import com.joptimizer.optimizers.LPOptimizationRequest;
-import com.joptimizer.optimizers.LPPrimalDualMethod;
 
 /**
  * This class provides static methods for solving correlated equilibrium problems for Bimatrix games or values represented in a Bimatrix.
@@ -388,130 +382,7 @@ public class CorrelatedEquilibriumSolver {
 		return cCount;
 		
 	}
-	
-	
-	/**
-	 * Old code for solving the utilitarian equilibrium with JOptimizer. JOptmizer is often not able to find solutions to these
-	 * problems because it uses an interior point method that requires an feasible solution on the interior and in the initial
-	 * stages of stochastic games VI, this may not be the case. Therefore, this code is deprecatd, but is retained for reference.
-	 * @param payoffRow the payoffs for the row player
-	 * @param payoffCol the payoffs for the col player
-	 * @return the correlated equilibrium
-	 */
-	@Deprecated
-	protected static double [][] getCorrelatedEQJointStrategyUsingJOptimizer(double [][] payoffRow, double [][] payoffCol){
-		
-		org.apache.log4j.BasicConfigurator.configure();
-		LogManager.getRootLogger().setLevel(Level.OFF);
-		
-		int nRows = payoffRow.length;
-		int nCols = payoffRow[0].length;
-		int n = nRows * nCols;
-		
-		double [] c = GeneralBimatrixSolverTools.getNegatedArray(getUtilitarianObjective(payoffRow, payoffCol));
-		
-		double [][] A = new double [1][n];
-		for(int i = 0; i < n; i++){
-			A[0][i] = 1.;
-		}
-		double [] b = new double[]{1.};
-		
-		double [] lb = GeneralBimatrixSolverTools.constantDoubleArray(0., n);
-		//double [] lb = GeneralBimatrixSolverTools.constantDoubleArray(-1e-5, n);
-		
-		double [][] G = new double[nRows*(nRows-1) + nCols*(nCols-1)][n];
-		//zero out for safety
-		for(int i = 0; i < G.length; i++){
-			for(int j = 0; j < n; j++){
-				G[i][j] = 0.;
-			}
-		}
-		
-		
-		int gInd = 0;
-		
-		//add player 1 action constraints
-		for(int a1 = 0; a1 < nRows; a1++){
-			//consider constraint of taking other action
-			for(int a1prime = 0; a1prime < nRows; a1prime++){
-				if(a1prime == a1){
-					continue;
-				}
-				for(int a2 = 0; a2 < nCols; a2++){
-					int ind = jointIndex(a1, a2, nCols);
-					
-					//>= coeffecient
-					double geVal = payoffRow[a1][a2] - payoffRow[a1prime][a2];
-					
-					//negate to turn into <= expression that joptimizer expects
-					G[gInd][ind] = -geVal;
-					
-				}
-				
-				gInd++;
-			}
-		}
-		
-		//add player 2 action constraints
-		for(int a2 = 0; a2 < nCols; a2++){
-			//consider constraint of taking other action
-			for(int a2prime = 0; a2prime < nCols; a2prime++){
-				if(a2prime == a2){
-					continue;
-				}
-				for(int a1 = 0; a1 < nRows; a1++){
-					int ind = jointIndex(a1, a2, nCols);
-					
-					//>= coefficient
-					double geVal = payoffCol[a1][a2] - payoffCol[a1][a2prime];
-					
-					//negate to turn into <= expression that joptimizer expects
-					G[gInd][ind] = -geVal;
-				}
-				
-				gInd++;
-			}
-		}
-		
-		//shrink G to just nonzero rows
-		G = removeZeroRows(G);
-		
-		double [] h = GeneralBimatrixSolverTools.constantDoubleArray(0., G.length);
-		
-		
-		//optimization problem
-		LPOptimizationRequest or = new LPOptimizationRequest();
-		or.setC(c);
-		or.setG(G);
-		or.setH(h);
-		or.setLb(lb);
-		or.setA(A);
-		or.setB(b);
-		or.setDumpProblem(true); 
-		
-		//optimization
-		LPPrimalDualMethod opt = new LPPrimalDualMethod();		
-		opt.setLPOptimizationRequest(or);
 
-		try {
-			opt.optimize();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		
-		double[] sol = roundNegativesToZero(opt.getOptimizationResponse().getSolution());
-		
-		double [][] jointActionProbs = new double[nRows][nCols];
-		for(int i = 0; i < sol.length; i++){
-			int [] rc = rowCol(i, nCols);
-			jointActionProbs[rc[0]][rc[1]] = sol[i];
-		}
-		
-		
-		return jointActionProbs;
-		
-	}
 	
 	
 	/**
