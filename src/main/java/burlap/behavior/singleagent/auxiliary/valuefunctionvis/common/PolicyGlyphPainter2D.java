@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.auxiliary.valuefunctionvis.common;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.StatePolicyPainter;
@@ -7,6 +8,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.vardomain.VariableDomain;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -195,7 +197,13 @@ public class PolicyGlyphPainter2D implements StatePolicyPainter {
 		yval = cHeight - height - normY*cHeight;
 
 		
-		List<ActionProb> pdist = policy.policyDistribution(s);
+		List<ActionProb> pdist;
+		if(policy instanceof EnumerablePolicy) {
+			pdist = ((EnumerablePolicy)policy).policyDistribution(s);
+		}
+		else{
+			pdist = Arrays.asList(new ActionProb(policy.action(s), 1.));
+		}
 		double maxp = 0.;
 		for(ActionProb ap : pdist){
 			if(ap.pSelection > maxp){

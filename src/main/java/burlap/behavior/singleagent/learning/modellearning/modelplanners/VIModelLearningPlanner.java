@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.learning.modellearning.modelplanners;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.support.ActionProb;
@@ -103,7 +104,7 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 	 * @author James MacGlashan
 	 *
 	 */
-	class ReplanIfUnseenPolicy implements Policy{
+	class ReplanIfUnseenPolicy implements EnumerablePolicy{
 
 		/**
 		 * The source policy to follow for known states
@@ -129,19 +130,28 @@ public class VIModelLearningPlanner extends ValueIteration implements ModelLearn
 		}
 
 		@Override
-		public List<ActionProb> policyDistribution(State s) {
-			
+		public double actionProb(State s, Action a) {
 			if(!VIModelLearningPlanner.this.hasComputedValueFor(s)){
 				VIModelLearningPlanner.this.observedStates.add(VIModelLearningPlanner.this.hashingFactory.hashState(s));
 				VIModelLearningPlanner.this.rerunVI();
 			}
-			return p.policyDistribution(s);
+			return p.actionProb(s, a);
 		}
 
 		@Override
-		public boolean stochastic() {
-			return p.stochastic();
+		public List<ActionProb> policyDistribution(State s) {
+
+			if(!(this.p instanceof EnumerablePolicy)){
+				throw new RuntimeException("Cannot return policy distribution because underlying policy is not an EnumerablePolicy");
+			}
+
+			if(!VIModelLearningPlanner.this.hasComputedValueFor(s)){
+				VIModelLearningPlanner.this.observedStates.add(VIModelLearningPlanner.this.hashingFactory.hashState(s));
+				VIModelLearningPlanner.this.rerunVI();
+			}
+			return ((EnumerablePolicy)p).policyDistribution(s);
 		}
+
 
 		@Override
 		public boolean definedFor(State s) {

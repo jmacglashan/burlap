@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
@@ -90,12 +90,12 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	/**
 	 * The lowerbound value function initialization
 	 */
-	protected ValueFunctionInitialization		lowerVInit;
+	protected ValueFunction lowerVInit;
 	
 	/**
 	 * The upperbound value function initialization
 	 */
-	protected ValueFunctionInitialization		upperVInit;
+	protected ValueFunction		upperVInit;
 	
 	/**
 	 * the max number of rollouts to perform when planning is started unless the value function margin is small enough. If
@@ -166,7 +166,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 * @param maxRollouts the maximum number of rollouts permitted before planning is forced to terminate. If set to -1 then there is no limit.
 	 */
 	public BoundedRTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory,
-					   ValueFunctionInitialization lowerVInit, ValueFunctionInitialization upperVInit, double maxDiff, int maxRollouts){
+					   ValueFunction lowerVInit, ValueFunction upperVInit, double maxDiff, int maxRollouts){
 		this.DPPInit(domain, gamma, hashingFactory);
 		this.lowerVInit = lowerVInit;
 		this.upperVInit = upperVInit;
@@ -216,7 +216,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	
 	/**
 	 * Use this method to set which value function--the lower bound or upper bound--to use after a planning rollout is complete. Setting this
-	 * value affects which values the {@link #value(State)}, {@link #getQs(State)}, and {@link #getQ(State, Action)} methods returns.
+	 * value affects which values the {@link #value(State)}, {@link #qValues(State)}, and {@link #qValue(State, Action)} methods returns.
 	 * Using the lower bound results in anytime performance.
 	 * @param useLowerBound if true, then the value function is set to use the lower bound after planning. If false, then the upper bound is used.
 	 */
@@ -486,7 +486,7 @@ public class BoundedRTDP extends DynamicProgramming implements Planner {
 	 */
 	protected QValue maxQ(State s){
 		
-		List<QValue> qs = this.getQs(s);
+		List<QValue> qs = this.qValues(s);
 		double max = Double.NEGATIVE_INFINITY;
 		List<QValue> maxQs = new ArrayList<QValue>(qs.size());
 		

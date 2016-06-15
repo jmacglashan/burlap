@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.functionapproximation.FunctionGradient;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -26,15 +27,15 @@ public class BoltzmannPolicyGradient {
 	 * Computes the gradient of a Boltzmann policy using the given differentiable valueFunction.
 	 * @param s the input state of the policy gradient
 	 * @param a the action whose policy probability gradient being queried
-	 * @param planner the differentiable {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} valueFunction
+	 * @param planner the differentiable {@link DifferentiableQFunction} valueFunction
 	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
 	 * @return the gradient of the policy.
 	 */
-	public static FunctionGradient computeBoltzmannPolicyGradient(State s, Action a, QGradientPlanner planner, double beta){
+	public static FunctionGradient computeBoltzmannPolicyGradient(State s, Action a, DifferentiableQFunction planner, double beta){
 
 
 		//get q objects
-		List<QValue> Qs = planner.getQs(s);
+		List<QValue> Qs = ((QProvider)planner).qValues(s);
 		double [] qs = new double[Qs.size()];
 		for(int i = 0; i < Qs.size(); i++){
 			qs[i] = Qs.get(i).q;
@@ -55,7 +56,7 @@ public class BoltzmannPolicyGradient {
 
 		FunctionGradient [] qGradients = new FunctionGradient[qs.length];
 		for(int i = 0; i < qs.length; i++){
-			qGradients[i] = planner.getQGradient(s, Qs.get(i).a).gradient;
+			qGradients[i] = planner.qGradient(s, Qs.get(i).a);
 		}
 
 

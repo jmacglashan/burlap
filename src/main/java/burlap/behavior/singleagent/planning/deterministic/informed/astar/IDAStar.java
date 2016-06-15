@@ -138,7 +138,7 @@ public class IDAStar extends DeterministicPlanner {
 		State s = lastNode.s.s();
 		
 		//get all actions
-		List<Action> gas = this.getAllGroundedActions(s);
+		List<Action> gas = this.applicableActions(s);
 		
 		//generate successor nodes
 		List <PrioritizedSearchNode> successors = new ArrayList<PrioritizedSearchNode>(gas.size());

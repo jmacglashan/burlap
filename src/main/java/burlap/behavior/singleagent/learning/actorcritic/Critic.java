@@ -20,7 +20,7 @@ public interface Critic {
 	 * This method allows the critic to critique actions that are not apart of the domain definition.
 	 * @param a a an action not apart of the of the domain definition that this critic should be able to crique.
 	 */
-	void addNonDomainReferencedAction(ActionType a);
+	void addActionType(ActionType a);
 	
 	
 	/**

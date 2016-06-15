@@ -36,13 +36,14 @@ public class PolicyUtils {
 
 
 	/**
-	 * Returns the probability of the policy taking action a in state s
-	 * @param p the {@link Policy}
+	 * Returns the probability of the policy taking action a in state s by searching for the action
+	 * in the returned policy distribution from the provided {@link EnumerablePolicy}.
+	 * @param p the {@link EnumerablePolicy}
 	 * @param s the state in which the action would be taken
 	 * @param a the action being queried
 	 * @return the probability of this policy taking action ga in state s
 	 */
-	public static double actionProb(Policy p, State s, Action a){
+	public static double actionProbFromEnum(EnumerablePolicy p, State s, Action a){
 		List <ActionProb> probs = p.policyDistribution(s);
 		if(probs == null || probs.isEmpty()){
 			throw new PolicyUndefinedException();
@@ -97,15 +98,15 @@ public class PolicyUtils {
 	/**
 	 * This is a helper method for stochastic policies. If the policy is stochastic, then rather than
 	 * having the policy define both the {@link Policy#action(State)} method and
-	 * {@link Policy#policyDistribution(State)} method,
-	 * the objects needs to only define the {@link Policy#policyDistribution(State)} method and
+	 * {@link EnumerablePolicy#policyDistribution(State)} method,
+	 * the objects needs to only define the {@link EnumerablePolicy#policyDistribution(State)} method and
 	 * the {@link Policy#action(State)} method can simply
 	 * return the result of this method to sample an action.
-	 * @param p the {@link Policy}
+	 * @param p the {@link EnumerablePolicy}
 	 * @param s the input state from which an action should be selected.
 	 * @return an {@link Action} to take
 	 */
-	public static Action sampleFromActionDistribution(Policy p, State s){
+	public static Action sampleFromActionDistribution(EnumerablePolicy p, State s){
 		Random rand = RandomFactory.getMapped(0);
 		double roll = rand.nextDouble();
 		List <ActionProb> probs = p.policyDistribution(s);

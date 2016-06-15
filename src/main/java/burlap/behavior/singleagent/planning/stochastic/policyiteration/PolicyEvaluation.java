@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.stochastic.policyiteration;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
@@ -19,13 +19,13 @@ import java.util.Set;
 /**
  * This class is used to compute the value function under some specified policy. The value function is computed using tabular
  * Value Iteration with the Bellman operator being fixed to the specified policy. After constructing an instance
- * use the {@link #evaluatePolicy(burlap.behavior.policy.Policy, State)} method to evaluate a
+ * use the {@link #evaluatePolicy(EnumerablePolicy, State)} method to evaluate a
  * policy from some initial seed state. You can reuse this class to evaluate different subsequent policies, but doing so
  * will overwrite the value function. If you want to save the value function that was computed for some policy,
  * use the {@link #getCopyOfValueFunction()} method.
  * <p>
- * Alternatively, you can also evaluate a policy with the {@link #evaluatePolicy(burlap.behavior.policy.Policy)} method,
- * but you should have already seeded the state space by having called the {@link #evaluatePolicy(burlap.behavior.policy.Policy, State)}
+ * Alternatively, you can also evaluate a policy with the {@link #evaluatePolicy(EnumerablePolicy)} method,
+ * but you should have already seeded the state space by having called the {@link #evaluatePolicy(EnumerablePolicy, State)}
  * method or the {@link #performReachabilityFrom(State)} method at least once previously,
  * a runtime exception will be thrown.
  *
@@ -65,7 +65,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 	 * @param policy The {@link burlap.behavior.policy.Policy} to evaluate
 	 * @param s the seed initiate state from which to find all reachable states
 	 */
-	public void evaluatePolicy(Policy policy, State s){
+	public void evaluatePolicy(EnumerablePolicy policy, State s){
 		this.performReachabilityFrom(s);
 		this.evaluatePolicy(policy);
 	}
@@ -75,7 +75,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 	 * Computes the value function for the given policy over the states that have been discovered
 	 * @param policy the {@link burlap.behavior.policy.Policy} to evaluate
 	 */
-	public void evaluatePolicy(Policy policy){
+	public void evaluatePolicy(EnumerablePolicy policy){
 
 		if(this.valueFunction.size() == 0){
 			throw new RuntimeException("Cannot evaluate policy, because no states have been expanded. Use the performStateReachability method" +
@@ -153,7 +153,7 @@ public class PolicyEvaluation extends DynamicProgramming {
 
 
 
-			List<Action> actions = this.getAllGroundedActions(sh.s());
+			List<Action> actions = this.applicableActions(sh.s());
 			for(Action a : actions){
 				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s(), a);
 				for(TransitionProb tp : tps){

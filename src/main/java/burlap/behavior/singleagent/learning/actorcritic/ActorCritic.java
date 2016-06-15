@@ -117,10 +117,10 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	
 	
 	@Override
-	public void addNonDomainReferencedAction(ActionType a){
-		super.addNonDomainReferencedAction(a);
+	public void addActionType(ActionType a){
+		super.addActionType(a);
 		this.actor.addNonDomainReferencedAction(a);
-		this.critic.addNonDomainReferencedAction(a);
+		this.critic.addActionType(a);
 		
 	}
 
@@ -150,7 +150,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 			ea.transition(ga, nextState, r);
 
 			CritiqueResult critqiue = this.critic.critiqueAndUpdate(eo);
-			this.actor.updateFromCritqique(critqiue);
+			this.actor.updateFromCritique(critqiue);
 
 			curState = env.currentObservation();
 			timeSteps++;

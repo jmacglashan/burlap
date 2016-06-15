@@ -10,7 +10,7 @@ import burlap.mdp.singleagent.action.ActionType;
  * identical to policies since they effectively specify how the agent should act; in fact, this abstract class extends the Policy
  * class. However, the extra important functionality that an actor must incorporate is the ability to adjust its policy
  * in response to some critique of its behavior. In this class, this functionality should be implemented in the
- * {@link #updateFromCritqique(CritiqueResult)} method.
+ * {@link #updateFromCritique(CritiqueResult)} method.
  * 
  * 
  * 
@@ -23,7 +23,7 @@ public abstract class Actor implements Policy {
 	 * Causes this object to update its behavior is response to a critique of its behavior.
 	 * @param critqiue the critique of the agents behavior represented by a {@link CritiqueResult} object
 	 */
-	public abstract void updateFromCritqique(CritiqueResult critqiue);
+	public abstract void updateFromCritique(CritiqueResult critqiue);
 	
 	/**
 	 * This method allows the actor to utilize actions that are not apart of the domain definition.

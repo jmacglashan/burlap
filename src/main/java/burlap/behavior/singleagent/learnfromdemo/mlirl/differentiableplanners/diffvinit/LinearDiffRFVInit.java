@@ -182,8 +182,7 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 	}
 
 	@Override
-	public FunctionGradient getVGradient(State s){
-
+	public FunctionGradient valueGradient(State s) {
 		double [] vFeatures = this.vinitFvGen.features(s);
 		FunctionGradient gradient = new FunctionGradient.SparseGradient(vFeatures.length);
 
@@ -191,13 +190,8 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 			gradient.put(i+this.rfDim, vFeatures[i]);
 		}
 		return  gradient;
-
 	}
 
-	@Override
-	public FunctionGradient getQGradient(State s, Action ga){
-		return this.getVGradient(s);
-	}
 
 
 
@@ -212,10 +206,6 @@ public class LinearDiffRFVInit implements DifferentiableVInit, DifferentiableRF 
 		return sum;
 	}
 
-	@Override
-	public double qValue(State s, Action a) {
-		return this.value(s);
-	}
 
 	@Override
 	public int numParameters() {

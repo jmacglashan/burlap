@@ -10,9 +10,9 @@ import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
 import burlap.behavior.singleagent.learning.modellearning.LearnedModel;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.Action;
 
 import burlap.mdp.core.state.State;
@@ -38,7 +38,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
+public class ARTDP extends MDPSolver implements QProvider,LearningAgent{
 
 	/**
 	 * The model of the world that is being learned.
@@ -105,7 +105,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param hashingFactory the state hashing factory to use for the tabular model and the planning
 	 * @param vInit the value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit){
+	public ARTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, ValueFunction vInit){
 		
 		this.solverInit(domain, gamma, hashingFactory);
 		
@@ -129,7 +129,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 	 * @param model the model algorithm to use
 	 * @param vInit the constant value function initialization to use; should be optimisitc.
 	 */
-	public ARTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, LearnedModel model, ValueFunctionInitialization vInit){
+	public ARTDP(SADomain domain, double gamma, HashableStateFactory hashingFactory, LearnedModel model, ValueFunction vInit){
 		
 		this.solverInit(domain, gamma, hashingFactory);
 		
@@ -145,7 +145,7 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 	
 	/**
-	 * Sets the policy to the provided one. Should be a policy that operates on a {@link burlap.behavior.valuefunction.QFunction}. Will automatically set its
+	 * Sets the policy to the provided one. Should be a policy that operates on a {@link QProvider}. Will automatically set its
 	 * Q-source to this object.
 	 * @param policy the policy to use.
 	 */
@@ -210,14 +210,14 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 	
 	@Override
-	public List<QValue> getQs(State s) {
-		List<QValue> qs = this.modelPlanner.getQs(s);
+	public List<QValue> qValues(State s) {
+		List<QValue> qs = this.modelPlanner.qValues(s);
 
 		if(this.model instanceof KWIKModel){
 			for(QValue q : qs){
 				//if Q for unknown action, use value initialization of current state
 				if(!((KWIKModel)this.model).transitionIsModeled(s, q.a)){
-					q.q = this.modelPlanner.getValueFunctionInitialization().qValue(s, q.a);
+					q.q = this.modelPlanner.getValueFunctionInitialization().value(s);
 				}
 			}
 		}
@@ -228,14 +228,14 @@ public class ARTDP extends MDPSolver implements QFunction,LearningAgent{
 
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 		
-		QValue q = this.modelPlanner.getQ(s, a);
+		double q = this.modelPlanner.qValue(s, a);
 
 		if(this.model instanceof KWIKModel){
 			//if Q for unknown action, use value initialization of curent state
-			if(!((KWIKModel)this.model).transitionIsModeled(s, q.a)){
-				q.q = this.modelPlanner.getValueFunctionInitialization().qValue(s, q.a);
+			if(!((KWIKModel)this.model).transitionIsModeled(s, a)){
+				q = this.modelPlanner.getValueFunctionInitialization().value(s);
 			}
 		}
 

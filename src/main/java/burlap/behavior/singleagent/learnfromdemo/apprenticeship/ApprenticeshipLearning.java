@@ -1,6 +1,7 @@
 package burlap.behavior.singleagent.learnfromdemo.apprenticeship;
 
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
@@ -10,7 +11,7 @@ import burlap.behavior.singleagent.learnfromdemo.CustomRewardModel;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -229,8 +230,8 @@ public class ApprenticeshipLearning {
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
 			}
-			else if (planner instanceof QFunction) {
-				policy = new GreedyQPolicy((QFunction)planner);
+			else if (planner instanceof QProvider) {
+				policy = new GreedyQPolicy((QProvider)planner);
 			}
 
 			// (5) Compute u^(i) = u(pi^(i))
@@ -346,8 +347,8 @@ public class ApprenticeshipLearning {
 			if (planner instanceof DeterministicPlanner) {
 				policy = new DDPlannerPolicy((DeterministicPlanner)planner);
 			}
-			else if (planner instanceof QFunction) {
-				policy = new GreedyQPolicy((QFunction)planner);
+			else if (planner instanceof QProvider) {
+				policy = new GreedyQPolicy((QProvider)planner);
 			}
 			policyHistory.add(policy);
 
@@ -541,7 +542,7 @@ public class ApprenticeshipLearning {
 	 * @author Stephen Brawner
 	 *
 	 */
-	public static class StationaryRandomDistributionPolicy implements Policy {
+	public static class StationaryRandomDistributionPolicy implements EnumerablePolicy {
 		Map<HashableState, Action> stateActionMapping;
 		List<ActionType> actionTypes;
 		Map<HashableState, List<ActionProb>> stateActionDistributionMapping;
@@ -620,6 +621,11 @@ public class ApprenticeshipLearning {
 		}
 
 		@Override
+		public double actionProb(State s, Action a) {
+			return PolicyUtils.actionProbFromEnum(this, s, a);
+		}
+
+		@Override
 		public List<ActionProb> policyDistribution(State s) {
 			HashableState hashableState = this.hashFactory.hashState(s);
 
@@ -630,10 +636,6 @@ public class ApprenticeshipLearning {
 			return new ArrayList<ActionProb>(this.stateActionDistributionMapping.get(hashableState));
 		}
 
-		@Override
-		public boolean stochastic() {
-			return true;
-		}
 
 		@Override
 		public boolean definedFor(State s) {

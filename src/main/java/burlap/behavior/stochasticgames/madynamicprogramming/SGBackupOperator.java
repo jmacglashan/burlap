@@ -11,7 +11,7 @@ import java.util.Map;
  * is meant to be applied to a next state, takes the set of Q-values for that state for all agents and returns
  * the backup operator. The classic Bellman MDP approach would be o use a max operator, but in stochastic games,
  * different solution concepts require different operators.
- * @author James MacGlashan; adapted from code written by Esha Gosh John Meehan and Michalis Michaelidis
+ * @author James MacGlashan
  *
  */
 public interface SGBackupOperator {

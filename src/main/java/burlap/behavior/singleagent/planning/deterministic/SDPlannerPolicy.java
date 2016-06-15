@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.policy.support.PolicyUndefinedException;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 
 
-public class SDPlannerPolicy implements SolverDerivedPolicy {
+public class SDPlannerPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
 	protected DeterministicPlanner dp;
 	
@@ -67,6 +68,14 @@ public class SDPlannerPolicy implements SolverDerivedPolicy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		if(a.equals(this.action(s))){
+			return 1.;
+		}
+		return 0.;
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
 		Action selectedAction = this.action(s);
 		if(selectedAction == null){
@@ -78,11 +87,6 @@ public class SDPlannerPolicy implements SolverDerivedPolicy {
 		return res;
 	}
 
-
-	@Override
-	public boolean stochastic() {
-		return false;
-	}
 
 
 	@Override

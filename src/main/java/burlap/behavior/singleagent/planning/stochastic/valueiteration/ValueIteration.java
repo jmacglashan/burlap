@@ -201,7 +201,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 			this.valueFunction.put(sh, this.valueInitializer.value(sh.s()));
 			
 
-			List<Action> actions = this.getAllGroundedActions(sh.s());
+			List<Action> actions = this.applicableActions(sh.s());
 			for(Action a : actions){
 				List<TransitionProb> tps = ((FullModel)model).transitions(sh.s(), a);
 				for(TransitionProb tp : tps){

@@ -1,7 +1,7 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
@@ -74,7 +74,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	/**
 	 * The Q-value initialization function to use.
 	 */
-	protected ValueFunctionInitialization	vInit;
+	protected ValueFunction vInit;
 	
 	/**
 	 * The backup operating defining the solution concept to use.
@@ -107,7 +107,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * @param backupOperator the solution concept backup operator to use.
 	 */
 	public void initMAVF(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
-						 double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator){
+						 double discount, HashableStateFactory hashingFactory, ValueFunction vInit, SGBackupOperator backupOperator){
 	
 		this.domain = domain;
 		this.jointModel = domain.getJointActionModel();

@@ -1,9 +1,7 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.policies;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import burlap.behavior.policy.EnumerablePolicy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
@@ -16,6 +14,10 @@ import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.action.JointAction;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 
 /**
  * An epsilon greedy joint policy, in which the joint aciton with the highest aggregate Q-values for each agent is returned a 1-epsilon fraction of the time and a random
@@ -25,7 +27,7 @@ import burlap.mdp.stochasticgames.action.JointAction;
  * @author James MacGlashan
  *
  */
-public class EGreedyMaxWellfare extends MAQSourcePolicy {
+public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePolicy {
 
 	
 	/**
@@ -164,6 +166,11 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
 		
 		List<JointAction> jas = this.getAllJointActions(s);
@@ -207,11 +214,6 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy {
 		
 		return aps;
 		
-	}
-
-	@Override
-	public boolean stochastic() {
-		return this.epsilon > 0. || this.breakTiesRandomly;
 	}
 
 	@Override

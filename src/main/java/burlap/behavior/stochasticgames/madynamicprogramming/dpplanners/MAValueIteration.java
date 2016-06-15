@@ -2,7 +2,8 @@ package burlap.behavior.stochasticgames.madynamicprogramming.dpplanners;
 
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.StateTransitionProb;
@@ -72,7 +73,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	public MAValueIteration(SGDomain domain, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 							double discount, HashableStateFactory hashingFactory, double qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, null, jointRewardFunction, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit), backupOperator);
+		this.initMAVF(domain, null, jointRewardFunction, terminalFunction, discount, hashingFactory, new ConstantValueFunction(qInit), backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -92,7 +93,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
 	public MAValueIteration(SGDomain domain, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
-							double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+							double discount, HashableStateFactory hashingFactory, ValueFunction qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
 		this.initMAVF(domain, null, jointRewardFunction, terminalFunction, discount, hashingFactory, qInit, backupOperator);
 		this.maxDelta = maxDelta;
@@ -118,7 +119,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 							double discount, HashableStateFactory hashingFactory, double vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
-		this.initMAVF(domain, agentDefinitions, jointRewardFunction, terminalFunction, discount, hashingFactory, new ValueFunctionInitialization.ConstantValueFunctionInitialization(vInit), backupOperator);
+		this.initMAVF(domain, agentDefinitions, jointRewardFunction, terminalFunction, discount, hashingFactory, new ConstantValueFunction(vInit), backupOperator);
 		this.maxDelta = maxDelta;
 		this.maxIterations = maxIterations;
 		
@@ -140,7 +141,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
 	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
-							double discount, HashableStateFactory hashingFactory, ValueFunctionInitialization vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
+							double discount, HashableStateFactory hashingFactory, ValueFunction vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
 		this.initMAVF(domain, agentDefinitions, jointRewardFunction, terminalFunction, discount, hashingFactory, vInit, backupOperator);
 		this.maxDelta = maxDelta;

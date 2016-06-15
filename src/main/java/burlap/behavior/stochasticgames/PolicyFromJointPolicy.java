@@ -1,6 +1,7 @@
 package burlap.behavior.stochasticgames;
 
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.EnumerablePolicy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.datastructures.HashedAggregator;
 import burlap.mdp.core.Action;
@@ -30,7 +31,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class PolicyFromJointPolicy implements Policy {
+public class PolicyFromJointPolicy implements EnumerablePolicy {
 
 	/**
 	 * The underlying joint policy from which actions are selected.
@@ -143,9 +144,18 @@ public class PolicyFromJointPolicy implements Policy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
-		
-		List<ActionProb> jaProbs = this.jointPolicy.policyDistribution(s);
+
+		if(!(jointPolicy instanceof EnumerablePolicy)){
+			throw new RuntimeException("Joint policy does not implement EnumerablePolicy, cannot return policy distribution.");
+		}
+
+		List<ActionProb> jaProbs = ((EnumerablePolicy)this.jointPolicy).policyDistribution(s);
 		HashedAggregator<SGAgentAction> marginalized = new HashedAggregator<SGAgentAction>();
 		for(ActionProb ap : jaProbs){
 			JointAction ja = (JointAction)ap.ga;
@@ -163,10 +173,6 @@ public class PolicyFromJointPolicy implements Policy {
 		return finalProbs;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return this.jointPolicy.stochastic();
-	}
 
 	@Override
 	public boolean definedFor(State s) {

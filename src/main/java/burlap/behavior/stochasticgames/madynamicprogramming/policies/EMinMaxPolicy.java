@@ -1,5 +1,6 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.policies;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.stochasticgames.JointPolicy;
@@ -27,7 +28,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class EMinMaxPolicy extends MAQSourcePolicy {
+public class EMinMaxPolicy extends MAQSourcePolicy implements EnumerablePolicy {
 
 	/**
 	 * The multi-agent q-source provider
@@ -86,6 +87,11 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 	@Override
 	public Action action(State s) {
 		return PolicyUtils.sampleFromActionDistribution(this, s);
+	}
+
+	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
 	}
 
 	@Override
@@ -148,10 +154,6 @@ public class EMinMaxPolicy extends MAQSourcePolicy {
 		return aps;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public boolean definedFor(State s) {

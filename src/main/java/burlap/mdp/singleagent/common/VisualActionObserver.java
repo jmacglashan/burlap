@@ -1,15 +1,14 @@
 package burlap.mdp.singleagent.common;
 
 import burlap.mdp.core.Action;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
-import burlap.mdp.singleagent.environment.extensions.EnvironmentObserver;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.environment.extensions.EnvironmentObserver;
 import burlap.visualizer.Visualizer;
 
 import javax.swing.*;
@@ -45,7 +44,7 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 	/**
 	 * The domain this visualizer is rendering
 	 */
-	protected Domain			domain;
+	protected OODomain			domain;
 	
 	/**
 	 * The visualizer that will render states
@@ -86,27 +85,46 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 	 * so long as the input {@link burlap.visualizer.Visualizer} has a set {@link burlap.visualizer.StateActionRenderLayer}. Default value is false.
 	 */
 	protected boolean			repaintOnActionInitiation = false;
-	
-	
+
+
+	/**
+	 * Initializes with a visualizer of size 800x800
+	 * @param painter the visualizer for states
+	 */
+	public VisualActionObserver(Visualizer painter){
+		this(null, painter);
+	}
+
+	/**
+	 * Initializes
+	 * @param painter the visualizer for states
+	 * @param cWidth the canvas width
+	 * @param cHeight the canvas height
+	 */
+	public VisualActionObserver(Visualizer painter, int cWidth, int cHeight){
+		this(null, painter, cWidth, cHeight);
+	}
+
+
 	/**
 	 * Initializes with a visualizer size of 800x800
-	 * @param domain the domain that is being visualized
+	 * @param domain the {@link OODomain} holding the propositional functions for the propositional function viewer
 	 * @param painter the painter for rendering states
 	 */
-	public VisualActionObserver(Domain domain, Visualizer painter){
+	public VisualActionObserver(OODomain domain, Visualizer painter){
 		this(domain, painter, 800, 800);
 	}
 	
 	
 	
 	/**
-	 * Initializes with a visualizer
-	 * @param domain the domain that is being visualized
+	 * Initializes
+	 * @param domain the {@link OODomain} holding the propositional functions for the propositional function viewer
 	 * @param painter the painter for rendering states
 	 * @param cWidth the width of the state visualization area
 	 * @param cHeight the height of the state visualization area
 	 */
-	public VisualActionObserver(Domain domain, Visualizer painter, int cWidth, int cHeight){
+	public VisualActionObserver(OODomain domain, Visualizer painter, int cWidth, int cHeight){
 		this.domain = domain;
 		this.painter = painter;
 		this.cWidth = cWidth;
@@ -163,9 +181,11 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 		
 		Container bottomContainer = new Container();
 		bottomContainer.setLayout(new BorderLayout());
-		bottomContainer.add(propViewer, BorderLayout.NORTH);
-		
-		getContentPane().add(bottomContainer, BorderLayout.SOUTH);
+		if(this.domain != null) {
+			bottomContainer.add(propViewer, BorderLayout.NORTH);
+			getContentPane().add(bottomContainer, BorderLayout.SOUTH);
+		}
+
 		getContentPane().add(painter, BorderLayout.CENTER);
 		
 		pack();
@@ -240,7 +260,7 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 	
 	private void updatePropTextArea(State s){
 
-		if(!(domain instanceof OODomain) || !(s instanceof OOState)){
+		if(domain == null || !(s instanceof OOState)){
 			return ;
 		}
 

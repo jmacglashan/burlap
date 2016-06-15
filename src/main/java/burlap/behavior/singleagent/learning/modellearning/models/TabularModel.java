@@ -17,8 +17,9 @@ import java.util.*;
 /**
  * A tabular model using frequencies to model the transition dynamics.
  * 
- * 
- * @author James MacGlashan; adapted from code provided by Takehiro Oyakawa and Chan Trau
+ * <p>
+ * Acknowledgements: Takehiro Oyakawa and Chan Trau for code on which this was based.
+ * @author James MacGlashan
  *
  */
 public class TabularModel implements KWIKModel {

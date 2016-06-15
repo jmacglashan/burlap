@@ -1,30 +1,26 @@
 package burlap.behavior.stochasticgames.agents.maql;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
-import burlap.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
-import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
+import burlap.behavior.stochasticgames.madynamicprogramming.*;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.MAQLControlledQSourceMap;
-import burlap.behavior.stochasticgames.madynamicprogramming.JAQValue;
-import burlap.behavior.stochasticgames.madynamicprogramming.MAQSourcePolicy;
-import burlap.behavior.stochasticgames.madynamicprogramming.MultiAgentQSourceProvider;
-import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent.HashBackedQSource;
-import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyMaxWellfare;
+import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.action.SGAgentAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.world.World;
+import burlap.statehashing.HashableStateFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -50,8 +46,9 @@ import burlap.mdp.stochasticgames.world.World;
  * in the world, and that this agent is the Q-source provider of the joint policy {@link MAQSourcePolicy}. If the set joint policy
  * is not an instance of {@link MAQSourcePolicy}, then an exception will be thrown.
  * 
- * 
- * @author James MacGlashan; adapted from code provided by Esha Gosh, John Meehan, Michalis Michaelidis
+ * <p>
+ * Acknowledgements: Esha Gosh, John Meehan, Michalis Michaelidis for code on which this was based.
+ * @author James MacGlashan
  *
  */
 public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourceProvider{
@@ -86,7 +83,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	/**
 	 * The Q-value initialization to use
 	 */
-	protected ValueFunctionInitialization				qInit;
+	protected QFunction 								qInit;
 	
 	/**
 	 * The state hashing factory used to index Q-values by state
@@ -144,7 +141,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
 		this.hashingFactory = hashFactory;
-		this.qInit = new ValueFunctionInitialization.ConstantValueFunctionInitialization(qInit);
+		this.qInit = new ConstantValueFunction(qInit);
 		this.backupOperator = backupOperator;
 		this.queryOtherAgentsQSource = queryOtherAgentsForTheirQValues;
 		
@@ -166,7 +163,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 */
-	public MultiAgentQLearning(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, ValueFunctionInitialization qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
+	public MultiAgentQLearning(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, QFunction qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = learningRate;

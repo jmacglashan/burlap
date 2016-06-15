@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgames.madynamicprogramming;
 
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
@@ -28,22 +28,22 @@ public interface QSourceForSingleAgent {
 	 * @param ja the Q-value's associated joint aciton
 	 * @return a {@link JAQValue} for the given state and joint action.
 	 */
-	public JAQValue getQValueFor(State s, JointAction ja);
+	JAQValue getQValueFor(State s, JointAction ja);
 	
 	
 	
 	/**
 	 * An implementation of the {@link QSourceForSingleAgent} interface that has Q-values backed by hashmaps. Specifically, a map from
-	 * hashed stats to a map from joint actions to stored {@link JAQValue} objects. This object also takes as {@link ValueFunctionInitialization}
-	 * object so that Q-values for state-jointaction pairs not previously stored can be intitialized.
+	 * hashed stats to a map from joint actions to stored {@link JAQValue} objects. This object also takes as {@link QFunction}
+	 * object so that Q-values for state-joint-action pairs not previously stored can be initialized.
 	 * @author James MacGlashan
 	 *
 	 */
-	public class HashBackedQSource implements QSourceForSingleAgent{
+	class HashBackedQSource implements QSourceForSingleAgent{
 
 		protected HashMap<HashableState, Map<JointAction, JAQValue>>	qValues;
 		protected HashableStateFactory hashingFactory;
-		protected ValueFunctionInitialization							qInit;		
+		protected QFunction qInit;
 		
 		
 		
@@ -52,7 +52,7 @@ public interface QSourceForSingleAgent {
 		 * @param hashingFactory the state hashing factory used to index states
 		 * @param qInit the value function intitliazaiton to use for previously unqueried states
 		 */
-		public HashBackedQSource(HashableStateFactory hashingFactory, ValueFunctionInitialization qInit){
+		public HashBackedQSource(HashableStateFactory hashingFactory, QFunction qInit){
 			this.qValues = new HashMap<HashableState, Map<JointAction,JAQValue>>();
 			this.hashingFactory = hashingFactory;
 			this.qInit = qInit;

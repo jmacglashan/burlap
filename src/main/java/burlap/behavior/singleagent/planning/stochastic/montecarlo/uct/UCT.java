@@ -7,7 +7,7 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTStateNode.UCTStateConstructor;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
@@ -25,7 +25,7 @@ import java.util.*;
  * An implementation of UCT [1]. This class can be augmented with a goal state specification (using a {@link burlap.mdp.auxiliary.stateconditiontest.StateConditionTest})
  * that will cause the planning algorithm to terminate early once it has found a path to the goal. This may be useful if randomly finding the goal state is rare.
  * <p>
- * The class also implements the {@link burlap.behavior.valuefunction.QFunction} interface. However, it will only return the Q-value
+ * The class also implements the {@link QProvider} interface. However, it will only return the Q-value
  * for a state if that state is the root node of the tree. If it is not the root node of the tree, then it will automatically reset the planning results
  * and replan from that state as the root node and then return the result. This allows the client to use a {@link burlap.behavior.policy.GreedyQPolicy}
  * with this valueFunction in which it replans with each step in the world, thereby forcing the Q-values for every state to be for the same horizon.
@@ -41,7 +41,7 @@ import java.util.*;
  * @author James MacGlashan
  *
  */
-public class UCT extends MDPSolver implements Planner, QFunction {
+public class UCT extends MDPSolver implements Planner, QProvider {
 
 	protected List<Map<HashableState, UCTStateNode>> 			stateDepthIndex;
 	protected Map <HashableState, List <UCTStateNode>>			statesToStateNodes;
@@ -170,7 +170,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	}
 
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 
 		//if we haven't done any planning, then do so now
 		if(this.root == null){
@@ -194,7 +194,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 
 		//if we haven't done any planning, then do so now
 		if(this.root == null){
@@ -210,7 +210,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 
 		for(UCTActionNode act : this.root.actionNodes){
 			if(act.action.equals(a)){
-				return new QValue(s, a, act.averageReturn());
+				return act.averageReturn();
 			}
 		}
 
@@ -222,7 +222,7 @@ public class UCT extends MDPSolver implements Planner, QFunction {
 		if(model.terminal(s)){
 			return 0.;
 		}
-		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		return Helper.maxQ(this, s);
 	}
 
 	@Override

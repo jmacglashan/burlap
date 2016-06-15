@@ -8,9 +8,10 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.BellmanOperator;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -49,8 +50,8 @@ import java.util.Map;
  * of sampled states the further down in the tree it is according to C_i = C_0 * gamma^(2i), where i is the depth of the node from the root and gamma is the discount
  * factor.
  * <p>
- * By default, the state value of leafs will be set to 0, but this value can be changed by providing a {@link ValueFunctionInitialization} object via the
- * {@link #setValueForLeafNodes(ValueFunctionInitialization)} method. Using a non-zero heuristic value may reduce the need for a large tree height.
+ * By default, the state value of leafs will be set to 0, but this value can be changed by providing a {@link ValueFunction} object via the
+ * {@link #setValueForLeafNodes(ValueFunction)} method. Using a non-zero heuristic value may reduce the need for a large tree height.
  * <p>
  * This class will work with {@link Option}s, but including options will necessarily *increase* the computational complexity, so they are not recommended.
  * <p>
@@ -70,7 +71,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class SparseSampling extends MDPSolver implements QFunction, Planner {
+public class SparseSampling extends MDPSolver implements QProvider, Planner {
 
 	/**
 	 * The height of the tree
@@ -95,7 +96,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	/**
 	 * The state value used for leaf nodes; default is zero.
 	 */
-	protected ValueFunctionInitialization vinit = new ValueFunctionInitialization.ConstantValueFunctionInitialization();
+	protected ValueFunction vinit = new ConstantValueFunction();
 	
 	
 	/**
@@ -253,10 +254,10 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	}
 	
 	/**
-	 * Sets the {@link ValueFunctionInitialization} object to use for settting the value of leaf nodes.
-	 * @param vinit the {@link ValueFunctionInitialization} object to use for settting the value of leaf nodes.
+	 * Sets the {@link ValueFunction} object to use for settting the value of leaf nodes.
+	 * @param vinit the {@link ValueFunction} object to use for settting the value of leaf nodes.
 	 */
-	public void setValueForLeafNodes(ValueFunctionInitialization vinit){
+	public void setValueForLeafNodes(ValueFunction vinit){
 		this.vinit = vinit;
 	}
 
@@ -347,7 +348,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	
 	
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 		
 		HashableState sh = this.hashingFactory.hashState(s);
 		List<QValue> qs = this.rootLevelQValues.get(sh);
@@ -360,7 +361,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 		
 		HashableState sh = this.hashingFactory.hashState(s);
 		List<QValue> qs = this.rootLevelQValues.get(sh);
@@ -371,12 +372,11 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		
 		for(QValue qv : qs){
 			if(qv.a.equals(a)){
-				return qv;
+				return qv.q;
 			}
 		}
 		
-		
-		return null;
+		throw new RuntimeException("Q-value for action " + a.toString() +" does not exist.");
 	}
 
 
@@ -385,7 +385,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		if(model.terminal(s)){
 			return 0.;
 		}
-		List<QValue> Qs = this.getQs(s);
+		List<QValue> Qs = this.qValues(s);
 		double [] qs = new double[Qs.size()];
 		for(int i = 0; i < Qs.size(); i++){
 			qs[i] = Qs.get(i).q;
@@ -478,7 +478,7 @@ public class SparseSampling extends MDPSolver implements QFunction, Planner {
 		 * @return a {@link List} of the estiamted Q-values for each action.
 		 */
 		public List<QValue> estimateQs(){
-			List<Action> gas = SparseSampling.this.getAllGroundedActions(this.sh.s());
+			List<Action> gas = SparseSampling.this.applicableActions(this.sh.s());
 			List<QValue> qs = new ArrayList<QValue>(gas.size());
 			for(Action ga : gas){
 				if(this.height <= 0){

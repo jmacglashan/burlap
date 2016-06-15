@@ -2,7 +2,7 @@ package burlap.behavior.policy;
 
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.mdp.core.Action;
@@ -20,9 +20,9 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class BoltzmannQPolicy implements SolverDerivedPolicy {
+public class BoltzmannQPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
-	protected QFunction qplanner;
+	protected QProvider qplanner;
 	double								temperature;
 	
 	
@@ -45,7 +45,7 @@ public class BoltzmannQPolicy implements SolverDerivedPolicy {
 	 * @param planner the q-computable valueFunction to use.
 	 * @param temperature the positive temperature value to use
 	 */
-	public BoltzmannQPolicy(QFunction planner, double temperature){
+	public BoltzmannQPolicy(QProvider planner, double temperature){
 		this.qplanner = planner;
 		this.temperature = temperature;
 	}
@@ -56,8 +56,13 @@ public class BoltzmannQPolicy implements SolverDerivedPolicy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
-		List<QValue> qValues = this.qplanner.getQs(s);
+		List<QValue> qValues = this.qplanner.qValues(s);
 		return this.getActionDistributionForQValues(s, qValues);
 	}
 
@@ -83,18 +88,14 @@ public class BoltzmannQPolicy implements SolverDerivedPolicy {
 		return res;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public void setSolver(MDPSolverInterface solver) {
-		if(!(solver instanceof QFunction)){
+		if(!(solver instanceof QProvider)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction) solver;
+		this.qplanner = (QProvider) solver;
 		
 	}
 

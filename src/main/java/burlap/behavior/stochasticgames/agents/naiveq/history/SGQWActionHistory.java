@@ -54,7 +54,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
 		
 		SGAgentAction myAction = jointAction.action(worldAgentName);
-		QValue qe = this.getQ(curHState, myAction);
+		QValue qe = this.storedQ(curHState, myAction);
 
 
 		

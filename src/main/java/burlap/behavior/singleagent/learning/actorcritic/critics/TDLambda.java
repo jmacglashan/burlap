@@ -7,8 +7,8 @@ import burlap.behavior.singleagent.learning.actorcritic.Critic;
 import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.statehashing.HashableState;
@@ -33,7 +33,7 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 	/**
 	 * Defines how the value function is initialized for unvisited states
 	 */
-	protected ValueFunctionInitialization			vInitFunction;
+	protected ValueFunction							vInitFunction;
 	
 	/**
 	 * Indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
@@ -71,7 +71,7 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 		this.solverInit(null, gamma, hashingFactory);
 		
 		this.learningRate = new ConstantLR(learningRate);
-		vInitFunction = new ValueFunctionInitialization.ConstantValueFunctionInitialization(vinit);
+		vInitFunction = new ConstantValueFunction(vinit);
 		this.lambda = lambda;
 		
 		
@@ -88,7 +88,7 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 	 * @param vinit a method of initializing the value function for previously unvisited states.
 	 * @param lambda indicates the strength of eligibility traces. Use 1 for Monte-carlo-like traces and 0 for single step backups
 	 */
-	public TDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunctionInitialization vinit, double lambda) {
+	public TDLambda(double gamma, HashableStateFactory hashingFactory, double learningRate, ValueFunction vinit, double lambda) {
 		this.gamma = gamma;
 		this.hashingFactory = hashingFactory;
 		

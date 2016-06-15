@@ -34,7 +34,7 @@ public interface MDPSolverInterface {
 
 	/**
 	 * Sets the domain of this solver. NOTE: this will also reset the actions this solver uses to the actions of the
-	 * provided domain. If you have previously added non-domain referenced actions through the {@link #addNonDomainReferencedAction(ActionType)}
+	 * provided domain. If you have previously added non-domain referenced actions through the {@link #addActionType(ActionType)}
 	 * method, you will have to do so again.
 	 * @param domain the domain this solver should use.
 	 */
@@ -65,7 +65,7 @@ public interface MDPSolverInterface {
 	 * should be added using this method.
 	 * @param a the action to add to the solver
 	 */
-	void addNonDomainReferencedAction(ActionType a);
+	void addActionType(ActionType a);
 
 	/**
 	 * Sets the action set the solver should use.

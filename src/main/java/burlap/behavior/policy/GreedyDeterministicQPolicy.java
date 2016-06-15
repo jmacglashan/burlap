@@ -2,7 +2,7 @@ package burlap.behavior.policy;
 
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -16,9 +16,9 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
+public class GreedyDeterministicQPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
-	protected QFunction qplanner;
+	protected QProvider qplanner;
 	
 	public GreedyDeterministicQPolicy() {
 		qplanner = null;
@@ -28,25 +28,25 @@ public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
 	 * Initializes with a QComputablePlanner
 	 * @param qplanner the QComputablePlanner to use
 	 */
-	public GreedyDeterministicQPolicy(QFunction qplanner){
+	public GreedyDeterministicQPolicy(QProvider qplanner){
 		this.qplanner = qplanner;
 	}
 	
 	@Override
 	public void setSolver(MDPSolverInterface solver){
 		
-		if(!(solver instanceof QFunction)){
+		if(!(solver instanceof QProvider)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction) solver;
+		this.qplanner = (QProvider) solver;
 	}
 	
 
 	@Override
 	public Action action(State s) {
 		
-		List<QValue> qValues = this.qplanner.getQs(s);
+		List<QValue> qValues = this.qplanner.qValues(s);
 		double maxQV = Double.NEGATIVE_INFINITY;
 		QValue maxQ = null;
 		for(QValue q : qValues){
@@ -60,14 +60,18 @@ public class GreedyDeterministicQPolicy implements SolverDerivedPolicy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		if(this.action(s).equals(a)){
+			return 1.;
+		}
+		return 0.;
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
 		return PolicyUtils.deterministicPolicyDistribution(this, s);
 	}
 
-	@Override
-	public boolean stochastic() {
-		return false;
-	}
 	
 	@Override
 	public boolean definedFor(State s) {

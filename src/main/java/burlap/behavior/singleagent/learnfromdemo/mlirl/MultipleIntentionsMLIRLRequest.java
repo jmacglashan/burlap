@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl;
 
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
+import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableQFunction;
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.singleagent.SADomain;
@@ -23,7 +24,7 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 	protected int k;
 
 	/**
-	 * A {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory} that produces {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} objects.
+	 * A {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory} that produces {@link DifferentiableQFunction} objects.
 	 */
 	protected QGradientPlannerFactory plannerFactory;
 
@@ -31,7 +32,7 @@ public class MultipleIntentionsMLIRLRequest extends MLIRLRequest {
 	/**
 	 * Initializes
 	 * @param domain the domain of the problem
-	 * @param plannerFactory A {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory} that produces {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlanner} objects.
+	 * @param plannerFactory A {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.QGradientPlannerFactory} that produces {@link DifferentiableQFunction} objects.
 	 * @param expertEpisodes the expert trajectories
 	 * @param rf the {@link burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF} model to use.
 	 * @param k the number of clusters

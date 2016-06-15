@@ -1,5 +1,6 @@
 package burlap.behavior.singleagent.planning.deterministic;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
@@ -21,7 +22,7 @@ import java.util.List;
  * answer
  * @author James MacGlashan
  */
-public class DDPlannerPolicy implements SolverDerivedPolicy {
+public class DDPlannerPolicy implements SolverDerivedPolicy, EnumerablePolicy {
 
 	protected DeterministicPlanner dp;
 	
@@ -57,6 +58,14 @@ public class DDPlannerPolicy implements SolverDerivedPolicy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		if(this.action(s).equals(a)){
+			return 1.;
+		}
+		return 0.;
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
 		Action selectedAction = this.action(s);
 		List <ActionProb> res = new ArrayList<ActionProb>();
@@ -66,10 +75,6 @@ public class DDPlannerPolicy implements SolverDerivedPolicy {
 	}
 
 
-	@Override
-	public boolean stochastic() {
-		return false;
-	}
 
 	@Override
 	public boolean definedFor(State s) {

@@ -1,5 +1,6 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.policies;
 
+import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.stochasticgames.JointPolicy;
@@ -26,7 +27,7 @@ import java.util.List;
  * @author James MacGlashan
  *
  */
-public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
+public class ECorrelatedQJointPolicy extends MAQSourcePolicy implements EnumerablePolicy {
 
 	
 	/**
@@ -92,6 +93,11 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
 		
 		List<String> agents = new ArrayList<String>(this.agentsInJointPolicy.keySet());
@@ -145,10 +151,6 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy {
 		return aps;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 
 	@Override
 	public boolean definedFor(State s) {

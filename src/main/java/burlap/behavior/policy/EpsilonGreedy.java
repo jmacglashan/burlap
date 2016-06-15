@@ -2,7 +2,7 @@ package burlap.behavior.policy;
 
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.MDPSolverInterface;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
@@ -22,9 +22,9 @@ import java.util.Random;
  * @author James MacGlashan
  *
  */
-public class EpsilonGreedy implements SolverDerivedPolicy {
+public class EpsilonGreedy implements SolverDerivedPolicy, EnumerablePolicy {
 
-	protected QFunction qplanner;
+	protected QProvider qplanner;
 	protected double					epsilon;
 	protected Random 					rand;
 	
@@ -44,7 +44,7 @@ public class EpsilonGreedy implements SolverDerivedPolicy {
 	 * @param planner the QComputablePlanner to use
 	 * @param epsilon the probability of taking a random action.
 	 */
-	public EpsilonGreedy(QFunction planner, double epsilon) {
+	public EpsilonGreedy(QProvider planner, double epsilon) {
 		qplanner = planner;
 		this.epsilon = epsilon;
 		rand = RandomFactory.getMapped(0);
@@ -70,18 +70,18 @@ public class EpsilonGreedy implements SolverDerivedPolicy {
 	@Override
 	public void setSolver(MDPSolverInterface solver){
 		
-		if(!(solver instanceof QFunction)){
+		if(!(solver instanceof QProvider)){
 			throw new RuntimeErrorException(new Error("Planner is not a QComputablePlanner"));
 		}
 		
-		this.qplanner = (QFunction) solver;
+		this.qplanner = (QProvider) solver;
 	}
 	
 	@Override
 	public Action action(State s) {
 		
 		
-		List<QValue> qValues = this.qplanner.getQs(s);
+		List<QValue> qValues = this.qplanner.qValues(s);
 		
 		
 		double roll = rand.nextDouble();
@@ -113,9 +113,14 @@ public class EpsilonGreedy implements SolverDerivedPolicy {
 	}
 
 	@Override
+	public double actionProb(State s, Action a) {
+		return PolicyUtils.actionProbFromEnum(this, s, a);
+	}
+
+	@Override
 	public List<ActionProb> policyDistribution(State s) {
 		
-		List<QValue> qValues = this.qplanner.getQs(s);
+		List<QValue> qValues = this.qplanner.qValues(s);
 		
 		List <ActionProb> dist = new ArrayList<ActionProb>(qValues.size());
 		double maxQ = Double.NEGATIVE_INFINITY;
@@ -142,10 +147,6 @@ public class EpsilonGreedy implements SolverDerivedPolicy {
 		return dist;
 	}
 
-	@Override
-	public boolean stochastic() {
-		return true;
-	}
 	
 	@Override
 	public boolean definedFor(State s) {

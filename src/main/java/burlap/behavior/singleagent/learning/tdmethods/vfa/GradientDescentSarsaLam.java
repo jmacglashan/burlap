@@ -13,7 +13,7 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
@@ -50,7 +50,7 @@ import java.util.*;
  * 2. 2. Sutton, Richard S., Doina Precup, and Satinder Singh. "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning." Artificial intelligence 112.1 (1999): 181-211.
  *
  */
-public class GradientDescentSarsaLam extends MDPSolver implements QFunction, LearningAgent, Planner {
+public class GradientDescentSarsaLam extends MDPSolver implements QProvider, LearningAgent, Planner {
 	
 	
 	/**
@@ -375,7 +375,7 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 			//manage replacing traces by zeroing out features for actions
 			//also zero out selected action, since it will be put back in later code
 			if(this.useReplacingTraces){
-				List<Action> allActions = this.getAllGroundedActions(curState);
+				List<Action> allActions = this.applicableActions(curState);
 				for(Action oa : allActions){
 
 					//get non-zero parameters and zero them
@@ -457,8 +457,8 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 
 
 	@Override
-	public List<QValue> getQs(State s) {
-		List<Action> gas = this.getAllGroundedActions(s);
+	public List<QValue> qValues(State s) {
+		List<Action> gas = this.applicableActions(s);
 		List <QValue> qs = new ArrayList<QValue>(gas.size());
 
 		for(Action ga : gas){
@@ -469,13 +469,13 @@ public class GradientDescentSarsaLam extends MDPSolver implements QFunction, Lea
 	}
 
 	@Override
-	public QValue getQ(State s, Action a) {
-		return new QValue(s, a, this.vfa.evaluate(s, a));
+	public double qValue(State s, Action a) {
+		return this.vfa.evaluate(s, a);
 	}
 
 	@Override
 	public double value(State s) {
-		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		return Helper.maxQ(this, s);
 	}
 	
 

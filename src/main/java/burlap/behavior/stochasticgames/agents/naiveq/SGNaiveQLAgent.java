@@ -4,9 +4,7 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.QValue;
-import burlap.behavior.valuefunction.ValueFunctionInitialization;
+import burlap.behavior.valuefunction.*;
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.core.Action;
@@ -33,7 +31,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class SGNaiveQLAgent extends SGAgent implements QFunction {
+public class SGNaiveQLAgent extends SGAgent implements QProvider {
 
 	/**
 	 * The tabular map from (hashed) states to the list of Q-values for each action in those states
@@ -66,7 +64,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	/**
 	 * Defines how q-values are initialized
 	 */
-	protected ValueFunctionInitialization								qInit;
+	protected QFunction 												qInit;
 	
 
 	/**
@@ -98,7 +96,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
-		this.qInit = new ValueFunctionInitialization.ConstantValueFunctionInitialization(0.);
+		this.qInit = new ConstantValueFunction(0.);
 		
 		this.qMap = new HashMap<HashableState, List<QValue>>();
 		stateRepresentations = new HashMap<HashableState, State>();
@@ -121,7 +119,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
 		this.hashFactory = hashFactory;
-		this.qInit = new ValueFunctionInitialization.ConstantValueFunctionInitialization(defaultQ);
+		this.qInit = new ConstantValueFunction(defaultQ);
 		
 		this.qMap = new HashMap<HashableState, List<QValue>>();
 		stateRepresentations = new HashMap<HashableState, State>();
@@ -138,7 +136,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @param qInitizalizer the Q-value initialization method
 	 * @param hashFactory the state hashing factory
 	 */
-	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, ValueFunctionInitialization qInitizalizer, HashableStateFactory hashFactory) {
+	public SGNaiveQLAgent(SGDomain d, double discount, double learningRate, QFunction qInitizalizer, HashableStateFactory hashFactory) {
 		this.init(d);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
@@ -168,7 +166,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		this.policy = policy;
 	}
 	
-	public void setQValueInitializer(ValueFunctionInitialization qInit){
+	public void setQValueInitializer(QFunction qInit){
 		this.qInit = qInit;
 	}
 	
@@ -198,7 +196,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 		SGAgentAction myAction = jointAction.action(worldAgentName);
 
 		double r = jointReward.get(worldAgentName);
-		QValue qv = this.getQ(s, myAction);
+		QValue qv = this.storedQ(s, myAction);
 		
 		double maxQ = 0.;
 		if(!isTerminal){
@@ -227,7 +225,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 	 * @return maximum numeric Q-value for a given state
 	 */
 	protected double getMaxQValue(State s){
-		List<QValue> qs = this.getQs(s);
+		List<QValue> qs = this.qValues(s);
 		double maxQ = Double.NEGATIVE_INFINITY;
 		for(QValue q : qs){
 			maxQ = Math.max(maxQ, q.q);
@@ -249,7 +247,7 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 
 
 	@Override
-	public List<QValue> getQs(State s) {
+	public List<QValue> qValues(State s) {
 
 		List<SGAgentAction> gsas = SGActionUtils.allApplicableActionsForTypes(agentType.actions, worldAgentName, s);
 		
@@ -305,17 +303,23 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 
 	@Override
 	public double value(State s) {
-		return QFunction.QFunctionHelper.getOptimalValue(this, s);
+		return Helper.maxQ(this, s);
 	}
 
 
 	@Override
-	public QValue getQ(State s, Action a) {
+	public double qValue(State s, Action a) {
 		
+		return this.storedQ(s, a).q;
+		
+	}
+
+	protected QValue storedQ(State s, Action a){
+
 		SGAgentAction gsa = (SGAgentAction)a;
-		
+
 		HashableState shq = this.stateHash(s);
-		
+
 		State storedRep = stateRepresentations.get(shq);
 		if(storedRep == null){
 			//no existing entry so we can create it
@@ -327,20 +331,20 @@ public class SGNaiveQLAgent extends SGAgent implements QFunction {
 			return q;
 		}
 
-		
+
 		List <QValue> entries = qMap.get(shq);
 		for(QValue qe : entries){
 			if(qe.a.equals(gsa)){
 				return qe;
 			}
 		}
-		
+
 		//if we got here then there are no entries for this action
 		QValue qe = new QValue(shq.s(), gsa, this.qInit.qValue(shq.s(), gsa));
 		entries.add(qe);
-		
+
 		return qe;
-		
+
 	}
 	
 	
