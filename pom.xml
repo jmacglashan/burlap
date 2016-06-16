@@ -107,14 +107,6 @@
       <version>1.13</version>
     </dependency>
 
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.weka</groupId>
-      <artifactId>weka-stable</artifactId>
-      <version>3.6.12</version>
-    </dependency>
-
-
     <dependency>
       <groupId>net.sf.jopt-simple</groupId>
       <artifactId>jopt-simple</artifactId>
