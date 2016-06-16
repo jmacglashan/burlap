@@ -11,7 +11,7 @@ package burlap.mdp.core;
 import burlap.mdp.core.state.State;
 
 /**
- * And interface for defining terminal states of an MDP.
+ * An interface for defining terminal states of an MDP.
  * @author James MacGlashan
  *
  */
