@@ -47,7 +47,7 @@ public class ConstantOOSGStateGenerator implements SGStateGenerator{
 		for(int i = 0; i < agentObs.size(); i++){
 			ObjectInstance aob = agentObs.get(i);
 			SGAgent agent = agents.get(i);
-			renamed.renameObject(aob.name(), agent.getAgentName());
+			renamed.renameObject(aob.name(), agent.agentName());
 		}
 
 

@@ -2,6 +2,8 @@ package burlap.mdp.stochasticgames.common;
 
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.AgentFactory;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 
 /**
@@ -30,8 +32,8 @@ public class AgentFactoryWithSubjectiveReward implements AgentFactory {
 	}
 
 	@Override
-	public SGAgent generateAgent() {
-		SGAgent a = baseFactory.generateAgent();
+	public SGAgent generateAgent(String agentName, SGAgentType type) {
+		SGAgentBase a = (SGAgentBase)baseFactory.generateAgent(agentName, type);
 		a.setInternalRewardFunction(internalReward);
 		return a;
 	}

@@ -1,10 +1,10 @@
 package burlap.shell.command.world;
 
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.core.Action;
+import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.world.World;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.action.SGAgentActionType;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.command.ShellCommand;
@@ -12,6 +12,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -37,7 +38,7 @@ public class JointActionCommand implements ShellCommand{
 		List<String> args = (List<String>)oset.nonOptionArguments();
 
 		if(oset.has("h")){
-			os.println("[-x [-v]][-c][-p] [agentName actionName [actionParams*]]\n" +
+			os.println("[-x [-v]][-c][-p] [agentId actionTypeName [actionParams*]]\n" +
 					"Used to manually execute a joint action in the world. Joint actions cannot be manually executed if" +
 					"the world is currently running a game with attached agents.\n\n" +
 					"-x: execute the joint action (executes after setting specified agent action)\n" +
@@ -48,19 +49,19 @@ public class JointActionCommand implements ShellCommand{
 		}
 
 		if(!args.isEmpty()){
-			String agentName = args.get(0);
+			int agentId = Integer.parseInt(args.get(0));
 
 			String aname = args.get(1);
 
-			SGAgentActionType action = ((SGDomain)shell.getDomain()).getSGAgentAction(aname);
+			ActionType action = ((SGDomain)shell.getDomain()).getActionType(aname);
 			if(action == null){
 				os.println("Cannot set action to " + aname + " because that action name is not known.");
 				return 0;
 			}
 
-			SGAgentAction ga = action.associatedAction(agentName, this.actionArgs(args));
+			Action ga = action.associatedAction(this.actionArgs(args));
 
-			ja.addAction(ga);
+			ja.setAction(agentId, ga);
 		}
 
 		if(oset.has("p")){
@@ -82,7 +83,7 @@ public class JointActionCommand implements ShellCommand{
 				if(oset.has("v")){
 
 					os.println(w.getCurrentWorldState().toString());
-					os.println(w.getLastRewards());
+					os.println(Arrays.toString(w.getLastRewards()));
 					if(w.worldStateIsTerminal()){
 						os.println("IS a terminal state.");
 					}
@@ -106,14 +107,17 @@ public class JointActionCommand implements ShellCommand{
 		return 0;
 	}
 
+
 	/**
-	 * Adds a {@link SGAgentAction} to the {@link JointAction}
-	 * being built and to be executed.
-	 * @param action the {@link SGAgentAction} to add to the {@link JointAction}.
+	 * Sets the action for a single agent in the joint action this shell command controls
+	 * @param actingAgent the agent for whom the action is to be set
+	 * @param a the action
 	 */
-	public void addGroundedActionToJoint(SGAgentAction action){
-		this.ja.addAction(action);
+	public void setAction(int actingAgent, Action a){
+		this.ja.setAction(actingAgent, a);
 	}
+
+
 
 
 	protected String actionArgs(List<String> commandArgs){

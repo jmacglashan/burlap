@@ -2,6 +2,7 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.valuefunction.QFunction;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.agent.AgentFactory;
 import burlap.mdp.stochasticgames.agent.SGAgent;
@@ -91,8 +92,9 @@ public class SGQWActionHistoryFactory implements AgentFactory {
 	}
 
 	@Override
-	public SGAgent generateAgent() {
-		SGQWActionHistory agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize);
+	public SGAgent generateAgent(String agentName, SGAgentType type) {
+		SGQWActionHistory agent = new SGQWActionHistory(domain, discount, learningRate, stateHash, historySize)
+				.setAgentDetails(agentName, type);
 
 		if(this.qinit != null){
 			agent.setQValueInitializer(qinit);

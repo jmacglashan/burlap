@@ -1,6 +1,7 @@
 package burlap.domain.stochasticgames.gridgame;
 
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.oo.state.OOState;
@@ -8,8 +9,7 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.generic.GenericOOState;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.FullJointModel;
 
 import java.util.*;
@@ -57,25 +57,26 @@ public class GridGameStandardMechanics implements FullJointModel {
 	public List<StateTransitionProb> stateTransitions(State s, JointAction ja) {
 		
 		List <StateTransitionProb> tps = new ArrayList<StateTransitionProb>();
-		
-		List <SGAgentAction> gsas = ja.getActionList();
+
 		
 		//need to force no movement when trying to enter space of a noop agent
 		List <Location2> previousLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
-		
-		for(SGAgentAction gsa : gsas){
-			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent());
+
+		int pn = 0;
+		for(Action gsa : ja){
+			Location2 loc = this.getLocation((OOState)s, this.agentName(pn, (OOState)s));
 			previousLocations.add(loc);
 			if(gsa.actionName().equals(GridGame.ACTION_NOOP)){
 				noopLocations.add(loc);
 			}
+			pn++;
 		}
 		
 		List <List<Location2Prob>> possibleOutcomes = new ArrayList<List<Location2Prob>>();
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
-			SGAgentAction gsa = gsas.get(i);
+			Action gsa = ja.action(i);
 			possibleOutcomes.add(this.getPossibleLocationsFromWallCollisions((OOState)s, loc, this.attemptedDelta(gsa.actionName()), noopLocations));
 		}
 		
@@ -94,10 +95,10 @@ public class GridGameStandardMechanics implements FullJointModel {
 
 				GenericOOState ns = (GenericOOState)s.copy();
 				for(int i = 0; i < csp.locs.size(); i++){
-					SGAgentAction gsa = gsas.get(i);
+					Action gsa = ja.action(i);
 					Location2 loc = csp.locs.get(i);
-					
-					ObjectInstance agent = ns.touch(gsa.actingAgent());
+					String agentName = this.agentName(i, (OOState)s);
+					ObjectInstance agent = ns.touch(agentName);
 					((MutableState)agent).set(GridGame.VAR_X, loc.x);
 					((MutableState)agent).set(GridGame.VAR_Y, loc.y);
 				}
@@ -120,24 +121,25 @@ public class GridGameStandardMechanics implements FullJointModel {
 
 		s = s.copy();
 
-		List <SGAgentAction> gsas = ja.getActionList();
-
 		//need to force no movement when trying to enter space of a noop agent
 		List <Location2> previousLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 		List <Location2> noopLocations = new ArrayList<GridGameStandardMechanics.Location2>();
 
-		for(SGAgentAction gsa : gsas){
-			Location2 loc = this.getLocation((OOState)s, gsa.actingAgent());
+		int pn = 0;
+		for(Action gsa : ja){
+			Location2 loc = this.getLocation((OOState)s, this.agentName(pn, (OOState)s));
 			previousLocations.add(loc);
 			if(gsa.actionName().equals(GridGame.ACTION_NOOP)){
 				noopLocations.add(loc);
 			}
+			pn++;
 		}
+
 
 		List <Location2> basicMoveResults = new ArrayList<GridGameStandardMechanics.Location2>();
 		for(int i = 0; i < ja.size(); i++){
 			Location2 loc = previousLocations.get(i);
-			SGAgentAction gsa = gsas.get(i);
+			Action gsa = ja.action(i);
 			basicMoveResults.add(this.sampleBasicMovement((OOState)s, loc, this.attemptedDelta(gsa.actionName()), noopLocations));
 		}
 
@@ -146,10 +148,11 @@ public class GridGameStandardMechanics implements FullJointModel {
 
 		List <Location2> finalPositions = this.resolveCollisions(previousLocations, basicMoveResults);
 		for(int i = 0; i < finalPositions.size(); i++){
-			SGAgentAction gsa = gsas.get(i);
+			Action gsa = ja.action(i);
 			Location2 loc = finalPositions.get(i);
+			String agentName = this.agentName(i, (OOState)s);
 
-			ObjectInstance agent = ((GenericOOState)s).touch(gsa.actingAgent());
+			ObjectInstance agent = ((GenericOOState)s).touch(agentName);
 			((MutableState)agent).set(GridGame.VAR_X, loc.x);
 			((MutableState)agent).set(GridGame.VAR_Y, loc.y);
 
@@ -856,6 +859,16 @@ public class GridGameStandardMechanics implements FullJointModel {
 		}
 		
 		return true;
+	}
+
+	protected String agentName(int agentNum, OOState s){
+		for(ObjectInstance o : s.objectsOfClass(GridGame.CLASS_AGENT)){
+			int opn = (Integer)o.get(GridGame.VAR_PN);
+			if(opn == agentNum){
+				return o.name();
+			}
+		}
+		return null;
 	}
 	
 	

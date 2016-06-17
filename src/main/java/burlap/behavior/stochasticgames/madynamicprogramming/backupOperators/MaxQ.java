@@ -1,14 +1,13 @@
 package burlap.behavior.stochasticgames.madynamicprogramming.backupOperators;
 
-import java.util.List;
-import java.util.Map;
-
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.action.JointAction;
+
+import java.util.List;
 
 
 /**
@@ -19,20 +18,19 @@ import burlap.mdp.stochasticgames.action.JointAction;
 public class MaxQ implements SGBackupOperator {
 
 	@Override
-	public double performBackup(State s, String forAgent, Map<String, SGAgentType> agentDefinitions, AgentQSourceMap qSourceMap) {
-		
-		List<JointAction> allJAs = JointAction.getAllJointActions(s, agentDefinitions);
-		
+	public double performBackup(State s, int forAgent, List<SGAgentType> agentDefinitions, AgentQSourceMap qSourceMap) {
+		List<JointAction> allJAs = JointAction.getAllJointActionsFromTypes(s, agentDefinitions);
+
 		double maxQ = Double.NEGATIVE_INFINITY;
-		
+
 		QSourceForSingleAgent myQs = qSourceMap.agentQSource(forAgent);
-		
+
 		for(JointAction ja : allJAs){
 			double q = myQs.getQValueFor(s, ja).q;
 			maxQ = Math.max(q, maxQ);
 		}
-		
-		
+
+
 		return maxQ;
 	}
 

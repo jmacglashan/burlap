@@ -1,13 +1,9 @@
 package burlap.mdp.stochasticgames.agent;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.model.JointRewardFunction;
-import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.world.World;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-
-import java.util.Map;
 
 
 /**
@@ -22,81 +18,35 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public abstract class SGAgent {
+public interface SGAgent {
 
-	protected SGDomain domain;
-	protected JointRewardFunction internalRewardFunction;
-	
-	
-	//data members for interaction with the world
-	protected SGAgentType agentType;
-	protected String				worldAgentName;
-	protected World world;
-	
-	
-	protected void init(SGDomain d){
-		this.domain = d;
-		internalRewardFunction = null;
-	}
-	
-	
-	/**
-	 * Internal reward functions are optional, but can be useful for purposes like reward shaping.
-	 * @param jr the internal reward function the agent should use for reasoning and learning
-	 */
-	public void setInternalRewardFunction(JointRewardFunction jr){
-		this.internalRewardFunction = jr;
-	}
-	
-	/**
-	 * Returns the internal reward function used by the agent.
-	 * @return the internal reward function used by the agent; null if the agent is not using an internal reward function.
-	 */
-	public JointRewardFunction getInternalRewardFunction() {
-		return this.internalRewardFunction;
-	}
-	
-	
-	/**
-	 * Causes this agent instance to join a world.
-	 * @param w the world for the agent to join
-	 * @param as the agent type the agent will be joining as
-	 */
-	public void joinWorld(World w, SGAgentType as){
-		agentType = as;
-		world = w;
-		worldAgentName = world.registerAgent(this, as);
-	}
-	
 	
 	/**
 	 * Returns this agent's name
 	 * @return this agent's name
 	 */
-	public String getAgentName(){
-		return worldAgentName;
-	}
+	String agentName();
 	
 	
 	/**
 	 * Returns this agent's type
 	 * @return this agent's type
 	 */
-	public SGAgentType getAgentType(){
-		return agentType;
-	}
-	
+	SGAgentType agentType();
+
 	/**
 	 * This method is called by the world when a new game is starting.
+	 * @param w the world in which the game is starting
+	 * @param agentNum the agent number of the agent in the world
 	 */
-	public abstract void gameStarting();
+	void gameStarting(World w, int agentNum);
 	
 	/**
 	 * This method is called by the world when it needs the agent to choose an action
 	 * @param s the current state of the world
 	 * @return the action this agent wishes to take
 	 */
-	public abstract SGAgentAction getAction(State s);
+	Action action(State s);
 	
 	/**
 	 * This method is called by the world when every agent in the world has taken their action. It conveys the result of
@@ -107,12 +57,12 @@ public abstract class SGAgent {
 	 * @param sprime the next state to which the agent transitioned
 	 * @param isTerminal whether the new state is a terminal state
 	 */
-	public abstract void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal);
+	void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime, boolean isTerminal);
 	
 	
 	/**
 	 * This method is called by the world when a game has ended.
 	 */
-	public abstract void gameTerminated();
+	void gameTerminated();
 
 }

@@ -13,9 +13,8 @@ import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.behavior.stochasticgames.solvers.MinMaxSolver;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.action.SGActionUtils;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class EMinMaxPolicy extends MAQSourcePolicy implements EnumerablePolicy {
 	/**
 	 * The target agent who is maximizing action selection
 	 */
-	protected String 						targetAgentQName;
+	protected int targetAgent;
 	
 	
 	
@@ -62,25 +61,26 @@ public class EMinMaxPolicy extends MAQSourcePolicy implements EnumerablePolicy {
 	 * Epsilon is the fraction of the time a random joint action is selected.
 	 * @param actingAgent the Q-learning agent
 	 * @param epsilon the epsilon parameter
+	 * @param targetAgentNum the agent number of the target agent
 	 */
-	public EMinMaxPolicy(MultiAgentQLearning actingAgent, double epsilon){
+	public EMinMaxPolicy(MultiAgentQLearning actingAgent, double epsilon, int targetAgentNum){
 		this.qSourceProvider = actingAgent;
 		this.epsilon = epsilon;
-		this.targetAgentQName = actingAgent.getAgentName();
+		this.targetAgent = targetAgentNum;
 	}
 	
 	
 	@Override
-	public void setTargetAgent(String agentName) {
-		this.targetAgentQName = agentName;
+	public void setTargetAgent(int agentNum) {
+		this.targetAgent = agentNum;
 	}
 
 	@Override
 	public JointPolicy copy() {
 		EMinMaxPolicy np = new EMinMaxPolicy(this.epsilon);
-		np.setTargetAgent(this.targetAgentQName);
+		np.setTargetAgent(this.targetAgent);
 		np.setQSourceProvider(this.qSourceProvider);
-		np.setAgentsInJointPolicy(this.agentsInJointPolicy);
+		np.setAgentTypesInJointPolicy(this.agentsInJointPolicy);
 		return np;
 	}
 
@@ -96,24 +96,17 @@ public class EMinMaxPolicy extends MAQSourcePolicy implements EnumerablePolicy {
 
 	@Override
 	public List<ActionProb> policyDistribution(State s) {
-		
-		String otherAgentName = null;
-		for(String aname : this.agentsInJointPolicy.keySet()){
-			if(!aname.equals(this.targetAgentQName)){
-				otherAgentName = aname;
-				break;
-			}
-		}
+
+		int oagent = this.targetAgent == 0 ? 1 : 0;
 		
 		AgentQSourceMap qSourceMap = this.qSourceProvider.getQSources();
 		
-		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(this.targetAgentQName);
-		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
+		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(this.targetAgent);
+		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(oagent);
 
-		List<SGAgentAction> forAgentGSAs = SGActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(targetAgentQName).actions, targetAgentQName, s);
-		List<SGAgentAction> otherAgentGSAs = SGActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(otherAgentName).actions, otherAgentName, s);
+		List<Action> forAgentGSAs = ActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(targetAgent).actions, s);
+		List<Action> otherAgentGSAs = ActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(oagent).actions, s);
 
-		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];
 		
 		

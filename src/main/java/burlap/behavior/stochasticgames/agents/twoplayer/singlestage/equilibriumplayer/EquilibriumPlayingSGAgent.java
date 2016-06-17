@@ -2,16 +2,17 @@ package burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibrium
 
 import burlap.behavior.stochasticgames.agents.twoplayer.singlestage.equilibriumplayer.equilibriumsolvers.MaxMax;
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
 import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
-import burlap.mdp.stochasticgames.action.SGActionUtils;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.world.World;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 
@@ -23,7 +24,7 @@ import java.util.Random;
  * @author James MacGlashan
  *
  */
-public class EquilibriumPlayingSGAgent extends SGAgent {
+public class EquilibriumPlayingSGAgent extends SGAgentBase {
 
 	/**
 	 * The solution concept to be solved for the immediate rewards.
@@ -34,7 +35,9 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	 * Random generator for selecting actions according to the solved solution
 	 */
 	protected Random rand = RandomFactory.getMapped(0);
-	
+
+
+	protected int agentNum;
 	
 	/**
 	 * Initializes with the {@link MaxMax} solution concept.
@@ -52,25 +55,26 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	}
 	
 	@Override
-	public void gameStarting() {
-		//do nothing
+	public void gameStarting(World w, int agentNum) {
+		this.world = w;
+		this.agentNum = agentNum;
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
+	public Action action(State s) {
 
-		List<SGAgentAction> myActions = SGActionUtils.allApplicableActionsForTypes(this.agentType.actions, this.worldAgentName, s);
+		List<Action> myActions = ActionUtils.allApplicableActionsForTypes(this.agentType.actions, s);
 		BimatrixTuple bimatrix = this.constructBimatrix(s, myActions);
 		solver.solve(bimatrix.rowPayoffs, bimatrix.colPayoffs);
 		double [] strategy = solver.getLastComputedRowStrategy();
-		SGAgentAction selection = myActions.get(this.sampleStrategy(strategy));
+		Action selection = myActions.get(this.sampleStrategy(strategy));
 		
 		return selection;
 	}
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction,
-			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+			double[] jointReward, State sprime, boolean isTerminal) {
 		//do nothing
 	}
 
@@ -85,10 +89,10 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 	 * action set is determined by retreiving the corresponding agent object from the world. Similarly for the joint action model.
 	 * If this agent has an internal reward function, they use that; otherwise the world reward function is used.
 	 * @param s the state from which the joint rewards are based
-	 * @param myActions the set of {@link SGAgentAction}s the agent can taken in s.
+	 * @param myActions the set of {@link Action}s the agent can taken in s.
 	 * @return a {@link BimatrixTuple} for the joint reward function.
 	 */
-	protected BimatrixTuple constructBimatrix(State s, List<SGAgentAction> myActions){
+	protected BimatrixTuple constructBimatrix(State s, List<Action> myActions){
 		
 		JointRewardFunction jr = this.world.getRewardFunction();
 		if(this.internalRewardFunction != null){
@@ -99,19 +103,21 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 		
 		
 		SGAgent opponent = this.getOpponent();
-		List<SGAgentAction> opponentActions = SGActionUtils.allApplicableActionsForTypes(opponent.getAgentType().actions, opponent.getAgentName(), s);
+		int opponentNum = this.opponentNum();
+		List<Action> opponentActions = ActionUtils.allApplicableActionsForTypes(opponent.agentType().actions, s);
+
 		
 		BimatrixTuple bimatrix = new BimatrixTuple(myActions.size(), opponentActions.size());
 		for(int i = 0; i < bimatrix.nRows(); i++){
-			SGAgentAction ma = myActions.get(i);
+			Action ma = myActions.get(i);
 			for(int j = 0; j < bimatrix.nCols(); j++){
-				SGAgentAction oa = opponentActions.get(j);
+				Action oa = opponentActions.get(j);
 				JointAction ja = new JointAction();
 				ja.addAction(ma);
 				ja.addAction(oa);
 				State sp = jam.sample(s, ja);
-				Map<String, Double> r = jr.reward(s, ja, sp);
-				bimatrix.setPayoff(i, j, r.get(this.worldAgentName), r.get(opponent.getAgentName()));
+				double[] r = jr.reward(s, ja, sp);
+				bimatrix.setPayoff(i, j, r[agentNum], r[opponentNum]);
 				
 			}
 		}
@@ -147,10 +153,17 @@ public class EquilibriumPlayingSGAgent extends SGAgent {
 		if(agents.size() != 2){
 			throw new RuntimeException("EquilibriumPlayingAgent is only defined for two player games and there are " + agents.size() + " players in the world.");
 		}
-		if(agents.get(0) == this){
-			return agents.get(1);
+		int other = this.agentNum == 0 ? 1 : 0;
+		return agents.get(other);
+	}
+
+	protected int opponentNum(){
+		List<SGAgent> agents = this.world.getRegisteredAgents();
+		if(agents.size() != 2){
+			throw new RuntimeException("EquilibriumPlayingAgent is only defined for two player games and there are " + agents.size() + " players in the world.");
 		}
-		return agents.get(0);
+		int other = this.agentNum == 0 ? 1 : 0;
+		return other;
 	}
 	
 	

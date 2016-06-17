@@ -1,7 +1,7 @@
 package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.stochasticgames.action.SGAgentActionType;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.stochasticgames.model.JointModel;
 
 import java.util.ArrayList;
@@ -21,9 +21,9 @@ public class SGDomain implements Domain{
 
 
 	/**
-	 * A map from action names to their corresponding {@link SGAgentActionType}
+	 * A map from action type names to their corresponding {@link ActionType}
 	 */
-	protected Map <String, SGAgentActionType>				singleActionMap = new HashMap<String, SGAgentActionType>();
+	protected Map <String, ActionType> actionMap = new HashMap<String, ActionType>();
 
 
 	/**
@@ -48,20 +48,20 @@ public class SGDomain implements Domain{
 		return this.jam;
 	}
 
-	public SGDomain addSGAgentAction(SGAgentActionType sa){
-		singleActionMap.put(sa.typeName(), sa);
+	public SGDomain addActionType(ActionType actionType){
+		actionMap.put(actionType.typeName(), actionType);
 		return this;
 	}
 
 	
 
-	public List <SGAgentActionType> getAgentActions(){
-		return new ArrayList<SGAgentActionType>(this.singleActionMap.values());
+	public List <ActionType> getActionTypes(){
+		return new ArrayList<ActionType>(this.actionMap.values());
 	}
 
 
-	public SGAgentActionType getSGAgentAction(String name) {
-		return singleActionMap.get(name);
+	public ActionType getActionType(String name) {
+		return actionMap.get(name);
 	}
 
 

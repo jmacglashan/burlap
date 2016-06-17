@@ -1,16 +1,14 @@
 package burlap.behavior.stochasticgames.agents.madp;
 
-import java.util.Map;
-
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
-import burlap.behavior.stochasticgames.madynamicprogramming.MAQSourcePolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming;
+import burlap.behavior.stochasticgames.madynamicprogramming.MAQSourcePolicy;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agent.SGAgent;
-import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 
 
@@ -25,7 +23,7 @@ import burlap.mdp.stochasticgames.world.World;
  * @author James MacGlashan
  *
  */
-public class MultiAgentDPPlanningAgent extends SGAgent {
+public class MultiAgentDPPlanningAgent extends SGAgentBase {
 
 	
 	/**
@@ -42,6 +40,8 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 	 * Whether the agent definitions for this valueFunction have been set yet.
 	 */
 	protected boolean						setAgentDefinitions = false;
+
+	protected int agentNum;
 	
 	
 	
@@ -52,11 +52,11 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 	 * @param planner the valueFunction the agent should use for determining its policy
 	 * @param policy the policy that will use the planners value function as a source.
 	 */
-	public MultiAgentDPPlanningAgent(SGDomain domain, MADynamicProgramming planner, PolicyFromJointPolicy policy){
+	public MultiAgentDPPlanningAgent(SGDomain domain, MADynamicProgramming planner, PolicyFromJointPolicy policy, String agentName, SGAgentType agentType){
 		if(!(policy.getJointPolicy() instanceof MAQSourcePolicy)){
 			throw new RuntimeException("The underlining joint policy must be of type MAQSourcePolicy for the MultiAgentVFPlanningAgent.");
 		}
-		super.init(domain);
+		super.init(domain, agentName, agentType);
 		this.planner = planner;
 		this.policy = policy;
 		((MAQSourcePolicy)this.policy.getJointPolicy()).setQSourceProvider(planner);
@@ -76,35 +76,34 @@ public class MultiAgentDPPlanningAgent extends SGAgent {
 		}
 		this.policy = policy;
 		((MAQSourcePolicy)this.policy.getJointPolicy()).setQSourceProvider(planner);
-		this.policy.setActingAgentName(this.worldAgentName);
+		this.policy.setActingAgent(this.agentNum);
 		
 	}
-	
-	@Override
-	public void joinWorld(World w, SGAgentType as){
-		super.joinWorld(w, as);
-		this.policy.setActingAgentName(this.worldAgentName);
-	}
+
 	
 	
 	@Override
-	public void gameStarting() {
+	public void gameStarting(World w, int agentNum) {
+		this.world = w;
+		this.agentNum = agentNum;
+		this.policy.setActingAgent(this.agentNum);
 		if(!this.setAgentDefinitions){
 			this.planner.setAgentDefinitions(this.world.getAgentDefinitions());
-			this.policy.getJointPolicy().setAgentsInJointPolicy(this.world.getAgentDefinitions());
+			this.policy.getJointPolicy().setAgentsInJointPolicy(this.world.getRegisteredAgents());
 			this.setAgentDefinitions = true;
+
 		}
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
+	public Action action(State s) {
 		this.planner.planFromState(s);
-		return (SGAgentAction)this.policy.action(s);
+		return this.policy.action(s);
 	}
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction,
-			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+			double[] jointReward, State sprime, boolean isTerminal) {
 		
 		//nothing to do
 

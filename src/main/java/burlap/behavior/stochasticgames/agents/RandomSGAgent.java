@@ -1,14 +1,14 @@
 package burlap.behavior.stochasticgames.agents;
 
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
-import burlap.mdp.stochasticgames.action.SGActionUtils;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.world.World;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -16,28 +16,29 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class RandomSGAgent extends SGAgent {
+public class RandomSGAgent extends SGAgentBase {
 
 	@Override
-	public void gameStarting() {
+	public void gameStarting(World w, int agentNum) {
 		//do nothing
 
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
+	public Action action(State s) {
 		
-		List<SGAgentAction> gsas = SGActionUtils.allApplicableActionsForTypes(this.agentType.actions, this.worldAgentName, s);
+		List<Action> gsas = ActionUtils.allApplicableActionsForTypes(this.agentType.actions, s);
+
 		
 		int r = RandomFactory.getMapped(0).nextInt(gsas.size());
-		SGAgentAction gsa = gsas.get(r);
+		Action gsa = gsas.get(r);
 		
 		return gsa;
 	}
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction,
-			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+			double[] jointReward, State sprime, boolean isTerminal) {
 		//do nothing
 
 	}

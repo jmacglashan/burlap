@@ -12,7 +12,7 @@ import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +46,13 @@ public class EGreedyJointPolicy extends MAQSourcePolicy implements EnumerablePol
 	/**
 	 * The agent whose q-values dictate which joint actions to return
 	 */
-	protected String						targetAgentQName;
+	protected int targetAgent;
 	
 	
 	/**
 	 * Initializes for a given epsilon value. The set of agents for which joint actions are returned, target agent whose q-values are maximized,
-	 * and multi-agent q-source provider will need to be set manually with the methods {@link #setAgentsInJointPolicy(java.util.Map)}, 
-	 * {@link #setTargetAgent(String)}, and {@link #setQSourceProvider(MultiAgentQSourceProvider)} before the policy can be queried.
+	 * and multi-agent q-source provider will need to be set manually with the methods {@link #setAgentsInJointPolicy(List)},
+	 * {@link #setTargetAgent(int)}, and {@link #setQSourceProvider(MultiAgentQSourceProvider)} before the policy can be queried.
 	 * Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent} agents may do this themselves. Consult the documentation
 	 * to check.
 	 * @param epsilon the fraction of the time [0, 1] that the agent selections random actions.
@@ -64,15 +64,15 @@ public class EGreedyJointPolicy extends MAQSourcePolicy implements EnumerablePol
 	
 	/**
 	 * Initializes for a multi-agent Q-learning object and epsilon value. The set of agents for which joint actions are to be returned
-	 * must be subsequently defined with the {@link #setAgentsInJointPolicy(java.util.Map)}. Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent}
+	 * must be subsequently defined with the {@link #setAgentsInJointPolicy(List)}. Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent}
 	 * agents may do this themselves. Consult the documentation to check.
 	 * @param actingAgent the agent whose Q-values are maximized.
 	 * @param epsilon the fraction of the time [0, 1] that the agent selections random actions.
 	 */
-	public EGreedyJointPolicy(MultiAgentQLearning actingAgent, double epsilon) {
+	public EGreedyJointPolicy(MultiAgentQLearning actingAgent, double epsilon, int targetAgentNum) {
 		this.qSourceProvider = actingAgent;
 		this.epsilon = epsilon;
-		this.targetAgentQName = actingAgent.getAgentName();
+		this.targetAgent = targetAgentNum;
 	}
 	
 	@Override
@@ -92,7 +92,7 @@ public class EGreedyJointPolicy extends MAQSourcePolicy implements EnumerablePol
 			double maxQ = Double.NEGATIVE_INFINITY;
 			for(JointAction ja : jas){
 				
-				double q = qSources.agentQSource(this.targetAgentQName).getQValueFor(s, ja).q;
+				double q = qSources.agentQSource(this.targetAgent).getQValueFor(s, ja).q;
 
 				if(q == maxQ){
 					jasWithMax.add(ja);
@@ -140,7 +140,7 @@ public class EGreedyJointPolicy extends MAQSourcePolicy implements EnumerablePol
 		double maxQ = Double.NEGATIVE_INFINITY;
 		for(JointAction ja : jas){
 			
-			double q = qSources.agentQSource(this.targetAgentQName).getQValueFor(s, ja).q;
+			double q = qSources.agentQSource(this.targetAgent).getQValueFor(s, ja).q;
 
 			if(q == maxQ){
 				jasWithMax.add(ja);
@@ -181,17 +181,17 @@ public class EGreedyJointPolicy extends MAQSourcePolicy implements EnumerablePol
 	}
 
 	@Override
-	public void setTargetAgent(String agentName) {
-		this.targetAgentQName = agentName;
+	public void setTargetAgent(int agentNum) {
+		this.targetAgent = agentNum;
 	}
 
 
 	@Override
 	public JointPolicy copy() {
 		EGreedyJointPolicy np = new EGreedyJointPolicy(this.epsilon);
-		np.setAgentsInJointPolicy(this.agentsInJointPolicy);
+		np.setAgentTypesInJointPolicy(this.agentsInJointPolicy);
 		np.setQSourceProvider(this.qSourceProvider);
-		np.setTargetAgent(this.targetAgentQName);
+		np.setTargetAgent(this.targetAgent);
 		return np;
 	}
 

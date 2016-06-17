@@ -10,5 +10,5 @@ public interface AgentFactory {
 	 * Returns a new agent instance.
 	 * @return a new agent instance.
 	 */
-	SGAgent generateAgent();
+	SGAgent generateAgent(String agentName, SGAgentType type);
 }

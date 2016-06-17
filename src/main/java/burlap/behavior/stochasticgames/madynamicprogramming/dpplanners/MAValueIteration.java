@@ -11,7 +11,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.model.FullJointModel;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.SGDomain;
@@ -116,7 +116,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
-	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+	public MAValueIteration(SGDomain domain, List<SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 							double discount, HashableStateFactory hashingFactory, double vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
 		this.initMAVF(domain, agentDefinitions, jointRewardFunction, terminalFunction, discount, hashingFactory, new ConstantValueFunction(vInit), backupOperator);
@@ -140,7 +140,7 @@ public class MAValueIteration extends MADynamicProgramming {
 	 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 	 * @param maxIterations the maximum number of iterations allowed
 	 */
-	public MAValueIteration(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+	public MAValueIteration(SGDomain domain, List<SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 							double discount, HashableStateFactory hashingFactory, ValueFunction vInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 		
 		this.initMAVF(domain, agentDefinitions, jointRewardFunction, terminalFunction, discount, hashingFactory, vInit, backupOperator);
@@ -223,7 +223,7 @@ public class MAValueIteration extends MADynamicProgramming {
 			HashableState sh = openQueue.poll();
 
 			//expand
-			List<JointAction> jas = JointAction.getAllJointActions(sh.s(), this.agentDefinitions);
+			List<JointAction> jas = JointAction.getAllJointActionsFromTypes(sh.s(), this.agentDefinitions);
 			for(JointAction ja : jas){
 				List<StateTransitionProb> tps = model.stateTransitions(sh.s(), ja);
 				for(StateTransitionProb tp : tps){

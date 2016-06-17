@@ -1,12 +1,12 @@
 package burlap.shell.command.world;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
-import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.action.SGAgentActionType;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
@@ -109,14 +109,14 @@ public class ManualAgentsCommands {
 
 			String aclass = args.get(0);
 			List<String> actionNames = args.subList(1, args.size());
-			List<SGAgentActionType> actions = new ArrayList<SGAgentActionType>();
+			List<ActionType> actions = new ArrayList<ActionType>();
 
 			if(actionNames.isEmpty()){
-				actions = ((SGDomain)shell.getDomain()).getAgentActions();
+				actions = ((SGDomain)shell.getDomain()).getActionTypes();
 			}
 			else{
 				for(String aname : actionNames){
-					SGAgentActionType action = ((SGDomain)shell.getDomain()).getSGAgentAction(aname);
+					ActionType action = ((SGDomain)shell.getDomain()).getActionType(aname);
 					if(action != null){
 						actions.add(action);
 					}
@@ -127,13 +127,11 @@ public class ManualAgentsCommands {
 
 			for(int i = 0; i < times; i++){
 				ManualSGAgent agent = new ManualSGAgent();
-				agent.joinWorld(((SGWorldShell)shell).getWorld(), type);
-				manualAgents.put(agent.getAgentName(), agent);
-				os.println("Created manual agent named: " + agent.getAgentName());
+				agent.setAgentDetails("manual" + i, type);
+				((SGWorldShell)shell).getWorld().join(agent);
+				manualAgents.put(agent.agentName(), agent);
+				os.println("Created manual agent named: " + agent.agentName());
 			}
-
-
-
 
 			return 0;
 		}
@@ -199,13 +197,13 @@ public class ManualAgentsCommands {
 
 			String aname = args.get(1);
 
-			SGAgentActionType action = ((SGDomain)shell.getDomain()).getSGAgentAction(aname);
+			ActionType action = ((SGDomain)shell.getDomain()).getActionType(aname);
 			if(action == null){
 				os.println("Cannot set action to " + aname + " because that action name is not known.");
 				return 0;
 			}
 
-			SGAgentAction ga = action.associatedAction(agentName, this.actionArgs(args));
+			Action ga = action.associatedAction(this.actionArgs(args));
 
 			ManualSGAgent agent = manualAgents.get(agentName);
 			if(agent == null){
@@ -250,7 +248,7 @@ public class ManualAgentsCommands {
 			}
 
 			for(ManualSGAgent agent : manualAgents.values()){
-				os.println(agent.getAgentName() + " " + agent.getNextAction());
+				os.println(agent.agentName() + " " + agent.getNextAction());
 			}
 
 			return 0;
@@ -258,18 +256,18 @@ public class ManualAgentsCommands {
 	}
 
 
-	public static class ManualSGAgent extends SGAgent{
+	public static class ManualSGAgent extends SGAgentBase {
 
 
-		protected volatile SGAgentAction nextAction = null;
+		protected volatile Action nextAction = null;
 
 		@Override
-		public void gameStarting() {
-			//do nothing
+		public void gameStarting(World w, int agentNum) {
+			this.world = w;
 		}
 
 		@Override
-		public SGAgentAction getAction(State s) {
+		public Action action(State s) {
 
 			synchronized(this){
 				while(this.nextAction == null){
@@ -280,13 +278,13 @@ public class ManualAgentsCommands {
 					}
 				}
 			}
-			SGAgentAction toTake = this.nextAction;
+			Action toTake = this.nextAction;
 			this.nextAction = null;
 			return toTake;
 		}
 
 		@Override
-		public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+		public void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime, boolean isTerminal) {
 			//do nothing
 		}
 
@@ -295,14 +293,14 @@ public class ManualAgentsCommands {
 			//do nothing
 		}
 
-		public void setNextAction(SGAgentAction nextAction){
+		public void setNextAction(Action nextAction){
 			synchronized(this){
 				this.nextAction = nextAction;
 				this.notifyAll();
 			}
 		}
 
-		protected SGAgentAction getNextAction(){
+		protected Action getNextAction(){
 			return this.nextAction;
 		}
 

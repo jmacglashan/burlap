@@ -2,13 +2,13 @@ package burlap.behavior.stochasticgames.agents.naiveq.history;
 
 import burlap.behavior.stochasticgames.agents.naiveq.SGNaiveQLAgent;
 import burlap.behavior.valuefunction.QValue;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-
-import java.util.Map;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.world.World;
+import burlap.statehashing.HashableStateFactory;
 
 
 /**
@@ -46,14 +46,21 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	}
 
 	@Override
-	public void gameStarting() {
+	public SGQWActionHistory setAgentDetails(String agentName, SGAgentType type) {
+		super.setAgentDetails(agentName, type);
+		return this;
+	}
+
+	@Override
+	public void gameStarting(World w, int agentNum) {
+		super.gameStarting(w, agentNum);
 		curHState = null;
 	}
 
 	@Override
-	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+	public void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime, boolean isTerminal) {
 		
-		SGAgentAction myAction = jointAction.action(worldAgentName);
+		Action myAction = jointAction.action(this.agentNum);
 		QValue qe = this.storedQ(curHState, myAction);
 
 
@@ -66,7 +73,7 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 		}
 		
 		
-		double r = jointReward.get(worldAgentName);
+		double r = jointReward[this.agentNum];
 		double maxQ = 0.;
 		if(!isTerminal){
 			maxQ = this.getMaxQValue(augSP);
@@ -80,11 +87,11 @@ public class SGQWActionHistory extends SGNaiveQLAgent {
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
+	public Action action(State s) {
 		if(this.curHState == null){
 			this.curHState = new HistoryState(s, this.historySize);
 		}
-		return super.getAction(curHState);
+		return super.action(curHState);
 	}
 
 

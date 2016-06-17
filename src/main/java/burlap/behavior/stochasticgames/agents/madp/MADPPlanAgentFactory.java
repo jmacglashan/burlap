@@ -5,6 +5,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.AgentFactory;
 import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 
 
 /**
@@ -46,8 +47,8 @@ public class MADPPlanAgentFactory implements AgentFactory {
 	}
 	
 	@Override
-	public SGAgent generateAgent() {
-		return new MultiAgentDPPlanningAgent(domain, this.plannerFactory.getPlannerInstance(), this.policy.copy());
+	public SGAgent generateAgent(String agentName, SGAgentType type) {
+		return new MultiAgentDPPlanningAgent(domain, this.plannerFactory.getPlannerInstance(), this.policy.copy(), agentName, type);
 	}
 
 }

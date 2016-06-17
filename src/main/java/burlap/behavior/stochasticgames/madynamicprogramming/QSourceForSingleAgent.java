@@ -4,7 +4,7 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -5,16 +5,15 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.stochasticgames.*;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
 import burlap.mdp.stochasticgames.world.World;
-
-import java.util.Map;
 
 /**
  * A stochastic games {@link SGAgent} that takes as input a single agent {@link burlap.behavior.singleagent.learning.LearningAgent}
@@ -22,14 +21,9 @@ import java.util.Map;
  * also implementing the {@link burlap.mdp.singleagent.environment.Environment} interface. When a game starts, a new
  * thread is launched in which the provided {@link burlap.behavior.singleagent.learning.LearningAgent} interacts with this
  * class's {@link burlap.mdp.singleagent.environment.Environment} methods.
- * <p>
- * When constructing a {@link burlap.behavior.singleagent.learning.LearningAgent} to use with this class, you should
- * set its {@link burlap.mdp.core.Domain} to null. Then, when this class joins a world through the {@link #joinWorld(World, SGAgentType)}
- * method, it will automatically use the {@link burlap.behavior.stochasticgames.agents.interfacing.singleagent.SGToSADomain} to create a {@link burlap.mdp.singleagent.SADomain}
- * and will then set then {@link burlap.behavior.singleagent.learning.LearningAgent} to use it.
  * @author James MacGlashan.
  */
-public class LearningAgentToSGAgentInterface extends SGAgent implements Environment {
+public class LearningAgentToSGAgentInterface extends SGAgentBase implements Environment {
 
 
 	/**
@@ -71,36 +65,36 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 	 */
 	protected StateReference				nextState = new StateReference();
 
+	protected int agentNum;
+
 
 	/**
 	 * Initializes.
 	 * @param domain The stochastic games {@link burlap.mdp.stochasticgames.SGDomain} in which this agent will interact.
 	 * @param learningAgent the {@link burlap.behavior.singleagent.learning.LearningAgent} that will handle this {@link SGAgent}'s control.
 	 */
-	public LearningAgentToSGAgentInterface(SGDomain domain, LearningAgent learningAgent){
-		this.init(domain);
+	public LearningAgentToSGAgentInterface(SGDomain domain, LearningAgent learningAgent, String agentName, SGAgentType agentType){
+		this.init(domain, agentName, agentType);
 		this.learningAgent = learningAgent;
-	}
-
-	@Override
-	public void joinWorld(World w, SGAgentType as) {
-		super.joinWorld(w, as);
-
 		if(this.learningAgent instanceof MDPSolver){
-			SGToSADomain dgen = new SGToSADomain(this.getAgentName(), this.domain, as);
-			SADomain saDomain = dgen.generateDomain();
-			((MDPSolver) this.learningAgent).setDomain(saDomain);
+			SADomain sadomain = new SADomain();
+			for(ActionType actionType : agentType.actions){
+				sadomain.addActionType(actionType);
+			}
+			((MDPSolver) this.learningAgent).setDomain(sadomain);
 
 		}
 	}
 
+
 	@Override
-	public void gameStarting() {
-		//do nothing
+	public void gameStarting(World w, int agentNum) {
+		this.world = w;
+		this.agentNum = agentNum;
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
+	public Action action(State s) {
 
 
 		synchronized(this.nextState){
@@ -121,7 +115,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 			this.saThread.start();
 		}
 
-		SGAgentAction toRet;
+		Action toRet;
 		synchronized(nextAction){
 			while(nextAction.val == null){
 				try{
@@ -139,8 +133,8 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 	}
 
 	@Override
-	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
-		this.lastReward = jointReward.get(this.getAgentName());
+	public void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime, boolean isTerminal) {
+		this.lastReward = jointReward[this.agentNum];
 		this.currentState = sprime;
 	}
 
@@ -173,8 +167,7 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 		State prevState = this.currentState;
 		synchronized(this.nextAction){
-			SGAgentAction gsa = (SGAgentAction)ga;
-			this.nextAction.val = gsa;
+			this.nextAction.val = ga;
 			this.nextAction.notifyAll();
 		}
 
@@ -212,10 +205,10 @@ public class LearningAgentToSGAgentInterface extends SGAgent implements Environm
 
 
 	/**
-	 *  A wrapper that maintains a reference to a {@link SGAgentAction} or null.
+	 *  A wrapper that maintains a reference to a {@link Action} or null.
 	 */
 	protected static class ActionReference{
-		protected SGAgentAction val;
+		protected Action val;
 	}
 
 

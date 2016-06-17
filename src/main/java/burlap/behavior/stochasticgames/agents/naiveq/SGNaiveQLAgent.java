@@ -4,18 +4,22 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.valuefunction.*;
+import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QProvider;
+import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
-import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.action.SGActionUtils;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +35,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class SGNaiveQLAgent extends SGAgent implements QProvider {
+public class SGNaiveQLAgent extends SGAgentBase implements QProvider {
 
 	/**
 	 * The tabular map from (hashed) states to the list of Q-values for each action in those states
@@ -76,7 +80,8 @@ public class SGNaiveQLAgent extends SGAgent implements QProvider {
 	 * The state hashing factory to use.
 	 */
 	protected HashableStateFactory hashFactory;
-	
+
+	protected int agentNum;
 	
 	/**
 	 * The total number of learning steps performed by this agent.
@@ -149,6 +154,12 @@ public class SGNaiveQLAgent extends SGAgent implements QProvider {
 		
 		this.storedMapAbstraction = new ShallowIdentityStateMapping();
 	}
+
+	public SGNaiveQLAgent setAgentDetails(String agentName, SGAgentType type){
+		this.worldAgentName = agentName;
+		this.agentType = type;
+		return this;
+	}
 	
 	/**
 	 * Sets the state abstraction that this agent will use
@@ -176,26 +187,27 @@ public class SGNaiveQLAgent extends SGAgent implements QProvider {
 	
 
 	@Override
-	public void gameStarting() {
+	public void gameStarting(World w, int agentNum) {
 		//nothing to do
-
+		this.world = w;
+		this.agentNum = agentNum;
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
-		return (SGAgentAction)this.policy.action(s);
+	public Action action(State s) {
+		return this.policy.action(s);
 	}
 
 	@Override
-	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+	public void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime, boolean isTerminal) {
 		
 		if(internalRewardFunction != null){
 			jointReward = internalRewardFunction.reward(s, jointAction, sprime);
 		}
 		
-		SGAgentAction myAction = jointAction.action(worldAgentName);
+		Action myAction = jointAction.action(agentNum);
 
-		double r = jointReward.get(worldAgentName);
+		double r = jointReward[agentNum];
 		QValue qv = this.storedQ(s, myAction);
 		
 		double maxQ = 0.;
@@ -249,7 +261,7 @@ public class SGNaiveQLAgent extends SGAgent implements QProvider {
 	@Override
 	public List<QValue> qValues(State s) {
 
-		List<SGAgentAction> gsas = SGActionUtils.allApplicableActionsForTypes(agentType.actions, worldAgentName, s);
+		List<Action> gsas = ActionUtils.allApplicableActionsForTypes(this.agentType.actions, s);
 		
 		HashableState shq = this.stateHash(s);
 		
@@ -258,7 +270,7 @@ public class SGNaiveQLAgent extends SGAgent implements QProvider {
 			//no existing entry so we can create it
 			stateRepresentations.put(shq, shq.s());
 			List <QValue> entries = new ArrayList<QValue>();
-			for(SGAgentAction gsa : gsas){
+			for(Action gsa : gsas){
 				QValue q = new QValue(shq.s(), gsa, this.qInit.qValue(shq.s(), gsa));
 				entries.add(q);
 			}
@@ -271,7 +283,7 @@ public class SGNaiveQLAgent extends SGAgent implements QProvider {
 		
 		List <QValue> entries = qMap.get(shq);
 		List <QValue> returnedEntries = new ArrayList<QValue>(gsas.size());
-		for(SGAgentAction gsa :gsas){
+		for(Action gsa :gsas){
 		;
 			//find matching action in entry list
 			boolean foundMatch = false;
@@ -316,7 +328,7 @@ public class SGNaiveQLAgent extends SGAgent implements QProvider {
 
 	protected QValue storedQ(State s, Action a){
 
-		SGAgentAction gsa = (SGAgentAction)a;
+		Action gsa = a;
 
 		HashableState shq = this.stateHash(s);
 

@@ -38,7 +38,7 @@ public class NFGameState implements MutableState, SGStateGenerator{
 	public NFGameState(List<SGAgent> agents){
 		this.players = new String[agents.size()];
 		for(int i = 0; i < players.length; i++){
-			players[i] = agents.get(i).getAgentName();
+			players[i] = agents.get(i).agentName();
 		}
 	}
 

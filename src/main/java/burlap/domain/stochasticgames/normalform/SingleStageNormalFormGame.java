@@ -3,16 +3,17 @@ package burlap.domain.stochasticgames.normalform;
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.*;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.singleagent.action.UniversalActionType;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.SGStateGenerator;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.action.SGAgentActionType;
-import burlap.mdp.stochasticgames.action.SimpleSGAction;
 import burlap.mdp.stochasticgames.common.StaticRepeatedGameModel;
 import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
@@ -23,16 +24,11 @@ import java.util.*;
 
 
 /**
- * This stochastic game domain generator provides methods to create N-player single stage games. There is only one object class, a "player" object class, which has
- * one attribute, its player number. A state consists simply of an object instance for each player. Different players maybe have different numbers of available
- * actions and the actions available to each player may have different names. The SingleAction's are created such that a player can only execute a single
- * action if that action is available to that player. Therefore, when agents joint a world for one of these games, their 
- * {@link SGAgentType} can be specified to have
- * all of the possible actions, because they will only be able to execute the relevant ones. The method {@link #getAgentTypeForAllPlayers(SGDomain)} will return
- * such an {@link SGAgentType} class that can be used for all agents.
+ * This stochastic game domain generator provides methods to create N-player single stage games. The method
+ * {@link #generateAgentType(int)} will generate the agent type (set of actions) for the given player number.
  * <p>
- * In addition to this generator being able to return the domain object, it may also be used to return the corresponding joint reward function. The method
- * {@link #getRepatedGameActionModel()} will return a joint action mode that always returns to the same state, which can be used for repeated game playing.
+ * In addition to this generator being able to return the domain object, it may also be used to return the corresponding joint reward function
+ * with the method {@link #getJointRewardFunction()}.
  * <p>
  * This class also provides static methods for returning generators for a number of classic bimatrix games: prisoner's dilemma, chicken, hawk dove,
  * battle of the sexes 1, battle of the sexes 2, matching pennies, and stag hunt.
@@ -132,7 +128,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	/**
-	 * A construtor for a bimatrix game where the row player payoffs and colum player payoffs are provided in two different 2D double matrices. The action
+	 * A constructor for a bimatrix game where the row player payoffs and column player payoffs are provided in two different 2D double matrices. The action
 	 * names for each row/column will be named "action0" ... "actionN" where N is the maximum number of rows/columns. 
 	 * @param rowPayoff the payoff matrix for the row player
 	 * @param colPayoff the payoff matrix for the column player
@@ -353,9 +349,10 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		
 		SGDomain domain = new SGDomain();
 
-		ActionNameMap [] cnames = ActionNameMap.deepCopyActionNameMapArray(this.actionNameToIndex);
-		for(String aname : this.uniqueActionNames){
-			domain.addSGAgentAction(new NFGAgentAction(aname, cnames));
+		for(int i = 0; i < this.actionNameToIndex.length; i++){
+			for(Map.Entry<String, Integer> as : this.actionNameToIndex[i].namesToInd.entrySet()){
+				domain.addActionType(new UniversalActionType(i + "_" + as.getKey(), new MatrixAction(as.getKey(), as.getValue())));
+			}
 		}
 
 		domain.setJointActionModel(new StaticRepeatedGameModel());
@@ -392,19 +389,12 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		
 		//set up the initial state generator for the world, which for a bimatrix game is trivial
 		SGStateGenerator sg = new NFGameState();
-		
-		//agent type defines the action set of players and OO-MDP class associated with their state information
-		//in this case that's just their player number. We can use the same action type for all players, regardless of wether
-		//each agent can play a different number of actions, because the actions have preconditions that prevent a player from taking actions
-		//that don't belong to them.
-		SGAgentType at = SingleStageNormalFormGame.getAgentTypeForAllPlayers(domain);
-		
-		
+
 		//create a world to synchronize the actions of agents in this domain and record results
 		World w = new World(domain, jr, tf, sg);
 		
 		for(SGAgent a : agents){
-			a.joinWorld(w, at);
+			w.join(a);
 		}
 		
 		return w;
@@ -435,20 +425,15 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		return new StrategyProfile(iprofile);
 	}
 
-	
-	
-	/**
-	 * Returns an {@link SGAgentType} object that can be used by agents being associated with any player number.
-	 * This AgentType permits agents to use any action in the domain, but the action preconditions will prevent the agent from taking actions
-	 * that its player number cannot take.
-	 * @param domain the domain in which the the agents will be playing.
-	 * @return an {@link SGAgentType} object that can be used by agents being associated with any player number.
-	 */
-	public static SGAgentType getAgentTypeForAllPlayers(SGDomain domain){
-		SGAgentType at = new SGAgentType("player", domain.getAgentActions());
-		return at;
+
+	public SGAgentType generateAgentType(int player){
+		List<ActionType> actions = new ArrayList<ActionType>();
+		for(Map.Entry<String, Integer> e : actionNameToIndex[player].namesToInd.entrySet()){
+			actions.add(new UniversalActionType(player + e.getKey(), new MatrixAction(e.getKey(), e.getValue())));
+		}
+		SGAgentType type = new SGAgentType("player" + player, actions);
+		return type;
 	}
-	
 	
 	/**
 	 * Returns a repeated game joint action model. This action model always returns to the same state.
@@ -606,26 +591,18 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		}
 
 		@Override
-		public Map<String, Double> reward(State s, JointAction ja, State sp) {
+		public double[] reward(State s, JointAction ja, State sp) {
 
-			NFGameState ns = (NFGameState)s;
-
-			Map<String, Double> rewards = new HashMap<String, Double>();
-			
+			double [] rewards = new double[this.nPlayers];
 			String [] profile = new String[this.nPlayers];
-			for(SGAgentAction sa : ja){
-				String name = sa.actingAgent();
-				int pn = ns.playerIndex(name);
-				profile[pn] = sa.actionName();
+			for(int i = 0; i < this.nPlayers; i++){
+				profile[i] = ja.action(i).actionName();
 			}
-			
 			StrategyProfile stprofile = SingleStageNormalFormGame.getStrategyProfile(this.actionNameToIndex, profile);
-			for(SGAgentAction sa : ja){
-				String name = sa.actingAgent();
-				int pn = ns.playerIndex(name);
-				rewards.put(name, this.payouts[pn].getPayout(stprofile));
+			for(int i = 0; i < nPlayers; i++){
+				rewards[i] = this.payouts[i].getPayout(stprofile);
 			}
-			
+
 			return rewards;
 		}
 		
@@ -636,50 +613,48 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	
 	
 	
-	/**
-	 * A SingleAction class that uses the parent domain generator to determine which agent can take which actions and enforces that in the preconditions.
-	 * @author James MacGlashan
-	 *
-	 */
-	protected static class NFGAgentAction implements SGAgentActionType {
 
-		protected String typeName;
-		ActionNameMap [] actionNameToIndex;
+	public static class MatrixAction implements Action{
 
-		public NFGAgentAction(String name, ActionNameMap[] actionNameToIndex) {
-			this.typeName = name;
-			this.actionNameToIndex = actionNameToIndex;
-		}
+		public int actionId;
+		public String name;
 
-
-		@Override
-		public String typeName() {
-			return typeName;
+		public MatrixAction(String name, int actionId) {
+			this.name = name;
+			this.actionId = actionId;
 		}
 
 		@Override
-		public SGAgentAction associatedAction(String actingAgent, String strRep) {
-			return new SimpleSGAction(typeName, actingAgent);
+		public String actionName() {
+			return name;
 		}
 
 		@Override
-		public List<SGAgentAction> allApplicableActions(String actingAgent, State s) {
-
-			NFGameState ns = (NFGameState)s;
-
-			int pn = ns.playerIndex(actingAgent);
-
-			if(this.actionNameToIndex[pn].containsKey(typeName)){
-				return Arrays.<SGAgentAction>asList(new SimpleSGAction(typeName, actingAgent));
-			}
-
-			return Arrays.asList();
+		public Action copy() {
+			return new MatrixAction(name, actionId);
 		}
 
-		
-		
-		
-		
+		@Override
+		public String toString() {
+			return name;
+		}
+
+		@Override
+		public int hashCode() {
+			return actionId;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if(this == o) return true;
+			if(o == null || getClass() != o.getClass()) return false;
+
+			MatrixAction that = (MatrixAction) o;
+
+			if(actionId != that.actionId) return false;
+			return name != null ? name.equals(that.name) : that.name == null;
+
+		}
 	}
 	
 	
@@ -815,7 +790,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 	 *
 	 */
 	protected static class ActionNameMap{
-		Map<String, Integer> namesToInd;
+		public Map<String, Integer> namesToInd;
 		
 		public ActionNameMap(){
 			this.namesToInd = new HashMap<String, Integer>();

@@ -226,11 +226,17 @@ public class MultiAgentExperimenter {
 			DPrint.cl(this.debugCode, "Beginning trial " + (i+1) + "/" + this.nTrials);
 			
 			World w = worldGenerator.generateWorld();
+			if(this.plotter != null){
+				this.plotter.setWorld(w);
+			}
 
 			DPrint.toggleCode(w.getDebugId(), false);
 			w.addWorldObserver(this.plotter);
+			int id = 0;
 			for(AgentFactoryAndType aft : this.agentFactoriesAndTypes){
-				aft.agentFactory.generateAgent().joinWorld(w, aft.at);
+				//aft.agentFactory.generateAgent().joinWorld(w, aft.at);
+				w.join(aft.agentFactory.generateAgent("agent"+id, aft.at));
+				id++;
 			}
 			
 			this.plotter.startNewTrial();

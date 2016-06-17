@@ -1,6 +1,7 @@
 package burlap.behavior.stochasticgames.agents.naiveq;
 
 import burlap.mdp.auxiliary.StateMapping;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.AgentFactory;
@@ -94,8 +95,9 @@ public class SGNaiveQFactory implements AgentFactory {
 	}
 
 	@Override
-	public SGAgent generateAgent() {
-		SGNaiveQLAgent agent = new SGNaiveQLAgent(domain, discount, learningRate, defaultQ, stateHash);
+	public SGAgent generateAgent(String agentName, SGAgentType type) {
+		SGNaiveQLAgent agent = new SGNaiveQLAgent(domain, discount, learningRate, defaultQ, stateHash)
+				.setAgentDetails(agentName, type);
 		if(storedAbstraction != null){
 			agent.setStoredMapAbstraction(storedAbstraction);
 		}

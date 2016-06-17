@@ -12,7 +12,7 @@ import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePol
 	
 	/**
 	 * Initializes for a given epsilon value. The set of agents for which joint actions are returned
-	 * and multi-agent q-source provider will need to be set manually with the methods {@link #setAgentsInJointPolicy(java.util.Map)}, 
+	 * and multi-agent q-source provider will need to be set manually with the methods {@link #setAgentsInJointPolicy(List)},
 	 * and {@link #setQSourceProvider(MultiAgentQSourceProvider)} before the policy can be queried.
 	 * Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent} agents may do this themselves. Consult the documentation
 	 * to check.
@@ -67,7 +67,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePol
 	
 	/**
 	 * Initializes for a given epsilon value and whether to break ties randomly. The set of agents for which joint actions are returned
-	 * and multi-agent q-source provider will need to be set manually with the methods {@link #setAgentsInJointPolicy(java.util.Map)}, 
+	 * and multi-agent q-source provider will need to be set manually with the methods {@link #setAgentsInJointPolicy(List)} ,
 	 * and {@link #setQSourceProvider(MultiAgentQSourceProvider)} before the policy can be queried.
 	 * Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent} agents may do this themselves. Consult the documentation
 	 * to check.
@@ -82,7 +82,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePol
 	
 	/**
 	 * Initializes for a multi-agent Q-learning object and epsilon value. The set of agents for which joint actions are to be returned
-	 * must be subsequently defined with the {@link #setAgentsInJointPolicy(java.util.Map)}. Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent}
+	 * must be subsequently defined with the {@link #setAgentsInJointPolicy(List)}. Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent}
 	 * agents may do this themselves. Consult the documentation to check. 
 	 * @param actingAgent the agent who will use this policy.
 	 * @param epsilon the fraction of the time [0, 1] that the agent selections random actions.
@@ -94,7 +94,7 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePol
 	
 	/**
 	 * Initializes for a multi-agent Q-learning object and epsilon value. The set of agents for which joint actions are to be returned
-	 * must be subsequently defined with the {@link #setAgentsInJointPolicy(java.util.Map)}. Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent}
+	 * must be subsequently defined with the {@link #setAgentsInJointPolicy(List)}. Note that the {@link MultiAgentQLearning} and {@link burlap.behavior.stochasticgames.agents.madp.MultiAgentDPPlanningAgent}
 	 * agents may do this themselves. Consult the documentation to check. 
 	 * @param actingAgent the agent who will use this policy.
 	 * @param epsilon the fraction of the time [0, 1] that the agent selections random actions.
@@ -139,8 +139,8 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePol
 			double maxSumQ = Double.NEGATIVE_INFINITY;
 			for(JointAction ja : jas){
 				double sumQ = 0.;
-				for(String aname : ja.getAgentNames()){
-					sumQ += qSources.agentQSource(aname).getQValueFor(s, ja).q;
+				for(int i = 0; i < this.agentsInJointPolicy.size(); i++){
+					sumQ += qSources.agentQSource(i).getQValueFor(s, ja).q;
 				}
 				if(sumQ == maxSumQ && this.breakTiesRandomly){
 					jasWithMax.add(ja);
@@ -186,8 +186,8 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePol
 		double maxSumQ = Double.NEGATIVE_INFINITY;
 		for(JointAction ja : jas){
 			double sumQ = 0.;
-			for(String aname : ja.getAgentNames()){
-				sumQ += qSources.agentQSource(aname).getQValueFor(s, ja).q;
+			for(int i = 0; i < this.agentsInJointPolicy.size(); i++){
+				sumQ += qSources.agentQSource(i).getQValueFor(s, ja).q;
 			}
 			if(sumQ == maxSumQ && this.breakTiesRandomly){
 				jasWithMax.add(ja);
@@ -222,14 +222,14 @@ public class EGreedyMaxWellfare extends MAQSourcePolicy implements EnumerablePol
 	}
 
 	@Override
-	public void setTargetAgent(String agentName) {
+	public void setTargetAgent(int agentNum) {
 		//do nothing
 	}
 
 	@Override
 	public JointPolicy copy() {
 		EGreedyMaxWellfare np = new EGreedyMaxWellfare(this.epsilon, this.breakTiesRandomly);
-		np.setAgentsInJointPolicy(this.agentsInJointPolicy);
+		np.setAgentTypesInJointPolicy(this.agentsInJointPolicy);
 		np.setQSourceProvider(this.qSourceProvider);
 		return np;
 	}

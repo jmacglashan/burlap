@@ -4,6 +4,7 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.behavior.valuefunction.QFunction;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
 import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
@@ -114,8 +115,8 @@ public class MAQLFactory implements AgentFactory {
 	
 	
 	@Override
-	public SGAgent generateAgent() {
-		MultiAgentQLearning agent = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, qInit, backupOperator, queryOtherAgentsQSource);
+	public SGAgent generateAgent(String agentName, SGAgentType type) {
+		MultiAgentQLearning agent = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, qInit, backupOperator, queryOtherAgentsQSource, agentName, type);
 		agent.setLearningPolicy(this.learningPolicy.copy());
 		return agent;
 	}

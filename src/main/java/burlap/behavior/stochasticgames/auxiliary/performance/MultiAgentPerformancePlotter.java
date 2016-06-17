@@ -5,7 +5,9 @@ import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.world.World;
 import burlap.mdp.stochasticgames.world.WorldObserver;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -208,7 +210,7 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	
 	
 	
-	
+	protected World world;
 	
 	
 	
@@ -222,9 +224,10 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 	 * @param trialMode the kinds of trail data that will be displayed
 	 * @param metrics which metrics will be plotted.
 	 */
-	public MultiAgentPerformancePlotter(TerminalFunction tf, int chartWidth, int chartHeight, int columns, int maxWindowHeight, 
+	public MultiAgentPerformancePlotter(TerminalFunction tf, int chartWidth, int chartHeight, int columns, int maxWindowHeight,
 								TrialMode trialMode, PerformanceMetric...metrics){
-		
+
+
 		this.tf = tf;
 		
 		colCSR = new XYSeriesCollection();
@@ -294,9 +297,11 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
         }
 		
 	}
-	
 
 
+	public void setWorld(World world) {
+		this.world = world;
+	}
 
 	/**
 	 * Adds the most recent trial (if enabled) chart and trial average (if enabled) chart into the provided container.
@@ -432,34 +437,37 @@ public class MultiAgentPerformancePlotter extends JFrame implements WorldObserve
 
 
 	@Override
-	synchronized public void observe(State s, JointAction ja, Map<String, Double> reward,
+	synchronized public void observe(State s, JointAction ja, double[] reward,
 			State sp) {
 		
 		
 		if(!this.collectData){
 			return;
 		}
-		
+
+		List<SGAgent> agents = this.world.getRegisteredAgents();
+
 		//do we need to instantiate the agents?
 		if(this.agentWiseData.size() == 0){
 			//then we need to instnaitate matters
-			for(String agentName : reward.keySet()){
-				this.agentWiseData.put(agentName, new DatasetsAndTrials(agentName));
+			for(SGAgent agent : agents){
+				this.agentWiseData.put(agent.agentName(), new DatasetsAndTrials(agent.agentName()));
 			}
+
 		}
 
 		this.freshStart = false;
 		
 		
 		boolean isTermainal = this.tf.isTerminal(sp);
-		
-		//update information for each agent
-		for(Map.Entry<String, Double> e : reward.entrySet()){
-			DatasetsAndTrials dt = this.agentWiseData.get(e.getKey());
+
+		for(int i = 0; i < reward.length; i++){
+			String agentName = agents.get(i).agentName();
+			DatasetsAndTrials dt = this.agentWiseData.get(agentName);
 			if(dt == null){
-				throw new RuntimeException("Error: a new agent has been overseved (" + e.getKey() + ") who was not present in the start of the games. Unable to track performance with repsect to other agents.");
+				throw new RuntimeException("Error: a new agent has been observed (" + agentName + ") who was not present in the start of the games. Unable to track performance with respect to other agents.");
 			}
-			dt.getLatestTrial().stepIncrement(e.getValue());
+			dt.getLatestTrial().stepIncrement(reward[i]);
 			if(isTermainal){
 				dt.getLatestTrial().setupForNewEpisode();
 			}

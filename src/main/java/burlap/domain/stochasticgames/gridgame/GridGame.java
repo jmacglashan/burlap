@@ -12,19 +12,18 @@ import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.generic.GenericOOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.model.JointRewardFunction;
-import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.singleagent.action.UniversalActionType;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgent;
-import burlap.mdp.stochasticgames.action.UniversalSGActionType;
-import burlap.shell.visual.SGVisualExplorer;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointModel;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
+import burlap.shell.visual.SGVisualExplorer;
 import burlap.visualizer.Visualizer;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -286,11 +285,11 @@ public class GridGame implements DomainGenerator {
 				.addStateClass(CLASS_DIM_V_WALL, GGWall.GGVerticalWall.class);
 		
 
-		domain.addSGAgentAction(new UniversalSGActionType(ACTION_NORTH))
-				.addSGAgentAction(new UniversalSGActionType(ACTION_SOUTH))
-				.addSGAgentAction(new UniversalSGActionType(ACTION_EAST))
-				.addSGAgentAction(new UniversalSGActionType(ACTION_WEST))
-				.addSGAgentAction(new UniversalSGActionType(ACTION_NOOP));
+		domain.addActionType(new UniversalActionType(ACTION_NORTH))
+				.addActionType(new UniversalActionType(ACTION_SOUTH))
+				.addActionType(new UniversalActionType(ACTION_EAST))
+				.addActionType(new UniversalActionType(ACTION_WEST))
+				.addActionType(new UniversalActionType(ACTION_NOOP));
 
 		
 		
@@ -459,7 +458,7 @@ public class GridGame implements DomainGenerator {
 	 * @return An {@link SGAgentType} that typically all {@link SGAgent}'s of the grid game should play as.
 	 */
 	public static SGAgentType getStandardGridGameAgentType(SGDomain domain){
-		return new SGAgentType(GridGame.CLASS_AGENT, domain.getAgentActions());
+		return new SGAgentType(GridGame.CLASS_AGENT, domain.getActionTypes());
 	}
 	
 	
@@ -641,16 +640,17 @@ public class GridGame implements DomainGenerator {
 		}
 		
 		@Override
-		public Map<String, Double> reward(State s, JointAction ja, State sp) {
+		public double[] reward(State s, JointAction ja, State sp) {
 
 			OOState osp = (OOState)sp;
 
-			Map <String, Double> rewards = new HashMap<String, Double>();
+			double [] rewards = new double[ja.size()];
 			
 			//get all agents and initialize reward to default
 			List <ObjectInstance> obs = osp.objectsOfClass(GridGame.CLASS_AGENT);
 			for(ObjectInstance o : obs){
-				rewards.put(o.name(), this.defaultCost(o.name(), ja));
+				int aid = ((GGAgent)o).player;
+				rewards[aid] = this.defaultCost(aid, ja);
 			}
 			
 			
@@ -660,7 +660,8 @@ public class GridGame implements DomainGenerator {
 			for(GroundedProp gp : upgps){
 				String agentName = gp.params[0];
 				if(gp.isTrue(osp)){
-					rewards.put(agentName, uGoalReward);
+					int aid = ((GGAgent)((OOState) sp).object(agentName)).player;
+					rewards[aid] = uGoalReward;
 				}
 			}
 			
@@ -671,7 +672,8 @@ public class GridGame implements DomainGenerator {
 			for(GroundedProp gp : ipgps){
 				String agentName = gp.params[0];
 				if(gp.isTrue(osp)){
-					rewards.put(agentName, this.getPersonalGoalReward(osp, agentName));
+					int aid = ((GGAgent)((OOState) sp).object(agentName)).player;
+					rewards[aid] = this.getPersonalGoalReward(osp, agentName);
 				}
 			}
 			
@@ -684,15 +686,15 @@ public class GridGame implements DomainGenerator {
 		/**
 		 * Returns a default cost for an agent assuming the agent didn't transition to a goal state. If noops incur step cost, then this is always the step cost.
 		 * If noops do not incur step costs and the agent took a noop, then 0 is returned.
-		 * @param aname the name of the agent for which the default reward should be returned.
+		 * @param aid the agent of interest
 		 * @param ja the joint action set
 		 * @return the default reward; either step cost or 0.
 		 */
-		protected double defaultCost(String aname, JointAction ja){
+		protected double defaultCost(int aid, JointAction ja){
 			if(this.noopIncursCost){
 				return this.stepCost;
 			}
-			else if(ja.action(aname) == null || ja.action(aname).actionName().equals(GridGame.ACTION_NOOP)){
+			else if(ja.action(aid) == null || ja.action(aid).actionName().equals(GridGame.ACTION_NOOP)){
 				return 0.;
 			}
 			return this.stepCost;
@@ -794,17 +796,17 @@ public class GridGame implements DomainGenerator {
 		SGVisualExplorer exp = new SGVisualExplorer(d, v, s);
 
 
-		exp.addKeyAction("w", CLASS_AGENT +"0", ACTION_NORTH, "");
-		exp.addKeyAction("s", CLASS_AGENT +"0", ACTION_SOUTH, "");
-		exp.addKeyAction("d", CLASS_AGENT +"0", ACTION_EAST, "");
-		exp.addKeyAction("a", CLASS_AGENT +"0", ACTION_WEST, "");
-		exp.addKeyAction("q", CLASS_AGENT +"0", ACTION_NOOP, "");
+		exp.addKeyAction("w", 0, ACTION_NORTH, "");
+		exp.addKeyAction("s", 0, ACTION_SOUTH, "");
+		exp.addKeyAction("d", 0, ACTION_EAST, "");
+		exp.addKeyAction("a", 0, ACTION_WEST, "");
+		exp.addKeyAction("q", 0, ACTION_NOOP, "");
 
-		exp.addKeyAction("i", CLASS_AGENT +"1", ACTION_NORTH, "");
-		exp.addKeyAction("k", CLASS_AGENT +"1", ACTION_SOUTH, "");
-		exp.addKeyAction("l", CLASS_AGENT +"1", ACTION_EAST, "");
-		exp.addKeyAction("j", CLASS_AGENT +"1", ACTION_WEST, "");
-		exp.addKeyAction("u", CLASS_AGENT +"1", ACTION_NOOP, "");
+		exp.addKeyAction("i", 1, ACTION_NORTH, "");
+		exp.addKeyAction("k", 1, ACTION_SOUTH, "");
+		exp.addKeyAction("l", 1, ACTION_EAST, "");
+		exp.addKeyAction("j", 1, ACTION_WEST, "");
+		exp.addKeyAction("u", 1, ACTION_NOOP, "");
 
 		exp.initGUI();
 

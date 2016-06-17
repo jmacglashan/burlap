@@ -3,10 +3,10 @@ package burlap.behavior.stochasticgames;
 import burlap.behavior.stochasticgames.agents.RandomSGAgent;
 import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
@@ -27,7 +27,7 @@ import java.util.*;
  * <p>
  * This class should be used either by constructing with an initial state ({@link #GameEpisode(State)}) or by constructing with the default constructor and then
  * using the {@link #initializeInState(State)} method before recording any further transitions. Transitions should then be recorded with the
- * {@link #transition(JointAction, State, Map)} method which takes as input the next state to which the agent transtions, the joint action taken
+ * {@link #transition(JointAction, State, double[])} method which takes as input the next state to which the agent transitions, the joint action taken
  * in the previously recorded state that causes the transition, and the joint reward received for the transition.
  * <p>
  * When querying about the state, joint action, or joint rewards, use the methods {@link #state(int)}, {@link #jointAction(int)}, and {@link #jointReward(int)}
@@ -35,8 +35,8 @@ import java.util.*;
  * These methods take as input the time step of the element you want. Note that t = 0 refers to the initial state step so calling getState(0) and getJointAction(0)
  * will return the initial state and the joint action taken in the initial state, respectively. However, joint rewards are always received in the next time step
  * from the state and action that produced them. Therefore, getJointReward(0) is undefined. Instead, the first reward received will be at time step 1: getReward(1).
- * Additionally, the action and reward for a specific agent in a specific time step can be queried with {@link #agentAction(int, String)} and
- * {@link #agentReward(int, String)}, respectively.
+ * Additionally, the action and reward for a specific agent in a specific time step can be queried with {@link #agentAction(int, int)} and
+ * {@link #agentReward(int, int)}, respectively.
  * 
  * @author James MacGlashan
  *
@@ -57,13 +57,8 @@ public class GameEpisode {
 	/**
 	 * The sequence of joint rewards
 	 */
-	public List<Map<String, Double>> jointRewards = new ArrayList<Map<String, Double>>();
-	
-	
-	/**
-	 * The set of agents involved in this game
-	 */
-	protected Set<String> agentsInGame = new HashSet<String>();
+	public List<double[]> jointRewards = new ArrayList<double[]>();
+
 	
 	
 	/**
@@ -126,7 +121,7 @@ public class GameEpisode {
 	 * @param t the time step
 	 * @return the joint reward received at time step t
 	 */
-	public Map<String, Double> jointReward(int t){
+	public double[] jointReward(int t){
 		if(t >= this.states.size()){
 			throw new RuntimeException("This game only has " + this.jointRewards.size() + " joint rewards recoreded; cannot return joint reward at time step " + t);
 		}
@@ -138,14 +133,14 @@ public class GameEpisode {
 	 * Returns the action taken for the given agent at the given time step where t=0 refers to the joint action taken in the initial state.
 	 * if there is no action taken by the agent with the given name, then a runtime exception is thrown.
 	 * @param t the time step 
-	 * @param agentName the name of the agent
+	 * @param agentNum the agent number for the action to be returned
 	 * @return the action taken by the specified agent in the given time step
 	 */
-	public SGAgentAction agentAction(int t, String agentName){
+	public Action agentAction(int t, int agentNum){
 		JointAction ja = this.jointAction(t);
-		SGAgentAction gsa = ja.action(agentName);
+		Action gsa = ja.action(agentNum);
 		if(gsa == null){
-			throw new RuntimeException("Agent " + agentName + " did not take an action in joint action " + t);
+			throw new RuntimeException("Agent " + agentNum + " did not take an action in joint action " + t);
 		}
 		return gsa;
 	}
@@ -157,27 +152,15 @@ public class GameEpisode {
 	 * this method is undefined for t = 0. Instead, the first time step with a reward is t=1 which refers to the reward received after the first joint
 	 * action is taken in the initial state.
 	 * @param t the time step
-	 * @param agentName the name of the agent
+	 * @param agentNum the agent for whom the reward should be returned
 	 * @return the reward received by the agent
 	 */
-	public double agentReward(int t, String agentName){
-		Map<String, Double> jr = this.jointReward(t);
-		Double r = jr.get(agentName);
-		if(r == null){
-			throw new RuntimeException("Agent "  + agentName + " did not receive a reward in joint reward " + t);
-		}
-		return r;
+	public double agentReward(int t, int agentNum){
+		double[] jr = this.jointReward(t);
+		return jr[agentNum];
 	}
 	
-	
-	/**
-	 * Returns true if an agent with the given name took any actions in the course of this game.
-	 * @param agentName the name of the agent
-	 * @return true if the agent took an action in this game; false otherwise.
-	 */
-	public boolean agentInGame(String agentName){
-		return this.agentsInGame.contains(agentName);
-	}
+
 	
 	
 	/**
@@ -205,13 +188,10 @@ public class GameEpisode {
 	 * @param nextState the next state to which the agents transition
 	 * @param jointReward the joint reward received for the transiton
 	 */
-	public void transition(JointAction jointAction, State nextState, Map<String, Double> jointReward){
+	public void transition(JointAction jointAction, State nextState, double[] jointReward){
 		this.states.add(nextState);
 		this.jointActions.add(jointAction);
 		this.jointRewards.add(jointReward);
-		for(String agent : jointAction.getAgentNames()){
-			this.agentsInGame.add(agent);
-		}
 	}
 
 	/**
@@ -236,18 +216,10 @@ public class GameEpisode {
 	 * Returns the joint reward sequence list object
 	 * @return the joint reward sequence list object
 	 */
-	public List<Map<String, Double>> getJointRewards() {
+	public List<double[]> getJointRewards() {
 		return jointRewards;
 	}
 
-	
-	/**
-	 * Returns the set of agents involved in this game
-	 * @return the set of agents involved in this game
-	 */
-	public Set<String> getAgentsInGame() {
-		return agentsInGame;
-	}
 
 
 
@@ -344,10 +316,10 @@ public class GameEpisode {
 		SGAgent ragent1 = new RandomSGAgent();
 		SGAgent ragent2 = new RandomSGAgent();
 
-		SGAgentType type = new SGAgentType("agent", domain.getAgentActions());
+		SGAgentType type = new SGAgentType("agent", domain.getActionTypes());
 
-		ragent1.joinWorld(world, type);
-		ragent2.joinWorld(world, type);
+		world.join(ragent1);
+		world.join(ragent2);
 
 		GameEpisode ga = world.runGame(20);
 		System.out.println(ga.maxTimeStep());

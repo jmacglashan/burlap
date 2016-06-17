@@ -19,10 +19,10 @@ public interface AgentQSourceMap {
 	
 	/**
 	 * Returns a QSource which can be used to query the Q-values of a given agent.
-	 * @param agentName the name of the agent for which Q-values will be queried.
+	 * @param agentNum the agent for whom the qSource is to be provided
 	 * @return A {@link QSourceForSingleAgent} object that allows the Q-values for a single agent to be queried.
 	 */
-	public QSourceForSingleAgent agentQSource(String agentName);
+	QSourceForSingleAgent agentQSource(int agentNum);
 	
 	
 	/**
@@ -30,16 +30,16 @@ public interface AgentQSourceMap {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class HashMapAgentQSourceMap implements AgentQSourceMap{
+	class HashMapAgentQSourceMap implements AgentQSourceMap{
 
-		protected Map<String, QSourceForSingleAgent> qSourceMapping;
+		protected Map<Integer, QSourceForSingleAgent> qSourceMapping;
 		
 		
 		/**
 		 * Initializes with the Q-source hashmap ot be used.
 		 * @param qSourceMapping the source hash map to be used.
 		 */
-		public HashMapAgentQSourceMap(Map<String, QSourceForSingleAgent> qSourceMapping){
+		public HashMapAgentQSourceMap(Map<Integer, QSourceForSingleAgent> qSourceMapping){
 			this.qSourceMapping = qSourceMapping;
 		}
 		
@@ -47,13 +47,13 @@ public interface AgentQSourceMap {
 		 * Sets the Q-source hash map to be used.
 		 * @param qSourceMapping the source hash map to be used.
 		 */
-		public void setQSourceMap(Map<String, QSourceForSingleAgent> qSourceMapping){
+		public void setQSourceMap(Map<Integer, QSourceForSingleAgent> qSourceMapping){
 			this.qSourceMapping = qSourceMapping;
 		}
 		
 		@Override
-		public QSourceForSingleAgent agentQSource(String agentName) {
-			return this.qSourceMapping.get(agentName);
+		public QSourceForSingleAgent agentQSource(int agentNum) {
+			return this.qSourceMapping.get(agentNum);
 		}
 		
 		
@@ -70,9 +70,9 @@ public interface AgentQSourceMap {
 	 * @author James MacGlashan
 	 *
 	 */
-	public class MAQLControlledQSourceMap implements AgentQSourceMap{
+	class MAQLControlledQSourceMap implements AgentQSourceMap{
 
-		protected Map<String, MultiAgentQLearning> qSourceMapping;
+		protected Map<Integer, MultiAgentQLearning> qSourceMapping;
 		
 		/**
 		 * Initializes with the list of agents that each keep their own Q-source. Agent instances
@@ -82,12 +82,14 @@ public interface AgentQSourceMap {
 		 * @param agents a list of {@link SGAgent} objects, each which is an instance {@link MultiAgentQLearning}.
 		 */
 		public MAQLControlledQSourceMap(List<SGAgent> agents){
-			this.qSourceMapping = new HashMap<String, MultiAgentQLearning>(agents.size());
+			this.qSourceMapping = new HashMap<Integer, MultiAgentQLearning>(agents.size());
+			int i = 0;
 			for(SGAgent agent : agents){
 				if(!(agent instanceof MultiAgentQLearning)){
 					throw new RuntimeException("All agents passed to the MAQLControlledQSourceMap object must be of type MultiAgentQLearning");
 				}
-				this.qSourceMapping.put(agent.getAgentName(), (MultiAgentQLearning)agent);
+				this.qSourceMapping.put(i, (MultiAgentQLearning)agent);
+				i++;
 			}
 		}
 		
@@ -97,15 +99,17 @@ public interface AgentQSourceMap {
 		 * @param agents a list of {@link MultiAgentQLearning} agents/
 		 */
 		public void setAgents(List<MultiAgentQLearning> agents){
-			this.qSourceMapping = new HashMap<String, MultiAgentQLearning>(agents.size());
+			this.qSourceMapping = new HashMap<Integer, MultiAgentQLearning>(agents.size());
+			int i = 0;
 			for(MultiAgentQLearning agent : agents){
-				this.qSourceMapping.put(agent.getAgentName(), agent);
+				this.qSourceMapping.put(i, agent);
+				i++;
 			}
 		}
 		
 		@Override
-		public QSourceForSingleAgent agentQSource(String agentName) {
-			return this.qSourceMapping.get(agentName).getMyQSource();
+		public QSourceForSingleAgent agentQSource(int agentNum) {
+			return this.qSourceMapping.get(agentNum).getMyQSource();
 		}
 		
 		

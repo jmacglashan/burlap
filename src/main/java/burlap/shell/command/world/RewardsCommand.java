@@ -8,7 +8,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import java.io.PrintStream;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -37,9 +36,11 @@ public class RewardsCommand implements ShellCommand {
 
 		World w = ((SGWorldShell)shell).getWorld();
 
-		for(Map.Entry<String, Double> rs : w.getLastRewards().entrySet()){
-			os.println(rs.getKey() + ": " + rs.getValue());
+		double [] rs = w.getLastRewards();
+		for(double d : rs){
+			os.println(d);
 		}
+
 
 		return 0;
 	}

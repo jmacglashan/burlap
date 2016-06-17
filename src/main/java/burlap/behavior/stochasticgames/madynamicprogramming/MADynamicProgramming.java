@@ -2,17 +2,17 @@ package burlap.behavior.stochasticgames.madynamicprogramming;
 
 import burlap.behavior.stochasticgames.madynamicprogramming.AgentQSourceMap.HashMapAgentQSourceMap;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.StateTransitionProb;
+import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
+import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.FullJointModel;
 import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import burlap.mdp.stochasticgames.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,11 +40,11 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * The domain in which planning is to be performed
 	 */
 	protected SGDomain						domain;
-	
+
 	/**
-	 * The agent definitions for which planning is performed.
+	 * The agent types
 	 */
-	protected Map<String, SGAgentType>		agentDefinitions;
+	protected List<SGAgentType> agentDefinitions;
 	
 	/**
 	 * The joint action model to use in planning.
@@ -106,7 +106,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * @param vInit the value function initialization function to use
 	 * @param backupOperator the solution concept backup operator to use.
 	 */
-	public void initMAVF(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+	public void initMAVF(SGDomain domain, List<SGAgentType> agentDefinitions, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 						 double discount, HashableStateFactory hashingFactory, ValueFunction vInit, SGBackupOperator backupOperator){
 	
 		this.domain = domain;
@@ -138,7 +138,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	 * be thrown. To check if the planning has already begun, use the {@link #hasStartedPlanning()} method.
 	 * @param agentDefinitions the definitions of agents involve in the planning problem.
 	 */
-	public void setAgentDefinitions(Map<String, SGAgentType> agentDefinitions){
+	public void setAgentDefinitions(List<SGAgentType> agentDefinitions){
 		
 		if(this.planningStarted){
 			throw new RuntimeException("Cannot reset the agent definitions after planning has already started.");
@@ -154,12 +154,13 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		
 		this.agentDefinitions = agentDefinitions;
 		
-		Map<String, QSourceForSingleAgent> hQSources = new HashMap<String, QSourceForSingleAgent>();
-		for(String agent : this.agentDefinitions.keySet()){
-			QSourceForSingleAgent qs = new BackupBasedQSource(agent);
-			hQSources.put(agent, qs);
+		Map<Integer, QSourceForSingleAgent> hQSources = new HashMap<Integer, QSourceForSingleAgent>();
+		for(int i = 0; i < this.agentDefinitions.size(); i++){
+			QSourceForSingleAgent qs = new BackupBasedQSource(i);
+			hQSources.put(i, qs);
 		}
 		this.qSources = new AgentQSourceMap.HashMapAgentQSourceMap(hQSources);
+
 	}
 	
 	
@@ -186,10 +187,10 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		HashableState sh = this.hashingFactory.hashState(s);
 		
 		double maxChange = Double.NEGATIVE_INFINITY;
-		for(String agentName : this.agentDefinitions.keySet()){
-			BackupBasedQSource qsource = (BackupBasedQSource)this.qSources.agentQSource(agentName);
+		for(int i = 0; i < this.agentDefinitions.size(); i++){
+			BackupBasedQSource qsource = (BackupBasedQSource)this.qSources.agentQSource(i);
 			double oldVal = qsource.getValue(sh);
-			double newVal = this.backupOperator.performBackup(s, agentName, this.agentDefinitions, this.qSources);
+			double newVal = this.backupOperator.performBackup(s, i, this.agentDefinitions, this.qSources);
 			maxChange = Math.max(maxChange, Math.abs(newVal-oldVal));
 			qsource.setValue(sh, newVal);
 		}
@@ -212,7 +213,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	public class JointActionTransitions{
 		public JointAction ja;
 		public List<StateTransitionProb> tps;
-		public List<Map<String, Double>> jrs;
+		public List<double[]> jrs;
 		
 		
 		/**
@@ -224,9 +225,9 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 			FullJointModel model = (FullJointModel)MADynamicProgramming.this.jointModel;
 			this.ja = ja;
 			this.tps = model.stateTransitions(s, ja);
-			this.jrs = new ArrayList<Map<String,Double>>(this.tps.size());
+			this.jrs = new ArrayList<double[]>(this.tps.size());
 			for(StateTransitionProb tp : this.tps){
-				Map<String, Double> jr = MADynamicProgramming.this.jointRewardFunction.reward(s, ja, tp.s);
+				double[] jr = MADynamicProgramming.this.jointRewardFunction.reward(s, ja, tp.s);
 				this.jrs.add(jr);
 			}
 		}
@@ -243,9 +244,9 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 	protected class BackupBasedQSource implements QSourceForSingleAgent{
 
 		/**
-		 * The agent name for which this value function is assigned.
+		 * The agent for which this value function is assigned.
 		 */
-		protected String agentName;
+		protected int agentNum;
 		
 		/**
 		 * The tabular value function
@@ -255,10 +256,10 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 		
 		/**
 		 * Initializes a value function for the agent of the given name.
-		 * @param agentName the name of the agent for which the value function corresponds.
+		 * @param agentNum the name of the agent for which the value function corresponds.
 		 */
-		public BackupBasedQSource(String agentName){
-			this.agentName = agentName;
+		public BackupBasedQSource(int agentNum){
+			this.agentNum = agentNum;
 		}
 		
 		@Override
@@ -275,7 +276,7 @@ public abstract class MADynamicProgramming implements MultiAgentQSourceProvider{
 					StateTransitionProb tp = jat.tps.get(i);
 					double p = tp.p;
 					HashableState sh = MADynamicProgramming.this.hashingFactory.hashState(tp.s);
-					double r = jat.jrs.get(i).get(this.agentName);
+					double r = jat.jrs.get(i)[this.agentNum];
 					double vprime = this.getValue(sh);
 					
 					

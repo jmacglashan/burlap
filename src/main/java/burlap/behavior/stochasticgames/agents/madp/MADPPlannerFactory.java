@@ -6,13 +6,13 @@ import burlap.behavior.stochasticgames.madynamicprogramming.dpplanners.MAValueIt
 import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.core.TerminalFunction;
-import burlap.statehashing.HashableStateFactory;
+import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
-import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.SGDomain;
+import burlap.statehashing.HashableStateFactory;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * An interface for generating {@link burlap.behavior.stochasticgames.madynamicprogramming.MADynamicProgramming} objects. This is useful for the
@@ -83,7 +83,7 @@ public interface MADPPlannerFactory {
 		/**
 		 * The agent definitions for which planning is performed.
 		 */
-		protected Map<String, SGAgentType>		agentDefinitions = null;
+		protected List<SGAgentType>		agentDefinitions = null;
 		
 		/**
 		 * The joint action model to use in planning.
@@ -205,7 +205,7 @@ public interface MADPPlannerFactory {
 		 * @param maxDelta the threshold that causes VI to terminate when the max Q-value change is less than it
 		 * @param maxIterations the maximum number of iterations allowed
 		 */
-		public MAVIPlannerFactory(SGDomain domain, Map<String, SGAgentType> agentDefinitions, JointModel jointModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
+		public MAVIPlannerFactory(SGDomain domain, List<SGAgentType> agentDefinitions, JointModel jointModel, JointRewardFunction jointRewardFunction, TerminalFunction terminalFunction,
 								  double discount, HashableStateFactory hashingFactory, QFunction qInit, SGBackupOperator backupOperator, double maxDelta, int maxIterations){
 			
 			this.domain = domain;

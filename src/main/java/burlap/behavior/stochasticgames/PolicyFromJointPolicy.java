@@ -6,8 +6,7 @@ import burlap.behavior.policy.support.ActionProb;
 import burlap.datastructures.HashedAggregator;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.Map;
  * this assumption may not always be correct, depending on the joint policy.
  * <p>
  * When the agent name for this policy is
- * set, it automatically calls the {@link JointPolicy#setTargetAgent(String)} method of the source joint policy with the same
+ * set, it automatically calls the {@link JointPolicy#setTargetAgent(int)} method of the source joint policy with the same
  * agent name.
  * <p>
  * Action selection from the underlying joint policy may also be synchronized with multiple agents who are following the same
@@ -38,10 +37,8 @@ public class PolicyFromJointPolicy implements EnumerablePolicy {
 	 */
 	protected JointPolicy					jointPolicy;
 	
-	/**
-	 * The acting agent's name whose actions from the joint policy will be returned.
-	 */
-	protected String						actingAgentName;
+
+	protected int actingAgent;
 	
 	
 	protected boolean						synchronizeJointActionSelectionAmongAgents = false;
@@ -68,24 +65,24 @@ public class PolicyFromJointPolicy implements EnumerablePolicy {
 	
 	/**
 	 * Initializes with the acting agent name whose actions from the underlying joint policy will be returned.
-	 * @param actingAgentName the acting agent name
+	 * @param actingAgent the acting agent name
 	 * @param jointPolicy the underlying joint polciy
 	 */
-	public PolicyFromJointPolicy(String actingAgentName, JointPolicy jointPolicy){
+	public PolicyFromJointPolicy(int actingAgent, JointPolicy jointPolicy){
 		this.jointPolicy = jointPolicy;
-		this.setActingAgentName(actingAgentName);
+		this.setActingAgent(actingAgent);
 	}
 	
 	/**
 	 * Initializes with the acting agent name whose actions from the underlying joint policy will be returned and 
 	 * whether actions should be synchronized with other agents following the same underlying joint policy.
-	 * @param actingAgentName the acting agent name
+	 * @param actingAgent the acting agent name
 	 * @param jointPolicy the underlying joint polciy
 	 * @param synchronizeJointActionSelectionAmongAgents whether actions should be synchronized with other agents following the same underlying joint policy.
 	 */
-	public PolicyFromJointPolicy(String actingAgentName, JointPolicy jointPolicy, boolean synchronizeJointActionSelectionAmongAgents){
-		this.setActingAgentName(actingAgentName);
+	public PolicyFromJointPolicy(int actingAgent, JointPolicy jointPolicy, boolean synchronizeJointActionSelectionAmongAgents){
 		this.jointPolicy = jointPolicy;
+		this.setActingAgent(actingAgent);
 		this.synchronizeJointActionSelectionAmongAgents = synchronizeJointActionSelectionAmongAgents;
 	}
 	
@@ -108,11 +105,11 @@ public class PolicyFromJointPolicy implements EnumerablePolicy {
 	
 	/**
 	 * Sets the acting agents name
-	 * @param agentName the acting agent's name
+	 * @param agentNum the acting agent
 	 */
-	public void setActingAgentName(String agentName){
-		this.actingAgentName = agentName;
-		this.jointPolicy.setTargetAgent(agentName);
+	public void setActingAgent(int agentNum){
+		this.actingAgent = agentNum;
+		this.jointPolicy.setTargetAgent(agentNum);
 	}
 	
 	
@@ -126,20 +123,20 @@ public class PolicyFromJointPolicy implements EnumerablePolicy {
 	}
 	
 	/**
-	 * Returns the acting agent's name
-	 * @return the acting agent's name
+	 * Returns the acting agent
+	 * @return the acting agent
 	 */
-	public String getActingAgentName(){
-		return this.actingAgentName;
+	public int getActingAgent(){
+		return this.actingAgent;
 	}
 	
 	@Override
 	public Action action(State s) {
 		if(!this.synchronizeJointActionSelectionAmongAgents){
-			return ((JointAction)this.jointPolicy.action(s)).action(this.actingAgentName);
+			return ((JointAction)this.jointPolicy.action(s)).action(this.actingAgent);
 		}
 		else{
-			return this.jointPolicy.getAgentSynchronizedActionSelection(this.actingAgentName, s);
+			return this.jointPolicy.getAgentSynchronizedActionSelection(this.actingAgent, s);
 		}
 	}
 
@@ -156,15 +153,15 @@ public class PolicyFromJointPolicy implements EnumerablePolicy {
 		}
 
 		List<ActionProb> jaProbs = ((EnumerablePolicy)this.jointPolicy).policyDistribution(s);
-		HashedAggregator<SGAgentAction> marginalized = new HashedAggregator<SGAgentAction>();
+		HashedAggregator<Action> marginalized = new HashedAggregator<Action>();
 		for(ActionProb ap : jaProbs){
 			JointAction ja = (JointAction)ap.ga;
-			SGAgentAction thisAgentsAction = ja.action(this.actingAgentName);
+			Action thisAgentsAction = ja.action(this.actingAgent);
 			marginalized.add(thisAgentsAction, ap.pSelection);
 		}
 		
 		List<ActionProb> finalProbs = new ArrayList<ActionProb>(marginalized.size());
-		for(Map.Entry<SGAgentAction, Double> e : marginalized.entrySet()){
+		for(Map.Entry<Action, Double> e : marginalized.entrySet()){
 			ActionProb ap = new ActionProb(e.getKey(), e.getValue());
 			finalProbs.add(ap);
 		}
@@ -186,7 +183,7 @@ public class PolicyFromJointPolicy implements EnumerablePolicy {
 	 */
 	public PolicyFromJointPolicy copy(){
 		PolicyFromJointPolicy np = new PolicyFromJointPolicy(this.jointPolicy.copy());
-		np.setActingAgentName(this.actingAgentName);
+		np.setActingAgent(this.actingAgent);
 		return np;
 	}
 	

@@ -2,7 +2,7 @@ package burlap.mdp.stochasticgames.model;
 
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;
 import java.util.List;

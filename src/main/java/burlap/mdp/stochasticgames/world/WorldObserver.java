@@ -1,9 +1,7 @@
 package burlap.mdp.stochasticgames.world;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-
-import java.util.Map;
+import burlap.mdp.stochasticgames.JointAction;
 
 /**
  * An interface for defining {@link World} observers. Observers
@@ -25,7 +23,7 @@ public interface WorldObserver {
 	 * @param reward the joint reward received by the agents
 	 * @param sp the next state of the world
 	 */
-	void observe(State s, JointAction ja, Map<String, Double> reward, State sp);
+	void observe(State s, JointAction ja, double[] reward, State sp);
 
 	/**
 	 * This method is called whenever a game in a world ends.

@@ -3,7 +3,7 @@ package burlap.behavior.stochasticgames;
 import burlap.behavior.policy.Policy;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
@@ -17,12 +17,12 @@ import java.util.*;
  * An agent definition consists of an agent name and their {@link SGAgentType}, the latter of which specifies the set of individual actions
  * that they can take and which object class represents their state.
  * <p>
- * It is not uncommon for some joint policies to be defined from a privledged agent's position. This class also contains an abstract method
- * for setting that target privledge agent: {@link #setTargetAgent(String)}. If the joint policy is agent agnostic, then this method
+ * It is not uncommon for some joint policies to be defined from a privileged agent's position. This class also contains an abstract method
+ * for setting that target privileged agent: {@link #setTargetAgent(int)}. If the joint policy is agent agnostic, then this method
  * does not need to do anything.
  * <p>
- * This class can also be used to synchonize the action selection of multiple agents according to the same sampled joint action. This is achieved
- * by using the {@link #getAgentSynchronizedActionSelection(String, State)} method, which returns the single action for each agent (of the specified
+ * This class can also be used to synchronize the action selection of multiple agents according to the same sampled joint action. This is achieved
+ * by using the {@link #getAgentSynchronizedActionSelection(int, State)} method, which returns the single action for each agent (of the specified
  * name) from the same sampled joint action until all agents defined in the policy have queried the method for their action selection.
  * @author James MacGlashan
  *
@@ -32,7 +32,7 @@ public abstract class JointPolicy implements Policy {
 	/**
 	 * The agent definitions that define the set of possible joint actions in each state.
 	 */
-	protected Map<String, SGAgentType>		agentsInJointPolicy;
+	protected List<SGAgentType>		agentsInJointPolicy;
 	
 	/**
 	 * The last synchronized joint action that was selected
@@ -40,9 +40,9 @@ public abstract class JointPolicy implements Policy {
 	protected JointAction					lastSynchronizedJointAction = null;
 	
 	/**
-	 * The agents whose actiosn have been syncrhonized so far
+	 * The agents whose actions have been synchronized so far
 	 */
-	protected Set<String>					agentsSyncrhonizedSoFar = new HashSet<String>();
+	protected Set<Integer> agentsSynchronizedSoFar = new HashSet<Integer>();
 	
 	/**
 	 * The last state in which synchronized actions were queried.
@@ -56,7 +56,7 @@ public abstract class JointPolicy implements Policy {
 	 * Sets the agent definitions that define the set of possible joint actions in each state.
 	 * @param agentsInJointPolicy the agent definitions that define the set of possible joint actions in each state.
 	 */
-	public void setAgentsInJointPolicy(Map<String, SGAgentType> agentsInJointPolicy){
+	public void setAgentTypesInJointPolicy(List<SGAgentType> agentsInJointPolicy){
 		this.agentsInJointPolicy = agentsInJointPolicy;
 	}
 	
@@ -66,9 +66,9 @@ public abstract class JointPolicy implements Policy {
 	 * @param agents the set of agents that will be involved in a joint aciton.
 	 */
 	public void setAgentsInJointPolicy(List<SGAgent> agents){
-		this.agentsInJointPolicy = new HashMap<String, SGAgentType>(agents.size());
+		this.agentsInJointPolicy = new ArrayList<SGAgentType>(agents.size());
 		for(SGAgent agent : agents){
-			this.agentsInJointPolicy.put(agent.getAgentName(), agent.getAgentType());
+			this.agentsInJointPolicy.add(agent.agentType());
 		}
 	}
 	
@@ -88,7 +88,7 @@ public abstract class JointPolicy implements Policy {
 	 * @return the set of all possible {@link JointAction} objects.
 	 */
 	public List<JointAction> getAllJointActions(State s){
-		return JointAction.getAllJointActions(s, agentsInJointPolicy);
+		return JointAction.getAllJointActionsFromTypes(s, agentsInJointPolicy);
 	}
 	
 	
@@ -97,39 +97,39 @@ public abstract class JointPolicy implements Policy {
 	 * agent names to their agent type.
 	 * @return a map specifying the agents who contribute actions to this joint policy
 	 */
-	public Map<String, SGAgentType> getAgentsInJointPolicy(){
+	public List<SGAgentType> getAgentsInJointPolicy(){
 		return this.agentsInJointPolicy;
 	}
 	
 	
 	/**
-	 * This method returns the action for a single agent by a synchonrized sampling of this joint policy,
+	 * This method returns the action for a single agent by a synchronized sampling of this joint policy,
 	 * which enables multiple agents to query this policy object and act according to the same selected joint
 	 * actions from it. This is useful when decisions are made from a "referee" who selects the joint action
-	 * that dictates the behavior of each agent. The synchonization is implemented by selecting a joint action.
+	 * that dictates the behavior of each agent. The synchronization is implemented by selecting a joint action.
 	 * Each time an agent queries for their action, it is drawn from the previously sampled joint action.
 	 * A new joint action is only selected after each agent defined in this objects {@link #agentsInJointPolicy} member 
 	 * has queried this method for their action or until an action for a different state is queried (that is, *either* condition
 	 * will cause the joint action to be resampled).
-	 * @param agentName the agent name whose action in this joint policy is being queried
+	 * @param agentNum the agent whose action in this joint policy is being queried
 	 * @param s the state in which the action is to be selected.
 	 * @return the single agent action to be taken according to the synchonrized joint action that was selected.
 	 */
-	public Action getAgentSynchronizedActionSelection(String agentName, State s){
+	public Action getAgentSynchronizedActionSelection(int agentNum, State s){
 		
 		if(this.lastSyncedState == null || !this.lastSyncedState.equals(s)){
 			//then reset syncrhonization
 			this.lastSyncedState = s;
-			this.agentsSyncrhonizedSoFar.clear();
+			this.agentsSynchronizedSoFar.clear();
 			this.lastSynchronizedJointAction = (JointAction)this.action(s);
 		}
 		
-		Action a = this.lastSynchronizedJointAction.action(agentName);
-		this.agentsSyncrhonizedSoFar.add(agentName);
-		if(this.agentsSyncrhonizedSoFar.containsAll(this.agentsInJointPolicy.keySet())){
+		Action a = this.lastSynchronizedJointAction.action(agentNum);
+		this.agentsSynchronizedSoFar.add(agentNum);
+		if(this.agentsSynchronizedSoFar.size() == this.agentsInJointPolicy.size()){
 			//then we're finished getting the actions for all agents and enable the next query
 			this.lastSyncedState = null;
-			this.agentsSyncrhonizedSoFar.clear();
+			this.agentsSynchronizedSoFar.clear();
 		}
 		
 		return a;
@@ -139,10 +139,10 @@ public abstract class JointPolicy implements Policy {
 	
 	
 	/**
-	 * Sets the target privledged agent from which this joint policy is defined.
-	 * @param agentName the name of the target agent.
+	 * Sets the target privileged agent from which this joint policy is defined.
+	 * @param agentNum the target agent.
 	 */
-	public abstract void setTargetAgent(String agentName);
+	public abstract void setTargetAgent(int agentNum);
 	
 	
 	

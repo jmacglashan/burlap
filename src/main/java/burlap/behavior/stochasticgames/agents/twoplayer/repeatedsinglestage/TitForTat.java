@@ -1,14 +1,14 @@
 package burlap.behavior.stochasticgames.agents.twoplayer.repeatedsinglestage;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agent.AgentFactory;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.action.SGAgentActionType;
-
-import java.util.Map;
+import burlap.mdp.stochasticgames.agent.AgentFactory;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.world.World;
 
 
 /**
@@ -19,35 +19,39 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class TitForTat extends SGAgent {
+public class TitForTat extends SGAgentBase {
 
 	/**
 	 * This agent's cooperate action
 	 */
-	protected SGAgentActionType myCoop;
+	protected Action myCoop;
 	
 	/**
 	 * This agent's defect action
 	 */
-	protected SGAgentActionType myDefect;
+	protected Action myDefect;
 	
 	/**
 	 * The opponent's cooperate action
 	 */
-	protected SGAgentActionType opponentCoop;
+	protected Action opponentCoop;
 	
 	/**
 	 * The opponent's defect action
 	 */
-	protected SGAgentActionType opponentDefect;
+	protected Action opponentDefect;
 	
 	
 	
 	/**
 	 * The last opponent's move
 	 */
-	protected SGAgentAction lastOpponentMove;
-	
+	protected Action lastOpponentMove;
+
+
+	protected int agentNum;
+
+	protected int otherNum;
 	
 	/**
 	 * Initializes with the specified cooperate and defect actions for both players.
@@ -55,14 +59,14 @@ public class TitForTat extends SGAgent {
 	 * @param coop the cooperate action for both players
 	 * @param defect the defect action for both players
 	 */
-	public TitForTat(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
+	public TitForTat(SGDomain domain, Action coop, Action defect){
 		this.init(domain);
 		this.myCoop = coop;
 		this.myDefect = defect;
 		this.opponentCoop = coop;
 		this.opponentDefect = defect;
 		
-		this.lastOpponentMove = opponentCoop.associatedAction("", "");
+		this.lastOpponentMove = null;
 	}
 	
 	/**
@@ -73,37 +77,35 @@ public class TitForTat extends SGAgent {
 	 * @param opponentCoop the opponent's cooperate action
 	 * @param opponentDefect the opponent's defect action
 	 */
-	public TitForTat(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentCoop, SGAgentActionType opponentDefect){
+	public TitForTat(SGDomain domain, Action myCoop, Action myDefect, Action opponentCoop, Action opponentDefect){
 		this.init(domain);
 		this.myCoop = myCoop;
 		this.myDefect = myDefect;
 		this.opponentCoop = opponentCoop;
 		this.opponentDefect = opponentDefect;
 
-		this.lastOpponentMove = opponentCoop.associatedAction("", "");
+		this.lastOpponentMove = null;
 	}
 	
 	@Override
-	public void gameStarting() {
-		this.lastOpponentMove = opponentCoop.associatedAction("","");
+	public void gameStarting(World w, int agentNum) {
+		this.agentNum = agentNum;
+		this.world = w;
+		this.otherNum = agentNum == 0 ? 1 : 0;
+		this.lastOpponentMove = null;
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
-		if(lastOpponentMove.actionName().equals(opponentCoop.typeName())){
-			return myCoop.associatedAction(this.worldAgentName, "");
+	public Action action(State s) {
+		if(lastOpponentMove.equals(opponentCoop)){
+			return myCoop;
 		}
-		return myDefect.associatedAction(this.worldAgentName, "");
+		return myDefect;
 	}
 
 	@Override
-	public void observeOutcome(State s, JointAction jointAction, Map<String, Double> jointReward, State sprime, boolean isTerminal) {
-		for(SGAgentAction gsa : jointAction){
-			if(!gsa.actingAgent().equals(this.worldAgentName)){
-				this.lastOpponentMove = gsa;
-			}
-		}
-
+	public void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime, boolean isTerminal) {
+		this.lastOpponentMove = jointAction.action(otherNum);
 	}
 
 	@Override
@@ -123,22 +125,22 @@ public class TitForTat extends SGAgent {
 		/**
 		 * This agent's cooperate action
 		 */
-		protected SGAgentActionType myCoop;
+		protected Action myCoop;
 		
 		/**
 		 * This agent's defect action
 		 */
-		protected SGAgentActionType myDefect;
+		protected Action myDefect;
 		
 		/**
 		 * The opponent's cooperate action
 		 */
-		protected SGAgentActionType opponentCoop;
+		protected Action opponentCoop;
 		
 		/**
 		 * The opponent's defect action
 		 */
-		protected SGAgentActionType opponentDefect;
+		protected Action opponentDefect;
 		
 		/**
 		 * The domain in which the agent will play
@@ -152,7 +154,7 @@ public class TitForTat extends SGAgent {
 		 * @param coop the cooperate action for both players
 		 * @param defect the defect action for both players
 		 */
-		public TitForTatAgentFactory(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
+		public TitForTatAgentFactory(SGDomain domain, Action coop, Action defect){
 			this.domain = domain;
 			this.myCoop = coop;
 			this.myDefect = defect;
@@ -169,7 +171,7 @@ public class TitForTat extends SGAgent {
 		 * @param opponentCoop the opponent's cooperate action
 		 * @param opponentDefect the opponent's defect action
 		 */
-		public TitForTatAgentFactory(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentCoop, SGAgentActionType opponentDefect){
+		public TitForTatAgentFactory(SGDomain domain, Action myCoop, Action myDefect, Action opponentCoop, Action opponentDefect){
 			this.domain = domain;
 			this.myCoop = myCoop;
 			this.myDefect = myDefect;
@@ -179,8 +181,9 @@ public class TitForTat extends SGAgent {
 		}
 		
 		@Override
-		public SGAgent generateAgent() {
-			return new TitForTat(domain, myCoop, myDefect, opponentCoop, opponentDefect);
+		public SGAgent generateAgent(String agentName, SGAgentType type) {
+			return new TitForTat(domain, myCoop, myDefect, opponentCoop, opponentDefect)
+					.setAgentDetails(agentName, type);
 		}
 		
 		

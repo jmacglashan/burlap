@@ -1,23 +1,24 @@
 package burlap.behavior.stochasticgames.agents;
 
 import burlap.behavior.policy.Policy;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agent.AgentFactory;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-
-import java.util.Map;
+import burlap.mdp.stochasticgames.agent.AgentFactory;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.world.World;
 
 /**
  * A class for an agent who makes decisions by following a specified strategy and does not respond to the other player's actions.
- * The policy object that determines actions can leave the actingAgent field empty/null, because this the {@link #getAction(State)} method
+ * The policy object that determines actions can leave the actingAgent field empty/null, because this the {@link #action(State)} method
  * will automatically replace it with whatever this agent's name is.
  * @author James MacGlashan
  *
  */
-public class SetStrategySGAgent extends SGAgent {
+public class SetStrategySGAgent extends SGAgentBase {
 
 	/**
 	 * The policy encoding the strategy this agent will follow
@@ -30,25 +31,24 @@ public class SetStrategySGAgent extends SGAgent {
 	 * @param domain the domain in which the agent will play
 	 * @param policy the strategy that the agent will follow
 	 */
-	public SetStrategySGAgent(SGDomain domain, Policy policy){
-		this.init(domain);
+	public SetStrategySGAgent(SGDomain domain, Policy policy, String agentName, SGAgentType type){
+		this.init(domain, agentName, type);
 		this.policy = policy;
 	}
 	
 	@Override
-	public void gameStarting() {
+	public void gameStarting(World w, int agentNum) {
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
-		SGAgentAction actSelection = (SGAgentAction)this.policy.action(s);
-		actSelection.setActingAgent(this.worldAgentName);
+	public Action action(State s) {
+		Action actSelection = this.policy.action(s);
 		return actSelection;
 	}
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction,
-			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+			double[] jointReward, State sprime, boolean isTerminal) {
 	}
 
 	@Override
@@ -76,8 +76,8 @@ public class SetStrategySGAgent extends SGAgent {
 		
 		
 		@Override
-		public SGAgent generateAgent() {
-			return new SetStrategySGAgent(domain, policy);
+		public SGAgent generateAgent(String agentName, SGAgentType type) {
+			return new SetStrategySGAgent(domain, policy, agentName, type);
 		}
 		
 		

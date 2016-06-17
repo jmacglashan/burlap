@@ -12,5 +12,5 @@ public interface MultiAgentQSourceProvider {
 	 * Returns an object that can provide Q-value sources for each agent.
 	 * @return a {@link AgentQSourceMap} object.
 	 */
-	public AgentQSourceMap getQSources();
+	AgentQSourceMap getQSources();
 }

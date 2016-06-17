@@ -6,7 +6,7 @@ import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.world.WorldObserver;
 import burlap.visualizer.Visualizer;
@@ -14,7 +14,6 @@ import burlap.visualizer.Visualizer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -124,7 +123,7 @@ public class VisualWorldObserver extends JFrame implements WorldObserver {
 
 
 	@Override
-	public void observe(State s, JointAction ja, Map<String, Double> reward, State sp) {
+	public void observe(State s, JointAction ja, double[] reward, State sp) {
 		
 		this.updateAndWait(sp);
 

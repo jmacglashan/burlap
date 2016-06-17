@@ -10,11 +10,12 @@ import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgen
 import burlap.behavior.stochasticgames.madynamicprogramming.policies.EGreedyMaxWellfare;
 import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.behavior.valuefunction.QFunction;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.HashableStateFactory;
@@ -35,7 +36,7 @@ import java.util.Map;
  * should maintain their own set of Q-values.
  * <p>
  * After an agent observes an outcome, it determines the change in Q-value. However, the agent will not actually update its Q-value
- * to the new value until it is asked for its next action ({@link #getAction(State)}) or until the {@link #gameTerminated()} message is sent.
+ * to the new value until it is asked for its next action ({@link #action(State)}) or until the {@link #gameTerminated()} message is sent.
  * Q-value updates are delayed in this way because if Q-values for each agent are shared and distributed among the agents, this ensures
  * that the Q-values are all updated after the next Q-value has been determined for each agent.
  * <p>
@@ -51,7 +52,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourceProvider{
+public class MultiAgentQLearning extends SGAgentBase implements MultiAgentQSourceProvider{
 
 	
 	/**
@@ -121,6 +122,8 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	 * The total number of learning steps performed by this agent.
 	 */
 	protected int													totalNumberOfSteps = 0;
+
+	protected int agentNum;
 	
 	
 	
@@ -136,8 +139,8 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 */
-	public MultiAgentQLearning(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory, double qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
-		this.init(d);
+	public MultiAgentQLearning(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory, double qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, String agentName, SGAgentType agentType){
+		this.init(d, agentName, agentType);
 		this.discount = discount;
 		this.learningRate = new ConstantLR(learningRate);
 		this.hashingFactory = hashFactory;
@@ -163,8 +166,8 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
 	 */
-	public MultiAgentQLearning(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, QFunction qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues){
-		this.init(d);
+	public MultiAgentQLearning(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, QFunction qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, String agentName, SGAgentType agentType){
+		this.init(d, agentName, agentType);
 		this.discount = discount;
 		this.learningRate = learningRate;
 		this.hashingFactory = hashFactory;
@@ -176,14 +179,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 		
 		this.learningPolicy = new PolicyFromJointPolicy(new EGreedyMaxWellfare(this, 0.1));
 	}
-	
-	
-	@Override
-	public void joinWorld(World w, SGAgentType as){
-		super.joinWorld(w, as);
-		this.learningPolicy.setActingAgentName(this.worldAgentName);
-	}
-	
+
 	
 	/**
 	 * Returns this agent's individual Q-value source
@@ -208,25 +204,29 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 			throw new RuntimeException("The underlining joint policy must be of type MAQSourcePolicy for the MultiAgentQLearning agent");
 		}
 		this.learningPolicy = p;
-		this.learningPolicy.setActingAgentName(this.worldAgentName);
 		((MAQSourcePolicy)this.learningPolicy.getJointPolicy()).setQSourceProvider(this);
 	}
 	
 	@Override
-	public void gameStarting() {
+	public void gameStarting(World w, int agentNum) {
+		this.agentNum = agentNum;
+		this.world = w;
+		this.learningPolicy.setActingAgent(agentNum);
 		if(this.qSourceMap == null){
 			if(this.queryOtherAgentsQSource){
 				this.qSourceMap = new MAQLControlledQSourceMap(this.world.getRegisteredAgents());
 			}
 			else{
-				Map<String, QSourceForSingleAgent> qSourceMapping = new HashMap<String, QSourceForSingleAgent>();
-				for(SGAgent a : this.world.getRegisteredAgents()){
+				Map<Integer, QSourceForSingleAgent> qSourceMapping = new HashMap<Integer, QSourceForSingleAgent>();
+				int aId = 0;
+				for(SGAgent a : w.getRegisteredAgents()){
 					if(a != this){
-						qSourceMapping.put(a.getAgentName(), new QSourceForSingleAgent.HashBackedQSource(this.hashingFactory, this.qInit));
+						qSourceMapping.put(aId, new QSourceForSingleAgent.HashBackedQSource(this.hashingFactory, this.qInit));
 					}
 					else{
-						qSourceMapping.put(a.getAgentName(), this.myQSource);
+						qSourceMapping.put(aId, this.myQSource);
 					}
+					aId++;
 				}
 				this.qSourceMap = new HashMapAgentQSourceMap(qSourceMapping);
 			}
@@ -237,21 +237,21 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
+	public Action action(State s) {
 		this.updateLatestQValue();
 		this.learningPolicy.getJointPolicy().setAgentsInJointPolicyFromWorld(this.world);
-		return (SGAgentAction)this.learningPolicy.action(s);
+		return this.learningPolicy.action(s);
 	}
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction,
-			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
+			double[] jointReward, State sprime, boolean isTerminal) {
 		
 		if(internalRewardFunction != null){
 			jointReward = internalRewardFunction.reward(s, jointAction, sprime);
 		}
 		
-		double r = jointReward.get(worldAgentName);
+		double r = jointReward[this.agentNum];
 		
 		if(r > 0.){
 			//System.out.println("Big reward.");
@@ -262,7 +262,7 @@ public class MultiAgentQLearning extends SGAgent implements MultiAgentQSourcePro
 		
 		double backUpValue = 0.;
 		if(!isTerminal){
-			backUpValue = this.backupOperator.performBackup(sprime, this.worldAgentName, this.world.getAgentDefinitions(), this.qSourceMap);
+			backUpValue = this.backupOperator.performBackup(sprime, this.agentNum, this.world.getAgentDefinitions(), this.qSourceMap);
 		}
 		
 		this.nextQValue = qToUpdate.q + this.learningRate.pollLearningRate(this.totalNumberOfSteps, s, jointAction) * (r + (this.discount * backUpValue) - this.qToUpdate.q);

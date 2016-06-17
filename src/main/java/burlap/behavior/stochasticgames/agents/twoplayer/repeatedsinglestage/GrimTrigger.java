@@ -1,44 +1,46 @@
 package burlap.behavior.stochasticgames.agents.twoplayer.repeatedsinglestage;
 
+import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.agent.AgentFactory;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.action.SGAgentActionType;
-
-import java.util.Map;
+import burlap.mdp.stochasticgames.agent.AgentFactory;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentBase;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.world.World;
 
 
 /**
  * A class for an agent that plays grim trigger. The agent starts by following a "cooperate" action. If at any point their opponent plays
- * a "defect" action, then this agent will play their "defect" action for the rest of the repeated game (until the {@link #gameStarting()} method is called again).
+ * a "defect" action, then this agent will play their "defect" action for the rest of the repeated game (until the {@link #gameStarting(World, int)} method is called again).
  * @author James MacGlashan
  *
  */
-public class GrimTrigger extends SGAgent {
+public class GrimTrigger extends SGAgentBase {
 
 	/**
 	 * This agent's cooperate action
 	 */
-	protected SGAgentActionType myCoop;
+	protected Action myCoop;
 	
 	/**
 	 * This agent's defect action
 	 */
-	protected SGAgentActionType myDefect;
+	protected Action myDefect;
 	
 	/**
 	 * The opponent's defect action
 	 */
-	protected SGAgentActionType opponentDefect;
+	protected Action opponentDefect;
 	
 	
 	/**
 	 * Whether this agent will play its defect action or not.
 	 */
 	protected boolean grimTrigger = false;
+
+	protected int agentNum;
 	
 	
 	/**
@@ -47,7 +49,7 @@ public class GrimTrigger extends SGAgent {
 	 * @param coop the cooperate action for both players
 	 * @param defect the defect action for both players
 	 */
-	public GrimTrigger(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
+	public GrimTrigger(SGDomain domain, Action coop, Action defect){
 		this.init(domain);
 		this.myCoop = coop;
 		this.myDefect = defect;
@@ -62,7 +64,7 @@ public class GrimTrigger extends SGAgent {
 	 * @param myDefect this agent's defect action
 	 * @param opponentDefect the opponent's defect action
 	 */
-	public GrimTrigger(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentDefect){
+	public GrimTrigger(SGDomain domain, Action myCoop, Action myDefect, Action opponentDefect){
 		this.init(domain);
 		this.myCoop = myCoop;
 		this.myDefect = myDefect;
@@ -70,27 +72,29 @@ public class GrimTrigger extends SGAgent {
 	}
 	
 	@Override
-	public void gameStarting() {
+	public void gameStarting(World w, int agentNum) {
+		this.world = w;
+		this.agentNum = agentNum;
 		grimTrigger = false;
 	}
 
 	@Override
-	public SGAgentAction getAction(State s) {
+	public Action action(State s) {
 		if(this.grimTrigger){
-			return myDefect.associatedAction(this.worldAgentName, "");
+			return myDefect;
 		}
-		return myCoop.associatedAction(this.worldAgentName, "");
+		return myCoop;
 	}
 
 	@Override
 	public void observeOutcome(State s, JointAction jointAction,
-			Map<String, Double> jointReward, State sprime, boolean isTerminal) {
-		
-		for(SGAgentAction gsa : jointAction){
-			if(!gsa.actingAgent().equals(this.worldAgentName) && this.opponentDefect.typeName().equals(gsa.actionName())){
-			    grimTrigger = true;
-			}
+			double[] jointReward, State sprime, boolean isTerminal) {
+
+		int oagent = this.agentNum == 0 ? 1 : 0;
+		if(jointAction.action(oagent).equals(opponentDefect)){
+			grimTrigger = true;
 		}
+
 
 	}
 
@@ -110,17 +114,17 @@ public class GrimTrigger extends SGAgent {
 		/**
 		 * The agent's cooperate action
 		 */
-		protected SGAgentActionType myCoop;
+		protected Action myCoop;
 		
 		/**
 		 * The agent's defect action
 		 */
-		protected SGAgentActionType myDefect;
+		protected Action myDefect;
 		
 		/**
 		 * The opponent's defect action
 		 */
-		protected SGAgentActionType opponentDefect;
+		protected Action opponentDefect;
 		
 		/**
 		 * The domain in which the agent will play
@@ -134,7 +138,7 @@ public class GrimTrigger extends SGAgent {
 		 * @param coop the cooperate action for both players
 		 * @param defect the defect action for both players
 		 */
-		public GrimTriggerAgentFactory(SGDomain domain, SGAgentActionType coop, SGAgentActionType defect){
+		public GrimTriggerAgentFactory(SGDomain domain, Action coop, Action defect){
 			this.domain = domain;
 			this.myCoop = coop;
 			this.myDefect = defect;
@@ -149,7 +153,7 @@ public class GrimTrigger extends SGAgent {
 		 * @param myDefect the agent's defect action
 		 * @param opponentDefect the opponent's defect action
 		 */
-		public GrimTriggerAgentFactory(SGDomain domain, SGAgentActionType myCoop, SGAgentActionType myDefect, SGAgentActionType opponentDefect){
+		public GrimTriggerAgentFactory(SGDomain domain, Action myCoop, Action myDefect, Action opponentDefect){
 			this.domain = domain;
 			this.myCoop = myCoop;
 			this.myDefect = myDefect;
@@ -157,8 +161,9 @@ public class GrimTrigger extends SGAgent {
 		}
 		
 		@Override
-		public SGAgent generateAgent() {
-			return new GrimTrigger(domain, myCoop, myDefect, opponentDefect);
+		public SGAgent generateAgent(String agentName, SGAgentType type) {
+			return new GrimTrigger(domain, myCoop, myDefect, opponentDefect)
+					.setAgentDetails(agentName, type);
 		}
 		
 		

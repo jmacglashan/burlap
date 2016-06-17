@@ -8,7 +8,7 @@ import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.IdentityStateMapping;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.SGStateGenerator;
 import burlap.mdp.stochasticgames.agent.SGAgent;
@@ -18,10 +18,7 @@ import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 
 /**
@@ -38,10 +35,8 @@ public class World {
 
 	protected SGDomain domain;
 	protected State								currentState;
-	protected List <SGAgent>						agents;
-	protected Map<SGAgentType, List<SGAgent>>		agentsByType;
+	protected List <SGAgent>					agents;
 	protected HashedAggregator<String>			agentCumulativeReward;
-	protected Map<String, SGAgentType>			agentDefinitions;
 	
 	protected JointModel worldModel;
 	protected JointRewardFunction jointRewardFunction;
@@ -62,7 +57,7 @@ public class World {
 	
 	protected int								debugId;
 
-	protected Map<String, Double>				lastRewards = new HashMap<String, Double>();
+	protected double[]							lastRewards;
 
 
 
@@ -112,8 +107,6 @@ public class World {
 		this.abstractionForAgents = abstractionForAgents;
 		
 		agents = new ArrayList<SGAgent>();
-		agentsByType = new HashMap<SGAgentType, List<SGAgent>>();
-		this.agentDefinitions = new HashMap<String, SGAgentType>();
 		
 		agentCumulativeReward = new HashedAggregator<String>();
 		
@@ -158,26 +151,34 @@ public class World {
 	public double getCumulativeRewardForAgent(String aname){
 		return agentCumulativeReward.v(aname);
 	}
-	
-	
+
+
 	/**
-	 * Registers an agent to be a participant in this world.
-	 * @param a the agent to be registered in this world
-	 * @param at the agent type the agent will be playing as
-	 * @return the unique name that will identify this agent in this world.
+	 * Causes the provided agent to join the world
+	 * @param a the agent to join
 	 */
-	public String registerAgent(SGAgent a, SGAgentType at){
-		//don't register the same agent multiple times
-		if(this.agentInstanceExists(a)){
-			return a.getAgentName();
+	public void join(SGAgent a){
+
+		if(this.agentWithName(a.agentName()) != null){
+			throw new RuntimeException("Agent with provided name has already joined.");
 		}
-		
-		String agentName = this.getNewWorldNameForAgentAndIndex(a, at);
-		
-		return agentName;
-		
+		agents.add(a);
+
 	}
-	
+
+	/**
+	 * Returns the agent with the given name, or null if there is no agent with that name.
+	 * @param name the name of the agent
+	 * @return the {@link SGAgent} with the name in this world, or null if there is none.
+	 */
+	public SGAgent agentWithName(String name){
+		for(SGAgent agent : agents){
+			if(agent.agentName().equals(name)){
+				return agent;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * Returns the current world state
@@ -230,7 +231,7 @@ public class World {
 	 * Returns the last rewards received.
 	 * @return the last rewards reward delivered to each agent.
 	 */
-	public Map<String, Double> getLastRewards() {
+	public double[] getLastRewards() {
 		return lastRewards;
 	}
 
@@ -275,7 +276,7 @@ public class World {
 
 			State oldState = this.currentState;
 			this.currentState = this.worldModel.sample(this.currentState, ja);
-			Map<String,Double> rewards = this.jointRewardFunction.reward(oldState, ja, this.currentState);
+			double[] rewards = this.jointRewardFunction.reward(oldState, ja, this.currentState);
 			this.lastRewards = rewards;
 			this.lastJointAction = ja;
 
@@ -315,8 +316,10 @@ public class World {
 	 */
 	public GameEpisode runGame(int maxStages, State s){
 
+		int aid = 0;
 		for(SGAgent a : agents){
-			a.gameStarting();
+			a.gameStarting(this, aid);
+			aid++;
 		}
 
 		currentState = s;
@@ -411,7 +414,7 @@ public class World {
 		JointAction ja = new JointAction();
 		State abstractedCurrent = abstractionForAgents.mapState(currentState);
 		for(SGAgent a : agents){
-			ja.addAction(a.getAction(abstractedCurrent));
+			ja.addAction(a.action(abstractedCurrent));
 		}
 		this.lastJointAction = ja;
 		
@@ -422,15 +425,16 @@ public class World {
 		//now that we have the joint action, perform it
 		State sp = worldModel.sample(currentState, ja);
 		State abstractedPrime = this.abstractionForAgents.mapState(sp);
-		Map<String, Double> jointReward = jointRewardFunction.reward(currentState, ja, sp);
+		double[] jointReward = jointRewardFunction.reward(currentState, ja, sp);
 		
 		DPrint.cl(debugId, jointReward.toString());
-		
+
 		//index reward
-		for(Entry<String, Double> ar : jointReward.entrySet()){
-			double r = ar.getValue();
-			agentCumulativeReward.add(ar.getKey(), r);
+		for(int i = 0; i < jointReward.length; i++){
+			String agentName = this.agents.get(i).agentName();
+			agentCumulativeReward.add(agentName, jointReward[i]);
 		}
+
 		
 		//tell all the agents about it
 		for(SGAgent a : agents){
@@ -471,14 +475,14 @@ public class World {
 		
 		//now that we have the joint action, perform it
 		State sp = worldModel.sample(currentState, this.lastJointAction);
-		Map<String, Double> jointReward = jointRewardFunction.reward(currentState, this.lastJointAction, sp);
+		double[] jointReward = jointRewardFunction.reward(currentState, this.lastJointAction, sp);
 		
 		DPrint.cl(debugId, jointReward.toString());
-		
+
 		//index reward
-		for(Entry<String, Double> ar : jointReward.entrySet()){
-			double r = ar.getValue();
-			agentCumulativeReward.add(ar.getKey(), r);
+		for(int i = 0; i < jointReward.length; i++){
+			String agentName = this.agents.get(i).agentName();
+			agentCumulativeReward.add(agentName, jointReward[i]);
 		}
 		
 		
@@ -537,8 +541,19 @@ public class World {
 	 * Returns the agent definitions for the agents registered in this world.
 	 * @return the agent definitions for the agents registered in this world.
 	 */
-	public Map<String, SGAgentType> getAgentDefinitions(){
-		return this.agentDefinitions;
+	public List<SGAgentType> getAgentDefinitions(){
+
+//		Map<String, SGAgentType> types = new HashMap<String, SGAgentType>(agents.size());
+//		for(SGAgent agent : this.agents){
+//			types.put(agent.agentName(), agent.agentType());
+//		}
+//		return types;
+
+		List<SGAgentType> defs = new ArrayList<SGAgentType>(this.agents.size());
+		for(SGAgent a : this.agents){
+			defs.add(a.agentType());
+		}
+		return defs;
 	}
 	
 	
@@ -550,7 +565,7 @@ public class World {
 	public int getPlayerNumberForAgent(String aname){
 		for(int i = 0; i < agents.size(); i++){
 			SGAgent a = agents.get(i);
-			if(a.getAgentName().equals(aname)){
+			if(a.agentName().equals(aname)){
 				return i;
 			}
 		}
@@ -566,47 +581,8 @@ public class World {
 	public boolean gameIsRunning(){
 		return this.isRecordingGame;
 	}
+
 	
-	
-	/**
-	 * Returns a unique agent name for the given agent object and agent type for that agent.
-	 * @param a the agent for which a unique name is to be returned
-	 * @param type the agent type of the agent
-	 * @return a unique name for the agent
-	 */
-	protected String getNewWorldNameForAgentAndIndex(SGAgent a, SGAgentType type){
-	
-		
-		List <SGAgent> aots = agentsByType.get(type);
-		if(aots == null){
-			aots = new ArrayList<SGAgent>();
-			agentsByType.put(type, aots);
-		}
-		
-		String name = type.typeName + aots.size();
-		agents.add(a);
-		aots.add(a);
-		
-		
-		this.agentDefinitions.put(name, type);
-		
-		return name;
-	}
-	
-	
-	/**
-	 * Returns whether the reference for the given agent already exists in the registered agents
-	 * @param a the agent reference to check for
-	 * @return true if that agent reference is already registered; false otherwise
-	 */
-	protected boolean agentInstanceExists(SGAgent a){
-		for(SGAgent A : agents){
-			if(A == a){
-				return true;
-			}
-		}
-		
-		return false;
-	}
+
 
 }

@@ -12,9 +12,8 @@ import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.action.JointAction;
-import burlap.mdp.stochasticgames.action.SGActionUtils;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
+import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +74,7 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy implements Enumerab
 	}
 	
 	@Override
-	public void setTargetAgent(String agentName) {
+	public void setTargetAgent(int agentNum) {
 		//do nothing
 	}
 
@@ -83,7 +82,7 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy implements Enumerab
 	public JointPolicy copy() {
 		ECorrelatedQJointPolicy jp = new ECorrelatedQJointPolicy(this.objectiveType, this.epsilon);
 		jp.setQSourceProvider(this.qSourceProvider);
-		jp.setAgentsInJointPolicy(this.agentsInJointPolicy);
+		jp.setAgentTypesInJointPolicy(this.agentsInJointPolicy);
 		return jp;
 	}
 
@@ -99,18 +98,15 @@ public class ECorrelatedQJointPolicy extends MAQSourcePolicy implements Enumerab
 
 	@Override
 	public List<ActionProb> policyDistribution(State s) {
-		
-		List<String> agents = new ArrayList<String>(this.agentsInJointPolicy.keySet());
-		String targetAgentName = agents.get(0);
-		String otherAgentName = agents.get(1);
+
 		
 		AgentQSourceMap qSourceMap = this.qSourceProvider.getQSources();
 		
-		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(targetAgentName);
-		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(otherAgentName);
+		QSourceForSingleAgent forAgentQSource = qSourceMap.agentQSource(0);
+		QSourceForSingleAgent otherAgentQSource = qSourceMap.agentQSource(1);
 
-		List<SGAgentAction> forAgentGSAs = SGActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(targetAgentName).actions, targetAgentName, s);
-		List<SGAgentAction> otherAgentGSAs = SGActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(otherAgentName).actions, otherAgentName, s);
+		List<Action> forAgentGSAs = ActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(0).actions, s);
+		List<Action> otherAgentGSAs = ActionUtils.allApplicableActionsForTypes(this.agentsInJointPolicy.get(1).actions, s);
 
 		
 		double [][] payout1 = new double[forAgentGSAs.size()][otherAgentGSAs.size()];

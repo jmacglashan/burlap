@@ -1,23 +1,23 @@
 package burlap.shell.visual;
 
 import burlap.mdp.auxiliary.common.NullTermination;
+import burlap.mdp.core.Action;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.action.ActionType;
-import burlap.mdp.stochasticgames.action.JointAction;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.common.NullJointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.mdp.stochasticgames.world.WorldObserver;
-import burlap.mdp.stochasticgames.action.SGAgentAction;
-import burlap.mdp.stochasticgames.common.NullJointRewardFunction;
-import burlap.visualizer.Visualizer;
 import burlap.shell.BurlapShell;
 import burlap.shell.SGWorldShell;
 import burlap.shell.ShellObserver;
 import burlap.shell.command.world.JointActionCommand;
+import burlap.visualizer.Visualizer;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -54,7 +54,8 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	
 	protected SGDomain								domain;
 	protected World									w;
-	protected Map <String, SGAgentAction>		keyActionMap;
+	protected Map <String, burlap.mdp.core.Action>		keyActionMap;
+	protected Map<String, Integer>						keyAgentMap;
 	protected Map <String, String>						keyShellMap;
 
 
@@ -124,7 +125,8 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		this.domain = domain;
 		this.w = world;
 		this.painter = painter;
-		this.keyActionMap = new HashMap <String, SGAgentAction>();
+		this.keyActionMap = new HashMap <String, Action>();
+		this.keyAgentMap = new HashMap<String, Integer>();
 		this.keyShellMap = new HashMap <String, String>();
 
 		this.keyShellMap.put("`", "gs");
@@ -153,19 +155,21 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	 * @param key the key that will cause the action to be set
 	 * @param action the action to set when the specified key is pressed.
 	 */
-	public void addKeyAction(String key, SGAgentAction action){
+	public void addKeyAction(String key, int actingAgent, Action action){
 		keyActionMap.put(key, action);
+		keyAgentMap.put(key, actingAgent);
 	}
 
 	/**
 	 * Adds a key action mapping.
 	 * @param key the key that is pressed by the user
-	 * @param actingAgent the name of the acting agent for whom the action is specified
+	 * @param actingAgent the acting agent for this command
 	 * @param actionTypeName the name of the {@link ActionType}
 	 * @param paramStringRep the string representation of the action parameters
 	 */
-	public void addKeyAction(String key, String actingAgent, String actionTypeName, String paramStringRep){
-		keyActionMap.put(key, this.domain.getSGAgentAction(actionTypeName).associatedAction(actingAgent, paramStringRep));
+	public void addKeyAction(String key, int actingAgent, String actionTypeName, String paramStringRep){
+		keyActionMap.put(key, this.domain.getActionType(actionTypeName).associatedAction(paramStringRep));
+		keyAgentMap.put(key, actingAgent);
 	}
 
 
@@ -330,7 +334,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	}
 
 	@Override
-	public void observe(State s, JointAction ja, Map<String, Double> reward, State sp) {
+	public void observe(State s, JointAction ja, double[] reward, State sp) {
 		this.updateState(sp);
 	}
 
@@ -357,9 +361,10 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 		
 
 		//otherwise this could be an action, see if there is an action mapping
-		SGAgentAction toAdd = keyActionMap.get(key);
+		Action toAdd = keyActionMap.get(key);
+		Integer agent = keyAgentMap.get(key);
 		if(toAdd != null) {
-			((JointActionCommand)this.shell.resolveCommand("ja")).addGroundedActionToJoint(toAdd);
+			((JointActionCommand)this.shell.resolveCommand("ja")).setAction(agent, toAdd);
 		}
 
 		else{

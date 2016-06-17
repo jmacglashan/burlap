@@ -1,19 +1,15 @@
 package burlap.mdp.stochasticgames.tournament;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.AgentFactory;
+import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.mdp.stochasticgames.world.WorldGenerator;
-import burlap.mdp.stochasticgames.agent.SGAgentType;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 
 /**
@@ -193,9 +189,9 @@ public class Tournament {
 			
 			//have the matched agents join the world
 			for(MatchEntry me : match){
-				SGAgent a = agents.get(me.agentId).generateAgent();
-				a.joinWorld(w, me.agentType);
-				agentNameToId.put(a.getAgentName(), me.agentId);
+				SGAgent a = agents.get(me.agentId).generateAgent("agent" + me.agentId, me.agentType);
+				w.join(a);
+				agentNameToId.put(a.agentName(), me.agentId);
 				DPrint.c(debugId, me.agentId + " ");
 			}
 			DPrint.cl(debugId, "");
