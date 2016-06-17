@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.differentiableplanners.dp
 import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;

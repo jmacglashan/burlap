@@ -5,7 +5,7 @@ import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.behavior.functionapproximation.dense.NormalizedVariableFeatures;
 import burlap.behavior.functionapproximation.sparse.StateFeature;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.ArrayList;

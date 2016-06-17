@@ -9,7 +9,7 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableVal
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.singleagent.planning.stochastic.dpoperator.DPOperator;
 import burlap.behavior.valuefunction.QValue;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;

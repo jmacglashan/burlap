@@ -2,9 +2,9 @@ package burlap.behavior.singleagent.learning.modellearning.rmax;
 
 import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.TransitionProb;
 

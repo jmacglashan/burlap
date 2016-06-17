@@ -1,13 +1,13 @@
 package burlap.shell.visual;
 
 import burlap.mdp.auxiliary.common.NullTermination;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.common.NullJointRewardFunction;
@@ -54,7 +54,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	
 	protected SGDomain								domain;
 	protected World									w;
-	protected Map <String, burlap.mdp.core.Action>		keyActionMap;
+	protected Map <String, Action>		keyActionMap;
 	protected Map<String, Integer>						keyAgentMap;
 	protected Map <String, String>						keyShellMap;
 

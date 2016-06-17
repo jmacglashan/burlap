@@ -1,6 +1,6 @@
 package burlap.mdp.singleagent.environment.extensions;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
@@ -16,7 +16,7 @@ public interface EnvironmentObserver {
 	 * This method is called when an {@link burlap.mdp.singleagent.environment.Environment} receives an action to execute, but before the
 	 * {@link burlap.mdp.singleagent.environment.Environment} has completed execution.
 	 * @param o the current {@link burlap.mdp.singleagent.environment.Environment} observation in which the the action begins execution.
-	 * @param action the {@link burlap.mdp.core.Action} which will be executed in the {@link burlap.mdp.singleagent.environment.Environment}.
+	 * @param action the {@link Action} which will be executed in the {@link burlap.mdp.singleagent.environment.Environment}.
 	 */
 	void observeEnvironmentActionInitiation(State o, Action action);
 

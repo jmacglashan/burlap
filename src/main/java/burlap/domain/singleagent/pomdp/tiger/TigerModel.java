@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.pomdp.tiger;
 
 import burlap.mdp.auxiliary.StateGenerator;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;

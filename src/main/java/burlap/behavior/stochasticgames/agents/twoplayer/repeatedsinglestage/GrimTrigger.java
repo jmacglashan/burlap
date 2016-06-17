@@ -1,6 +1,6 @@
 package burlap.behavior.stochasticgames.agents.twoplayer.repeatedsinglestage;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;

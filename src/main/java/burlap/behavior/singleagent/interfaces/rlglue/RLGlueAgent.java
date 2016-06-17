@@ -323,7 +323,7 @@ public class RLGlueAgent implements Environment, AgentInterface {
 	}
 
 	@Override
-	public EnvironmentOutcome executeAction(burlap.mdp.core.Action ga) {
+	public EnvironmentOutcome executeAction(burlap.mdp.core.action.Action ga) {
 
 		if(this.curState == null){
 			this.blockUntilStateReceived();

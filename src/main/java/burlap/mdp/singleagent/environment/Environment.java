@@ -1,12 +1,12 @@
 package burlap.mdp.singleagent.environment;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 
 /**
  * Environments define a current observation represetned with a {@link State} and manage state and reward transitions when an action is executed in the environment through
- * the {@link #executeAction(burlap.mdp.core.Action)} method. {@link burlap.mdp.singleagent.environment.Environment}
+ * the {@link #executeAction(Action)} method. {@link burlap.mdp.singleagent.environment.Environment}
  * instances are what learning algorithms implementing {@link burlap.behavior.singleagent.learning.LearningAgent} interact with.
  * Maintaining an Environment ensures that transitions are protected from an agent manipulating the state
  * and are also useful when a BURLAP agent is interacting with external or real time systems such as robotics. Environments

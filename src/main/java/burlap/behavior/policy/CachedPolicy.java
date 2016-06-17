@@ -3,7 +3,7 @@ package burlap.behavior.policy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.HashableState;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.HashMap;

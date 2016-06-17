@@ -9,7 +9,7 @@ import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
 import burlap.behavior.singleagent.learning.modellearning.modelplanners.VIModelLearningPlanner;
 import burlap.behavior.singleagent.learning.modellearning.models.TabularModel;
 import burlap.behavior.singleagent.shaping.potential.PotentialFunction;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;

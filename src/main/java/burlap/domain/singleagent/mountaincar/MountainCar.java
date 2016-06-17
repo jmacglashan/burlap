@@ -1,14 +1,14 @@
 package burlap.domain.singleagent.mountaincar;
 
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.action.UniversalActionType;
+import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.singleagent.common.GoalBasedRF;
 import burlap.shell.visual.VisualExplorer;
 import burlap.mdp.singleagent.model.FactoredModel;

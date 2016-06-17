@@ -6,7 +6,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.learning.modellearning.ModelLearningPlanner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.FullModel;

@@ -1,13 +1,13 @@
 package burlap.shell.visual;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -168,7 +168,7 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 	/**
 	 * Specifies which action to execute for a given key press
 	 * @param key the key that is pressed by the user
-	 * @param action the {@link burlap.mdp.core.Action} to take when the key is pressed
+	 * @param action the {@link Action} to take when the key is pressed
 	 */
 	public void addKeyAction(String key, Action action){
 		keyActionMap.put(key, action);
@@ -430,9 +430,9 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 
 
 	/**
-	 * Executes the provided {@link burlap.mdp.core.Action} in the explorer's environment and records
+	 * Executes the provided {@link Action} in the explorer's environment and records
 	 * the result if episodes are being recorded.
-	 * @param ga the {@link burlap.mdp.core.Action} to execute.
+	 * @param ga the {@link Action} to execute.
 	 */
 	protected void executeAction(Action ga){
 		EnvironmentOutcome eo = env.executeAction(ga);

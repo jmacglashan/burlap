@@ -1,6 +1,6 @@
 package burlap.mdp.singleagent.model;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 

@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
 import burlap.behavior.singleagent.planning.stochastic.montecarlo.uct.UCTActionNode.UCTActionConstructor;
-import burlap.mdp.core.Action;
-import burlap.mdp.singleagent.action.ActionType;
-import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.core.action.Action;
+import burlap.mdp.core.action.ActionType;
+import burlap.mdp.core.action.ActionUtils;
 import burlap.statehashing.HashableState;
 
 import java.util.ArrayList;

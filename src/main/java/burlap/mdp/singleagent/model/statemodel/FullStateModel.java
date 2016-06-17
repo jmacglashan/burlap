@@ -1,7 +1,7 @@
 package burlap.mdp.singleagent.model.statemodel;
 
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
 

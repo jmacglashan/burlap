@@ -1,6 +1,6 @@
 package burlap.domain.singleagent.blocksworld;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.oo.ObjectParameterizedAction;
 import burlap.mdp.core.state.State;

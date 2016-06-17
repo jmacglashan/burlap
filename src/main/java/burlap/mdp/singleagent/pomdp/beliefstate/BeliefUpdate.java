@@ -1,6 +1,6 @@
 package burlap.mdp.singleagent.pomdp.beliefstate;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 /**

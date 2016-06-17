@@ -2,10 +2,10 @@ package burlap.behavior.singleagent.learning.lspi;
 
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.StateGenerator;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionType;
-import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.core.action.ActionType;
+import burlap.mdp.core.action.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;

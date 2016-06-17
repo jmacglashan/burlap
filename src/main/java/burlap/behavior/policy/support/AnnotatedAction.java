@@ -1,6 +1,6 @@
 package burlap.behavior.policy.support;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 
 /**
  * @author James MacGlashan.

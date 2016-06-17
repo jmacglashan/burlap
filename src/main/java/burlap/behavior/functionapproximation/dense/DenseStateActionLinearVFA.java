@@ -2,7 +2,7 @@ package burlap.behavior.functionapproximation.dense;
 
 import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
 import burlap.behavior.functionapproximation.FunctionGradient;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 /**

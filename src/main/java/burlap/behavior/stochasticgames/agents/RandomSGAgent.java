@@ -1,9 +1,9 @@
 package burlap.behavior.stochasticgames.agents;
 
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.core.action.ActionUtils;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentBase;
 import burlap.mdp.stochasticgames.world.World;

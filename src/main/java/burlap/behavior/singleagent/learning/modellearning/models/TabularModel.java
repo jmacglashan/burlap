@@ -1,9 +1,9 @@
 package burlap.behavior.singleagent.learning.modellearning.models;
 
 import burlap.behavior.singleagent.learning.modellearning.KWIKModel;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.core.action.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.FullModel;

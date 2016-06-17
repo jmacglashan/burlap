@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.functionapproximation.FunctionGradient;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 /**

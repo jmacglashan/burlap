@@ -1,7 +1,7 @@
 package burlap.domain.stochasticgames.gridgame;
 
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.oo.state.OOState;

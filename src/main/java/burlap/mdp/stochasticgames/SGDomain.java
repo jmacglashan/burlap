@@ -1,7 +1,7 @@
 package burlap.mdp.stochasticgames;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.stochasticgames.model.JointModel;
 
 import java.util.ArrayList;

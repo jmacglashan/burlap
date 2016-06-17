@@ -11,7 +11,7 @@ import burlap.behavior.singleagent.learnfromdemo.mlirl.support.DifferentiableRF;
 import burlap.behavior.valuefunction.QProvider;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.List;

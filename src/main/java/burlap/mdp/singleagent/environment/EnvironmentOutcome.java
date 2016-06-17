@@ -1,12 +1,12 @@
 package burlap.mdp.singleagent.environment;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 /**
  * A tuple for specifying the outcome of executing an action in an {@link burlap.mdp.singleagent.environment.Environment}.
  * The class consists of the previous environment observation (as a {@link State}) in which the action was taken;
- * the action taken (as a {@link burlap.mdp.core.Action}); the next environment observation (also a {@link State}
+ * the action taken (as a {@link Action}); the next environment observation (also a {@link State}
  * following the action; the reward received from the environment; and whether the new state of the environment is a
  * terminal state.
  * @author James MacGlashan.

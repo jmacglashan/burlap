@@ -10,9 +10,9 @@ import burlap.behavior.stochasticgames.madynamicprogramming.MultiAgentQSourcePro
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver;
 import burlap.behavior.stochasticgames.solvers.CorrelatedEquilibriumSolver.CorrelatedEquilibriumObjective;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionUtils;
+import burlap.mdp.core.action.ActionUtils;
 import burlap.mdp.stochasticgames.JointAction;
 
 import java.util.ArrayList;

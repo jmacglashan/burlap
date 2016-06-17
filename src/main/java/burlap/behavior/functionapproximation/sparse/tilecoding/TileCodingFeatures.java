@@ -5,7 +5,7 @@ import burlap.behavior.functionapproximation.sparse.LinearVFA;
 import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
 import burlap.behavior.functionapproximation.sparse.StateFeature;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.*;

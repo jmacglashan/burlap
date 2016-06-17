@@ -3,7 +3,7 @@ package burlap.behavior.singleagent.options.model;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.options.Option;
 import burlap.datastructures.HashedAggregator;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;

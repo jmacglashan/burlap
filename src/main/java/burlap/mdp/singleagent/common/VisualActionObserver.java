@@ -1,6 +1,6 @@
 package burlap.mdp.singleagent.common;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
@@ -81,7 +81,7 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 
 
 	/**
-	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(State, burlap.mdp.core.Action)}
+	 * If true, then a a state-action pair is rendered on calls to {@link #observeEnvironmentActionInitiation(State, Action)}
 	 * so long as the input {@link burlap.visualizer.Visualizer} has a set {@link burlap.visualizer.StateActionRenderLayer}. Default value is false.
 	 */
 	protected boolean			repaintOnActionInitiation = false;
@@ -164,7 +164,7 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 
 	/**
 	 * Sets whether the state-action should be updated when an action is initiated in an {@link burlap.mdp.singleagent.environment.Environment} via the
-	 * {@link #observeEnvironmentActionInitiation(State, burlap.mdp.core.Action)} method.
+	 * {@link #observeEnvironmentActionInitiation(State, Action)} method.
 	 * @param repaintOnActionInitiation if true, then state-action's are painted on action initiation; if false, they are not.
 	 */
 	public void setRepaintOnActionInitiation(boolean repaintOnActionInitiation) {
@@ -194,7 +194,7 @@ public class VisualActionObserver extends JFrame implements EnvironmentObserver 
 
 
 	@Override
-	public void observeEnvironmentActionInitiation(State o, burlap.mdp.core.Action action) {
+	public void observeEnvironmentActionInitiation(State o, Action action) {
 		if(this.repaintOnActionInitiation) {
 			this.painter.updateStateAction(o, action);
 			this.updatePropTextArea(o);

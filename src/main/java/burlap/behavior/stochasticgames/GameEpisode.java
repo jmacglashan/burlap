@@ -4,7 +4,7 @@ import burlap.behavior.stochasticgames.agents.RandomSGAgent;
 import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
 import burlap.mdp.auxiliary.common.ConstantStateGenerator;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;

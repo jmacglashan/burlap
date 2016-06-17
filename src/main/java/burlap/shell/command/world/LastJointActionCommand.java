@@ -1,6 +1,6 @@
 package burlap.shell.command.world;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.shell.BurlapShell;

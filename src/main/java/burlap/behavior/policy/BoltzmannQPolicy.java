@@ -5,7 +5,7 @@ import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.datastructures.BoltzmannDistribution;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 import javax.management.RuntimeErrorException;

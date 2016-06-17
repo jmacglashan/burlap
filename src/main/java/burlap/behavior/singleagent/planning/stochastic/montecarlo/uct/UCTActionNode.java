@@ -1,6 +1,6 @@
 package burlap.behavior.singleagent.planning.stochastic.montecarlo.uct;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.statehashing.HashableState;
 
 import java.util.ArrayList;

@@ -3,7 +3,7 @@ package burlap.domain.singleagent.rlglue;
 import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
 import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import org.rlcommunity.rlglue.codec.EnvironmentInterface;
@@ -90,7 +90,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 	/**
 	 * A mapping from action index identifiers (that RLGlue will use) to BURLAP actions and their parametrization specified as the index of objects in a state.
 	 */
-	protected Map<Integer, burlap.mdp.core.Action> actionMap = new HashMap<Integer, burlap.mdp.core.Action>();
+	protected Map<Integer, burlap.mdp.core.action.Action> actionMap = new HashMap<Integer, burlap.mdp.core.action.Action>();
 	
 
 	
@@ -133,8 +133,8 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 		State exampleState = this.stateGenerator.generateState();
 		int actionInd = 0;
 		for(ActionType a : this.domain.getActionTypes()){
-			List<burlap.mdp.core.Action> gas = a.allApplicableActions(exampleState);
-			for(burlap.mdp.core.Action ga : gas){
+			List<burlap.mdp.core.action.Action> gas = a.allApplicableActions(exampleState);
+			for(burlap.mdp.core.action.Action ga : gas){
 				this.actionMap.put(actionInd, ga);
 				actionInd++;
 			}
@@ -214,7 +214,7 @@ public class RLGlueEnvironment implements EnvironmentInterface {
 
 	@Override
 	public Reward_observation_terminal env_step(Action arg0) {
-		burlap.mdp.core.Action burlapAction = this.actionMap.get(arg0.getInt(0));
+		burlap.mdp.core.action.Action burlapAction = this.actionMap.get(arg0.getInt(0));
 		EnvironmentOutcome eo;
 		State nextState;
 		if(this.terminalVisits == 0) {

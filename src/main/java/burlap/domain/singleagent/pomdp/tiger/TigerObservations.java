@@ -1,7 +1,7 @@
 package burlap.domain.singleagent.pomdp.tiger;
 
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.pomdp.observations.DiscreteObservationFunction;
 import burlap.mdp.singleagent.pomdp.observations.ObservationProbability;

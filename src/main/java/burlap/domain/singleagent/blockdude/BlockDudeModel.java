@@ -3,7 +3,7 @@ package burlap.domain.singleagent.blockdude;
 import burlap.domain.singleagent.blockdude.state.BlockDudeAgent;
 import burlap.domain.singleagent.blockdude.state.BlockDudeCell;
 import burlap.domain.singleagent.blockdude.state.BlockDudeState;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;

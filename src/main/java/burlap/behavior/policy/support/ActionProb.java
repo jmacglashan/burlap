@@ -1,6 +1,6 @@
 package burlap.behavior.policy.support;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 
 /**
  * Class for storing an action and probability tuple. The probability represents the probability that the action will be selected.

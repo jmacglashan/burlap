@@ -1,6 +1,6 @@
 package burlap.behavior.functionapproximation.dense;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 import java.util.HashMap;

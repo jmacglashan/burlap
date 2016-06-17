@@ -310,7 +310,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		
 		
 		//add each action (which is taken in the state being renderd)
-		for(burlap.mdp.core.Action ga : curEA.actionSequence){
+		for(burlap.mdp.core.action.Action ga : curEA.actionSequence){
 			iterationListModel.addElement(ga.toString());
 		}
 		

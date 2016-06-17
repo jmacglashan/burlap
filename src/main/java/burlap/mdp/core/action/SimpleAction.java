@@ -1,4 +1,4 @@
-package burlap.mdp.core;
+package burlap.mdp.core.action;
 
 /**
  * A simple implementation of {@link Action} for unparameterized actions. Contains a single String for the name

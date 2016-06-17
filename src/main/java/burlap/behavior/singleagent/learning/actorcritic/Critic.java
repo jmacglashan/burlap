@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.learning.actorcritic;
 
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 
 

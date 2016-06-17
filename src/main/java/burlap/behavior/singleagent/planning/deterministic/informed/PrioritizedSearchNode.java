@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.planning.deterministic.informed;
 
 import burlap.behavior.singleagent.planning.deterministic.SearchNode;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.statehashing.HashableState;
 
 import java.util.Comparator;

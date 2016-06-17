@@ -1,6 +1,6 @@
 package burlap.mdp.core.oo;
 
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.state.ObjectInstance;
 
 /**

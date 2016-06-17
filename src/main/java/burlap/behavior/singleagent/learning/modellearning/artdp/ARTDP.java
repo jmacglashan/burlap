@@ -13,7 +13,7 @@ import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 
 import burlap.mdp.core.state.State;
 

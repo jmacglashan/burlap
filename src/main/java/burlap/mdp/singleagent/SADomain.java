@@ -1,7 +1,7 @@
 package burlap.mdp.singleagent;
 
 import burlap.mdp.core.Domain;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.singleagent.model.SampleModel;
 
 import java.util.*;

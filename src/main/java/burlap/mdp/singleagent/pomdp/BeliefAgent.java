@@ -1,7 +1,7 @@
 package burlap.mdp.singleagent.pomdp;
 
 import burlap.behavior.singleagent.Episode;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.pomdp.beliefstate.BeliefState;

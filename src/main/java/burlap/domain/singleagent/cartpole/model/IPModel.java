@@ -4,7 +4,7 @@ import burlap.debugtools.RandomFactory;
 import burlap.domain.singleagent.cartpole.CartPoleDomain;
 import burlap.domain.singleagent.cartpole.InvertedPendulum;
 import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;

@@ -3,7 +3,7 @@ package burlap.behavior.functionapproximation.dense.fourier;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.functionapproximation.sparse.SparseStateFeatures;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 

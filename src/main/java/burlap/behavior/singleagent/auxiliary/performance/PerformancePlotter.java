@@ -341,7 +341,7 @@ public class PerformancePlotter extends JFrame implements EnvironmentObserver {
 	}
 
 	@Override
-	public void observeEnvironmentActionInitiation(State o, burlap.mdp.core.Action action) {
+	public void observeEnvironmentActionInitiation(State o, burlap.mdp.core.action.Action action) {
 		//do nothing
 	}
 

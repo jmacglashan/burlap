@@ -1,7 +1,7 @@
 package burlap.behavior.singleagent.shaping.potential;
 
 import burlap.behavior.singleagent.shaping.ShapedRewardFunction;
-import burlap.mdp.core.Action;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.RewardFunction;
 

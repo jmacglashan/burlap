@@ -2,7 +2,7 @@ package burlap.behavior.singleagent.learning.actorcritic;
 
 
 import burlap.behavior.policy.Policy;
-import burlap.mdp.singleagent.action.ActionType;
+import burlap.mdp.core.action.ActionType;
 
 
 /**
