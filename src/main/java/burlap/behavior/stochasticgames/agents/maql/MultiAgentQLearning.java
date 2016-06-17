@@ -138,6 +138,8 @@ public class MultiAgentQLearning extends SGAgentBase implements MultiAgentQSourc
 	 * @param qInit the default Q-value to which all initial Q-values will be initialized
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
+	 * @param agentName the name of the agent
+	 * @param agentType the {@link SGAgentType} for the agent defining its action space
 	 */
 	public MultiAgentQLearning(SGDomain d, double discount, double learningRate, HashableStateFactory hashFactory, double qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, String agentName, SGAgentType agentType){
 		this.init(d, agentName, agentType);
@@ -165,6 +167,8 @@ public class MultiAgentQLearning extends SGAgentBase implements MultiAgentQSourc
 	 * @param qInit the q-value initialization to use
 	 * @param backupOperator the backup operator to use that defines the solution concept being learned
 	 * @param queryOtherAgentsForTheirQValues it true, then the agent uses the Q-values for other agents that are stored by them; if false then the agent stores a Q-value for each other agent in the world.
+	 * @param agentName the name of the agent
+	 * @param agentType the {@link SGAgentType} for the agent defining its action space
 	 */
 	public MultiAgentQLearning(SGDomain d, double discount, LearningRate learningRate, HashableStateFactory hashFactory, QFunction qInit, SGBackupOperator backupOperator, boolean queryOtherAgentsForTheirQValues, String agentName, SGAgentType agentType){
 		this.init(d, agentName, agentType);

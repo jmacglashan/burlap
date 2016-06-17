@@ -30,6 +30,8 @@ public class SetStrategySGAgent extends SGAgentBase {
 	 * Initializes for the given domain in which the agent will play and the strategy that they will follow.
 	 * @param domain the domain in which the agent will play
 	 * @param policy the strategy that the agent will follow
+	 * @param agentName the name of the agent
+	 * @param type the {@link SGAgentType} for the agent defining its action space
 	 */
 	public SetStrategySGAgent(SGDomain domain, Policy policy, String agentName, SGAgentType type){
 		this.init(domain, agentName, type);

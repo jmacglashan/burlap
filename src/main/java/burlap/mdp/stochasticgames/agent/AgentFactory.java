@@ -6,9 +6,12 @@ package burlap.mdp.stochasticgames.agent;
  *
  */
 public interface AgentFactory {
+
 	/**
-	 * Returns a new agent instance.
-	 * @return a new agent instance.
+	 * Generates a new {@link SGAgent}
+	 * @param agentName the name for the agent
+	 * @param type the {@link SGAgentType} for the agent
+	 * @return a new {@link SGAgent}
 	 */
 	SGAgent generateAgent(String agentName, SGAgentType type);
 }

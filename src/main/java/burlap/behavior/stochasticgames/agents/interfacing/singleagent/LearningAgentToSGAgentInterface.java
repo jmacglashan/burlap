@@ -72,6 +72,8 @@ public class LearningAgentToSGAgentInterface extends SGAgentBase implements Envi
 	 * Initializes.
 	 * @param domain The stochastic games {@link burlap.mdp.stochasticgames.SGDomain} in which this agent will interact.
 	 * @param learningAgent the {@link burlap.behavior.singleagent.learning.LearningAgent} that will handle this {@link SGAgent}'s control.
+	 * @param agentName the name of the agent
+	 * @param agentType the {@link SGAgentType} for the agent defining its action space
 	 */
 	public LearningAgentToSGAgentInterface(SGDomain domain, LearningAgent learningAgent, String agentName, SGAgentType agentType){
 		this.init(domain, agentName, agentType);

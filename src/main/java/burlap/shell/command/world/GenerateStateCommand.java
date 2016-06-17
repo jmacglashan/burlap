@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 /**
  * A {@link burlap.shell.command.ShellCommand} for generating a new state in a {@link World}
- * according to the {@link World}'s assigned {@link burlap.mdp.stochasticgames.SGStateGenerator}.
+ * according to the {@link World}'s assigned {@link burlap.mdp.auxiliary.StateGenerator}.
  * Use the -h option for help information.
  * @author James MacGlashan.
  */

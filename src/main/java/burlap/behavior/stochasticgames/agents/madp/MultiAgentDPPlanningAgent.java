@@ -51,6 +51,8 @@ public class MultiAgentDPPlanningAgent extends SGAgentBase {
 	 * @param domain the domain in which the agent will act
 	 * @param planner the valueFunction the agent should use for determining its policy
 	 * @param policy the policy that will use the planners value function as a source.
+	 * @param agentName the name of the agent
+	 * @param agentType the {@link SGAgentType} for the agent defining its action space
 	 */
 	public MultiAgentDPPlanningAgent(SGDomain domain, MADynamicProgramming planner, PolicyFromJointPolicy policy, String agentName, SGAgentType agentType){
 		if(!(policy.getJointPolicy() instanceof MAQSourcePolicy)){

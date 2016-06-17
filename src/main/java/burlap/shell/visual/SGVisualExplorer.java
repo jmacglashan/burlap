@@ -41,7 +41,7 @@ import java.util.Map;
  * action is specified, the corresponding joint action is taken by pressing a special finalizing key that by default is set to "c".
  * The ` key
  * causes the state to reset to the initial state provided to the explorer or the {@link World}'s
- * {@link burlap.mdp.stochasticgames.SGStateGenerator}. This explorer also associates itself with a {@link burlap.shell.SGWorldShell} so that additional commands can be given.
+ * {@link burlap.mdp.auxiliary.StateGenerator}. This explorer also associates itself with a {@link burlap.shell.SGWorldShell} so that additional commands can be given.
  * Keys can also be mapped to execute specific shell commands. You can access the shell with the
  * <p>
  * @author James MacGlashan
@@ -153,6 +153,7 @@ public class SGVisualExplorer extends JFrame implements ShellObserver, WorldObse
 	 * the agent name as follows: "agentName::actionName" This means
 	 * that different key presses will have to specified for different agents.
 	 * @param key the key that will cause the action to be set
+	 * @param actingAgent the id of the acting agent
 	 * @param action the action to set when the specified key is pressed.
 	 */
 	public void addKeyAction(String key, int actingAgent, Action action){

@@ -68,6 +68,7 @@ public class EGreedyJointPolicy extends MAQSourcePolicy implements EnumerablePol
 	 * agents may do this themselves. Consult the documentation to check.
 	 * @param actingAgent the agent whose Q-values are maximized.
 	 * @param epsilon the fraction of the time [0, 1] that the agent selections random actions.
+	 * @param targetAgentNum the target agent identifier whose Q-values should be used
 	 */
 	public EGreedyJointPolicy(MultiAgentQLearning actingAgent, double epsilon, int targetAgentNum) {
 		this.qSourceProvider = actingAgent;
