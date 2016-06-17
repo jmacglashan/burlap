@@ -4,16 +4,16 @@ import burlap.behavior.stochasticgames.GameEpisode;
 import burlap.behavior.stochasticgames.JointPolicy;
 import burlap.datastructures.HashedAggregator;
 import burlap.debugtools.DPrint;
+import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.auxiliary.StateMapping;
+import burlap.mdp.auxiliary.common.ConstantStateGenerator;
 import burlap.mdp.auxiliary.common.IdentityStateMapping;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.SGStateGenerator;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 
@@ -41,7 +41,7 @@ public class World {
 	protected JointModel worldModel;
 	protected JointRewardFunction jointRewardFunction;
 	protected TerminalFunction					tf;
-	protected SGStateGenerator initialStateGenerator;
+	protected StateGenerator initialStateGenerator;
 	
 	protected StateMapping					abstractionForAgents;
 	
@@ -70,7 +70,7 @@ public class World {
 	 * @param initialState the initial state of the world every time a new game starts
 	 */
 	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, State initialState){
-		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantSGStateGenerator(initialState), new IdentityStateMapping());
+		this.init(domain, domain.getJointActionModel(), jr, tf, new ConstantStateGenerator(initialState), new IdentityStateMapping());
 	}
 
 
@@ -81,7 +81,7 @@ public class World {
 	 * @param tf the terminal function
 	 * @param sg a state generator for generating initial states of a game
 	 */
-	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg){
+	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, StateGenerator sg){
 		this.init(domain, domain.getJointActionModel(), jr, tf, sg, new IdentityStateMapping());
 	}
 
@@ -94,11 +94,11 @@ public class World {
 	 * @param sg a state generator for generating initial states of a game
 	 * @param abstractionForAgents the abstract state representation that agents will be provided
 	 */
-	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
+	public World(SGDomain domain, JointRewardFunction jr, TerminalFunction tf, StateGenerator sg, StateMapping abstractionForAgents){
 		this.init(domain, domain.getJointActionModel(), jr, tf, sg, abstractionForAgents);
 	}
 	
-	protected void init(SGDomain domain, JointModel jam, JointRewardFunction jr, TerminalFunction tf, SGStateGenerator sg, StateMapping abstractionForAgents){
+	protected void init(SGDomain domain, JointModel jam, JointRewardFunction jr, TerminalFunction tf, StateGenerator sg, StateMapping abstractionForAgents){
 		this.domain = domain;
 		this.worldModel = jam;
 		this.jointRewardFunction = jr;
@@ -194,7 +194,7 @@ public class World {
 	 */
 	public void generateNewCurrentState(){
 		if(!this.gameIsRunning()) {
-			currentState = initialStateGenerator.generateState(agents);
+			currentState = initialStateGenerator.generateState();
 		}
 	}
 
@@ -303,7 +303,7 @@ public class World {
 	 */
 	public GameEpisode runGame(int maxStages){
 		
-		return this.runGame(maxStages, initialStateGenerator.generateState(agents));
+		return this.runGame(maxStages, initialStateGenerator.generateState());
 		
 	}
 
@@ -361,7 +361,7 @@ public class World {
 	 * @return a {@link GameEpisode} that has recorded the result.
 	 */
 	public GameEpisode rolloutJointPolicy(JointPolicy jp, int maxStages){
-		currentState = initialStateGenerator.generateState(agents);
+		currentState = initialStateGenerator.generateState();
 		this.currentGameEpisodeRecord = new GameEpisode(currentState);
 		this.isRecordingGame = true;
 		int t = 0;

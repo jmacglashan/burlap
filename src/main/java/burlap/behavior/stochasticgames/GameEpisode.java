@@ -3,13 +3,13 @@ package burlap.behavior.stochasticgames;
 import burlap.behavior.stochasticgames.agents.RandomSGAgent;
 import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GridGame;
+import burlap.mdp.auxiliary.common.ConstantStateGenerator;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.mdp.stochasticgames.common.ConstantSGStateGenerator;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.oo.OOSGDomain;
 import burlap.mdp.stochasticgames.world.World;
@@ -310,7 +310,7 @@ public class GameEpisode {
 
 		JointRewardFunction jr = new GridGame.GGJointRewardFunction(domain);
 		TerminalFunction tf = new GridGame.GGTerminalFunction(domain);
-		World world = new World(domain, jr, tf, new ConstantSGStateGenerator(s));
+		World world = new World(domain, jr, tf, new ConstantStateGenerator(s));
 		DPrint.toggleCode(world.getDebugId(),false);
 
 		SGAgent ragent1 = new RandomSGAgent();

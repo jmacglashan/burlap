@@ -2,6 +2,7 @@ package burlap.domain.stochasticgames.normalform;
 
 import burlap.behavior.stochasticgames.solvers.GeneralBimatrixSolverTools;
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Action;
 import burlap.mdp.core.Domain;
@@ -11,7 +12,6 @@ import burlap.mdp.singleagent.action.ActionType;
 import burlap.mdp.singleagent.action.UniversalActionType;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.SGStateGenerator;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.common.StaticRepeatedGameModel;
@@ -388,7 +388,7 @@ public class SingleStageNormalFormGame implements DomainGenerator {
 		TerminalFunction tf = new NullTermination();
 		
 		//set up the initial state generator for the world, which for a bimatrix game is trivial
-		SGStateGenerator sg = new NFGameState();
+		StateGenerator sg = new NFGameState(agents.length);
 
 		//create a world to synchronize the actions of agents in this domain and record results
 		World w = new World(domain, jr, tf, sg);

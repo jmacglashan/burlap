@@ -1,10 +1,9 @@
 package burlap.domain.stochasticgames.normalform;
 
+import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.annotations.ShallowCopyState;
-import burlap.mdp.stochasticgames.agent.SGAgent;
-import burlap.mdp.stochasticgames.SGStateGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,7 @@ import java.util.List;
  * @author James MacGlashan.
  */
 @ShallowCopyState
-public class NFGameState implements MutableState, SGStateGenerator{
+public class NFGameState implements MutableState, StateGenerator {
 
 	public String [] players;
 
@@ -35,16 +34,10 @@ public class NFGameState implements MutableState, SGStateGenerator{
 		this.players = players;
 	}
 
-	public NFGameState(List<SGAgent> agents){
-		this.players = new String[agents.size()];
-		for(int i = 0; i < players.length; i++){
-			players[i] = agents.get(i).agentName();
-		}
-	}
 
 	@Override
-	public State generateState(List<SGAgent> agents) {
-		return new NFGameState(agents);
+	public State generateState() {
+		return new NFGameState(players.clone());
 	}
 
 	@Override
