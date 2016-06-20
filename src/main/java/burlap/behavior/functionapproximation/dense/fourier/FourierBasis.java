@@ -1,0 +1,265 @@
+package burlap.behavior.functionapproximation.dense.fourier;
+
+import burlap.behavior.functionapproximation.dense.DenseLinearVFA;
+import burlap.behavior.functionapproximation.dense.DenseStateFeatures;
+import burlap.behavior.functionapproximation.dense.NormalizedVariableFeatures;
+import burlap.behavior.functionapproximation.sparse.StateFeature;
+import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
+import burlap.mdp.core.action.Action;
+import burlap.mdp.core.state.State;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * An implementation of Fourier Basis functions [1]. This class expects a normalized state variable/feature vector of input states, if it is not normalized, behavior is not well defined. Therefore,
+ * you may want to consider using the {@link NormalizedVariableFeatures}.
+ * The higher order the basis functions, the higher the VFA resolution is. Typically, order n will produce (n+1)^d state basis functions (and a copy for each action), where d is the number of state variables. Since this grows quickly,
+ * a way to manage the complexity is to simplify the number of coefficient vectors. That is, each basis function is a function of the dot product of the input state variable vector and a coefficient vector {0...n}^d 
+ * and normally all possible coefficient vectors (and their corresponding basis functions) for
+ * order n are produced. However, this class can be told to limit the permitted coefficient vectors to those that have no more than k non-zero entries in the coefficient vector. When k = 1, all features are treated as indepdent resulting
+ * in n*d basis functions.
+ * <p>
+ * When using a learning algorithm like {@link GradientDescentSarsaLam} with Fourier basis functions, it is typically a good idea to use the {@link FourierBasisLearningRateWrapper}, which scales the normal learning rate by the inverse of the norm
+ * of a basis function's coefficient vector. 
+ * 
+ * <p>
+ * 1. G.D. Konidaris, S. Osentoski and P.S. Thomas. Value Function Approximation in Reinforcement Learning using the Fourier Basis. In Proceedings of the Twenty-Fifth Conference on Artificial Intelligence, pages 380-385, August 2011.
+ * 
+ * @author James MacGlashan
+ *
+ */
+public class FourierBasis implements DenseStateFeatures {
+
+	/**
+	 * The number of state variables on which the produced basis functions operate
+	 */
+	protected int								numStateVariables;
+	
+	/**
+	 * The input features over which fourier basis functions will be generated
+	 */
+	protected DenseStateFeatures inputFeatures;
+	
+	/**
+	 * The coefficient vectors used
+	 */
+	protected List<short[]>						coefficientVectors;
+	
+	/**
+	 * The maximum number of non-zero coefficient entries permitted in a coefficient vector
+	 */
+	protected int maxNonZeroCoefficients;
+	
+	/**
+	 * The order of the Fourier basis functions.
+	 */
+	protected int								order;
+	
+	/**
+	 * A map for returning a multiplier to the number of state features for each action. Effectively
+	 * this ensures a unique feature ID for each Fourier basis function for each action.
+	 */
+	protected Map<Action, Integer> actionFeatureMultiplier = new HashMap<Action, Integer>();
+	
+	
+	/**
+	 * The next action Fourier basis function size multiplier to use for the next newly seen action.
+	 */
+	protected int nextActionMultiplier = 0;
+
+
+
+
+	/**
+	 * Initializes. The coefficient vectors used by this Fourier Basis function will be generated lazily when the first features for an input state/state-action pair are queried.
+	 * The maximum number of non-zero coefficient entries in a coefficient vector will be set to the maixmum (the state variable dimensionality).
+	 * @param inputFeatures the state feature vector generator that turns OO-MDP {@link State} objects into double arrays.
+	 * @param order the Fourier basis order
+	 */
+	public FourierBasis(DenseStateFeatures inputFeatures, int order){
+		this.inputFeatures = inputFeatures;
+		this.order = order;
+		this.maxNonZeroCoefficients = -1;
+	}
+	
+	/**
+	 * Initializes. The coefficient vectors used by this Fourier Basis function will be generated lazily when the first features for an input state are queried.
+	 * Setting maxNonZeroCoefficents to one results in treating each state variable as independent and thereby producing order*d basis functions (for each action) where d is the number
+	 * of state variables. Larger values of maxNonZeroCoefficents will result in more variable dependency combinations.
+	 * @param inputFeatures The input features over which fourier basis functions will be generated
+	 * @param order the fourier basis order
+	 * @param maxNonZeroCoefficients the maximum number of entries in coefficient vectors that can have non-zero values.
+	 */
+	public FourierBasis(DenseStateFeatures inputFeatures, int order, int maxNonZeroCoefficients){
+		this.inputFeatures = inputFeatures;
+		this.order = order;
+		this.maxNonZeroCoefficients = maxNonZeroCoefficients;
+	}
+	
+	
+	/**
+	 * Forces the set of coefficient vectors (and thereby Fourier basis functions) used. Use this method only if you want to fine tune the basis functions used.
+	 * @param coefficientVectors the coefficient vectors used to produce the Fourier basis functions.
+	 */
+	public void setCoefficientVectors(List<short[]> coefficientVectors){
+		this.coefficientVectors = coefficientVectors;
+	}
+	
+	
+	/**
+	 * Returns the basis function value for the given state input for the given basis function index. The basisFunction index may be greater than the number of coefficient vectors because
+	 * it may refer to an state-action feature's basis function (and there is a copy of each basis function for each action). The basis function used will be the one associated with the coefficient vector at index basisFunction % m, where m
+	 * is the number of this object's coefficient vectors.
+	 * @param input the state variables
+	 * @param basisFunction the basis function index
+	 * @return the value of the basis function for the given input state variables
+	 */
+	public double basisValue(double [] input, int basisFunction){
+		short [] coefficientVector = this.coefficientVectors.get(basisFunction % this.coefficientVectors.size());
+		if(coefficientVector.length != input.length){
+			throw new RuntimeException("Error in Fourier Basis function evaluation: expected input state variable vector of size " + this.numStateVariables + ", but received one of dimension " + input.length);
+		}
+		//dot product of input and coefficient vector
+		double sum = 0.;
+		for(int i = 0; i < this.numStateVariables; i++){
+			sum += input[i] * (double)coefficientVector[i];
+		}
+		
+		//get cos function of it
+		sum *= Math.PI;
+		sum = Math.cos(sum);
+		return sum;
+	}
+	
+	@Override
+	public double [] features(State s) {
+		
+		double [] input = this.inputFeatures.features(s);
+		if(this.coefficientVectors == null){
+			this.numStateVariables = input.length;
+			if(this.maxNonZeroCoefficients == -1){
+				this.maxNonZeroCoefficients = this.numStateVariables;
+			}
+			this.generateCoefficientVectors();
+		}
+		
+		List<StateFeature> res = new ArrayList<StateFeature>(this.coefficientVectors.size());
+
+		double [] features = new double[this.coefficientVectors.size()];
+		for(int i = 0; i < this.coefficientVectors.size(); i++){
+			double value = this.basisValue(input, i);
+			features[i] = value;
+		}
+		
+		
+		return features;
+	}
+
+
+
+	
+	
+	/**
+	 * Returns the coefficient vector for the given basis function index. The basisFunction index may be greater than the number of coefficient vectors because
+	 * it may refer to an state-action feature's basis function (and there is a copy of each basis function for each action). The coefficient vector returned is at the index basisFunction % m, where m
+	 * is the number of this object's coefficient vectors.
+	 * @param i the basis function index
+	 * @return the coefficient vector for the given basis function
+	 */
+	public short [] getCoefficientVector(int i){
+		return this.coefficientVectors.get(i % this.coefficientVectors.size());
+	}
+	
+	
+	/**
+	 * Returns the norm of the coefficient vector for the given basis function index. The basisFunction index may be greater than the number of coefficient vectors because
+	 * it may refer to an state-action feature's basis function (and there is a copy of each basis function for each action). The coefficient vector returned is at the index basisFunction % m, where m
+	 * is the number of this object's coefficient vectors.
+	 * @param i the basis function index
+	 * @return the norm of the coefficient vector for the given basis function
+	 */
+	public double coefficientNorm(int i){
+		short [] vector = this.coefficientVectors.get(i % this.coefficientVectors.size());
+		double sum = 0.;
+		for(short c : vector){
+			sum += (double)c*(double)c;
+		}
+		sum = Math.sqrt(sum);
+		return sum;
+	}
+	
+	
+	/**
+	 * Creates and returns a linear VFA object over this Fourier basis feature database.
+	 * @param defaultWeightValue the default feature weight value to use for all features
+	 * @return a linear VFA object over this Fourier basis feature database.
+	 */
+	public DenseLinearVFA generateVFA(double defaultWeightValue)
+	{
+		return new DenseLinearVFA(this, defaultWeightValue);
+	}
+	
+	
+	/**
+	 * Generates all coefficient vectors given the number of state variables and the maximum number of non-zero coefficient element entries.
+	 */
+	protected void generateCoefficientVectors(){
+		this.coefficientVectors = new ArrayList<short[]>();
+		short [] tempVector = new short[this.numStateVariables];
+		this.generateCoefficientVectorsHelper(0, tempVector, 0);
+	}
+	
+	
+	/**
+	 * Recursive cofficient generator helper method. Once a permitted coefficient vector is fully generated, it is copied and added to this object's list of coefficient vectors.
+	 * @param index the index into the coefficient vector that needs to have its values filled in.
+	 * @param vector the coefficient vector generated thus far
+	 * @param numNonZeroEntries the number of non-zero coefficient vector entires currently in the vector.
+	 */
+	protected void generateCoefficientVectorsHelper(int index, short[] vector, int numNonZeroEntries){
+		
+		//base case is we're at the end of the vector
+		if(index == this.numStateVariables){
+			this.coefficientVectors.add(vector.clone());
+			return;
+		}
+		
+		//otherwise, consider all possible values for this vector provided we don't have too many non-zero entries
+		if(numNonZeroEntries >= this.maxNonZeroCoefficients){
+			vector[index] = 0;
+			this.generateCoefficientVectorsHelper(index+1, vector, numNonZeroEntries);
+		}
+		else{
+			//consider all possible values
+			for(short i = 0; i <= this.order; i++){
+				vector[index] = i;
+				if(i > 0){
+					this.generateCoefficientVectorsHelper(index+1, vector, numNonZeroEntries+1);
+				}
+				else{
+					this.generateCoefficientVectorsHelper(index+1, vector, numNonZeroEntries);
+				}
+			}
+		}
+		
+	}
+
+
+
+
+	@Override
+	public FourierBasis copy() {
+		FourierBasis fb = new FourierBasis(this.inputFeatures, this.order, this.maxNonZeroCoefficients);
+		fb.numStateVariables = this.numStateVariables;
+		fb.coefficientVectors = new ArrayList<short[]>(this.coefficientVectors);
+		fb.actionFeatureMultiplier = new HashMap<Action, Integer>(this.actionFeatureMultiplier);
+
+		return fb;
+	}
+	
+	
+}

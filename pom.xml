@@ -4,25 +4,28 @@
 
   <groupId>edu.brown.cs.burlap</groupId>
   <artifactId>burlap</artifactId>
-  <version>2.1.2</version>
+  <version>3.0.0</version>
   <packaging>jar</packaging>
+
+  <properties>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+  </properties>
 
   <name>BURLAP</name>
   <description>The Brown-UMBC Reinforcement Learning and Planning (BURLAP) Java code library is for the use and
     development of single or multi-agent planning and learning algorithms and domains to accompany them. The library
-    supports a wide range of problem types including discrete, continuous, or relational domains. By default
-    states of domains use the rich object-oriented MDP representation, but you can also implement
-    your own forms of state representation. Planning and learning algorithms range from classic forward search
-    planning to value function-based stochastic planning and learning algorithms. Also included is a set of analysis
-    tools such as a common framework for the visualization of domains and agent performance in various domains.
+    uses a highly flexible state/observation representation where you define states with your own Java classes, enabling
+    support for domains that discrete, continuous, relational, or anything else. Planning and learning algorithms range from classic forward search
+    planning to value-function-based stochastic planning and learning algorithms.
   </description>
 
   <url>http://burlap.cs.brown.edu</url>
 
   <licenses>
     <license>
-      <name>GNU LGPL Version 3.0</name>
-      <url>http://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+      <name>Apache 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
 
@@ -52,46 +55,11 @@
   <dependencies>
 
     <dependency>
-      <groupId>colt</groupId>
-      <artifactId>colt</artifactId>
-      <version>1.2.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.sun.commons</groupId>
-      <artifactId>beanutils</artifactId>
-      <version>1.6.1-20070314</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>2.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math3</artifactId>
       <version>3.2</version>
     </dependency>
 
-    <dependency>
-      <groupId>net.sourceforge.csparsej</groupId>
-      <artifactId>csparsej</artifactId>
-      <version>1.1.1</version>
-    </dependency>
 
     <dependency>
       <groupId>com.googlecode.efficient-java-matrix-library</groupId>
@@ -99,29 +67,6 @@
       <version>0.25</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>1.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.2.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.2.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.2.3</version>
-    </dependency>
 
     <dependency>
       <groupId>org.jfree</groupId>
@@ -154,40 +99,11 @@
       <version>1.2.14</version>
     </dependency>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.3</version>
-    </dependency>
 
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.13</version>
-    </dependency>
-
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.0.b2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.weka</groupId>
-      <artifactId>weka-stable</artifactId>
-      <version>3.6.12</version>
-    </dependency>
-
-    <dependency>
-      <groupId>net.sf.trove4j</groupId>
-      <artifactId>trove4j</artifactId>
-      <version>3.0.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>18.0</version>
     </dependency>
 
     <dependency>
