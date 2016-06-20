@@ -29,7 +29,7 @@ import java.util.Map;
  * @author James MacGlashan
  *
  */
-public class BoltzmannActor extends Actor implements EnumerablePolicy {
+public class BoltzmannActor implements Actor, EnumerablePolicy {
 
 	/**
 	 * The domain in which this agent will act
@@ -97,23 +97,23 @@ public class BoltzmannActor extends Actor implements EnumerablePolicy {
 	}
 
 	@Override
-	public void updateFromCritique(CritiqueResult critqiue) {
+	public void update(CritiqueResult critique) {
 		
-		HashableState sh = this.hashingFactory.hashState(critqiue.getS());
+		HashableState sh = this.hashingFactory.hashState(critique.getS());
 		PolicyNode node = this.getNode(sh);
 		
-		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s(), critqiue.getA());
+		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s(), critique.getA());
 		
-		ActionPreference pref = this.getMatchingPreference(sh, critqiue.getA(), node);
-		pref.preference += learningRate * critqiue.getCritique();
+		ActionPreference pref = this.getMatchingPreference(sh, critique.getA(), node);
+		pref.preference += learningRate * critique.getCritique();
 		
 		this.totalNumberOfSteps++;
 		
 
 	}
 
-	@Override
-	public void addNonDomainReferencedAction(ActionType a) {
+
+	public void addActionType(ActionType a) {
 		
 		if(!actionTypes.contains(a)){
 			this.actionTypes.add(a);
@@ -186,7 +186,7 @@ public class BoltzmannActor extends Actor implements EnumerablePolicy {
 	}
 	
 	@Override
-	public void resetData() {
+	public void reset() {
 		this.preferences.clear();
 		this.learningRate.resetDecay();
 	}

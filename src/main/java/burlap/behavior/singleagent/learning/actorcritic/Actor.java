@@ -2,7 +2,6 @@ package burlap.behavior.singleagent.learning.actorcritic;
 
 
 import burlap.behavior.policy.Policy;
-import burlap.mdp.core.action.ActionType;
 
 
 /**
@@ -10,31 +9,24 @@ import burlap.mdp.core.action.ActionType;
  * identical to policies since they effectively specify how the agent should act; in fact, this abstract class extends the Policy
  * class. However, the extra important functionality that an actor must incorporate is the ability to adjust its policy
  * in response to some critique of its behavior. In this class, this functionality should be implemented in the
- * {@link #updateFromCritique(CritiqueResult)} method.
+ * {@link #update(CritiqueResult)} method.
  * 
  * 
  * 
  * @author James MacGlashan
  *
  */
-public abstract class Actor implements Policy {
+public interface Actor extends Policy {
 
 	/**
 	 * Causes this object to update its behavior is response to a critique of its behavior.
-	 * @param critqiue the critique of the agents behavior represented by a {@link CritiqueResult} object
+	 * @param critique the critique of the agents behavior represented by a {@link CritiqueResult} object
 	 */
-	public abstract void updateFromCritique(CritiqueResult critqiue);
-	
-	/**
-	 * This method allows the actor to utilize actions that are not apart of the domain definition.
-	 * @param a an action not apart of the of the domain definition that this actor should be able to use.
-	 */
-	public abstract void addNonDomainReferencedAction(ActionType a);
-	
-	
+	void update(CritiqueResult critique);
+
 	/**
 	 * Used to reset any data that was created/modified during learning so that learning can be begin anew.
 	 */
-	public abstract void resetData();
+	void reset();
 
 }

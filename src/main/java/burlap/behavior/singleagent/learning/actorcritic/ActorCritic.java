@@ -150,7 +150,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 			ea.transition(ga, nextState, r);
 
 			CritiqueResult critqiue = this.critic.critiqueAndUpdate(eo);
-			this.actor.updateFromCritique(critqiue);
+			this.actor.update(critqiue);
 
 			curState = env.currentObservation();
 			timeSteps++;
@@ -200,7 +200,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	@Override
 	public void resetSolver(){
 		this.episodeHistory.clear();
-		this.actor.resetData();
+		this.actor.reset();
 		this.critic.resetData();
 	}
 	
