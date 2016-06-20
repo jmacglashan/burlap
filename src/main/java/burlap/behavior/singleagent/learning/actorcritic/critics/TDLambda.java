@@ -4,7 +4,6 @@ import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.actorcritic.Critic;
-import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.valuefunction.ConstantValueFunction;
@@ -104,7 +103,7 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 
 
 	@Override
-	public void initializeEpisode(State s) {
+	public void startEpisode(State s) {
 		this.traces = new LinkedList<TDLambda.StateEligibilityTrace>();
 	}
 
@@ -122,7 +121,7 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 	}
 	
 	@Override
-	public CritiqueResult critiqueAndUpdate(EnvironmentOutcome eo) {
+	public double critique(EnvironmentOutcome eo) {
 		
 		HashableState sh = hashingFactory.hashState(eo.o);
 		HashableState shprime = hashingFactory.hashState(eo.op);
@@ -164,12 +163,11 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 			traces.add(t);
 		}
 		
-		
-		CritiqueResult critique = new CritiqueResult(eo.o, eo.a, eo.op, delta);
+
 		
 		this.totalNumberOfSteps++;
 		
-		return critique;
+		return delta;
 	}
 
 
@@ -180,11 +178,11 @@ public class TDLambda extends MDPSolver implements Critic, ValueFunction {
 
 	@Override
 	public void resetSolver() {
-		this.resetData();
+		this.reset();
 	}
 
 	@Override
-	public void resetData(){
+	public void reset(){
 		this.vIndex.clear();
 		this.traces.clear();
 		this.learningRate.resetDecay();

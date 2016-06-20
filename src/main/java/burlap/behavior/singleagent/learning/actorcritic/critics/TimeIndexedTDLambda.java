@@ -1,6 +1,5 @@
 package burlap.behavior.singleagent.learning.actorcritic.critics;
 
-import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.valuefunction.ValueFunction;
@@ -116,8 +115,8 @@ public class TimeIndexedTDLambda extends TDLambda {
 	}
 	
 	@Override
-	public void initializeEpisode(State s) {
-		super.initializeEpisode(s);
+	public void startEpisode(State s) {
+		super.startEpisode(s);
 		this.curTime = 0;
 	}
 
@@ -128,7 +127,7 @@ public class TimeIndexedTDLambda extends TDLambda {
 	
 	
 	@Override
-	public CritiqueResult critiqueAndUpdate(EnvironmentOutcome eo) {
+	public double critique(EnvironmentOutcome eo) {
 		
 		HashableState sh = hashingFactory.hashState(eo.o);
 		HashableState shprime = hashingFactory.hashState(eo.op);
@@ -164,13 +163,11 @@ public class TimeIndexedTDLambda extends TDLambda {
 
 		//update time stamp for next visit
 		curTime += n;
-		
-		
-		CritiqueResult critique = new CritiqueResult(eo.o, eo.a, eo.op, delta);
+
 		
 		this.totalNumberOfSteps++;
 		
-		return critique;
+		return delta;
 	}
 	
 	
@@ -198,8 +195,8 @@ public class TimeIndexedTDLambda extends TDLambda {
 	
 	
 	@Override
-	public void resetData(){
-		super.resetData();
+	public void reset(){
+		super.reset();
 		this.vTIndex.clear();
 	}
 	

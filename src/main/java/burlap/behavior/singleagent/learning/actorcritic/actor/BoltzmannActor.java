@@ -6,7 +6,6 @@ import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.policy.support.ActionProb;
 import burlap.behavior.singleagent.learning.actorcritic.Actor;
-import burlap.behavior.singleagent.learning.actorcritic.CritiqueResult;
 import burlap.datastructures.BoltzmannDistribution;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.Domain;
@@ -14,6 +13,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.action.ActionUtils;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 
@@ -96,16 +96,27 @@ public class BoltzmannActor implements Actor, EnumerablePolicy {
 		this.learningRate = lr;
 	}
 
+
 	@Override
-	public void update(CritiqueResult critique) {
+	public void startEpisode(State s) {
+		//do nothing
+	}
+
+	@Override
+	public void endEpisode() {
+		//do nothing
+	}
+
+	@Override
+	public void update(EnvironmentOutcome eo, double critique) {
 		
-		HashableState sh = this.hashingFactory.hashState(critique.getS());
+		HashableState sh = this.hashingFactory.hashState(eo.o);
 		PolicyNode node = this.getNode(sh);
 		
-		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s(), critique.getA());
+		double learningRate = this.learningRate.pollLearningRate(this.totalNumberOfSteps, sh.s(), eo.a);
 		
-		ActionPreference pref = this.getMatchingPreference(sh, critique.getA(), node);
-		pref.preference += learningRate * critique.getCritique();
+		ActionPreference pref = this.getMatchingPreference(sh, eo.a, node);
+		pref.preference += learningRate * critique;
 		
 		this.totalNumberOfSteps++;
 		
