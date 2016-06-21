@@ -126,5 +126,21 @@ public class HashedAggregator <K>{
 	public boolean containsKey(K key){
 		return this.storage.containsKey(key);
 	}
+
+
+	/**
+	 * Removes the entry for the given key
+	 * @param key the key of the entry to remove
+	 */
+	public void remove(K key){
+		this.storage.remove(key);
+	}
+
+	/**
+	 * Clears the entries
+	 */
+	public void clear(){
+		this.storage.clear();
+	}
 	
 }
