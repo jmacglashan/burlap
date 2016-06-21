@@ -63,6 +63,15 @@ public class HashedAggregator <K>{
 		double c = cur != null ? cur : initialValue;
 		this.storage.put(ind, c+v);
 	}
+
+	/**
+	 * Forces the value for an entry
+	 * @param ind the key index
+	 * @param v the value to be associated with the key index
+	 */
+	public void set(K ind, double v){
+		this.storage.put(ind, v);
+	}
 	
 	
 	/**
