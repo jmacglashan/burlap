@@ -56,12 +56,7 @@ public class BoltzmannActor implements Actor, EnumerablePolicy {
 	 * for each applicable action in the state.
 	 */
 	protected Map<HashableState, PolicyNode>		preferences;
-	
-	
-	/**
-	 * Indicates whether the actions that this agent can perform are parameterized
-	 */
-	protected boolean								containsParameterizedActions = false;
+
 	
 	/**
 	 * The total number of learning steps performed by this agent.
