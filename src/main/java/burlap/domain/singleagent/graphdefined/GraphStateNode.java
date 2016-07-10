@@ -20,12 +20,12 @@ public class GraphStateNode implements MutableState {
 	public GraphStateNode() {
 		if(keys == null) {
 			keys = new ArrayList<Object>();
-			keys.add("node");
+			keys.add(GraphDefinedDomain.VAR);
 		}
 	}
 
 	public GraphStateNode(int id) {
-		super();
+		this();
 		this.id = id;
 	}
 
