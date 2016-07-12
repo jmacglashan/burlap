@@ -24,10 +24,7 @@ import joptsimple.OptionSet;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
@@ -296,6 +293,33 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 			}
 
 		});
+
+		painter.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				painter.requestFocus();
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+		});
 		
 		actionField = new TextField(20);
 		bottomContainer.add(actionField, BorderLayout.CENTER);
@@ -361,6 +385,32 @@ public class VisualExplorer extends JFrame implements ShellObserver{
 
 		this.consoleFrame.getContentPane().add(consoleCommand, BorderLayout.SOUTH);
 
+		this.stateConsole.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				consoleCommand.requestFocus();
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+		});
 
 
 		pack();
