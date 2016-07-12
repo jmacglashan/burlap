@@ -5,7 +5,7 @@ BURLAP
 
 Repository for the ongoing development of the Brown-UMBC Reinforcement Learning And Planning (BURLAP) java library.
 
-BURLAP is a java code library for the use and development of single or multi-agent planning and learning algorithms and domains to accompany them. The library uses a highly flexible state/observation representation where you define states with your own Java classes, enabling support for domains that discrete, continuous, relational, or anything else. Planning and learning algorithms range from classic forward search planning to value function-based stochastic planning and learning algorithms. Also included is a set of tools such as an extendable experiment shell and a common framework for the visualization of domains and agent performance.
+BURLAP is a java code library for the use and development of single or multi-agent planning and learning algorithms and domains to accompany them. The library uses a highly flexible state/observation representation where you define states with your own Java classes, enabling support for domains that are discrete, continuous, relational, or anything else. Planning and learning algorithms range from classic forward search planning to value function-based stochastic planning and learning algorithms. Various tools are also included, such as an extendable experiment shell and a common framework for the visualization of domains and agent performance.
 
 ## Important Links
 
