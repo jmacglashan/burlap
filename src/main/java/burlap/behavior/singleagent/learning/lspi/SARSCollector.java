@@ -111,7 +111,7 @@ public abstract class SARSCollector {
 			intoDataset = new SARSData(nSamples);
 		}
 
-		while(nSamples > 0){
+		while(nSamples > 0 && !env.isInTerminalState()){
 			int maxSteps = Math.min(nSamples, maxEpisodeSteps);
 			int oldSize = intoDataset.size();
 			this.collectDataFrom(env, maxSteps, intoDataset);
@@ -158,15 +158,15 @@ public abstract class SARSCollector {
 			
 			State curState = s;
 			int nsteps = 0;
-			boolean temrinated = false;
-			while(!temrinated && nsteps < maxSteps){
+			boolean terminated = model.terminal(s);
+			while(!terminated && nsteps < maxSteps){
 				
 				List<Action> gas = ActionUtils.allApplicableActionsForTypes(this.actionTypes, curState);
 				Action ga = gas.get(RandomFactory.getMapped(0).nextInt(gas.size()));
 				EnvironmentOutcome eo = model.sample(curState, ga);
 				intoDataset.add(curState, ga, eo.r, eo.op);
 				curState = eo.op;
-				
+				terminated = eo.terminated;
 				nsteps++;
 				
 			}
