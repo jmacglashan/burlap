@@ -6,7 +6,6 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.core.action.ActionType;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
@@ -22,8 +21,8 @@ import java.util.List;
  * can be modified by swapping out different {@link Actor} and {@link Critic} objects. The general structure of the 
  * learning algorithm is for the {@link Actor} class to be queried for an action given the current state of the world.
  * That action is taken and a resulting state is observed. The {@link Critic} is then asked to critique this behavior
- * which is returned in a {@link CritiqueResult} object and then passed along to the {@link Actor} so that the actor may
- * update is behavior accordingly.
+ * which is returned in a double value, which is then passed along to the {@link Actor} so that the actor may
+ * update its behavior accordingly.
  * <p>
  * In addition to learning, this algorithm can also be used for planning using the {@link #planFromState(State)}
  * method. If you plan to use it for planning, you should call the {@link #initializeForPlanning(int)}
@@ -115,14 +114,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 		this.numEpisodesForPlanning = numEpisodesForPlanning;
 	}
 	
-	
-	@Override
-	public void addActionType(ActionType a){
-		super.addActionType(a);
-		this.actor.addNonDomainReferencedAction(a);
-		this.critic.addActionType(a);
-		
-	}
+
 
 	@Override
 	public Episode runLearningEpisode(Environment env) {
@@ -137,20 +129,19 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 		Episode ea = new Episode(initialState);
 		State curState = initialState;
 
-		this.critic.initializeEpisode(curState);
+		this.critic.startEpisode(curState);
+		this.actor.startEpisode(curState);
 
 		int timeSteps = 0;
 		while(!env.isInTerminalState() && (timeSteps < maxSteps || maxSteps == -1)){
 
 			Action ga = this.actor.action(curState);
 			EnvironmentOutcome eo = env.executeAction(ga);
-			State nextState = eo.op;
-			double r = eo.r;
 
-			ea.transition(ga, nextState, r);
+			ea.transition(eo);
 
-			CritiqueResult critqiue = this.critic.critiqueAndUpdate(eo);
-			this.actor.updateFromCritique(critqiue);
+			double critique = this.critic.critique(eo);
+			this.actor.update(eo, critique);
 
 			curState = env.currentObservation();
 			timeSteps++;
@@ -158,6 +149,7 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 		}
 
 		this.critic.endEpisode();
+		this.actor.endEpisode();
 
 		if(episodeHistory.size() >= numEpisodesToStore){
 			episodeHistory.poll();
@@ -200,8 +192,8 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	@Override
 	public void resetSolver(){
 		this.episodeHistory.clear();
-		this.actor.resetData();
-		this.critic.resetData();
+		this.actor.reset();
+		this.critic.reset();
 	}
 	
 	
