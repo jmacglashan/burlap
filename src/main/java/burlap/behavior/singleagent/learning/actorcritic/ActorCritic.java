@@ -6,7 +6,6 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -70,37 +69,32 @@ public class ActorCritic extends MDPSolver implements LearningAgent {
 	
 	/**
 	 * Initializes the learning algorithm.
-	 * @param domain the domain in which to learn
-	 * @param gamma the discount factor
 	 * @param actor the actor component to use to select actions
 	 * @param critic the critic component to use to critique 
 	 */
-	public ActorCritic(SADomain domain, double gamma, Actor actor, Critic critic) {
+	public ActorCritic(Actor actor, Critic critic) {
 		this.actor = actor;
 		this.critic = critic;
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<Episode>();
 		numEpisodesToStore = 1;
-		this.solverInit(domain, gamma, null);
+
 	}
 	
 	
 	/**
 	 * Initializes the learning algorithm.
-	 * @param domain the domain in which to learn
-	 * @param gamma the discount factor
 	 * @param actor the actor component to use to select actions
 	 * @param critic the critic component to use to critique 
 	 * @param maxEpisodeSize the maximum number of steps the agent will take in a learning episode before the agent gives up.
 	 */
-	public ActorCritic(SADomain domain, double gamma, Actor actor, Critic critic, int maxEpisodeSize) {
+	public ActorCritic(Actor actor, Critic critic, int maxEpisodeSize) {
 		this.actor = actor;
 		this.critic = critic;
 		this.maxEpisodeSize = maxEpisodeSize;
 		numEpisodesForPlanning = 1;
 		this.episodeHistory = new LinkedList<Episode>();
 		numEpisodesToStore = 1;
-		this.solverInit(domain, gamma, null);
 	}
 
 	/**
