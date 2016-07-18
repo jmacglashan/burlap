@@ -259,7 +259,7 @@ public class GridGameStandardMechanics implements FullJointModel {
 	 * @param noops the locations in which agents have been forced to stay from other events
 	 * @return the new resolved locations of all agents
 	 */
-	List <Location2> backupNoOps(List <Location2> originalPositions, List<Location2> desiredPositions, List <Location2> noops){
+	protected List <Location2> backupNoOps(List <Location2> originalPositions, List<Location2> desiredPositions, List <Location2> noops){
 		
 		List <Location2> resolved = new ArrayList<GridGameStandardMechanics.Location2>(desiredPositions);
 		
@@ -877,7 +877,7 @@ public class GridGameStandardMechanics implements FullJointModel {
 	 * @author James MacGlashan
 	 *
 	 */
-	class Location2{
+	public static class Location2{
 		
 		/**
 		 * The x position
@@ -937,7 +937,7 @@ public class GridGameStandardMechanics implements FullJointModel {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
+            result = prime * result;
             result = prime * result + x;
             result = prime * result + y;
             return result;
@@ -955,9 +955,6 @@ public class GridGameStandardMechanics implements FullJointModel {
             
         }
 
-        private GridGameStandardMechanics getOuterType() {
-            return GridGameStandardMechanics.this;
-        }
 		
 	}
 	
@@ -967,7 +964,7 @@ public class GridGameStandardMechanics implements FullJointModel {
 	 * @author James MacGlashan
 	 *
 	 */
-	class Location2Prob{
+	public static class Location2Prob{
 		
 		/**
 		 * The location
@@ -998,7 +995,7 @@ public class GridGameStandardMechanics implements FullJointModel {
 	 * @author James MacGlashan
 	 *
 	 */
-	class LocationSetProb{
+	public static class LocationSetProb{
 		
 		/**
 		 * The location outcomes for each agent
