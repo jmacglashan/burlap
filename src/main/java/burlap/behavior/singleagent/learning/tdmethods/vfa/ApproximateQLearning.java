@@ -229,6 +229,7 @@ public abstract class ApproximateQLearning extends MDPSolver implements Learning
 
 	@Override
 	public List<QValue> qValues(State s) {
+		s = this.stateMapping.mapState(s);
 		List<Action> actions = this.applicableActions(s);
 		List<QValue> qs = new ArrayList<QValue>(actions.size());
 		for(Action a : actions){
@@ -240,11 +241,13 @@ public abstract class ApproximateQLearning extends MDPSolver implements Learning
 
 	@Override
 	public double qValue(State s, Action a) {
+		s = this.stateMapping.mapState(s);
 		return this.vfa.evaluate(s, a);
 	}
 
 	@Override
 	public double value(State s) {
+		s = this.stateMapping.mapState(s);
 		List<QValue> qs = this.qValues(s);
 		double max = Double.NEGATIVE_INFINITY;
 		for(QValue q : qs){
@@ -260,6 +263,7 @@ public abstract class ApproximateQLearning extends MDPSolver implements Learning
 	 * @return all Q-value estimates from the current state Q-function; a {@link List} of {@link QValue} objects.
 	 */
 	public List<QValue> getStaleQs(State s) {
+		s = this.stateMapping.mapState(s);
 		List<Action> actions = this.applicableActions(s);
 		List<QValue> qs = new ArrayList<QValue>(actions.size());
 		for(Action a : actions){
@@ -277,6 +281,7 @@ public abstract class ApproximateQLearning extends MDPSolver implements Learning
 	 * @return the {@link QValue} under the state Q-function
 	 */
 	public QValue getStaleQ(State s, Action a) {
+		s = this.stateMapping.mapState(s);
 		double qv = this.staleVfa.evaluate(s, a);
 		return new QValue(s, a, qv);
 	}
@@ -288,6 +293,7 @@ public abstract class ApproximateQLearning extends MDPSolver implements Learning
 	 * @return stale state value function estimate (max state Q-value)
 	 */
 	public double staleValue(State s) {
+		s = this.stateMapping.mapState(s);
 		List<QValue> qs = this.getStaleQs(s);
 		double max = Double.NEGATIVE_INFINITY;
 		for(QValue q : qs){
