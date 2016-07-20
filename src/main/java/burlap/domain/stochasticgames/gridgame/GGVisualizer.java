@@ -71,7 +71,7 @@ public class GGVisualizer {
 	 * @author James MacGlashan
 	 *
 	 */
-	static class CellPainter implements ObjectPainter{
+	public static class CellPainter implements ObjectPainter{
 
 		/**
 		 * The width of the playing field
@@ -152,7 +152,7 @@ public class GGVisualizer {
 	 * @author James MacGlashan
 	 *
 	 */
-	static class WallPainter implements ObjectPainter{
+	public static class WallPainter implements ObjectPainter{
 
 		/**
 		 * The width of the playing field
