@@ -185,11 +185,29 @@ public class IISimpleHashableState extends WrappedHashableState {
 	 */
 	protected boolean valuesEqual(Object key, Object v1, Object v2){
 		if(v1.getClass().isArray() && v2.getClass().isArray()){
-			return Arrays.equals((Object[])v1, (Object[])v2);
+			if (v1 instanceof long[]) {
+				return Arrays.equals((long[])v1, (long[])v2);
+			} else if (v1 instanceof int[]) {
+				return Arrays.equals((int[])v1, (int[])v2);
+			} else if (v1 instanceof short[]) {
+				return Arrays.equals((short[])v1, (short[])v2);
+			} else if (v1 instanceof char[]) {
+				return Arrays.equals((char[])v1, (char[])v2);
+			} else if (v1 instanceof byte[]) {
+				return Arrays.equals((byte[])v1, (byte[])v2);
+			} else if (v1 instanceof double[]) {
+				return Arrays.equals((double[])v1, (double[])v2);
+			} else if (v1 instanceof float[]) {
+				return Arrays.equals((float[])v1, (float[])v2);
+			} else if (v1 instanceof boolean[]) {
+
+			} else {
+				// Not an array of primitives
+				return Arrays.equals((Object[])v1, (Object[])v2);
+			}
 		}
 		return v1.equals(v2);
 	}
-
 
 
 }
