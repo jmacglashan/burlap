@@ -16,6 +16,31 @@ BURLAP is a java code library for the use and development of single or multi-age
 * BURLAP ROS Bridge library: https://github.com/h2r/burlap_rosbridge
 * Minecraft Interface: http://github.com/h2r/burlapcraft
 
+## Simple Example
+Here is example code of creating a grid world problem, creating a Q-learning agent, running the agent for 100 episodes, and then visualizing the episodes after it's complete.
+
+```
+//define the problem
+GridWorldDomain gwd = new GridWorldDomain(11, 11);
+gwd.setMapToFourRooms();
+gwd.setTf(new GridWorldTerminalFunction(10, 10));
+SADomain domain = gwd.generateDomain();
+Environment env = new SimulatedEnvironment(domain, new GridWorldState(0, 0));
+
+//create a Q-learning agent
+QLearning agent = new QLearning(domain, 0.99, new SimpleHashableStateFactory(), 1.0, 1.0);
+
+//run 100 learning episode and save the episode results
+List<Episode> episdoes = new ArrayList<>();
+for(int i = 0; i < 100; i++){
+	episdoes.add(agent.runLearningEpisode(env));
+	env.resetEnvironment();
+}
+
+//visualize the completed learning episodes
+new EpisodeSequenceVisualizer(GridWorldVisualizer.getVisualizer(gwd.getMap()), domain, episdoes);
+```
+
 ## Linking
 
 BURLAP builds using Maven and is indexed on Maven Central, so all you need to do to have your Maven project link to BURLAP is add the following to the `<dependencies>` section of your project's pom.xml file:
