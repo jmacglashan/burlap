@@ -48,7 +48,7 @@ BURLAP builds using Maven and is indexed on Maven Central, so all you need to do
 <dependency>
   <groupId>edu.brown.cs.burlap</groupId>
   <artifactId>burlap</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
