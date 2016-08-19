@@ -26,7 +26,7 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 public class DiscretizingMaskedHashableStateFactory extends SimpleHashableStateFactory {
 
 
-	DiscMaskedConfig config;
+	protected DiscMaskedConfig config;
 
 
 	/**
