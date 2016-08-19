@@ -18,6 +18,7 @@ import burlap.mdp.stochasticgames.model.JointModel;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -427,7 +428,7 @@ public class World {
 		State abstractedPrime = this.abstractionForAgents.mapState(sp);
 		double[] jointReward = jointRewardFunction.reward(currentState, ja, sp);
 		
-		DPrint.cl(debugId, jointReward.toString());
+		DPrint.cl(debugId, Arrays.toString(jointReward));
 
 		//index reward
 		for(int i = 0; i < jointReward.length; i++){
@@ -477,7 +478,7 @@ public class World {
 		State sp = worldModel.sample(currentState, this.lastJointAction);
 		double[] jointReward = jointRewardFunction.reward(currentState, this.lastJointAction, sp);
 		
-		DPrint.cl(debugId, jointReward.toString());
+		DPrint.cl(debugId, Arrays.toString(jointReward));
 
 		//index reward
 		for(int i = 0; i < jointReward.length; i++){
