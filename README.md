@@ -31,14 +31,14 @@ Environment env = new SimulatedEnvironment(domain, new GridWorldState(0, 0));
 QLearning agent = new QLearning(domain, 0.99, new SimpleHashableStateFactory(), 1.0, 1.0);
 
 //run 100 learning episode and save the episode results
-List<Episode> episdoes = new ArrayList<>();
+List<Episode> episodes = new ArrayList<>();
 for(int i = 0; i < 100; i++){
-	episdoes.add(agent.runLearningEpisode(env));
+	episodes.add(agent.runLearningEpisode(env));
 	env.resetEnvironment();
 }
 
 //visualize the completed learning episodes
-new EpisodeSequenceVisualizer(GridWorldVisualizer.getVisualizer(gwd.getMap()), domain, episdoes);
+new EpisodeSequenceVisualizer(GridWorldVisualizer.getVisualizer(gwd.getMap()), domain, episodes);
 ```
 
 ## Linking
