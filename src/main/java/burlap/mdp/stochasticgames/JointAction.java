@@ -203,9 +203,9 @@ public class JointAction implements Action, Iterable<Action>{
 
 		List<Action> agentsChoices = individualActionChoices.get(i);
 		for(Action gsa : agentsChoices){
-			currentSelections.push(gsa);
+			currentSelections.addLast(gsa);
 			allJointActionsHelper(individualActionChoices, i+1, currentSelections, allJointActions);
-			currentSelections.pop();
+			currentSelections.remove(i);
 		}
 	}
 	

@@ -28,7 +28,7 @@ public class DifferentiableSoftmaxOperator extends SoftmaxOperator implements Di
 		for(int i = 0; i < qs.length; i++){
 
 			double probA = Math.exp(this.beta * qs[i] - logSum);
-			FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(this.beta, qs, maxBetaScaled, logSum, qGradients, i);
+			FunctionGradient policyGradient = BoltzmannPolicyGradient.computePolicyGradient(qs, qGradients, i, this.beta);
 
 			for(FunctionGradient.PartialDerivative pd : policyGradient.getNonZeroPartialDerivatives()){
 				double curVal = vGradient.getPartialDerivative(pd.parameterId);
