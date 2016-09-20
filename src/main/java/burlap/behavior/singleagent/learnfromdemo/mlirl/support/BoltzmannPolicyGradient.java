@@ -1,8 +1,11 @@
 package burlap.behavior.singleagent.learnfromdemo.mlirl.support;
 
 import burlap.behavior.functionapproximation.FunctionGradient;
+import burlap.behavior.functionapproximation.GradientUtils;
 import burlap.behavior.valuefunction.QProvider;
 import burlap.behavior.valuefunction.QValue;
+import burlap.datastructures.BoltzmannDistribution;
+import burlap.datastructures.HashedAggregator;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
@@ -60,49 +63,55 @@ public class BoltzmannPolicyGradient {
 		}
 
 
-		double maxBetaScaled = maxBetaScaled(qs, beta);
-		double logSum = logSum(qs, maxBetaScaled, beta);
-
-		FunctionGradient policyGradient = computePolicyGradient(beta, qs, maxBetaScaled, logSum, qGradients, aind);
+		FunctionGradient policyGradient = computePolicyGradient(qs, qGradients, aind, beta);
 
 		return policyGradient;
 
 	}
 
-	/**
-	 * Computes the gradient of a Boltzmann policy using values derived from a Differentiable Botlzmann backup valueFunction.
-	 * @param beta the Boltzmann beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
-	 * @param qs an array holding the Q-value for each action.
-	 * @param maxBetaScaled the maximum Q-value after being scaled by the parameter beta
-	 * @param logSum the log sum of the exponentiated q values
-	 * @param gqs a matrix holding the Q-value gradient for each action. The matrix's major order is the action index, followed by the parameter gradient
-	 * @param aInd the index of the query action for which the policy's gradient is being computed
-	 * @return the gradient of the policy.
-	 */
-	public static FunctionGradient computePolicyGradient(double beta, double [] qs, double maxBetaScaled, double logSum, FunctionGradient [] gqs, int aInd){
+    /**
+     * Computes the gradient of the Boltzmann (softmax) policy wrt some parameters.
+     * @param prefs the action-wise preference values passed through the softmax
+     * @param grads the gradients of the preference-values with respect to the parameters
+     * @param aind the index of the action for which the gradient is being queried
+     * @param beta the softmax beta parameter. This parameter is the inverse of the Botlzmann temperature. As beta becomes larger, the policy becomes more deterministic. Should lie in [0, +ifnty].
+     * @return the gradient of the policy
+     */
+	public static FunctionGradient computePolicyGradient(double [] prefs, FunctionGradient[] grads, int aind, double beta){
 
-		FunctionGradient pg = new FunctionGradient.SparseGradient();
-		double constantPart = beta * Math.exp(beta*qs[aInd] + maxBetaScaled - logSum - logSum);
-		Set<Integer> nzPDs = combinedNonZeroPDParameters(gqs);
-		for(int i = 0; i < qs.length; i++){
-			for(int param : nzPDs){
-				double curVal = pg.getPartialDerivative(param);
-				double nextVal = curVal + (gqs[aInd].getPartialDerivative(param) - gqs[i].getPartialDerivative(param))
-											* Math.exp(beta * qs[i] - maxBetaScaled);
+		//first compute policy probs
+		BoltzmannDistribution bd = new BoltzmannDistribution(prefs, 1./beta);
+		double [] probs = bd.getProbabilities();
 
-				pg.put(param, nextVal);
- 			}
-		}
-
-		FunctionGradient finalGradient = new FunctionGradient.SparseGradient(pg.numNonZeroPDs());
-		for(FunctionGradient.PartialDerivative pd : pg.getNonZeroPartialDerivatives()){
-			double nextVal = pd.value * constantPart;
-			finalGradient.put(pd.parameterId, nextVal);
-		}
-
-		return finalGradient;
+		return computePolicyGradient(probs, prefs, grads, aind, beta);
 
 	}
+
+    public static FunctionGradient computePolicyGradient(double [] probs, double [] prefs, FunctionGradient[] grads, int aind, double beta){
+
+        HashedAggregator<Integer> sums = new HashedAggregator<Integer>();
+
+        //now get component for on action gradient
+        FunctionGradient aterm = GradientUtils.scalarMultCopy(grads[aind], beta * (1. - probs[aind]));
+        GradientUtils.sumInto(aterm, sums);
+
+        //now sum over off action gradients
+        for(int i = 0; i < prefs.length; i++){
+            if(i == aind) continue;
+
+            FunctionGradient offTerm = GradientUtils.scalarMultCopy(grads[i], -beta * probs[i]);
+            GradientUtils.sumInto(offTerm, sums);
+        }
+
+        FunctionGradient unnormalized = GradientUtils.toGradient(sums);
+        FunctionGradient grad = GradientUtils.scalarMultCopy(unnormalized, probs[aind]);
+
+        return grad;
+
+    }
+
+
+
 
 
 	/**
