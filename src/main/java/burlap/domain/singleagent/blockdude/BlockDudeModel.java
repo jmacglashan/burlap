@@ -138,7 +138,7 @@ public class BlockDudeModel implements FullStateModel {
 		int nx = ax+dir;
 		int ny = ay+1;
 
-		if(nx < 0 || nx > maxx){
+		if(nx < 0 || nx >= maxx){
 			return;
 		}
 
@@ -241,6 +241,10 @@ public class BlockDudeModel implements FullStateModel {
 
 
 		int nx = ax + dir;
+		
+		if (nx < 0 || nx >= maxx) {
+			return; // cannot drop block past the edge of the map
+		}
 
 		int heightAtNX = greatestHeightBelow(s, map, maxx, nx, ay+1);
 		if(heightAtNX > ay){
