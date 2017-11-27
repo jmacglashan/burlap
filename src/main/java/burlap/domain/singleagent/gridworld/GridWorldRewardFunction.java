@@ -98,8 +98,8 @@ public class GridWorldRewardFunction implements RewardFunction {
 	@Override
 	public double reward(State s, Action a, State sprime) {
 
-		int x = ((GridWorldState)s).agent.x;
-		int y = ((GridWorldState)s).agent.y;
+		int x = ((GridWorldState)sprime).agent.x;
+		int y = ((GridWorldState)sprime).agent.y;
 		
 		if(x >= this.width || x < 0 || y >= this.height || y < 0){
 			throw new RuntimeException("GridWorld reward matrix is only defined for a " + this.width + "x" + 
