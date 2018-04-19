@@ -52,6 +52,9 @@ BURLAP builds using Maven and is indexed on Maven Central, so all you need to do
 </dependency>
 ```
 
+Or, if you have a Gradle project, add the following to your build.gradle file in the `dependencies` section:  
+`compile 'edu.brown.cs.burlap:burlap:3.0.1'`
+
 Alternatively, you can compile and install from the source using Maven. The current master branch may be ahead of the latest release on Maven Central, so if you compile and install from source, make sure your external project's POM dependency uses the version you installed.
 
 ## Compiling
