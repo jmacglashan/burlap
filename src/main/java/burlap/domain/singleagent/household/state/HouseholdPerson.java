@@ -17,18 +17,21 @@ public class HouseholdPerson extends MutableObject {
 	     Household.ATT_IN_CONVERSATION					     
     );
 
-    public HouseholdPerson(String name, int x, int y) {
-	this(name, (Object) x, (Object) y, false);
+    public HouseholdPerson(String name, int x, int y, String shape, String color) {
+	this(name, (Object) x, (Object) y, shape, color, false);
     }
 
-    public HouseholdPerson(String name, int x, int y, boolean inConversation) {
-	this(name, (Object) x, (Object) y, (Object) inConversation);
+    public HouseholdPerson(String name, int x, int y, String shape,
+			   String color, boolean inConversation) {
+	this(name, (Object) x, (Object) y, shape, color, (Object) inConversation);
     }
 
-    private HouseholdPerson(String name, Object x, Object y,
-			    Object inConversation) {
+    private HouseholdPerson(String name, Object x, Object y, String shape,
+			    String color, Object inConversation) {
 	this.set(Household.ATT_X, x);
 	this.set(Household.ATT_Y, y);
+	this.set(Household.ATT_SHAPE, shape);
+	this.set(Household.ATT_COLOR, color);
 	this.set(Household.ATT_IN_CONVERSATION, inConversation);
 	this.setName(name);
     }
@@ -49,6 +52,8 @@ public class HouseholdPerson extends MutableObject {
 				   objectName,
 				   get(Household.ATT_X),
 				   get(Household.ATT_Y),
+				   get(Household.ATT_SHAPE),
+				   get(Household.ATT_COLOR),
 				   get(Household.ATT_IN_CONVERSATION)
 				   );
     }
