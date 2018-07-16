@@ -18,8 +18,13 @@ public class HouseholdRoom extends MutableObject {
 	   Household.ATT_SHAPE
     );
 
-    public HouseholdRoom(String name, int left, int right, int bottom, int top,
-			 String color, String shape) {
+    public HouseholdRoom(String name,
+			 int left,
+			 int right,
+			 int bottom,
+			 int top,
+			 String color,
+			 String shape) {
 	this.set(Household.ATT_LEFT, left);
 	this.set(Household.ATT_RIGHT, right);
 	this.set(Household.ATT_BOTTOM, bottom);
@@ -42,12 +47,11 @@ public class HouseholdRoom extends MutableObject {
     @Override
     public HouseholdRoom copyWithName(String objectName) {
 	return new HouseholdRoom(objectName,
-				 get(Household.ATT_LEFT),
-				 get(Household.ATT_RIGHT),
-				 get(Household.ATT_BOTTOM),
-				 get(Household.ATT_TOP),
-				 get(Household.ATT_SHAPE),
-				 get(Household.ATT_COLOR)
-				 );
+				 (int) get(Household.ATT_LEFT),
+				 (int) get(Household.ATT_RIGHT),
+				 (int) get(Household.ATT_BOTTOM),
+				 (int) get(Household.ATT_TOP),
+				 (String) get(Household.ATT_SHAPE),
+				 (String) get(Household.ATT_COLOR));
     }
 }

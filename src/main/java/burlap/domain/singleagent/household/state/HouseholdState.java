@@ -11,13 +11,24 @@ import java.util.*;
 
 public class HouseholdState implements MutableOOState {
 
+    private static final int DEFAULT_MIN_X = 0;
+    private static final int DEFAULT_MIN_Y = 0;
+
+    private int width;
+    private int height;
     private HouseholdAgent agent;
     private Map<String, HouseholdPerson> people;
     private Map<String, HouseholdRoom> rooms;
     private Map<String, HouseholdDoor> doors;
 
-    public HouseholdState(HouseholdAgent agent, List<HouseholdPerson> people,
-			  List<HouseholdRoom> rooms, List<HouseholdDoors> doors) {
+    public HouseholdState(int width,
+			  int height,
+			  HouseholdAgent agent,
+			  List<HouseholdPerson> people,
+			  List<HouseholdRoom> rooms,
+			  List<HouseholdDoors> doors) {
+	this.width = width;
+	this.height = height;
 	this.agent = agent;
 	this.people = new HashMap<String, HouseholdPerson>();
 	for(HouseholdPerson p : people) {
@@ -35,8 +46,10 @@ public class HouseholdState implements MutableOOState {
 	}
     }
 
-    public HouseholdState(HouseholdAgent a, Map<String, HouseholdPerson> people,
-			  Map<String, HouseholdRoom> rooms, Map<String, HouseholdDoor> doors) {
+    public HouseholdState(HouseholdAgent a,
+			  Map<String, HouseholdPerson> people,
+			  Map<String, HouseholdRoom> rooms,
+			  Map<String, HouseholdDoor> doors) {
 	this.agent = a;
 	this.people = people;
 	this.rooms = rooms;
@@ -44,9 +57,90 @@ public class HouseholdState implements MutableOOState {
     }
 
     @Override
+    public MutableOOState addObject(ObjectInstance obInst) {
+	if(obInst instanceof HouseholdAgent ||
+	   obInst.className().equals(Household.CLASS_AGENT)) {
+	    touchAgent();
+	    agent = (HouseholdAgent) obInst;
+	} else if(obInst instanceof HouseholdPerson ||
+		  obInst.className().equals(Household.CLASS_PERSON)) {
+	    touchPeople().put(obInst.name(), (HouseholdPerson) obInst);
+        } else if(obInst instanceof HouseholdRoom ||
+		  obInst.className().equals(Household.CLASS_ROOM)) {
+	    touchRooms().put(obInst.name(), (HouseholdRoom) obInst);
+	} else if(obInst instanceof HouseholdDoor ||
+		  obInst.className().equals(Household.CLASS_DOOR)) {
+	    touchDoors().put(obInst.name(), (HouseholdDoor) obInst);
+	} else {
+	    throw new RuntimeException("Can only add certain objects.");
+	}
+	return this;
+    }
+
+    @Override
+    public MutableOOState removeObject(String name) {
+	throw new RuntimeException("Remove not implemented");
+    }
+
+    @Override
+    public MutableOOState renameObject(String currentName, String newName) {
+	throw new RuntimeException("Rename not implemented");
+    }
+	
+    @Override
     public int numObjects() {
 	return 1 + people.size() + rooms.size() + doors.size();
     }
+
+    @Override
+    public ObjectInstance object(String name) {
+	if(agent.name().equals(name)) {
+	    return agent;
+	}
+
+	ObjectInstance o = people.get(name);
+	if(o != null) {
+	    return o;
+	}
+
+	o = rooms.get(name);
+	if(o != null) {
+	    return o;
+	}
+
+	o = doors.get(name);
+	if(o != null) {
+	    return o;
+	}
+
+	return null;
+    }
+
+    @Override
+    public List<ObjectInstance> objects() {
+	List<ObjectInstance> obs = newArrayList<ObjectInstance>();
+	objs.add(agent);
+	objs.addAll(people.values());
+	objs.addAll(rooms.values());
+	objs.addAll(doors.values());
+	return objs;
+    }
+
+    @Override
+    public List<ObjectInstance> objectsOfClass(String className) {
+	if(className.equals(Household.CLASS_AGENT)) {
+	    return Arrays.asList(agent);
+	} else if(className.equals(Household.CLASS_PERSON)) {
+	    return new ArrayList<ObjectInstance>(people.values());
+	} else if(className.equals(Household.CLASS_ROOM)) {
+	    return new ArrayList<ObjectInstance>(rooms.values());
+	} else if(className.equals(Household.CLASS_DOOR)) {
+	    return new ArrayList<ObjectInstance>(doors.values());
+	}
+	throw new RuntimeException("No object class " + className);
+    }
+	
+	
     
     public HouseholdAgent getAgent() {
 	return agent;
