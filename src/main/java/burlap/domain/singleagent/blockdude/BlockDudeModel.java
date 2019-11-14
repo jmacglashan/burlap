@@ -138,7 +138,7 @@ public class BlockDudeModel implements FullStateModel {
 		int nx = ax+dir;
 		int ny = ay+1;
 
-		if(nx < 0 || nx > maxx){
+		if(nx < 0 || nx >= maxx){
 			return;
 		}
 
