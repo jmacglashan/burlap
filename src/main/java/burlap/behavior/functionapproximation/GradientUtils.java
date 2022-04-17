@@ -46,6 +46,7 @@ public class GradientUtils {
      * to a gradient multiplied by a scMultiplies every element in a {@link FunctionGradient} by scalar
      * @param fg the {@link FunctionGradient}
      * @param scalar the scalar value
+     * @return function gradient {@link FunctionGradient}
      */
     public static FunctionGradient scalarMultCopy(FunctionGradient fg, double scalar){
         FunctionGradient cfg = new FunctionGradient.SparseGradient(fg.numNonZeroPDs());

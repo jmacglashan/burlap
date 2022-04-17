@@ -1,5 +1,6 @@
 package burlap.debugtools;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,7 +99,7 @@ public class DPrint {
 			mb = m;
 		}
 		if(mb){
-			System.out.print(s);
+			System.out.print(Instant.now().toString() + ": " + s);
 		}
 	}
 	

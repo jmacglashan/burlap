@@ -316,7 +316,14 @@ public class QLearning extends MDPSolver implements QProvider, LearningAgent, Pl
 		return this.getQ(this.stateHash(s), a).q;
 	}
 	
-	
+	/**
+	 * Returns the number of states being tracked by the Q-Learner currently
+	 * @return the number of states tracked by the Q-learner currently
+	 */
+	public int statesTracked() {
+		return qFunction.size();
+	}
+
 	/**
 	 * Returns the possible Q-values for a given hashed stated.
 	 * @param s the hashed state for which to get the Q-values.

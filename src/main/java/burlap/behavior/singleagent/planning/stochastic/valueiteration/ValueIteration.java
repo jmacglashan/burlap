@@ -2,6 +2,7 @@ package burlap.behavior.singleagent.planning.stochastic.valueiteration;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.PlanningObserver;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.action.Action;
@@ -12,11 +13,7 @@ import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 
 
 /**
@@ -62,7 +59,8 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	
 	protected boolean												hasRunVI = false;
 	
-	
+	protected List<PlanningObserver>								observers = new ArrayList<PlanningObserver>();
+
 	/**
 	 * Initializers the valueFunction.
 	 * @param domain the domain in which to plan
@@ -98,6 +96,9 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 		this.stopReachabilityFromTerminalStates = toggle;
 	}
 
+	public void addObserver(PlanningObserver o) {
+		this.observers.add(o);
+	}
 
 	/**
 	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
@@ -146,7 +147,13 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 				delta = Math.max(Math.abs(maxQ - v), delta);
 				
 			}
-			
+
+			for (PlanningObserver observer: observers) {
+				observer.observe(new GreedyQPolicy(this), i, delta);
+			}
+
+			System.out.println("VI [" + i + "] delta: " + delta);
+
 			if(delta < this.maxDelta){
 				break; //approximated well enough; stop iterating
 			}

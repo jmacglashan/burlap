@@ -4,6 +4,7 @@ import burlap.behavior.policy.EnumerablePolicy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.PlanningObserver;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.action.Action;
@@ -14,10 +15,7 @@ import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PolicyIteration extends DynamicProgramming implements Planner {
 
@@ -70,8 +68,9 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * Boolean to indicate whether planning as been run at least once
 	 */
 	protected boolean												hasRunPlanning = false;
-	
-	
+
+	protected List<PlanningObserver>								observers = new ArrayList<PlanningObserver>();
+
 	/**
 	 * Initializes the valueFunction.
 	 * @param domain the domain in which to plan
@@ -158,6 +157,10 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		return totalValueIterations;
 	}
 
+	public void addObserver(PlanningObserver o) {
+		this.observers.add(o);
+	}
+
 	/**
 	 * Plans from the input state and then returns a {@link burlap.behavior.policy.GreedyQPolicy} that greedily
 	 * selects the action with the highest Q-value and breaks ties uniformly randomly.
@@ -175,6 +178,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 				delta = this.evaluatePolicy();
 				iterations++;
 				this.evaluativePolicy = new GreedyQPolicy(this.getCopyOfValueFunction());
+				System.out.println("PI [" + iterations + "] delta: " + delta);
 			}while(delta > this.maxPIDelta && iterations < maxPolicyIterations);
 
 			this.hasRunPlanning = true;
@@ -185,7 +189,6 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		this.totalPolicyIterations += iterations;
 
 		return (GreedyQPolicy)this.evaluativePolicy;
-
 	}
 	
 	
@@ -202,7 +205,7 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 * @return the maximum single iteration change in the value function
 	 */
 	protected double evaluatePolicy(){
-		
+
 		if(!this.foundReachableStates){
 			throw new RuntimeException("Cannot run VI until the reachable states have been found. Use planFromState method at least once or instead.");
 		}
@@ -212,9 +215,9 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 		Set <HashableState> states = valueFunction.keySet();
 		
 		int i;
+		double delta = 0.;
 		for(i = 0; i < this.maxIterations; i++){
 			
-			double delta = 0.;
 			for(HashableState sh : states){
 				
 				double v = this.value(sh);
@@ -229,10 +232,13 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 				i++;
 				break; //approximated well enough; stop iterating
 			}
-			
 		}
-		
+
 		DPrint.cl(this.debugCode, "Iterations in inner VI for policy eval: " + i);
+		for (PlanningObserver observer: observers) {
+			observer.observe(new GreedyQPolicy(this), i, delta);
+		}
+
 		this.totalValueIterations += i;
 		
 		return maxChangeInPolicyEvaluation;
